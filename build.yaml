@@ -4,13 +4,6 @@ targets:
       graphql_codegen:
         options:
           schema_mapping:
-            - schema: graphql/schema.graphql
+            - schema: graphql/minimal_schema.graphql
               queries_glob: lib/**/*.graphql
               output_directory: lib/core/data/graphql/__generated__
-          type_overrides:
-            Query:
-              name: Query
-            Mutation:
-              name: Mutation
-            Subscription:
-              name: Subscription

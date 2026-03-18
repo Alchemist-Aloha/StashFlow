@@ -1,0 +1,4851 @@
+"The query root for this schema"
+type Query {
+  # Filters
+  findSavedFilter(id: ID!): SavedFilter
+  findSavedFilters(mode: FilterMode): [SavedFilter!]!
+  findDefaultFilter(mode: FilterMode!): SavedFilter
+    @deprecated(reason: "default filter now stored in UI config")
+
+  "Find a file by its id or path"
+  findFile(id: ID, path: String): BaseFile!
+
+  "Queries for Files"
+  findFiles(
+    file_filter: FileFilterType
+    filter: FindFilterType
+    ids: [ID!]
+  ): FindFilesResultType!
+
+  "Find a file by its id or path"
+  findFolder(id: ID, path: String): Folder!
+
+  "Queries for Files"
+  findFolders(
+    folder_filter: FolderFilterType
+    filter: FindFilterType
+    ids: [ID!]
+  ): FindFoldersResultType!
+
+  "Find a scene by ID or Checksum"
+  findScene(id: ID, checksum: String): Scene
+  findSceneByHash(input: SceneHashInput!): Scene
+
+  "A function which queries Scene objects"
+  findScenes(
+    scene_filter: SceneFilterType
+    scene_ids: [Int!] @deprecated(reason: "use ids")
+    ids: [ID!]
+    filter: FindFilterType
+  ): FindScenesResultType!
+
+  findScenesByPathRegex(filter: FindFilterType): FindScenesResultType!
+
+  """
+  Returns any groups of scenes that are perceptual duplicates within the queried distance
+  and the difference between their duration is smaller than durationDiff
+  """
+  findDuplicateScenes(
+    distance: Int
+    """
+    Max difference in seconds between files in order to be considered for similarity matching.
+    Fractional seconds are ok: 0.5 will mean only files that have durations within 0.5 seconds between them will be matched based on PHash distance.
+    """
+    duration_diff: Float
+  ): [[Scene!]!]!
+
+  "Return valid stream paths"
+  sceneStreams(id: ID): [SceneStreamEndpoint!]!
+
+  parseSceneFilenames(
+    filter: FindFilterType
+    config: SceneParserInput!
+  ): SceneParserResultType!
+
+  "A function which queries SceneMarker objects"
+  findSceneMarkers(
+    scene_marker_filter: SceneMarkerFilterType
+    filter: FindFilterType
+    ids: [ID!]
+  ): FindSceneMarkersResultType!
+
+  findImage(id: ID, checksum: String): Image
+
+  "A function which queries Scene objects"
+  findImages(
+    image_filter: ImageFilterType
+    image_ids: [Int!] @deprecated(reason: "use ids")
+    ids: [ID!]
+    filter: FindFilterType
+  ): FindImagesResultType!
+
+  "Find a performer by ID"
+  findPerformer(id: ID!): Performer
+  "A function which queries Performer objects"
+  findPerformers(
+    performer_filter: PerformerFilterType
+    filter: FindFilterType
+    performer_ids: [Int!] @deprecated(reason: "use ids")
+    ids: [ID!]
+  ): FindPerformersResultType!
+
+  "Find a studio by ID"
+  findStudio(id: ID!): Studio
+  "A function which queries Studio objects"
+  findStudios(
+    studio_filter: StudioFilterType
+    filter: FindFilterType
+    ids: [ID!]
+  ): FindStudiosResultType!
+
+  "Find a movie by ID"
+  findMovie(id: ID!): Movie @deprecated(reason: "Use findGroup instead")
+  "A function which queries Movie objects"
+  findMovies(
+    movie_filter: MovieFilterType
+    filter: FindFilterType
+    ids: [ID!]
+  ): FindMoviesResultType! @deprecated(reason: "Use findGroups instead")
+
+  "Find a group by ID"
+  findGroup(id: ID!): Group
+  "A function which queries Group objects"
+  findGroups(
+    group_filter: GroupFilterType
+    filter: FindFilterType
+    ids: [ID!]
+  ): FindGroupsResultType!
+
+  findGallery(id: ID!): Gallery
+  findGalleries(
+    gallery_filter: GalleryFilterType
+    filter: FindFilterType
+    ids: [ID!]
+  ): FindGalleriesResultType!
+
+  findTag(id: ID!): Tag
+  findTags(
+    tag_filter: TagFilterType
+    filter: FindFilterType
+    ids: [ID!]
+  ): FindTagsResultType!
+
+  "Retrieve random scene markers for the wall"
+  markerWall(q: String): [SceneMarker!]!
+  "Retrieve random scenes for the wall"
+  sceneWall(q: String): [Scene!]!
+
+  "Get marker strings"
+  markerStrings(q: String, sort: String): [MarkerStringsResultType]!
+  "Get stats"
+  stats: StatsResultType!
+  "Organize scene markers by tag for a given scene ID"
+  sceneMarkerTags(scene_id: ID!): [SceneMarkerTag!]!
+
+  logs: [LogEntry!]!
+
+  # Scrapers
+
+  "List available scrapers"
+  listScrapers(types: [ScrapeContentType!]!): [Scraper!]!
+
+  "Scrape for a single scene"
+  scrapeSingleScene(
+    source: ScraperSourceInput!
+    input: ScrapeSingleSceneInput!
+  ): [ScrapedScene!]!
+  "Scrape for multiple scenes"
+  scrapeMultiScenes(
+    source: ScraperSourceInput!
+    input: ScrapeMultiScenesInput!
+  ): [[ScrapedScene!]!]!
+
+  "Scrape for a single studio"
+  scrapeSingleStudio(
+    source: ScraperSourceInput!
+    input: ScrapeSingleStudioInput!
+  ): [ScrapedStudio!]!
+
+  "Scrape for a single tag"
+  scrapeSingleTag(
+    source: ScraperSourceInput!
+    input: ScrapeSingleTagInput!
+  ): [ScrapedTag!]!
+
+  "Scrape for a single performer"
+  scrapeSinglePerformer(
+    source: ScraperSourceInput!
+    input: ScrapeSinglePerformerInput!
+  ): [ScrapedPerformer!]!
+  "Scrape for multiple performers"
+  scrapeMultiPerformers(
+    source: ScraperSourceInput!
+    input: ScrapeMultiPerformersInput!
+  ): [[ScrapedPerformer!]!]!
+
+  "Scrape for a single gallery"
+  scrapeSingleGallery(
+    source: ScraperSourceInput!
+    input: ScrapeSingleGalleryInput!
+  ): [ScrapedGallery!]!
+
+  "Scrape for a single movie"
+  scrapeSingleMovie(
+    source: ScraperSourceInput!
+    input: ScrapeSingleMovieInput!
+  ): [ScrapedMovie!]! @deprecated(reason: "Use scrapeSingleGroup instead")
+
+  "Scrape for a single group"
+  scrapeSingleGroup(
+    source: ScraperSourceInput!
+    input: ScrapeSingleGroupInput!
+  ): [ScrapedGroup!]!
+
+  "Scrape for a single image"
+  scrapeSingleImage(
+    source: ScraperSourceInput!
+    input: ScrapeSingleImageInput!
+  ): [ScrapedImage!]!
+
+  "Scrapes content based on a URL"
+  scrapeURL(url: String!, ty: ScrapeContentType!): ScrapedContent
+
+  "Scrapes a complete performer record based on a URL"
+  scrapePerformerURL(url: String!): ScrapedPerformer
+  "Scrapes a complete scene record based on a URL"
+  scrapeSceneURL(url: String!): ScrapedScene
+  "Scrapes a complete gallery record based on a URL"
+  scrapeGalleryURL(url: String!): ScrapedGallery
+  "Scrapes a complete image record based on a URL"
+  scrapeImageURL(url: String!): ScrapedImage
+  "Scrapes a complete movie record based on a URL"
+  scrapeMovieURL(url: String!): ScrapedMovie
+    @deprecated(reason: "Use scrapeGroupURL instead")
+  "Scrapes a complete group record based on a URL"
+  scrapeGroupURL(url: String!): ScrapedGroup
+
+  # Plugins
+  "List loaded plugins"
+  plugins: [Plugin!]
+  "List available plugin operations"
+  pluginTasks: [PluginTask!]
+
+  # Packages
+  "List installed packages"
+  installedPackages(type: PackageType!): [Package!]!
+  "List available packages"
+  availablePackages(type: PackageType!, source: String!): [Package!]!
+
+  # Config
+  "Returns the current, complete configuration"
+  configuration: ConfigResult!
+  "Returns an array of paths for the given path"
+  directory(
+    "The directory path to list"
+    path: String
+    "Desired collation locale. Determines the order of the directory result. eg. 'en-US', 'pt-BR', ..."
+    locale: String = "en"
+  ): Directory!
+  validateStashBoxCredentials(input: StashBoxInput!): StashBoxValidationResult!
+
+  # System status
+  systemStatus: SystemStatus!
+
+  # Job status
+  jobQueue: [Job!]
+  findJob(input: FindJobInput!): Job
+
+  dlnaStatus: DLNAStatus!
+
+  # Get everything
+
+  allScenes: [Scene!]! @deprecated(reason: "Use findScenes instead")
+  allSceneMarkers: [SceneMarker!]!
+    @deprecated(reason: "Use findSceneMarkers instead")
+  allImages: [Image!]! @deprecated(reason: "Use findImages instead")
+  allGalleries: [Gallery!]! @deprecated(reason: "Use findGalleries instead")
+
+  allPerformers: [Performer!]!
+  allTags: [Tag!]! @deprecated(reason: "Use findTags instead")
+  allStudios: [Studio!]! @deprecated(reason: "Use findStudios instead")
+  allMovies: [Movie!]! @deprecated(reason: "Use findGroups instead")
+
+  # Get everything with minimal metadata
+
+  # Version
+  version: Version!
+
+  # LatestVersion
+  latestversion: LatestVersion!
+}
+
+type Mutation {
+  setup(input: SetupInput!): Boolean!
+
+  "Migrates the schema to the required version. Returns the job ID"
+  migrate(input: MigrateInput!): ID!
+
+  "Downloads and installs ffmpeg and ffprobe binaries into the configuration directory. Returns the job ID."
+  downloadFFMpeg: ID!
+
+  sceneCreate(input: SceneCreateInput!): Scene
+  sceneUpdate(input: SceneUpdateInput!): Scene
+  sceneMerge(input: SceneMergeInput!): Scene
+  bulkSceneUpdate(input: BulkSceneUpdateInput!): [Scene!]
+  sceneDestroy(input: SceneDestroyInput!): Boolean!
+  scenesDestroy(input: ScenesDestroyInput!): Boolean!
+  scenesUpdate(input: [SceneUpdateInput!]!): [Scene]
+
+  "Increments the o-counter for a scene. Returns the new value"
+  sceneIncrementO(id: ID!): Int! @deprecated(reason: "Use sceneAddO instead")
+  "Decrements the o-counter for a scene. Returns the new value"
+  sceneDecrementO(id: ID!): Int! @deprecated(reason: "Use sceneRemoveO instead")
+
+  "Increments the o-counter for a scene. Uses the current time if none provided."
+  sceneAddO(id: ID!, times: [Timestamp!]): HistoryMutationResult!
+  "Decrements the o-counter for a scene, removing the last recorded time if specific time not provided. Returns the new value"
+  sceneDeleteO(id: ID!, times: [Timestamp!]): HistoryMutationResult!
+
+  "Resets the o-counter for a scene to 0. Returns the new value"
+  sceneResetO(id: ID!): Int!
+
+  "Sets the resume time point (if provided) and adds the provided duration to the scene's play duration"
+  sceneSaveActivity(id: ID!, resume_time: Float, playDuration: Float): Boolean!
+
+  "Resets the resume time point and play duration"
+  sceneResetActivity(
+    id: ID!
+    reset_resume: Boolean
+    reset_duration: Boolean
+  ): Boolean!
+
+  "Increments the play count for the scene. Returns the new play count value."
+  sceneIncrementPlayCount(id: ID!): Int!
+    @deprecated(reason: "Use sceneAddPlay instead")
+
+  "Increments the play count for the scene. Uses the current time if none provided."
+  sceneAddPlay(id: ID!, times: [Timestamp!]): HistoryMutationResult!
+  "Decrements the play count for the scene, removing the specific times or the last recorded time if not provided."
+  sceneDeletePlay(id: ID!, times: [Timestamp!]): HistoryMutationResult!
+  "Resets the play count for a scene to 0. Returns the new play count value."
+  sceneResetPlayCount(id: ID!): Int!
+
+  "Generates screenshot at specified time in seconds. Leave empty to generate default screenshot"
+  sceneGenerateScreenshot(id: ID!, at: Float): String!
+
+  sceneMarkerCreate(input: SceneMarkerCreateInput!): SceneMarker
+  sceneMarkerUpdate(input: SceneMarkerUpdateInput!): SceneMarker
+  bulkSceneMarkerUpdate(input: BulkSceneMarkerUpdateInput!): [SceneMarker!]
+  sceneMarkerDestroy(id: ID!): Boolean!
+  sceneMarkersDestroy(ids: [ID!]!): Boolean!
+
+  sceneAssignFile(input: AssignSceneFileInput!): Boolean!
+
+  imageUpdate(input: ImageUpdateInput!): Image
+  bulkImageUpdate(input: BulkImageUpdateInput!): [Image!]
+  imageDestroy(input: ImageDestroyInput!): Boolean!
+  imagesDestroy(input: ImagesDestroyInput!): Boolean!
+  imagesUpdate(input: [ImageUpdateInput!]!): [Image]
+
+  "Increments the o-counter for an image. Returns the new value"
+  imageIncrementO(id: ID!): Int!
+  "Decrements the o-counter for an image. Returns the new value"
+  imageDecrementO(id: ID!): Int!
+  "Resets the o-counter for a image to 0. Returns the new value"
+  imageResetO(id: ID!): Int!
+
+  galleryCreate(input: GalleryCreateInput!): Gallery
+  galleryUpdate(input: GalleryUpdateInput!): Gallery
+  bulkGalleryUpdate(input: BulkGalleryUpdateInput!): [Gallery!]
+  galleryDestroy(input: GalleryDestroyInput!): Boolean!
+  galleriesUpdate(input: [GalleryUpdateInput!]!): [Gallery]
+
+  addGalleryImages(input: GalleryAddInput!): Boolean!
+  removeGalleryImages(input: GalleryRemoveInput!): Boolean!
+  setGalleryCover(input: GallerySetCoverInput!): Boolean!
+  resetGalleryCover(input: GalleryResetCoverInput!): Boolean!
+
+  galleryChapterCreate(input: GalleryChapterCreateInput!): GalleryChapter
+  galleryChapterUpdate(input: GalleryChapterUpdateInput!): GalleryChapter
+  galleryChapterDestroy(id: ID!): Boolean!
+
+  performerCreate(input: PerformerCreateInput!): Performer
+  performerUpdate(input: PerformerUpdateInput!): Performer
+  performerDestroy(input: PerformerDestroyInput!): Boolean!
+  performersDestroy(ids: [ID!]!): Boolean!
+  bulkPerformerUpdate(input: BulkPerformerUpdateInput!): [Performer!]
+  performerMerge(input: PerformerMergeInput!): Performer!
+
+  studioCreate(input: StudioCreateInput!): Studio
+  studioUpdate(input: StudioUpdateInput!): Studio
+  studioDestroy(input: StudioDestroyInput!): Boolean!
+  studiosDestroy(ids: [ID!]!): Boolean!
+  bulkStudioUpdate(input: BulkStudioUpdateInput!): [Studio!]
+
+  movieCreate(input: MovieCreateInput!): Movie
+    @deprecated(reason: "Use groupCreate instead")
+  movieUpdate(input: MovieUpdateInput!): Movie
+    @deprecated(reason: "Use groupUpdate instead")
+  movieDestroy(input: MovieDestroyInput!): Boolean!
+    @deprecated(reason: "Use groupDestroy instead")
+  moviesDestroy(ids: [ID!]!): Boolean!
+    @deprecated(reason: "Use groupsDestroy instead")
+  bulkMovieUpdate(input: BulkMovieUpdateInput!): [Movie!]
+    @deprecated(reason: "Use bulkGroupUpdate instead")
+
+  groupCreate(input: GroupCreateInput!): Group
+  groupUpdate(input: GroupUpdateInput!): Group
+  groupDestroy(input: GroupDestroyInput!): Boolean!
+  groupsDestroy(ids: [ID!]!): Boolean!
+  bulkGroupUpdate(input: BulkGroupUpdateInput!): [Group!]
+
+  addGroupSubGroups(input: GroupSubGroupAddInput!): Boolean!
+  removeGroupSubGroups(input: GroupSubGroupRemoveInput!): Boolean!
+
+  "Reorder sub groups within a group. Returns true if successful."
+  reorderSubGroups(input: ReorderSubGroupsInput!): Boolean!
+
+  tagCreate(input: TagCreateInput!): Tag
+  tagUpdate(input: TagUpdateInput!): Tag
+  tagDestroy(input: TagDestroyInput!): Boolean!
+  tagsDestroy(ids: [ID!]!): Boolean!
+  tagsMerge(input: TagsMergeInput!): Tag
+  bulkTagUpdate(input: BulkTagUpdateInput!): [Tag!]
+
+  """
+  Moves the given files to the given destination. Returns true if successful.
+  Either the destination_folder or destination_folder_id must be provided.
+  If both are provided, the destination_folder_id takes precedence.
+  Destination folder must be a subfolder of one of the stash library paths.
+  If provided, destination_basename must be a valid filename with an extension that
+  matches one of the media extensions.
+  Creates folder hierarchy if needed.
+  """
+  moveFiles(input: MoveFilesInput!): Boolean!
+  deleteFiles(ids: [ID!]!): Boolean!
+  "Deletes file entries from the database without deleting the files from the filesystem"
+  destroyFiles(ids: [ID!]!): Boolean!
+
+  fileSetFingerprints(input: FileSetFingerprintsInput!): Boolean!
+  "Reveal the file in the system file manager"
+  revealFileInFileManager(id: ID!): Boolean!
+  "Reveal the folder in the system file manager"
+  revealFolderInFileManager(id: ID!): Boolean!
+
+  # Saved filters
+  saveFilter(input: SaveFilterInput!): SavedFilter!
+  destroySavedFilter(input: DestroyFilterInput!): Boolean!
+  setDefaultFilter(input: SetDefaultFilterInput!): Boolean!
+    @deprecated(reason: "now uses UI config")
+
+  "Change general configuration options"
+  configureGeneral(input: ConfigGeneralInput!): ConfigGeneralResult!
+  configureInterface(input: ConfigInterfaceInput!): ConfigInterfaceResult!
+  configureDLNA(input: ConfigDLNAInput!): ConfigDLNAResult!
+  configureScraping(input: ConfigScrapingInput!): ConfigScrapingResult!
+  configureDefaults(
+    input: ConfigDefaultSettingsInput!
+  ): ConfigDefaultSettingsResult!
+
+  "overwrites the entire plugin configuration for the given plugin"
+  configurePlugin(plugin_id: ID!, input: Map!): Map!
+
+  """
+  overwrites the UI configuration
+  if input is provided, then the entire UI configuration is replaced
+  if partial is provided, then the partial UI configuration is merged into the existing UI configuration
+  """
+  configureUI(input: Map, partial: Map): Map!
+  """
+  sets a single UI key value
+  key is a dot separated path to the value
+  """
+  configureUISetting(key: String!, value: Any): Map!
+
+  "Generate and set (or clear) API key"
+  generateAPIKey(input: GenerateAPIKeyInput!): String!
+
+  "Returns a link to download the result"
+  exportObjects(input: ExportObjectsInput!): String
+
+  "Performs an incremental import. Returns the job ID"
+  importObjects(input: ImportObjectsInput!): ID!
+
+  "Start an full import. Completely wipes the database and imports from the metadata directory. Returns the job ID"
+  metadataImport: ID!
+  "Start a full export. Outputs to the metadata directory. Returns the job ID"
+  metadataExport: ID!
+  "Start a scan. Returns the job ID"
+  metadataScan(input: ScanMetadataInput!): ID!
+  "Start generating content. Returns the job ID"
+  metadataGenerate(input: GenerateMetadataInput!): ID!
+  "Start auto-tagging. Returns the job ID"
+  metadataAutoTag(input: AutoTagMetadataInput!): ID!
+  "Clean metadata. Returns the job ID"
+  metadataClean(input: CleanMetadataInput!): ID!
+  "Clean generated files. Returns the job ID"
+  metadataCleanGenerated(input: CleanGeneratedInput!): ID!
+  "Identifies scenes using scrapers. Returns the job ID"
+  metadataIdentify(input: IdentifyMetadataInput!): ID!
+
+  "Migrate generated files for the current hash naming"
+  migrateHashNaming: ID!
+  "Migrates legacy scene screenshot files into the blob storage"
+  migrateSceneScreenshots(input: MigrateSceneScreenshotsInput!): ID!
+  "Migrates blobs from the old storage system to the current one"
+  migrateBlobs(input: MigrateBlobsInput!): ID!
+
+  "Anonymise the database in a separate file. Optionally returns a link to download the database file"
+  anonymiseDatabase(input: AnonymiseDatabaseInput!): String
+
+  "Optimises the database. Returns the job ID"
+  optimiseDatabase: ID!
+
+  "Reload scrapers"
+  reloadScrapers: Boolean!
+
+  """
+  Enable/disable plugins - enabledMap is a map of plugin IDs to enabled booleans.
+  Plugins not in the map are not affected.
+  """
+  setPluginsEnabled(enabledMap: BoolMap!): Boolean!
+
+  """
+  Run a plugin task.
+  If task_name is provided, then the task must exist in the plugin config and the tasks configuration
+  will be used to run the plugin.
+  If no task_name is provided, then the plugin will be executed with the arguments provided only.
+  Returns the job ID
+  """
+  runPluginTask(
+    plugin_id: ID!
+    "if provided, then the default args will be applied"
+    task_name: String
+    "displayed in the task queue"
+    description: String
+    args: [PluginArgInput!] @deprecated(reason: "Use args_map instead")
+    args_map: Map
+  ): ID!
+
+  """
+  Runs a plugin operation. The operation is run immediately and does not use the job queue.
+  Returns a map of the result.
+  """
+  runPluginOperation(plugin_id: ID!, args: Map): Any
+
+  reloadPlugins: Boolean!
+
+  """
+  Installs the given packages.
+  If a package is already installed, it will be updated if needed..
+  If an error occurs when installing a package, the job will continue to install the remaining packages.
+  Returns the job ID
+  """
+  installPackages(type: PackageType!, packages: [PackageSpecInput!]!): ID!
+  """
+  Updates the given packages.
+  If a package is not installed, it will not be installed.
+  If a package does not need to be updated, it will not be updated.
+  If no packages are provided, all packages of the given type will be updated.
+  If an error occurs when updating a package, the job will continue to update the remaining packages.
+  Returns the job ID.
+  """
+  updatePackages(type: PackageType!, packages: [PackageSpecInput!]): ID!
+  """
+  Uninstalls the given packages.
+  If an error occurs when uninstalling a package, the job will continue to uninstall the remaining packages.
+  Returns the job ID
+  """
+  uninstallPackages(type: PackageType!, packages: [PackageSpecInput!]!): ID!
+
+  stopJob(job_id: ID!): Boolean!
+  stopAllJobs: Boolean!
+
+  "Submit fingerprints to stash-box instance"
+  submitStashBoxFingerprints(
+    input: StashBoxFingerprintSubmissionInput!
+  ): Boolean!
+
+  "Submit scene as draft to stash-box instance"
+  submitStashBoxSceneDraft(input: StashBoxDraftSubmissionInput!): ID
+  "Submit performer as draft to stash-box instance"
+  submitStashBoxPerformerDraft(input: StashBoxDraftSubmissionInput!): ID
+
+  "Backup the database. Optionally returns a link to download the database file"
+  backupDatabase(input: BackupDatabaseInput!): String
+
+  "DANGEROUS: Execute an arbitrary SQL statement that returns rows."
+  querySQL(sql: String!, args: [Any]): SQLQueryResult!
+
+  "DANGEROUS: Execute an arbitrary SQL statement without returning any rows."
+  execSQL(sql: String!, args: [Any]): SQLExecResult!
+
+  "Run batch performer tag task. Returns the job ID."
+  stashBoxBatchPerformerTag(input: StashBoxBatchTagInput!): String!
+  "Run batch studio tag task. Returns the job ID."
+  stashBoxBatchStudioTag(input: StashBoxBatchTagInput!): String!
+  "Run batch tag tag task. Returns the job ID."
+  stashBoxBatchTagTag(input: StashBoxBatchTagInput!): String!
+
+  "Enables DLNA for an optional duration. Has no effect if DLNA is enabled by default"
+  enableDLNA(input: EnableDLNAInput!): Boolean!
+  "Disables DLNA for an optional duration. Has no effect if DLNA is disabled by default"
+  disableDLNA(input: DisableDLNAInput!): Boolean!
+  "Enables an IP address for DLNA for an optional duration"
+  addTempDLNAIP(input: AddTempDLNAIPInput!): Boolean!
+  "Removes an IP address from the temporary DLNA whitelist"
+  removeTempDLNAIP(input: RemoveTempDLNAIPInput!): Boolean!
+}
+
+type Subscription {
+  "Update from the metadata manager"
+  jobsSubscribe: JobStatusUpdate!
+
+  loggingSubscribe: [LogEntry!]!
+
+  scanCompleteSubscribe: Boolean!
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
+input SetupInput {
+  "Empty to indicate $HOME/.stash/config.yml default"
+  configLocation: String!
+  stashes: [StashConfigInput!]!
+  "True if SFW content mode is enabled"
+  sfwContentMode: Boolean
+  "Empty to indicate default"
+  databaseFile: String!
+  "Empty to indicate default"
+  generatedLocation: String!
+  "Empty to indicate default"
+  cacheLocation: String!
+  storeBlobsInDatabase: Boolean!
+  "Empty to indicate default - only applicable if storeBlobsInDatabase is false"
+  blobsLocation: String!
+}
+
+enum StreamingResolutionEnum {
+  "240p"
+  LOW
+  "480p"
+  STANDARD
+  "720p"
+  STANDARD_HD
+  "1080p"
+  FULL_HD
+  "4k"
+  FOUR_K
+  "Original"
+  ORIGINAL
+}
+
+enum PreviewPreset {
+  "X264_ULTRAFAST"
+  ultrafast
+  "X264_VERYFAST"
+  veryfast
+  "X264_FAST"
+  fast
+  "X264_MEDIUM"
+  medium
+  "X264_SLOW"
+  slow
+  "X264_SLOWER"
+  slower
+  "X264_VERYSLOW"
+  veryslow
+}
+
+enum HashAlgorithm {
+  MD5
+  "oshash"
+  OSHASH
+}
+
+enum BlobsStorageType {
+  # blobs are stored in the database
+  "Database"
+  DATABASE
+  # blobs are stored in the filesystem under the configured blobs directory
+  "Filesystem"
+  FILESYSTEM
+}
+
+input ConfigGeneralInput {
+  "Array of file paths to content"
+  stashes: [StashConfigInput!]
+  "Path to the SQLite database"
+  databasePath: String
+  "Path to backup directory"
+  backupDirectoryPath: String
+  "Path to trash directory - if set, deleted files will be moved here instead of being permanently deleted"
+  deleteTrashPath: String
+  "Path to generated files"
+  generatedPath: String
+  "Path to import/export files"
+  metadataPath: String
+  "Path to scrapers"
+  scrapersPath: String
+  "Path to plugins"
+  pluginsPath: String
+  "Path to cache"
+  cachePath: String
+  "Path to blobs - required for filesystem blob storage"
+  blobsPath: String
+  "Where to store blobs"
+  blobsStorage: BlobsStorageType
+  "Path to the ffmpeg binary. If empty, stash will attempt to find it in the path or config directory"
+  ffmpegPath: String
+  "Path to the ffprobe binary. If empty, stash will attempt to find it in the path or config directory"
+  ffprobePath: String
+  "Whether to calculate MD5 checksums for scene video files"
+  calculateMD5: Boolean
+  "Hash algorithm to use for generated file naming"
+  videoFileNamingAlgorithm: HashAlgorithm
+  "Number of parallel tasks to start during scan/generate"
+  parallelTasks: Int
+  "Include audio stream in previews"
+  previewAudio: Boolean
+  "Number of segments in a preview file"
+  previewSegments: Int
+  "Preview segment duration, in seconds"
+  previewSegmentDuration: Float
+  "Duration of start of video to exclude when generating previews"
+  previewExcludeStart: String
+  "Duration of end of video to exclude when generating previews"
+  previewExcludeEnd: String
+  "Preset when generating preview"
+  previewPreset: PreviewPreset
+  "Transcode Hardware Acceleration"
+  transcodeHardwareAcceleration: Boolean
+  "Max generated transcode size"
+  maxTranscodeSize: StreamingResolutionEnum
+  "Max streaming transcode size"
+  maxStreamingTranscodeSize: StreamingResolutionEnum
+
+  """
+  ffmpeg transcode input args - injected before input file
+  These are applied to generated transcodes (previews and transcodes)
+  """
+  transcodeInputArgs: [String!]
+  """
+  ffmpeg transcode output args - injected before output file
+  These are applied to generated transcodes (previews and transcodes)
+  """
+  transcodeOutputArgs: [String!]
+
+  """
+  ffmpeg stream input args - injected before input file
+  These are applied when live transcoding
+  """
+  liveTranscodeInputArgs: [String!]
+  """
+  ffmpeg stream output args - injected before output file
+  These are applied when live transcoding
+  """
+  liveTranscodeOutputArgs: [String!]
+
+  "whether to include range in generated funscript heatmaps"
+  drawFunscriptHeatmapRange: Boolean
+
+  "Write image thumbnails to disk when generating on the fly"
+  writeImageThumbnails: Boolean
+  "Create Image Clips from Video extensions when Videos are disabled in Library"
+  createImageClipsFromVideos: Boolean
+  "Username"
+  username: String
+  "Password"
+  password: String
+  "Maximum session cookie age"
+  maxSessionAge: Int
+  "Name of the log file"
+  logFile: String
+  "Whether to also output to stderr"
+  logOut: Boolean
+  "Minimum log level"
+  logLevel: String
+  "Whether to log http access"
+  logAccess: Boolean
+  "Maximum log size"
+  logFileMaxSize: Int
+  "True if galleries should be created from folders with images"
+  createGalleriesFromFolders: Boolean
+  "Regex used to identify images as gallery covers"
+  galleryCoverRegex: String
+  "Array of video file extensions"
+  videoExtensions: [String!]
+  "Array of image file extensions"
+  imageExtensions: [String!]
+  "Array of gallery zip file extensions"
+  galleryExtensions: [String!]
+  "Array of file regexp to exclude from Video Scans"
+  excludes: [String!]
+  "Array of file regexp to exclude from Image Scans"
+  imageExcludes: [String!]
+  "Custom Performer Image Location"
+  customPerformerImageLocation: String
+  "Stash-box instances used for tagging"
+  stashBoxes: [StashBoxInput!]
+  "Python path - resolved using path if unset"
+  pythonPath: String
+
+  "Source of scraper packages"
+  scraperPackageSources: [PackageSourceInput!]
+  "Source of plugin packages"
+  pluginPackageSources: [PackageSourceInput!]
+
+  "Size of the longest dimension for each sprite in pixels"
+  spriteScreenshotSize: Int
+
+  "True if sprite generation should use the sprite interval and min/max sprites settings instead of the default"
+  useCustomSpriteInterval: Boolean
+  "Time between two different scrubber sprites in seconds - only used if useCustomSpriteInterval is true"
+  spriteInterval: Float
+  "Minimum number of sprites to be generated - only used if useCustomSpriteInterval is true"
+  minimumSprites: Int
+  "Minimum number of sprites to be generated - only used if useCustomSpriteInterval is true"
+  maximumSprites: Int
+}
+
+type ConfigGeneralResult {
+  "Array of file paths to content"
+  stashes: [StashConfig!]!
+  "Path to the SQLite database"
+  databasePath: String!
+  "Path to backup directory"
+  backupDirectoryPath: String!
+  "Path to trash directory - if set, deleted files will be moved here instead of being permanently deleted"
+  deleteTrashPath: String!
+  "Path to generated files"
+  generatedPath: String!
+  "Path to import/export files"
+  metadataPath: String!
+  "Path to the config file used"
+  configFilePath: String!
+  "Path to scrapers"
+  scrapersPath: String!
+  "Path to plugins"
+  pluginsPath: String!
+  "Path to cache"
+  cachePath: String!
+  "Path to blobs - required for filesystem blob storage"
+  blobsPath: String!
+  "Where to store blobs"
+  blobsStorage: BlobsStorageType!
+  "Path to the ffmpeg binary. If empty, stash will attempt to find it in the path or config directory"
+  ffmpegPath: String!
+  "Path to the ffprobe binary. If empty, stash will attempt to find it in the path or config directory"
+  ffprobePath: String!
+  "Whether to calculate MD5 checksums for scene video files"
+  calculateMD5: Boolean!
+  "Hash algorithm to use for generated file naming"
+  videoFileNamingAlgorithm: HashAlgorithm!
+  "Number of parallel tasks to start during scan/generate"
+  parallelTasks: Int!
+  "Include audio stream in previews"
+  previewAudio: Boolean!
+  "Number of segments in a preview file"
+  previewSegments: Int!
+  "Preview segment duration, in seconds"
+  previewSegmentDuration: Float!
+  "Duration of start of video to exclude when generating previews"
+  previewExcludeStart: String!
+  "Duration of end of video to exclude when generating previews"
+  previewExcludeEnd: String!
+  "Preset when generating preview"
+  previewPreset: PreviewPreset!
+  "Transcode Hardware Acceleration"
+  transcodeHardwareAcceleration: Boolean!
+  "Max generated transcode size"
+  maxTranscodeSize: StreamingResolutionEnum
+  "Max streaming transcode size"
+  maxStreamingTranscodeSize: StreamingResolutionEnum
+
+  """
+  ffmpeg transcode input args - injected before input file
+  These are applied to generated transcodes (previews and transcodes)
+  """
+  transcodeInputArgs: [String!]!
+  """
+  ffmpeg transcode output args - injected before output file
+  These are applied to generated transcodes (previews and transcodes)
+  """
+  transcodeOutputArgs: [String!]!
+
+  """
+  ffmpeg stream input args - injected before input file
+  These are applied when live transcoding
+  """
+  liveTranscodeInputArgs: [String!]!
+  """
+  ffmpeg stream output args - injected before output file
+  These are applied when live transcoding
+  """
+  liveTranscodeOutputArgs: [String!]!
+
+  "whether to include range in generated funscript heatmaps"
+  drawFunscriptHeatmapRange: Boolean!
+
+  "Write image thumbnails to disk when generating on the fly"
+  writeImageThumbnails: Boolean!
+  "Create Image Clips from Video extensions when Videos are disabled in Library"
+  createImageClipsFromVideos: Boolean!
+  "API Key"
+  apiKey: String!
+  "Username"
+  username: String!
+  "Password"
+  password: String!
+  "Maximum session cookie age"
+  maxSessionAge: Int!
+  "Name of the log file"
+  logFile: String
+  "Whether to also output to stderr"
+  logOut: Boolean!
+  "Minimum log level"
+  logLevel: String!
+  "Whether to log http access"
+  logAccess: Boolean!
+  "Maximum log size"
+  logFileMaxSize: Int!
+  "True if sprite generation should use the sprite interval and min/max sprites settings instead of the default"
+  useCustomSpriteInterval: Boolean!
+  "Time between two different scrubber sprites in seconds - only used if useCustomSpriteInterval is true"
+  spriteInterval: Float!
+  "Minimum number of sprites to be generated - only used if useCustomSpriteInterval is true"
+  minimumSprites: Int!
+  "Maximum number of sprites to be generated - only used if useCustomSpriteInterval is true"
+  maximumSprites: Int!
+  "Size of the longest dimension for each sprite in pixels"
+  spriteScreenshotSize: Int!
+  "Array of video file extensions"
+  videoExtensions: [String!]!
+  "Array of image file extensions"
+  imageExtensions: [String!]!
+  "Array of gallery zip file extensions"
+  galleryExtensions: [String!]!
+  "True if galleries should be created from folders with images"
+  createGalleriesFromFolders: Boolean!
+  "Regex used to identify images as gallery covers"
+  galleryCoverRegex: String!
+  "Array of file regexp to exclude from Video Scans"
+  excludes: [String!]!
+  "Array of file regexp to exclude from Image Scans"
+  imageExcludes: [String!]!
+  "Custom Performer Image Location"
+  customPerformerImageLocation: String
+  "Stash-box instances used for tagging"
+  stashBoxes: [StashBox!]!
+  "Python path - resolved using path if unset"
+  pythonPath: String!
+
+  "Source of scraper packages"
+  scraperPackageSources: [PackageSource!]!
+  "Source of plugin packages"
+  pluginPackageSources: [PackageSource!]!
+}
+
+input ConfigDisableDropdownCreateInput {
+  performer: Boolean
+  tag: Boolean
+  studio: Boolean
+  movie: Boolean
+  gallery: Boolean
+}
+
+enum ImageLightboxDisplayMode {
+  ORIGINAL
+  FIT_XY
+  FIT_X
+}
+
+enum ImageLightboxScrollMode {
+  ZOOM
+  PAN_Y
+}
+
+input ConfigImageLightboxInput {
+  slideshowDelay: Int
+  displayMode: ImageLightboxDisplayMode
+  scaleUp: Boolean
+  resetZoomOnNav: Boolean
+  scrollMode: ImageLightboxScrollMode
+  scrollAttemptsBeforeChange: Int
+  disableAnimation: Boolean
+}
+
+type ConfigImageLightboxResult {
+  slideshowDelay: Int
+  displayMode: ImageLightboxDisplayMode
+  scaleUp: Boolean
+  resetZoomOnNav: Boolean
+  scrollMode: ImageLightboxScrollMode
+  scrollAttemptsBeforeChange: Int!
+  disableAnimation: Boolean
+}
+
+input ConfigInterfaceInput {
+  "True if SFW content mode is enabled"
+  sfwContentMode: Boolean
+
+  "Ordered list of items that should be shown in the menu"
+  menuItems: [String!]
+
+  "Enable sound on mouseover previews"
+  soundOnPreview: Boolean
+
+  "Show title and tags in wall view"
+  wallShowTitle: Boolean
+  "Wall playback type"
+  wallPlayback: String
+
+  "Show scene scrubber by default"
+  showScrubber: Boolean
+
+  "Maximum duration (in seconds) in which a scene video will loop in the scene player"
+  maximumLoopDuration: Int
+  "If true, video will autostart on load in the scene player"
+  autostartVideo: Boolean
+  "If true, video will autostart when loading from play random or play selected"
+  autostartVideoOnPlaySelected: Boolean
+  "If true, next scene in playlist will be played at video end by default"
+  continuePlaylistDefault: Boolean
+
+  "If true, studio overlays will be shown as text instead of logo images"
+  showStudioAsText: Boolean
+
+  "Custom CSS"
+  css: String
+  cssEnabled: Boolean
+
+  "Custom Javascript"
+  javascript: String
+  javascriptEnabled: Boolean
+
+  "Custom Locales"
+  customLocales: String
+  customLocalesEnabled: Boolean
+
+  "When true, disables all customizations (plugins, CSS, JavaScript, locales) for troubleshooting"
+  disableCustomizations: Boolean
+
+  "Interface language"
+  language: String
+
+  imageLightbox: ConfigImageLightboxInput
+
+  "Set to true to disable creating new objects via the dropdown menus"
+  disableDropdownCreate: ConfigDisableDropdownCreateInput
+
+  "Handy Connection Key"
+  handyKey: String
+  "Funscript Time Offset"
+  funscriptOffset: Int
+  "Whether to use Stash Hosted Funscript"
+  useStashHostedFunscript: Boolean
+  "True if we should not auto-open a browser window on startup"
+  noBrowser: Boolean
+  "True if we should send notifications to the desktop"
+  notificationsEnabled: Boolean
+}
+
+type ConfigDisableDropdownCreate {
+  performer: Boolean!
+  tag: Boolean!
+  studio: Boolean!
+  movie: Boolean!
+  gallery: Boolean!
+}
+
+type ConfigInterfaceResult {
+  "True if SFW content mode is enabled"
+  sfwContentMode: Boolean!
+
+  "Ordered list of items that should be shown in the menu"
+  menuItems: [String!]
+
+  "Enable sound on mouseover previews"
+  soundOnPreview: Boolean
+
+  "Show title and tags in wall view"
+  wallShowTitle: Boolean
+  "Wall playback type"
+  wallPlayback: String
+
+  "Show scene scrubber by default"
+  showScrubber: Boolean
+
+  "Maximum duration (in seconds) in which a scene video will loop in the scene player"
+  maximumLoopDuration: Int
+  "True if we should not auto-open a browser window on startup"
+  noBrowser: Boolean
+  "True if we should send desktop notifications"
+  notificationsEnabled: Boolean
+  "If true, video will autostart on load in the scene player"
+  autostartVideo: Boolean
+  "If true, video will autostart when loading from play random or play selected"
+  autostartVideoOnPlaySelected: Boolean
+  "If true, next scene in playlist will be played at video end by default"
+  continuePlaylistDefault: Boolean
+
+  "If true, studio overlays will be shown as text instead of logo images"
+  showStudioAsText: Boolean
+
+  "Custom CSS"
+  css: String
+  cssEnabled: Boolean
+
+  "Custom Javascript"
+  javascript: String
+  javascriptEnabled: Boolean
+
+  "Custom Locales"
+  customLocales: String
+  customLocalesEnabled: Boolean
+
+  "When true, disables all customizations (plugins, CSS, JavaScript, locales) for troubleshooting"
+  disableCustomizations: Boolean
+
+  "Interface language"
+  language: String
+
+  imageLightbox: ConfigImageLightboxResult!
+
+  "Fields are true if creating via dropdown menus are disabled"
+  disableDropdownCreate: ConfigDisableDropdownCreate!
+
+  "Handy Connection Key"
+  handyKey: String
+  "Funscript Time Offset"
+  funscriptOffset: Int
+  "Whether to use Stash Hosted Funscript"
+  useStashHostedFunscript: Boolean
+}
+
+input ConfigDLNAInput {
+  serverName: String
+  "True if DLNA service should be enabled by default"
+  enabled: Boolean
+  "Defaults to 1338"
+  port: Int
+  "List of IPs whitelisted for DLNA service"
+  whitelistedIPs: [String!]
+  "List of interfaces to run DLNA on. Empty for all"
+  interfaces: [String!]
+  "Order to sort videos"
+  videoSortOrder: String
+}
+
+type ConfigDLNAResult {
+  serverName: String!
+  "True if DLNA service should be enabled by default"
+  enabled: Boolean!
+  "Defaults to 1338"
+  port: Int!
+  "List of IPs whitelisted for DLNA service"
+  whitelistedIPs: [String!]!
+  "List of interfaces to run DLNA on. Empty for all"
+  interfaces: [String!]!
+  "Order to sort videos"
+  videoSortOrder: String!
+}
+
+input ConfigScrapingInput {
+  "Scraper user agent string"
+  scraperUserAgent: String
+  "Scraper CDP path. Path to chrome executable or remote address"
+  scraperCDPPath: String
+  "Whether the scraper should check for invalid certificates"
+  scraperCertCheck: Boolean
+  "Tags blacklist during scraping"
+  excludeTagPatterns: [String!]
+}
+
+type ConfigScrapingResult {
+  "Scraper user agent string"
+  scraperUserAgent: String
+  "Scraper CDP path. Path to chrome executable or remote address"
+  scraperCDPPath: String
+  "Whether the scraper should check for invalid certificates"
+  scraperCertCheck: Boolean!
+  "Tags blacklist during scraping"
+  excludeTagPatterns: [String!]!
+}
+
+type ConfigDefaultSettingsResult {
+  scan: ScanMetadataOptions
+  identify: IdentifyMetadataTaskOptions
+  autoTag: AutoTagMetadataOptions
+  generate: GenerateMetadataOptions
+
+  "If true, delete file checkbox will be checked by default"
+  deleteFile: Boolean
+  "If true, delete generated supporting files checkbox will be checked by default"
+  deleteGenerated: Boolean
+}
+
+input ConfigDefaultSettingsInput {
+  scan: ScanMetadataInput
+  identify: IdentifyMetadataInput
+  autoTag: AutoTagMetadataInput
+  generate: GenerateMetadataInput
+
+  "If true, delete file checkbox will be checked by default"
+  deleteFile: Boolean
+  "If true, delete generated files checkbox will be checked by default"
+  deleteGenerated: Boolean
+}
+
+"All configuration settings"
+type ConfigResult {
+  general: ConfigGeneralResult!
+  interface: ConfigInterfaceResult!
+  dlna: ConfigDLNAResult!
+  scraping: ConfigScrapingResult!
+  defaults: ConfigDefaultSettingsResult!
+  ui: Map!
+  plugins(include: [ID!]): PluginConfigMap!
+}
+
+"Directory structure of a path"
+type Directory {
+  path: String!
+  parent: String
+  directories: [String!]!
+}
+
+"Stash configuration details"
+input StashConfigInput {
+  path: String!
+  excludeVideo: Boolean!
+  excludeImage: Boolean!
+}
+
+type StashConfig {
+  path: String!
+  excludeVideo: Boolean!
+  excludeImage: Boolean!
+}
+
+input GenerateAPIKeyInput {
+  clear: Boolean
+}
+
+type StashBoxValidationResult {
+  valid: Boolean!
+  status: String!
+}
+type DLNAIP {
+  ipAddress: String!
+  "Time until IP will be no longer allowed/disallowed"
+  until: Time
+}
+
+type DLNAStatus {
+  running: Boolean!
+  "If not currently running, time until it will be started. If running, time until it will be stopped"
+  until: Time
+  recentIPAddresses: [String!]!
+  allowedIPAddresses: [DLNAIP!]!
+}
+
+input EnableDLNAInput {
+  "Duration to enable, in minutes. 0 or null for indefinite."
+  duration: Int
+}
+
+input DisableDLNAInput {
+  "Duration to enable, in minutes. 0 or null for indefinite."
+  duration: Int
+}
+
+input AddTempDLNAIPInput {
+  address: String!
+  "Duration to enable, in minutes. 0 or null for indefinite."
+  duration: Int
+}
+
+input RemoveTempDLNAIPInput {
+  address: String!
+}
+type Fingerprint {
+  type: String!
+  value: String!
+}
+
+type Folder {
+  id: ID!
+  path: String!
+  basename: String!
+
+  parent_folder_id: ID @deprecated(reason: "Use parent_folder instead")
+  zip_file_id: ID @deprecated(reason: "Use zip_file instead")
+
+  parent_folder: Folder
+  "Returns all parent folders in order from immediate parent to top-level"
+  parent_folders: [Folder!]!
+  zip_file: BasicFile
+
+  mod_time: Time!
+
+  created_at: Time!
+  updated_at: Time!
+}
+
+interface BaseFile {
+  id: ID!
+  path: String!
+  basename: String!
+
+  parent_folder_id: ID! @deprecated(reason: "Use parent_folder instead")
+  zip_file_id: ID @deprecated(reason: "Use zip_file instead")
+
+  parent_folder: Folder!
+  zip_file: BasicFile
+
+  mod_time: Time!
+  size: Int64!
+
+  fingerprint(type: String!): String
+  fingerprints: [Fingerprint!]!
+
+  created_at: Time!
+  updated_at: Time!
+}
+
+type BasicFile implements BaseFile {
+  id: ID!
+  path: String!
+  basename: String!
+
+  parent_folder_id: ID! @deprecated(reason: "Use parent_folder instead")
+  zip_file_id: ID @deprecated(reason: "Use zip_file instead")
+
+  parent_folder: Folder!
+  zip_file: BasicFile
+
+  mod_time: Time!
+  size: Int64!
+
+  fingerprint(type: String!): String
+  fingerprints: [Fingerprint!]!
+
+  created_at: Time!
+  updated_at: Time!
+}
+
+type VideoFile implements BaseFile {
+  id: ID!
+  path: String!
+  basename: String!
+
+  parent_folder_id: ID! @deprecated(reason: "Use parent_folder instead")
+  zip_file_id: ID @deprecated(reason: "Use zip_file instead")
+
+  parent_folder: Folder!
+  zip_file: BasicFile
+
+  mod_time: Time!
+  size: Int64!
+
+  fingerprint(type: String!): String
+  fingerprints: [Fingerprint!]!
+
+  format: String!
+  width: Int!
+  height: Int!
+  duration: Float!
+  video_codec: String!
+  audio_codec: String!
+  frame_rate: Float!
+  bit_rate: Int!
+
+  created_at: Time!
+  updated_at: Time!
+}
+
+type ImageFile implements BaseFile {
+  id: ID!
+  path: String!
+  basename: String!
+
+  parent_folder_id: ID! @deprecated(reason: "Use parent_folder instead")
+  zip_file_id: ID @deprecated(reason: "Use zip_file instead")
+
+  parent_folder: Folder!
+  zip_file: BasicFile
+
+  mod_time: Time!
+  size: Int64!
+
+  fingerprint(type: String!): String
+  fingerprints: [Fingerprint!]!
+
+  format: String!
+  width: Int!
+  height: Int!
+
+  created_at: Time!
+  updated_at: Time!
+}
+
+union VisualFile = VideoFile | ImageFile
+
+type GalleryFile implements BaseFile {
+  id: ID!
+  path: String!
+  basename: String!
+
+  parent_folder_id: ID! @deprecated(reason: "Use parent_folder instead")
+  zip_file_id: ID @deprecated(reason: "Use zip_file instead")
+
+  parent_folder: Folder!
+  zip_file: BasicFile
+
+  mod_time: Time!
+  size: Int64!
+
+  fingerprint(type: String!): String
+  fingerprints: [Fingerprint!]!
+
+  created_at: Time!
+  updated_at: Time!
+}
+
+input MoveFilesInput {
+  ids: [ID!]!
+  "valid for single or multiple file ids"
+  destination_folder: String
+
+  "valid for single or multiple file ids"
+  destination_folder_id: ID
+
+  "valid only for single file id. If empty, existing basename is used"
+  destination_basename: String
+}
+
+input SetFingerprintsInput {
+  type: String!
+  "a null value will remove the fingerprint"
+  value: String
+}
+
+input FileSetFingerprintsInput {
+  id: ID!
+  "only supplied fingerprint types will be modified"
+  fingerprints: [SetFingerprintsInput!]!
+}
+
+type FindFilesResultType {
+  count: Int!
+
+  "Total megapixels of any image files"
+  megapixels: Float!
+  "Total duration in seconds of any video files"
+  duration: Float!
+
+  "Total file size in bytes"
+  size: Int!
+
+  files: [BaseFile!]!
+}
+
+type FindFoldersResultType {
+  count: Int!
+  folders: [Folder!]!
+}
+enum SortDirectionEnum {
+  ASC
+  DESC
+}
+
+input FindFilterType {
+  q: String
+  page: Int
+  "use per_page = -1 to indicate all results. Defaults to 25."
+  per_page: Int
+  # TODO - this should be refactored to not use a string
+  sort: String
+  direction: SortDirectionEnum
+}
+
+type SavedFindFilterType {
+  q: String
+  page: Int
+  """
+  use per_page = -1 to indicate all results. Defaults to 25.
+  """
+  per_page: Int
+  sort: String
+  direction: SortDirectionEnum
+}
+
+enum ResolutionEnum {
+  "144p"
+  VERY_LOW
+  "240p"
+  LOW
+  "360p"
+  R360P
+  "480p"
+  STANDARD
+  "540p"
+  WEB_HD
+  "720p"
+  STANDARD_HD
+  "1080p"
+  FULL_HD
+  "1440p"
+  QUAD_HD
+  "1920p"
+  VR_HD @deprecated(reason: "Use 4K instead")
+  "4K"
+  FOUR_K
+  "5K"
+  FIVE_K
+  "6K"
+  SIX_K
+  "7K"
+  SEVEN_K
+  "8K"
+  EIGHT_K
+  "8K+"
+  HUGE
+}
+
+input ResolutionCriterionInput {
+  value: ResolutionEnum!
+  modifier: CriterionModifier!
+}
+
+enum OrientationEnum {
+  "Landscape"
+  LANDSCAPE
+  "Portrait"
+  PORTRAIT
+  "Square"
+  SQUARE
+}
+
+input OrientationCriterionInput {
+  value: [OrientationEnum!]!
+}
+
+input DuplicationCriterionInput {
+  duplicated: Boolean @deprecated(reason: "Use phash field instead")
+  "Currently unimplemented. Intended for phash distance matching."
+  distance: Int
+  "Filter by phash duplication"
+  phash: Boolean
+  "Filter by URL duplication"
+  url: Boolean
+  "Filter by Stash ID duplication"
+  stash_id: Boolean
+  "Filter by title duplication"
+  title: Boolean
+}
+
+input FileDuplicationCriterionInput {
+  duplicated: Boolean @deprecated(reason: "Use phash field instead")
+  "Currently unimplemented. Intended for phash distance matching."
+  distance: Int
+  "Filter by phash duplication"
+  phash: Boolean
+}
+
+input StashIDCriterionInput {
+  """
+  If present, this value is treated as a predicate.
+  That is, it will filter based on stash_id with the matching endpoint
+  """
+  endpoint: String
+  stash_id: String
+  modifier: CriterionModifier!
+}
+
+input StashIDsCriterionInput {
+  """
+  If present, this value is treated as a predicate.
+  That is, it will filter based on stash_ids with the matching endpoint
+  """
+  endpoint: String
+  stash_ids: [String]
+  modifier: CriterionModifier!
+}
+
+input CustomFieldCriterionInput {
+  field: String!
+  value: [Any!]
+  modifier: CriterionModifier!
+}
+
+input PerformerFilterType {
+  AND: PerformerFilterType
+  OR: PerformerFilterType
+  NOT: PerformerFilterType
+
+  name: StringCriterionInput
+  disambiguation: StringCriterionInput
+  details: StringCriterionInput
+
+  "Filter by favorite"
+  filter_favorites: Boolean
+  "Filter by birth year"
+  birth_year: IntCriterionInput
+  "Filter by age"
+  age: IntCriterionInput
+  "Filter by ethnicity"
+  ethnicity: StringCriterionInput
+  "Filter by country"
+  country: StringCriterionInput
+  "Filter by eye color"
+  eye_color: StringCriterionInput
+  "Filter by height in cm"
+  height_cm: IntCriterionInput
+  "Filter by measurements"
+  measurements: StringCriterionInput
+  "Filter by fake tits value"
+  fake_tits: StringCriterionInput
+  "Filter by penis length value"
+  penis_length: FloatCriterionInput
+  "Filter by circumcision"
+  circumcised: CircumcisionCriterionInput
+  "Deprecated: use career_start and career_end. This filter is non-functional."
+  career_length: StringCriterionInput
+    @deprecated(reason: "Use career_start and career_end")
+  "Filter by career start"
+  career_start: DateCriterionInput
+  "Filter by career end"
+  career_end: DateCriterionInput
+  "Filter by tattoos"
+  tattoos: StringCriterionInput
+  "Filter by piercings"
+  piercings: StringCriterionInput
+  "Filter by aliases"
+  aliases: StringCriterionInput
+  "Filter by gender"
+  gender: GenderCriterionInput
+  "Filter to only include performers missing this property"
+  is_missing: String
+  "Filter to only include performers with these tags"
+  tags: HierarchicalMultiCriterionInput
+  "Filter by tag count"
+  tag_count: IntCriterionInput
+  "Filter by scene count"
+  scene_count: IntCriterionInput
+  "Filter by marker count (via scene)"
+  marker_count: IntCriterionInput
+  "Filter by image count"
+  image_count: IntCriterionInput
+  "Filter by gallery count"
+  gallery_count: IntCriterionInput
+  "Filter by play count"
+  play_count: IntCriterionInput
+  "Filter by o count"
+  o_counter: IntCriterionInput
+  "Filter by StashID"
+  stash_id_endpoint: StashIDCriterionInput
+    @deprecated(reason: "use stash_ids_endpoint instead")
+  "Filter by StashIDs"
+  stash_ids_endpoint: StashIDsCriterionInput
+  # rating expressed as 1-100
+  rating100: IntCriterionInput
+  "Filter by url"
+  url: StringCriterionInput
+  "Filter by hair color"
+  hair_color: StringCriterionInput
+  "Filter by weight"
+  weight: IntCriterionInput
+  "Filter by death year"
+  death_year: IntCriterionInput
+  "Filter by studios where performer appears in scene/image/gallery"
+  studios: HierarchicalMultiCriterionInput
+  "Filter by groups where performer appears in scene"
+  groups: HierarchicalMultiCriterionInput
+  "Filter by performers where performer appears with another performer in scene/image/gallery"
+  performers: MultiCriterionInput
+  "Filter by autotag ignore value"
+  ignore_auto_tag: Boolean
+  "Filter by birthdate"
+  birthdate: DateCriterionInput
+  "Filter by death date"
+  death_date: DateCriterionInput
+  "Filter by related scenes that meet this criteria"
+  scenes_filter: SceneFilterType
+  "Filter by related images that meet this criteria"
+  images_filter: ImageFilterType
+  "Filter by related galleries that meet this criteria"
+  galleries_filter: GalleryFilterType
+  "Filter by related tags that meet this criteria"
+  tags_filter: TagFilterType
+  "Filter by related scene markers (via scene) that meet this criteria"
+  markers_filter: SceneMarkerFilterType
+  "Filter by creation time"
+  created_at: TimestampCriterionInput
+  "Filter by last update time"
+  updated_at: TimestampCriterionInput
+
+  custom_fields: [CustomFieldCriterionInput!]
+}
+
+input SceneMarkerFilterType {
+  "Filter to only include scene markers with these tags"
+  tags: HierarchicalMultiCriterionInput
+  "Filter to only include scene markers attached to a scene with these tags"
+  scene_tags: HierarchicalMultiCriterionInput
+  "Filter to only include scene markers with these performers"
+  performers: MultiCriterionInput
+  "Filter to only include scene markers from these scenes"
+  scenes: MultiCriterionInput
+  "Filter by duration (in seconds)"
+  duration: FloatCriterionInput
+  "Filter by creation time"
+  created_at: TimestampCriterionInput
+  "Filter by last update time"
+  updated_at: TimestampCriterionInput
+  "Filter by scene date"
+  scene_date: DateCriterionInput
+  "Filter by scene creation time"
+  scene_created_at: TimestampCriterionInput
+  "Filter by scene last update time"
+  scene_updated_at: TimestampCriterionInput
+  "Filter by related scenes that meet this criteria"
+  scene_filter: SceneFilterType
+}
+
+input SceneFilterType {
+  AND: SceneFilterType
+  OR: SceneFilterType
+  NOT: SceneFilterType
+
+  id: IntCriterionInput
+  title: StringCriterionInput
+  code: StringCriterionInput
+  details: StringCriterionInput
+  director: StringCriterionInput
+
+  "Filter by file oshash"
+  oshash: StringCriterionInput
+  "Filter by file checksum"
+  checksum: StringCriterionInput
+  "Filter by file phash"
+  phash: StringCriterionInput @deprecated(reason: "Use phash_distance instead")
+  "Filter by file phash distance"
+  phash_distance: PhashDistanceCriterionInput
+  "Filter by path"
+  path: StringCriterionInput
+  "Filter by file count"
+  file_count: IntCriterionInput
+  # rating expressed as 1-100
+  rating100: IntCriterionInput
+  "Filter by organized"
+  organized: Boolean
+  "Filter by o-counter"
+  o_counter: IntCriterionInput
+  "Filter Scenes by duplication criteria"
+  duplicated: DuplicationCriterionInput
+  "Filter by resolution"
+  resolution: ResolutionCriterionInput
+  "Filter by orientation"
+  orientation: OrientationCriterionInput
+  "Filter by frame rate"
+  framerate: IntCriterionInput
+  "Filter by bit rate"
+  bitrate: IntCriterionInput
+  "Filter by video codec"
+  video_codec: StringCriterionInput
+  "Filter by audio codec"
+  audio_codec: StringCriterionInput
+  "Filter by duration (in seconds)"
+  duration: IntCriterionInput
+  "Filter to only include scenes which have markers. `true` or `false`"
+  has_markers: String
+  "Filter to only include scenes missing this property"
+  is_missing: String
+  "Filter to only include scenes with this studio"
+  studios: HierarchicalMultiCriterionInput
+  "Filter to only include scenes with this movie"
+  movies: MultiCriterionInput @deprecated(reason: "use groups instead")
+  "Filter to only include scenes with this group"
+  groups: HierarchicalMultiCriterionInput
+  "Filter to only include scenes with this gallery"
+  galleries: MultiCriterionInput
+  "Filter to only include scenes with these tags"
+  tags: HierarchicalMultiCriterionInput
+  "Filter by tag count"
+  tag_count: IntCriterionInput
+  "Filter to only include scenes with performers with these tags"
+  performer_tags: HierarchicalMultiCriterionInput
+  "Filter scenes that have performers that have been favorited"
+  performer_favorite: Boolean
+  "Filter scenes by performer age at time of scene"
+  performer_age: IntCriterionInput
+  "Filter to only include scenes with these performers"
+  performers: MultiCriterionInput
+  "Filter by performer count"
+  performer_count: IntCriterionInput
+  "Filter by StashID"
+  stash_id_endpoint: StashIDCriterionInput
+    @deprecated(reason: "use stash_ids_endpoint instead")
+  "Filter by StashIDs"
+  stash_ids_endpoint: StashIDsCriterionInput
+  "Filter by StashID count"
+  stash_id_count: IntCriterionInput
+  "Filter by url"
+  url: StringCriterionInput
+  "Filter by interactive"
+  interactive: Boolean
+  "Filter by InteractiveSpeed"
+  interactive_speed: IntCriterionInput
+  "Filter by captions"
+  captions: StringCriterionInput
+  "Filter by resume time"
+  resume_time: IntCriterionInput
+  "Filter by play count"
+  play_count: IntCriterionInput
+  "Filter by play duration (in seconds)"
+  play_duration: IntCriterionInput
+  "Filter by scene last played time"
+  last_played_at: TimestampCriterionInput
+  "Filter by date"
+  date: DateCriterionInput
+  "Filter by creation time"
+  created_at: TimestampCriterionInput
+  "Filter by last update time"
+  updated_at: TimestampCriterionInput
+
+  "Filter by related galleries that meet this criteria"
+  galleries_filter: GalleryFilterType
+  "Filter by related performers that meet this criteria"
+  performers_filter: PerformerFilterType
+  "Filter by related studios that meet this criteria"
+  studios_filter: StudioFilterType
+  "Filter by related tags that meet this criteria"
+  tags_filter: TagFilterType
+  "Filter by related movies that meet this criteria"
+  movies_filter: MovieFilterType
+    @deprecated(reason: "use groups_filter instead")
+  "Filter by related groups that meet this criteria"
+  groups_filter: GroupFilterType
+  "Filter by related markers that meet this criteria"
+  markers_filter: SceneMarkerFilterType
+  "Filter by related files that meet this criteria"
+  files_filter: FileFilterType
+
+  custom_fields: [CustomFieldCriterionInput!]
+}
+
+input MovieFilterType {
+  AND: MovieFilterType
+  OR: MovieFilterType
+  NOT: MovieFilterType
+
+  name: StringCriterionInput
+  director: StringCriterionInput
+  synopsis: StringCriterionInput
+
+  "Filter by duration (in seconds)"
+  duration: IntCriterionInput
+  # rating expressed as 1-100
+  rating100: IntCriterionInput
+  "Filter to only include movies with this studio"
+  studios: HierarchicalMultiCriterionInput
+  "Filter to only include movies missing this property"
+  is_missing: String
+  "Filter by url"
+  url: StringCriterionInput
+  "Filter to only include movies where performer appears in a scene"
+  performers: MultiCriterionInput
+  "Filter to only include movies with these tags"
+  tags: HierarchicalMultiCriterionInput
+  "Filter by tag count"
+  tag_count: IntCriterionInput
+  "Filter by date"
+  date: DateCriterionInput
+  "Filter by creation time"
+  created_at: TimestampCriterionInput
+  "Filter by last update time"
+  updated_at: TimestampCriterionInput
+
+  "Filter by related scenes that meet this criteria"
+  scenes_filter: SceneFilterType
+  "Filter by related studios that meet this criteria"
+  studios_filter: StudioFilterType
+}
+
+input GroupFilterType {
+  AND: GroupFilterType
+  OR: GroupFilterType
+  NOT: GroupFilterType
+
+  name: StringCriterionInput
+  director: StringCriterionInput
+  synopsis: StringCriterionInput
+
+  "Filter by duration (in seconds)"
+  duration: IntCriterionInput
+  # rating expressed as 1-100
+  rating100: IntCriterionInput
+  "Filter to only include groups with this studio"
+  studios: HierarchicalMultiCriterionInput
+  "Filter to only include groups missing this property"
+  is_missing: String
+  "Filter by url"
+  url: StringCriterionInput
+  "Filter to only include groups where performer appears in a scene"
+  performers: MultiCriterionInput
+  "Filter to only include groups with these tags"
+  tags: HierarchicalMultiCriterionInput
+  "Filter by tag count"
+  tag_count: IntCriterionInput
+  "Filter by date"
+  date: DateCriterionInput
+  "Filter by creation time"
+  created_at: TimestampCriterionInput
+  "Filter by last update time"
+  updated_at: TimestampCriterionInput
+  "Filter by o-counter"
+  o_counter: IntCriterionInput
+
+  "Filter by containing groups"
+  containing_groups: HierarchicalMultiCriterionInput
+  "Filter by sub groups"
+  sub_groups: HierarchicalMultiCriterionInput
+  "Filter by number of containing groups the group has"
+  containing_group_count: IntCriterionInput
+  "Filter by number of sub-groups the group has"
+  sub_group_count: IntCriterionInput
+  "Filter by number of scenes the group has"
+  scene_count: IntCriterionInput
+
+  "Filter by related scenes that meet this criteria"
+  scenes_filter: SceneFilterType
+  "Filter by related studios that meet this criteria"
+  studios_filter: StudioFilterType
+
+  "Filter by custom fields"
+  custom_fields: [CustomFieldCriterionInput!]
+}
+
+input StudioFilterType {
+  AND: StudioFilterType
+  OR: StudioFilterType
+  NOT: StudioFilterType
+
+  name: StringCriterionInput
+  details: StringCriterionInput
+  "Filter to only include studios with this parent studio"
+  parents: MultiCriterionInput
+  "Filter by StashID"
+  stash_id_endpoint: StashIDCriterionInput
+    @deprecated(reason: "use stash_ids_endpoint instead")
+  "Filter by StashIDs"
+  stash_ids_endpoint: StashIDsCriterionInput
+  "Filter to only include studios with these tags"
+  tags: HierarchicalMultiCriterionInput
+  "Filter to only include studios missing this property"
+  is_missing: String
+  # rating expressed as 1-100
+  rating100: IntCriterionInput
+  "Filter by favorite"
+  favorite: Boolean
+  "Filter by scene count"
+  scene_count: IntCriterionInput
+  "Filter by image count"
+  image_count: IntCriterionInput
+  "Filter by gallery count"
+  gallery_count: IntCriterionInput
+  "Filter by group count"
+  group_count: IntCriterionInput
+  "Filter by tag count"
+  tag_count: IntCriterionInput
+  "Filter by url"
+  url: StringCriterionInput
+  "Filter by studio aliases"
+  aliases: StringCriterionInput
+  "Filter by subsidiary studio count"
+  child_count: IntCriterionInput
+  "Filter by autotag ignore value"
+  ignore_auto_tag: Boolean
+  "Filter by organized"
+  organized: Boolean
+  "Filter by related scenes that meet this criteria"
+  scenes_filter: SceneFilterType
+  "Filter by related images that meet this criteria"
+  images_filter: ImageFilterType
+  "Filter by related galleries that meet this criteria"
+  galleries_filter: GalleryFilterType
+  "Filter by related groups that meet this criteria"
+  groups_filter: GroupFilterType
+  "Filter by creation time"
+  created_at: TimestampCriterionInput
+  "Filter by last update time"
+  updated_at: TimestampCriterionInput
+
+  custom_fields: [CustomFieldCriterionInput!]
+}
+
+input GalleryFilterType {
+  AND: GalleryFilterType
+  OR: GalleryFilterType
+  NOT: GalleryFilterType
+
+  id: IntCriterionInput
+  title: StringCriterionInput
+  details: StringCriterionInput
+
+  "Filter by file checksum"
+  checksum: StringCriterionInput
+  "Filter by path"
+  path: StringCriterionInput
+  "Filter by zip-file count"
+  file_count: IntCriterionInput
+  "Filter to only include galleries missing this property"
+  is_missing: String
+  "Filter to include/exclude galleries that were created from zip"
+  is_zip: Boolean
+  # rating expressed as 1-100
+  rating100: IntCriterionInput
+  "Filter by organized"
+  organized: Boolean
+  "Filter by average image resolution"
+  average_resolution: ResolutionCriterionInput
+  "Filter to only include galleries that have chapters. `true` or `false`"
+  has_chapters: String
+  "Filter to only include galleries with these scenes"
+  scenes: MultiCriterionInput
+  "Filter to only include galleries with this studio"
+  studios: HierarchicalMultiCriterionInput
+  "Filter to only include galleries with these tags"
+  tags: HierarchicalMultiCriterionInput
+  "Filter by tag count"
+  tag_count: IntCriterionInput
+  "Filter to only include galleries with performers with these tags"
+  performer_tags: HierarchicalMultiCriterionInput
+  "Filter to only include galleries with these performers"
+  performers: MultiCriterionInput
+  "Filter by performer count"
+  performer_count: IntCriterionInput
+  "Filter galleries that have performers that have been favorited"
+  performer_favorite: Boolean
+  "Filter galleries by performer age at time of gallery"
+  performer_age: IntCriterionInput
+  "Filter by number of images in this gallery"
+  image_count: IntCriterionInput
+  "Filter by url"
+  url: StringCriterionInput
+  "Filter by date"
+  date: DateCriterionInput
+  "Filter by creation time"
+  created_at: TimestampCriterionInput
+  "Filter by last update time"
+  updated_at: TimestampCriterionInput
+  "Filter by studio code"
+  code: StringCriterionInput
+  "Filter by photographer"
+  photographer: StringCriterionInput
+
+  "Filter by related scenes that meet this criteria"
+  scenes_filter: SceneFilterType
+  "Filter by related images that meet this criteria"
+  images_filter: ImageFilterType
+  "Filter by related performers that meet this criteria"
+  performers_filter: PerformerFilterType
+  "Filter by related studios that meet this criteria"
+  studios_filter: StudioFilterType
+  "Filter by related tags that meet this criteria"
+  tags_filter: TagFilterType
+  "Filter by related files that meet this criteria"
+  files_filter: FileFilterType
+  "Filter by related folders that meet this criteria"
+  folders_filter: FolderFilterType
+  "Filter by parent folder of the zip or folder the gallery is in"
+  parent_folder: HierarchicalMultiCriterionInput
+
+  custom_fields: [CustomFieldCriterionInput!]
+}
+
+input TagFilterType {
+  AND: TagFilterType
+  OR: TagFilterType
+  NOT: TagFilterType
+
+  "Filter by tag name"
+  name: StringCriterionInput
+
+  "Filter by tag sort_name"
+  sort_name: StringCriterionInput
+
+  "Filter by tag aliases"
+  aliases: StringCriterionInput
+
+  "Filter by favorite"
+  favorite: Boolean
+
+  "Filter by tag description"
+  description: StringCriterionInput
+
+  "Filter to only include tags missing this property"
+  is_missing: String
+
+  "Filter by number of scenes with this tag"
+  scene_count: IntCriterionInput
+
+  "Filter by number of images with this tag"
+  image_count: IntCriterionInput
+
+  "Filter by number of galleries with this tag"
+  gallery_count: IntCriterionInput
+
+  "Filter by number of performers with this tag"
+  performer_count: IntCriterionInput
+
+  "Filter by number of studios with this tag"
+  studio_count: IntCriterionInput
+
+  "Filter by number of movies with this tag"
+  movie_count: IntCriterionInput
+
+  "Filter by number of group with this tag"
+  group_count: IntCriterionInput
+
+  "Filter by number of markers with this tag"
+  marker_count: IntCriterionInput
+
+  "Filter by parent tags"
+  parents: HierarchicalMultiCriterionInput
+
+  "Filter by child tags"
+  children: HierarchicalMultiCriterionInput
+
+  "Filter by number of parent tags the tag has"
+  parent_count: IntCriterionInput
+
+  "Filter by number of child tags the tag has"
+  child_count: IntCriterionInput
+
+  "Filter by autotag ignore value"
+  ignore_auto_tag: Boolean
+
+  "Filter by StashID"
+  stash_id_endpoint: StashIDCriterionInput
+    @deprecated(reason: "use stash_ids_endpoint instead")
+
+  "Filter by StashID"
+  stash_ids_endpoint: StashIDsCriterionInput
+
+  "Filter by related scenes that meet this criteria"
+  scenes_filter: SceneFilterType
+  "Filter by related images that meet this criteria"
+  images_filter: ImageFilterType
+  "Filter by related galleries that meet this criteria"
+  galleries_filter: GalleryFilterType
+  "Filter by related groups that meet this criteria"
+  groups_filter: GroupFilterType
+  "Filter by related performers that meet this criteria"
+  performers_filter: PerformerFilterType
+  "Filter by related studios that meet this criteria"
+  studios_filter: StudioFilterType
+  "Filter by related scene markers that meet this criteria"
+  markers_filter: SceneMarkerFilterType
+
+  "Filter by creation time"
+  created_at: TimestampCriterionInput
+
+  "Filter by last update time"
+  updated_at: TimestampCriterionInput
+
+  custom_fields: [CustomFieldCriterionInput!]
+}
+
+input ImageFilterType {
+  AND: ImageFilterType
+  OR: ImageFilterType
+  NOT: ImageFilterType
+
+  title: StringCriterionInput
+  details: StringCriterionInput
+
+  " Filter by image id"
+  id: IntCriterionInput
+  "Filter by file checksum"
+  checksum: StringCriterionInput
+  "Filter by file phash distance"
+  phash_distance: PhashDistanceCriterionInput
+  "Filter by path"
+  path: StringCriterionInput
+  "Filter by file count"
+  file_count: IntCriterionInput
+  # rating expressed as 1-100
+  rating100: IntCriterionInput
+  "Filter by date"
+  date: DateCriterionInput
+  "Filter by url"
+  url: StringCriterionInput
+  "Filter by organized"
+  organized: Boolean
+  "Filter by o-counter"
+  o_counter: IntCriterionInput
+  "Filter by resolution"
+  resolution: ResolutionCriterionInput
+  "Filter by orientation"
+  orientation: OrientationCriterionInput
+  "Filter to only include images missing this property"
+  is_missing: String
+  "Filter to only include images with this studio"
+  studios: HierarchicalMultiCriterionInput
+  "Filter to only include images with these tags"
+  tags: HierarchicalMultiCriterionInput
+  "Filter by tag count"
+  tag_count: IntCriterionInput
+  "Filter to only include images with performers with these tags"
+  performer_tags: HierarchicalMultiCriterionInput
+  "Filter to only include images with these performers"
+  performers: MultiCriterionInput
+  "Filter by performer count"
+  performer_count: IntCriterionInput
+  "Filter images that have performers that have been favorited"
+  performer_favorite: Boolean
+  "Filter images by performer age at time of image"
+  performer_age: IntCriterionInput
+  "Filter to only include images with these galleries"
+  galleries: MultiCriterionInput
+  "Filter by creation time"
+  created_at: TimestampCriterionInput
+  "Filter by last update time"
+  updated_at: TimestampCriterionInput
+  "Filter by studio code"
+  code: StringCriterionInput
+  "Filter by photographer"
+  photographer: StringCriterionInput
+
+  "Filter by related galleries that meet this criteria"
+  galleries_filter: GalleryFilterType
+  "Filter by related performers that meet this criteria"
+  performers_filter: PerformerFilterType
+  "Filter by related studios that meet this criteria"
+  studios_filter: StudioFilterType
+  "Filter by related tags that meet this criteria"
+  tags_filter: TagFilterType
+  "Filter by related files that meet this criteria"
+  files_filter: FileFilterType
+  "Filter by custom fields"
+  custom_fields: [CustomFieldCriterionInput!]
+}
+
+input FileFilterType {
+  AND: FileFilterType
+  OR: FileFilterType
+  NOT: FileFilterType
+
+  path: StringCriterionInput
+  basename: StringCriterionInput
+  dir: StringCriterionInput
+
+  parent_folder: HierarchicalMultiCriterionInput
+  zip_file: MultiCriterionInput
+
+  "Filter by modification time"
+  mod_time: TimestampCriterionInput
+
+  "Filter files by duplication criteria (only phash applies to files)"
+  duplicated: FileDuplicationCriterionInput
+
+  "find files based on hash"
+  hashes: [FingerprintFilterInput!]
+
+  video_file_filter: VideoFileFilterInput
+  image_file_filter: ImageFileFilterInput
+
+  scene_count: IntCriterionInput
+  image_count: IntCriterionInput
+  gallery_count: IntCriterionInput
+
+  "Filter by related scenes that meet this criteria"
+  scenes_filter: SceneFilterType
+  "Filter by related images that meet this criteria"
+  images_filter: ImageFilterType
+  "Filter by related galleries that meet this criteria"
+  galleries_filter: GalleryFilterType
+
+  "Filter by creation time"
+  created_at: TimestampCriterionInput
+  "Filter by last update time"
+  updated_at: TimestampCriterionInput
+}
+
+input FolderFilterType {
+  AND: FolderFilterType
+  OR: FolderFilterType
+  NOT: FolderFilterType
+
+  path: StringCriterionInput
+  basename: StringCriterionInput
+
+  parent_folder: HierarchicalMultiCriterionInput
+  zip_file: MultiCriterionInput
+
+  "Filter by modification time"
+  mod_time: TimestampCriterionInput
+
+  gallery_count: IntCriterionInput
+
+  "Filter by files that meet this criteria"
+  files_filter: FileFilterType
+  "Filter by related galleries that meet this criteria"
+  galleries_filter: GalleryFilterType
+
+  "Filter by creation time"
+  created_at: TimestampCriterionInput
+  "Filter by last update time"
+  updated_at: TimestampCriterionInput
+}
+
+input VideoFileFilterInput {
+  resolution: ResolutionCriterionInput
+  orientation: OrientationCriterionInput
+  framerate: IntCriterionInput
+  bitrate: IntCriterionInput
+  format: StringCriterionInput
+  video_codec: StringCriterionInput
+  audio_codec: StringCriterionInput
+
+  "in seconds"
+  duration: IntCriterionInput
+
+  captions: StringCriterionInput
+
+  interactive: Boolean
+  interactive_speed: IntCriterionInput
+}
+
+input ImageFileFilterInput {
+  format: StringCriterionInput
+  resolution: ResolutionCriterionInput
+  orientation: OrientationCriterionInput
+}
+
+input FingerprintFilterInput {
+  type: String!
+  value: String!
+  "Hamming distance - defaults to 0"
+  distance: Int
+}
+
+enum CriterionModifier {
+  "="
+  EQUALS
+  "!="
+  NOT_EQUALS
+  ">"
+  GREATER_THAN
+  "<"
+  LESS_THAN
+  "IS NULL"
+  IS_NULL
+  "IS NOT NULL"
+  NOT_NULL
+  "INCLUDES ALL"
+  INCLUDES_ALL
+  INCLUDES
+  EXCLUDES
+  "MATCHES REGEX"
+  MATCHES_REGEX
+  "NOT MATCHES REGEX"
+  NOT_MATCHES_REGEX
+  ">= AND <="
+  BETWEEN
+  "< OR >"
+  NOT_BETWEEN
+}
+
+input StringCriterionInput {
+  value: String!
+  modifier: CriterionModifier!
+}
+
+input IntCriterionInput {
+  value: Int!
+  value2: Int
+  modifier: CriterionModifier!
+}
+
+input FloatCriterionInput {
+  value: Float!
+  value2: Float
+  modifier: CriterionModifier!
+}
+
+input MultiCriterionInput {
+  value: [ID!]
+  modifier: CriterionModifier!
+  excludes: [ID!]
+}
+
+input GenderCriterionInput {
+  value: GenderEnum
+  value_list: [GenderEnum!]
+  modifier: CriterionModifier!
+}
+
+input CircumcisionCriterionInput {
+  value: [CircumcisedEnum!]
+  modifier: CriterionModifier!
+}
+
+input HierarchicalMultiCriterionInput {
+  value: [ID!]
+  modifier: CriterionModifier!
+  depth: Int
+  excludes: [ID!]
+}
+
+input DateCriterionInput {
+  value: String!
+  value2: String
+  modifier: CriterionModifier!
+}
+
+input TimestampCriterionInput {
+  value: String!
+  value2: String
+  modifier: CriterionModifier!
+}
+
+input PhashDistanceCriterionInput {
+  value: String!
+  modifier: CriterionModifier!
+  distance: Int
+}
+
+enum FilterMode {
+  SCENES
+  PERFORMERS
+  STUDIOS
+  GALLERIES
+  SCENE_MARKERS
+  MOVIES
+  GROUPS
+  TAGS
+  IMAGES
+}
+
+type SavedFilter {
+  id: ID!
+  mode: FilterMode!
+  name: String!
+  "JSON-encoded filter string"
+  filter: String!
+    @deprecated(reason: "use find_filter and object_filter instead")
+  find_filter: SavedFindFilterType
+  # maps to any of the AnyFilterInput types
+  # using a generic Map instead of creating and maintaining match types for inputs
+  object_filter: Map
+  # generic map for ui options
+  ui_options: Map
+}
+
+input SaveFilterInput {
+  "provide ID to overwrite existing filter"
+  id: ID
+  mode: FilterMode!
+  name: String!
+  find_filter: FindFilterType
+  object_filter: Map
+  # generic map for ui options
+  ui_options: Map
+}
+
+input DestroyFilterInput {
+  id: ID!
+}
+
+input SetDefaultFilterInput {
+  mode: FilterMode!
+  "null to clear"
+  find_filter: FindFilterType
+  object_filter: Map
+  # generic map for ui options
+  ui_options: Map
+}
+type GalleryChapter {
+  id: ID!
+  gallery: Gallery!
+  title: String!
+  image_index: Int!
+  created_at: Time!
+  updated_at: Time!
+}
+
+input GalleryChapterCreateInput {
+  gallery_id: ID!
+  title: String!
+  image_index: Int!
+}
+
+input GalleryChapterUpdateInput {
+  id: ID!
+  gallery_id: ID
+  title: String
+  image_index: Int
+}
+
+type FindGalleryChaptersResultType {
+  count: Int!
+  chapters: [GalleryChapter!]!
+}
+type GalleryPathsType {
+  cover: String!
+  preview: String! # Resolver
+}
+
+"Gallery type"
+type Gallery {
+  id: ID!
+  title: String
+  code: String
+  url: String @deprecated(reason: "Use urls")
+  urls: [String!]!
+  date: String
+  details: String
+  photographer: String
+  # rating expressed as 1-100
+  rating100: Int
+  organized: Boolean!
+  created_at: Time!
+  updated_at: Time!
+
+  files: [GalleryFile!]!
+  folder: Folder
+
+  chapters: [GalleryChapter!]!
+  scenes: [Scene!]!
+  studio: Studio
+  image_count: Int!
+  tags: [Tag!]!
+  performers: [Performer!]!
+
+  cover: Image
+
+  paths: GalleryPathsType! # Resolver
+  custom_fields: Map!
+  image(index: Int!): Image!
+}
+
+input GalleryCreateInput {
+  title: String!
+  code: String
+  url: String @deprecated(reason: "Use urls")
+  urls: [String!]
+  date: String
+  details: String
+  photographer: String
+  # rating expressed as 1-100
+  rating100: Int
+  organized: Boolean
+  scene_ids: [ID!]
+  studio_id: ID
+  tag_ids: [ID!]
+  performer_ids: [ID!]
+
+  custom_fields: Map
+}
+
+input GalleryUpdateInput {
+  clientMutationId: String
+  id: ID!
+  title: String
+  code: String
+  url: String @deprecated(reason: "Use urls")
+  urls: [String!]
+  date: String
+  details: String
+  photographer: String
+  # rating expressed as 1-100
+  rating100: Int
+  organized: Boolean
+  scene_ids: [ID!]
+  studio_id: ID
+  tag_ids: [ID!]
+  performer_ids: [ID!]
+
+  primary_file_id: ID
+
+  custom_fields: CustomFieldsInput
+}
+
+input BulkGalleryUpdateInput {
+  clientMutationId: String
+  ids: [ID!]
+  code: String
+  url: String @deprecated(reason: "Use urls")
+  urls: BulkUpdateStrings
+  date: String
+  details: String
+  photographer: String
+  # rating expressed as 1-100
+  rating100: Int
+  organized: Boolean
+  scene_ids: BulkUpdateIds
+  studio_id: ID
+  tag_ids: BulkUpdateIds
+  performer_ids: BulkUpdateIds
+
+  custom_fields: CustomFieldsInput
+}
+
+input GalleryDestroyInput {
+  ids: [ID!]!
+  """
+  If true, then the zip file will be deleted if the gallery is zip-file-based.
+  If gallery is folder-based, then any files not associated with other
+  galleries will be deleted, along with the folder, if it is not empty.
+  """
+  delete_file: Boolean
+  delete_generated: Boolean
+  "If true, delete the file entry from the database if the file is not assigned to any other objects"
+  destroy_file_entry: Boolean
+}
+
+type FindGalleriesResultType {
+  count: Int!
+  galleries: [Gallery!]!
+}
+
+input GalleryAddInput {
+  gallery_id: ID!
+  image_ids: [ID!]!
+}
+
+input GalleryRemoveInput {
+  gallery_id: ID!
+  image_ids: [ID!]!
+}
+
+input GallerySetCoverInput {
+  gallery_id: ID!
+  cover_image_id: ID!
+}
+
+input GalleryResetCoverInput {
+  gallery_id: ID!
+}
+"GroupDescription represents a relationship to a group with a description of the relationship"
+type GroupDescription {
+  group: Group!
+  description: String
+}
+
+type Group {
+  id: ID!
+  name: String!
+  aliases: String
+  "Duration in seconds"
+  duration: Int
+  date: String
+  # rating expressed as 1-100
+  rating100: Int
+  studio: Studio
+  director: String
+  synopsis: String
+  urls: [String!]!
+  tags: [Tag!]!
+  created_at: Time!
+  updated_at: Time!
+
+  containing_groups: [GroupDescription!]!
+  sub_groups: [GroupDescription!]!
+
+  front_image_path: String # Resolver
+  back_image_path: String # Resolver
+  scene_count(depth: Int): Int! # Resolver
+  performer_count(depth: Int): Int! # Resolver
+  sub_group_count(depth: Int): Int! # Resolver
+  scenes: [Scene!]!
+  o_counter: Int # Resolver
+  custom_fields: Map!
+}
+
+input GroupDescriptionInput {
+  group_id: ID!
+  description: String
+}
+
+input GroupCreateInput {
+  name: String!
+  aliases: String
+  "Duration in seconds"
+  duration: Int
+  date: String
+  # rating expressed as 1-100
+  rating100: Int
+  studio_id: ID
+  director: String
+  synopsis: String
+  urls: [String!]
+  tag_ids: [ID!]
+
+  containing_groups: [GroupDescriptionInput!]
+  sub_groups: [GroupDescriptionInput!]
+
+  "This should be a URL or a base64 encoded data URL"
+  front_image: String
+  "This should be a URL or a base64 encoded data URL"
+  back_image: String
+
+  custom_fields: Map
+}
+
+input GroupUpdateInput {
+  id: ID!
+  name: String
+  aliases: String
+  duration: Int
+  date: String
+  # rating expressed as 1-100
+  rating100: Int
+  studio_id: ID
+  director: String
+  synopsis: String
+  urls: [String!]
+  tag_ids: [ID!]
+
+  containing_groups: [GroupDescriptionInput!]
+  sub_groups: [GroupDescriptionInput!]
+
+  "This should be a URL or a base64 encoded data URL"
+  front_image: String
+  "This should be a URL or a base64 encoded data URL"
+  back_image: String
+
+  custom_fields: CustomFieldsInput
+}
+
+input BulkUpdateGroupDescriptionsInput {
+  groups: [GroupDescriptionInput!]!
+  mode: BulkUpdateIdMode!
+}
+
+input BulkGroupUpdateInput {
+  clientMutationId: String
+  ids: [ID!]
+  # rating expressed as 1-100
+  rating100: Int
+  date: String
+  synopsis: String
+  studio_id: ID
+  director: String
+  urls: BulkUpdateStrings
+  tag_ids: BulkUpdateIds
+
+  containing_groups: BulkUpdateGroupDescriptionsInput
+  sub_groups: BulkUpdateGroupDescriptionsInput
+
+  custom_fields: CustomFieldsInput
+}
+
+input GroupDestroyInput {
+  id: ID!
+}
+
+input ReorderSubGroupsInput {
+  "ID of the group to reorder sub groups for"
+  group_id: ID!
+  """
+  IDs of the sub groups to reorder. These must be a subset of the current sub groups.
+  Sub groups will be inserted in this order at the insert_index
+  """
+  sub_group_ids: [ID!]!
+  "The sub-group ID at which to insert the sub groups"
+  insert_at_id: ID!
+  "If true, the sub groups will be inserted after the insert_index, otherwise they will be inserted before"
+  insert_after: Boolean
+}
+
+type FindGroupsResultType {
+  count: Int!
+  groups: [Group!]!
+}
+
+input GroupSubGroupAddInput {
+  containing_group_id: ID!
+  sub_groups: [GroupDescriptionInput!]!
+  "The index at which to insert the sub groups. If not provided, the sub groups will be appended to the end"
+  insert_index: Int
+}
+
+input GroupSubGroupRemoveInput {
+  containing_group_id: ID!
+  sub_group_ids: [ID!]!
+}
+type Image {
+  id: ID!
+  title: String
+  code: String
+  # rating expressed as 1-100
+  rating100: Int
+  url: String @deprecated(reason: "Use urls")
+  urls: [String!]!
+  date: String
+  details: String
+  photographer: String
+  o_counter: Int
+  organized: Boolean!
+  created_at: Time!
+  updated_at: Time!
+
+  files: [ImageFile!]! @deprecated(reason: "Use visual_files")
+  visual_files: [VisualFile!]!
+  paths: ImagePathsType! # Resolver
+  galleries: [Gallery!]!
+  studio: Studio
+  tags: [Tag!]!
+  performers: [Performer!]!
+  custom_fields: Map!
+}
+
+type ImageFileType {
+  mod_time: Time!
+  size: Int!
+  width: Int!
+  height: Int!
+}
+
+type ImagePathsType {
+  thumbnail: String # Resolver
+  preview: String # Resolver
+  image: String # Resolver
+}
+
+input ImageUpdateInput {
+  clientMutationId: String
+  id: ID!
+  title: String
+  code: String
+  # rating expressed as 1-100
+  rating100: Int
+  organized: Boolean
+  url: String @deprecated(reason: "Use urls")
+  urls: [String!]
+  date: String
+  details: String
+  photographer: String
+
+  studio_id: ID
+  performer_ids: [ID!]
+  tag_ids: [ID!]
+  gallery_ids: [ID!]
+
+  primary_file_id: ID
+  custom_fields: CustomFieldsInput
+}
+
+input BulkImageUpdateInput {
+  clientMutationId: String
+  ids: [ID!]
+  title: String
+  code: String
+  # rating expressed as 1-100
+  rating100: Int
+  organized: Boolean
+  url: String @deprecated(reason: "Use urls")
+  urls: BulkUpdateStrings
+  date: String
+  details: String
+  photographer: String
+
+  studio_id: ID
+  performer_ids: BulkUpdateIds
+  tag_ids: BulkUpdateIds
+  gallery_ids: BulkUpdateIds
+  custom_fields: CustomFieldsInput
+}
+
+input ImageDestroyInput {
+  id: ID!
+  delete_file: Boolean
+  delete_generated: Boolean
+  "If true, delete the file entry from the database if the file is not assigned to any other objects"
+  destroy_file_entry: Boolean
+}
+
+input ImagesDestroyInput {
+  ids: [ID!]!
+  delete_file: Boolean
+  delete_generated: Boolean
+  "If true, delete the file entry from the database if the file is not assigned to any other objects"
+  destroy_file_entry: Boolean
+}
+
+type FindImagesResultType {
+  count: Int!
+  "Total megapixels of the images"
+  megapixels: Float!
+  "Total file size in bytes"
+  filesize: Float!
+  images: [Image!]!
+}
+enum JobStatus {
+  READY
+  RUNNING
+  FINISHED
+  STOPPING
+  CANCELLED
+  FAILED
+}
+
+type Job {
+  id: ID!
+  status: JobStatus!
+  subTasks: [String!]
+  description: String!
+  progress: Float
+  startTime: Time
+  endTime: Time
+  addTime: Time!
+  error: String
+}
+
+input FindJobInput {
+  id: ID!
+}
+
+enum JobStatusUpdateType {
+  ADD
+  REMOVE
+  UPDATE
+}
+
+type JobStatusUpdate {
+  type: JobStatusUpdateType!
+  job: Job!
+}
+enum LogLevel {
+  Trace
+  Debug
+  Info
+  Progress
+  Warning
+  Error
+}
+
+type LogEntry {
+  time: Time!
+  level: LogLevel!
+  message: String!
+}
+input GenerateMetadataInput {
+  covers: Boolean
+  sprites: Boolean
+  previews: Boolean
+  imagePreviews: Boolean
+  previewOptions: GeneratePreviewOptionsInput
+  markers: Boolean
+  markerImagePreviews: Boolean
+  markerScreenshots: Boolean
+  transcodes: Boolean
+  "Generate transcodes even if not required"
+  forceTranscodes: Boolean
+  "Generate video phashes during scan"
+  phashes: Boolean
+  interactiveHeatmapsSpeeds: Boolean
+  "Generate image phashes during scan"
+  imagePhashes: Boolean
+  imageThumbnails: Boolean
+  clipPreviews: Boolean
+
+  "scene ids to generate for"
+  sceneIDs: [ID!]
+  "marker ids to generate for"
+  markerIDs: [ID!]
+  "image ids to generate for"
+  imageIDs: [ID!]
+  "gallery ids to generate for"
+  galleryIDs: [ID!]
+  "paths to run generate on, in addition to the other ID lists"
+  paths: [String!]
+
+  "overwrite existing media"
+  overwrite: Boolean
+}
+
+input GeneratePreviewOptionsInput {
+  "Number of segments in a preview file"
+  previewSegments: Int
+  "Preview segment duration, in seconds"
+  previewSegmentDuration: Float
+  "Duration of start of video to exclude when generating previews"
+  previewExcludeStart: String
+  "Duration of end of video to exclude when generating previews"
+  previewExcludeEnd: String
+  "Preset when generating preview"
+  previewPreset: PreviewPreset
+}
+
+type GenerateMetadataOptions {
+  covers: Boolean
+  sprites: Boolean
+  previews: Boolean
+  imagePreviews: Boolean
+  previewOptions: GeneratePreviewOptions
+  markers: Boolean
+  markerImagePreviews: Boolean
+  markerScreenshots: Boolean
+  transcodes: Boolean
+  phashes: Boolean
+  interactiveHeatmapsSpeeds: Boolean
+  imageThumbnails: Boolean
+  clipPreviews: Boolean
+}
+
+type GeneratePreviewOptions {
+  "Number of segments in a preview file"
+  previewSegments: Int
+  "Preview segment duration, in seconds"
+  previewSegmentDuration: Float
+  "Duration of start of video to exclude when generating previews"
+  previewExcludeStart: String
+  "Duration of end of video to exclude when generating previews"
+  previewExcludeEnd: String
+  "Preset when generating preview"
+  previewPreset: PreviewPreset
+}
+
+"Filter options for meta data scannning"
+input ScanMetaDataFilterInput {
+  "If set, files with a modification time before this time point are ignored by the scan"
+  minModTime: Timestamp
+}
+
+input ScanMetadataInput {
+  paths: [String!]
+
+  "Forces a rescan on files even if modification time is unchanged"
+  rescan: Boolean
+  "Generate covers during scan"
+  scanGenerateCovers: Boolean
+  "Generate previews during scan"
+  scanGeneratePreviews: Boolean
+  "Generate image previews during scan"
+  scanGenerateImagePreviews: Boolean
+  "Generate sprites during scan"
+  scanGenerateSprites: Boolean
+  "Generate video phashes during scan"
+  scanGeneratePhashes: Boolean
+  "Generate image phashes during scan"
+  scanGenerateImagePhashes: Boolean
+  "Generate image thumbnails during scan"
+  scanGenerateThumbnails: Boolean
+  "Generate image clip previews during scan"
+  scanGenerateClipPreviews: Boolean
+
+  "Filter options for the scan"
+  filter: ScanMetaDataFilterInput
+}
+
+type ScanMetadataOptions {
+  "Forces a rescan on files even if modification time is unchanged"
+  rescan: Boolean!
+  "Generate covers during scan"
+  scanGenerateCovers: Boolean!
+  "Generate previews during scan"
+  scanGeneratePreviews: Boolean!
+  "Generate image previews during scan"
+  scanGenerateImagePreviews: Boolean!
+  "Generate sprites during scan"
+  scanGenerateSprites: Boolean!
+  "Generate video phashes during scan"
+  scanGeneratePhashes: Boolean!
+  "Generate image phashes during scan"
+  scanGenerateImagePhashes: Boolean
+  "Generate image thumbnails during scan"
+  scanGenerateThumbnails: Boolean!
+  "Generate image clip previews during scan"
+  scanGenerateClipPreviews: Boolean!
+}
+
+input CleanMetadataInput {
+  paths: [String!]
+
+  """
+  Don't check zip file contents when determining whether to clean a file.
+  This can significantly speed up the clean process, but will potentially miss removed files within zip files.
+  Where users do not modify zip files contents directly, this should be safe to use.
+  Defaults to false.
+  """
+  ignoreZipFileContents: Boolean
+
+  "Do a dry run. Don't delete any files"
+  dryRun: Boolean!
+}
+
+input CleanGeneratedInput {
+  "Clean blob files without blob entries"
+  blobFiles: Boolean
+  "Clean sprite and vtt files without scene entries"
+  sprites: Boolean
+  "Clean preview files without scene entries"
+  screenshots: Boolean
+  "Clean scene transcodes without scene entries"
+  transcodes: Boolean
+
+  "Clean marker files without marker entries"
+  markers: Boolean
+
+  "Clean image thumbnails/clips without image entries"
+  imageThumbnails: Boolean
+
+  "Do a dry run. Don't delete any files"
+  dryRun: Boolean
+}
+
+input AutoTagMetadataInput {
+  "Paths to tag, null for all files"
+  paths: [String!]
+  """
+  IDs of performers to tag files with, or "*" for all
+  """
+  performers: [String!]
+  """
+  IDs of studios to tag files with, or "*" for all
+  """
+  studios: [String!]
+  """
+  IDs of tags to tag files with, or "*" for all
+  """
+  tags: [String!]
+}
+
+type AutoTagMetadataOptions {
+  """
+  IDs of performers to tag files with, or "*" for all
+  """
+  performers: [String!]
+  """
+  IDs of studios to tag files with, or "*" for all
+  """
+  studios: [String!]
+  """
+  IDs of tags to tag files with, or "*" for all
+  """
+  tags: [String!]
+}
+
+enum IdentifyFieldStrategy {
+  "Never sets the field value"
+  IGNORE
+  """
+  For multi-value fields, merge with existing.
+  For single-value fields, ignore if already set
+  """
+  MERGE
+  """
+  Always replaces the value if a value is found.
+  For multi-value fields, any existing values are removed and replaced with the
+  scraped values.
+  """
+  OVERWRITE
+}
+
+input IdentifyFieldOptionsInput {
+  field: String!
+  strategy: IdentifyFieldStrategy!
+  "creates missing objects if needed - only applicable for performers, tags and studios"
+  createMissing: Boolean
+}
+
+input IdentifyMetadataOptionsInput {
+  "any fields missing from here are defaulted to MERGE and createMissing false"
+  fieldOptions: [IdentifyFieldOptionsInput!]
+  "defaults to true if not provided"
+  setCoverImage: Boolean
+  setOrganized: Boolean
+  "defaults to true if not provided"
+  includeMalePerformers: Boolean @deprecated(reason: "Use performerGenders")
+  "Filter to only include performers with these genders. If not provided, all genders are included."
+  performerGenders: [GenderEnum!]
+  "defaults to true if not provided"
+  skipMultipleMatches: Boolean
+  "tag to tag skipped multiple matches with"
+  skipMultipleMatchTag: String
+  "defaults to true if not provided"
+  skipSingleNamePerformers: Boolean
+  "tag to tag skipped single name performers with"
+  skipSingleNamePerformerTag: String
+}
+
+input IdentifySourceInput {
+  source: ScraperSourceInput!
+  "Options defined for a source override the defaults"
+  options: IdentifyMetadataOptionsInput
+}
+
+input IdentifyMetadataInput {
+  "An ordered list of sources to identify items with. Only the first source that finds a match is used."
+  sources: [IdentifySourceInput!]!
+  "Options defined here override the configured defaults"
+  options: IdentifyMetadataOptionsInput
+
+  "scene ids to identify"
+  sceneIDs: [ID!]
+
+  "paths of scenes to identify - ignored if scene ids are set"
+  paths: [String!]
+}
+
+# types for default options
+type IdentifyFieldOptions {
+  field: String!
+  strategy: IdentifyFieldStrategy!
+  "creates missing objects if needed - only applicable for performers, tags and studios"
+  createMissing: Boolean
+}
+
+type IdentifyMetadataOptions {
+  "any fields missing from here are defaulted to MERGE and createMissing false"
+  fieldOptions: [IdentifyFieldOptions!]
+  "defaults to true if not provided"
+  setCoverImage: Boolean
+  setOrganized: Boolean
+  "defaults to true if not provided"
+  includeMalePerformers: Boolean @deprecated(reason: "Use performerGenders")
+  "Filter to only include performers with these genders. If not provided, all genders are included."
+  performerGenders: [GenderEnum!]
+  "defaults to true if not provided"
+  skipMultipleMatches: Boolean
+  "tag to tag skipped multiple matches with"
+  skipMultipleMatchTag: String
+  "defaults to true if not provided"
+  skipSingleNamePerformers: Boolean
+  "tag to tag skipped single name performers with"
+  skipSingleNamePerformerTag: String
+}
+
+type IdentifySource {
+  source: ScraperSource!
+  "Options defined for a source override the defaults"
+  options: IdentifyMetadataOptions
+}
+
+type IdentifyMetadataTaskOptions {
+  "An ordered list of sources to identify items with. Only the first source that finds a match is used."
+  sources: [IdentifySource!]!
+  "Options defined here override the configured defaults"
+  options: IdentifyMetadataOptions
+}
+
+input ExportObjectTypeInput {
+  ids: [String!]
+  all: Boolean
+}
+
+input ExportObjectsInput {
+  scenes: ExportObjectTypeInput
+  images: ExportObjectTypeInput
+  studios: ExportObjectTypeInput
+  performers: ExportObjectTypeInput
+  tags: ExportObjectTypeInput
+  groups: ExportObjectTypeInput
+  movies: ExportObjectTypeInput @deprecated(reason: "Use groups instead")
+  galleries: ExportObjectTypeInput
+  includeDependencies: Boolean
+}
+
+enum ImportDuplicateEnum {
+  IGNORE
+  OVERWRITE
+  FAIL
+}
+
+enum ImportMissingRefEnum {
+  IGNORE
+  FAIL
+  CREATE
+}
+
+input ImportObjectsInput {
+  file: Upload!
+  duplicateBehaviour: ImportDuplicateEnum!
+  missingRefBehaviour: ImportMissingRefEnum!
+}
+
+input BackupDatabaseInput {
+  download: Boolean
+  "If true, blob files will be included in the backup. This can significantly increase the size of the backup and the time it takes to create it, but allows for a complete backup of the system that can be restored without needing access to the original media files."
+  includeBlobs: Boolean
+}
+
+input AnonymiseDatabaseInput {
+  download: Boolean
+}
+
+enum SystemStatusEnum {
+  SETUP
+  NEEDS_MIGRATION
+  OK
+}
+
+type SystemStatus {
+  databaseSchema: Int
+  databasePath: String
+  configPath: String
+  appSchema: Int!
+  status: SystemStatusEnum!
+  os: String!
+  workingDir: String!
+  homeDir: String!
+  ffmpegPath: String
+  ffprobePath: String
+}
+
+input MigrateInput {
+  backupPath: String!
+}
+
+input CustomFieldsInput {
+  "If populated, the entire custom fields map will be replaced with this value"
+  full: Map
+  "If populated, only the keys in this map will be updated"
+  partial: Map
+  "Remove any keys in this list"
+  remove: [String!]
+}
+input MigrateSceneScreenshotsInput {
+  # if true, delete screenshot files after migrating
+  deleteFiles: Boolean
+  # if true, overwrite existing covers with the covers from the screenshots directory
+  overwriteExisting: Boolean
+}
+
+input MigrateBlobsInput {
+  # if true, delete blob data from old storage system
+  deleteOld: Boolean
+}
+type Movie {
+  id: ID!
+  name: String!
+  aliases: String
+  "Duration in seconds"
+  duration: Int
+  date: String
+  # rating expressed as 1-100
+  rating100: Int
+  studio: Studio
+  director: String
+  synopsis: String
+  url: String @deprecated(reason: "Use urls")
+  urls: [String!]!
+  tags: [Tag!]!
+  created_at: Time!
+  updated_at: Time!
+
+  front_image_path: String # Resolver
+  back_image_path: String # Resolver
+  scene_count(depth: Int): Int! # Resolver
+  scenes: [Scene!]!
+}
+
+input MovieCreateInput {
+  name: String!
+  aliases: String
+  "Duration in seconds"
+  duration: Int
+  date: String
+  # rating expressed as 1-100
+  rating100: Int
+  studio_id: ID
+  director: String
+  synopsis: String
+  url: String @deprecated(reason: "Use urls")
+  urls: [String!]
+  tag_ids: [ID!]
+  "This should be a URL or a base64 encoded data URL"
+  front_image: String
+  "This should be a URL or a base64 encoded data URL"
+  back_image: String
+}
+
+input MovieUpdateInput {
+  id: ID!
+  name: String
+  aliases: String
+  duration: Int
+  date: String
+  # rating expressed as 1-100
+  rating100: Int
+  studio_id: ID
+  director: String
+  synopsis: String
+  url: String @deprecated(reason: "Use urls")
+  urls: [String!]
+  tag_ids: [ID!]
+  "This should be a URL or a base64 encoded data URL"
+  front_image: String
+  "This should be a URL or a base64 encoded data URL"
+  back_image: String
+}
+
+input BulkMovieUpdateInput {
+  clientMutationId: String
+  ids: [ID!]
+  # rating expressed as 1-100
+  rating100: Int
+  studio_id: ID
+  director: String
+  urls: BulkUpdateStrings
+  tag_ids: BulkUpdateIds
+}
+
+input MovieDestroyInput {
+  id: ID!
+}
+
+type FindMoviesResultType {
+  count: Int!
+  movies: [Movie!]!
+}
+enum PackageType {
+  Scraper
+  Plugin
+}
+
+type Package {
+  package_id: String!
+  name: String!
+  version: String
+  date: Timestamp
+  requires: [Package!]!
+
+  sourceURL: String!
+
+  "The version of this package currently available from the remote source"
+  source_package: Package
+
+  metadata: Map!
+}
+
+input PackageSpecInput {
+  id: String!
+  sourceURL: String!
+}
+
+type PackageSource {
+  name: String
+  url: String!
+  local_path: String
+}
+
+input PackageSourceInput {
+  name: String
+  url: String!
+  local_path: String
+}
+enum GenderEnum {
+  MALE
+  FEMALE
+  TRANSGENDER_MALE
+  TRANSGENDER_FEMALE
+  INTERSEX
+  NON_BINARY
+}
+
+enum CircumcisedEnum {
+  CUT
+  UNCUT
+}
+
+type Performer {
+  id: ID!
+  name: String!
+  disambiguation: String
+  url: String @deprecated(reason: "Use urls")
+  urls: [String!]
+  gender: GenderEnum
+  twitter: String @deprecated(reason: "Use urls")
+  instagram: String @deprecated(reason: "Use urls")
+  birthdate: String
+  ethnicity: String
+  country: String
+  eye_color: String
+  height_cm: Int
+  measurements: String
+  fake_tits: String
+  penis_length: Float
+  circumcised: CircumcisedEnum
+  career_length: String @deprecated(reason: "Use career_start and career_end")
+  career_start: String
+  career_end: String
+  tattoos: String
+  piercings: String
+  alias_list: [String!]!
+  favorite: Boolean!
+  tags: [Tag!]!
+  ignore_auto_tag: Boolean!
+
+  image_path: String # Resolver
+  scene_count: Int! # Resolver
+  image_count: Int! # Resolver
+  gallery_count: Int! # Resolver
+  group_count: Int! # Resolver
+  movie_count: Int! @deprecated(reason: "use group_count instead") # Resolver
+  performer_count: Int! # Resolver
+  o_counter: Int # Resolver
+  scenes: [Scene!]!
+  stash_ids: [StashID!]!
+  # rating expressed as 1-100
+  rating100: Int
+  details: String
+  death_date: String
+  hair_color: String
+  weight: Int
+  created_at: Time!
+  updated_at: Time!
+  groups: [Group!]!
+  movies: [Movie!]! @deprecated(reason: "use groups instead")
+
+  custom_fields: Map!
+}
+
+input PerformerCreateInput {
+  name: String!
+  disambiguation: String
+  url: String @deprecated(reason: "Use urls")
+  urls: [String!]
+  gender: GenderEnum
+  birthdate: String
+  ethnicity: String
+  country: String
+  eye_color: String
+  height_cm: Int
+  measurements: String
+  fake_tits: String
+  penis_length: Float
+  circumcised: CircumcisedEnum
+  career_length: String @deprecated(reason: "Use career_start and career_end")
+  career_start: String
+  career_end: String
+  tattoos: String
+  piercings: String
+  "Duplicate aliases and those equal to name will be ignored (case-insensitive)"
+  alias_list: [String!]
+  twitter: String @deprecated(reason: "Use urls")
+  instagram: String @deprecated(reason: "Use urls")
+  favorite: Boolean
+  tag_ids: [ID!]
+  "This should be a URL or a base64 encoded data URL"
+  image: String
+  stash_ids: [StashIDInput!]
+  # rating expressed as 1-100
+  rating100: Int
+  details: String
+  death_date: String
+  hair_color: String
+  weight: Int
+  ignore_auto_tag: Boolean
+
+  custom_fields: Map
+}
+
+input PerformerUpdateInput {
+  id: ID!
+  name: String
+  disambiguation: String
+  url: String @deprecated(reason: "Use urls")
+  urls: [String!]
+  gender: GenderEnum
+  birthdate: String
+  ethnicity: String
+  country: String
+  eye_color: String
+  height_cm: Int
+  measurements: String
+  fake_tits: String
+  penis_length: Float
+  circumcised: CircumcisedEnum
+  career_length: String @deprecated(reason: "Use career_start and career_end")
+  career_start: String
+  career_end: String
+  tattoos: String
+  piercings: String
+  "Duplicate aliases and those equal to name will be ignored (case-insensitive)"
+  alias_list: [String!]
+  twitter: String @deprecated(reason: "Use urls")
+  instagram: String @deprecated(reason: "Use urls")
+  favorite: Boolean
+  tag_ids: [ID!]
+  "This should be a URL or a base64 encoded data URL"
+  image: String
+  stash_ids: [StashIDInput!]
+  # rating expressed as 1-100
+  rating100: Int
+  details: String
+  death_date: String
+  hair_color: String
+  weight: Int
+  ignore_auto_tag: Boolean
+
+  custom_fields: CustomFieldsInput
+}
+
+input BulkUpdateStrings {
+  values: [String!]
+  mode: BulkUpdateIdMode!
+}
+
+input BulkPerformerUpdateInput {
+  clientMutationId: String
+  ids: [ID!]
+  disambiguation: String
+  url: String @deprecated(reason: "Use urls")
+  urls: BulkUpdateStrings
+  gender: GenderEnum
+  birthdate: String
+  ethnicity: String
+  country: String
+  eye_color: String
+  height_cm: Int
+  measurements: String
+  fake_tits: String
+  penis_length: Float
+  circumcised: CircumcisedEnum
+  career_length: String @deprecated(reason: "Use career_start and career_end")
+  career_start: String
+  career_end: String
+  tattoos: String
+  piercings: String
+  "Duplicate aliases and those equal to name will result in an error (case-insensitive)"
+  alias_list: BulkUpdateStrings
+  twitter: String @deprecated(reason: "Use urls")
+  instagram: String @deprecated(reason: "Use urls")
+  favorite: Boolean
+  tag_ids: BulkUpdateIds
+  # rating expressed as 1-100
+  rating100: Int
+  details: String
+  death_date: String
+  hair_color: String
+  weight: Int
+  ignore_auto_tag: Boolean
+
+  custom_fields: CustomFieldsInput
+}
+
+input PerformerDestroyInput {
+  id: ID!
+}
+
+type FindPerformersResultType {
+  count: Int!
+  performers: [Performer!]!
+}
+
+input PerformerMergeInput {
+  source: [ID!]!
+  destination: ID!
+  # values defined here will override values in the destination
+  values: PerformerUpdateInput
+}
+type PluginPaths {
+  # path to javascript files
+  javascript: [String!]
+  # path to css files
+  css: [String!]
+}
+
+type Plugin {
+  id: ID!
+  name: String!
+  description: String
+  url: String
+  version: String
+
+  enabled: Boolean!
+
+  tasks: [PluginTask!]
+  hooks: [PluginHook!]
+  settings: [PluginSetting!]
+
+  """
+  Plugin IDs of plugins that this plugin depends on.
+  Applies only for UI plugins to indicate css/javascript load order.
+  """
+  requires: [ID!]
+
+  paths: PluginPaths!
+}
+
+type PluginTask {
+  name: String!
+  description: String
+  plugin: Plugin!
+}
+
+type PluginHook {
+  name: String!
+  description: String
+  hooks: [String!]
+  plugin: Plugin!
+}
+
+type PluginResult {
+  error: String
+  result: String
+}
+
+input PluginArgInput {
+  key: String!
+  value: PluginValueInput
+}
+
+input PluginValueInput {
+  str: String
+  i: Int
+  b: Boolean
+  f: Float
+  o: [PluginArgInput!]
+  a: [PluginValueInput!]
+}
+
+enum PluginSettingTypeEnum {
+  STRING
+  NUMBER
+  BOOLEAN
+}
+
+type PluginSetting {
+  name: String!
+  display_name: String
+  description: String
+  type: PluginSettingTypeEnum!
+}
+"An RFC3339 timestamp"
+scalar Time
+
+"""
+Timestamp is a point in time. It is always output as RFC3339-compatible time points.
+It can be input as a RFC3339 string, or as "<4h" for "4 hours in the past" or ">5m"
+for "5 minutes in the future"
+"""
+scalar Timestamp
+
+"A String -> Any map"
+scalar Map
+
+"A String -> Boolean map"
+scalar BoolMap
+
+"A plugin ID -> Map (String -> Any map) map"
+scalar PluginConfigMap
+
+scalar Any
+
+scalar Int64
+
+"A multipart file upload"
+scalar Upload
+type SceneFileType {
+  size: String
+  duration: Float
+  video_codec: String
+  audio_codec: String
+  width: Int
+  height: Int
+  framerate: Float
+  bitrate: Int
+}
+
+type ScenePathsType {
+  screenshot: String # Resolver
+  preview: String # Resolver
+  stream: String # Resolver
+  webp: String # Resolver
+  vtt: String # Resolver
+  sprite: String # Resolver
+  funscript: String # Resolver
+  interactive_heatmap: String # Resolver
+  caption: String # Resolver
+}
+
+type SceneMovie {
+  movie: Movie!
+  scene_index: Int
+}
+
+type SceneGroup {
+  group: Group!
+  scene_index: Int
+}
+
+type VideoCaption {
+  language_code: String!
+  caption_type: String!
+}
+
+type Scene {
+  id: ID!
+  title: String
+  code: String
+  details: String
+  director: String
+  url: String @deprecated(reason: "Use urls")
+  urls: [String!]!
+  date: String
+  # rating expressed as 1-100
+  rating100: Int
+  organized: Boolean!
+  o_counter: Int
+  interactive: Boolean!
+  interactive_speed: Int
+  captions: [VideoCaption!]
+  created_at: Time!
+  updated_at: Time!
+  "The last time play count was updated"
+  last_played_at: Time
+  "The time index a scene was left at"
+  resume_time: Float
+  "The total time a scene has spent playing"
+  play_duration: Float
+  "The number ot times a scene has been played"
+  play_count: Int
+
+  "Times a scene was played"
+  play_history: [Time!]!
+  "Times the o counter was incremented"
+  o_history: [Time!]!
+
+  files: [VideoFile!]!
+  paths: ScenePathsType! # Resolver
+  scene_markers: [SceneMarker!]!
+  galleries: [Gallery!]!
+  studio: Studio
+  groups: [SceneGroup!]!
+  movies: [SceneMovie!]! @deprecated(reason: "Use groups")
+  tags: [Tag!]!
+  performers: [Performer!]!
+  stash_ids: [StashID!]!
+
+  custom_fields: Map!
+
+  "Return valid stream paths"
+  sceneStreams: [SceneStreamEndpoint!]!
+}
+
+input SceneMovieInput {
+  movie_id: ID!
+  scene_index: Int
+}
+
+input SceneGroupInput {
+  group_id: ID!
+  scene_index: Int
+}
+
+input SceneCreateInput {
+  title: String
+  code: String
+  details: String
+  director: String
+  url: String @deprecated(reason: "Use urls")
+  urls: [String!]
+  date: String
+  # rating expressed as 1-100
+  rating100: Int
+  organized: Boolean
+  studio_id: ID
+  gallery_ids: [ID!]
+  performer_ids: [ID!]
+  groups: [SceneGroupInput!]
+  movies: [SceneMovieInput!] @deprecated(reason: "Use groups")
+  tag_ids: [ID!]
+  "This should be a URL or a base64 encoded data URL"
+  cover_image: String
+  stash_ids: [StashIDInput!]
+
+  """
+  The first id will be assigned as primary.
+  Files will be reassigned from existing scenes if applicable.
+  Files must not already be primary for another scene.
+  """
+  file_ids: [ID!]
+
+  custom_fields: Map
+}
+
+input SceneUpdateInput {
+  clientMutationId: String
+  id: ID!
+  title: String
+  code: String
+  details: String
+  director: String
+  url: String @deprecated(reason: "Use urls")
+  urls: [String!]
+  date: String
+  # rating expressed as 1-100
+  rating100: Int
+  o_counter: Int
+    @deprecated(reason: "Unsupported - Use sceneIncrementO/sceneDecrementO")
+  organized: Boolean
+  studio_id: ID
+  gallery_ids: [ID!]
+  performer_ids: [ID!]
+  groups: [SceneGroupInput!]
+  movies: [SceneMovieInput!] @deprecated(reason: "Use groups")
+  tag_ids: [ID!]
+  "This should be a URL or a base64 encoded data URL"
+  cover_image: String
+  stash_ids: [StashIDInput!]
+
+  "The time index a scene was left at"
+  resume_time: Float
+  "The total time a scene has spent playing"
+  play_duration: Float
+  "The number ot times a scene has been played"
+  play_count: Int
+    @deprecated(
+      reason: "Unsupported - Use sceneIncrementPlayCount/sceneDecrementPlayCount"
+    )
+
+  primary_file_id: ID
+
+  custom_fields: CustomFieldsInput
+}
+
+enum BulkUpdateIdMode {
+  SET
+  ADD
+  REMOVE
+}
+
+input BulkUpdateIds {
+  ids: [ID!]
+  mode: BulkUpdateIdMode!
+}
+
+input BulkSceneUpdateInput {
+  clientMutationId: String
+  ids: [ID!]
+  title: String
+  code: String
+  details: String
+  director: String
+  url: String @deprecated(reason: "Use urls")
+  urls: BulkUpdateStrings
+  date: String
+  # rating expressed as 1-100
+  rating100: Int
+  organized: Boolean
+  studio_id: ID
+  gallery_ids: BulkUpdateIds
+  performer_ids: BulkUpdateIds
+  tag_ids: BulkUpdateIds
+  group_ids: BulkUpdateIds
+  movie_ids: BulkUpdateIds @deprecated(reason: "Use group_ids")
+
+  custom_fields: CustomFieldsInput
+}
+
+input SceneDestroyInput {
+  id: ID!
+  delete_file: Boolean
+  delete_generated: Boolean
+  "If true, delete the file entry from the database if the file is not assigned to any other objects"
+  destroy_file_entry: Boolean
+}
+
+input ScenesDestroyInput {
+  ids: [ID!]!
+  delete_file: Boolean
+  delete_generated: Boolean
+  "If true, delete the file entry from the database if the file is not assigned to any other objects"
+  destroy_file_entry: Boolean
+}
+
+type FindScenesResultType {
+  count: Int!
+  "Total duration in seconds"
+  duration: Float!
+  "Total file size in bytes"
+  filesize: Float!
+  scenes: [Scene!]!
+}
+
+input SceneParserInput {
+  ignoreWords: [String!]
+  whitespaceCharacters: String
+  capitalizeTitle: Boolean
+  ignoreOrganized: Boolean
+}
+
+type SceneMovieID {
+  movie_id: ID!
+  scene_index: String
+}
+
+type SceneParserResult {
+  scene: Scene!
+  title: String
+  code: String
+  details: String
+  director: String
+  url: String
+  date: String
+  # rating expressed as 1-5
+  rating: Int @deprecated(reason: "Use 1-100 range with rating100")
+  # rating expressed as 1-100
+  rating100: Int
+  studio_id: ID
+  gallery_ids: [ID!]
+  performer_ids: [ID!]
+  movies: [SceneMovieID!]
+  tag_ids: [ID!]
+}
+
+type SceneParserResultType {
+  count: Int!
+  results: [SceneParserResult!]!
+}
+
+input SceneHashInput {
+  checksum: String
+  oshash: String
+}
+
+type SceneStreamEndpoint {
+  url: String!
+  mime_type: String
+  label: String
+}
+
+input AssignSceneFileInput {
+  scene_id: ID!
+  file_id: ID!
+}
+
+input SceneMergeInput {
+  """
+  If destination scene has no files, then the primary file of the
+  first source scene will be assigned as primary
+  """
+  source: [ID!]!
+  destination: ID!
+  # values defined here will override values in the destination
+  values: SceneUpdateInput
+
+  # if true, the source history will be combined with the destination
+  play_history: Boolean
+  o_history: Boolean
+}
+
+type HistoryMutationResult {
+  count: Int!
+  history: [Time!]!
+}
+type SceneMarker {
+  id: ID!
+  scene: Scene!
+  title: String!
+  "The required start time of the marker (in seconds). Supports decimals."
+  seconds: Float!
+  "The optional end time of the marker (in seconds). Supports decimals."
+  end_seconds: Float
+  primary_tag: Tag!
+  tags: [Tag!]!
+  created_at: Time!
+  updated_at: Time!
+
+  "The path to stream this marker"
+  stream: String! # Resolver
+  "The path to the preview image for this marker"
+  preview: String! # Resolver
+  "The path to the screenshot image for this marker"
+  screenshot: String! # Resolver
+}
+
+input SceneMarkerCreateInput {
+  title: String!
+  "The required start time of the marker (in seconds). Supports decimals."
+  seconds: Float!
+  "The optional end time of the marker (in seconds). Supports decimals."
+  end_seconds: Float
+  scene_id: ID!
+  primary_tag_id: ID!
+  tag_ids: [ID!]
+}
+
+input SceneMarkerUpdateInput {
+  id: ID!
+  title: String
+  "The start time of the marker (in seconds). Supports decimals."
+  seconds: Float
+  "The end time of the marker (in seconds). Supports decimals."
+  end_seconds: Float
+  scene_id: ID
+  primary_tag_id: ID
+  tag_ids: [ID!]
+}
+
+input BulkSceneMarkerUpdateInput {
+  ids: [ID!]
+  title: String
+  primary_tag_id: ID
+  tag_ids: BulkUpdateIds
+}
+
+type FindSceneMarkersResultType {
+  count: Int!
+  scene_markers: [SceneMarker!]!
+}
+
+type MarkerStringsResultType {
+  count: Int!
+  id: ID!
+  title: String!
+}
+type SceneMarkerTag {
+  tag: Tag!
+  scene_markers: [SceneMarker!]!
+}
+"A movie from a scraping operation..."
+type ScrapedMovie {
+  stored_id: ID
+  name: String
+  aliases: String
+  duration: String
+  date: String
+  rating: String
+  director: String
+  url: String @deprecated(reason: "use urls")
+  urls: [String!]
+  synopsis: String
+  studio: ScrapedStudio
+  tags: [ScrapedTag!]
+
+  "This should be a base64 encoded data URL"
+  front_image: String
+  "This should be a base64 encoded data URL"
+  back_image: String
+}
+
+input ScrapedMovieInput {
+  name: String
+  aliases: String
+  duration: String
+  date: String
+  rating: String
+  director: String
+  url: String @deprecated(reason: "use urls")
+  urls: [String!]
+  synopsis: String
+  # not including tags for the input
+}
+
+"A group from a scraping operation..."
+type ScrapedGroup {
+  stored_id: ID
+  name: String
+  aliases: String
+  duration: String
+  date: String
+  rating: String
+  director: String
+  urls: [String!]
+  synopsis: String
+  studio: ScrapedStudio
+  tags: [ScrapedTag!]
+
+  "This should be a base64 encoded data URL"
+  front_image: String
+  "This should be a base64 encoded data URL"
+  back_image: String
+}
+
+input ScrapedGroupInput {
+  name: String
+  aliases: String
+  duration: String
+  date: String
+  rating: String
+  director: String
+  urls: [String!]
+  synopsis: String
+  # not including tags for the input
+}
+"A performer from a scraping operation..."
+type ScrapedPerformer {
+  "Set if performer matched"
+  stored_id: ID
+  name: String
+  disambiguation: String
+  gender: String
+  url: String @deprecated(reason: "use urls")
+  urls: [String!]
+  twitter: String @deprecated(reason: "use urls")
+  instagram: String @deprecated(reason: "use urls")
+  birthdate: String
+  ethnicity: String
+  country: String
+  eye_color: String
+  height: String
+  measurements: String
+  fake_tits: String
+  penis_length: String
+  circumcised: String
+  career_length: String @deprecated(reason: "Use career_start and career_end")
+  career_start: String
+  career_end: String
+  tattoos: String
+  piercings: String
+  # aliases must be comma-delimited to be parsed correctly
+  aliases: String
+  tags: [ScrapedTag!]
+
+  "This should be a base64 encoded data URL"
+  image: String @deprecated(reason: "use images instead")
+  images: [String!]
+  details: String
+  death_date: String
+  hair_color: String
+  weight: String
+  remote_site_id: String
+}
+
+input ScrapedPerformerInput {
+  "Set if performer matched"
+  stored_id: ID
+  name: String
+  disambiguation: String
+  gender: String
+  url: String @deprecated(reason: "use urls")
+  urls: [String!]
+  twitter: String @deprecated(reason: "use urls")
+  instagram: String @deprecated(reason: "use urls")
+  birthdate: String
+  ethnicity: String
+  country: String
+  eye_color: String
+  height: String
+  measurements: String
+  fake_tits: String
+  penis_length: String
+  circumcised: String
+  career_length: String @deprecated(reason: "Use career_start and career_end")
+  career_start: String
+  career_end: String
+  tattoos: String
+  piercings: String
+  aliases: String
+
+  # not including tags for the input
+  # not including image for the input
+  details: String
+  death_date: String
+  hair_color: String
+  weight: String
+  remote_site_id: String
+}
+enum ScrapeType {
+  "From text query"
+  NAME
+  "From existing object"
+  FRAGMENT
+  "From URL"
+  URL
+}
+
+"Type of the content a scraper generates"
+enum ScrapeContentType {
+  GALLERY
+  IMAGE
+  MOVIE
+  GROUP
+  PERFORMER
+  SCENE
+}
+
+"Scraped Content is the forming union over the different scrapers"
+union ScrapedContent =
+    ScrapedStudio
+  | ScrapedTag
+  | ScrapedScene
+  | ScrapedGallery
+  | ScrapedImage
+  | ScrapedMovie
+  | ScrapedGroup
+  | ScrapedPerformer
+
+type ScraperSpec {
+  "URLs matching these can be scraped with"
+  urls: [String!]
+  supported_scrapes: [ScrapeType!]!
+}
+
+type Scraper {
+  id: ID!
+  name: String!
+  "Details for performer scraper"
+  performer: ScraperSpec
+  "Details for scene scraper"
+  scene: ScraperSpec
+  "Details for gallery scraper"
+  gallery: ScraperSpec
+  "Details for image scraper"
+  image: ScraperSpec
+  "Details for movie scraper"
+  movie: ScraperSpec @deprecated(reason: "use group")
+  "Details for group scraper"
+  group: ScraperSpec
+}
+
+type ScrapedStudio {
+  "Set if studio matched"
+  stored_id: ID
+  name: String!
+  url: String @deprecated(reason: "use urls")
+  urls: [String!]
+  parent: ScrapedStudio
+  image: String
+  details: String
+  "Aliases must be comma-delimited to be parsed correctly"
+  aliases: String
+  tags: [ScrapedTag!]
+
+  remote_site_id: String
+}
+
+type ScrapedTag {
+  "Set if tag matched"
+  stored_id: ID
+  name: String!
+  description: String
+  alias_list: [String!]
+  parent: ScrapedTag
+  "Remote site ID, if applicable"
+  remote_site_id: String
+}
+
+type ScrapedScene {
+  title: String
+  code: String
+  details: String
+  director: String
+  url: String @deprecated(reason: "use urls")
+  urls: [String!]
+  date: String
+
+  "This should be a base64 encoded data URL"
+  image: String
+
+  file: SceneFileType # Resolver
+  studio: ScrapedStudio
+  tags: [ScrapedTag!]
+  performers: [ScrapedPerformer!]
+  movies: [ScrapedMovie!] @deprecated(reason: "use groups")
+  groups: [ScrapedGroup!]
+
+  remote_site_id: String
+  duration: Int
+  fingerprints: [StashBoxFingerprint!]
+}
+
+input ScrapedSceneInput {
+  title: String
+  code: String
+  details: String
+  director: String
+  url: String @deprecated(reason: "use urls")
+  urls: [String!]
+  date: String
+
+  # no image, file, duration or relationships
+
+  remote_site_id: String
+}
+
+type ScrapedGallery {
+  title: String
+  code: String
+  details: String
+  photographer: String
+  url: String @deprecated(reason: "use urls")
+  urls: [String!]
+  date: String
+
+  studio: ScrapedStudio
+  tags: [ScrapedTag!]
+  performers: [ScrapedPerformer!]
+}
+
+input ScrapedGalleryInput {
+  title: String
+  code: String
+  details: String
+  photographer: String
+  url: String @deprecated(reason: "use urls")
+  urls: [String!]
+  date: String
+
+  # no studio, tags or performers
+}
+
+type ScrapedImage {
+  title: String
+  code: String
+  details: String
+  photographer: String
+  urls: [String!]
+  date: String
+  studio: ScrapedStudio
+  tags: [ScrapedTag!]
+  performers: [ScrapedPerformer!]
+}
+
+input ScrapedImageInput {
+  title: String
+  code: String
+  details: String
+  urls: [String!]
+  date: String
+}
+
+input ScraperSourceInput {
+  "Index of the configured stash-box instance to use. Should be unset if scraper_id is set"
+  stash_box_index: Int @deprecated(reason: "use stash_box_endpoint")
+  "Stash-box endpoint"
+  stash_box_endpoint: String
+  "Scraper ID to scrape with. Should be unset if stash_box_endpoint/stash_box_index is set"
+  scraper_id: ID
+}
+
+type ScraperSource {
+  "Index of the configured stash-box instance to use. Should be unset if scraper_id is set"
+  stash_box_index: Int @deprecated(reason: "use stash_box_endpoint")
+  "Stash-box endpoint"
+  stash_box_endpoint: String
+  "Scraper ID to scrape with. Should be unset if stash_box_endpoint/stash_box_index is set"
+  scraper_id: ID
+}
+
+input ScrapeSingleSceneInput {
+  "Instructs to query by string"
+  query: String
+  "Instructs to query by scene fingerprints"
+  scene_id: ID
+  "Instructs to query by scene fragment"
+  scene_input: ScrapedSceneInput
+}
+
+input ScrapeMultiScenesInput {
+  "Instructs to query by scene fingerprints"
+  scene_ids: [ID!]
+}
+
+input ScrapeSingleStudioInput {
+  """
+  Query can be either a name or a Stash ID
+  """
+  query: String
+}
+
+input ScrapeSingleTagInput {
+  """
+  Query can be either a name or a Stash ID
+  """
+  query: String
+}
+
+input ScrapeSinglePerformerInput {
+  "Instructs to query by string"
+  query: String
+  "Instructs to query by performer id"
+  performer_id: ID
+  "Instructs to query by performer fragment"
+  performer_input: ScrapedPerformerInput
+}
+
+input ScrapeMultiPerformersInput {
+  "Instructs to query by scene fingerprints"
+  performer_ids: [ID!]
+}
+
+input ScrapeSingleGalleryInput {
+  "Instructs to query by string"
+  query: String
+  "Instructs to query by gallery id"
+  gallery_id: ID
+  "Instructs to query by gallery fragment"
+  gallery_input: ScrapedGalleryInput
+}
+
+input ScrapeSingleImageInput {
+  "Instructs to query by string"
+  query: String
+  "Instructs to query by image id"
+  image_id: ID
+  "Instructs to query by image fragment"
+  image_input: ScrapedImageInput
+}
+
+input ScrapeSingleMovieInput {
+  "Instructs to query by string"
+  query: String
+  "Instructs to query by movie id"
+  movie_id: ID
+  "Instructs to query by movie fragment"
+  movie_input: ScrapedMovieInput
+}
+
+input ScrapeSingleGroupInput {
+  "Instructs to query by string"
+  query: String
+  "Instructs to query by group id"
+  group_id: ID
+  "Instructs to query by group fragment"
+  group_input: ScrapedGroupInput
+}
+
+input StashBoxSceneQueryInput {
+  "Index of the configured stash-box instance to use"
+  stash_box_index: Int @deprecated(reason: "use stash_box_endpoint")
+  "Endpoint of the stash-box instance to use"
+  stash_box_endpoint: String
+  "Instructs query by scene fingerprints"
+  scene_ids: [ID!]
+  "Query by query string"
+  q: String
+}
+
+input StashBoxPerformerQueryInput {
+  "Index of the configured stash-box instance to use"
+  stash_box_index: Int @deprecated(reason: "use stash_box_endpoint")
+  "Endpoint of the stash-box instance to use"
+  stash_box_endpoint: String
+  "Instructs query by scene fingerprints"
+  performer_ids: [ID!]
+  "Query by query string"
+  q: String
+}
+
+type StashBoxPerformerQueryResult {
+  query: String!
+  results: [ScrapedPerformer!]!
+}
+
+type StashBoxFingerprint {
+  algorithm: String!
+  hash: String!
+  duration: Int!
+}
+
+"""
+Accepts either ids, or a combination of names and stash_ids.
+If none are set, then all existing items will be tagged.
+"""
+input StashBoxBatchTagInput {
+  "Stash endpoint to use for the tagging"
+  endpoint: Int @deprecated(reason: "use stash_box_endpoint")
+  "Endpoint of the stash-box instance to use"
+  stash_box_endpoint: String
+  "Fields to exclude when executing the tagging"
+  exclude_fields: [String!]
+  "Refresh items already tagged by StashBox if true. Only tag items with no StashBox tagging if false"
+  refresh: Boolean!
+  "If batch adding studios, should their parent studios also be created?"
+  createParent: Boolean!
+  """
+  IDs in stash of the items to update.
+  If set, names and stash_ids fields will be ignored.
+  """
+  ids: [ID!]
+  "Names of the items in the stash-box instance to search for and create"
+  names: [String!]
+  "Stash IDs of the items in the stash-box instance to search for and create"
+  stash_ids: [String!]
+  "IDs in stash of the performers to update"
+  performer_ids: [ID!] @deprecated(reason: "use ids")
+  "Names of the performers in the stash-box instance to search for and create"
+  performer_names: [String!] @deprecated(reason: "use names")
+}
+type SQLQueryResult {
+  "The column names, in the order they appear in the result set."
+  columns: [String!]!
+  "The returned rows."
+  rows: [[Any]!]!
+}
+
+type SQLExecResult {
+  """
+  The number of rows affected by the query, usually an UPDATE, INSERT, or DELETE.
+  Not all queries or databases support this feature.
+  """
+  rows_affected: Int64
+  """
+  The integer generated by the database in response to a command.
+  Typically this will be from an "auto increment" column when inserting a new row.
+  Not all databases support this feature, and the syntax of such statements varies.
+  """
+  last_insert_id: Int64
+}
+type StashBox {
+  endpoint: String!
+  api_key: String!
+  name: String!
+  max_requests_per_minute: Int!
+}
+
+input StashBoxInput {
+  endpoint: String!
+  api_key: String!
+  name: String!
+  # defaults to 240
+  max_requests_per_minute: Int
+}
+
+type StashID {
+  endpoint: String!
+  stash_id: String!
+  updated_at: Time!
+}
+
+input StashIDInput {
+  endpoint: String!
+  stash_id: String!
+  updated_at: Time
+}
+
+input StashBoxFingerprintSubmissionInput {
+  scene_ids: [String!]!
+  stash_box_index: Int @deprecated(reason: "use stash_box_endpoint")
+  stash_box_endpoint: String
+}
+
+input StashBoxDraftSubmissionInput {
+  id: String!
+  stash_box_index: Int @deprecated(reason: "use stash_box_endpoint")
+  stash_box_endpoint: String
+}
+type StatsResultType {
+  scene_count: Int!
+  scenes_size: Float!
+  scenes_duration: Float!
+  image_count: Int!
+  images_size: Float!
+  gallery_count: Int!
+  performer_count: Int!
+  studio_count: Int!
+  group_count: Int!
+  movie_count: Int! @deprecated(reason: "use group_count instead")
+  tag_count: Int!
+  total_o_count: Int!
+  total_play_duration: Float!
+  total_play_count: Int!
+  scenes_played: Int!
+}
+type Studio {
+  id: ID!
+  name: String!
+  url: String @deprecated(reason: "Use urls")
+  urls: [String!]!
+  parent_studio: Studio
+  child_studios: [Studio!]!
+  aliases: [String!]!
+  tags: [Tag!]!
+  ignore_auto_tag: Boolean!
+  organized: Boolean!
+
+  image_path: String # Resolver
+  scene_count(depth: Int): Int! # Resolver
+  image_count(depth: Int): Int! # Resolver
+  gallery_count(depth: Int): Int! # Resolver
+  performer_count(depth: Int): Int! # Resolver
+  group_count(depth: Int): Int! # Resolver
+  movie_count(depth: Int): Int! @deprecated(reason: "use group_count instead") # Resolver
+  stash_ids: [StashID!]!
+  # rating expressed as 1-100
+  rating100: Int
+  favorite: Boolean!
+  details: String
+  created_at: Time!
+  updated_at: Time!
+  groups: [Group!]!
+  movies: [Movie!]! @deprecated(reason: "use groups instead")
+  o_counter: Int
+
+  custom_fields: Map!
+}
+
+input StudioCreateInput {
+  name: String!
+  url: String @deprecated(reason: "Use urls")
+  urls: [String!]
+  parent_id: ID
+  "This should be a URL or a base64 encoded data URL"
+  image: String
+  stash_ids: [StashIDInput!]
+  # rating expressed as 1-100
+  rating100: Int
+  favorite: Boolean
+  details: String
+  "Duplicate aliases and those equal to name will be ignored (case-insensitive)"
+  aliases: [String!]
+  tag_ids: [ID!]
+  ignore_auto_tag: Boolean
+  organized: Boolean
+
+  custom_fields: Map
+}
+
+input StudioUpdateInput {
+  id: ID!
+  name: String
+  url: String @deprecated(reason: "Use urls")
+  urls: [String!]
+  parent_id: ID
+  "This should be a URL or a base64 encoded data URL"
+  image: String
+  stash_ids: [StashIDInput!]
+  # rating expressed as 1-100
+  rating100: Int
+  favorite: Boolean
+  details: String
+  "Duplicate aliases and those equal to name will be ignored (case-insensitive)"
+  aliases: [String!]
+  tag_ids: [ID!]
+  ignore_auto_tag: Boolean
+  organized: Boolean
+
+  custom_fields: CustomFieldsInput
+}
+
+input BulkStudioUpdateInput {
+  ids: [ID!]!
+  url: String @deprecated(reason: "Use urls")
+  urls: BulkUpdateStrings
+  parent_id: ID
+  # rating expressed as 1-100
+  rating100: Int
+  favorite: Boolean
+  details: String
+  tag_ids: BulkUpdateIds
+  ignore_auto_tag: Boolean
+  organized: Boolean
+}
+
+input StudioDestroyInput {
+  id: ID!
+}
+
+type FindStudiosResultType {
+  count: Int!
+  studios: [Studio!]!
+}
+type Tag {
+  id: ID!
+  name: String!
+  "Value that does not appear in the UI but overrides name for sorting"
+  sort_name: String
+  description: String
+  aliases: [String!]!
+  ignore_auto_tag: Boolean!
+  created_at: Time!
+  updated_at: Time!
+  favorite: Boolean!
+  stash_ids: [StashID!]!
+  image_path: String # Resolver
+  scene_count(depth: Int): Int! # Resolver
+  scene_marker_count(depth: Int): Int! # Resolver
+  image_count(depth: Int): Int! # Resolver
+  gallery_count(depth: Int): Int! # Resolver
+  performer_count(depth: Int): Int! # Resolver
+  studio_count(depth: Int): Int! # Resolver
+  group_count(depth: Int): Int! # Resolver
+  movie_count(depth: Int): Int! @deprecated(reason: "use group_count instead") # Resolver
+  parents: [Tag!]!
+  children: [Tag!]!
+
+  parent_count: Int! # Resolver
+  child_count: Int! # Resolver
+  custom_fields: Map!
+}
+
+input TagCreateInput {
+  name: String!
+  "Value that does not appear in the UI but overrides name for sorting"
+  sort_name: String
+  description: String
+  "Duplicate aliases and those equal to name will be ignored (case-insensitive)"
+  aliases: [String!]
+  ignore_auto_tag: Boolean
+  favorite: Boolean
+  "This should be a URL or a base64 encoded data URL"
+  image: String
+  stash_ids: [StashIDInput!]
+
+  parent_ids: [ID!]
+  child_ids: [ID!]
+
+  custom_fields: Map
+}
+
+input TagUpdateInput {
+  id: ID!
+  name: String
+  "Value that does not appear in the UI but overrides name for sorting"
+  sort_name: String
+  description: String
+  "Duplicate aliases and those equal to name will be ignored (case-insensitive)"
+  aliases: [String!]
+  ignore_auto_tag: Boolean
+  favorite: Boolean
+  "This should be a URL or a base64 encoded data URL"
+  image: String
+  stash_ids: [StashIDInput!]
+
+  parent_ids: [ID!]
+  child_ids: [ID!]
+
+  custom_fields: CustomFieldsInput
+}
+
+input TagDestroyInput {
+  id: ID!
+}
+
+type FindTagsResultType {
+  count: Int!
+  tags: [Tag!]!
+}
+
+input TagsMergeInput {
+  source: [ID!]!
+  destination: ID!
+  # values defined here will override values in the destination
+  values: TagUpdateInput
+}
+
+input BulkTagUpdateInput {
+  ids: [ID!]
+  description: String
+  "Duplicate aliases and those equal to name will result in an error (case-insensitive)"
+  aliases: BulkUpdateStrings
+  ignore_auto_tag: Boolean
+  favorite: Boolean
+
+  parent_ids: BulkUpdateIds
+  child_ids: BulkUpdateIds
+}
+type Version {
+  version: String
+  hash: String!
+  build_time: String!
+}
+
+type LatestVersion {
+  version: String!
+  shorthash: String!
+  release_date: String!
+  url: String!
+}

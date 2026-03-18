@@ -1,0 +1,42 @@
+type Query {
+  findScenes(filter: SceneFilterType): FindScenesResultType!
+  findPerformers(filter: PerformerFilterType): FindPerformersResultType!
+}
+
+type FindScenesResultType {
+  count: Int!
+  scenes: [Scene!]!
+}
+
+type FindPerformersResultType {
+  count: Int!
+  performers: [Performer!]!
+}
+
+type Scene {
+  id: ID!
+  title: String!
+  date: String
+  rating: Int
+}
+
+type Performer {
+  id: ID!
+  name: String!
+  details: String
+  image_path: String
+}
+
+input SceneFilterType {
+  page: Int
+  per_page: Int
+}
+
+input PerformerFilterType {
+  page: Int
+  per_page: Int
+}
+
+schema {
+  query: Query
+}
