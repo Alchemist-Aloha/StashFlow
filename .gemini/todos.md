@@ -1,5 +1,5 @@
-# StashAppFlutter GraphQL API Integration Todo
+# StashAppFlutter Detail Pages & Playback Todo
 
-- [ ] Task 1: Setup GraphQL Client & Configuration
-- [ ] Task 2: Create GraphQL Query Files
-- [ ] Task 3: Implement GraphQL Repositories
+- [x] Task 1: Video Player State Management
+- [ ] Task 2: Implement Scene Details Page
+- [ ] Task 3: Connect MiniPlayer to State
