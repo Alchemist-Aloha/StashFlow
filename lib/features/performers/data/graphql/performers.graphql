@@ -1,0 +1,17 @@
+query FindPerformers($filter: PerformerFilterType, $performer_filter: PerformerListFilterType) {
+  findPerformers(filter: $filter, performer_filter: $performer_filter) {
+    count
+    performers {
+      id
+      name
+      details
+      image_path
+      gender
+      birthdate
+      tags {
+        id
+        name
+      }
+    }
+  }
+}
