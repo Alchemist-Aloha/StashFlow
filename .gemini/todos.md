@@ -1,5 +1,4 @@
-# StashAppFlutter Domain Layer Todo
+# StashAppFlutter Navigation & Initial UI Todo
 
-- [ ] Task 1: Define Core Domain Entities (Scene, Performer, Studio)
-- [ ] Task 2: Define Repository Interfaces
-- [ ] Task 3: Set Up Riverpod Notifiers (AsyncNotifier)
+- [ ] Task 1: Set Up GoRouter
+- [ ] Task 2: Create YouTube-style Shell Page
