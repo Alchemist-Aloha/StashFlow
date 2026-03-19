@@ -30,10 +30,14 @@ class StreamChoice {
 @riverpod
 class StreamResolver extends _$StreamResolver {
   @override
-  void build() {}
+  void build() {
+    // Keep resolver alive during async stream selection/probing work.
+    ref.keepAlive();
+  }
 
   Future<StreamChoice?> resolvePreferredStream(Scene scene) async {
     final client = ref.read(graphqlClientProvider);
+    final mediaHeaders = ref.read(mediaHeadersProvider);
     final queryStopwatch = Stopwatch()..start();
     final result = await client.query(
       QueryOptions(
@@ -96,7 +100,6 @@ class StreamResolver extends _$StreamResolver {
       return StreamChoice(url: streamUrl, mimeType: guessMimeType(streamUrl));
     }
 
-    final mediaHeaders = ref.read(mediaHeadersProvider);
     final candidates = <StreamChoice>[];
     for (final stream in streams) {
       final resolvedUrl = resolveGraphqlMediaUrl(
