@@ -58,10 +58,10 @@ flutter run
 flutter build apk
 ```
 
-## Documentation
-
-- `docs/README.md` docs index
-- `docs/AGENT_START_HERE.md` quick onboarding checklist
-- `docs/ARCHITECTURE_MAP.md` architecture and data-flow overview
-- `docs/DEBUGGING_PLAYBOOK.md` troubleshooting patterns
-- `docs/KNOWNISSUES.md` actively tracked issues
+## 📚 Internal Docs
+For architecture, known issues, and onboarding, see:
+- [Documentation Index](docs/README.md)
+- [Architecture Map](docs/ARCHITECTURE_MAP.md)
+- [Debugging Playbook](docs/DEBUGGING_PLAYBOOK.md)
+- [Known Issues](docs/KNOWNISSUES.md)
+- [Agent Start Here](docs/AGENT_START_HERE.md)
