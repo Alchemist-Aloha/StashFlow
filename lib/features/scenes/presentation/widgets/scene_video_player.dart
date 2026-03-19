@@ -95,7 +95,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
           : 'sceneStreams';
       final mediaHeaders = ref.read(mediaHeadersProvider);
 
-        final prewarmFuture = _prewarmPathsStreamOnce(mediaHeaders);
+      final prewarmFuture = _prewarmPathsStreamOnce(mediaHeaders);
 
       if (streamUrl.isEmpty) {
         if (!mounted) return;
