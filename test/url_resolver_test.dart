@@ -27,7 +27,7 @@ void main() {
   test('resolves scheme-less host urls using endpoint scheme', () {
     expect(
       resolveGraphqlMediaUrl(
-        rawUrl: '//stash.cai.co.im/image/abc.jpg',
+        rawUrl: '//192.168.88.225:29999/image/abc.jpg',
         graphqlEndpoint: endpoint,
       ),
       'http://192.168.88.225:29999/image/abc.jpg',
