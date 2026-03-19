@@ -28,7 +28,9 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
       padding: const EdgeInsets.all(AppTheme.spacingMedium),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppTheme.radiusLarge)),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(AppTheme.radiusLarge),
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -39,7 +41,9 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
             children: [
               Text(
                 'Filter Scenes',
-                style: context.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                style: context.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               TextButton(
                 onPressed: () {
@@ -61,7 +65,11 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
             divisions: 5,
             label: '${(_tempFilter.minRating ?? 0) ~/ 20} Stars',
             onChanged: (value) {
-              setState(() => _tempFilter = _tempFilter.copyWith(minRating: value.toInt()));
+              setState(
+                () => _tempFilter = _tempFilter.copyWith(
+                  minRating: value.toInt(),
+                ),
+              );
             },
           ),
           const SizedBox(height: AppTheme.spacingSmall),
@@ -72,7 +80,11 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                 label: const Text('Watched'),
                 selected: _tempFilter.isWatched == true,
                 onSelected: (selected) {
-                  setState(() => _tempFilter = _tempFilter.copyWith(isWatched: selected ? true : null));
+                  setState(
+                    () => _tempFilter = _tempFilter.copyWith(
+                      isWatched: selected ? true : null,
+                    ),
+                  );
                 },
               ),
               const SizedBox(width: AppTheme.spacingSmall),
@@ -80,7 +92,11 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                 label: const Text('Unwatched'),
                 selected: _tempFilter.isWatched == false,
                 onSelected: (selected) {
-                  setState(() => _tempFilter = _tempFilter.copyWith(isWatched: selected ? false : null));
+                  setState(
+                    () => _tempFilter = _tempFilter.copyWith(
+                      isWatched: selected ? false : null,
+                    ),
+                  );
                 },
               ),
             ],
@@ -109,7 +125,9 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: context.colors.primary,
                 foregroundColor: context.colors.onPrimary,
-                padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingMedium),
+                padding: const EdgeInsets.symmetric(
+                  vertical: AppTheme.spacingMedium,
+                ),
               ),
               child: const Text('Apply Filters'),
             ),

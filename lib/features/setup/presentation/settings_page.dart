@@ -149,7 +149,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  const Text('Connection Status', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text(
+                    'Connection Status',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 8),
                   Consumer(
                     builder: (context, ref, child) {
@@ -164,7 +167,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         ),
                         loading: () => const Row(
                           children: [
-                            SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2)),
+                            SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
                             SizedBox(width: 8),
                             Text('Checking connection...'),
                           ],
@@ -173,7 +180,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           children: [
                             const Icon(Icons.error, color: Colors.red),
                             const SizedBox(width: 8),
-                            Expanded(child: Text('Failed: $error', style: const TextStyle(color: Colors.red))),
+                            Expanded(
+                              child: Text(
+                                'Failed: $error',
+                                style: const TextStyle(color: Colors.red),
+                              ),
+                            ),
                           ],
                         ),
                       );
