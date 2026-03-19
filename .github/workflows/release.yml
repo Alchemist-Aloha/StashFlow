@@ -2,6 +2,8 @@ name: Release APK
 
 on:
   push:
+    branches:
+      - '**'
     tags:
       - 'v*'
   workflow_dispatch:
@@ -34,7 +36,14 @@ jobs:
       - name: Build APK
         run: flutter build apk --release
         
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: stash-app-flutter-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
       - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
           files: build/app/outputs/flutter-apk/app-release.apk
