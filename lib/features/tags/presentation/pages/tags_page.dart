@@ -37,7 +37,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
         ref.read(tagListProvider.notifier).setSort(sort: 'name', descending: false);
         break;
       case _TagSortOption.sceneCount:
-        ref.read(tagListProvider.notifier).setSort(sort: 'scene_count', descending: true);
+        ref.read(tagListProvider.notifier).setSort(sort: 'scenes_count', descending: true);
         break;
       case _TagSortOption.imageCount:
         ref.read(tagListProvider.notifier).setSort(sort: 'image_count', descending: true);

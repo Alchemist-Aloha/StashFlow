@@ -38,7 +38,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
         ref.read(performerListProvider.notifier).setSort(sort: 'name', descending: false);
         break;
       case _PerformerSortOption.sceneCount:
-        ref.read(performerListProvider.notifier).setSort(sort: 'scene_count', descending: true);
+        ref.read(performerListProvider.notifier).setSort(sort: 'scenes_count', descending: true);
         break;
       case _PerformerSortOption.lastUpdated:
         ref.read(performerListProvider.notifier).setSort(sort: 'updated_at', descending: true);

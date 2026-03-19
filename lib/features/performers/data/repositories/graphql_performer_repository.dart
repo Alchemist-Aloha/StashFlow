@@ -21,32 +21,48 @@ class GraphQLPerformerRepository implements PerformerRepository {
     String? sort,
     bool descending = true,
   }) async {
-    final result = await client.query$FindPerformers(
-      Options$Query$FindPerformers(
-        variables: Variables$Query$FindPerformers(
-          filter: Input$FindFilterType(
-            page: page,
-            per_page: perPage,
-            sort: sort,
-            direction: descending
-                ? Enum$SortDirectionEnum.DESC
-                : Enum$SortDirectionEnum.ASC,
-          ),
-          performer_filter: filter != null
-              ? Input$PerformerFilterType(
-                  name: Input$StringCriterionInput(
-                    value: filter,
-                    modifier: Enum$CriterionModifier.EQUALS,
-                  ),
-                )
-              : null,
-        ),
-      ),
+    QueryResult<Query$FindPerformers>? result;
+    String? effectiveSort = sort == 'scene_count' ? 'scenes_count' : sort;
+
+    result = await _runFindPerformers(
+      page: page,
+      perPage: perPage,
+      filter: filter,
+      sort: effectiveSort,
+      descending: descending,
     );
+
+    // Some servers may still use scene_count; retry if scenes_count is rejected.
+    if (result.hasException && effectiveSort == 'scenes_count' && _isInvalidSort(result.exception!, 'scenes_count')) {
+      effectiveSort = 'scene_count';
+      result = await _runFindPerformers(
+        page: page,
+        perPage: perPage,
+        filter: filter,
+        sort: effectiveSort,
+        descending: descending,
+      );
+    }
+
+    final shouldLocalSortBySceneCount =
+      (sort == 'scene_count' || sort == 'scenes_count') &&
+      result.hasException &&
+      (_isInvalidSort(result.exception!, 'scenes_count') ||
+        _isInvalidSort(result.exception!, 'scene_count'));
+
+    if (shouldLocalSortBySceneCount) {
+      result = await _runFindPerformers(
+        page: page,
+        perPage: perPage,
+        filter: filter,
+        sort: null,
+        descending: descending,
+      );
+    }
 
     if (result.hasException) throw result.exception!;
 
-    return result.parsedData!.findPerformers.performers
+    final performers = result.parsedData!.findPerformers.performers
         .map(
           (p) => Performer(
             id: p.id,
@@ -87,6 +103,45 @@ class GraphQLPerformerRepository implements PerformerRepository {
           ),
         )
         .toList();
+
+    if ((sort == 'scene_count' || sort == 'scenes_count') && shouldLocalSortBySceneCount) {
+      performers.sort((a, b) => descending
+          ? b.sceneCount.compareTo(a.sceneCount)
+          : a.sceneCount.compareTo(b.sceneCount));
+    }
+
+    return performers;
+  }
+
+  Future<QueryResult<Query$FindPerformers>> _runFindPerformers({
+    int? page,
+    int? perPage,
+    String? filter,
+    String? sort,
+    required bool descending,
+  }) {
+    return client.query$FindPerformers(
+      Options$Query$FindPerformers(
+        variables: Variables$Query$FindPerformers(
+          filter: Input$FindFilterType(
+            q: filter,
+            page: page,
+            per_page: perPage,
+            sort: sort,
+            direction: descending
+                ? Enum$SortDirectionEnum.DESC
+                : Enum$SortDirectionEnum.ASC,
+          ),
+          performer_filter: null,
+        ),
+      ),
+    );
+  }
+
+  bool _isInvalidSort(OperationException exception, String attemptedSort) {
+    return exception.graphqlErrors.any(
+      (e) => e.message.contains('invalid sort') && e.message.contains(attemptedSort),
+    );
   }
 
   @override

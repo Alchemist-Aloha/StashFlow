@@ -45,7 +45,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
         ref.read(sceneListProvider.notifier).setSort(sort: 'date', descending: false);
         break;
       case _SceneSortOption.rating:
-        ref.read(sceneListProvider.notifier).setSort(sort: 'rating100', descending: true);
+        ref.read(sceneListProvider.notifier).setSort(sort: 'rating', descending: true);
         break;
       case _SceneSortOption.playCount:
         ref.read(sceneListProvider.notifier).setSort(sort: 'play_count', descending: true);

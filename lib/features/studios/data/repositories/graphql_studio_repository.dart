@@ -16,32 +16,48 @@ class GraphQLStudioRepository implements StudioRepository {
     String? sort,
     bool? descending,
   }) async {
-    final result = await client.query$FindStudios(
-      Options$Query$FindStudios(
-        variables: Variables$Query$FindStudios(
-          filter: Input$FindFilterType(
-            page: page,
-            per_page: perPage,
-            sort: sort,
-            direction: descending == true
-                ? Enum$SortDirectionEnum.DESC
-                : Enum$SortDirectionEnum.ASC,
-          ),
-          studio_filter: filter != null
-              ? Input$StudioFilterType(
-                  name: Input$StringCriterionInput(
-                    value: filter,
-                    modifier: Enum$CriterionModifier.EQUALS,
-                  ),
-                )
-              : null,
-        ),
-      ),
+    QueryResult<Query$FindStudios> result;
+    String? effectiveSort = sort == 'scene_count' ? 'scenes_count' : sort;
+
+    result = await _runFindStudios(
+      page: page,
+      perPage: perPage,
+      filter: filter,
+      sort: effectiveSort,
+      descending: descending,
     );
+
+    // Some servers may still use scene_count; retry if scenes_count is rejected.
+    if (result.hasException && effectiveSort == 'scenes_count' && _isInvalidSort(result.exception!, 'scenes_count')) {
+      effectiveSort = 'scene_count';
+      result = await _runFindStudios(
+        page: page,
+        perPage: perPage,
+        filter: filter,
+        sort: effectiveSort,
+        descending: descending,
+      );
+    }
+
+    final shouldLocalSortBySceneCount =
+        (sort == 'scene_count' || sort == 'scenes_count') &&
+        result.hasException &&
+        (_isInvalidSort(result.exception!, 'scenes_count') ||
+            _isInvalidSort(result.exception!, 'scene_count'));
+
+    if (shouldLocalSortBySceneCount) {
+      result = await _runFindStudios(
+        page: page,
+        perPage: perPage,
+        filter: filter,
+        sort: null,
+        descending: descending,
+      );
+    }
 
     if (result.hasException) throw result.exception!;
 
-    return result.parsedData!.findStudios.studios
+    final studios = result.parsedData!.findStudios.studios
         .map(
           (s) => Studio(
             id: s.id,
@@ -58,6 +74,45 @@ class GraphQLStudioRepository implements StudioRepository {
           ),
         )
         .toList();
+
+    if (shouldLocalSortBySceneCount) {
+      studios.sort((a, b) => (descending == true)
+          ? b.sceneCount.compareTo(a.sceneCount)
+          : a.sceneCount.compareTo(b.sceneCount));
+    }
+
+    return studios;
+  }
+
+  Future<QueryResult<Query$FindStudios>> _runFindStudios({
+    int? page,
+    int? perPage,
+    String? filter,
+    String? sort,
+    bool? descending,
+  }) {
+    return client.query$FindStudios(
+      Options$Query$FindStudios(
+        variables: Variables$Query$FindStudios(
+          filter: Input$FindFilterType(
+            q: filter,
+            page: page,
+            per_page: perPage,
+            sort: sort,
+            direction: descending == true
+                ? Enum$SortDirectionEnum.DESC
+                : Enum$SortDirectionEnum.ASC,
+          ),
+          studio_filter: null,
+        ),
+      ),
+    );
+  }
+
+  bool _isInvalidSort(OperationException exception, String attemptedSort) {
+    return exception.graphqlErrors.any(
+      (e) => e.message.contains('invalid sort') && e.message.contains(attemptedSort),
+    );
   }
 
   @override

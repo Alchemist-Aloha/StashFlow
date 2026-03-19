@@ -16,32 +16,48 @@ class GraphQLTagRepository implements TagRepository {
     String? sort,
     bool? descending,
   }) async {
-    final result = await client.query$FindTags(
-      Options$Query$FindTags(
-        variables: Variables$Query$FindTags(
-          filter: Input$FindFilterType(
-            page: page,
-            per_page: perPage,
-            sort: sort,
-            direction: descending == true
-                ? Enum$SortDirectionEnum.DESC
-                : Enum$SortDirectionEnum.ASC,
-          ),
-          tag_filter: filter != null
-              ? Input$TagFilterType(
-                  name: Input$StringCriterionInput(
-                    value: filter,
-                    modifier: Enum$CriterionModifier.EQUALS,
-                  ),
-                )
-              : null,
-        ),
-      ),
+    QueryResult<Query$FindTags> result;
+    String? effectiveSort = sort == 'scene_count' ? 'scenes_count' : sort;
+
+    result = await _runFindTags(
+      page: page,
+      perPage: perPage,
+      filter: filter,
+      sort: effectiveSort,
+      descending: descending,
     );
+
+    // Some servers may still use scene_count; retry if scenes_count is rejected.
+    if (result.hasException && effectiveSort == 'scenes_count' && _isInvalidSort(result.exception!, 'scenes_count')) {
+      effectiveSort = 'scene_count';
+      result = await _runFindTags(
+        page: page,
+        perPage: perPage,
+        filter: filter,
+        sort: effectiveSort,
+        descending: descending,
+      );
+    }
+
+    final shouldLocalSortBySceneCount =
+        (sort == 'scene_count' || sort == 'scenes_count') &&
+        result.hasException &&
+        (_isInvalidSort(result.exception!, 'scenes_count') ||
+            _isInvalidSort(result.exception!, 'scene_count'));
+
+    if (shouldLocalSortBySceneCount) {
+      result = await _runFindTags(
+        page: page,
+        perPage: perPage,
+        filter: filter,
+        sort: null,
+        descending: descending,
+      );
+    }
 
     if (result.hasException) throw result.exception!;
 
-    return result.parsedData!.findTags.tags
+    final tags = result.parsedData!.findTags.tags
         .map(
           (t) => Tag(
             id: t.id,
@@ -56,6 +72,45 @@ class GraphQLTagRepository implements TagRepository {
           ),
         )
         .toList();
+
+    if (shouldLocalSortBySceneCount) {
+      tags.sort((a, b) => (descending == true)
+          ? b.sceneCount.compareTo(a.sceneCount)
+          : a.sceneCount.compareTo(b.sceneCount));
+    }
+
+    return tags;
+  }
+
+  Future<QueryResult<Query$FindTags>> _runFindTags({
+    int? page,
+    int? perPage,
+    String? filter,
+    String? sort,
+    bool? descending,
+  }) {
+    return client.query$FindTags(
+      Options$Query$FindTags(
+        variables: Variables$Query$FindTags(
+          filter: Input$FindFilterType(
+            q: filter,
+            page: page,
+            per_page: perPage,
+            sort: sort,
+            direction: descending == true
+                ? Enum$SortDirectionEnum.DESC
+                : Enum$SortDirectionEnum.ASC,
+          ),
+          tag_filter: null,
+        ),
+      ),
+    );
+  }
+
+  bool _isInvalidSort(OperationException exception, String attemptedSort) {
+    return exception.graphqlErrors.any(
+      (e) => e.message.contains('invalid sort') && e.message.contains(attemptedSort),
+    );
   }
 
   @override

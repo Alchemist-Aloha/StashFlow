@@ -7,13 +7,11 @@ targets:
         enabled: true
       json_serializable:
         enabled: true
-      build_web_compilers|entrypoint:
-        enabled: false
       graphql_codegen:
         options:
           clients:
             - graphql
           schema_mapping:
-            - schema: lib/core/data/graphql/schema.graphql
-              queries_glob: lib/**/*.graphql
+            - schema: graphql/combined_schema.graphql
+              queries_glob: lib/features/**/*.graphql
               output_directory: lib/core/data/graphql/__generated__

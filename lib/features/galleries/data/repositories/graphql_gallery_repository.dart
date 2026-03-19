@@ -69,7 +69,7 @@ class GraphQLGalleryRepository implements GalleryRepository {
           id
           title
           date
-          rating100
+          rating
           image_count
           details
         }

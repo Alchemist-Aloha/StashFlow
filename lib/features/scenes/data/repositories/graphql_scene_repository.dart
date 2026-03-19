@@ -26,72 +26,33 @@ class GraphQLSceneRepository implements SceneRepository {
     String? tagId,
     SceneFilter? sceneFilter,
   }) async {
-    final result = await client.query$FindScenes(
-      Options$Query$FindScenes(
-        variables: Variables$Query$FindScenes(
-          filter: Input$FindFilterType(
-            page: page,
-            per_page: perPage,
-            sort: sort,
-            direction: descending
-                ? Enum$SortDirectionEnum.DESC
-                : Enum$SortDirectionEnum.ASC,
-          ),
-          scene_filter: Input$SceneFilterType(
-            title: (filter != null || sceneFilter?.searchQuery != null)
-                ? Input$StringCriterionInput(
-                    value: filter ?? sceneFilter!.searchQuery!,
-                    modifier: Enum$CriterionModifier.EQUALS,
-                  )
-                : null,
-            performers: (performerId != null || (sceneFilter?.performerIds?.isNotEmpty ?? false))
-                ? Input$MultiCriterionInput(
-                    value: performerId != null ? [performerId] : sceneFilter!.performerIds,
-                    modifier: Enum$CriterionModifier.INCLUDES,
-                  )
-                : null,
-            studios: (studioId != null || sceneFilter?.studioId != null)
-                ? Input$HierarchicalMultiCriterionInput(
-                    value: studioId != null ? [studioId] : [sceneFilter!.studioId!],
-                    modifier: Enum$CriterionModifier.INCLUDES,
-                  )
-                : null,
-            tags: (tagId != null || (sceneFilter?.includeTags?.isNotEmpty ?? false))
-                ? Input$HierarchicalMultiCriterionInput(
-                    value: tagId != null ? [tagId] : sceneFilter!.includeTags,
-                    modifier: Enum$CriterionModifier.INCLUDES,
-                  )
-                : null,
-            rating100: sceneFilter?.minRating != null
-                ? Input$IntCriterionInput(
-                    value: sceneFilter!.minRating!,
-                    modifier: Enum$CriterionModifier.GREATER_THAN,
-                  )
-                : null,
-            play_count: sceneFilter?.isWatched == true
-                ? Input$IntCriterionInput(
-                    value: 0,
-                    modifier: Enum$CriterionModifier.GREATER_THAN,
-                  )
-                : sceneFilter?.isWatched == false
-                    ? Input$IntCriterionInput(
-                        value: 0,
-                        modifier: Enum$CriterionModifier.EQUALS,
-                      )
-                    : null,
-            date: (sceneFilter?.startDate != null || sceneFilter?.endDate != null)
-                ? Input$DateCriterionInput(
-                    value: sceneFilter?.startDate?.toIso8601String().split('T')[0] ?? '',
-                    value2: sceneFilter?.endDate?.toIso8601String().split('T')[0],
-                    modifier: sceneFilter?.endDate != null
-                        ? Enum$CriterionModifier.BETWEEN
-                        : Enum$CriterionModifier.GREATER_THAN,
-                  )
-                : null,
-          ),
-        ),
-      ),
+    String? effectiveSort = sort == 'rating100' ? 'rating' : sort;
+    var result = await _runFindScenes(
+      page: page,
+      perPage: perPage,
+      filter: filter,
+      sort: effectiveSort,
+      descending: descending,
+      performerId: performerId,
+      studioId: studioId,
+      tagId: tagId,
+      sceneFilter: sceneFilter,
     );
+
+    if (result.hasException && effectiveSort == 'rating' && _isInvalidSort(result.exception!, 'rating')) {
+      effectiveSort = 'rating100';
+      result = await _runFindScenes(
+        page: page,
+        perPage: perPage,
+        filter: filter,
+        sort: effectiveSort,
+        descending: descending,
+        performerId: performerId,
+        studioId: studioId,
+        tagId: tagId,
+        sceneFilter: sceneFilter,
+      );
+    }
 
     if (result.hasException) throw result.exception!;
 
@@ -141,6 +102,86 @@ class GraphQLSceneRepository implements SceneRepository {
           ),
         )
         .toList();
+  }
+
+  Future<QueryResult<Query$FindScenes>> _runFindScenes({
+    int? page,
+    int? perPage,
+    String? filter,
+    String? sort,
+    required bool descending,
+    String? performerId,
+    String? studioId,
+    String? tagId,
+    SceneFilter? sceneFilter,
+  }) {
+    return client.query$FindScenes(
+      Options$Query$FindScenes(
+        variables: Variables$Query$FindScenes(
+          filter: Input$FindFilterType(
+            q: filter ?? sceneFilter?.searchQuery,
+            page: page,
+            per_page: perPage,
+            sort: sort,
+            direction: descending
+                ? Enum$SortDirectionEnum.DESC
+                : Enum$SortDirectionEnum.ASC,
+          ),
+          scene_filter: Input$SceneFilterType(
+            performers: (performerId != null || (sceneFilter?.performerIds?.isNotEmpty ?? false))
+                ? Input$MultiCriterionInput(
+                    value: performerId != null ? [performerId] : sceneFilter!.performerIds,
+                    modifier: Enum$CriterionModifier.INCLUDES,
+                  )
+                : null,
+            studios: (studioId != null || sceneFilter?.studioId != null)
+                ? Input$HierarchicalMultiCriterionInput(
+                    value: studioId != null ? [studioId] : [sceneFilter!.studioId!],
+                    modifier: Enum$CriterionModifier.INCLUDES,
+                  )
+                : null,
+            tags: (tagId != null || (sceneFilter?.includeTags?.isNotEmpty ?? false))
+                ? Input$HierarchicalMultiCriterionInput(
+                    value: tagId != null ? [tagId] : sceneFilter!.includeTags,
+                    modifier: Enum$CriterionModifier.INCLUDES,
+                  )
+                : null,
+            rating100: sceneFilter?.minRating != null
+                ? Input$IntCriterionInput(
+                    value: sceneFilter!.minRating!,
+                    modifier: Enum$CriterionModifier.GREATER_THAN,
+                  )
+                : null,
+            play_count: sceneFilter?.isWatched == true
+                ? Input$IntCriterionInput(
+                    value: 0,
+                    modifier: Enum$CriterionModifier.GREATER_THAN,
+                  )
+                : sceneFilter?.isWatched == false
+                    ? Input$IntCriterionInput(
+                        value: 0,
+                        modifier: Enum$CriterionModifier.EQUALS,
+                      )
+                    : null,
+            date: (sceneFilter?.startDate != null || sceneFilter?.endDate != null)
+                ? Input$DateCriterionInput(
+                    value: sceneFilter?.startDate?.toIso8601String().split('T')[0] ?? '',
+                    value2: sceneFilter?.endDate?.toIso8601String().split('T')[0],
+                    modifier: sceneFilter?.endDate != null
+                        ? Enum$CriterionModifier.BETWEEN
+                        : Enum$CriterionModifier.GREATER_THAN,
+                  )
+                : null,
+          ),
+        ),
+      ),
+    );
+  }
+
+  bool _isInvalidSort(OperationException exception, String attemptedSort) {
+    return exception.graphqlErrors.any(
+      (e) => e.message.contains('invalid sort') && e.message.contains(attemptedSort),
+    );
   }
 
   @override

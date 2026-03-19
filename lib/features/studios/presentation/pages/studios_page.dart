@@ -37,7 +37,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
         ref.read(studioListProvider.notifier).setSort(sort: 'name', descending: false);
         break;
       case _StudioSortOption.sceneCount:
-        ref.read(studioListProvider.notifier).setSort(sort: 'scene_count', descending: true);
+        ref.read(studioListProvider.notifier).setSort(sort: 'scenes_count', descending: true);
         break;
       case _StudioSortOption.rating:
         ref.read(studioListProvider.notifier).setSort(sort: 'rating100', descending: true);

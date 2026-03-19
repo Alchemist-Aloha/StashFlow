@@ -35,6 +35,11 @@ class StreamResolver extends _$StreamResolver {
       QueryOptions(
         document: gql('''
           query SceneStreamsForPlayer(\$id: ID!) {
+            sceneStreams(id: \$id) {
+              url
+              mime_type
+              label
+            }
             findScene(id: \$id) {
               sceneStreams {
                 url
@@ -51,10 +56,15 @@ class StreamResolver extends _$StreamResolver {
 
     if (result.hasException) return null;
 
-    final streams = ((result.data?['findScene']?['sceneStreams']) as List?)
-            ?.whereType<Map<String, dynamic>>()
-            .toList() ??
-        const <Map<String, dynamic>>[];
+    final rootStreams = ((result.data?['sceneStreams']) as List?)
+        ?.whereType<Map<String, dynamic>>()
+        .toList() ??
+      const <Map<String, dynamic>>[];
+    final nestedStreams = ((result.data?['findScene']?['sceneStreams']) as List?)
+        ?.whereType<Map<String, dynamic>>()
+        .toList() ??
+      const <Map<String, dynamic>>[];
+    final streams = rootStreams.isNotEmpty ? rootStreams : nestedStreams;
     
     final graphqlEndpoint = client.link is HttpLink
         ? (client.link as HttpLink).uri
