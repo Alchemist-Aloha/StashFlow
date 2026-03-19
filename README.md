@@ -22,37 +22,17 @@ A mobile-first Flutter client for your **Stash** server. Designed for seamless b
 - GraphQL (`graphql_flutter` + `graphql_codegen` generated classes)
 - SharedPreferences
 
-## Quick Start
+## 🚀 Getting Started
 
-```bash
-flutter pub get
-flutter analyze
-flutter test
-flutter run
-```
+1. **Download:** Grab the latest APK from the [Releases](https://github.com/Alchemist-Aloha/StashAppFlutter/releases) page.
+2. **Connect:** Open the app ➔ Settings ➔ Enter your **Server URL** and **API Key**.
+3. **Browse:** Your library will automatically sync and be ready for action.
 
-## Build
-
-```bash
-flutter build apk
-```
-
-## Regenerate Generated Code
-
-Run this after editing GraphQL documents/schema mappings or generated-provider inputs:
-
-```bash
-dart run build_runner build --delete-conflicting-outputs
-```
-
-## Runtime Settings
-
-Configured inside the app Settings page:
-
-- `server_base_url`
-- `server_api_key`
-- `prefer_scene_streams`
-- `scene_grid_layout`
+### ⚙️ Runtime Settings
+Tailor your experience in the app settings:
+- `server_base_url` & `server_api_key`
+- `prefer_scene_streams` (Toggle stream strategies)
+- `scene_grid_layout` (Switch between Grid/List)
 
 ## Project Structure
 
