@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../scenes/presentation/providers/video_player_provider.dart';
 
 class MiniPlayer extends ConsumerWidget {
@@ -10,6 +11,7 @@ class MiniPlayer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final playerState = ref.watch(playerStateProvider);
     final activeScene = playerState.activeScene;
+    final mediaHeaders = ref.watch(mediaHeadersProvider);
 
     if (activeScene == null) return const SizedBox.shrink();
 
@@ -27,6 +29,7 @@ class MiniPlayer extends ConsumerWidget {
               aspectRatio: 16 / 9,
               child: Image.network(
                 activeScene.paths.screenshot ?? '',
+                headers: mediaHeaders,
                 fit: BoxFit.cover,
                 errorBuilder: (c, e, s) => const Icon(Icons.movie),
               ),

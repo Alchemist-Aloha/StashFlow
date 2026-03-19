@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../providers/performer_details_provider.dart';
 
 class PerformerDetailsPage extends ConsumerWidget {
@@ -9,6 +10,7 @@ class PerformerDetailsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final performerAsync = ref.watch(performerDetailsProvider(performerId));
+    final mediaHeaders = ref.watch(mediaHeadersProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Performer Details')),
@@ -22,7 +24,10 @@ class PerformerDetailsPage extends ConsumerWidget {
                 decoration: BoxDecoration(
                   image: performer.imagePath != null
                       ? DecorationImage(
-                          image: NetworkImage(performer.imagePath!),
+                          image: NetworkImage(
+                            performer.imagePath!,
+                            headers: mediaHeaders,
+                          ),
                           fit: BoxFit.cover,
                         )
                       : null,

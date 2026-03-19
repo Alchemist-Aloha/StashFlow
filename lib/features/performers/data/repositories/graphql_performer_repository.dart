@@ -1,5 +1,6 @@
 import 'package:graphql/client.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
+import '../../../../core/data/graphql/url_resolver.dart';
 import '../graphql/performers.graphql.dart';
 import '../../domain/entities/performer.dart';
 import '../../domain/repositories/performer_repository.dart';
@@ -7,6 +8,10 @@ import '../../domain/repositories/performer_repository.dart';
 class GraphQLPerformerRepository implements PerformerRepository {
   final GraphQLClient client;
   GraphQLPerformerRepository(this.client);
+
+  Uri get _graphqlEndpoint => client.link is HttpLink
+      ? (client.link as HttpLink).uri
+      : Uri.parse('https://localhost/graphql');
 
   @override
   Future<List<Performer>> findPerformers({
@@ -55,7 +60,10 @@ class GraphQLPerformerRepository implements PerformerRepository {
             piercings: p.piercings,
             aliasList: p.alias_list,
             favorite: p.favorite,
-            imagePath: p.image_path,
+            imagePath: resolveGraphqlMediaUrl(
+              rawUrl: p.image_path,
+              graphqlEndpoint: _graphqlEndpoint,
+            ),
             sceneCount: p.scene_count,
             imageCount: p.image_count,
             galleryCount: p.gallery_count,
@@ -105,7 +113,10 @@ class GraphQLPerformerRepository implements PerformerRepository {
       piercings: p.piercings,
       aliasList: p.alias_list,
       favorite: p.favorite,
-      imagePath: p.image_path,
+      imagePath: resolveGraphqlMediaUrl(
+        rawUrl: p.image_path,
+        graphqlEndpoint: _graphqlEndpoint,
+      ),
       sceneCount: p.scene_count,
       imageCount: p.image_count,
       galleryCount: p.gallery_count,

@@ -1,5 +1,6 @@
 import 'package:graphql/client.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
+import '../../../../core/data/graphql/url_resolver.dart';
 import '../graphql/scenes.graphql.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/repositories/scene_repository.dart';
@@ -7,6 +8,10 @@ import '../../domain/repositories/scene_repository.dart';
 class GraphQLSceneRepository implements SceneRepository {
   final GraphQLClient client;
   GraphQLSceneRepository(this.client);
+
+  Uri get _graphqlEndpoint => client.link is HttpLink
+      ? (client.link as HttpLink).uri
+      : Uri.parse('https://localhost/graphql');
 
   @override
   Future<List<Scene>> findScenes({
@@ -48,9 +53,18 @@ class GraphQLSceneRepository implements SceneRepository {
             playCount: s.play_count ?? 0,
             files: [], // Slim data doesn't have files
             paths: ScenePaths(
-              screenshot: s.paths.screenshot,
-              preview: s.paths.preview,
-              stream: s.paths.stream,
+              screenshot: resolveGraphqlMediaUrl(
+                rawUrl: s.paths.screenshot,
+                graphqlEndpoint: _graphqlEndpoint,
+              ),
+              preview: resolveGraphqlMediaUrl(
+                rawUrl: s.paths.preview,
+                graphqlEndpoint: _graphqlEndpoint,
+              ),
+              stream: resolveGraphqlMediaUrl(
+                rawUrl: s.paths.stream,
+                graphqlEndpoint: _graphqlEndpoint,
+              ),
             ),
             studioId: s.studio?.id,
             studioName: s.studio?.name,
@@ -98,9 +112,18 @@ class GraphQLSceneRepository implements SceneRepository {
           )
           .toList(),
       paths: ScenePaths(
-        screenshot: s.paths.screenshot,
-        preview: s.paths.preview,
-        stream: s.paths.stream,
+        screenshot: resolveGraphqlMediaUrl(
+          rawUrl: s.paths.screenshot,
+          graphqlEndpoint: _graphqlEndpoint,
+        ),
+        preview: resolveGraphqlMediaUrl(
+          rawUrl: s.paths.preview,
+          graphqlEndpoint: _graphqlEndpoint,
+        ),
+        stream: resolveGraphqlMediaUrl(
+          rawUrl: s.paths.stream,
+          graphqlEndpoint: _graphqlEndpoint,
+        ),
       ),
       studioId: s.studio?.id,
       studioName: s.studio?.name,
