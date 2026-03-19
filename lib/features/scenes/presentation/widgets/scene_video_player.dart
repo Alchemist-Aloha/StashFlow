@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
@@ -94,12 +95,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
           : 'sceneStreams';
       final mediaHeaders = ref.read(mediaHeadersProvider);
 
-      final prewarmResult = await _prewarmPathsStreamOnce(mediaHeaders);
-      if (prewarmResult.attempted) {
-        streamSource = prewarmResult.succeeded
-            ? '$streamSource+prewarm'
-            : '$streamSource+prewarm-fail';
-      }
+        final prewarmFuture = _prewarmPathsStreamOnce(mediaHeaders);
 
       if (streamUrl.isEmpty) {
         if (!mounted) return;
@@ -130,10 +126,25 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
             streamLabel: streamLabel,
             streamSource: streamSource,
             httpHeaders: mediaHeaders,
-            prewarmAttempted: prewarmResult.attempted,
-            prewarmSucceeded: prewarmResult.succeeded,
-            prewarmLatencyMs: prewarmResult.latencyMs,
+            prewarmAttempted: false,
+            prewarmSucceeded: false,
           );
+
+      unawaited(
+        prewarmFuture.then((result) {
+          if (!mounted) return;
+          final activeSceneId = ref.read(playerStateProvider).activeScene?.id;
+          if (activeSceneId != widget.scene.id) return;
+
+          ref
+              .read(playerStateProvider.notifier)
+              .setPrewarmResult(
+                attempted: result.attempted,
+                succeeded: result.succeeded,
+                latencyMs: result.latencyMs,
+              );
+        }),
+      );
     } finally {
       if (mounted) {
         setState(() => _isStarting = false);

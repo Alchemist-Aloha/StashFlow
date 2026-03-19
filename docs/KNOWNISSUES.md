@@ -1,7 +1,5 @@
 # Known Issues
 
-# Known Issues
-
 ## Closed Recently
 
 ### Scene rating and play-count sorting mismatch
@@ -17,7 +15,7 @@
 
 ## First video playback startup is slow
 
-- Status: Open
+- Status: Mitigated (2026-03-19), re-validate on device
 - Area: Scene playback / streaming startup
 - Severity: Medium
 
@@ -40,17 +38,17 @@
 
 ### Current understanding
 
-- The remaining delay appears to be backend-side warm-up/cold-start behavior for initial stream access.
-- Client-side source choice is no longer the primary blocker for startup.
-- The `+prewarm` strategy works to establish an early connection, but server-side transcoding/initialization still introduces a hard delay for certain stream sources.
-- Contextual playback queue and Autoplay Next may mitigate perceived latency by buffering or initiating the next stream sooner, though pre-fetching the next stream in the background is not fully implemented.
+- App-side root cause was identified: playback startup path awaited prewarm before calling player start, which could block for up to the prewarm timeout budget and matched the ~8 second delay pattern.
+- Mitigation was applied: prewarm now runs in background and no longer blocks `playScene`.
+- Remaining variability can still come from backend cold start/transcoding on first request.
+- Contextual playback queue and Autoplay Next may still help perceived latency, though full next-scene prefetch is not implemented.
 
 ### Next investigation ideas
 
-- Measure startup time on the server side for first request versus warmed request.
+- Re-measure first-play startup after the non-blocking prewarm change.
 - Compare startup latency between stream variants for the same scene under identical conditions.
-- Implement background stream pre-fetching for the upcoming scene in the PlaybackQueue.
-- Consider optional background prewarm earlier in app lifecycle (for users who opt in).
+- Measure server-side first-request warm-up time to separate backend latency from client latency.
+- Implement optional next-scene prefetch in PlaybackQueue.
 
 ## Optional Consistency Follow-ups
 

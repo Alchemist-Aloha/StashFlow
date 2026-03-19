@@ -136,6 +136,18 @@ class PlayerState extends _$PlayerState {
     _rebuildChewieControls();
   }
 
+  void setPrewarmResult({
+    required bool attempted,
+    required bool succeeded,
+    int? latencyMs,
+  }) {
+    state = state.copyWith(
+      prewarmAttempted: attempted,
+      prewarmSucceeded: succeeded,
+      prewarmLatencyMs: latencyMs,
+    );
+  }
+
   void _rebuildChewieControls() {
     final videoController = state.videoPlayerController;
     if (videoController == null || !videoController.value.isInitialized) {
