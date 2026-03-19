@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:graphql/client.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
@@ -374,6 +375,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         await _saveToggleSettings();
                       },
                     ),
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.bug_report_outlined),
+                    title: const Text('Debug Log Viewer'),
+                    subtitle: const Text('Open a live view of in-app logs'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => context.push('/settings/logs'),
                   ),
                   const SizedBox(height: 8),
                   const Text(

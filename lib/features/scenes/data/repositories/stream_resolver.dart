@@ -16,10 +16,11 @@ class StreamChoice {
   int get score {
     final lowerMime = mimeType.toLowerCase();
     final lowerLabel = (label ?? '').toLowerCase();
-    if (lowerMime.contains('mpegurl') || lowerMime.contains('hls')) return 300;
-    if (lowerMime.contains('dash')) return 250;
-    if (lowerMime.contains('mp4') && lowerLabel.contains('direct')) return 220;
-    if (lowerMime.contains('mp4')) return 200;
+    if (lowerMime.contains('mpegurl') || lowerMime.contains('hls')) return 200;
+    if (lowerMime.contains('dash')) return 150;
+    // Prefer direct stream (fastest, no manifest parsing needed)
+    if (lowerMime.contains('mp4') && lowerLabel.contains('direct')) return 300;
+    if (lowerMime.contains('mp4')) return 250;
     return 100;
   }
 }

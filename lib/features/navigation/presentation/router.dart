@@ -16,6 +16,7 @@ import '../../galleries/presentation/pages/gallery_details_page.dart';
 import '../../groups/presentation/pages/groups_page.dart';
 import '../../groups/presentation/pages/group_details_page.dart';
 import '../../setup/presentation/settings_page.dart';
+import '../../setup/presentation/debug_log_viewer_page.dart';
 import 'shell_page.dart';
 
 part 'router.g.dart';
@@ -39,6 +40,10 @@ GoRouter router(Ref ref) {
           GoRoute(
             path: '/settings',
             builder: (context, state) => const SettingsPage(),
+          ),
+          GoRoute(
+            path: '/settings/logs',
+            builder: (context, state) => const DebugLogViewerPage(),
           ),
           GoRoute(
             path: '/studios',
