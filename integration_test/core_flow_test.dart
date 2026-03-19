@@ -19,6 +19,8 @@ class FakeSceneRepository implements SceneRepository {
     int? page,
     int? perPage,
     String? filter,
+    String? sort,
+    bool descending = true,
   }) async {
     if (filter == null || filter.isEmpty) return _scenes;
     return _scenes

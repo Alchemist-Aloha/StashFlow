@@ -11,12 +11,16 @@ class SceneDetailsPage extends ConsumerWidget {
   const SceneDetailsPage({required this.sceneId, super.key});
 
   Future<void> _openRandomScene(BuildContext context, WidgetRef ref) async {
-    final randomScene = await ref.read(sceneListProvider.notifier).getRandomScene();
+    final randomScene = await ref
+        .read(sceneListProvider.notifier)
+        .getRandomScene();
     if (!context.mounted) return;
 
     if (randomScene == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No scenes available for random navigation')),
+        const SnackBar(
+          content: Text('No scenes available for random navigation'),
+        ),
       );
       return;
     }

@@ -18,11 +18,20 @@ class GraphQLPerformerRepository implements PerformerRepository {
     int? page,
     int? perPage,
     String? filter,
+    String? sort,
+    bool descending = true,
   }) async {
     final result = await client.query$FindPerformers(
       Options$Query$FindPerformers(
         variables: Variables$Query$FindPerformers(
-          filter: Input$FindFilterType(page: page, per_page: perPage),
+          filter: Input$FindFilterType(
+            page: page,
+            per_page: perPage,
+            sort: sort,
+            direction: descending
+                ? Enum$SortDirectionEnum.DESC
+                : Enum$SortDirectionEnum.ASC,
+          ),
           performer_filter: filter != null
               ? Input$PerformerFilterType(
                   name: Input$StringCriterionInput(

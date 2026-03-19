@@ -18,11 +18,20 @@ class GraphQLSceneRepository implements SceneRepository {
     int? page,
     int? perPage,
     String? filter,
+    String? sort,
+    bool descending = true,
   }) async {
     final result = await client.query$FindScenes(
       Options$Query$FindScenes(
         variables: Variables$Query$FindScenes(
-          filter: Input$FindFilterType(page: page, per_page: perPage),
+          filter: Input$FindFilterType(
+            page: page,
+            per_page: perPage,
+            sort: sort,
+            direction: descending
+                ? Enum$SortDirectionEnum.DESC
+                : Enum$SortDirectionEnum.ASC,
+          ),
           scene_filter: filter != null
               ? Input$SceneFilterType(
                   title: Input$StringCriterionInput(

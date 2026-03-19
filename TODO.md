@@ -183,7 +183,9 @@ Candidate files:
 
 Progress:
 - [x] Scene sort chips implemented (Newest, Oldest, Rating, Play Count, Random).
-- [x] Performer sort chips implemented (Name, Scene Count, Rating, Random).
+- [x] Scene deterministic sorts (Newest, Oldest, Rating, Play Count) now use server-side query sorting.
+- [x] Performer sort chips implemented (Name, Scene Count, Last Updated, Random).
+- [x] Performer deterministic sorts (Name, Scene Count, Last Updated) now use server-side query sorting.
 - [ ] Add sort chips for Studios and Tags.
 - [ ] Add true `Last updated` sorting for performers when backend field is available.
 

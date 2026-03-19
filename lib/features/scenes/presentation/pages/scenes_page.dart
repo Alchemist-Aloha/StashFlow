@@ -7,13 +7,7 @@ import '../../../../core/presentation/widgets/error_state_view.dart';
 import '../providers/scene_list_provider.dart';
 import '../widgets/scene_card.dart';
 
-enum _SceneSortOption {
-  dateNewest,
-  dateOldest,
-  rating,
-  playCount,
-  random,
-}
+enum _SceneSortOption { dateNewest, dateOldest, rating, playCount, random }
 
 class ScenesPage extends ConsumerStatefulWidget {
   const ScenesPage({super.key});
@@ -42,16 +36,10 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     final scenes = [...input];
     switch (_sortOption) {
       case _SceneSortOption.dateNewest:
-        scenes.sort((a, b) => b.date.compareTo(a.date));
-        break;
       case _SceneSortOption.dateOldest:
-        scenes.sort((a, b) => a.date.compareTo(b.date));
-        break;
       case _SceneSortOption.rating:
-        scenes.sort((a, b) => (b.rating100 ?? -1).compareTo(a.rating100 ?? -1));
-        break;
       case _SceneSortOption.playCount:
-        scenes.sort((a, b) => b.playCount.compareTo(a.playCount));
+        // Server-side ordering handles these options.
         break;
       case _SceneSortOption.random:
         scenes.shuffle();
@@ -60,13 +48,53 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     return scenes;
   }
 
+  void _applyServerSort(_SceneSortOption option) {
+    switch (option) {
+      case _SceneSortOption.dateNewest:
+        ref.read(sceneListProvider.notifier).setSort(
+          sort: 'date',
+          descending: true,
+        );
+        break;
+      case _SceneSortOption.dateOldest:
+        ref.read(sceneListProvider.notifier).setSort(
+          sort: 'date',
+          descending: false,
+        );
+        break;
+      case _SceneSortOption.rating:
+        ref.read(sceneListProvider.notifier).setSort(
+          sort: 'rating100',
+          descending: true,
+        );
+        break;
+      case _SceneSortOption.playCount:
+        ref.read(sceneListProvider.notifier).setSort(
+          sort: 'play_count',
+          descending: true,
+        );
+        break;
+      case _SceneSortOption.random:
+        // Random option intentionally remains client-side shuffle.
+        ref.read(sceneListProvider.notifier).setSort(
+          sort: 'date',
+          descending: true,
+        );
+        break;
+    }
+  }
+
   Future<void> _openRandomScene() async {
-    final randomScene = await ref.read(sceneListProvider.notifier).getRandomScene();
+    final randomScene = await ref
+        .read(sceneListProvider.notifier)
+        .getRandomScene();
     if (!mounted) return;
 
     if (randomScene == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No scenes available for random navigation')),
+        const SnackBar(
+          content: Text('No scenes available for random navigation'),
+        ),
       );
       return;
     }
@@ -95,6 +123,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
               onSelected: (selected) {
                 if (!selected) return;
                 setState(() => _sortOption = option.$1);
+                _applyServerSort(option.$1);
               },
             ),
             const SizedBox(width: 8),
@@ -201,8 +230,9 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                             itemBuilder: (context, index) => SceneCard(
                               scene: sortedScenes[index],
                               isGrid: true,
-                              onTap: () =>
-                                  context.push('/scene/${sortedScenes[index].id}'),
+                              onTap: () => context.push(
+                                '/scene/${sortedScenes[index].id}',
+                              ),
                             ),
                           )
                         : ListView.builder(
@@ -210,8 +240,9 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                             itemBuilder: (context, index) => SceneCard(
                               scene: sortedScenes[index],
                               isGrid: false,
-                              onTap: () =>
-                                  context.push('/scene/${sortedScenes[index].id}'),
+                              onTap: () => context.push(
+                                '/scene/${sortedScenes[index].id}',
+                              ),
                             ),
                           ),
                   );

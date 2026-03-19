@@ -28,6 +28,8 @@ class PerformerList extends _$PerformerList {
   static const int _perPage = kDefaultPageSize;
   bool _hasMore = true;
   bool _isLoadingMore = false;
+  String? _sort;
+  bool _descending = true;
 
   @override
   FutureOr<List<Performer>> build() async {
@@ -40,7 +42,18 @@ class PerformerList extends _$PerformerList {
       page: _currentPage,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
+      sort: _sort,
+      descending: _descending,
     );
+  }
+
+  void setSort({String? sort, bool descending = true}) {
+    _sort = sort;
+    _descending = descending;
+    _currentPage = 1;
+    _hasMore = true;
+    _isLoadingMore = false;
+    ref.invalidateSelf();
   }
 
   Future<void> fetchNextPage() async {
@@ -56,6 +69,8 @@ class PerformerList extends _$PerformerList {
         page: nextPage,
         perPage: _perPage,
         filter: query.isEmpty ? null : query,
+        sort: _sort,
+        descending: _descending,
       );
 
       if (nextPerformers.isEmpty) {

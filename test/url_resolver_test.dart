@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/data/graphql/url_resolver.dart';
 
 void main() {
-  final endpoint = Uri.parse('https://stash.cai.co.im/graphql');
+  final endpoint = Uri.parse('http://192.168.88.225:29999');
 
   test('keeps absolute urls unchanged', () {
     expect(
@@ -20,7 +20,7 @@ void main() {
         rawUrl: '/image/abc.jpg',
         graphqlEndpoint: endpoint,
       ),
-      'https://stash.cai.co.im/image/abc.jpg',
+      'http://192.168.88.225:29999/image/abc.jpg',
     );
   });
 
@@ -30,7 +30,7 @@ void main() {
         rawUrl: '//stash.cai.co.im/image/abc.jpg',
         graphqlEndpoint: endpoint,
       ),
-      'https://stash.cai.co.im/image/abc.jpg',
+      'http://192.168.88.225:29999/image/abc.jpg',
     );
   });
 

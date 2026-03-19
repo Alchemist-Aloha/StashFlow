@@ -5,6 +5,8 @@ abstract class PerformerRepository {
     int? page,
     int? perPage,
     String? filter,
+    String? sort,
+    bool descending = true,
   });
   Future<Performer> getPerformerById(String id);
 }

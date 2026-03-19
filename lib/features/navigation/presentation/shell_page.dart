@@ -34,12 +34,16 @@ class ShellPage extends ConsumerWidget {
   }
 
   Future<void> _surpriseMe(BuildContext context, WidgetRef ref) async {
-    final randomScene = await ref.read(sceneListProvider.notifier).getRandomScene();
+    final randomScene = await ref
+        .read(sceneListProvider.notifier)
+        .getRandomScene();
     if (!context.mounted) return;
 
     if (randomScene == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No scenes available for Surprise Me yet')),
+        const SnackBar(
+          content: Text('No scenes available for Surprise Me yet'),
+        ),
       );
       return;
     }

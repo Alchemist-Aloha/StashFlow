@@ -30,6 +30,8 @@ class SceneList extends _$SceneList {
   static const int _perPage = kDefaultPageSize;
   bool _hasMore = true;
   bool _isLoadingMore = false;
+  String? _sort;
+  bool _descending = true;
 
   @override
   FutureOr<List<Scene>> build() async {
@@ -42,7 +44,18 @@ class SceneList extends _$SceneList {
       page: _currentPage,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
+      sort: _sort,
+      descending: _descending,
     );
+  }
+
+  void setSort({String? sort, bool descending = true}) {
+    _sort = sort;
+    _descending = descending;
+    _currentPage = 1;
+    _hasMore = true;
+    _isLoadingMore = false;
+    ref.invalidateSelf();
   }
 
   Future<void> fetchNextPage() async {
@@ -58,6 +71,8 @@ class SceneList extends _$SceneList {
         page: nextPage,
         perPage: _perPage,
         filter: query.isEmpty ? null : query,
+        sort: _sort,
+        descending: _descending,
       );
 
       if (nextScenes.isEmpty) {
@@ -88,6 +103,8 @@ class SceneList extends _$SceneList {
       page: 1,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
+      sort: _sort,
+      descending: _descending,
     );
     if (firstPage.isEmpty) return null;
     return firstPage[_random.nextInt(firstPage.length)];

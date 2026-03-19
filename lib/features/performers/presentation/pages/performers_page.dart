@@ -7,12 +7,7 @@ import '../../domain/entities/performer.dart';
 import '../providers/performer_list_provider.dart';
 import '../widgets/performer_card.dart';
 
-enum _PerformerSortOption {
-  name,
-  sceneCount,
-  rating,
-  random,
-}
+enum _PerformerSortOption { name, sceneCount, lastUpdated, random }
 
 class PerformersPage extends ConsumerStatefulWidget {
   const PerformersPage({super.key});
@@ -40,15 +35,9 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
     final performers = [...input];
     switch (_sortOption) {
       case _PerformerSortOption.name:
-        performers.sort(
-          (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
-        );
-        break;
       case _PerformerSortOption.sceneCount:
-        performers.sort((a, b) => b.sceneCount.compareTo(a.sceneCount));
-        break;
-      case _PerformerSortOption.rating:
-        performers.sort((a, b) => (b.rating100 ?? -1).compareTo(a.rating100 ?? -1));
+      case _PerformerSortOption.lastUpdated:
+        // Server-side ordering handles these options.
         break;
       case _PerformerSortOption.random:
         performers.shuffle();
@@ -57,10 +46,42 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
     return performers;
   }
 
+  void _applyServerSort(_PerformerSortOption option) {
+    switch (option) {
+      case _PerformerSortOption.name:
+        ref.read(performerListProvider.notifier).setSort(
+          sort: 'name',
+          descending: false,
+        );
+        break;
+      case _PerformerSortOption.sceneCount:
+        ref.read(performerListProvider.notifier).setSort(
+          sort: 'scene_count',
+          descending: true,
+        );
+        break;
+      case _PerformerSortOption.lastUpdated:
+        ref.read(performerListProvider.notifier).setSort(
+          sort: 'updated_at',
+          descending: true,
+        );
+        break;
+      case _PerformerSortOption.random:
+        // Random option intentionally remains client-side shuffle.
+        ref.read(performerListProvider.notifier).setSort(
+          sort: 'name',
+          descending: false,
+        );
+        break;
+    }
+  }
+
   void _openRandomPerformer(List<Performer> performers) {
     if (performers.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No performers available for random navigation')),
+        const SnackBar(
+          content: Text('No performers available for random navigation'),
+        ),
       );
       return;
     }
@@ -74,7 +95,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
     const options = [
       (_PerformerSortOption.name, 'Name'),
       (_PerformerSortOption.sceneCount, 'Scene Count'),
-      (_PerformerSortOption.rating, 'Rating'),
+      (_PerformerSortOption.lastUpdated, 'Last Updated'),
       (_PerformerSortOption.random, 'Random'),
     ];
 
@@ -90,6 +111,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
               onSelected: (selected) {
                 if (!selected) return;
                 setState(() => _sortOption = option.$1);
+                _applyServerSort(option.$1);
               },
             ),
             const SizedBox(width: 8),
@@ -151,7 +173,9 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                   return NotificationListener<ScrollNotification>(
                     onNotification: (ScrollNotification scrollInfo) {
                       if (shouldLoadNextPage(scrollInfo.metrics)) {
-                        ref.read(performerListProvider.notifier).fetchNextPage();
+                        ref
+                            .read(performerListProvider.notifier)
+                            .fetchNextPage();
                       }
                       return false;
                     },
@@ -169,7 +193,8 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                         final performer = sortedPerformers[index];
                         return PerformerCard(
                           performer: performer,
-                          onTap: () => context.push('/performer/${performer.id}'),
+                          onTap: () =>
+                              context.push('/performer/${performer.id}'),
                         );
                       },
                     ),
