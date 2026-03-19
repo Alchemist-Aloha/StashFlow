@@ -5,6 +5,7 @@ import 'features/navigation/presentation/router.dart';
 import 'core/data/preferences/shared_preferences_provider.dart';
 
 import 'core/presentation/theme/app_theme.dart';
+import 'core/presentation/theme/theme_mode_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,10 +27,13 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+    final themeMode = ref.watch(appThemeModeProvider);
     return MaterialApp.router(
       routerConfig: router,
       title: 'StashAppFlutter',
-      theme: AppTheme.darkTheme,
+      themeMode: themeMode,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
     );
   }
 }

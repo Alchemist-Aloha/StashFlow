@@ -95,45 +95,69 @@ class AppTheme {
   static const radiusMedium = 8.0;
   static const radiusLarge = 12.0;
 
-  static final darkTheme = ThemeData(
-    useMaterial3: true,
-    brightness: Brightness.dark,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFF673AB7), // Deep Purple
-      brightness: Brightness.dark,
-      surface: const Color(0xFF121212),
-    ),
-    scaffoldBackgroundColor: const Color(0xFF121212),
-    cardTheme: CardThemeData(
-      color: const Color(0xFF1E1E1E),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(radiusMedium),
+  static ThemeData _buildTheme(Brightness brightness) {
+    final isDark = brightness == Brightness.dark;
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: const Color(0xFF0F766E),
+      brightness: brightness,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: brightness,
+      colorScheme: colorScheme,
+      scaffoldBackgroundColor: colorScheme.surface,
+      appBarTheme: AppBarTheme(
+        elevation: 0,
+        centerTitle: false,
+        backgroundColor: colorScheme.surface,
+        foregroundColor: colorScheme.onSurface,
       ),
-    ),
-    appBarTheme: const AppBarTheme(
-      backgroundColor: Color(0xFF121212),
-      elevation: 0,
-      centerTitle: false,
-    ),
-    extensions: [
-      AppColors(
-        surface: const Color(0xFF121212),
-        onSurface: Colors.white,
-        primary: const Color(0xFFBB86FC),
-        onPrimary: Colors.black,
-        secondary: const Color(0xFF03DAC6),
-        onSecondary: Colors.black,
-        error: const Color(0xFFCF6679),
-        onError: Colors.black,
-        surfaceVariant: const Color(0xFF2C2C2C),
-        onSurfaceVariant: const Color(0xFFE1E1E1),
-        outline: const Color(0xFF424242),
-        cardBackground: const Color(0xFF1E1E1E),
-        ratingColor: Colors.amber,
+      cardTheme: CardThemeData(
+        elevation: 0,
+        color: colorScheme.surfaceContainerHighest,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusMedium),
+        ),
       ),
-    ],
-  );
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: colorScheme.surfaceContainerHighest,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusMedium),
+        ),
+      ),
+      chipTheme: ChipThemeData(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(999),
+        ),
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: colorScheme.primaryContainer,
+        foregroundColor: colorScheme.onPrimaryContainer,
+      ),
+      extensions: [
+        AppColors(
+          surface: colorScheme.surface,
+          onSurface: colorScheme.onSurface,
+          primary: colorScheme.primary,
+          onPrimary: colorScheme.onPrimary,
+          secondary: colorScheme.secondary,
+          onSecondary: colorScheme.onSecondary,
+          error: colorScheme.error,
+          onError: colorScheme.onError,
+          surfaceVariant: colorScheme.surfaceContainerHigh,
+          onSurfaceVariant: colorScheme.onSurfaceVariant,
+          outline: colorScheme.outline,
+          cardBackground: colorScheme.surfaceContainerHighest,
+          ratingColor: isDark ? Colors.amber.shade300 : Colors.amber.shade700,
+        ),
+      ],
+    );
+  }
+
+  static final lightTheme = _buildTheme(Brightness.light);
+  static final darkTheme = _buildTheme(Brightness.dark);
 }
 
 extension AppThemeX on BuildContext {

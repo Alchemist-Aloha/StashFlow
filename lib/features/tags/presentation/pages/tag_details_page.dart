@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -10,27 +12,27 @@ import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/media_strip.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 
-import '../../../scenes/presentation/providers/scene_list_provider.dart';
+import '../providers/tag_list_provider.dart';
 
 class TagDetailsPage extends ConsumerWidget {
   final String tagId;
 
   const TagDetailsPage({required this.tagId, super.key});
 
-  Future<void> _openRandomScene(BuildContext context, WidgetRef ref) async {
-    final randomScene = await ref
-        .read(sceneListProvider.notifier)
-        .getRandomScene(tagId: tagId);
+  Future<void> _openRandomTag(BuildContext context, WidgetRef ref) async {
+    final randomTag = await ref
+        .read(tagListProvider.notifier)
+        .getRandomTag(useCurrentFilter: true, excludeTagId: tagId);
     if (!context.mounted) return;
 
-    if (randomScene == null) {
+    if (randomTag == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No scenes available for this tag')),
+        const SnackBar(content: Text('No tags available for random navigation')),
       );
       return;
     }
 
-    context.push('/scene/${randomScene.id}');
+    context.push('/tag/${randomTag.id}');
   }
 
   @override
@@ -42,48 +44,17 @@ class TagDetailsPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tag Details'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.casino_outlined),
-            tooltip: 'Random scene with this tag',
-            onPressed: () => _openRandomScene(context, ref),
-          ),
-        ],
+      ),
+      floatingActionButton: FloatingActionButton.small(
+        onPressed: () => _openRandomTag(context, ref),
+        tooltip: 'Random tag',
+        child: const Icon(Icons.casino_outlined),
       ),
       body: tagAsync.when(
         data: (tag) => SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                height: 240,
-                width: double.infinity,
-                color: context.colors.surfaceVariant,
-                child: tag.imagePath != null && tag.imagePath!.isNotEmpty
-                    ? Image.network(
-                        tag.imagePath!,
-                        headers: mediaHeaders,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Center(
-                          child: Icon(
-                            Icons.local_offer,
-                            size: 72,
-                            color: context.colors.onSurfaceVariant.withValues(
-                              alpha: 0.5,
-                            ),
-                          ),
-                        ),
-                      )
-                    : Center(
-                        child: Icon(
-                          Icons.local_offer,
-                          size: 72,
-                          color: context.colors.onSurfaceVariant.withValues(
-                            alpha: 0.5,
-                          ),
-                        ),
-                      ),
-              ),
               Padding(
                 padding: const EdgeInsets.all(AppTheme.spacingMedium),
                 child: Column(
@@ -113,8 +84,10 @@ class TagDetailsPage extends ConsumerWidget {
                       onViewAll: () => context.push('/tag/${tag.id}/media'),
                     ),
                     mediaAsync.when(
-                      data: (mediaItems) => MediaStrip(
-                        items: mediaItems
+                      data: (mediaItems) {
+                        final shuffledItems = [...mediaItems]..shuffle(Random());
+                        return MediaStrip(
+                          items: shuffledItems
                             .map(
                               (item) => MediaStripItem(
                                 id: item.sceneId,
@@ -125,8 +98,9 @@ class TagDetailsPage extends ConsumerWidget {
                               ),
                             )
                             .toList(),
-                        headers: mediaHeaders,
-                      ),
+                          headers: mediaHeaders,
+                        );
+                      },
                       loading: () => const SizedBox(
                         height: 100,
                         child: Center(child: CircularProgressIndicator()),

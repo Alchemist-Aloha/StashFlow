@@ -336,56 +336,21 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
           ],
         ),
       ],
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: AppTheme.spacingMedium,
-        mainAxisSpacing: AppTheme.spacingMedium,
-        childAspectRatio: 1.25,
-      ),
-      itemBuilder: (context, studio) => InkWell(
-        onTap: () => context.push('/studio/${studio.id}'),
-        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(AppTheme.spacingMedium),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  studio.name,
-                  style: context.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '${studio.sceneCount} scenes',
-                      style: context.textTheme.bodySmall,
-                    ),
-                    if (studio.rating100 != null)
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.star,
-                            size: 14,
-                            color: context.colors.ratingColor,
-                          ),
-                          const SizedBox(width: 2),
-                          Text(
-                            (studio.rating100! / 20).toStringAsFixed(1),
-                            style: context.textTheme.bodySmall,
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
-              ],
-            ),
+      padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingSmall),
+      itemBuilder: (context, studio) => Card(
+        margin: const EdgeInsets.symmetric(
+          horizontal: AppTheme.spacingMedium,
+          vertical: 4,
+        ),
+        child: ListTile(
+          onTap: () => context.push('/studio/${studio.id}'),
+          title: Text(
+            studio.name,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          trailing: Text(
+            '${studio.sceneCount} scenes',
+            style: context.textTheme.bodySmall,
           ),
         ),
       ),

@@ -1,20 +1,29 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../../core/data/graphql/media_headers_provider.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
-import '../providers/scene_list_provider.dart';
+import '../../../../core/presentation/widgets/media_strip.dart';
+import '../../../../core/presentation/widgets/section_header.dart';
+import '../../../studios/presentation/providers/studio_media_provider.dart';
+import '../providers/playback_queue_provider.dart';
 import '../providers/scene_details_provider.dart';
+import '../providers/scene_list_provider.dart';
 import '../widgets/scene_video_player.dart';
 
-import '../../../../core/presentation/widgets/section_header.dart';
-import '../../../../core/presentation/theme/app_theme.dart';
-
-import '../providers/playback_queue_provider.dart';
-
-class SceneDetailsPage extends ConsumerWidget {
+class SceneDetailsPage extends ConsumerStatefulWidget {
   final String sceneId;
   const SceneDetailsPage({required this.sceneId, super.key});
 
+  @override
+  ConsumerState<SceneDetailsPage> createState() => _SceneDetailsPageState();
+}
+
+class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   static const Set<String> _genericFallbackNames = {
     'stream',
     'preview',
@@ -23,6 +32,14 @@ class SceneDetailsPage extends ConsumerWidget {
     'play',
     'media',
   };
+
+  static const _collapsedDetailsLines = 6;
+  static const _collapsedTagRowsHeight = 84.0;
+  static const _collapsedPerformerRows = 2;
+
+  bool _detailsExpanded = false;
+  bool _tagsExpanded = false;
+  bool _performersExpanded = false;
 
   String _displayTitle({
     required String title,
@@ -63,17 +80,15 @@ class SceneDetailsPage extends ConsumerWidget {
     return cleaned;
   }
 
-  Future<void> _openRandomScene(BuildContext context, WidgetRef ref) async {
+  Future<void> _openRandomScene(BuildContext context) async {
     final randomScene = await ref
         .read(sceneListProvider.notifier)
-        .getRandomScene(useCurrentFilter: true, excludeSceneId: sceneId);
+        .getRandomScene(useCurrentFilter: true, excludeSceneId: widget.sceneId);
     if (!context.mounted) return;
 
     if (randomScene == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No scenes available for random navigation'),
-        ),
+        const SnackBar(content: Text('No scenes available for random navigation')),
       );
       return;
     }
@@ -94,8 +109,8 @@ class SceneDetailsPage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final sceneAsync = ref.watch(sceneDetailsProvider(sceneId));
+  Widget build(BuildContext context) {
+    final sceneAsync = ref.watch(sceneDetailsProvider(widget.sceneId));
 
     return Scaffold(
       appBar: AppBar(
@@ -115,21 +130,58 @@ class SceneDetailsPage extends ConsumerWidget {
             loading: () => const SizedBox.shrink(),
             error: (_, _) => const SizedBox.shrink(),
           ),
-          IconButton(
-            icon: const Icon(Icons.casino_outlined),
-            tooltip: 'Random scene',
-            onPressed: () => _openRandomScene(context, ref),
-          ),
         ],
+      ),
+      floatingActionButton: sceneAsync.maybeWhen(
+        data: (_) => FloatingActionButton.small(
+          onPressed: () => _openRandomScene(context),
+          tooltip: 'Random scene',
+          child: const Icon(Icons.casino_outlined),
+        ),
+        orElse: () => null,
       ),
       body: sceneAsync.when(
         data: (scene) {
           final primaryFile = scene.files.isNotEmpty ? scene.files.first : null;
+          final detailsText = (scene.details ?? '').trim();
+          final hasDetails = detailsText.isNotEmpty;
+          final canExpandDetails = detailsText.length > 260 || detailsText.contains('\n');
+
+          final tagIndexes = <int>[];
+          for (var i = 0; i < scene.tagNames.length; i++) {
+            if (scene.tagNames[i].trim().isNotEmpty) {
+              tagIndexes.add(i);
+            }
+          }
+          final hasTags = tagIndexes.isNotEmpty;
+          final canExpandTags = tagIndexes.length > 6;
+
+          final performerIndexes = <int>[];
+          for (var i = 0; i < scene.performerNames.length; i++) {
+            if (scene.performerNames[i].trim().isNotEmpty) {
+              performerIndexes.add(i);
+            }
+          }
+          final hasPerformers = performerIndexes.isNotEmpty;
+          final canExpandPerformers =
+              performerIndexes.length > _collapsedPerformerRows;
+
+          final canOpenStudio =
+              scene.studioId != null && (scene.studioName ?? '').trim().isNotEmpty;
+
           final displayTitle = _displayTitle(
             title: scene.title,
             filePath: scene.path,
             streamPath: scene.paths.stream,
           );
+
+          final mediaHeaders = ref.watch(mediaHeadersProvider);
+          final studioMediaAsync = scene.studioId == null
+              ? const AsyncValue<List<StudioMediaItem>>.data(
+                  <StudioMediaItem>[],
+                )
+              : ref.watch(studioMediaProvider(scene.studioId!));
+
           return SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,52 +199,46 @@ class SceneDetailsPage extends ConsumerWidget {
                           color: context.colors.onSurface,
                         ),
                       ),
-                      const SizedBox(height: AppTheme.spacingSmall),
+                      const SizedBox(height: 6),
                       Row(
                         children: [
-                          if (scene.studioImagePath != null)
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                right: AppTheme.spacingSmall,
-                              ),
-                              child: CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                  scene.studioImagePath!,
-                                ),
-                                radius: 12,
-                              ),
-                            ),
                           if (scene.studioName != null)
-                            Text(
-                              scene.studioName!,
-                              style: context.textTheme.titleMedium?.copyWith(
-                                color: context.colors.primary,
-                                fontWeight: FontWeight.w500,
+                            GestureDetector(
+                              onTap: canOpenStudio
+                                  ? () => context.push('/studio/${scene.studioId}')
+                                  : null,
+                              child: Text(
+                                scene.studioName!,
+                                style: context.textTheme.titleMedium?.copyWith(
+                                  color: canOpenStudio
+                                      ? context.colors.primary
+                                      : context.colors.onSurface,
+                                  fontWeight: FontWeight.w500,
+                                  decoration: canOpenStudio
+                                      ? TextDecoration.underline
+                                      : TextDecoration.none,
+                                ),
                               ),
                             ),
                           if (scene.studioName != null)
                             Text(
                               ' • ',
                               style: TextStyle(
-                                color: context.colors.onSurface.withValues(
-                                  alpha: 0.5,
-                                ),
+                                color: context.colors.onSurface.withValues(alpha: 0.5),
                               ),
                             ),
                           Text(
                             scene.date.year.toString(),
                             style: context.textTheme.titleMedium?.copyWith(
-                              color: context.colors.onSurface.withValues(
-                                alpha: 0.6,
-                              ),
+                              color: context.colors.onSurface.withValues(alpha: 0.6),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: AppTheme.spacingMedium),
+                      const SizedBox(height: 10),
                       Wrap(
-                        spacing: AppTheme.spacingSmall,
-                        runSpacing: AppTheme.spacingSmall,
+                        spacing: 6,
+                        runSpacing: 6,
                         children: [
                           if (primaryFile?.duration != null)
                             _buildChip(
@@ -234,92 +280,208 @@ class SceneDetailsPage extends ConsumerWidget {
                         ],
                       ),
                       const Divider(height: 32, color: Colors.grey),
-                      if (scene.details != null &&
-                          scene.details!.isNotEmpty) ...[
-                        const SectionHeader(
-                          title: 'Details',
-                          padding: EdgeInsets.zero,
+                      if (hasDetails) ...[
+                        Row(
+                          children: [
+                            Text(
+                              'Details',
+                              style: context.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const Spacer(),
+                            if (canExpandDetails)
+                              TextButton(
+                                onPressed: () {
+                                  setState(
+                                    () => _detailsExpanded = !_detailsExpanded,
+                                  );
+                                },
+                                child: Text(
+                                  _detailsExpanded ? 'Show less' : 'Show more',
+                                ),
+                              ),
+                          ],
                         ),
                         const SizedBox(height: AppTheme.spacingSmall),
                         Text(
-                          scene.details!,
+                          detailsText,
+                          maxLines: _detailsExpanded ? null : _collapsedDetailsLines,
+                          overflow: _detailsExpanded ? null : TextOverflow.ellipsis,
                           style: context.textTheme.bodyMedium?.copyWith(
-                            color: context.colors.onSurface.withValues(
-                              alpha: 0.8,
+                            color: context.colors.onSurface.withValues(alpha: 0.8),
+                          ),
+                        ),
+                        const Divider(height: 32, color: Colors.grey),
+                      ],
+                      if (hasTags) ...[
+                        Row(
+                          children: [
+                            Text(
+                              'Tags',
+                              style: context.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const Spacer(),
+                            if (canExpandTags)
+                              TextButton(
+                                onPressed: () {
+                                  setState(() => _tagsExpanded = !_tagsExpanded);
+                                },
+                                child: Text(
+                                  _tagsExpanded ? 'Show less' : 'Show more',
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: AppTheme.spacingSmall),
+                        AnimatedSize(
+                          duration: const Duration(milliseconds: 180),
+                          curve: Curves.easeOut,
+                          child: ConstrainedBox(
+                            constraints: _tagsExpanded
+                                ? const BoxConstraints()
+                                : const BoxConstraints(
+                                    maxHeight: _collapsedTagRowsHeight,
+                                  ),
+                            child: ClipRect(
+                              child: Wrap(
+                                spacing: AppTheme.spacingSmall,
+                                runSpacing: AppTheme.spacingSmall,
+                                children: [
+                                  for (final index in tagIndexes)
+                                    ActionChip(
+                                      label: Text(
+                                        scene.tagNames[index],
+                                        style: context.textTheme.bodySmall,
+                                      ),
+                                      backgroundColor: context.colors.surfaceVariant,
+                                      side: BorderSide.none,
+                                      visualDensity: VisualDensity.compact,
+                                      onPressed: () {
+                                        if (index < scene.tagIds.length) {
+                                          context.push('/tag/${scene.tagIds[index]}');
+                                        }
+                                      },
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                         const Divider(height: 32, color: Colors.grey),
                       ],
-                      if (scene.tagNames.isNotEmpty) ...[
+                      if (hasPerformers) ...[
                         const SectionHeader(
-                          title: 'Tags',
+                          title: 'Performers',
                           padding: EdgeInsets.zero,
                         ),
                         const SizedBox(height: AppTheme.spacingSmall),
-                        Wrap(
-                          spacing: AppTheme.spacingSmall,
-                          runSpacing: AppTheme.spacingSmall,
-                          children: List.generate(scene.tagNames.length, (
-                            index,
-                          ) {
-                            return ActionChip(
-                              label: Text(
-                                scene.tagNames[index],
-                                style: context.textTheme.bodySmall,
+                        ListView.separated(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: _performersExpanded
+                              ? performerIndexes.length
+                              : min(_collapsedPerformerRows, performerIndexes.length),
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: AppTheme.spacingSmall),
+                          itemBuilder: (context, index) {
+                            final performerIndex = performerIndexes[index];
+                            final performerName = scene.performerNames[performerIndex].trim();
+                            final performerImagePath =
+                              performerIndex < scene.performerImagePaths.length
+                              ? scene.performerImagePaths[performerIndex]
+                              : null;
+                            final hasImage =
+                              performerImagePath != null &&
+                              performerImagePath.trim().isNotEmpty;
+
+                            return ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: hasImage
+                                  ? CircleAvatar(
+                                      backgroundColor: context.colors.surfaceVariant,
+                                      foregroundImage: NetworkImage(
+                                        performerImagePath,
+                                        headers: mediaHeaders,
+                                      ),
+                                      child: const Icon(Icons.person),
+                                    )
+                                  : const CircleAvatar(child: Icon(Icons.person)),
+                              title: Text(
+                                performerName,
+                                style: context.textTheme.bodyLarge,
                               ),
-                              backgroundColor: context.colors.surfaceVariant,
-                              side: BorderSide.none,
-                              visualDensity: VisualDensity.compact,
-                              onPressed: () {
-                                if (index < scene.tagIds.length) {
-                                  context.push('/tag/${scene.tagIds[index]}');
+                              trailing: const Icon(Icons.chevron_right),
+                              onTap: () {
+                                if (performerIndex < scene.performerIds.length) {
+                                  context.push(
+                                    '/performer/${scene.performerIds[performerIndex]}',
+                                  );
                                 }
                               },
                             );
-                          }),
+                          },
                         ),
+                        if (canExpandPerformers)
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: TextButton(
+                              onPressed: () {
+                                setState(
+                                  () => _performersExpanded = !_performersExpanded,
+                                );
+                              },
+                              child: Text(
+                                _performersExpanded ? 'Show less' : 'Show more',
+                              ),
+                            ),
+                          ),
                         const Divider(height: 32, color: Colors.grey),
                       ],
-                      const SectionHeader(
-                        title: 'Performers',
-                        padding: EdgeInsets.zero,
-                      ),
-                      const SizedBox(height: AppTheme.spacingSmall),
-                      ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: scene.performerNames.length,
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: AppTheme.spacingSmall),
-                        itemBuilder: (context, index) {
-                          final hasImage =
-                              index < scene.performerImagePaths.length &&
-                              scene.performerImagePaths[index] != null;
-                          return ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: hasImage
-                                ? CircleAvatar(
-                                    backgroundImage: NetworkImage(
-                                      scene.performerImagePaths[index]!,
+                      if (scene.studioId != null) ...[
+                        SectionHeader(
+                          title: 'More From Studio',
+                          onViewAll: canOpenStudio
+                              ? () => context.push('/studio/${scene.studioId}/media')
+                              : null,
+                          padding: EdgeInsets.zero,
+                        ),
+                        const SizedBox(height: AppTheme.spacingSmall),
+                        studioMediaAsync.when(
+                          data: (mediaItems) {
+                            final shuffled = mediaItems
+                                .where((item) => item.sceneId != scene.id)
+                                .toList()
+                              ..shuffle(Random(scene.id.hashCode));
+
+                            return MediaStrip(
+                              items: shuffled
+                                  .map(
+                                    (item) => MediaStripItem(
+                                      id: item.sceneId,
+                                      title: item.title,
+                                      thumbnailUrl: item.thumbnailUrl,
+                                      onTap: () => context.push('/scene/${item.sceneId}'),
                                     ),
                                   )
-                                : const CircleAvatar(child: Icon(Icons.person)),
-                            title: Text(
-                              scene.performerNames[index],
-                              style: context.textTheme.bodyLarge,
+                                  .toList(),
+                              headers: mediaHeaders,
+                            );
+                          },
+                          loading: () => const SizedBox(
+                            height: 100,
+                            child: Center(child: CircularProgressIndicator()),
+                          ),
+                          error: (err, stack) => Text(
+                            'Failed to load studio media: $err',
+                            style: TextStyle(
+                              color: context.colors.onSurface.withValues(alpha: 0.7),
                             ),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () {
-                              if (index < scene.performerIds.length) {
-                                context.push(
-                                  '/performer/${scene.performerIds[index]}',
-                                );
-                              }
-                            },
-                          );
-                        },
-                      ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -330,7 +492,7 @@ class SceneDetailsPage extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => ErrorStateView(
           message: 'Failed to load scene details.\n$err',
-          onRetry: () => ref.refresh(sceneDetailsProvider(sceneId)),
+          onRetry: () => ref.refresh(sceneDetailsProvider(widget.sceneId)),
         ),
       ),
     );

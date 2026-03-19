@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,24 +11,26 @@ import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/media_strip.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 
-import '../../../scenes/presentation/providers/scene_list_provider.dart';
+import '../providers/performer_list_provider.dart';
 
 class PerformerDetailsPage extends ConsumerWidget {
   final String performerId;
   const PerformerDetailsPage({required this.performerId, super.key});
 
-  Future<void> _openRandomScene(BuildContext context, WidgetRef ref) async {
-    final randomScene = await ref.read(sceneListProvider.notifier).getRandomScene(performerId: performerId);
+  Future<void> _openRandomPerformer(BuildContext context, WidgetRef ref) async {
+    final randomPerformer = await ref
+        .read(performerListProvider.notifier)
+        .getRandomPerformer(useCurrentFilter: true, excludePerformerId: performerId);
     if (!context.mounted) return;
 
-    if (randomScene == null) {
+    if (randomPerformer == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No scenes available for this performer')),
+        const SnackBar(content: Text('No performers available for random navigation')),
       );
       return;
     }
 
-    context.push('/scene/${randomScene.id}');
+    context.push('/performer/${randomPerformer.id}');
   }
 
   int? _calculateAge(String? birthdate) {
@@ -53,13 +57,11 @@ class PerformerDetailsPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Performer Details'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.casino_outlined),
-            tooltip: 'Random scene with this performer',
-            onPressed: () => _openRandomScene(context, ref),
-          ),
-        ],
+      ),
+      floatingActionButton: FloatingActionButton.small(
+        onPressed: () => _openRandomPerformer(context, ref),
+        tooltip: 'Random performer',
+        child: const Icon(Icons.casino_outlined),
       ),
       body: performerAsync.when(
         data: (performer) {
@@ -71,21 +73,28 @@ class PerformerDetailsPage extends ConsumerWidget {
                 Container(
                   height: 300,
                   width: double.infinity,
-                  decoration: BoxDecoration(
-                    image: performer.imagePath != null
-                        ? DecorationImage(
-                            image: NetworkImage(
-                              performer.imagePath!,
-                              headers: mediaHeaders,
+                  color: context.colors.surfaceVariant,
+                  child: performer.imagePath != null
+                      ? Image.network(
+                          performer.imagePath!,
+                          headers: mediaHeaders,
+                          fit: BoxFit.contain,
+                          alignment: Alignment.center,
+                          errorBuilder: (context, error, stackTrace) => Icon(
+                            Icons.person,
+                            size: 100,
+                            color: context.colors.onSurfaceVariant.withValues(
+                              alpha: 0.5,
                             ),
-                            fit: BoxFit.cover,
-                          )
-                        : null,
-                    color: context.colors.surfaceVariant,
-                  ),
-                  child: performer.imagePath == null
-                      ? Icon(Icons.person, size: 100, color: context.colors.onSurfaceVariant.withValues(alpha: 0.5))
-                      : null,
+                          ),
+                        )
+                      : Icon(
+                          Icons.person,
+                          size: 100,
+                          color: context.colors.onSurfaceVariant.withValues(
+                            alpha: 0.5,
+                          ),
+                        ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(AppTheme.spacingMedium),
@@ -188,8 +197,10 @@ class PerformerDetailsPage extends ConsumerWidget {
                         onViewAll: () => context.push('/performer/${performer.id}/media'),
                       ),
                       mediaAsync.when(
-                        data: (mediaItems) => MediaStrip(
-                          items: mediaItems
+                        data: (mediaItems) {
+                          final shuffledItems = [...mediaItems]..shuffle(Random());
+                          return MediaStrip(
+                            items: shuffledItems
                               .map((item) => MediaStripItem(
                                     id: item.sceneId,
                                     title: item.title,
@@ -197,8 +208,9 @@ class PerformerDetailsPage extends ConsumerWidget {
                                     onTap: () => context.push('/scene/${item.sceneId}'),
                                   ))
                               .toList(),
-                          headers: mediaHeaders,
-                        ),
+                            headers: mediaHeaders,
+                          );
+                        },
                         loading: () => const SizedBox(
                           height: 100,
                           child: Center(child: CircularProgressIndicator()),

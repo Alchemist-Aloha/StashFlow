@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -10,27 +12,27 @@ import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/media_strip.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 
-import '../../../scenes/presentation/providers/scene_list_provider.dart';
+import '../providers/studio_list_provider.dart';
 
 class StudioDetailsPage extends ConsumerWidget {
   final String studioId;
 
   const StudioDetailsPage({required this.studioId, super.key});
 
-  Future<void> _openRandomScene(BuildContext context, WidgetRef ref) async {
-    final randomScene = await ref
-        .read(sceneListProvider.notifier)
-        .getRandomScene(studioId: studioId);
+  Future<void> _openRandomStudio(BuildContext context, WidgetRef ref) async {
+    final randomStudio = await ref
+        .read(studioListProvider.notifier)
+        .getRandomStudio(useCurrentFilter: true, excludeStudioId: studioId);
     if (!context.mounted) return;
 
-    if (randomScene == null) {
+    if (randomStudio == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No scenes available for this studio')),
+        const SnackBar(content: Text('No studios available for random navigation')),
       );
       return;
     }
 
-    context.push('/scene/${randomScene.id}');
+    context.push('/studio/${randomStudio.id}');
   }
 
   @override
@@ -42,13 +44,11 @@ class StudioDetailsPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Studio Details'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.casino_outlined),
-            tooltip: 'Random scene from this studio',
-            onPressed: () => _openRandomScene(context, ref),
-          ),
-        ],
+      ),
+      floatingActionButton: FloatingActionButton.small(
+        onPressed: () => _openRandomStudio(context, ref),
+        tooltip: 'Random studio',
+        child: const Icon(Icons.casino_outlined),
       ),
       body: studioAsync.when(
         data: (studio) => SingleChildScrollView(
@@ -63,7 +63,8 @@ class StudioDetailsPage extends ConsumerWidget {
                     ? Image.network(
                         studio.imagePath!,
                         headers: mediaHeaders,
-                        fit: BoxFit.cover,
+                        fit: BoxFit.contain,
+                        alignment: Alignment.center,
                         errorBuilder: (context, error, stackTrace) => Center(
                           child: Icon(
                             Icons.apartment,
@@ -122,8 +123,10 @@ class StudioDetailsPage extends ConsumerWidget {
                           context.push('/studio/${studio.id}/media'),
                     ),
                     mediaAsync.when(
-                      data: (mediaItems) => MediaStrip(
-                        items: mediaItems
+                      data: (mediaItems) {
+                        final shuffledItems = [...mediaItems]..shuffle(Random());
+                        return MediaStrip(
+                          items: shuffledItems
                             .map(
                               (item) => MediaStripItem(
                                 id: item.sceneId,
@@ -134,8 +137,9 @@ class StudioDetailsPage extends ConsumerWidget {
                               ),
                             )
                             .toList(),
-                        headers: mediaHeaders,
-                      ),
+                          headers: mediaHeaders,
+                        );
+                      },
                       loading: () => const SizedBox(
                         height: 100,
                         child: Center(child: CircularProgressIndicator()),

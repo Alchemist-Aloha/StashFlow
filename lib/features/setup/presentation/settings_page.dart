@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:graphql/client.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/presentation/theme/theme_mode_provider.dart';
 import '../../galleries/presentation/providers/gallery_details_provider.dart';
 import '../../galleries/presentation/providers/gallery_list_provider.dart';
 import '../../groups/presentation/providers/group_details_provider.dart';
@@ -44,6 +45,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   bool _sceneGridLayout = false;
   bool _autoplayNext = false;
   bool _showVideoDebugInfo = false;
+  ThemeMode _themeMode = ThemeMode.system;
   bool _loading = true;
 
   bool _isHostOnlyInput(String raw) {
@@ -112,13 +114,20 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final sceneGridLayout = prefs.getBool(_sceneGridLayoutKey) ?? false;
     final autoplayNext = prefs.getBool(_autoplayNextKey) ?? false;
     final showVideoDebugInfo = prefs.getBool(_showVideoDebugInfoKey) ?? false;
+    final themeMode = ref.read(appThemeModeProvider);
     _baseUrlController.text = url;
     _apiKeyController.text = apiKey;
     _preferSceneStreams = preferSceneStreams;
     _sceneGridLayout = sceneGridLayout;
     _autoplayNext = autoplayNext;
     _showVideoDebugInfo = showVideoDebugInfo;
+    _themeMode = themeMode;
     setState(() => _loading = false);
+  }
+
+  Future<void> _saveThemeMode(ThemeMode mode) async {
+    setState(() => _themeMode = mode);
+    await ref.read(appThemeModeProvider.notifier).setThemeMode(mode);
   }
 
   Future<void> _saveServerSettings() async {
@@ -325,6 +334,40 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     onChanged: (value) async {
                       setState(() => _showVideoDebugInfo = value);
                       await _saveToggleSettings();
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Appearance',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8),
+                  SegmentedButton<ThemeMode>(
+                    showSelectedIcon: false,
+                    style: ButtonStyle(
+                      visualDensity: VisualDensity.compact,
+                    ),
+                    segments: const [
+                      ButtonSegment<ThemeMode>(
+                        value: ThemeMode.system,
+                        icon: Icon(Icons.brightness_auto_outlined),
+                        label: Text('System'),
+                      ),
+                      ButtonSegment<ThemeMode>(
+                        value: ThemeMode.light,
+                        icon: Icon(Icons.light_mode_outlined),
+                        label: Text('Light'),
+                      ),
+                      ButtonSegment<ThemeMode>(
+                        value: ThemeMode.dark,
+                        icon: Icon(Icons.dark_mode_outlined),
+                        label: Text('Dark'),
+                      ),
+                    ],
+                    selected: {_themeMode},
+                    onSelectionChanged: (selection) {
+                      final selected = selection.first;
+                      _saveThemeMode(selected);
                     },
                   ),
                   const SizedBox(height: 12),
