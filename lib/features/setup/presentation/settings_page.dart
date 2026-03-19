@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import 'providers/connection_provider.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -53,6 +54,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     _baseUrlController.text = normalizedUrl;
 
     ref.invalidate(graphqlClientProvider);
+    ref.invalidate(connectionStatusProvider);
 
     if (!mounted) return;
     ScaffoldMessenger.of(
@@ -129,6 +131,37 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         child: const Text('Clear'),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 24),
+                  const Text('Connection Status', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final statusInfo = ref.watch(connectionStatusProvider);
+                      return statusInfo.when(
+                        data: (version) => Row(
+                          children: [
+                            const Icon(Icons.check_circle, color: Colors.green),
+                            const SizedBox(width: 8),
+                            Text('Connected (Stash $version)'),
+                          ],
+                        ),
+                        loading: () => const Row(
+                          children: [
+                            SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2)),
+                            SizedBox(width: 8),
+                            Text('Checking connection...'),
+                          ],
+                        ),
+                        error: (error, stack) => Row(
+                          children: [
+                            const Icon(Icons.error, color: Colors.red),
+                            const SizedBox(width: 8),
+                            Expanded(child: Text('Failed: $error', style: const TextStyle(color: Colors.red))),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

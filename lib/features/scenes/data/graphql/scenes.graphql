@@ -16,10 +16,12 @@ fragment SlimSceneData on Scene {
   studio {
     id
     name
+    image_path
   }
   performers {
     id
     name
+    image_path
   }
 }
 

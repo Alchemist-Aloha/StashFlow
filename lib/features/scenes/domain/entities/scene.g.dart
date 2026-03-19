@@ -24,11 +24,15 @@ _Scene _$SceneFromJson(Map<String, dynamic> json) => _Scene(
   paths: ScenePaths.fromJson(json['paths'] as Map<String, dynamic>),
   studioId: json['studio_id'] as String?,
   studioName: json['studio_name'] as String?,
+  studioImagePath: json['studio_image_path'] as String?,
   performerIds: (json['performer_ids'] as List<dynamic>)
       .map((e) => e as String)
       .toList(),
   performerNames: (json['performer_names'] as List<dynamic>)
       .map((e) => e as String)
+      .toList(),
+  performerImagePaths: (json['performer_image_paths'] as List<dynamic>)
+      .map((e) => e as String?)
       .toList(),
   tagIds: (json['tag_ids'] as List<dynamic>).map((e) => e as String).toList(),
   tagNames: (json['tag_names'] as List<dynamic>)
@@ -52,8 +56,10 @@ Map<String, dynamic> _$SceneToJson(_Scene instance) => <String, dynamic>{
   'paths': instance.paths,
   'studio_id': instance.studioId,
   'studio_name': instance.studioName,
+  'studio_image_path': instance.studioImagePath,
   'performer_ids': instance.performerIds,
   'performer_names': instance.performerNames,
+  'performer_image_paths': instance.performerImagePaths,
   'tag_ids': instance.tagIds,
   'tag_names': instance.tagNames,
 };

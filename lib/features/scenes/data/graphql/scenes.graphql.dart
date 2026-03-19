@@ -539,6 +539,13 @@ const fragmentDefinitionSlimSceneData = FragmentDefinitionNode(
               selectionSet: null,
             ),
             FieldNode(
+              name: NameNode(value: 'image_path'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
               name: NameNode(value: '__typename'),
               alias: null,
               arguments: [],
@@ -564,6 +571,13 @@ const fragmentDefinitionSlimSceneData = FragmentDefinitionNode(
             ),
             FieldNode(
               name: NameNode(value: 'name'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'image_path'),
               alias: null,
               arguments: [],
               directives: [],
@@ -782,16 +796,19 @@ class Fragment$SlimSceneData$studio {
   Fragment$SlimSceneData$studio({
     required this.id,
     required this.name,
+    this.image_path,
     this.$__typename = 'Studio',
   });
 
   factory Fragment$SlimSceneData$studio.fromJson(Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
+    final l$image_path = json['image_path'];
     final l$$__typename = json['__typename'];
     return Fragment$SlimSceneData$studio(
       id: (l$id as String),
       name: (l$name as String),
+      image_path: (l$image_path as String?),
       $__typename: (l$$__typename as String),
     );
   }
@@ -799,6 +816,8 @@ class Fragment$SlimSceneData$studio {
   final String id;
 
   final String name;
+
+  final String? image_path;
 
   final String $__typename;
 
@@ -808,6 +827,8 @@ class Fragment$SlimSceneData$studio {
     _resultData['id'] = l$id;
     final l$name = name;
     _resultData['name'] = l$name;
+    final l$image_path = image_path;
+    _resultData['image_path'] = l$image_path;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -817,8 +838,9 @@ class Fragment$SlimSceneData$studio {
   int get hashCode {
     final l$id = id;
     final l$name = name;
+    final l$image_path = image_path;
     final l$$__typename = $__typename;
-    return Object.hashAll([l$id, l$name, l$$__typename]);
+    return Object.hashAll([l$id, l$name, l$image_path, l$$__typename]);
   }
 
   @override
@@ -838,6 +860,11 @@ class Fragment$SlimSceneData$studio {
     final l$name = name;
     final lOther$name = other.name;
     if (l$name != lOther$name) {
+      return false;
+    }
+    final l$image_path = image_path;
+    final lOther$image_path = other.image_path;
+    if (l$image_path != lOther$image_path) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -864,7 +891,12 @@ abstract class CopyWith$Fragment$SlimSceneData$studio<TRes> {
   factory CopyWith$Fragment$SlimSceneData$studio.stub(TRes res) =
       _CopyWithStubImpl$Fragment$SlimSceneData$studio;
 
-  TRes call({String? id, String? name, String? $__typename});
+  TRes call({
+    String? id,
+    String? name,
+    String? image_path,
+    String? $__typename,
+  });
 }
 
 class _CopyWithImpl$Fragment$SlimSceneData$studio<TRes>
@@ -880,6 +912,7 @@ class _CopyWithImpl$Fragment$SlimSceneData$studio<TRes>
   TRes call({
     Object? id = _undefined,
     Object? name = _undefined,
+    Object? image_path = _undefined,
     Object? $__typename = _undefined,
   }) => _then(
     Fragment$SlimSceneData$studio(
@@ -887,6 +920,9 @@ class _CopyWithImpl$Fragment$SlimSceneData$studio<TRes>
       name: name == _undefined || name == null
           ? _instance.name
           : (name as String),
+      image_path: image_path == _undefined
+          ? _instance.image_path
+          : (image_path as String?),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
@@ -900,13 +936,15 @@ class _CopyWithStubImpl$Fragment$SlimSceneData$studio<TRes>
 
   TRes _res;
 
-  call({String? id, String? name, String? $__typename}) => _res;
+  call({String? id, String? name, String? image_path, String? $__typename}) =>
+      _res;
 }
 
 class Fragment$SlimSceneData$performers {
   Fragment$SlimSceneData$performers({
     required this.id,
     required this.name,
+    this.image_path,
     this.$__typename = 'Performer',
   });
 
@@ -915,10 +953,12 @@ class Fragment$SlimSceneData$performers {
   ) {
     final l$id = json['id'];
     final l$name = json['name'];
+    final l$image_path = json['image_path'];
     final l$$__typename = json['__typename'];
     return Fragment$SlimSceneData$performers(
       id: (l$id as String),
       name: (l$name as String),
+      image_path: (l$image_path as String?),
       $__typename: (l$$__typename as String),
     );
   }
@@ -926,6 +966,8 @@ class Fragment$SlimSceneData$performers {
   final String id;
 
   final String name;
+
+  final String? image_path;
 
   final String $__typename;
 
@@ -935,6 +977,8 @@ class Fragment$SlimSceneData$performers {
     _resultData['id'] = l$id;
     final l$name = name;
     _resultData['name'] = l$name;
+    final l$image_path = image_path;
+    _resultData['image_path'] = l$image_path;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -944,8 +988,9 @@ class Fragment$SlimSceneData$performers {
   int get hashCode {
     final l$id = id;
     final l$name = name;
+    final l$image_path = image_path;
     final l$$__typename = $__typename;
-    return Object.hashAll([l$id, l$name, l$$__typename]);
+    return Object.hashAll([l$id, l$name, l$image_path, l$$__typename]);
   }
 
   @override
@@ -965,6 +1010,11 @@ class Fragment$SlimSceneData$performers {
     final l$name = name;
     final lOther$name = other.name;
     if (l$name != lOther$name) {
+      return false;
+    }
+    final l$image_path = image_path;
+    final lOther$image_path = other.image_path;
+    if (l$image_path != lOther$image_path) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -991,7 +1041,12 @@ abstract class CopyWith$Fragment$SlimSceneData$performers<TRes> {
   factory CopyWith$Fragment$SlimSceneData$performers.stub(TRes res) =
       _CopyWithStubImpl$Fragment$SlimSceneData$performers;
 
-  TRes call({String? id, String? name, String? $__typename});
+  TRes call({
+    String? id,
+    String? name,
+    String? image_path,
+    String? $__typename,
+  });
 }
 
 class _CopyWithImpl$Fragment$SlimSceneData$performers<TRes>
@@ -1007,6 +1062,7 @@ class _CopyWithImpl$Fragment$SlimSceneData$performers<TRes>
   TRes call({
     Object? id = _undefined,
     Object? name = _undefined,
+    Object? image_path = _undefined,
     Object? $__typename = _undefined,
   }) => _then(
     Fragment$SlimSceneData$performers(
@@ -1014,6 +1070,9 @@ class _CopyWithImpl$Fragment$SlimSceneData$performers<TRes>
       name: name == _undefined || name == null
           ? _instance.name
           : (name as String),
+      image_path: image_path == _undefined
+          ? _instance.image_path
+          : (image_path as String?),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
@@ -1027,7 +1086,8 @@ class _CopyWithStubImpl$Fragment$SlimSceneData$performers<TRes>
 
   TRes _res;
 
-  call({String? id, String? name, String? $__typename}) => _res;
+  call({String? id, String? name, String? image_path, String? $__typename}) =>
+      _res;
 }
 
 class Fragment$SceneData implements Fragment$SlimSceneData {
@@ -1940,16 +2000,19 @@ class Fragment$SceneData$studio implements Fragment$SlimSceneData$studio {
   Fragment$SceneData$studio({
     required this.id,
     required this.name,
+    this.image_path,
     this.$__typename = 'Studio',
   });
 
   factory Fragment$SceneData$studio.fromJson(Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
+    final l$image_path = json['image_path'];
     final l$$__typename = json['__typename'];
     return Fragment$SceneData$studio(
       id: (l$id as String),
       name: (l$name as String),
+      image_path: (l$image_path as String?),
       $__typename: (l$$__typename as String),
     );
   }
@@ -1957,6 +2020,8 @@ class Fragment$SceneData$studio implements Fragment$SlimSceneData$studio {
   final String id;
 
   final String name;
+
+  final String? image_path;
 
   final String $__typename;
 
@@ -1966,6 +2031,8 @@ class Fragment$SceneData$studio implements Fragment$SlimSceneData$studio {
     _resultData['id'] = l$id;
     final l$name = name;
     _resultData['name'] = l$name;
+    final l$image_path = image_path;
+    _resultData['image_path'] = l$image_path;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -1975,8 +2042,9 @@ class Fragment$SceneData$studio implements Fragment$SlimSceneData$studio {
   int get hashCode {
     final l$id = id;
     final l$name = name;
+    final l$image_path = image_path;
     final l$$__typename = $__typename;
-    return Object.hashAll([l$id, l$name, l$$__typename]);
+    return Object.hashAll([l$id, l$name, l$image_path, l$$__typename]);
   }
 
   @override
@@ -1996,6 +2064,11 @@ class Fragment$SceneData$studio implements Fragment$SlimSceneData$studio {
     final l$name = name;
     final lOther$name = other.name;
     if (l$name != lOther$name) {
+      return false;
+    }
+    final l$image_path = image_path;
+    final lOther$image_path = other.image_path;
+    if (l$image_path != lOther$image_path) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -2022,7 +2095,12 @@ abstract class CopyWith$Fragment$SceneData$studio<TRes> {
   factory CopyWith$Fragment$SceneData$studio.stub(TRes res) =
       _CopyWithStubImpl$Fragment$SceneData$studio;
 
-  TRes call({String? id, String? name, String? $__typename});
+  TRes call({
+    String? id,
+    String? name,
+    String? image_path,
+    String? $__typename,
+  });
 }
 
 class _CopyWithImpl$Fragment$SceneData$studio<TRes>
@@ -2038,6 +2116,7 @@ class _CopyWithImpl$Fragment$SceneData$studio<TRes>
   TRes call({
     Object? id = _undefined,
     Object? name = _undefined,
+    Object? image_path = _undefined,
     Object? $__typename = _undefined,
   }) => _then(
     Fragment$SceneData$studio(
@@ -2045,6 +2124,9 @@ class _CopyWithImpl$Fragment$SceneData$studio<TRes>
       name: name == _undefined || name == null
           ? _instance.name
           : (name as String),
+      image_path: image_path == _undefined
+          ? _instance.image_path
+          : (image_path as String?),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
@@ -2058,7 +2140,8 @@ class _CopyWithStubImpl$Fragment$SceneData$studio<TRes>
 
   TRes _res;
 
-  call({String? id, String? name, String? $__typename}) => _res;
+  call({String? id, String? name, String? image_path, String? $__typename}) =>
+      _res;
 }
 
 class Fragment$SceneData$performers
@@ -2066,16 +2149,19 @@ class Fragment$SceneData$performers
   Fragment$SceneData$performers({
     required this.id,
     required this.name,
+    this.image_path,
     this.$__typename = 'Performer',
   });
 
   factory Fragment$SceneData$performers.fromJson(Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
+    final l$image_path = json['image_path'];
     final l$$__typename = json['__typename'];
     return Fragment$SceneData$performers(
       id: (l$id as String),
       name: (l$name as String),
+      image_path: (l$image_path as String?),
       $__typename: (l$$__typename as String),
     );
   }
@@ -2083,6 +2169,8 @@ class Fragment$SceneData$performers
   final String id;
 
   final String name;
+
+  final String? image_path;
 
   final String $__typename;
 
@@ -2092,6 +2180,8 @@ class Fragment$SceneData$performers
     _resultData['id'] = l$id;
     final l$name = name;
     _resultData['name'] = l$name;
+    final l$image_path = image_path;
+    _resultData['image_path'] = l$image_path;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -2101,8 +2191,9 @@ class Fragment$SceneData$performers
   int get hashCode {
     final l$id = id;
     final l$name = name;
+    final l$image_path = image_path;
     final l$$__typename = $__typename;
-    return Object.hashAll([l$id, l$name, l$$__typename]);
+    return Object.hashAll([l$id, l$name, l$image_path, l$$__typename]);
   }
 
   @override
@@ -2122,6 +2213,11 @@ class Fragment$SceneData$performers
     final l$name = name;
     final lOther$name = other.name;
     if (l$name != lOther$name) {
+      return false;
+    }
+    final l$image_path = image_path;
+    final lOther$image_path = other.image_path;
+    if (l$image_path != lOther$image_path) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -2148,7 +2244,12 @@ abstract class CopyWith$Fragment$SceneData$performers<TRes> {
   factory CopyWith$Fragment$SceneData$performers.stub(TRes res) =
       _CopyWithStubImpl$Fragment$SceneData$performers;
 
-  TRes call({String? id, String? name, String? $__typename});
+  TRes call({
+    String? id,
+    String? name,
+    String? image_path,
+    String? $__typename,
+  });
 }
 
 class _CopyWithImpl$Fragment$SceneData$performers<TRes>
@@ -2164,6 +2265,7 @@ class _CopyWithImpl$Fragment$SceneData$performers<TRes>
   TRes call({
     Object? id = _undefined,
     Object? name = _undefined,
+    Object? image_path = _undefined,
     Object? $__typename = _undefined,
   }) => _then(
     Fragment$SceneData$performers(
@@ -2171,6 +2273,9 @@ class _CopyWithImpl$Fragment$SceneData$performers<TRes>
       name: name == _undefined || name == null
           ? _instance.name
           : (name as String),
+      image_path: image_path == _undefined
+          ? _instance.image_path
+          : (image_path as String?),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
@@ -2184,7 +2289,8 @@ class _CopyWithStubImpl$Fragment$SceneData$performers<TRes>
 
   TRes _res;
 
-  call({String? id, String? name, String? $__typename}) => _res;
+  call({String? id, String? name, String? image_path, String? $__typename}) =>
+      _res;
 }
 
 class Fragment$SceneData$files {

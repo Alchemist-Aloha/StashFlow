@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Scene {
 
- String get id; String get title; String? get details; String? get path; DateTime get date; int? get rating100;@JsonKey(name: 'o_counter') int get oCounter; bool get organized; bool get interactive;@JsonKey(name: 'resume_time') double? get resumeTime;@JsonKey(name: 'play_count') int get playCount; List<SceneFile> get files; ScenePaths get paths;@JsonKey(name: 'studio_id') String? get studioId;@JsonKey(name: 'studio_name') String? get studioName;@JsonKey(name: 'performer_ids') List<String> get performerIds;@JsonKey(name: 'performer_names') List<String> get performerNames;@JsonKey(name: 'tag_ids') List<String> get tagIds;@JsonKey(name: 'tag_names') List<String> get tagNames;
+ String get id; String get title; String? get details; String? get path; DateTime get date; int? get rating100;@JsonKey(name: 'o_counter') int get oCounter; bool get organized; bool get interactive;@JsonKey(name: 'resume_time') double? get resumeTime;@JsonKey(name: 'play_count') int get playCount; List<SceneFile> get files; ScenePaths get paths;@JsonKey(name: 'studio_id') String? get studioId;@JsonKey(name: 'studio_name') String? get studioName;@JsonKey(name: 'studio_image_path') String? get studioImagePath;@JsonKey(name: 'performer_ids') List<String> get performerIds;@JsonKey(name: 'performer_names') List<String> get performerNames;@JsonKey(name: 'performer_image_paths') List<String?> get performerImagePaths;@JsonKey(name: 'tag_ids') List<String> get tagIds;@JsonKey(name: 'tag_names') List<String> get tagNames;
 /// Create a copy of Scene
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $SceneCopyWith<Scene> get copyWith => _$SceneCopyWithImpl<Scene>(this as Scene, 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Scene&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.details, details) || other.details == details)&&(identical(other.path, path) || other.path == path)&&(identical(other.date, date) || other.date == date)&&(identical(other.rating100, rating100) || other.rating100 == rating100)&&(identical(other.oCounter, oCounter) || other.oCounter == oCounter)&&(identical(other.organized, organized) || other.organized == organized)&&(identical(other.interactive, interactive) || other.interactive == interactive)&&(identical(other.resumeTime, resumeTime) || other.resumeTime == resumeTime)&&(identical(other.playCount, playCount) || other.playCount == playCount)&&const DeepCollectionEquality().equals(other.files, files)&&(identical(other.paths, paths) || other.paths == paths)&&(identical(other.studioId, studioId) || other.studioId == studioId)&&(identical(other.studioName, studioName) || other.studioName == studioName)&&const DeepCollectionEquality().equals(other.performerIds, performerIds)&&const DeepCollectionEquality().equals(other.performerNames, performerNames)&&const DeepCollectionEquality().equals(other.tagIds, tagIds)&&const DeepCollectionEquality().equals(other.tagNames, tagNames));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Scene&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.details, details) || other.details == details)&&(identical(other.path, path) || other.path == path)&&(identical(other.date, date) || other.date == date)&&(identical(other.rating100, rating100) || other.rating100 == rating100)&&(identical(other.oCounter, oCounter) || other.oCounter == oCounter)&&(identical(other.organized, organized) || other.organized == organized)&&(identical(other.interactive, interactive) || other.interactive == interactive)&&(identical(other.resumeTime, resumeTime) || other.resumeTime == resumeTime)&&(identical(other.playCount, playCount) || other.playCount == playCount)&&const DeepCollectionEquality().equals(other.files, files)&&(identical(other.paths, paths) || other.paths == paths)&&(identical(other.studioId, studioId) || other.studioId == studioId)&&(identical(other.studioName, studioName) || other.studioName == studioName)&&(identical(other.studioImagePath, studioImagePath) || other.studioImagePath == studioImagePath)&&const DeepCollectionEquality().equals(other.performerIds, performerIds)&&const DeepCollectionEquality().equals(other.performerNames, performerNames)&&const DeepCollectionEquality().equals(other.performerImagePaths, performerImagePaths)&&const DeepCollectionEquality().equals(other.tagIds, tagIds)&&const DeepCollectionEquality().equals(other.tagNames, tagNames));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,title,details,path,date,rating100,oCounter,organized,interactive,resumeTime,playCount,const DeepCollectionEquality().hash(files),paths,studioId,studioName,const DeepCollectionEquality().hash(performerIds),const DeepCollectionEquality().hash(performerNames),const DeepCollectionEquality().hash(tagIds),const DeepCollectionEquality().hash(tagNames)]);
+int get hashCode => Object.hashAll([runtimeType,id,title,details,path,date,rating100,oCounter,organized,interactive,resumeTime,playCount,const DeepCollectionEquality().hash(files),paths,studioId,studioName,studioImagePath,const DeepCollectionEquality().hash(performerIds),const DeepCollectionEquality().hash(performerNames),const DeepCollectionEquality().hash(performerImagePaths),const DeepCollectionEquality().hash(tagIds),const DeepCollectionEquality().hash(tagNames)]);
 
 @override
 String toString() {
-  return 'Scene(id: $id, title: $title, details: $details, path: $path, date: $date, rating100: $rating100, oCounter: $oCounter, organized: $organized, interactive: $interactive, resumeTime: $resumeTime, playCount: $playCount, files: $files, paths: $paths, studioId: $studioId, studioName: $studioName, performerIds: $performerIds, performerNames: $performerNames, tagIds: $tagIds, tagNames: $tagNames)';
+  return 'Scene(id: $id, title: $title, details: $details, path: $path, date: $date, rating100: $rating100, oCounter: $oCounter, organized: $organized, interactive: $interactive, resumeTime: $resumeTime, playCount: $playCount, files: $files, paths: $paths, studioId: $studioId, studioName: $studioName, studioImagePath: $studioImagePath, performerIds: $performerIds, performerNames: $performerNames, performerImagePaths: $performerImagePaths, tagIds: $tagIds, tagNames: $tagNames)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $SceneCopyWith<$Res>  {
   factory $SceneCopyWith(Scene value, $Res Function(Scene) _then) = _$SceneCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, String? details, String? path, DateTime date, int? rating100,@JsonKey(name: 'o_counter') int oCounter, bool organized, bool interactive,@JsonKey(name: 'resume_time') double? resumeTime,@JsonKey(name: 'play_count') int playCount, List<SceneFile> files, ScenePaths paths,@JsonKey(name: 'studio_id') String? studioId,@JsonKey(name: 'studio_name') String? studioName,@JsonKey(name: 'performer_ids') List<String> performerIds,@JsonKey(name: 'performer_names') List<String> performerNames,@JsonKey(name: 'tag_ids') List<String> tagIds,@JsonKey(name: 'tag_names') List<String> tagNames
+ String id, String title, String? details, String? path, DateTime date, int? rating100,@JsonKey(name: 'o_counter') int oCounter, bool organized, bool interactive,@JsonKey(name: 'resume_time') double? resumeTime,@JsonKey(name: 'play_count') int playCount, List<SceneFile> files, ScenePaths paths,@JsonKey(name: 'studio_id') String? studioId,@JsonKey(name: 'studio_name') String? studioName,@JsonKey(name: 'studio_image_path') String? studioImagePath,@JsonKey(name: 'performer_ids') List<String> performerIds,@JsonKey(name: 'performer_names') List<String> performerNames,@JsonKey(name: 'performer_image_paths') List<String?> performerImagePaths,@JsonKey(name: 'tag_ids') List<String> tagIds,@JsonKey(name: 'tag_names') List<String> tagNames
 });
 
 
@@ -65,7 +65,7 @@ class _$SceneCopyWithImpl<$Res>
 
 /// Create a copy of Scene
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? details = freezed,Object? path = freezed,Object? date = null,Object? rating100 = freezed,Object? oCounter = null,Object? organized = null,Object? interactive = null,Object? resumeTime = freezed,Object? playCount = null,Object? files = null,Object? paths = null,Object? studioId = freezed,Object? studioName = freezed,Object? performerIds = null,Object? performerNames = null,Object? tagIds = null,Object? tagNames = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? details = freezed,Object? path = freezed,Object? date = null,Object? rating100 = freezed,Object? oCounter = null,Object? organized = null,Object? interactive = null,Object? resumeTime = freezed,Object? playCount = null,Object? files = null,Object? paths = null,Object? studioId = freezed,Object? studioName = freezed,Object? studioImagePath = freezed,Object? performerIds = null,Object? performerNames = null,Object? performerImagePaths = null,Object? tagIds = null,Object? tagNames = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -82,9 +82,11 @@ as int,files: null == files ? _self.files : files // ignore: cast_nullable_to_no
 as List<SceneFile>,paths: null == paths ? _self.paths : paths // ignore: cast_nullable_to_non_nullable
 as ScenePaths,studioId: freezed == studioId ? _self.studioId : studioId // ignore: cast_nullable_to_non_nullable
 as String?,studioName: freezed == studioName ? _self.studioName : studioName // ignore: cast_nullable_to_non_nullable
+as String?,studioImagePath: freezed == studioImagePath ? _self.studioImagePath : studioImagePath // ignore: cast_nullable_to_non_nullable
 as String?,performerIds: null == performerIds ? _self.performerIds : performerIds // ignore: cast_nullable_to_non_nullable
 as List<String>,performerNames: null == performerNames ? _self.performerNames : performerNames // ignore: cast_nullable_to_non_nullable
-as List<String>,tagIds: null == tagIds ? _self.tagIds : tagIds // ignore: cast_nullable_to_non_nullable
+as List<String>,performerImagePaths: null == performerImagePaths ? _self.performerImagePaths : performerImagePaths // ignore: cast_nullable_to_non_nullable
+as List<String?>,tagIds: null == tagIds ? _self.tagIds : tagIds // ignore: cast_nullable_to_non_nullable
 as List<String>,tagNames: null == tagNames ? _self.tagNames : tagNames // ignore: cast_nullable_to_non_nullable
 as List<String>,
   ));
@@ -180,10 +182,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String? details,  String? path,  DateTime date,  int? rating100, @JsonKey(name: 'o_counter')  int oCounter,  bool organized,  bool interactive, @JsonKey(name: 'resume_time')  double? resumeTime, @JsonKey(name: 'play_count')  int playCount,  List<SceneFile> files,  ScenePaths paths, @JsonKey(name: 'studio_id')  String? studioId, @JsonKey(name: 'studio_name')  String? studioName, @JsonKey(name: 'performer_ids')  List<String> performerIds, @JsonKey(name: 'performer_names')  List<String> performerNames, @JsonKey(name: 'tag_ids')  List<String> tagIds, @JsonKey(name: 'tag_names')  List<String> tagNames)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String? details,  String? path,  DateTime date,  int? rating100, @JsonKey(name: 'o_counter')  int oCounter,  bool organized,  bool interactive, @JsonKey(name: 'resume_time')  double? resumeTime, @JsonKey(name: 'play_count')  int playCount,  List<SceneFile> files,  ScenePaths paths, @JsonKey(name: 'studio_id')  String? studioId, @JsonKey(name: 'studio_name')  String? studioName, @JsonKey(name: 'studio_image_path')  String? studioImagePath, @JsonKey(name: 'performer_ids')  List<String> performerIds, @JsonKey(name: 'performer_names')  List<String> performerNames, @JsonKey(name: 'performer_image_paths')  List<String?> performerImagePaths, @JsonKey(name: 'tag_ids')  List<String> tagIds, @JsonKey(name: 'tag_names')  List<String> tagNames)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Scene() when $default != null:
-return $default(_that.id,_that.title,_that.details,_that.path,_that.date,_that.rating100,_that.oCounter,_that.organized,_that.interactive,_that.resumeTime,_that.playCount,_that.files,_that.paths,_that.studioId,_that.studioName,_that.performerIds,_that.performerNames,_that.tagIds,_that.tagNames);case _:
+return $default(_that.id,_that.title,_that.details,_that.path,_that.date,_that.rating100,_that.oCounter,_that.organized,_that.interactive,_that.resumeTime,_that.playCount,_that.files,_that.paths,_that.studioId,_that.studioName,_that.studioImagePath,_that.performerIds,_that.performerNames,_that.performerImagePaths,_that.tagIds,_that.tagNames);case _:
   return orElse();
 
 }
@@ -201,10 +203,10 @@ return $default(_that.id,_that.title,_that.details,_that.path,_that.date,_that.r
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String? details,  String? path,  DateTime date,  int? rating100, @JsonKey(name: 'o_counter')  int oCounter,  bool organized,  bool interactive, @JsonKey(name: 'resume_time')  double? resumeTime, @JsonKey(name: 'play_count')  int playCount,  List<SceneFile> files,  ScenePaths paths, @JsonKey(name: 'studio_id')  String? studioId, @JsonKey(name: 'studio_name')  String? studioName, @JsonKey(name: 'performer_ids')  List<String> performerIds, @JsonKey(name: 'performer_names')  List<String> performerNames, @JsonKey(name: 'tag_ids')  List<String> tagIds, @JsonKey(name: 'tag_names')  List<String> tagNames)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String? details,  String? path,  DateTime date,  int? rating100, @JsonKey(name: 'o_counter')  int oCounter,  bool organized,  bool interactive, @JsonKey(name: 'resume_time')  double? resumeTime, @JsonKey(name: 'play_count')  int playCount,  List<SceneFile> files,  ScenePaths paths, @JsonKey(name: 'studio_id')  String? studioId, @JsonKey(name: 'studio_name')  String? studioName, @JsonKey(name: 'studio_image_path')  String? studioImagePath, @JsonKey(name: 'performer_ids')  List<String> performerIds, @JsonKey(name: 'performer_names')  List<String> performerNames, @JsonKey(name: 'performer_image_paths')  List<String?> performerImagePaths, @JsonKey(name: 'tag_ids')  List<String> tagIds, @JsonKey(name: 'tag_names')  List<String> tagNames)  $default,) {final _that = this;
 switch (_that) {
 case _Scene():
-return $default(_that.id,_that.title,_that.details,_that.path,_that.date,_that.rating100,_that.oCounter,_that.organized,_that.interactive,_that.resumeTime,_that.playCount,_that.files,_that.paths,_that.studioId,_that.studioName,_that.performerIds,_that.performerNames,_that.tagIds,_that.tagNames);case _:
+return $default(_that.id,_that.title,_that.details,_that.path,_that.date,_that.rating100,_that.oCounter,_that.organized,_that.interactive,_that.resumeTime,_that.playCount,_that.files,_that.paths,_that.studioId,_that.studioName,_that.studioImagePath,_that.performerIds,_that.performerNames,_that.performerImagePaths,_that.tagIds,_that.tagNames);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -221,10 +223,10 @@ return $default(_that.id,_that.title,_that.details,_that.path,_that.date,_that.r
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String? details,  String? path,  DateTime date,  int? rating100, @JsonKey(name: 'o_counter')  int oCounter,  bool organized,  bool interactive, @JsonKey(name: 'resume_time')  double? resumeTime, @JsonKey(name: 'play_count')  int playCount,  List<SceneFile> files,  ScenePaths paths, @JsonKey(name: 'studio_id')  String? studioId, @JsonKey(name: 'studio_name')  String? studioName, @JsonKey(name: 'performer_ids')  List<String> performerIds, @JsonKey(name: 'performer_names')  List<String> performerNames, @JsonKey(name: 'tag_ids')  List<String> tagIds, @JsonKey(name: 'tag_names')  List<String> tagNames)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String? details,  String? path,  DateTime date,  int? rating100, @JsonKey(name: 'o_counter')  int oCounter,  bool organized,  bool interactive, @JsonKey(name: 'resume_time')  double? resumeTime, @JsonKey(name: 'play_count')  int playCount,  List<SceneFile> files,  ScenePaths paths, @JsonKey(name: 'studio_id')  String? studioId, @JsonKey(name: 'studio_name')  String? studioName, @JsonKey(name: 'studio_image_path')  String? studioImagePath, @JsonKey(name: 'performer_ids')  List<String> performerIds, @JsonKey(name: 'performer_names')  List<String> performerNames, @JsonKey(name: 'performer_image_paths')  List<String?> performerImagePaths, @JsonKey(name: 'tag_ids')  List<String> tagIds, @JsonKey(name: 'tag_names')  List<String> tagNames)?  $default,) {final _that = this;
 switch (_that) {
 case _Scene() when $default != null:
-return $default(_that.id,_that.title,_that.details,_that.path,_that.date,_that.rating100,_that.oCounter,_that.organized,_that.interactive,_that.resumeTime,_that.playCount,_that.files,_that.paths,_that.studioId,_that.studioName,_that.performerIds,_that.performerNames,_that.tagIds,_that.tagNames);case _:
+return $default(_that.id,_that.title,_that.details,_that.path,_that.date,_that.rating100,_that.oCounter,_that.organized,_that.interactive,_that.resumeTime,_that.playCount,_that.files,_that.paths,_that.studioId,_that.studioName,_that.studioImagePath,_that.performerIds,_that.performerNames,_that.performerImagePaths,_that.tagIds,_that.tagNames);case _:
   return null;
 
 }
@@ -236,7 +238,7 @@ return $default(_that.id,_that.title,_that.details,_that.path,_that.date,_that.r
 @JsonSerializable()
 
 class _Scene implements Scene {
-  const _Scene({required this.id, required this.title, this.details, this.path, required this.date, required this.rating100, @JsonKey(name: 'o_counter') required this.oCounter, required this.organized, required this.interactive, @JsonKey(name: 'resume_time') required this.resumeTime, @JsonKey(name: 'play_count') required this.playCount, required final  List<SceneFile> files, required this.paths, @JsonKey(name: 'studio_id') required this.studioId, @JsonKey(name: 'studio_name') required this.studioName, @JsonKey(name: 'performer_ids') required final  List<String> performerIds, @JsonKey(name: 'performer_names') required final  List<String> performerNames, @JsonKey(name: 'tag_ids') required final  List<String> tagIds, @JsonKey(name: 'tag_names') required final  List<String> tagNames}): _files = files,_performerIds = performerIds,_performerNames = performerNames,_tagIds = tagIds,_tagNames = tagNames;
+  const _Scene({required this.id, required this.title, this.details, this.path, required this.date, required this.rating100, @JsonKey(name: 'o_counter') required this.oCounter, required this.organized, required this.interactive, @JsonKey(name: 'resume_time') required this.resumeTime, @JsonKey(name: 'play_count') required this.playCount, required final  List<SceneFile> files, required this.paths, @JsonKey(name: 'studio_id') required this.studioId, @JsonKey(name: 'studio_name') required this.studioName, @JsonKey(name: 'studio_image_path') required this.studioImagePath, @JsonKey(name: 'performer_ids') required final  List<String> performerIds, @JsonKey(name: 'performer_names') required final  List<String> performerNames, @JsonKey(name: 'performer_image_paths') required final  List<String?> performerImagePaths, @JsonKey(name: 'tag_ids') required final  List<String> tagIds, @JsonKey(name: 'tag_names') required final  List<String> tagNames}): _files = files,_performerIds = performerIds,_performerNames = performerNames,_performerImagePaths = performerImagePaths,_tagIds = tagIds,_tagNames = tagNames;
   factory _Scene.fromJson(Map<String, dynamic> json) => _$SceneFromJson(json);
 
 @override final  String id;
@@ -260,6 +262,7 @@ class _Scene implements Scene {
 @override final  ScenePaths paths;
 @override@JsonKey(name: 'studio_id') final  String? studioId;
 @override@JsonKey(name: 'studio_name') final  String? studioName;
+@override@JsonKey(name: 'studio_image_path') final  String? studioImagePath;
  final  List<String> _performerIds;
 @override@JsonKey(name: 'performer_ids') List<String> get performerIds {
   if (_performerIds is EqualUnmodifiableListView) return _performerIds;
@@ -272,6 +275,13 @@ class _Scene implements Scene {
   if (_performerNames is EqualUnmodifiableListView) return _performerNames;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_performerNames);
+}
+
+ final  List<String?> _performerImagePaths;
+@override@JsonKey(name: 'performer_image_paths') List<String?> get performerImagePaths {
+  if (_performerImagePaths is EqualUnmodifiableListView) return _performerImagePaths;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_performerImagePaths);
 }
 
  final  List<String> _tagIds;
@@ -302,16 +312,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Scene&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.details, details) || other.details == details)&&(identical(other.path, path) || other.path == path)&&(identical(other.date, date) || other.date == date)&&(identical(other.rating100, rating100) || other.rating100 == rating100)&&(identical(other.oCounter, oCounter) || other.oCounter == oCounter)&&(identical(other.organized, organized) || other.organized == organized)&&(identical(other.interactive, interactive) || other.interactive == interactive)&&(identical(other.resumeTime, resumeTime) || other.resumeTime == resumeTime)&&(identical(other.playCount, playCount) || other.playCount == playCount)&&const DeepCollectionEquality().equals(other._files, _files)&&(identical(other.paths, paths) || other.paths == paths)&&(identical(other.studioId, studioId) || other.studioId == studioId)&&(identical(other.studioName, studioName) || other.studioName == studioName)&&const DeepCollectionEquality().equals(other._performerIds, _performerIds)&&const DeepCollectionEquality().equals(other._performerNames, _performerNames)&&const DeepCollectionEquality().equals(other._tagIds, _tagIds)&&const DeepCollectionEquality().equals(other._tagNames, _tagNames));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Scene&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.details, details) || other.details == details)&&(identical(other.path, path) || other.path == path)&&(identical(other.date, date) || other.date == date)&&(identical(other.rating100, rating100) || other.rating100 == rating100)&&(identical(other.oCounter, oCounter) || other.oCounter == oCounter)&&(identical(other.organized, organized) || other.organized == organized)&&(identical(other.interactive, interactive) || other.interactive == interactive)&&(identical(other.resumeTime, resumeTime) || other.resumeTime == resumeTime)&&(identical(other.playCount, playCount) || other.playCount == playCount)&&const DeepCollectionEquality().equals(other._files, _files)&&(identical(other.paths, paths) || other.paths == paths)&&(identical(other.studioId, studioId) || other.studioId == studioId)&&(identical(other.studioName, studioName) || other.studioName == studioName)&&(identical(other.studioImagePath, studioImagePath) || other.studioImagePath == studioImagePath)&&const DeepCollectionEquality().equals(other._performerIds, _performerIds)&&const DeepCollectionEquality().equals(other._performerNames, _performerNames)&&const DeepCollectionEquality().equals(other._performerImagePaths, _performerImagePaths)&&const DeepCollectionEquality().equals(other._tagIds, _tagIds)&&const DeepCollectionEquality().equals(other._tagNames, _tagNames));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,title,details,path,date,rating100,oCounter,organized,interactive,resumeTime,playCount,const DeepCollectionEquality().hash(_files),paths,studioId,studioName,const DeepCollectionEquality().hash(_performerIds),const DeepCollectionEquality().hash(_performerNames),const DeepCollectionEquality().hash(_tagIds),const DeepCollectionEquality().hash(_tagNames)]);
+int get hashCode => Object.hashAll([runtimeType,id,title,details,path,date,rating100,oCounter,organized,interactive,resumeTime,playCount,const DeepCollectionEquality().hash(_files),paths,studioId,studioName,studioImagePath,const DeepCollectionEquality().hash(_performerIds),const DeepCollectionEquality().hash(_performerNames),const DeepCollectionEquality().hash(_performerImagePaths),const DeepCollectionEquality().hash(_tagIds),const DeepCollectionEquality().hash(_tagNames)]);
 
 @override
 String toString() {
-  return 'Scene(id: $id, title: $title, details: $details, path: $path, date: $date, rating100: $rating100, oCounter: $oCounter, organized: $organized, interactive: $interactive, resumeTime: $resumeTime, playCount: $playCount, files: $files, paths: $paths, studioId: $studioId, studioName: $studioName, performerIds: $performerIds, performerNames: $performerNames, tagIds: $tagIds, tagNames: $tagNames)';
+  return 'Scene(id: $id, title: $title, details: $details, path: $path, date: $date, rating100: $rating100, oCounter: $oCounter, organized: $organized, interactive: $interactive, resumeTime: $resumeTime, playCount: $playCount, files: $files, paths: $paths, studioId: $studioId, studioName: $studioName, studioImagePath: $studioImagePath, performerIds: $performerIds, performerNames: $performerNames, performerImagePaths: $performerImagePaths, tagIds: $tagIds, tagNames: $tagNames)';
 }
 
 
@@ -322,7 +332,7 @@ abstract mixin class _$SceneCopyWith<$Res> implements $SceneCopyWith<$Res> {
   factory _$SceneCopyWith(_Scene value, $Res Function(_Scene) _then) = __$SceneCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, String? details, String? path, DateTime date, int? rating100,@JsonKey(name: 'o_counter') int oCounter, bool organized, bool interactive,@JsonKey(name: 'resume_time') double? resumeTime,@JsonKey(name: 'play_count') int playCount, List<SceneFile> files, ScenePaths paths,@JsonKey(name: 'studio_id') String? studioId,@JsonKey(name: 'studio_name') String? studioName,@JsonKey(name: 'performer_ids') List<String> performerIds,@JsonKey(name: 'performer_names') List<String> performerNames,@JsonKey(name: 'tag_ids') List<String> tagIds,@JsonKey(name: 'tag_names') List<String> tagNames
+ String id, String title, String? details, String? path, DateTime date, int? rating100,@JsonKey(name: 'o_counter') int oCounter, bool organized, bool interactive,@JsonKey(name: 'resume_time') double? resumeTime,@JsonKey(name: 'play_count') int playCount, List<SceneFile> files, ScenePaths paths,@JsonKey(name: 'studio_id') String? studioId,@JsonKey(name: 'studio_name') String? studioName,@JsonKey(name: 'studio_image_path') String? studioImagePath,@JsonKey(name: 'performer_ids') List<String> performerIds,@JsonKey(name: 'performer_names') List<String> performerNames,@JsonKey(name: 'performer_image_paths') List<String?> performerImagePaths,@JsonKey(name: 'tag_ids') List<String> tagIds,@JsonKey(name: 'tag_names') List<String> tagNames
 });
 
 
@@ -339,7 +349,7 @@ class __$SceneCopyWithImpl<$Res>
 
 /// Create a copy of Scene
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? details = freezed,Object? path = freezed,Object? date = null,Object? rating100 = freezed,Object? oCounter = null,Object? organized = null,Object? interactive = null,Object? resumeTime = freezed,Object? playCount = null,Object? files = null,Object? paths = null,Object? studioId = freezed,Object? studioName = freezed,Object? performerIds = null,Object? performerNames = null,Object? tagIds = null,Object? tagNames = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? details = freezed,Object? path = freezed,Object? date = null,Object? rating100 = freezed,Object? oCounter = null,Object? organized = null,Object? interactive = null,Object? resumeTime = freezed,Object? playCount = null,Object? files = null,Object? paths = null,Object? studioId = freezed,Object? studioName = freezed,Object? studioImagePath = freezed,Object? performerIds = null,Object? performerNames = null,Object? performerImagePaths = null,Object? tagIds = null,Object? tagNames = null,}) {
   return _then(_Scene(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -356,9 +366,11 @@ as int,files: null == files ? _self._files : files // ignore: cast_nullable_to_n
 as List<SceneFile>,paths: null == paths ? _self.paths : paths // ignore: cast_nullable_to_non_nullable
 as ScenePaths,studioId: freezed == studioId ? _self.studioId : studioId // ignore: cast_nullable_to_non_nullable
 as String?,studioName: freezed == studioName ? _self.studioName : studioName // ignore: cast_nullable_to_non_nullable
+as String?,studioImagePath: freezed == studioImagePath ? _self.studioImagePath : studioImagePath // ignore: cast_nullable_to_non_nullable
 as String?,performerIds: null == performerIds ? _self._performerIds : performerIds // ignore: cast_nullable_to_non_nullable
 as List<String>,performerNames: null == performerNames ? _self._performerNames : performerNames // ignore: cast_nullable_to_non_nullable
-as List<String>,tagIds: null == tagIds ? _self._tagIds : tagIds // ignore: cast_nullable_to_non_nullable
+as List<String>,performerImagePaths: null == performerImagePaths ? _self._performerImagePaths : performerImagePaths // ignore: cast_nullable_to_non_nullable
+as List<String?>,tagIds: null == tagIds ? _self._tagIds : tagIds // ignore: cast_nullable_to_non_nullable
 as List<String>,tagNames: null == tagNames ? _self._tagNames : tagNames // ignore: cast_nullable_to_non_nullable
 as List<String>,
   ));

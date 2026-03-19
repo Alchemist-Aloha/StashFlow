@@ -126,8 +126,16 @@ class GraphQLSceneRepository implements SceneRepository {
             ),
             studioId: s.studio?.id,
             studioName: s.studio?.name,
+            studioImagePath: resolveGraphqlMediaUrl(
+              rawUrl: s.studio?.image_path,
+              graphqlEndpoint: _graphqlEndpoint,
+            ),
             performerIds: s.performers.map((p) => p.id).toList(),
             performerNames: s.performers.map((p) => p.name).toList(),
+            performerImagePaths: s.performers.map((p) => resolveGraphqlMediaUrl(
+              rawUrl: p.image_path,
+              graphqlEndpoint: _graphqlEndpoint,
+            )).toList(),
             tagIds: [],
             tagNames: [],
           ),
@@ -187,8 +195,16 @@ class GraphQLSceneRepository implements SceneRepository {
       ),
       studioId: s.studio?.id,
       studioName: s.studio?.name,
+      studioImagePath: resolveGraphqlMediaUrl(
+        rawUrl: s.studio?.image_path,
+        graphqlEndpoint: _graphqlEndpoint,
+      ),
       performerIds: s.performers.map((p) => p.id).toList(),
       performerNames: s.performers.map((p) => p.name).toList(),
+      performerImagePaths: s.performers.map((p) => resolveGraphqlMediaUrl(
+        rawUrl: p.image_path,
+        graphqlEndpoint: _graphqlEndpoint,
+      )).toList(),
       tagIds: s.tags.map((t) => t.id).toList(),
       tagNames: s.tags.map((t) => t.name).toList(),
     );

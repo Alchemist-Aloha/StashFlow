@@ -93,6 +93,14 @@ class SceneDetailsPage extends ConsumerWidget {
                       const SizedBox(height: AppTheme.spacingSmall),
                       Row(
                         children: [
+                          if (scene.studioImagePath != null)
+                            Padding(
+                              padding: const EdgeInsets.only(right: AppTheme.spacingSmall),
+                              child: CircleAvatar(
+                                backgroundImage: NetworkImage(scene.studioImagePath!),
+                                radius: 12,
+                              ),
+                            ),
                           if (scene.studioName != null)
                             Text(
                               scene.studioName!,
@@ -179,9 +187,12 @@ class SceneDetailsPage extends ConsumerWidget {
                         itemCount: scene.performerNames.length,
                         separatorBuilder: (context, index) => const SizedBox(height: AppTheme.spacingSmall),
                         itemBuilder: (context, index) {
+                          final hasImage = index < scene.performerImagePaths.length && scene.performerImagePaths[index] != null;
                           return ListTile(
                             contentPadding: EdgeInsets.zero,
-                            leading: const CircleAvatar(child: Icon(Icons.person)),
+                            leading: hasImage
+                                ? CircleAvatar(backgroundImage: NetworkImage(scene.performerImagePaths[index]!))
+                                : const CircleAvatar(child: Icon(Icons.person)),
                             title: Text(
                               scene.performerNames[index],
                               style: context.textTheme.bodyLarge,
