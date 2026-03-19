@@ -10,6 +10,7 @@ import 'playback_queue_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/utils/app_log_store.dart';
 import '../widgets/scrub_chewie_controls.dart';
 
 part 'video_player_provider.g.dart';
@@ -114,10 +115,17 @@ class PlayerState extends _$PlayerState {
   static const _enableBackgroundPlaybackKey = 'video_background_playback';
   static const _enableNativePipKey = 'video_native_pip';
 
+  VideoPlayerController? _videoControllerRef;
+  ChewieController? _chewieControllerRef;
+  String? _firstFrameLoggedSceneId;
+
   @override
   GlobalPlayerState build() {
+    // Keep player state alive across route transitions to avoid restarting media.
+    ref.keepAlive();
+
     ref.onDispose(() {
-      _disposeControllers();
+      unawaited(_disposeControllers());
     });
 
     final prefs = ref.read(sharedPreferencesProvider);
@@ -204,6 +212,7 @@ class PlayerState extends _$PlayerState {
     );
 
     existingChewie?.dispose();
+    _chewieControllerRef = newChewie;
     state = state.copyWith(chewieController: newChewie);
   }
 
@@ -229,9 +238,23 @@ class PlayerState extends _$PlayerState {
     bool? prewarmSucceeded,
     int? prewarmLatencyMs,
   }) async {
+    final allowBackgroundPlayback = state.enableBackgroundPlayback;
+    final useDoubleTapSeek = state.useDoubleTapSeek;
+    final enableNativePip = state.enableNativePip;
+
+    AppLogStore.instance.add(
+      'provider playScene begin scene=${scene.id} source=${streamSource ?? '-'} mime=${mimeType ?? '-'}',
+      source: 'player_provider',
+    );
+
     if (state.activeScene?.id == scene.id &&
         state.videoPlayerController != null) {
+      _videoControllerRef ??= state.videoPlayerController;
       state.videoPlayerController?.play();
+      AppLogStore.instance.add(
+        'provider playScene replay-active scene=${scene.id}',
+        source: 'player_provider',
+      );
       state = state.copyWith(
         isPlaying: true,
         streamMimeType: mimeType,
@@ -244,21 +267,30 @@ class PlayerState extends _$PlayerState {
       return;
     }
 
+    // Detach the currently rendered player widget before disposing native players.
+    if (state.activeScene != null) {
+      state = state.copyWith(clearActive: true, isPlaying: false);
+    }
+
     // Stop current
     await _disposeControllers();
+    if (!ref.mounted) return;
 
     final stopwatch = Stopwatch()..start();
     final videoController = VideoPlayerController.networkUrl(
       Uri.parse(streamUrl),
       httpHeaders: httpHeaders ?? const <String, String>{},
       videoPlayerOptions: VideoPlayerOptions(
-        allowBackgroundPlayback: state.enableBackgroundPlayback,
+        allowBackgroundPlayback: allowBackgroundPlayback,
       ),
     );
+    _videoControllerRef = videoController;
+    _firstFrameLoggedSceneId = null;
 
     state = state.copyWith(
       activeScene: scene,
       videoPlayerController: videoController,
+      chewieController: null,
       isPlaying: false,
       streamMimeType: mimeType,
       streamLabel: streamLabel,
@@ -271,7 +303,15 @@ class PlayerState extends _$PlayerState {
 
     try {
       await videoController.initialize();
+      if (!ref.mounted) {
+        await _disposeControllers();
+        return;
+      }
       stopwatch.stop();
+      AppLogStore.instance.add(
+        'provider initialize done scene=${scene.id} elapsed=${stopwatch.elapsedMilliseconds}ms duration=${videoController.value.duration.inMilliseconds}ms size=${videoController.value.size.width.toStringAsFixed(0)}x${videoController.value.size.height.toStringAsFixed(0)}',
+        source: 'player_provider',
+      );
 
       final initializedAspectRatio = videoController.value.aspectRatio;
       final metadataAspectRatio = _sceneAspectRatio(scene);
@@ -287,11 +327,12 @@ class PlayerState extends _$PlayerState {
         aspectRatio: resolvedAspectRatio,
         allowFullScreen: true,
         customControls: ScrubChewieControls(
-          useDoubleTapSeek: state.useDoubleTapSeek,
-          enableNativePip: state.enableNativePip,
+          useDoubleTapSeek: useDoubleTapSeek,
+          enableNativePip: enableNativePip,
         ),
         placeholder: Container(color: Colors.black),
       );
+      _chewieControllerRef = chewieController;
 
       state = state.copyWith(
         chewieController: chewieController,
@@ -304,7 +345,15 @@ class PlayerState extends _$PlayerState {
       videoController.addListener(_videoListener);
     } catch (e) {
       debugPrint('Error initializing video player: $e');
-      stop();
+      AppLogStore.instance.add(
+        'provider initialize error scene=${scene.id} error=$e',
+        source: 'player_provider',
+      );
+      if (ref.mounted) {
+        stop();
+      } else {
+        await _disposeControllers();
+      }
     }
   }
 
@@ -336,8 +385,10 @@ class PlayerState extends _$PlayerState {
   }
 
   void stop() {
-    _disposeControllers();
+    unawaited(_disposeControllers());
     unawaited(WakelockPlus.disable());
+    if (!ref.mounted) return;
+
     state = GlobalPlayerState(
       autoplayNext: state.autoplayNext,
       showVideoDebugInfo: state.showVideoDebugInfo,
@@ -348,15 +399,37 @@ class PlayerState extends _$PlayerState {
   }
 
   Future<void> _disposeControllers() async {
-    state.videoPlayerController?.removeListener(_videoListener);
-    state.chewieController?.dispose();
-    await state.videoPlayerController?.dispose();
+    final videoController =
+        _videoControllerRef ??
+        (ref.mounted ? state.videoPlayerController : null);
+    final chewieController =
+        _chewieControllerRef ?? (ref.mounted ? state.chewieController : null);
+    _videoControllerRef = null;
+    _chewieControllerRef = null;
+
+    videoController?.removeListener(_videoListener);
+    chewieController?.dispose();
+    await videoController?.dispose();
     await WakelockPlus.disable();
   }
 
   void _videoListener() {
+    if (!ref.mounted) return;
+
     final controller = state.videoPlayerController;
     if (controller != null) {
+      final activeSceneId = state.activeScene?.id;
+      if (activeSceneId != null &&
+          _firstFrameLoggedSceneId != activeSceneId &&
+          controller.value.isInitialized &&
+          controller.value.position > Duration.zero) {
+        _firstFrameLoggedSceneId = activeSceneId;
+        AppLogStore.instance.add(
+          'provider first-frame scene=$activeSceneId position=${controller.value.position.inMilliseconds}ms buffered=${controller.value.buffered.length}',
+          source: 'player_provider',
+        );
+      }
+
       if (controller.value.isPlaying != state.isPlaying) {
         state = state.copyWith(isPlaying: controller.value.isPlaying);
         unawaited(
@@ -382,6 +455,8 @@ class PlayerState extends _$PlayerState {
   }
 
   Future<void> playNext() async {
+    if (!ref.mounted) return;
+
     final nextScene = ref.read(playbackQueueProvider.notifier).getNextScene();
     if (nextScene != null) {
       final resolver = ref.read(streamResolverProvider.notifier);

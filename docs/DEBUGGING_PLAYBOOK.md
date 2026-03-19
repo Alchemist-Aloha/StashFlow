@@ -31,11 +31,37 @@ Checks:
 3. Confirm one-time prewarm request executed by checking if `prewarm` shows `ok` or `fail` and latency.
 4. Check if `src` includes `+header` (indicates extra roundtrip for MIME probing).
 5. Compare first request vs second request latency for same scene.
+6. Check app logs for provider lifecycle errors (`Cannot use the Ref of playerStateProvider after it has been disposed`).
 
 Interpretation:
 - Prewarm is now best-effort and non-blocking for player startup; it should not gate first frame display.
 - If MIME is valid and first start is still slow after the non-blocking change, likely backend warm-up/cold-start.
 - If `src` shows `autoplay-next`, it implies the stream was initiated via PlaybackQueue.
+- If disposed-ref errors appear near startup logs, treat those as a separate lifecycle fault before concluding pure network/backend latency.
+
+## Mini-player tap restarts playback
+
+Symptoms:
+- Tapping the mini-player to return to scene page restarts current playback.
+
+Checks:
+1. Confirm player provider remains alive across route transitions.
+2. Verify startup log does not show repeated `startup begin` for same scene immediately after mini-player navigation.
+
+Interpretation:
+- Restart-on-tap is typically state disposal/rebuild during navigation, not a stream resolver issue.
+
+## PiP includes full details page UI
+
+Symptoms:
+- Entering PiP captures scene details page chrome instead of video-only surface.
+
+Checks:
+1. Confirm PiP entry from controls forces fullscreen first.
+2. Confirm auto-enter PiP on app pause is gated to fullscreen playback only.
+
+Interpretation:
+- Android PiP captures the current activity surface; entering from inline/details context can include non-video UI.
 
 ## Fullscreen seek gestures do not work
 

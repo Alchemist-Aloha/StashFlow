@@ -14,6 +14,7 @@ class Fragment$SlimSceneData {
     required this.interactive,
     this.resume_time,
     this.play_count,
+    required this.files,
     required this.paths,
     this.studio,
     required this.performers,
@@ -30,6 +31,7 @@ class Fragment$SlimSceneData {
     final l$interactive = json['interactive'];
     final l$resume_time = json['resume_time'];
     final l$play_count = json['play_count'];
+    final l$files = json['files'];
     final l$paths = json['paths'];
     final l$studio = json['studio'];
     final l$performers = json['performers'];
@@ -44,6 +46,13 @@ class Fragment$SlimSceneData {
       interactive: (l$interactive as bool),
       resume_time: (l$resume_time as num?)?.toDouble(),
       play_count: (l$play_count as int?),
+      files: (l$files as List<dynamic>)
+          .map(
+            (e) => Fragment$SlimSceneData$files.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
       paths: Fragment$SlimSceneData$paths.fromJson(
         (l$paths as Map<String, dynamic>),
       ),
@@ -81,6 +90,8 @@ class Fragment$SlimSceneData {
 
   final int? play_count;
 
+  final List<Fragment$SlimSceneData$files> files;
+
   final Fragment$SlimSceneData$paths paths;
 
   final Fragment$SlimSceneData$studio? studio;
@@ -109,6 +120,8 @@ class Fragment$SlimSceneData {
     _resultData['resume_time'] = l$resume_time;
     final l$play_count = play_count;
     _resultData['play_count'] = l$play_count;
+    final l$files = files;
+    _resultData['files'] = l$files.map((e) => e.toJson()).toList();
     final l$paths = paths;
     _resultData['paths'] = l$paths.toJson();
     final l$studio = studio;
@@ -131,6 +144,7 @@ class Fragment$SlimSceneData {
     final l$interactive = interactive;
     final l$resume_time = resume_time;
     final l$play_count = play_count;
+    final l$files = files;
     final l$paths = paths;
     final l$studio = studio;
     final l$performers = performers;
@@ -145,6 +159,7 @@ class Fragment$SlimSceneData {
       l$interactive,
       l$resume_time,
       l$play_count,
+      Object.hashAll(l$files.map((v) => v)),
       l$paths,
       l$studio,
       Object.hashAll(l$performers.map((v) => v)),
@@ -205,6 +220,18 @@ class Fragment$SlimSceneData {
     if (l$play_count != lOther$play_count) {
       return false;
     }
+    final l$files = files;
+    final lOther$files = other.files;
+    if (l$files.length != lOther$files.length) {
+      return false;
+    }
+    for (int i = 0; i < l$files.length; i++) {
+      final l$files$entry = l$files[i];
+      final lOther$files$entry = lOther$files[i];
+      if (l$files$entry != lOther$files$entry) {
+        return false;
+      }
+    }
     final l$paths = paths;
     final lOther$paths = other.paths;
     if (l$paths != lOther$paths) {
@@ -260,11 +287,20 @@ abstract class CopyWith$Fragment$SlimSceneData<TRes> {
     bool? interactive,
     double? resume_time,
     int? play_count,
+    List<Fragment$SlimSceneData$files>? files,
     Fragment$SlimSceneData$paths? paths,
     Fragment$SlimSceneData$studio? studio,
     List<Fragment$SlimSceneData$performers>? performers,
     String? $__typename,
   });
+  TRes files(
+    Iterable<Fragment$SlimSceneData$files> Function(
+      Iterable<
+        CopyWith$Fragment$SlimSceneData$files<Fragment$SlimSceneData$files>
+      >,
+    )
+    _fn,
+  );
   CopyWith$Fragment$SlimSceneData$paths<TRes> get paths;
   CopyWith$Fragment$SlimSceneData$studio<TRes> get studio;
   TRes performers(
@@ -299,6 +335,7 @@ class _CopyWithImpl$Fragment$SlimSceneData<TRes>
     Object? interactive = _undefined,
     Object? resume_time = _undefined,
     Object? play_count = _undefined,
+    Object? files = _undefined,
     Object? paths = _undefined,
     Object? studio = _undefined,
     Object? performers = _undefined,
@@ -326,6 +363,9 @@ class _CopyWithImpl$Fragment$SlimSceneData<TRes>
       play_count: play_count == _undefined
           ? _instance.play_count
           : (play_count as int?),
+      files: files == _undefined || files == null
+          ? _instance.files
+          : (files as List<Fragment$SlimSceneData$files>),
       paths: paths == _undefined || paths == null
           ? _instance.paths
           : (paths as Fragment$SlimSceneData$paths),
@@ -339,6 +379,21 @@ class _CopyWithImpl$Fragment$SlimSceneData<TRes>
           ? _instance.$__typename
           : ($__typename as String),
     ),
+  );
+
+  TRes files(
+    Iterable<Fragment$SlimSceneData$files> Function(
+      Iterable<
+        CopyWith$Fragment$SlimSceneData$files<Fragment$SlimSceneData$files>
+      >,
+    )
+    _fn,
+  ) => call(
+    files: _fn(
+      _instance.files.map(
+        (e) => CopyWith$Fragment$SlimSceneData$files(e, (i) => i),
+      ),
+    ).toList(),
   );
 
   CopyWith$Fragment$SlimSceneData$paths<TRes> get paths {
@@ -393,11 +448,14 @@ class _CopyWithStubImpl$Fragment$SlimSceneData<TRes>
     bool? interactive,
     double? resume_time,
     int? play_count,
+    List<Fragment$SlimSceneData$files>? files,
     Fragment$SlimSceneData$paths? paths,
     Fragment$SlimSceneData$studio? studio,
     List<Fragment$SlimSceneData$performers>? performers,
     String? $__typename,
   }) => _res;
+
+  files(_fn) => _res;
 
   CopyWith$Fragment$SlimSceneData$paths<TRes> get paths =>
       CopyWith$Fragment$SlimSceneData$paths.stub(_res);
@@ -478,6 +536,30 @@ const fragmentDefinitionSlimSceneData = FragmentDefinitionNode(
         arguments: [],
         directives: [],
         selectionSet: null,
+      ),
+      FieldNode(
+        name: NameNode(value: 'files'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: SelectionSetNode(
+          selections: [
+            FieldNode(
+              name: NameNode(value: 'path'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: '__typename'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+          ],
+        ),
       ),
       FieldNode(
         name: NameNode(value: 'paths'),
@@ -640,6 +722,114 @@ extension ClientExtension$Fragment$SlimSceneData on graphql.GraphQLClient {
     );
     return result == null ? null : Fragment$SlimSceneData.fromJson(result);
   }
+}
+
+class Fragment$SlimSceneData$files {
+  Fragment$SlimSceneData$files({
+    required this.path,
+    this.$__typename = 'VideoFile',
+  });
+
+  factory Fragment$SlimSceneData$files.fromJson(Map<String, dynamic> json) {
+    final l$path = json['path'];
+    final l$$__typename = json['__typename'];
+    return Fragment$SlimSceneData$files(
+      path: (l$path as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String path;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$path = path;
+    _resultData['path'] = l$path;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$path = path;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$path, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$SlimSceneData$files ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$path = path;
+    final lOther$path = other.path;
+    if (l$path != lOther$path) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$SlimSceneData$files
+    on Fragment$SlimSceneData$files {
+  CopyWith$Fragment$SlimSceneData$files<Fragment$SlimSceneData$files>
+  get copyWith => CopyWith$Fragment$SlimSceneData$files(this, (i) => i);
+}
+
+abstract class CopyWith$Fragment$SlimSceneData$files<TRes> {
+  factory CopyWith$Fragment$SlimSceneData$files(
+    Fragment$SlimSceneData$files instance,
+    TRes Function(Fragment$SlimSceneData$files) then,
+  ) = _CopyWithImpl$Fragment$SlimSceneData$files;
+
+  factory CopyWith$Fragment$SlimSceneData$files.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$SlimSceneData$files;
+
+  TRes call({String? path, String? $__typename});
+}
+
+class _CopyWithImpl$Fragment$SlimSceneData$files<TRes>
+    implements CopyWith$Fragment$SlimSceneData$files<TRes> {
+  _CopyWithImpl$Fragment$SlimSceneData$files(this._instance, this._then);
+
+  final Fragment$SlimSceneData$files _instance;
+
+  final TRes Function(Fragment$SlimSceneData$files) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? path = _undefined, Object? $__typename = _undefined}) =>
+      _then(
+        Fragment$SlimSceneData$files(
+          path: path == _undefined || path == null
+              ? _instance.path
+              : (path as String),
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String),
+        ),
+      );
+}
+
+class _CopyWithStubImpl$Fragment$SlimSceneData$files<TRes>
+    implements CopyWith$Fragment$SlimSceneData$files<TRes> {
+  _CopyWithStubImpl$Fragment$SlimSceneData$files(this._res);
+
+  TRes _res;
+
+  call({String? path, String? $__typename}) => _res;
 }
 
 class Fragment$SlimSceneData$paths {
@@ -1101,6 +1291,7 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     required this.interactive,
     this.resume_time,
     this.play_count,
+    required this.files,
     required this.paths,
     this.studio,
     required this.performers,
@@ -1108,7 +1299,6 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     this.details,
     required this.urls,
     this.director,
-    required this.files,
     required this.tags,
   });
 
@@ -1122,6 +1312,7 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     final l$interactive = json['interactive'];
     final l$resume_time = json['resume_time'];
     final l$play_count = json['play_count'];
+    final l$files = json['files'];
     final l$paths = json['paths'];
     final l$studio = json['studio'];
     final l$performers = json['performers'];
@@ -1129,7 +1320,6 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     final l$details = json['details'];
     final l$urls = json['urls'];
     final l$director = json['director'];
-    final l$files = json['files'];
     final l$tags = json['tags'];
     return Fragment$SceneData(
       id: (l$id as String),
@@ -1141,6 +1331,12 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
       interactive: (l$interactive as bool),
       resume_time: (l$resume_time as num?)?.toDouble(),
       play_count: (l$play_count as int?),
+      files: (l$files as List<dynamic>)
+          .map(
+            (e) =>
+                Fragment$SceneData$files.fromJson((e as Map<String, dynamic>)),
+          )
+          .toList(),
       paths: Fragment$SceneData$paths.fromJson(
         (l$paths as Map<String, dynamic>),
       ),
@@ -1160,12 +1356,6 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
       details: (l$details as String?),
       urls: (l$urls as List<dynamic>).map((e) => (e as String)).toList(),
       director: (l$director as String?),
-      files: (l$files as List<dynamic>)
-          .map(
-            (e) =>
-                Fragment$SceneData$files.fromJson((e as Map<String, dynamic>)),
-          )
-          .toList(),
       tags: (l$tags as List<dynamic>)
           .map(
             (e) =>
@@ -1193,6 +1383,8 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
 
   final int? play_count;
 
+  final List<Fragment$SceneData$files> files;
+
   final Fragment$SceneData$paths paths;
 
   final Fragment$SceneData$studio? studio;
@@ -1206,8 +1398,6 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
   final List<String> urls;
 
   final String? director;
-
-  final List<Fragment$SceneData$files> files;
 
   final List<Fragment$SceneData$tags> tags;
 
@@ -1231,6 +1421,8 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     _resultData['resume_time'] = l$resume_time;
     final l$play_count = play_count;
     _resultData['play_count'] = l$play_count;
+    final l$files = files;
+    _resultData['files'] = l$files.map((e) => e.toJson()).toList();
     final l$paths = paths;
     _resultData['paths'] = l$paths.toJson();
     final l$studio = studio;
@@ -1245,8 +1437,6 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     _resultData['urls'] = l$urls.map((e) => e).toList();
     final l$director = director;
     _resultData['director'] = l$director;
-    final l$files = files;
-    _resultData['files'] = l$files.map((e) => e.toJson()).toList();
     final l$tags = tags;
     _resultData['tags'] = l$tags.map((e) => e.toJson()).toList();
     return _resultData;
@@ -1263,6 +1453,7 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     final l$interactive = interactive;
     final l$resume_time = resume_time;
     final l$play_count = play_count;
+    final l$files = files;
     final l$paths = paths;
     final l$studio = studio;
     final l$performers = performers;
@@ -1270,7 +1461,6 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     final l$details = details;
     final l$urls = urls;
     final l$director = director;
-    final l$files = files;
     final l$tags = tags;
     return Object.hashAll([
       l$id,
@@ -1282,6 +1472,7 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
       l$interactive,
       l$resume_time,
       l$play_count,
+      Object.hashAll(l$files.map((v) => v)),
       l$paths,
       l$studio,
       Object.hashAll(l$performers.map((v) => v)),
@@ -1289,7 +1480,6 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
       l$details,
       Object.hashAll(l$urls.map((v) => v)),
       l$director,
-      Object.hashAll(l$files.map((v) => v)),
       Object.hashAll(l$tags.map((v) => v)),
     ]);
   }
@@ -1347,6 +1537,18 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     if (l$play_count != lOther$play_count) {
       return false;
     }
+    final l$files = files;
+    final lOther$files = other.files;
+    if (l$files.length != lOther$files.length) {
+      return false;
+    }
+    for (int i = 0; i < l$files.length; i++) {
+      final l$files$entry = l$files[i];
+      final lOther$files$entry = lOther$files[i];
+      if (l$files$entry != lOther$files$entry) {
+        return false;
+      }
+    }
     final l$paths = paths;
     final lOther$paths = other.paths;
     if (l$paths != lOther$paths) {
@@ -1396,18 +1598,6 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     if (l$director != lOther$director) {
       return false;
     }
-    final l$files = files;
-    final lOther$files = other.files;
-    if (l$files.length != lOther$files.length) {
-      return false;
-    }
-    for (int i = 0; i < l$files.length; i++) {
-      final l$files$entry = l$files[i];
-      final lOther$files$entry = lOther$files[i];
-      if (l$files$entry != lOther$files$entry) {
-        return false;
-      }
-    }
     final l$tags = tags;
     final lOther$tags = other.tags;
     if (l$tags.length != lOther$tags.length) {
@@ -1448,6 +1638,7 @@ abstract class CopyWith$Fragment$SceneData<TRes> {
     bool? interactive,
     double? resume_time,
     int? play_count,
+    List<Fragment$SceneData$files>? files,
     Fragment$SceneData$paths? paths,
     Fragment$SceneData$studio? studio,
     List<Fragment$SceneData$performers>? performers,
@@ -1455,9 +1646,14 @@ abstract class CopyWith$Fragment$SceneData<TRes> {
     String? details,
     List<String>? urls,
     String? director,
-    List<Fragment$SceneData$files>? files,
     List<Fragment$SceneData$tags>? tags,
   });
+  TRes files(
+    Iterable<Fragment$SceneData$files> Function(
+      Iterable<CopyWith$Fragment$SceneData$files<Fragment$SceneData$files>>,
+    )
+    _fn,
+  );
   CopyWith$Fragment$SceneData$paths<TRes> get paths;
   CopyWith$Fragment$SceneData$studio<TRes> get studio;
   TRes performers(
@@ -1465,12 +1661,6 @@ abstract class CopyWith$Fragment$SceneData<TRes> {
       Iterable<
         CopyWith$Fragment$SceneData$performers<Fragment$SceneData$performers>
       >,
-    )
-    _fn,
-  );
-  TRes files(
-    Iterable<Fragment$SceneData$files> Function(
-      Iterable<CopyWith$Fragment$SceneData$files<Fragment$SceneData$files>>,
     )
     _fn,
   );
@@ -1502,6 +1692,7 @@ class _CopyWithImpl$Fragment$SceneData<TRes>
     Object? interactive = _undefined,
     Object? resume_time = _undefined,
     Object? play_count = _undefined,
+    Object? files = _undefined,
     Object? paths = _undefined,
     Object? studio = _undefined,
     Object? performers = _undefined,
@@ -1509,7 +1700,6 @@ class _CopyWithImpl$Fragment$SceneData<TRes>
     Object? details = _undefined,
     Object? urls = _undefined,
     Object? director = _undefined,
-    Object? files = _undefined,
     Object? tags = _undefined,
   }) => _then(
     Fragment$SceneData(
@@ -1534,6 +1724,9 @@ class _CopyWithImpl$Fragment$SceneData<TRes>
       play_count: play_count == _undefined
           ? _instance.play_count
           : (play_count as int?),
+      files: files == _undefined || files == null
+          ? _instance.files
+          : (files as List<Fragment$SceneData$files>),
       paths: paths == _undefined || paths == null
           ? _instance.paths
           : (paths as Fragment$SceneData$paths),
@@ -1553,13 +1746,23 @@ class _CopyWithImpl$Fragment$SceneData<TRes>
       director: director == _undefined
           ? _instance.director
           : (director as String?),
-      files: files == _undefined || files == null
-          ? _instance.files
-          : (files as List<Fragment$SceneData$files>),
       tags: tags == _undefined || tags == null
           ? _instance.tags
           : (tags as List<Fragment$SceneData$tags>),
     ),
+  );
+
+  TRes files(
+    Iterable<Fragment$SceneData$files> Function(
+      Iterable<CopyWith$Fragment$SceneData$files<Fragment$SceneData$files>>,
+    )
+    _fn,
+  ) => call(
+    files: _fn(
+      _instance.files.map(
+        (e) => CopyWith$Fragment$SceneData$files(e, (i) => i),
+      ),
+    ).toList(),
   );
 
   CopyWith$Fragment$SceneData$paths<TRes> get paths {
@@ -1595,19 +1798,6 @@ class _CopyWithImpl$Fragment$SceneData<TRes>
     ).toList(),
   );
 
-  TRes files(
-    Iterable<Fragment$SceneData$files> Function(
-      Iterable<CopyWith$Fragment$SceneData$files<Fragment$SceneData$files>>,
-    )
-    _fn,
-  ) => call(
-    files: _fn(
-      _instance.files.map(
-        (e) => CopyWith$Fragment$SceneData$files(e, (i) => i),
-      ),
-    ).toList(),
-  );
-
   TRes tags(
     Iterable<Fragment$SceneData$tags> Function(
       Iterable<CopyWith$Fragment$SceneData$tags<Fragment$SceneData$tags>>,
@@ -1636,6 +1826,7 @@ class _CopyWithStubImpl$Fragment$SceneData<TRes>
     bool? interactive,
     double? resume_time,
     int? play_count,
+    List<Fragment$SceneData$files>? files,
     Fragment$SceneData$paths? paths,
     Fragment$SceneData$studio? studio,
     List<Fragment$SceneData$performers>? performers,
@@ -1643,9 +1834,10 @@ class _CopyWithStubImpl$Fragment$SceneData<TRes>
     String? details,
     List<String>? urls,
     String? director,
-    List<Fragment$SceneData$files>? files,
     List<Fragment$SceneData$tags>? tags,
   }) => _res;
+
+  files(_fn) => _res;
 
   CopyWith$Fragment$SceneData$paths<TRes> get paths =>
       CopyWith$Fragment$SceneData$paths.stub(_res);
@@ -1654,8 +1846,6 @@ class _CopyWithStubImpl$Fragment$SceneData<TRes>
       CopyWith$Fragment$SceneData$studio.stub(_res);
 
   performers(_fn) => _res;
-
-  files(_fn) => _res;
 
   tags(_fn) => _res;
 }
@@ -1858,6 +2048,305 @@ extension ClientExtension$Fragment$SceneData on graphql.GraphQLClient {
     );
     return result == null ? null : Fragment$SceneData.fromJson(result);
   }
+}
+
+class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
+  Fragment$SceneData$files({
+    required this.path,
+    this.$__typename = 'VideoFile',
+    required this.basename,
+    required this.format,
+    required this.width,
+    required this.height,
+    required this.video_codec,
+    required this.audio_codec,
+    required this.bit_rate,
+    required this.duration,
+    required this.frame_rate,
+  });
+
+  factory Fragment$SceneData$files.fromJson(Map<String, dynamic> json) {
+    final l$path = json['path'];
+    final l$$__typename = json['__typename'];
+    final l$basename = json['basename'];
+    final l$format = json['format'];
+    final l$width = json['width'];
+    final l$height = json['height'];
+    final l$video_codec = json['video_codec'];
+    final l$audio_codec = json['audio_codec'];
+    final l$bit_rate = json['bit_rate'];
+    final l$duration = json['duration'];
+    final l$frame_rate = json['frame_rate'];
+    return Fragment$SceneData$files(
+      path: (l$path as String),
+      $__typename: (l$$__typename as String),
+      basename: (l$basename as String),
+      format: (l$format as String),
+      width: (l$width as int),
+      height: (l$height as int),
+      video_codec: (l$video_codec as String),
+      audio_codec: (l$audio_codec as String),
+      bit_rate: (l$bit_rate as int),
+      duration: (l$duration as num).toDouble(),
+      frame_rate: (l$frame_rate as num).toDouble(),
+    );
+  }
+
+  final String path;
+
+  final String $__typename;
+
+  final String basename;
+
+  final String format;
+
+  final int width;
+
+  final int height;
+
+  final String video_codec;
+
+  final String audio_codec;
+
+  final int bit_rate;
+
+  final double duration;
+
+  final double frame_rate;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$path = path;
+    _resultData['path'] = l$path;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    final l$basename = basename;
+    _resultData['basename'] = l$basename;
+    final l$format = format;
+    _resultData['format'] = l$format;
+    final l$width = width;
+    _resultData['width'] = l$width;
+    final l$height = height;
+    _resultData['height'] = l$height;
+    final l$video_codec = video_codec;
+    _resultData['video_codec'] = l$video_codec;
+    final l$audio_codec = audio_codec;
+    _resultData['audio_codec'] = l$audio_codec;
+    final l$bit_rate = bit_rate;
+    _resultData['bit_rate'] = l$bit_rate;
+    final l$duration = duration;
+    _resultData['duration'] = l$duration;
+    final l$frame_rate = frame_rate;
+    _resultData['frame_rate'] = l$frame_rate;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$path = path;
+    final l$$__typename = $__typename;
+    final l$basename = basename;
+    final l$format = format;
+    final l$width = width;
+    final l$height = height;
+    final l$video_codec = video_codec;
+    final l$audio_codec = audio_codec;
+    final l$bit_rate = bit_rate;
+    final l$duration = duration;
+    final l$frame_rate = frame_rate;
+    return Object.hashAll([
+      l$path,
+      l$$__typename,
+      l$basename,
+      l$format,
+      l$width,
+      l$height,
+      l$video_codec,
+      l$audio_codec,
+      l$bit_rate,
+      l$duration,
+      l$frame_rate,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$SceneData$files ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$path = path;
+    final lOther$path = other.path;
+    if (l$path != lOther$path) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    final l$basename = basename;
+    final lOther$basename = other.basename;
+    if (l$basename != lOther$basename) {
+      return false;
+    }
+    final l$format = format;
+    final lOther$format = other.format;
+    if (l$format != lOther$format) {
+      return false;
+    }
+    final l$width = width;
+    final lOther$width = other.width;
+    if (l$width != lOther$width) {
+      return false;
+    }
+    final l$height = height;
+    final lOther$height = other.height;
+    if (l$height != lOther$height) {
+      return false;
+    }
+    final l$video_codec = video_codec;
+    final lOther$video_codec = other.video_codec;
+    if (l$video_codec != lOther$video_codec) {
+      return false;
+    }
+    final l$audio_codec = audio_codec;
+    final lOther$audio_codec = other.audio_codec;
+    if (l$audio_codec != lOther$audio_codec) {
+      return false;
+    }
+    final l$bit_rate = bit_rate;
+    final lOther$bit_rate = other.bit_rate;
+    if (l$bit_rate != lOther$bit_rate) {
+      return false;
+    }
+    final l$duration = duration;
+    final lOther$duration = other.duration;
+    if (l$duration != lOther$duration) {
+      return false;
+    }
+    final l$frame_rate = frame_rate;
+    final lOther$frame_rate = other.frame_rate;
+    if (l$frame_rate != lOther$frame_rate) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$SceneData$files
+    on Fragment$SceneData$files {
+  CopyWith$Fragment$SceneData$files<Fragment$SceneData$files> get copyWith =>
+      CopyWith$Fragment$SceneData$files(this, (i) => i);
+}
+
+abstract class CopyWith$Fragment$SceneData$files<TRes> {
+  factory CopyWith$Fragment$SceneData$files(
+    Fragment$SceneData$files instance,
+    TRes Function(Fragment$SceneData$files) then,
+  ) = _CopyWithImpl$Fragment$SceneData$files;
+
+  factory CopyWith$Fragment$SceneData$files.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$SceneData$files;
+
+  TRes call({
+    String? path,
+    String? $__typename,
+    String? basename,
+    String? format,
+    int? width,
+    int? height,
+    String? video_codec,
+    String? audio_codec,
+    int? bit_rate,
+    double? duration,
+    double? frame_rate,
+  });
+}
+
+class _CopyWithImpl$Fragment$SceneData$files<TRes>
+    implements CopyWith$Fragment$SceneData$files<TRes> {
+  _CopyWithImpl$Fragment$SceneData$files(this._instance, this._then);
+
+  final Fragment$SceneData$files _instance;
+
+  final TRes Function(Fragment$SceneData$files) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? path = _undefined,
+    Object? $__typename = _undefined,
+    Object? basename = _undefined,
+    Object? format = _undefined,
+    Object? width = _undefined,
+    Object? height = _undefined,
+    Object? video_codec = _undefined,
+    Object? audio_codec = _undefined,
+    Object? bit_rate = _undefined,
+    Object? duration = _undefined,
+    Object? frame_rate = _undefined,
+  }) => _then(
+    Fragment$SceneData$files(
+      path: path == _undefined || path == null
+          ? _instance.path
+          : (path as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+      basename: basename == _undefined || basename == null
+          ? _instance.basename
+          : (basename as String),
+      format: format == _undefined || format == null
+          ? _instance.format
+          : (format as String),
+      width: width == _undefined || width == null
+          ? _instance.width
+          : (width as int),
+      height: height == _undefined || height == null
+          ? _instance.height
+          : (height as int),
+      video_codec: video_codec == _undefined || video_codec == null
+          ? _instance.video_codec
+          : (video_codec as String),
+      audio_codec: audio_codec == _undefined || audio_codec == null
+          ? _instance.audio_codec
+          : (audio_codec as String),
+      bit_rate: bit_rate == _undefined || bit_rate == null
+          ? _instance.bit_rate
+          : (bit_rate as int),
+      duration: duration == _undefined || duration == null
+          ? _instance.duration
+          : (duration as double),
+      frame_rate: frame_rate == _undefined || frame_rate == null
+          ? _instance.frame_rate
+          : (frame_rate as double),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Fragment$SceneData$files<TRes>
+    implements CopyWith$Fragment$SceneData$files<TRes> {
+  _CopyWithStubImpl$Fragment$SceneData$files(this._res);
+
+  TRes _res;
+
+  call({
+    String? path,
+    String? $__typename,
+    String? basename,
+    String? format,
+    int? width,
+    int? height,
+    String? video_codec,
+    String? audio_codec,
+    int? bit_rate,
+    double? duration,
+    double? frame_rate,
+  }) => _res;
 }
 
 class Fragment$SceneData$paths implements Fragment$SlimSceneData$paths {
@@ -2305,305 +2794,6 @@ class _CopyWithStubImpl$Fragment$SceneData$performers<TRes>
 
   call({String? id, String? name, String? image_path, String? $__typename}) =>
       _res;
-}
-
-class Fragment$SceneData$files {
-  Fragment$SceneData$files({
-    required this.path,
-    required this.basename,
-    required this.format,
-    required this.width,
-    required this.height,
-    required this.video_codec,
-    required this.audio_codec,
-    required this.bit_rate,
-    required this.duration,
-    required this.frame_rate,
-    this.$__typename = 'VideoFile',
-  });
-
-  factory Fragment$SceneData$files.fromJson(Map<String, dynamic> json) {
-    final l$path = json['path'];
-    final l$basename = json['basename'];
-    final l$format = json['format'];
-    final l$width = json['width'];
-    final l$height = json['height'];
-    final l$video_codec = json['video_codec'];
-    final l$audio_codec = json['audio_codec'];
-    final l$bit_rate = json['bit_rate'];
-    final l$duration = json['duration'];
-    final l$frame_rate = json['frame_rate'];
-    final l$$__typename = json['__typename'];
-    return Fragment$SceneData$files(
-      path: (l$path as String),
-      basename: (l$basename as String),
-      format: (l$format as String),
-      width: (l$width as int),
-      height: (l$height as int),
-      video_codec: (l$video_codec as String),
-      audio_codec: (l$audio_codec as String),
-      bit_rate: (l$bit_rate as int),
-      duration: (l$duration as num).toDouble(),
-      frame_rate: (l$frame_rate as num).toDouble(),
-      $__typename: (l$$__typename as String),
-    );
-  }
-
-  final String path;
-
-  final String basename;
-
-  final String format;
-
-  final int width;
-
-  final int height;
-
-  final String video_codec;
-
-  final String audio_codec;
-
-  final int bit_rate;
-
-  final double duration;
-
-  final double frame_rate;
-
-  final String $__typename;
-
-  Map<String, dynamic> toJson() {
-    final _resultData = <String, dynamic>{};
-    final l$path = path;
-    _resultData['path'] = l$path;
-    final l$basename = basename;
-    _resultData['basename'] = l$basename;
-    final l$format = format;
-    _resultData['format'] = l$format;
-    final l$width = width;
-    _resultData['width'] = l$width;
-    final l$height = height;
-    _resultData['height'] = l$height;
-    final l$video_codec = video_codec;
-    _resultData['video_codec'] = l$video_codec;
-    final l$audio_codec = audio_codec;
-    _resultData['audio_codec'] = l$audio_codec;
-    final l$bit_rate = bit_rate;
-    _resultData['bit_rate'] = l$bit_rate;
-    final l$duration = duration;
-    _resultData['duration'] = l$duration;
-    final l$frame_rate = frame_rate;
-    _resultData['frame_rate'] = l$frame_rate;
-    final l$$__typename = $__typename;
-    _resultData['__typename'] = l$$__typename;
-    return _resultData;
-  }
-
-  @override
-  int get hashCode {
-    final l$path = path;
-    final l$basename = basename;
-    final l$format = format;
-    final l$width = width;
-    final l$height = height;
-    final l$video_codec = video_codec;
-    final l$audio_codec = audio_codec;
-    final l$bit_rate = bit_rate;
-    final l$duration = duration;
-    final l$frame_rate = frame_rate;
-    final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$path,
-      l$basename,
-      l$format,
-      l$width,
-      l$height,
-      l$video_codec,
-      l$audio_codec,
-      l$bit_rate,
-      l$duration,
-      l$frame_rate,
-      l$$__typename,
-    ]);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other is! Fragment$SceneData$files ||
-        runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$path = path;
-    final lOther$path = other.path;
-    if (l$path != lOther$path) {
-      return false;
-    }
-    final l$basename = basename;
-    final lOther$basename = other.basename;
-    if (l$basename != lOther$basename) {
-      return false;
-    }
-    final l$format = format;
-    final lOther$format = other.format;
-    if (l$format != lOther$format) {
-      return false;
-    }
-    final l$width = width;
-    final lOther$width = other.width;
-    if (l$width != lOther$width) {
-      return false;
-    }
-    final l$height = height;
-    final lOther$height = other.height;
-    if (l$height != lOther$height) {
-      return false;
-    }
-    final l$video_codec = video_codec;
-    final lOther$video_codec = other.video_codec;
-    if (l$video_codec != lOther$video_codec) {
-      return false;
-    }
-    final l$audio_codec = audio_codec;
-    final lOther$audio_codec = other.audio_codec;
-    if (l$audio_codec != lOther$audio_codec) {
-      return false;
-    }
-    final l$bit_rate = bit_rate;
-    final lOther$bit_rate = other.bit_rate;
-    if (l$bit_rate != lOther$bit_rate) {
-      return false;
-    }
-    final l$duration = duration;
-    final lOther$duration = other.duration;
-    if (l$duration != lOther$duration) {
-      return false;
-    }
-    final l$frame_rate = frame_rate;
-    final lOther$frame_rate = other.frame_rate;
-    if (l$frame_rate != lOther$frame_rate) {
-      return false;
-    }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
-    }
-    return true;
-  }
-}
-
-extension UtilityExtension$Fragment$SceneData$files
-    on Fragment$SceneData$files {
-  CopyWith$Fragment$SceneData$files<Fragment$SceneData$files> get copyWith =>
-      CopyWith$Fragment$SceneData$files(this, (i) => i);
-}
-
-abstract class CopyWith$Fragment$SceneData$files<TRes> {
-  factory CopyWith$Fragment$SceneData$files(
-    Fragment$SceneData$files instance,
-    TRes Function(Fragment$SceneData$files) then,
-  ) = _CopyWithImpl$Fragment$SceneData$files;
-
-  factory CopyWith$Fragment$SceneData$files.stub(TRes res) =
-      _CopyWithStubImpl$Fragment$SceneData$files;
-
-  TRes call({
-    String? path,
-    String? basename,
-    String? format,
-    int? width,
-    int? height,
-    String? video_codec,
-    String? audio_codec,
-    int? bit_rate,
-    double? duration,
-    double? frame_rate,
-    String? $__typename,
-  });
-}
-
-class _CopyWithImpl$Fragment$SceneData$files<TRes>
-    implements CopyWith$Fragment$SceneData$files<TRes> {
-  _CopyWithImpl$Fragment$SceneData$files(this._instance, this._then);
-
-  final Fragment$SceneData$files _instance;
-
-  final TRes Function(Fragment$SceneData$files) _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({
-    Object? path = _undefined,
-    Object? basename = _undefined,
-    Object? format = _undefined,
-    Object? width = _undefined,
-    Object? height = _undefined,
-    Object? video_codec = _undefined,
-    Object? audio_codec = _undefined,
-    Object? bit_rate = _undefined,
-    Object? duration = _undefined,
-    Object? frame_rate = _undefined,
-    Object? $__typename = _undefined,
-  }) => _then(
-    Fragment$SceneData$files(
-      path: path == _undefined || path == null
-          ? _instance.path
-          : (path as String),
-      basename: basename == _undefined || basename == null
-          ? _instance.basename
-          : (basename as String),
-      format: format == _undefined || format == null
-          ? _instance.format
-          : (format as String),
-      width: width == _undefined || width == null
-          ? _instance.width
-          : (width as int),
-      height: height == _undefined || height == null
-          ? _instance.height
-          : (height as int),
-      video_codec: video_codec == _undefined || video_codec == null
-          ? _instance.video_codec
-          : (video_codec as String),
-      audio_codec: audio_codec == _undefined || audio_codec == null
-          ? _instance.audio_codec
-          : (audio_codec as String),
-      bit_rate: bit_rate == _undefined || bit_rate == null
-          ? _instance.bit_rate
-          : (bit_rate as int),
-      duration: duration == _undefined || duration == null
-          ? _instance.duration
-          : (duration as double),
-      frame_rate: frame_rate == _undefined || frame_rate == null
-          ? _instance.frame_rate
-          : (frame_rate as double),
-      $__typename: $__typename == _undefined || $__typename == null
-          ? _instance.$__typename
-          : ($__typename as String),
-    ),
-  );
-}
-
-class _CopyWithStubImpl$Fragment$SceneData$files<TRes>
-    implements CopyWith$Fragment$SceneData$files<TRes> {
-  _CopyWithStubImpl$Fragment$SceneData$files(this._res);
-
-  TRes _res;
-
-  call({
-    String? path,
-    String? basename,
-    String? format,
-    int? width,
-    int? height,
-    String? video_codec,
-    String? audio_codec,
-    int? bit_rate,
-    double? duration,
-    double? frame_rate,
-    String? $__typename,
-  }) => _res;
 }
 
 class Fragment$SceneData$tags {

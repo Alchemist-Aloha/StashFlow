@@ -56,6 +56,7 @@ FutureOr<List<TagMediaItem>> tagMedia(Ref ref, String tagId) async {
           sceneId: scene.id,
           title: buildSceneDisplayTitle(
             title: scene.title,
+            filePath: scene.files.isNotEmpty ? scene.files.first.path : null,
             streamPath: scene.paths.stream,
           ),
           thumbnailUrl: resolveGraphqlMediaUrl(
@@ -118,6 +119,7 @@ class TagMediaGrid extends _$TagMediaGrid {
             sceneId: scene.id,
             title: buildSceneDisplayTitle(
               title: scene.title,
+              filePath: scene.files.isNotEmpty ? scene.files.first.path : null,
               streamPath: scene.paths.stream,
             ),
             thumbnailUrl: resolveGraphqlMediaUrl(

@@ -123,7 +123,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final showVideoDebugInfo = prefs.getBool(_showVideoDebugInfoKey) ?? false;
     final useDoubleTapSeek = prefs.getBool(_useDoubleTapSeekKey) ?? true;
     final enableBackgroundPlayback =
-      prefs.getBool(_enableBackgroundPlaybackKey) ?? false;
+        prefs.getBool(_enableBackgroundPlaybackKey) ?? false;
     final enableNativePip = prefs.getBool(_enableNativePipKey) ?? false;
     final themeMode = ref.read(appThemeModeProvider);
     _baseUrlController.text = url;
@@ -232,7 +232,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     await prefs.setBool(_autoplayNextKey, _autoplayNext);
     await prefs.setBool(_showVideoDebugInfoKey, _showVideoDebugInfo);
     await prefs.setBool(_useDoubleTapSeekKey, _useDoubleTapSeek);
-    await prefs.setBool(_enableBackgroundPlaybackKey, _enableBackgroundPlayback);
+    await prefs.setBool(
+      _enableBackgroundPlaybackKey,
+      _enableBackgroundPlayback,
+    );
     await prefs.setBool(_enableNativePipKey, _enableNativePip);
 
     // Keep in-memory player state synchronized with persisted settings.

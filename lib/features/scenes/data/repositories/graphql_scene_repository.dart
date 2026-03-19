@@ -67,7 +67,7 @@ class GraphQLSceneRepository implements SceneRepository {
             id: s.id,
             title: s.title ?? '',
             details: null,
-            path: null,
+            path: s.files.isNotEmpty ? s.files.first.path : null,
             date: DateTime.tryParse(s.date ?? '') ?? DateTime.now(),
             rating100: s.rating100,
             oCounter: s.o_counter ?? 0,

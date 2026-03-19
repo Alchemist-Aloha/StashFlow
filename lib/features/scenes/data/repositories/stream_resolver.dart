@@ -34,6 +34,7 @@ class StreamResolver extends _$StreamResolver {
 
   Future<StreamChoice?> resolvePreferredStream(Scene scene) async {
     final client = ref.read(graphqlClientProvider);
+    final queryStopwatch = Stopwatch()..start();
     final result = await client.query(
       QueryOptions(
         document: gql('''
@@ -54,10 +55,16 @@ class StreamResolver extends _$StreamResolver {
         '''),
         variables: <String, dynamic>{'id': scene.id},
         fetchPolicy: FetchPolicy.networkOnly,
+        cacheRereadPolicy: CacheRereadPolicy.ignoreAll,
       ),
     );
+    queryStopwatch.stop();
+    final exceptionSummary = _summarizeException(result.exception);
 
-    if (result.hasException) return null;
+    AppLogStore.instance.add(
+      'resolver query scene=${scene.id} elapsed=${queryStopwatch.elapsedMilliseconds}ms hasException=${result.hasException}${exceptionSummary == null || exceptionSummary.isEmpty ? '' : ' error=$exceptionSummary'}',
+      source: 'stream_resolver',
+    );
 
     final rootStreams =
         ((result.data?['sceneStreams']) as List?)
@@ -70,6 +77,14 @@ class StreamResolver extends _$StreamResolver {
             .toList() ??
         const <Map<String, dynamic>>[];
     final streams = rootStreams.isNotEmpty ? rootStreams : nestedStreams;
+
+    if (result.hasException && streams.isEmpty) return null;
+    if (result.hasException && streams.isNotEmpty) {
+      AppLogStore.instance.add(
+        'resolver query scene=${scene.id} continuing with ${streams.length} streams despite exception',
+        source: 'stream_resolver',
+      );
+    }
 
     final graphqlEndpoint = client.link is HttpLink
         ? (client.link as HttpLink).uri
@@ -186,6 +201,28 @@ class StreamResolver extends _$StreamResolver {
     return '${uri.scheme}://${uri.host}${uri.path}';
   }
 
+  String? _summarizeException(OperationException? exception) {
+    if (exception == null) return null;
+
+    final parts = <String>[];
+    parts.addAll(exception.graphqlErrors.map((e) => e.message.trim()));
+    final linkException = exception.linkException;
+    if (linkException != null) {
+      parts.add(linkException.runtimeType.toString());
+    }
+
+    final joined = parts.where((e) => e.isNotEmpty).join(' | ');
+    if (joined.isEmpty) return null;
+
+    final redacted = joined.replaceAll(
+      RegExp(r'apikey=[^&\s\},]+', caseSensitive: false),
+      'apikey=<redacted>',
+    );
+    return redacted.length > 260
+        ? '${redacted.substring(0, 260)}...'
+        : redacted;
+  }
+
   String guessMimeType(String url, {String? label}) {
     final uri = Uri.tryParse(url);
     final path = (uri?.path ?? url).toLowerCase();
@@ -262,6 +299,7 @@ class StreamResolver extends _$StreamResolver {
         String method, {
         bool withRange = false,
       }) async {
+        final requestStopwatch = Stopwatch()..start();
         final req = await client
             .openUrl(method, uri)
             .timeout(const Duration(seconds: 3));
@@ -270,8 +308,13 @@ class StreamResolver extends _$StreamResolver {
 
         final res = await req.close().timeout(const Duration(seconds: 3));
         await res.drain<void>();
+        requestStopwatch.stop();
 
         final contentType = res.headers.value(HttpHeaders.contentTypeHeader);
+        AppLogStore.instance.add(
+          'resolver probe method=$method range=$withRange status=${res.statusCode} elapsed=${requestStopwatch.elapsedMilliseconds}ms type=${contentType ?? '-'} url=${_shortUrl(url)}',
+          source: 'stream_resolver',
+        );
         if (contentType == null || contentType.trim().isEmpty) return null;
         return contentType.split(';').first.trim().toLowerCase();
       }

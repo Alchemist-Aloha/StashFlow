@@ -56,6 +56,7 @@ FutureOr<List<StudioMediaItem>> studioMedia(Ref ref, String studioId) async {
           sceneId: scene.id,
           title: buildSceneDisplayTitle(
             title: scene.title,
+            filePath: scene.files.isNotEmpty ? scene.files.first.path : null,
             streamPath: scene.paths.stream,
           ),
           thumbnailUrl: resolveGraphqlMediaUrl(
@@ -118,6 +119,7 @@ class StudioMediaGrid extends _$StudioMediaGrid {
             sceneId: scene.id,
             title: buildSceneDisplayTitle(
               title: scene.title,
+              filePath: scene.files.isNotEmpty ? scene.files.first.path : null,
               streamPath: scene.paths.stream,
             ),
             thumbnailUrl: resolveGraphqlMediaUrl(

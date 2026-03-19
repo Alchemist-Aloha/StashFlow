@@ -38,7 +38,7 @@ String? _nameFromPath(String? rawPath) {
   final lastSegment = segments.isEmpty ? '' : segments.last;
   if (lastSegment.isEmpty) return null;
 
-  final decoded = Uri.decodeComponent(lastSegment);
+  final decoded = _safeDecodeComponent(lastSegment);
   final dotIndex = decoded.lastIndexOf('.');
   final withoutExt = dotIndex > 0 ? decoded.substring(0, dotIndex) : decoded;
   final cleaned = withoutExt.replaceAll(RegExp(r'[_\.]+'), ' ').trim();
@@ -47,6 +47,14 @@ String? _nameFromPath(String? rawPath) {
   final lower = cleaned.toLowerCase();
   if (kGenericSceneFallbackNames.contains(lower)) return null;
   return cleaned;
+}
+
+String _safeDecodeComponent(String value) {
+  try {
+    return Uri.decodeComponent(value);
+  } catch (_) {
+    return value;
+  }
 }
 
 extension SceneDisplayTitleX on Scene {

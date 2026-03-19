@@ -8,6 +8,9 @@ fragment SlimSceneData on Scene {
   interactive
   resume_time
   play_count
+  files {
+    path
+  }
   paths {
     screenshot
     preview

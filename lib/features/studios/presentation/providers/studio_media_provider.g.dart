@@ -66,7 +66,7 @@ final class StudioMediaProvider
   }
 }
 
-String _$studioMediaHash() => r'580849a9e2876c376b1feb5d21d7b4540d2d8147';
+String _$studioMediaHash() => r'9e404d06d2c77b7134659a3e522733f84753afdc';
 
 final class StudioMediaFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<StudioMediaItem>>, String> {
@@ -127,7 +127,7 @@ final class StudioMediaGridProvider
   }
 }
 
-String _$studioMediaGridHash() => r'54fa996875ac841ff7b8a8d0aaa978d1e106e5e1';
+String _$studioMediaGridHash() => r'c8260b1c298f60402543e239f6ded25862be0ab3';
 
 final class StudioMediaGridFamily extends $Family
     with

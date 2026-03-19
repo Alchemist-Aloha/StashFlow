@@ -22,7 +22,7 @@ class ScrubChewieControls extends StatefulWidget {
 }
 
 class _ScrubChewieControlsState extends State<ScrubChewieControls>
-  with WidgetsBindingObserver {
+    with WidgetsBindingObserver {
   ChewieController? _chewieController;
   VideoPlayerController? _boundVideoController;
   static const _playbackSpeeds = <double>[0.75, 1.0, 1.25, 1.5, 2.0];
@@ -90,7 +90,22 @@ class _ScrubChewieControlsState extends State<ScrubChewieControls>
 
     final controller = _boundVideoController;
     if (controller == null || !controller.value.isPlaying) return;
+    if (!(_chewieController?.isFullScreen ?? false)) return;
     unawaited(PipMode.enterIfAvailable());
+  }
+
+  Future<void> _enterPipVideoOnly() async {
+    if (!widget.enableNativePip || !Platform.isAndroid) return;
+
+    final chewieController = _chewieController;
+    if (chewieController == null) return;
+
+    if (!chewieController.isFullScreen) {
+      chewieController.enterFullScreen();
+      await Future<void>.delayed(const Duration(milliseconds: 140));
+    }
+
+    await PipMode.enterIfAvailable();
   }
 
   void _onVideoTick() {
@@ -456,7 +471,7 @@ class _ScrubChewieControlsState extends State<ScrubChewieControls>
                               color: Colors.white,
                             ),
                             onPressed: () async {
-                              await PipMode.enterIfAvailable();
+                              await _enterPipVideoOnly();
                               _showControlsTemporarily();
                             },
                           ),

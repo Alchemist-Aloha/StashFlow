@@ -59,6 +59,7 @@ FutureOr<List<PerformerMediaItem>> performerMedia(
           sceneId: scene.id,
           title: buildSceneDisplayTitle(
             title: scene.title,
+            filePath: scene.files.isNotEmpty ? scene.files.first.path : null,
             streamPath: scene.paths.stream,
           ),
           thumbnailUrl: resolveGraphqlMediaUrl(
@@ -124,6 +125,7 @@ class PerformerMediaGrid extends _$PerformerMediaGrid {
             sceneId: scene.id,
             title: buildSceneDisplayTitle(
               title: scene.title,
+              filePath: scene.files.isNotEmpty ? scene.files.first.path : null,
               streamPath: scene.paths.stream,
             ),
             thumbnailUrl: resolveGraphqlMediaUrl(

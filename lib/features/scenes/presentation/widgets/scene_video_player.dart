@@ -84,6 +84,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       final prefs = ref.read(sharedPreferencesProvider);
       final preferSceneStreams = prefs.getBool(_preferSceneStreamsKey) ?? true;
       final resolver = ref.read(streamResolverProvider.notifier);
+      final resolveStopwatch = Stopwatch()..start();
 
       AppLogStore.instance.add(
         'startup begin scene=${widget.scene.id} preferSceneStreams=$preferSceneStreams',
@@ -93,6 +94,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       final choice = preferSceneStreams
           ? await resolver.resolvePreferredStream(widget.scene)
           : null;
+      resolveStopwatch.stop();
 
       final streamUrl = choice?.url ?? widget.scene.paths.stream ?? '';
       var mimeType = choice?.mimeType ?? resolver.guessMimeType(streamUrl);
@@ -103,7 +105,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       final mediaHeaders = ref.read(mediaHeadersProvider);
 
       AppLogStore.instance.add(
-        'startup select scene=${widget.scene.id} source=$streamSource mime=$mimeType label=${streamLabel ?? '-'}',
+        'startup select scene=${widget.scene.id} source=$streamSource mime=$mimeType label=${streamLabel ?? '-'} resolve=${resolveStopwatch.elapsedMilliseconds}ms',
         source: 'player_startup',
       );
 
@@ -118,21 +120,29 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       }
 
       if (mimeType == 'unknown') {
+        final mimeProbeStopwatch = Stopwatch()..start();
         final probedMime = await resolver.probeMimeTypeFromHeaders(
           streamUrl,
           mediaHeaders,
         );
+        mimeProbeStopwatch.stop();
         if (probedMime != null && probedMime.isNotEmpty) {
           mimeType = probedMime;
           streamSource = '$streamSource+header';
           AppLogStore.instance.add(
-            'startup header-probe scene=${widget.scene.id} mime=$probedMime',
+            'startup header-probe scene=${widget.scene.id} mime=$probedMime elapsed=${mimeProbeStopwatch.elapsedMilliseconds}ms',
+            source: 'player_startup',
+          );
+        } else {
+          AppLogStore.instance.add(
+            'startup header-probe scene=${widget.scene.id} mime=unknown elapsed=${mimeProbeStopwatch.elapsedMilliseconds}ms',
             source: 'player_startup',
           );
         }
       }
 
       _autoStartedSceneId = widget.scene.id;
+      final playSceneStopwatch = Stopwatch()..start();
       await ref
           .read(playerStateProvider.notifier)
           .playScene(
@@ -145,10 +155,11 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
             prewarmAttempted: false,
             prewarmSucceeded: false,
           );
+      playSceneStopwatch.stop();
 
       startupStopwatch.stop();
       AppLogStore.instance.add(
-        'startup playScene-dispatched scene=${widget.scene.id} elapsed=${startupStopwatch.elapsedMilliseconds}ms source=$streamSource mime=$mimeType',
+        'startup playScene-dispatched scene=${widget.scene.id} elapsed=${startupStopwatch.elapsedMilliseconds}ms playScene=${playSceneStopwatch.elapsedMilliseconds}ms source=$streamSource mime=$mimeType',
         source: 'player_startup',
       );
 
@@ -165,6 +176,11 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                 succeeded: result.succeeded,
                 latencyMs: result.latencyMs,
               );
+
+          AppLogStore.instance.add(
+            'startup prewarm-result scene=${widget.scene.id} attempted=${result.attempted} success=${result.succeeded} latency=${result.latencyMs ?? -1}ms',
+            source: 'player_startup',
+          );
         }),
       );
     } catch (error, stack) {
@@ -183,7 +199,13 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
 
   Future<_PrewarmResult> _prewarmPathsStreamOnce(Map<String, String> headers) {
     final existingFuture = _pathsStreamPrewarmFuture;
-    if (existingFuture != null) return existingFuture;
+    if (existingFuture != null) {
+      AppLogStore.instance.add(
+        'startup prewarm reused scene=${widget.scene.id}',
+        source: 'player_startup',
+      );
+      return existingFuture;
+    }
 
     final rawStreamUrl = widget.scene.paths.stream ?? '';
     final client = ref.read(graphqlClientProvider);
@@ -197,11 +219,20 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       graphqlEndpoint: graphqlEndpoint,
     );
     if (streamUrl.isEmpty) {
+      AppLogStore.instance.add(
+        'startup prewarm skipped scene=${widget.scene.id} reason=empty_stream_url',
+        source: 'player_startup',
+      );
       _pathsStreamPrewarmFuture = Future<_PrewarmResult>.value(
         const _PrewarmResult(attempted: false, succeeded: false),
       );
       return _pathsStreamPrewarmFuture!;
     }
+
+    AppLogStore.instance.add(
+      'startup prewarm start scene=${widget.scene.id} url=$streamUrl',
+      source: 'player_startup',
+    );
 
     final future = _prewarmStreamRequest(streamUrl, headers);
     _pathsStreamPrewarmFuture = future;

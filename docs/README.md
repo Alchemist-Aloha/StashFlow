@@ -20,6 +20,9 @@ This folder contains agent-focused project documentation.
 - Video seek interaction mode is configurable in Settings (`Drag` vs `Double-tap`) and works in inline and fullscreen player.
 - Player controls now auto-hide while playing and reappear on interaction.
 - Stream prewarm runs in the background and no longer blocks playback startup.
+- Mini-player navigation back to scene details preserves current playback session (no intentional restart).
+- Native PiP is enabled as an optional setting; PiP entry prefers fullscreen player context for video-only surface.
+- Startup diagnostics include stream resolver and player startup logs; provider lifecycle race is still being monitored.
 - GraphQL codegen maps to `graphql/combined_schema.graphql` and feature documents.
 
 ## Purpose
