@@ -128,3 +128,8 @@ class ScenesPage extends ConsumerWidget {
 git add .
 git commit -m "feat: implement scenes page with riverpod"
 ```
+
+<!-- UI_GUIDELINE_REF -->
+
+## UI Guideline Reference
+See [../../UIGUIDELINE.md](../../UIGUIDELINE.md) for current UI standards.

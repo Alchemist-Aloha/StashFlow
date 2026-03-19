@@ -58,3 +58,8 @@ The MVP will utilize existing Stash fragments:
 - **Mock Repositories**: Test UI states (Loading, Error, Empty) using a mock data layer.
 - **Entity Validation**: Unit tests to ensure the domain entities correctly handle missing or null fields from the API.
 - **Navigation Flow**: Verify that the mini-player state is preserved during routing.
+
+<!-- UI_GUIDELINE_REF -->
+
+## UI Guideline Reference
+See [../../UIGUIDELINE.md](../../UIGUIDELINE.md) for current UI standards.

@@ -306,3 +306,8 @@ git commit -m "feat(graphql): define performer fragments and update queries"
 git add lib/features/performers/data/repositories/graphql_performer_repository.dart
 git commit -m "refactor: use generated graphql classes in PerformerRepository"
 ```
+
+<!-- UI_GUIDELINE_REF -->
+
+## UI Guideline Reference
+See [../../UIGUIDELINE.md](../../UIGUIDELINE.md) for current UI standards.

@@ -160,3 +160,8 @@ class MiniPlayer extends ConsumerWidget {
 git add .
 git commit -m "feat: connect mini player to active scene state"
 ```
+
+<!-- UI_GUIDELINE_REF -->
+
+## UI Guideline Reference
+See [../../UIGUIDELINE.md](../../UIGUIDELINE.md) for current UI standards.

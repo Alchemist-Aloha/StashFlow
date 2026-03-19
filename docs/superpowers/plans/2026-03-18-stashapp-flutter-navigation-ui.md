@@ -149,3 +149,8 @@ class ShellPage extends StatelessWidget {
 git add .
 git commit -m "feat: create shell page with mini player and bottom nav"
 ```
+
+<!-- UI_GUIDELINE_REF -->
+
+## UI Guideline Reference
+See [../../UIGUIDELINE.md](../../UIGUIDELINE.md) for current UI standards.

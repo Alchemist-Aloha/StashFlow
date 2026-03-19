@@ -197,3 +197,8 @@ final sceneRepositoryProvider = Provider<SceneRepository>((ref) {
 git add .
 git commit -m "feat: implement graphql scene repository"
 ```
+
+<!-- UI_GUIDELINE_REF -->
+
+## UI Guideline Reference
+See [../../UIGUIDELINE.md](../../UIGUIDELINE.md) for current UI standards.

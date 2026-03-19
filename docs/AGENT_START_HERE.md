@@ -44,3 +44,8 @@
 - List pages use `ListPageScaffold` where possible.
 - Sort/filter controls should use app bar actions + bottom sheets.
 - Random discovery actions should use floating action buttons on list pages.
+
+<!-- UI_GUIDELINE_REF -->
+
+## UI Guideline Reference
+See [UIGUIDELINE.md](UIGUIDELINE.md) for current UI standards.

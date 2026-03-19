@@ -57,3 +57,8 @@ The app follows **Clean Architecture**:
 - **Clean Architecture + Riverpod + GoRouter**.
 - **Mobile-first UI design**.
 - **Direct API mapping from Stash server GraphQL operations**.
+
+<!-- UI_GUIDELINE_REF -->
+
+## UI Guideline Reference
+See [../../UIGUIDELINE.md](../../UIGUIDELINE.md) for current UI standards.

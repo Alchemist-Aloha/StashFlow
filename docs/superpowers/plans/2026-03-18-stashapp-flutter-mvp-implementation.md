@@ -132,3 +132,8 @@ _Historical note (2026-03-19): This document is retained for planning/spec conte
     - Verify: Browse -> Search -> Play -> Navigate Back (MiniPlayer) -> Resume.
 - [ ] **Step 2: Commit**
     - `git commit -m "chore: final mvp verification and polish"`
+
+<!-- UI_GUIDELINE_REF -->
+
+## UI Guideline Reference
+See [../../UIGUIDELINE.md](../../UIGUIDELINE.md) for current UI standards.

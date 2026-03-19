@@ -172,3 +172,8 @@ Candidate files:
 1. Phase 1 (stability and diagnostics)
 2. Phase 2 (UI standardization)
 3. Phase 3 (reuse and long-term maintainability)
+
+<!-- UI_GUIDELINE_REF -->
+
+## UI Guideline Reference
+See [../../UIGUIDELINE.md](../../UIGUIDELINE.md) for current UI standards.

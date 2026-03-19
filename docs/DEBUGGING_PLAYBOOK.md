@@ -77,3 +77,8 @@ If broken:
 1. Verify corresponding provider has a `getRandom*` method using server `sort: 'random'`.
 2. Verify page calls the provider method and handles `null` with snack bar.
 3. Check route push target path and entity id.
+
+<!-- UI_GUIDELINE_REF -->
+
+## UI Guideline Reference
+See [UIGUIDELINE.md](UIGUIDELINE.md) for current UI standards.

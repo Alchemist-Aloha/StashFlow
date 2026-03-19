@@ -166,3 +166,8 @@ Expected: SUCCESS
 git add .
 git commit -m "feat: setup riverpod notifiers for scenes"
 ```
+
+<!-- UI_GUIDELINE_REF -->
+
+## UI Guideline Reference
+See [../../UIGUIDELINE.md](../../UIGUIDELINE.md) for current UI standards.

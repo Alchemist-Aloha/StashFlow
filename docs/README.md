@@ -27,3 +27,8 @@ Use these docs to reduce exploration time, avoid repeated mistakes, and keep cha
 
 - `docs/superpowers/plans/*` and `docs/superpowers/specs/*` are historical planning artifacts.
 - They are retained for context and may not exactly match current implementation.
+
+<!-- UI_GUIDELINE_REF -->
+
+## UI Guideline Reference
+See [UIGUIDELINE.md](UIGUIDELINE.md) for current UI standards.

@@ -48,3 +48,8 @@ flutter pub get
 2. Targeted tests if available
 3. Full `flutter test`
 4. `flutter build apk` for release-path validation
+
+<!-- UI_GUIDELINE_REF -->
+
+## UI Guideline Reference
+See [UIGUIDELINE.md](UIGUIDELINE.md) for current UI standards.

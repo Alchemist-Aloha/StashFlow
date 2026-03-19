@@ -28,3 +28,8 @@ Use this before closing a task.
 - [ ] Root cause or best-known hypothesis stated.
 - [ ] Trade-offs and limits are explicit.
 - [ ] Next action is clear and testable.
+
+<!-- UI_GUIDELINE_REF -->
+
+## UI Guideline Reference
+See [UIGUIDELINE.md](UIGUIDELINE.md) for current UI standards.

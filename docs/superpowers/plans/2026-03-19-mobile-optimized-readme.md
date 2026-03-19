@@ -155,3 +155,8 @@ For architecture, known issues, and onboarding, see:
 git add README.md
 git commit -m "docs: final README structure refinement"
 ```
+
+<!-- UI_GUIDELINE_REF -->
+
+## UI Guideline Reference
+See [../../UIGUIDELINE.md](../../UIGUIDELINE.md) for current UI standards.

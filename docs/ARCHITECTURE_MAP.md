@@ -55,3 +55,8 @@
 - Schema used for generation: `graphql/combined_schema.graphql`
 - Feature operation documents: `lib/features/**/*.graphql`
 - Generated types: `lib/core/data/graphql/schema.graphql.dart` and feature `*.graphql.dart`
+
+<!-- UI_GUIDELINE_REF -->
+
+## UI Guideline Reference
+See [UIGUIDELINE.md](UIGUIDELINE.md) for current UI standards.

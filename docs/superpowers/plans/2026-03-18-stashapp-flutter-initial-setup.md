@@ -123,3 +123,8 @@ class MyApp extends StatelessWidget {
 git add lib/
 git commit -m "chore: initial directory structure and main.dart"
 ```
+
+<!-- UI_GUIDELINE_REF -->
+
+## UI Guideline Reference
+See [../../UIGUIDELINE.md](../../UIGUIDELINE.md) for current UI standards.

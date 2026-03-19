@@ -65,3 +65,8 @@
 - Status: Open
 - Area: UI regression safety
 - Severity: Low
+
+<!-- UI_GUIDELINE_REF -->
+
+## UI Guideline Reference
+See [UIGUIDELINE.md](UIGUIDELINE.md) for current UI standards.

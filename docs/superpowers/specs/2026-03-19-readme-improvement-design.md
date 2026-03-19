@@ -52,3 +52,8 @@ Improve the project's `README.md` to be more appealing to end-users by focusing 
 -   Features are easily scannable and visually appealing.
 -   The "Quick Start" guide is clear and non-technical for end-users.
 -   Technical details are present but secondary to the user experience.
+
+<!-- UI_GUIDELINE_REF -->
+
+## UI Guideline Reference
+See [../../UIGUIDELINE.md](../../UIGUIDELINE.md) for current UI standards.
