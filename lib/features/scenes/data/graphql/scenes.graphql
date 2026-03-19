@@ -35,6 +35,8 @@ fragment SceneData on Scene {
     video_codec
     audio_codec
     bit_rate
+    duration
+    frame_rate
   }
   tags {
     id

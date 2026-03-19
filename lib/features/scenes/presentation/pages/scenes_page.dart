@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../domain/entities/scene.dart';
-import '../../../../core/utils/pagination.dart';
-import '../../../../core/presentation/widgets/error_state_view.dart';
+import '../../domain/entities/scene_filter.dart';
 import '../providers/scene_list_provider.dart';
 import '../widgets/scene_card.dart';
+
+import '../../../../core/presentation/widgets/list_page_scaffold.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
+
+import '../widgets/scene_filter_panel.dart';
 
 enum _SceneSortOption { dateNewest, dateOldest, rating, playCount, random }
 
@@ -17,8 +21,6 @@ class ScenesPage extends ConsumerStatefulWidget {
 }
 
 class _ScenesPageState extends ConsumerState<ScenesPage> {
-  bool _isSearching = false;
-  final _searchController = TextEditingController();
   bool _isGridView = false;
   _SceneSortOption _sortOption = _SceneSortOption.dateNewest;
 
@@ -30,76 +32,51 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     });
   }
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
   void _onSearchChanged(String query) {
     ref.read(sceneSearchQueryProvider.notifier).update(query);
-  }
-
-  List<Scene> _sortScenes(List<Scene> input) {
-    switch (_sortOption) {
-      case _SceneSortOption.dateNewest:
-      case _SceneSortOption.dateOldest:
-      case _SceneSortOption.rating:
-      case _SceneSortOption.playCount:
-      case _SceneSortOption.random:
-        // Server-side ordering handles these options.
-        break;
-    }
-    return input;
   }
 
   void _applyServerSort(_SceneSortOption option) {
     switch (option) {
       case _SceneSortOption.dateNewest:
-        ref
-            .read(sceneListProvider.notifier)
-            .setSort(sort: 'date', descending: true);
+        ref.read(sceneListProvider.notifier).setSort(sort: 'date', descending: true);
         break;
       case _SceneSortOption.dateOldest:
-        ref
-            .read(sceneListProvider.notifier)
-            .setSort(sort: 'date', descending: false);
+        ref.read(sceneListProvider.notifier).setSort(sort: 'date', descending: false);
         break;
       case _SceneSortOption.rating:
-        ref
-            .read(sceneListProvider.notifier)
-            .setSort(sort: 'rating100', descending: true);
+        ref.read(sceneListProvider.notifier).setSort(sort: 'rating100', descending: true);
         break;
       case _SceneSortOption.playCount:
-        ref
-            .read(sceneListProvider.notifier)
-            .setSort(sort: 'play_count', descending: true);
+        ref.read(sceneListProvider.notifier).setSort(sort: 'play_count', descending: true);
         break;
       case _SceneSortOption.random:
-        // Random option intentionally remains client-side shuffle.
-        ref
-            .read(sceneListProvider.notifier)
-            .setSort(sort: 'random', descending: true);
+        ref.read(sceneListProvider.notifier).setSort(sort: 'random', descending: true);
         break;
     }
   }
 
   Future<void> _openRandomScene() async {
-    final randomScene = await ref
-        .read(sceneListProvider.notifier)
-        .getRandomScene();
+    final randomScene = await ref.read(sceneListProvider.notifier).getRandomScene(useCurrentFilter: true);
     if (!mounted) return;
 
     if (randomScene == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No scenes available for random navigation'),
-        ),
+        const SnackBar(content: Text('No scenes available for random navigation')),
       );
       return;
     }
 
     context.push('/scene/${randomScene.id}');
+  }
+
+  void _showFilterPanel() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const SceneFilterPanel(),
+    );
   }
 
   Widget _buildSortBar() {
@@ -113,7 +90,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+      padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium, vertical: AppTheme.spacingSmall),
       child: Row(
         children: [
           for (final option in options) ...[
@@ -126,7 +103,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                 _applyServerSort(option.$1);
               },
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppTheme.spacingSmall),
           ],
         ],
       ),
@@ -136,126 +113,62 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
   @override
   Widget build(BuildContext context) {
     final scenesAsync = ref.watch(sceneListProvider);
+    final filterState = ref.watch(sceneFilterStateProvider);
+    final hasActiveFilters = filterState != SceneFilter.empty();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: _isSearching
-            ? TextField(
-                controller: _searchController,
-                autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: 'Search scenes...',
-                  border: InputBorder.none,
-                  hintStyle: TextStyle(color: Colors.white54),
-                ),
-                style: const TextStyle(color: Colors.white),
-                onChanged: _onSearchChanged,
-              )
-            : const Text(
-                'Stash',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: -1,
+    return ListPageScaffold<Scene>(
+      title: 'Stash',
+      searchHint: 'Search scenes...',
+      onSearchChanged: _onSearchChanged,
+      provider: scenesAsync,
+      onRefresh: () => ref.refresh(sceneListProvider.future),
+      onFetchNextPage: () => ref.read(sceneListProvider.notifier).fetchNextPage(),
+      sortBar: _buildSortBar(),
+      actions: [
+        IconButton(
+          icon: Icon(_isGridView ? Icons.view_list : Icons.grid_view),
+          onPressed: () => setState(() => _isGridView = !_isGridView),
+        ),
+        Stack(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.filter_list),
+              onPressed: _showFilterPanel,
+            ),
+            if (hasActiveFilters)
+              Positioned(
+                right: 8,
+                top: 8,
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: context.colors.secondary,
+                    shape: BoxShape.circle,
+                  ),
+                  constraints: const BoxConstraints(minWidth: 8, minHeight: 8),
                 ),
               ),
-        actions: [
-          if (_isSearching)
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () {
-                setState(() => _isSearching = false);
-                _searchController.clear();
-                _onSearchChanged('');
-              },
+          ],
+        ),
+        IconButton(
+          icon: const Icon(Icons.casino_outlined),
+          tooltip: 'Random scene',
+          onPressed: _openRandomScene,
+        ),
+      ],
+      gridDelegate: _isGridView
+          ? const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: AppTheme.spacingSmall,
+              mainAxisSpacing: AppTheme.spacingSmall,
+              childAspectRatio: 0.8,
             )
-          else
-            IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () => setState(() => _isSearching = true),
-            ),
-          IconButton(
-            icon: Icon(_isGridView ? Icons.view_list : Icons.grid_view),
-            onPressed: () => setState(() => _isGridView = !_isGridView),
-          ),
-          IconButton(
-            icon: const Icon(Icons.casino_outlined),
-            tooltip: 'Random scene',
-            onPressed: _openRandomScene,
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
-            child: CircleAvatar(
-              radius: 14,
-              child: Icon(Icons.person, size: 18),
-            ),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          _buildSortBar(),
-          Expanded(
-            child: RefreshIndicator(
-              onRefresh: () => ref.refresh(sceneListProvider.future),
-              child: scenesAsync.when(
-                data: (scenes) {
-                  final sortedScenes = _sortScenes(scenes);
-                  if (sortedScenes.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        'No scenes found',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    );
-                  }
-
-                  return NotificationListener<ScrollNotification>(
-                    onNotification: (ScrollNotification scrollInfo) {
-                      if (shouldLoadNextPage(scrollInfo.metrics)) {
-                        ref.read(sceneListProvider.notifier).fetchNextPage();
-                      }
-                      return false;
-                    },
-                    child: _isGridView
-                        ? GridView.builder(
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 8,
-                                  mainAxisSpacing: 8,
-                                  childAspectRatio: 0.8,
-                                ),
-                            padding: const EdgeInsets.all(8),
-                            itemCount: sortedScenes.length,
-                            itemBuilder: (context, index) => SceneCard(
-                              scene: sortedScenes[index],
-                              isGrid: true,
-                              onTap: () => context.push(
-                                '/scene/${sortedScenes[index].id}',
-                              ),
-                            ),
-                          )
-                        : ListView.builder(
-                            itemCount: sortedScenes.length,
-                            itemBuilder: (context, index) => SceneCard(
-                              scene: sortedScenes[index],
-                              isGrid: false,
-                              onTap: () => context.push(
-                                '/scene/${sortedScenes[index].id}',
-                              ),
-                            ),
-                          ),
-                  );
-                },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, stack) => ErrorStateView(
-                  message: 'Failed to load scenes.\n$err',
-                  onRetry: () => ref.refresh(sceneListProvider),
-                ),
-              ),
-            ),
-          ),
-        ],
+          : null,
+      padding: EdgeInsets.all(_isGridView ? AppTheme.spacingSmall : 0),
+      itemBuilder: (context, scene) => SceneCard(
+        scene: scene,
+        isGrid: _isGridView,
+        onTap: () => context.push('/scene/${scene.id}'),
       ),
     );
   }

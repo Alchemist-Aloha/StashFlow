@@ -39,6 +39,8 @@ abstract class SceneFile with _$SceneFile {
     @JsonKey(name: 'video_codec') required String? videoCodec,
     @JsonKey(name: 'audio_codec') required String? audioCodec,
     @JsonKey(name: 'bit_rate') required int? bitRate,
+    required double? duration,
+    @JsonKey(name: 'frame_rate') required double? frameRate,
   }) = _SceneFile;
 
   factory SceneFile.fromJson(Map<String, dynamic> json) =>

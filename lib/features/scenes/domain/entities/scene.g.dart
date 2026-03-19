@@ -65,6 +65,8 @@ _SceneFile _$SceneFileFromJson(Map<String, dynamic> json) => _SceneFile(
   videoCodec: json['video_codec'] as String?,
   audioCodec: json['audio_codec'] as String?,
   bitRate: (json['bit_rate'] as num?)?.toInt(),
+  duration: (json['duration'] as num?)?.toDouble(),
+  frameRate: (json['frame_rate'] as num?)?.toDouble(),
 );
 
 Map<String, dynamic> _$SceneFileToJson(_SceneFile instance) =>
@@ -75,6 +77,8 @@ Map<String, dynamic> _$SceneFileToJson(_SceneFile instance) =>
       'video_codec': instance.videoCodec,
       'audio_codec': instance.audioCodec,
       'bit_rate': instance.bitRate,
+      'duration': instance.duration,
+      'frame_rate': instance.frameRate,
     };
 
 _ScenePaths _$ScenePathsFromJson(Map<String, dynamic> json) => _ScenePaths(

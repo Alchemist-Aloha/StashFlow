@@ -124,6 +124,58 @@ abstract class _$SceneSearchQuery extends $Notifier<String> {
   }
 }
 
+@ProviderFor(SceneFilterState)
+final sceneFilterStateProvider = SceneFilterStateProvider._();
+
+final class SceneFilterStateProvider
+    extends $NotifierProvider<SceneFilterState, SceneFilter> {
+  SceneFilterStateProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'sceneFilterStateProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$sceneFilterStateHash();
+
+  @$internal
+  @override
+  SceneFilterState create() => SceneFilterState();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(SceneFilter value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SceneFilter>(value),
+    );
+  }
+}
+
+String _$sceneFilterStateHash() => r'42514424785c20696ab809b6725584ab6b3184ce';
+
+abstract class _$SceneFilterState extends $Notifier<SceneFilter> {
+  SceneFilter build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<SceneFilter, SceneFilter>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<SceneFilter, SceneFilter>,
+              SceneFilter,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(SceneList)
 final sceneListProvider = SceneListProvider._();
 
@@ -148,7 +200,7 @@ final class SceneListProvider
   SceneList create() => SceneList();
 }
 
-String _$sceneListHash() => r'89dbaf897a944aab99f6e36fc5cc2c5276180069';
+String _$sceneListHash() => r'88754d804bf42d690cd52987f08eb20fa95a5d22';
 
 abstract class _$SceneList extends $AsyncNotifier<List<Scene>> {
   FutureOr<List<Scene>> build();

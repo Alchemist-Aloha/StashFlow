@@ -380,7 +380,7 @@ $ScenePathsCopyWith<$Res> get paths {
 /// @nodoc
 mixin _$SceneFile {
 
- String? get format; int? get width; int? get height;@JsonKey(name: 'video_codec') String? get videoCodec;@JsonKey(name: 'audio_codec') String? get audioCodec;@JsonKey(name: 'bit_rate') int? get bitRate;
+ String? get format; int? get width; int? get height;@JsonKey(name: 'video_codec') String? get videoCodec;@JsonKey(name: 'audio_codec') String? get audioCodec;@JsonKey(name: 'bit_rate') int? get bitRate; double? get duration;@JsonKey(name: 'frame_rate') double? get frameRate;
 /// Create a copy of SceneFile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -393,16 +393,16 @@ $SceneFileCopyWith<SceneFile> get copyWith => _$SceneFileCopyWithImpl<SceneFile>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SceneFile&&(identical(other.format, format) || other.format == format)&&(identical(other.width, width) || other.width == width)&&(identical(other.height, height) || other.height == height)&&(identical(other.videoCodec, videoCodec) || other.videoCodec == videoCodec)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.bitRate, bitRate) || other.bitRate == bitRate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SceneFile&&(identical(other.format, format) || other.format == format)&&(identical(other.width, width) || other.width == width)&&(identical(other.height, height) || other.height == height)&&(identical(other.videoCodec, videoCodec) || other.videoCodec == videoCodec)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.bitRate, bitRate) || other.bitRate == bitRate)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.frameRate, frameRate) || other.frameRate == frameRate));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,format,width,height,videoCodec,audioCodec,bitRate);
+int get hashCode => Object.hash(runtimeType,format,width,height,videoCodec,audioCodec,bitRate,duration,frameRate);
 
 @override
 String toString() {
-  return 'SceneFile(format: $format, width: $width, height: $height, videoCodec: $videoCodec, audioCodec: $audioCodec, bitRate: $bitRate)';
+  return 'SceneFile(format: $format, width: $width, height: $height, videoCodec: $videoCodec, audioCodec: $audioCodec, bitRate: $bitRate, duration: $duration, frameRate: $frameRate)';
 }
 
 
@@ -413,7 +413,7 @@ abstract mixin class $SceneFileCopyWith<$Res>  {
   factory $SceneFileCopyWith(SceneFile value, $Res Function(SceneFile) _then) = _$SceneFileCopyWithImpl;
 @useResult
 $Res call({
- String? format, int? width, int? height,@JsonKey(name: 'video_codec') String? videoCodec,@JsonKey(name: 'audio_codec') String? audioCodec,@JsonKey(name: 'bit_rate') int? bitRate
+ String? format, int? width, int? height,@JsonKey(name: 'video_codec') String? videoCodec,@JsonKey(name: 'audio_codec') String? audioCodec,@JsonKey(name: 'bit_rate') int? bitRate, double? duration,@JsonKey(name: 'frame_rate') double? frameRate
 });
 
 
@@ -430,7 +430,7 @@ class _$SceneFileCopyWithImpl<$Res>
 
 /// Create a copy of SceneFile
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? format = freezed,Object? width = freezed,Object? height = freezed,Object? videoCodec = freezed,Object? audioCodec = freezed,Object? bitRate = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? format = freezed,Object? width = freezed,Object? height = freezed,Object? videoCodec = freezed,Object? audioCodec = freezed,Object? bitRate = freezed,Object? duration = freezed,Object? frameRate = freezed,}) {
   return _then(_self.copyWith(
 format: freezed == format ? _self.format : format // ignore: cast_nullable_to_non_nullable
 as String?,width: freezed == width ? _self.width : width // ignore: cast_nullable_to_non_nullable
@@ -438,7 +438,9 @@ as int?,height: freezed == height ? _self.height : height // ignore: cast_nullab
 as int?,videoCodec: freezed == videoCodec ? _self.videoCodec : videoCodec // ignore: cast_nullable_to_non_nullable
 as String?,audioCodec: freezed == audioCodec ? _self.audioCodec : audioCodec // ignore: cast_nullable_to_non_nullable
 as String?,bitRate: freezed == bitRate ? _self.bitRate : bitRate // ignore: cast_nullable_to_non_nullable
-as int?,
+as int?,duration: freezed == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
+as double?,frameRate: freezed == frameRate ? _self.frameRate : frameRate // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 
@@ -523,10 +525,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? format,  int? width,  int? height, @JsonKey(name: 'video_codec')  String? videoCodec, @JsonKey(name: 'audio_codec')  String? audioCodec, @JsonKey(name: 'bit_rate')  int? bitRate)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? format,  int? width,  int? height, @JsonKey(name: 'video_codec')  String? videoCodec, @JsonKey(name: 'audio_codec')  String? audioCodec, @JsonKey(name: 'bit_rate')  int? bitRate,  double? duration, @JsonKey(name: 'frame_rate')  double? frameRate)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SceneFile() when $default != null:
-return $default(_that.format,_that.width,_that.height,_that.videoCodec,_that.audioCodec,_that.bitRate);case _:
+return $default(_that.format,_that.width,_that.height,_that.videoCodec,_that.audioCodec,_that.bitRate,_that.duration,_that.frameRate);case _:
   return orElse();
 
 }
@@ -544,10 +546,10 @@ return $default(_that.format,_that.width,_that.height,_that.videoCodec,_that.aud
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? format,  int? width,  int? height, @JsonKey(name: 'video_codec')  String? videoCodec, @JsonKey(name: 'audio_codec')  String? audioCodec, @JsonKey(name: 'bit_rate')  int? bitRate)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? format,  int? width,  int? height, @JsonKey(name: 'video_codec')  String? videoCodec, @JsonKey(name: 'audio_codec')  String? audioCodec, @JsonKey(name: 'bit_rate')  int? bitRate,  double? duration, @JsonKey(name: 'frame_rate')  double? frameRate)  $default,) {final _that = this;
 switch (_that) {
 case _SceneFile():
-return $default(_that.format,_that.width,_that.height,_that.videoCodec,_that.audioCodec,_that.bitRate);case _:
+return $default(_that.format,_that.width,_that.height,_that.videoCodec,_that.audioCodec,_that.bitRate,_that.duration,_that.frameRate);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -564,10 +566,10 @@ return $default(_that.format,_that.width,_that.height,_that.videoCodec,_that.aud
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? format,  int? width,  int? height, @JsonKey(name: 'video_codec')  String? videoCodec, @JsonKey(name: 'audio_codec')  String? audioCodec, @JsonKey(name: 'bit_rate')  int? bitRate)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? format,  int? width,  int? height, @JsonKey(name: 'video_codec')  String? videoCodec, @JsonKey(name: 'audio_codec')  String? audioCodec, @JsonKey(name: 'bit_rate')  int? bitRate,  double? duration, @JsonKey(name: 'frame_rate')  double? frameRate)?  $default,) {final _that = this;
 switch (_that) {
 case _SceneFile() when $default != null:
-return $default(_that.format,_that.width,_that.height,_that.videoCodec,_that.audioCodec,_that.bitRate);case _:
+return $default(_that.format,_that.width,_that.height,_that.videoCodec,_that.audioCodec,_that.bitRate,_that.duration,_that.frameRate);case _:
   return null;
 
 }
@@ -579,7 +581,7 @@ return $default(_that.format,_that.width,_that.height,_that.videoCodec,_that.aud
 @JsonSerializable()
 
 class _SceneFile implements SceneFile {
-  const _SceneFile({required this.format, required this.width, required this.height, @JsonKey(name: 'video_codec') required this.videoCodec, @JsonKey(name: 'audio_codec') required this.audioCodec, @JsonKey(name: 'bit_rate') required this.bitRate});
+  const _SceneFile({required this.format, required this.width, required this.height, @JsonKey(name: 'video_codec') required this.videoCodec, @JsonKey(name: 'audio_codec') required this.audioCodec, @JsonKey(name: 'bit_rate') required this.bitRate, required this.duration, @JsonKey(name: 'frame_rate') required this.frameRate});
   factory _SceneFile.fromJson(Map<String, dynamic> json) => _$SceneFileFromJson(json);
 
 @override final  String? format;
@@ -588,6 +590,8 @@ class _SceneFile implements SceneFile {
 @override@JsonKey(name: 'video_codec') final  String? videoCodec;
 @override@JsonKey(name: 'audio_codec') final  String? audioCodec;
 @override@JsonKey(name: 'bit_rate') final  int? bitRate;
+@override final  double? duration;
+@override@JsonKey(name: 'frame_rate') final  double? frameRate;
 
 /// Create a copy of SceneFile
 /// with the given fields replaced by the non-null parameter values.
@@ -602,16 +606,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SceneFile&&(identical(other.format, format) || other.format == format)&&(identical(other.width, width) || other.width == width)&&(identical(other.height, height) || other.height == height)&&(identical(other.videoCodec, videoCodec) || other.videoCodec == videoCodec)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.bitRate, bitRate) || other.bitRate == bitRate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SceneFile&&(identical(other.format, format) || other.format == format)&&(identical(other.width, width) || other.width == width)&&(identical(other.height, height) || other.height == height)&&(identical(other.videoCodec, videoCodec) || other.videoCodec == videoCodec)&&(identical(other.audioCodec, audioCodec) || other.audioCodec == audioCodec)&&(identical(other.bitRate, bitRate) || other.bitRate == bitRate)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.frameRate, frameRate) || other.frameRate == frameRate));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,format,width,height,videoCodec,audioCodec,bitRate);
+int get hashCode => Object.hash(runtimeType,format,width,height,videoCodec,audioCodec,bitRate,duration,frameRate);
 
 @override
 String toString() {
-  return 'SceneFile(format: $format, width: $width, height: $height, videoCodec: $videoCodec, audioCodec: $audioCodec, bitRate: $bitRate)';
+  return 'SceneFile(format: $format, width: $width, height: $height, videoCodec: $videoCodec, audioCodec: $audioCodec, bitRate: $bitRate, duration: $duration, frameRate: $frameRate)';
 }
 
 
@@ -622,7 +626,7 @@ abstract mixin class _$SceneFileCopyWith<$Res> implements $SceneFileCopyWith<$Re
   factory _$SceneFileCopyWith(_SceneFile value, $Res Function(_SceneFile) _then) = __$SceneFileCopyWithImpl;
 @override @useResult
 $Res call({
- String? format, int? width, int? height,@JsonKey(name: 'video_codec') String? videoCodec,@JsonKey(name: 'audio_codec') String? audioCodec,@JsonKey(name: 'bit_rate') int? bitRate
+ String? format, int? width, int? height,@JsonKey(name: 'video_codec') String? videoCodec,@JsonKey(name: 'audio_codec') String? audioCodec,@JsonKey(name: 'bit_rate') int? bitRate, double? duration,@JsonKey(name: 'frame_rate') double? frameRate
 });
 
 
@@ -639,7 +643,7 @@ class __$SceneFileCopyWithImpl<$Res>
 
 /// Create a copy of SceneFile
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? format = freezed,Object? width = freezed,Object? height = freezed,Object? videoCodec = freezed,Object? audioCodec = freezed,Object? bitRate = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? format = freezed,Object? width = freezed,Object? height = freezed,Object? videoCodec = freezed,Object? audioCodec = freezed,Object? bitRate = freezed,Object? duration = freezed,Object? frameRate = freezed,}) {
   return _then(_SceneFile(
 format: freezed == format ? _self.format : format // ignore: cast_nullable_to_non_nullable
 as String?,width: freezed == width ? _self.width : width // ignore: cast_nullable_to_non_nullable
@@ -647,7 +651,9 @@ as int?,height: freezed == height ? _self.height : height // ignore: cast_nullab
 as int?,videoCodec: freezed == videoCodec ? _self.videoCodec : videoCodec // ignore: cast_nullable_to_non_nullable
 as String?,audioCodec: freezed == audioCodec ? _self.audioCodec : audioCodec // ignore: cast_nullable_to_non_nullable
 as String?,bitRate: freezed == bitRate ? _self.bitRate : bitRate // ignore: cast_nullable_to_non_nullable
-as int?,
+as int?,duration: freezed == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
+as double?,frameRate: freezed == frameRate ? _self.frameRate : frameRate // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 

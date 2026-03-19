@@ -1,36 +1,91 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/presentation/widgets/list_page_scaffold.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
 import '../providers/group_list_provider.dart';
+import '../../domain/entities/group.dart';
 
-class GroupsPage extends ConsumerWidget {
+enum _GroupSortOption { name }
+
+class GroupsPage extends ConsumerStatefulWidget {
   const GroupsPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<GroupsPage> createState() => _GroupsPageState();
+}
+
+class _GroupsPageState extends ConsumerState<GroupsPage> {
+  _GroupSortOption _sortOption = _GroupSortOption.name;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _applyServerSort(_sortOption);
+    });
+  }
+
+  void _onSearchChanged(String query) {
+    ref.read(groupSearchQueryProvider.notifier).update(query);
+  }
+
+  void _applyServerSort(_GroupSortOption option) {
+    switch (option) {
+      case _GroupSortOption.name:
+        ref.read(groupListProvider.notifier).setSort(sort: 'name', descending: false);
+        break;
+    }
+  }
+
+  Widget _buildSortBar() {
+    const options = [
+      (_GroupSortOption.name, 'Name'),
+    ];
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium, vertical: AppTheme.spacingSmall),
+      child: Row(
+        children: [
+          for (final option in options) ...[
+            ChoiceChip(
+              label: Text(option.$2),
+              selected: _sortOption == option.$1,
+              onSelected: (selected) {
+                if (!selected) return;
+                setState(() => _sortOption = option.$1);
+                _applyServerSort(option.$1);
+              },
+            ),
+            const SizedBox(width: AppTheme.spacingSmall),
+          ],
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final groupsAsync = ref.watch(groupListProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Groups')),
-      body: groupsAsync.when(
-        data: (groups) {
-          if (groups.isEmpty) {
-            return const Center(child: Text('No groups found'));
-          }
-
-          return ListView.builder(
-            itemCount: groups.length,
-            itemBuilder: (context, index) {
-              final group = groups[index];
-              return ListTile(
-                leading: const Icon(Icons.group_work),
-                title: Text(group.name.isEmpty ? 'Unnamed group' : group.name),
-                subtitle: Text('ID: ${group.id}'),
-              );
-            },
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('Error: $err')),
+    return ListPageScaffold<Group>(
+      title: 'Groups',
+      searchHint: 'Search groups...',
+      onSearchChanged: _onSearchChanged,
+      provider: groupsAsync,
+      onRefresh: () => ref.refresh(groupListProvider.future),
+      onFetchNextPage: () => ref.read(groupListProvider.notifier).fetchNextPage(),
+      sortBar: _buildSortBar(),
+      itemBuilder: (context, group) => Card(
+        margin: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium, vertical: 4),
+        child: ListTile(
+          leading: const Icon(Icons.group_work),
+          title: Text(
+            group.name.isEmpty ? 'Unnamed group' : group.name,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          subtitle: Text('ID: ${group.id}'),
+        ),
       ),
     );
   }

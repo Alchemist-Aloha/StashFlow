@@ -5,6 +5,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
+import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
 import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/main.dart';
@@ -21,6 +22,10 @@ class FakeSceneRepository implements SceneRepository {
     String? filter,
     String? sort,
     bool descending = true,
+    String? performerId,
+    String? studioId,
+    String? tagId,
+    SceneFilter? sceneFilter,
   }) async {
     if (filter == null || filter.isEmpty) return _scenes;
     return _scenes

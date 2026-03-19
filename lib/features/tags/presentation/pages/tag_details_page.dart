@@ -6,10 +6,30 @@ import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../providers/tag_media_provider.dart';
 import '../providers/tag_details_provider.dart';
 
+import '../../../../core/presentation/widgets/section_header.dart';
+import '../../../../core/presentation/widgets/media_strip.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
+
+import '../../../scenes/presentation/providers/scene_list_provider.dart';
+
 class TagDetailsPage extends ConsumerWidget {
   final String tagId;
 
   const TagDetailsPage({required this.tagId, super.key});
+
+  Future<void> _openRandomScene(BuildContext context, WidgetRef ref) async {
+    final randomScene = await ref.read(sceneListProvider.notifier).getRandomScene(tagId: tagId);
+    if (!context.mounted) return;
+
+    if (randomScene == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No scenes available for this tag')),
+      );
+      return;
+    }
+
+    context.push('/scene/${randomScene.id}');
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,7 +38,16 @@ class TagDetailsPage extends ConsumerWidget {
     final mediaHeaders = ref.watch(mediaHeadersProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Tag Details')),
+      appBar: AppBar(
+        title: const Text('Tag Details'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.casino_outlined),
+            tooltip: 'Random scene with this tag',
+            onPressed: () => _openRandomScene(context, ref),
+          ),
+        ],
+      ),
       body: tagAsync.when(
         data: (tag) => SingleChildScrollView(
           child: Column(
@@ -27,155 +56,85 @@ class TagDetailsPage extends ConsumerWidget {
               Container(
                 height: 240,
                 width: double.infinity,
-                color: Colors.grey[900],
+                color: context.colors.surfaceVariant,
                 child: tag.imagePath != null && tag.imagePath!.isNotEmpty
                     ? Image.network(
                         tag.imagePath!,
                         headers: mediaHeaders,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Center(
-                              child: Icon(
-                                Icons.local_offer,
-                                size: 72,
-                                color: Colors.white54,
-                              ),
-                            ),
+                        errorBuilder: (context, error, stackTrace) => Center(
+                          child: Icon(
+                            Icons.local_offer,
+                            size: 72,
+                            color: context.colors.onSurfaceVariant.withOpacity(0.5),
+                          ),
+                        ),
                       )
-                    : const Center(
+                    : Center(
                         child: Icon(
                           Icons.local_offer,
                           size: 72,
-                          color: Colors.white54,
+                          color: context.colors.onSurfaceVariant.withOpacity(0.5),
                         ),
                       ),
               ),
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(AppTheme.spacingMedium),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       tag.name,
-                      style: const TextStyle(
-                        fontSize: 24,
+                      style: context.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: context.colors.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    _statRow('Scenes', tag.sceneCount.toString()),
-                    _statRow('Images', tag.imageCount.toString()),
-                    _statRow('Galleries', tag.galleryCount.toString()),
-                    _statRow('Performers', tag.performerCount.toString()),
-                    const SizedBox(height: 20),
-                    Row(
+                    const SizedBox(height: AppTheme.spacingMedium),
+                    Wrap(
+                      spacing: AppTheme.spacingSmall,
+                      runSpacing: AppTheme.spacingSmall,
                       children: [
-                        const Text(
-                          'Media',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const Spacer(),
-                        TextButton(
-                          onPressed: () => context.push('/tag/${tag.id}/media'),
-                          child: const Text('View all'),
-                        ),
+                        _buildChip(context, '${tag.sceneCount} scenes'),
+                        _buildChip(context, '${tag.performerCount} performers'),
+                        _buildChip(context, '${tag.imageCount} images'),
+                        _buildChip(context, '${tag.galleryCount} galleries'),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const Divider(height: 32, color: Colors.grey),
+                    SectionHeader(
+                      title: 'Media',
+                      onViewAll: () => context.push('/tag/${tag.id}/media'),
+                    ),
                     mediaAsync.when(
-                      data: (mediaItems) {
-                        if (mediaItems.isEmpty) {
-                          return const Text(
-                            'No media available.',
-                            style: TextStyle(color: Colors.white70),
-                          );
-                        }
-
-                        return SizedBox(
-                          height: 138,
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: mediaItems.length,
-                            separatorBuilder: (_, index) =>
-                                const SizedBox(width: 10),
-                            itemBuilder: (context, index) {
-                              final item = mediaItems[index];
-                              return InkWell(
-                                onTap: () =>
-                                    context.push('/scene/${item.sceneId}'),
-                                borderRadius: BorderRadius.circular(10),
-                                child: SizedBox(
-                                  width: 200,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(10),
-                                        child: Image.network(
-                                          item.thumbnailUrl,
-                                          headers: mediaHeaders,
-                                          width: 200,
-                                          height: 112,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (c, e, s) => Container(
-                                            width: 200,
-                                            height: 112,
-                                            color: Colors.grey[800],
-                                            child: const Icon(
-                                              Icons.movie,
-                                              color: Colors.white70,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        item.title,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      },
+                      data: (mediaItems) => MediaStrip(
+                        items: mediaItems
+                            .map((item) => MediaStripItem(
+                                  id: item.sceneId,
+                                  title: item.title,
+                                  thumbnailUrl: item.thumbnailUrl,
+                                  onTap: () => context.push('/scene/${item.sceneId}'),
+                                ))
+                            .toList(),
+                        headers: mediaHeaders,
+                      ),
                       loading: () => const SizedBox(
-                        height: 60,
+                        height: 100,
                         child: Center(child: CircularProgressIndicator()),
                       ),
                       error: (err, stack) => Text(
                         'Failed to load media: $err',
-                        style: const TextStyle(color: Colors.white70),
+                        style: TextStyle(color: context.colors.onSurface.withOpacity(0.7)),
                       ),
                     ),
-                    if (tag.description != null &&
-                        tag.description!.trim().isNotEmpty) ...[
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Description',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
+                    if (tag.description != null && tag.description!.trim().isNotEmpty) ...[
+                      const Divider(height: 32, color: Colors.grey),
+                      const SectionHeader(title: 'Description'),
                       Text(
                         tag.description!,
-                        style: const TextStyle(color: Colors.white70),
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          color: context.colors.onSurface.withOpacity(0.8),
+                        ),
                       ),
                     ],
                   ],
@@ -190,15 +149,12 @@ class TagDetailsPage extends ConsumerWidget {
     );
   }
 
-  Widget _statRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Text('$label: ', style: const TextStyle(color: Colors.grey)),
-          Text(value, style: const TextStyle(color: Colors.white)),
-        ],
-      ),
+  Widget _buildChip(BuildContext context, String label) {
+    return Chip(
+      label: Text(label, style: context.textTheme.bodySmall),
+      backgroundColor: context.colors.surfaceVariant,
+      side: BorderSide.none,
+      visualDensity: VisualDensity.compact,
     );
   }
 }

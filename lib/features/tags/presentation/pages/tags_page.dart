@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/utils/pagination.dart';
-import '../../../../core/presentation/widgets/error_state_view.dart';
 import '../providers/tag_list_provider.dart';
+
+import '../../../../core/presentation/widgets/list_page_scaffold.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
+import '../../domain/entities/tag.dart';
+
+enum _TagSortOption { name, sceneCount, imageCount }
 
 class TagsPage extends ConsumerStatefulWidget {
   const TagsPage({super.key});
@@ -13,91 +17,87 @@ class TagsPage extends ConsumerStatefulWidget {
 }
 
 class _TagsPageState extends ConsumerState<TagsPage> {
-  bool _isSearching = false;
-  final _searchController = TextEditingController();
+  _TagSortOption _sortOption = _TagSortOption.name;
 
   @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _applyServerSort(_sortOption);
+    });
   }
 
   void _onSearchChanged(String query) {
     ref.read(tagSearchQueryProvider.notifier).update(query);
   }
 
+  void _applyServerSort(_TagSortOption option) {
+    switch (option) {
+      case _TagSortOption.name:
+        ref.read(tagListProvider.notifier).setSort(sort: 'name', descending: false);
+        break;
+      case _TagSortOption.sceneCount:
+        ref.read(tagListProvider.notifier).setSort(sort: 'scene_count', descending: true);
+        break;
+      case _TagSortOption.imageCount:
+        ref.read(tagListProvider.notifier).setSort(sort: 'image_count', descending: true);
+        break;
+    }
+  }
+
+  Widget _buildSortBar() {
+    const options = [
+      (_TagSortOption.name, 'Name'),
+      (_TagSortOption.sceneCount, 'Scene Count'),
+      (_TagSortOption.imageCount, 'Image Count'),
+    ];
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium, vertical: AppTheme.spacingSmall),
+      child: Row(
+        children: [
+          for (final option in options) ...[
+            ChoiceChip(
+              label: Text(option.$2),
+              selected: _sortOption == option.$1,
+              onSelected: (selected) {
+                if (!selected) return;
+                setState(() => _sortOption = option.$1);
+                _applyServerSort(option.$1);
+              },
+            ),
+            const SizedBox(width: AppTheme.spacingSmall),
+          ],
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final tagsAsync = ref.watch(tagListProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: _isSearching
-            ? TextField(
-                controller: _searchController,
-                autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: 'Search tags...',
-                  border: InputBorder.none,
-                ),
-                onChanged: _onSearchChanged,
-              )
-            : const Text('Tags'),
-        actions: [
-          if (_isSearching)
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () {
-                setState(() => _isSearching = false);
-                _searchController.clear();
-                _onSearchChanged('');
-              },
-            )
-          else
-            IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () => setState(() => _isSearching = true),
-            ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: () => ref.refresh(tagListProvider.future),
-        child: tagsAsync.when(
-          data: (tags) {
-            if (tags.isEmpty) {
-              return const Center(child: Text('No tags found'));
-            }
-
-            return NotificationListener<ScrollNotification>(
-              onNotification: (ScrollNotification scrollInfo) {
-                if (shouldLoadNextPage(scrollInfo.metrics)) {
-                  ref.read(tagListProvider.notifier).fetchNextPage();
-                }
-                return false;
-              },
-              child: ListView.separated(
-                padding: const EdgeInsets.all(12),
-                itemCount: tags.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 8),
-                itemBuilder: (context, index) {
-                  final tag = tags[index];
-                  return Card(
-                    child: ListTile(
-                      onTap: () => context.push('/tag/${tag.id}'),
-                      title: Text(tag.name),
-                      subtitle: Text(
-                        'Scenes: ${tag.sceneCount}  Images: ${tag.imageCount}',
-                      ),
-                    ),
-                  );
-                },
-              ),
-            );
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, _) => ErrorStateView(
-            message: 'Failed to load tags.\n$err',
-            onRetry: () => ref.refresh(tagListProvider),
+    return ListPageScaffold<Tag>(
+      title: 'Tags',
+      searchHint: 'Search tags...',
+      onSearchChanged: _onSearchChanged,
+      provider: tagsAsync,
+      onRefresh: () => ref.refresh(tagListProvider.future),
+      onFetchNextPage: () => ref.read(tagListProvider.notifier).fetchNextPage(),
+      sortBar: _buildSortBar(),
+      padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingSmall),
+      itemBuilder: (context, tag) => Card(
+        margin: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium, vertical: 4),
+        child: ListTile(
+          onTap: () => context.push('/tag/${tag.id}'),
+          title: Text(
+            tag.name,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          trailing: Text(
+            '${tag.sceneCount} scenes',
+            style: context.textTheme.bodySmall,
           ),
         ),
       ),

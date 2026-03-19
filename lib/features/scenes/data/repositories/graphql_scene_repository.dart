@@ -3,6 +3,7 @@ import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../graphql/scenes.graphql.dart';
 import '../../domain/entities/scene.dart';
+import '../../domain/entities/scene_filter.dart';
 import '../../domain/repositories/scene_repository.dart';
 
 class GraphQLSceneRepository implements SceneRepository {
@@ -20,6 +21,10 @@ class GraphQLSceneRepository implements SceneRepository {
     String? filter,
     String? sort,
     bool descending = true,
+    String? performerId,
+    String? studioId,
+    String? tagId,
+    SceneFilter? sceneFilter,
   }) async {
     final result = await client.query$FindScenes(
       Options$Query$FindScenes(
@@ -32,14 +37,58 @@ class GraphQLSceneRepository implements SceneRepository {
                 ? Enum$SortDirectionEnum.DESC
                 : Enum$SortDirectionEnum.ASC,
           ),
-          scene_filter: filter != null
-              ? Input$SceneFilterType(
-                  title: Input$StringCriterionInput(
-                    value: filter,
+          scene_filter: Input$SceneFilterType(
+            title: (filter != null || sceneFilter?.searchQuery != null)
+                ? Input$StringCriterionInput(
+                    value: filter ?? sceneFilter!.searchQuery!,
                     modifier: Enum$CriterionModifier.EQUALS,
-                  ),
-                )
-              : null,
+                  )
+                : null,
+            performers: (performerId != null || (sceneFilter?.performerIds?.isNotEmpty ?? false))
+                ? Input$MultiCriterionInput(
+                    value: performerId != null ? [performerId] : sceneFilter!.performerIds,
+                    modifier: Enum$CriterionModifier.INCLUDES,
+                  )
+                : null,
+            studios: (studioId != null || sceneFilter?.studioId != null)
+                ? Input$HierarchicalMultiCriterionInput(
+                    value: studioId != null ? [studioId] : [sceneFilter!.studioId!],
+                    modifier: Enum$CriterionModifier.INCLUDES,
+                  )
+                : null,
+            tags: (tagId != null || (sceneFilter?.includeTags?.isNotEmpty ?? false))
+                ? Input$HierarchicalMultiCriterionInput(
+                    value: tagId != null ? [tagId] : sceneFilter!.includeTags,
+                    modifier: Enum$CriterionModifier.INCLUDES,
+                  )
+                : null,
+            rating100: sceneFilter?.minRating != null
+                ? Input$IntCriterionInput(
+                    value: sceneFilter!.minRating!,
+                    modifier: Enum$CriterionModifier.GREATER_THAN,
+                  )
+                : null,
+            play_count: sceneFilter?.isWatched == true
+                ? Input$IntCriterionInput(
+                    value: 0,
+                    modifier: Enum$CriterionModifier.GREATER_THAN,
+                  )
+                : sceneFilter?.isWatched == false
+                    ? Input$IntCriterionInput(
+                        value: 0,
+                        modifier: Enum$CriterionModifier.EQUALS,
+                      )
+                    : null,
+            date: (sceneFilter?.startDate != null || sceneFilter?.endDate != null)
+                ? Input$DateCriterionInput(
+                    value: sceneFilter?.startDate?.toIso8601String().split('T')[0] ?? '',
+                    value2: sceneFilter?.endDate?.toIso8601String().split('T')[0],
+                    modifier: sceneFilter?.endDate != null
+                        ? Enum$CriterionModifier.BETWEEN
+                        : Enum$CriterionModifier.GREATER_THAN,
+                  )
+                : null,
+          ),
         ),
       ),
     );
@@ -117,6 +166,8 @@ class GraphQLSceneRepository implements SceneRepository {
               videoCodec: f.video_codec,
               audioCodec: f.audio_codec,
               bitRate: f.bit_rate,
+              duration: f.duration,
+              frameRate: f.frame_rate,
             ),
           )
           .toList(),

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/utils/pagination.dart';
-import '../../../../core/presentation/widgets/error_state_view.dart';
 import '../providers/studio_list_provider.dart';
+
+import '../../../../core/presentation/widgets/list_page_scaffold.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
+import '../../domain/entities/studio.dart';
+
+enum _StudioSortOption { name, sceneCount, rating }
 
 class StudiosPage extends ConsumerStatefulWidget {
   const StudiosPage({super.key});
@@ -13,113 +17,121 @@ class StudiosPage extends ConsumerStatefulWidget {
 }
 
 class _StudiosPageState extends ConsumerState<StudiosPage> {
-  bool _isSearching = false;
-  final _searchController = TextEditingController();
+  _StudioSortOption _sortOption = _StudioSortOption.name;
 
   @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _applyServerSort(_sortOption);
+    });
   }
 
   void _onSearchChanged(String query) {
     ref.read(studioSearchQueryProvider.notifier).update(query);
   }
 
+  void _applyServerSort(_StudioSortOption option) {
+    switch (option) {
+      case _StudioSortOption.name:
+        ref.read(studioListProvider.notifier).setSort(sort: 'name', descending: false);
+        break;
+      case _StudioSortOption.sceneCount:
+        ref.read(studioListProvider.notifier).setSort(sort: 'scene_count', descending: true);
+        break;
+      case _StudioSortOption.rating:
+        ref.read(studioListProvider.notifier).setSort(sort: 'rating100', descending: true);
+        break;
+    }
+  }
+
+  Widget _buildSortBar() {
+    const options = [
+      (_StudioSortOption.name, 'Name'),
+      (_StudioSortOption.sceneCount, 'Scene Count'),
+      (_StudioSortOption.rating, 'Rating'),
+    ];
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium, vertical: AppTheme.spacingSmall),
+      child: Row(
+        children: [
+          for (final option in options) ...[
+            ChoiceChip(
+              label: Text(option.$2),
+              selected: _sortOption == option.$1,
+              onSelected: (selected) {
+                if (!selected) return;
+                setState(() => _sortOption = option.$1);
+                _applyServerSort(option.$1);
+              },
+            ),
+            const SizedBox(width: AppTheme.spacingSmall),
+          ],
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final studiosAsync = ref.watch(studioListProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: _isSearching
-            ? TextField(
-                controller: _searchController,
-                autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: 'Search studios...',
-                  border: InputBorder.none,
-                ),
-                onChanged: _onSearchChanged,
-              )
-            : const Text('Studios'),
-        actions: [
-          if (_isSearching)
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () {
-                setState(() => _isSearching = false);
-                _searchController.clear();
-                _onSearchChanged('');
-              },
-            )
-          else
-            IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () => setState(() => _isSearching = true),
-            ),
-        ],
+    return ListPageScaffold<Studio>(
+      title: 'Studios',
+      searchHint: 'Search studios...',
+      onSearchChanged: _onSearchChanged,
+      provider: studiosAsync,
+      onRefresh: () => ref.refresh(studioListProvider.future),
+      onFetchNextPage: () => ref.read(studioListProvider.notifier).fetchNextPage(),
+      sortBar: _buildSortBar(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: AppTheme.spacingMedium,
+        mainAxisSpacing: AppTheme.spacingMedium,
+        childAspectRatio: 1.25,
       ),
-      body: RefreshIndicator(
-        onRefresh: () => ref.refresh(studioListProvider.future),
-        child: studiosAsync.when(
-          data: (studios) {
-            if (studios.isEmpty) {
-              return const Center(child: Text('No studios found'));
-            }
-
-            return NotificationListener<ScrollNotification>(
-              onNotification: (ScrollNotification scrollInfo) {
-                if (shouldLoadNextPage(scrollInfo.metrics)) {
-                  ref.read(studioListProvider.notifier).fetchNextPage();
-                }
-                return false;
-              },
-              child: GridView.builder(
-                padding: const EdgeInsets.all(16),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 1.25,
+      itemBuilder: (context, studio) => InkWell(
+        onTap: () => context.push('/studio/${studio.id}'),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(AppTheme.spacingMedium),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  studio.name,
+                  style: context.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                itemCount: studios.length,
-                itemBuilder: (context, index) {
-                  final studio = studios[index];
-                  return InkWell(
-                    onTap: () => context.push('/studio/${studio.id}'),
-                    borderRadius: BorderRadius.circular(12),
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              studio.name,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 8),
-                            Text('Scenes: ${studio.sceneCount}'),
-                            Text('Performers: ${studio.performerCount}'),
-                          ],
-                        ),
-                      ),
+                const Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${studio.sceneCount} scenes',
+                      style: context.textTheme.bodySmall,
                     ),
-                  );
-                },
-              ),
-            );
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, _) => ErrorStateView(
-            message: 'Failed to load studios.\n$err',
-            onRetry: () => ref.refresh(studioListProvider),
+                    if (studio.rating100 != null)
+                      Row(
+                        children: [
+                          Icon(Icons.star, size: 14, color: context.colors.ratingColor),
+                          const SizedBox(width: 2),
+                          Text(
+                            (studio.rating100! / 20).toStringAsFixed(1),
+                            style: context.textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

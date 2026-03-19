@@ -13,11 +13,20 @@ class GraphQLStudioRepository implements StudioRepository {
     int? page,
     int? perPage,
     String? filter,
+    String? sort,
+    bool? descending,
   }) async {
     final result = await client.query$FindStudios(
       Options$Query$FindStudios(
         variables: Variables$Query$FindStudios(
-          filter: Input$FindFilterType(page: page, per_page: perPage),
+          filter: Input$FindFilterType(
+            page: page,
+            per_page: perPage,
+            sort: sort,
+            direction: descending == true
+                ? Enum$SortDirectionEnum.DESC
+                : Enum$SortDirectionEnum.ASC,
+          ),
           studio_filter: filter != null
               ? Input$StudioFilterType(
                   name: Input$StringCriterionInput(

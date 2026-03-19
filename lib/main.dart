@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'features/navigation/presentation/router.dart';
 import 'core/data/preferences/shared_preferences_provider.dart';
 
+import 'core/presentation/theme/app_theme.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final sharedPreferences = await SharedPreferences.getInstance();
@@ -27,13 +29,7 @@ class MyApp extends ConsumerWidget {
     return MaterialApp.router(
       routerConfig: router,
       title: 'StashAppFlutter',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.darkTheme,
     );
   }
 }

@@ -1683,6 +1683,20 @@ const fragmentDefinitionSceneData = FragmentDefinitionNode(
               selectionSet: null,
             ),
             FieldNode(
+              name: NameNode(value: 'duration'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'frame_rate'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
               name: NameNode(value: '__typename'),
               alias: null,
               arguments: [],
@@ -2181,6 +2195,8 @@ class Fragment$SceneData$files {
     required this.video_codec,
     required this.audio_codec,
     required this.bit_rate,
+    required this.duration,
+    required this.frame_rate,
     this.$__typename = 'VideoFile',
   });
 
@@ -2191,6 +2207,8 @@ class Fragment$SceneData$files {
     final l$video_codec = json['video_codec'];
     final l$audio_codec = json['audio_codec'];
     final l$bit_rate = json['bit_rate'];
+    final l$duration = json['duration'];
+    final l$frame_rate = json['frame_rate'];
     final l$$__typename = json['__typename'];
     return Fragment$SceneData$files(
       format: (l$format as String),
@@ -2199,6 +2217,8 @@ class Fragment$SceneData$files {
       video_codec: (l$video_codec as String),
       audio_codec: (l$audio_codec as String),
       bit_rate: (l$bit_rate as int),
+      duration: (l$duration as num).toDouble(),
+      frame_rate: (l$frame_rate as num).toDouble(),
       $__typename: (l$$__typename as String),
     );
   }
@@ -2214,6 +2234,10 @@ class Fragment$SceneData$files {
   final String audio_codec;
 
   final int bit_rate;
+
+  final double duration;
+
+  final double frame_rate;
 
   final String $__typename;
 
@@ -2231,6 +2255,10 @@ class Fragment$SceneData$files {
     _resultData['audio_codec'] = l$audio_codec;
     final l$bit_rate = bit_rate;
     _resultData['bit_rate'] = l$bit_rate;
+    final l$duration = duration;
+    _resultData['duration'] = l$duration;
+    final l$frame_rate = frame_rate;
+    _resultData['frame_rate'] = l$frame_rate;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -2244,6 +2272,8 @@ class Fragment$SceneData$files {
     final l$video_codec = video_codec;
     final l$audio_codec = audio_codec;
     final l$bit_rate = bit_rate;
+    final l$duration = duration;
+    final l$frame_rate = frame_rate;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$format,
@@ -2252,6 +2282,8 @@ class Fragment$SceneData$files {
       l$video_codec,
       l$audio_codec,
       l$bit_rate,
+      l$duration,
+      l$frame_rate,
       l$$__typename,
     ]);
   }
@@ -2295,6 +2327,16 @@ class Fragment$SceneData$files {
     if (l$bit_rate != lOther$bit_rate) {
       return false;
     }
+    final l$duration = duration;
+    final lOther$duration = other.duration;
+    if (l$duration != lOther$duration) {
+      return false;
+    }
+    final l$frame_rate = frame_rate;
+    final lOther$frame_rate = other.frame_rate;
+    if (l$frame_rate != lOther$frame_rate) {
+      return false;
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -2326,6 +2368,8 @@ abstract class CopyWith$Fragment$SceneData$files<TRes> {
     String? video_codec,
     String? audio_codec,
     int? bit_rate,
+    double? duration,
+    double? frame_rate,
     String? $__typename,
   });
 }
@@ -2347,6 +2391,8 @@ class _CopyWithImpl$Fragment$SceneData$files<TRes>
     Object? video_codec = _undefined,
     Object? audio_codec = _undefined,
     Object? bit_rate = _undefined,
+    Object? duration = _undefined,
+    Object? frame_rate = _undefined,
     Object? $__typename = _undefined,
   }) => _then(
     Fragment$SceneData$files(
@@ -2368,6 +2414,12 @@ class _CopyWithImpl$Fragment$SceneData$files<TRes>
       bit_rate: bit_rate == _undefined || bit_rate == null
           ? _instance.bit_rate
           : (bit_rate as int),
+      duration: duration == _undefined || duration == null
+          ? _instance.duration
+          : (duration as double),
+      frame_rate: frame_rate == _undefined || frame_rate == null
+          ? _instance.frame_rate
+          : (frame_rate as double),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
@@ -2388,6 +2440,8 @@ class _CopyWithStubImpl$Fragment$SceneData$files<TRes>
     String? video_codec,
     String? audio_codec,
     int? bit_rate,
+    double? duration,
+    double? frame_rate,
     String? $__typename,
   }) => _res;
 }

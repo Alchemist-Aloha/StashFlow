@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:math';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/scene.dart';
+import '../../domain/entities/scene_filter.dart';
 import '../../domain/repositories/scene_repository.dart';
 import '../../data/repositories/graphql_scene_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
@@ -36,6 +37,15 @@ class SceneSearchQuery extends _$SceneSearchQuery {
 }
 
 @riverpod
+class SceneFilterState extends _$SceneFilterState {
+  @override
+  SceneFilter build() => SceneFilter.empty();
+
+  void update(SceneFilter filter) => state = filter;
+  void clear() => state = SceneFilter.empty();
+}
+
+@riverpod
 class SceneList extends _$SceneList {
   int _currentPage = 1;
   static const int _perPage = kDefaultPageSize;
@@ -49,13 +59,16 @@ class SceneList extends _$SceneList {
     _isLoadingMore = false;
     final query = ref.watch(sceneSearchQueryProvider);
     final sortConfig = ref.watch(sceneSortProvider);
+    final filter = ref.watch(sceneFilterStateProvider);
     final repository = ref.watch(sceneRepositoryProvider);
+    
     return repository.findScenes(
       page: _currentPage,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
       sort: sortConfig.sort,
       descending: sortConfig.descending,
+      sceneFilter: filter,
     );
   }
 
@@ -76,6 +89,7 @@ class SceneList extends _$SceneList {
     final repository = ref.read(sceneRepositoryProvider);
     final query = ref.read(sceneSearchQueryProvider);
     final sortConfig = ref.read(sceneSortProvider);
+    final filter = ref.read(sceneFilterStateProvider);
 
     try {
       final nextPage = _currentPage + 1;
@@ -85,6 +99,7 @@ class SceneList extends _$SceneList {
         filter: query.isEmpty ? null : query,
         sort: sortConfig.sort,
         descending: sortConfig.descending,
+        sceneFilter: filter,
       );
 
       if (nextScenes.isEmpty) {
@@ -103,9 +118,15 @@ class SceneList extends _$SceneList {
   bool get hasMore => _hasMore;
   bool get isLoadingMore => _isLoadingMore;
 
-  Future<Scene?> getRandomScene({bool useCurrentFilter = false}) async {
+  Future<Scene?> getRandomScene({
+    bool useCurrentFilter = false,
+    String? performerId,
+    String? studioId,
+    String? tagId,
+  }) async {
     final repository = ref.read(sceneRepositoryProvider);
     final query = useCurrentFilter ? ref.read(sceneSearchQueryProvider) : '';
+    final filter = useCurrentFilter ? ref.read(sceneFilterStateProvider) : null;
 
     // Ask backend for true random ordering and pick a single item.
     final randomPage = await repository.findScenes(
@@ -114,6 +135,10 @@ class SceneList extends _$SceneList {
       filter: query.isEmpty ? null : query,
       sort: 'random',
       descending: true,
+      performerId: performerId,
+      studioId: studioId,
+      tagId: tagId,
+      sceneFilter: filter,
     );
     if (randomPage.isNotEmpty) {
       return randomPage.first;

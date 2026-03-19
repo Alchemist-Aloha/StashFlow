@@ -8,8 +8,11 @@ import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
 import '../providers/video_player_provider.dart';
 import '../../domain/entities/scene.dart';
+import '../providers/playback_queue_provider.dart';
+import '../../data/repositories/stream_resolver.dart';
 
 class SceneVideoPlayer extends ConsumerStatefulWidget {
   final Scene scene;
@@ -56,12 +59,14 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     try {
       final prefs = ref.read(sharedPreferencesProvider);
       final preferSceneStreams = prefs.getBool(_preferSceneStreamsKey) ?? true;
+      final resolver = ref.read(streamResolverProvider.notifier);
 
       final choice = preferSceneStreams
-          ? await _resolvePreferredStream()
+          ? await resolver.resolvePreferredStream(widget.scene)
           : null;
+      
       final streamUrl = choice?.url ?? widget.scene.paths.stream ?? '';
-      var mimeType = choice?.mimeType ?? _guessMimeType(streamUrl);
+      var mimeType = choice?.mimeType ?? resolver.guessMimeType(streamUrl);
       final streamLabel = choice?.label;
       var streamSource = choice == null
           ? (preferSceneStreams ? 'paths.stream' : 'paths.stream(direct)')
@@ -84,7 +89,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       }
 
       if (mimeType == 'unknown') {
-        final probedMime = await _probeMimeTypeFromHeaders(
+        final probedMime = await resolver.probeMimeTypeFromHeaders(
           streamUrl,
           mediaHeaders,
         );
@@ -187,133 +192,10 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     }
   }
 
-  Future<_StreamChoice?> _resolvePreferredStream() async {
-    final client = ref.read(graphqlClientProvider);
-    final result = await client.query(
-      QueryOptions(
-        document: gql('''
-          query SceneStreamsForPlayer(\$id: ID!) {
-            findScene(id: \$id) {
-              sceneStreams {
-                url
-                mime_type
-                label
-              }
-            }
-          }
-        '''),
-        variables: <String, dynamic>{'id': widget.scene.id},
-        fetchPolicy: FetchPolicy.networkOnly,
-      ),
-    );
-
-    if (result.hasException) {
-      return null;
-    }
-
-    final streams =
-        ((result.data?['findScene']?['sceneStreams']) as List?)
-            ?.whereType<Map<String, dynamic>>()
-            .toList() ??
-        const <Map<String, dynamic>>[];
-    if (streams.isEmpty) return null;
-
-    final graphqlEndpoint = client.link is HttpLink
-        ? (client.link as HttpLink).uri
-        : Uri.parse(widget.scene.paths.stream ?? 'https://localhost/graphql');
-
-    _StreamChoice? best;
-    for (final stream in streams) {
-      final resolvedUrl = resolveGraphqlMediaUrl(
-        rawUrl: stream['url'] as String?,
-        graphqlEndpoint: graphqlEndpoint,
-      );
-      if (resolvedUrl.isEmpty) continue;
-
-      final mime = (stream['mime_type'] as String?)?.trim();
-      final label = (stream['label'] as String?)?.trim();
-      final guessed = _guessMimeType(resolvedUrl, label: label);
-      final choice = _StreamChoice(
-        url: resolvedUrl,
-        mimeType: (mime == null || mime.isEmpty) ? guessed : mime,
-        label: label,
-      );
-
-      if (best == null || choice.score > best.score) {
-        best = choice;
-      }
-    }
-
-    return best;
-  }
-
-  Future<String?> _probeMimeTypeFromHeaders(
-    String url,
-    Map<String, String> headers,
-  ) async {
-    final uri = Uri.tryParse(url);
-    if (uri == null) return null;
-
-    final client = HttpClient();
-    client.connectionTimeout = const Duration(seconds: 3);
-
-    try {
-      Future<String?> requestAndExtract(
-        String method, {
-        bool withRange = false,
-      }) async {
-        final req = await client
-            .openUrl(method, uri)
-            .timeout(const Duration(seconds: 3));
-        headers.forEach(req.headers.set);
-        if (withRange) {
-          req.headers.set('Range', 'bytes=0-0');
-        }
-
-        final res = await req.close().timeout(const Duration(seconds: 3));
-        await res.drain<void>();
-
-        final contentType = res.headers.value(HttpHeaders.contentTypeHeader);
-        if (contentType == null || contentType.trim().isEmpty) return null;
-        return contentType.split(';').first.trim().toLowerCase();
-      }
-
-      final fromHead = await requestAndExtract('HEAD');
-      if (fromHead != null && fromHead.isNotEmpty) return fromHead;
-
-      final fromGet = await requestAndExtract('GET', withRange: true);
-      if (fromGet != null && fromGet.isNotEmpty) return fromGet;
-      return null;
-    } catch (_) {
-      return null;
-    } finally {
-      client.close(force: true);
-    }
-  }
-
-  String _guessMimeType(String url, {String? label}) {
-    final uri = Uri.tryParse(url);
-    final path = (uri?.path ?? url).toLowerCase();
-    final lowerLabel = (label ?? '').toLowerCase();
-
-    if (path.endsWith('.m3u8') || lowerLabel.contains('hls')) {
-      return 'application/vnd.apple.mpegurl';
-    }
-    if (path.endsWith('.mpd') || lowerLabel.contains('dash')) {
-      return 'application/dash+xml';
-    }
-    if (path.endsWith('.mp4') || lowerLabel.contains('mp4')) {
-      return 'video/mp4';
-    }
-    if (path.endsWith('.webm') || lowerLabel.contains('webm')) {
-      return 'video/webm';
-    }
-    return 'unknown';
-  }
-
   @override
   Widget build(BuildContext context) {
     final playerState = ref.watch(playerStateProvider);
+    final nextScene = ref.watch(playbackQueueProvider.notifier).getNextScene();
 
     if (playerState.activeScene?.id != widget.scene.id) {
       return AspectRatio(
@@ -369,6 +251,34 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
               ),
             ),
           ),
+          if (nextScene != null)
+            Positioned(
+              bottom: 50,
+              right: 16,
+              child: ElevatedButton.icon(
+                onPressed: () => ref.read(playerStateProvider.notifier).playNext(),
+                icon: const Icon(Icons.skip_next),
+                label: Text('Next: ${nextScene.title}'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black54,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ),
+          Positioned(
+            top: 8,
+            right: 8,
+            child: Row(
+              children: [
+                const Text('Autoplay Next', style: TextStyle(color: Colors.white70, fontSize: 10)),
+                Switch.adaptive(
+                  value: playerState.autoplayNext,
+                  onChanged: (val) => ref.read(playerStateProvider.notifier).setAutoplayNext(val),
+                  activeColor: context.colors.secondary,
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -385,22 +295,4 @@ class _PrewarmResult {
   final bool attempted;
   final bool succeeded;
   final int? latencyMs;
-}
-
-class _StreamChoice {
-  const _StreamChoice({required this.url, required this.mimeType, this.label});
-
-  final String url;
-  final String mimeType;
-  final String? label;
-
-  int get score {
-    final lowerMime = mimeType.toLowerCase();
-    final lowerLabel = (label ?? '').toLowerCase();
-    if (lowerMime.contains('mpegurl') || lowerMime.contains('hls')) return 300;
-    if (lowerMime.contains('dash')) return 250;
-    if (lowerMime.contains('mp4') && lowerLabel.contains('direct')) return 220;
-    if (lowerMime.contains('mp4')) return 200;
-    return 100;
-  }
 }

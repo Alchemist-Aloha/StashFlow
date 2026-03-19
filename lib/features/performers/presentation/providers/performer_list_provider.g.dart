@@ -150,7 +150,7 @@ final class PerformerListProvider
   PerformerList create() => PerformerList();
 }
 
-String _$performerListHash() => r'8d206c5e5337097b6ac985d8c1ae2570529208c8';
+String _$performerListHash() => r'90fcf0b7971cfb3f2479865863f9961babf87a34';
 
 abstract class _$PerformerList extends $AsyncNotifier<List<Performer>> {
   FutureOr<List<Performer>> build();

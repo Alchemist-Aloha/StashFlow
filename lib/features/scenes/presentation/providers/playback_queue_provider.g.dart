@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'video_player_provider.dart';
+part of 'playback_queue_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,51 +9,51 @@ part of 'video_player_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(PlayerState)
-final playerStateProvider = PlayerStateProvider._();
+@ProviderFor(PlaybackQueue)
+final playbackQueueProvider = PlaybackQueueProvider._();
 
-final class PlayerStateProvider
-    extends $NotifierProvider<PlayerState, GlobalPlayerState> {
-  PlayerStateProvider._()
+final class PlaybackQueueProvider
+    extends $NotifierProvider<PlaybackQueue, List<Scene>> {
+  PlaybackQueueProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'playerStateProvider',
+        name: r'playbackQueueProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$playerStateHash();
+  String debugGetCreateSourceHash() => _$playbackQueueHash();
 
   @$internal
   @override
-  PlayerState create() => PlayerState();
+  PlaybackQueue create() => PlaybackQueue();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(GlobalPlayerState value) {
+  Override overrideWithValue(List<Scene> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<GlobalPlayerState>(value),
+      providerOverride: $SyncValueProvider<List<Scene>>(value),
     );
   }
 }
 
-String _$playerStateHash() => r'85f37d57fd25c52ecb8085badc43bfef968e42c1';
+String _$playbackQueueHash() => r'6dc2610e550b280f4cc99f01c4586d06d14d51d1';
 
-abstract class _$PlayerState extends $Notifier<GlobalPlayerState> {
-  GlobalPlayerState build();
+abstract class _$PlaybackQueue extends $Notifier<List<Scene>> {
+  List<Scene> build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<GlobalPlayerState, GlobalPlayerState>;
+    final ref = this.ref as $Ref<List<Scene>, List<Scene>>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<GlobalPlayerState, GlobalPlayerState>,
-              GlobalPlayerState,
+              AnyNotifier<List<Scene>, List<Scene>>,
+              List<Scene>,
               Object?,
               Object?
             >;

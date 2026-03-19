@@ -12,10 +12,12 @@ class GraphQLGalleryRepository implements GalleryRepository {
     int? page,
     int? perPage,
     String? filter,
+    String? sort,
+    bool? descending,
   }) async {
     const query = r'''
-      query FindGalleries($page: Int, $perPage: Int, $filter: String) {
-        findGalleries(filter: {page: $page, per_page: $perPage}) {
+      query FindGalleries($filter: FindFilterType, $gallery_filter: GalleryFilterType) {
+        findGalleries(filter: $filter, gallery_filter: $gallery_filter) {
           galleries {
             id
             title
@@ -27,7 +29,22 @@ class GraphQLGalleryRepository implements GalleryRepository {
     final result = await client.query(
       QueryOptions(
         document: gql(query),
-        variables: {'page': page, 'perPage': perPage, 'filter': filter},
+        variables: {
+          'filter': {
+            'page': page,
+            'per_page': perPage,
+            'sort': sort,
+            'direction': descending == true ? 'DESC' : 'ASC',
+          },
+          'gallery_filter': filter != null
+              ? {
+                  'title': {
+                    'value': filter,
+                    'modifier': 'EQUALS',
+                  },
+                }
+              : null,
+        },
       ),
     );
 

@@ -12,10 +12,12 @@ class GraphQLGroupRepository implements GroupRepository {
     int? page,
     int? perPage,
     String? filter,
+    String? sort,
+    bool? descending,
   }) async {
     const query = r'''
-      query FindGroups($page: Int, $perPage: Int, $filter: String) {
-        findGroups(filter: {page: $page, per_page: $perPage}) {
+      query FindGroups($filter: FindFilterType, $group_filter: GroupFilterType) {
+        findGroups(filter: $filter, group_filter: $group_filter) {
           groups {
             id
             name
@@ -27,7 +29,22 @@ class GraphQLGroupRepository implements GroupRepository {
     final result = await client.query(
       QueryOptions(
         document: gql(query),
-        variables: {'page': page, 'perPage': perPage, 'filter': filter},
+        variables: {
+          'filter': {
+            'page': page,
+            'per_page': perPage,
+            'sort': sort,
+            'direction': descending == true ? 'DESC' : 'ASC',
+          },
+          'group_filter': filter != null
+              ? {
+                  'name': {
+                    'value': filter,
+                    'modifier': 'EQUALS',
+                  },
+                }
+              : null,
+        },
       ),
     );
 

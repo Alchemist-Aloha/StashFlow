@@ -27,6 +27,8 @@ class StudioList extends _$StudioList {
   static const int _perPage = kDefaultPageSize;
   bool _hasMore = true;
   bool _isLoadingMore = false;
+  String? _sort;
+  bool? _descending;
 
   @override
   FutureOr<List<Studio>> build() async {
@@ -39,7 +41,15 @@ class StudioList extends _$StudioList {
       page: _currentPage,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
+      sort: _sort,
+      descending: _descending,
     );
+  }
+
+  void setSort({required String sort, required bool descending}) {
+    _sort = sort;
+    _descending = descending;
+    ref.invalidateSelf();
   }
 
   Future<void> fetchNextPage() async {
@@ -55,6 +65,8 @@ class StudioList extends _$StudioList {
         page: nextPage,
         perPage: _perPage,
         filter: query.isEmpty ? null : query,
+        sort: _sort,
+        descending: _descending,
       );
 
       if (nextStudios.isEmpty) {

@@ -5,5 +5,7 @@ abstract class GalleryRepository {
     int? page,
     int? perPage,
     String? filter,
+    String? sort,
+    bool? descending,
   });
 }

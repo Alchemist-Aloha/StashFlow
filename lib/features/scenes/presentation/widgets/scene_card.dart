@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../domain/entities/scene.dart';
 
+import '../providers/playback_queue_provider.dart';
+
 class SceneCard extends ConsumerWidget {
   final Scene scene;
   final bool isGrid;
@@ -15,19 +17,55 @@ class SceneCard extends ConsumerWidget {
     super.key,
   });
 
+  void _showMenu(BuildContext context, WidgetRef ref) {
+    final RenderBox button = context.findRenderObject() as RenderBox;
+    final RenderBox overlay = Navigator.of(context).overlay!.context.findRenderObject() as RenderBox;
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        button.localToGlobal(Offset.zero, ancestor: overlay),
+        button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
+      ),
+      Offset.zero & overlay.size,
+    );
+
+    showMenu(
+      context: context,
+      position: position,
+      items: [
+        const PopupMenuItem(
+          value: 'add_to_queue',
+          child: ListTile(
+            leading: Icon(Icons.queue_play_next),
+            title: Text('Add to queue'),
+            contentPadding: EdgeInsets.zero,
+            visualDensity: VisualDensity.compact,
+          ),
+        ),
+      ],
+    ).then((value) {
+      if (value == 'add_to_queue') {
+        ref.read(playbackQueueProvider.notifier).add(scene);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Added "${scene.title}" to queue')),
+        );
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mediaHeaders = ref.watch(mediaHeadersProvider);
 
     if (isGrid) {
-      return _buildGridCard(mediaHeaders);
+      return _buildGridCard(context, ref, mediaHeaders);
     }
-    return _buildListCard(mediaHeaders);
+    return _buildListCard(context, ref, mediaHeaders);
   }
 
-  Widget _buildListCard(Map<String, String> mediaHeaders) {
+  Widget _buildListCard(BuildContext context, WidgetRef ref, Map<String, String> mediaHeaders) {
     return InkWell(
       onTap: onTap,
+      onLongPress: () => _showMenu(context, ref),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -98,7 +136,7 @@ class SceneCard extends ConsumerWidget {
                 IconButton(
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
-                  onPressed: () {},
+                  onPressed: () => _showMenu(context, ref),
                   icon: const Icon(
                     Icons.more_vert,
                     size: 20,
@@ -113,9 +151,10 @@ class SceneCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildGridCard(Map<String, String> mediaHeaders) {
+  Widget _buildGridCard(BuildContext context, WidgetRef ref, Map<String, String> mediaHeaders) {
     return InkWell(
       onTap: onTap,
+      onLongPress: () => _showMenu(context, ref),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -136,25 +175,41 @@ class SceneCard extends ConsumerWidget {
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Text(
-                  scene.title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        scene.title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                          color: Colors.white,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        scene.studioName ?? 'Unknown Studio',
+                        style: TextStyle(color: Colors.grey[400], fontSize: 10),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: () => _showMenu(context, ref),
+                  icon: const Icon(
+                    Icons.more_vert,
+                    size: 16,
                     color: Colors.white,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  scene.studioName ?? 'Unknown Studio',
-                  style: TextStyle(color: Colors.grey[400], fontSize: 10),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
