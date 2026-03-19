@@ -40,11 +40,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   static const _sceneGridLayoutKey = 'scene_grid_layout';
   static const _autoplayNextKey = 'autoplay_next';
   static const _showVideoDebugInfoKey = 'show_video_debug_info';
+  static const _useDoubleTapSeekKey = 'video_use_double_tap_seek';
 
   bool _preferSceneStreams = true;
   bool _sceneGridLayout = false;
   bool _autoplayNext = false;
   bool _showVideoDebugInfo = false;
+  bool _useDoubleTapSeek = true;
   ThemeMode _themeMode = ThemeMode.system;
   bool _loading = true;
 
@@ -114,6 +116,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final sceneGridLayout = prefs.getBool(_sceneGridLayoutKey) ?? false;
     final autoplayNext = prefs.getBool(_autoplayNextKey) ?? false;
     final showVideoDebugInfo = prefs.getBool(_showVideoDebugInfoKey) ?? false;
+    final useDoubleTapSeek = prefs.getBool(_useDoubleTapSeekKey) ?? true;
     final themeMode = ref.read(appThemeModeProvider);
     _baseUrlController.text = url;
     _apiKeyController.text = apiKey;
@@ -121,6 +124,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     _sceneGridLayout = sceneGridLayout;
     _autoplayNext = autoplayNext;
     _showVideoDebugInfo = showVideoDebugInfo;
+    _useDoubleTapSeek = useDoubleTapSeek;
     _themeMode = themeMode;
     setState(() => _loading = false);
   }
@@ -217,11 +221,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     await prefs.setBool(_sceneGridLayoutKey, _sceneGridLayout);
     await prefs.setBool(_autoplayNextKey, _autoplayNext);
     await prefs.setBool(_showVideoDebugInfoKey, _showVideoDebugInfo);
+    await prefs.setBool(_useDoubleTapSeekKey, _useDoubleTapSeek);
 
     // Keep in-memory player state synchronized with persisted settings.
     final playerStateNotifier = ref.read(playerStateProvider.notifier);
     playerStateNotifier.setAutoplayNext(_autoplayNext);
     playerStateNotifier.setShowVideoDebugInfo(_showVideoDebugInfo);
+    playerStateNotifier.setUseDoubleTapSeek(_useDoubleTapSeek);
   }
 
   @override
@@ -243,7 +249,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       appBar: AppBar(title: const Text('Settings')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : Padding(
+          : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -335,6 +341,39 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       setState(() => _showVideoDebugInfo = value);
                       await _saveToggleSettings();
                     },
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Seek Interaction'),
+                    subtitle: Text(
+                      _useDoubleTapSeek
+                          ? 'Double-tap left/right to seek 10s'
+                          : 'Drag the timeline to seek',
+                    ),
+                    trailing: SegmentedButton<bool>(
+                      showSelectedIcon: false,
+                      style: ButtonStyle(
+                        visualDensity: VisualDensity.compact,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      segments: const [
+                        ButtonSegment<bool>(
+                          value: false,
+                          icon: Icon(Icons.drag_indicator),
+                          label: Text('Drag'),
+                        ),
+                        ButtonSegment<bool>(
+                          value: true,
+                          icon: Icon(Icons.touch_app_outlined),
+                          label: Text('Double-tap'),
+                        ),
+                      ],
+                      selected: {_useDoubleTapSeek},
+                      onSelectionChanged: (selection) async {
+                        setState(() => _useDoubleTapSeek = selection.first);
+                        await _saveToggleSettings();
+                      },
+                    ),
                   ),
                   const SizedBox(height: 8),
                   const Text(

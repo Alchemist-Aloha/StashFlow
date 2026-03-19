@@ -24,7 +24,6 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
 
   bool _isStarting = false;
   String? _autoStartedSceneId;
-  static const _gestureSeekSeconds = 10;
 
   double _effectiveAspectRatio(VideoPlayerController? controller) {
     final controllerRatio = controller?.value.aspectRatio;
@@ -120,6 +119,22 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
             streamSource: streamSource,
             httpHeaders: mediaHeaders,
           );
+
+      unawaited(
+        prewarmFuture.then((result) {
+          if (!mounted) return;
+          final activeSceneId = ref.read(playerStateProvider).activeScene?.id;
+          if (activeSceneId != widget.scene.id) return;
+
+          ref
+              .read(playerStateProvider.notifier)
+              .setPrewarmResult(
+                attempted: result.attempted,
+                succeeded: result.succeeded,
+                latencyMs: result.latencyMs,
+              );
+        }),
+      );
     } finally {
       if (mounted) {
         setState(() => _isStarting = false);
@@ -170,46 +185,6 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       child: Stack(
         children: [
           Positioned.fill(child: Chewie(controller: chewieController)),
-          // Consume single taps on video surface and use double-tap seek zones.
-          Positioned.fill(
-            child: Column(
-              children: [
-                Expanded(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTap: () {},
-                          onDoubleTap: () {
-                            ref
-                                .read(playerStateProvider.notifier)
-                                .seekRelative(
-                                  const Duration(seconds: -_gestureSeekSeconds),
-                                );
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTap: () {},
-                          onDoubleTap: () {
-                            ref
-                                .read(playerStateProvider.notifier)
-                                .seekRelative(
-                                  const Duration(seconds: _gestureSeekSeconds),
-                                );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 74),
-              ],
-            ),
-          ),
           if (playerState.showVideoDebugInfo)
             Positioned(
               top: 8,

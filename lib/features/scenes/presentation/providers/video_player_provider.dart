@@ -25,6 +25,7 @@ class GlobalPlayerState {
   final int? startupLatencyMs;
   final bool autoplayNext;
   final bool showVideoDebugInfo;
+  final bool useDoubleTapSeek;
 
   GlobalPlayerState({
     this.activeScene,
@@ -37,6 +38,7 @@ class GlobalPlayerState {
     this.startupLatencyMs,
     this.autoplayNext = false,
     this.showVideoDebugInfo = false,
+    this.useDoubleTapSeek = true,
   });
 
   GlobalPlayerState copyWith({
@@ -50,6 +52,7 @@ class GlobalPlayerState {
     int? startupLatencyMs,
     bool? autoplayNext,
     bool? showVideoDebugInfo,
+    bool? useDoubleTapSeek,
     bool clearActive = false,
   }) {
     return GlobalPlayerState(
@@ -71,6 +74,7 @@ class GlobalPlayerState {
           : (startupLatencyMs ?? this.startupLatencyMs),
       autoplayNext: autoplayNext ?? this.autoplayNext,
       showVideoDebugInfo: showVideoDebugInfo ?? this.showVideoDebugInfo,
+      useDoubleTapSeek: useDoubleTapSeek ?? this.useDoubleTapSeek,
     );
   }
 }
@@ -79,6 +83,7 @@ class GlobalPlayerState {
 class PlayerState extends _$PlayerState {
   static const _autoplayNextKey = 'autoplay_next';
   static const _showVideoDebugInfoKey = 'show_video_debug_info';
+  static const _useDoubleTapSeekKey = 'video_use_double_tap_seek';
 
   @override
   GlobalPlayerState build() {
@@ -90,6 +95,7 @@ class PlayerState extends _$PlayerState {
     return GlobalPlayerState(
       autoplayNext: prefs.getBool(_autoplayNextKey) ?? false,
       showVideoDebugInfo: prefs.getBool(_showVideoDebugInfoKey) ?? false,
+      useDoubleTapSeek: prefs.getBool(_useDoubleTapSeekKey) ?? true,
     );
   }
 
@@ -103,6 +109,56 @@ class PlayerState extends _$PlayerState {
     state = state.copyWith(showVideoDebugInfo: value);
     final prefs = ref.read(sharedPreferencesProvider);
     prefs.setBool(_showVideoDebugInfoKey, value);
+  }
+
+  void setUseDoubleTapSeek(bool value) {
+    state = state.copyWith(useDoubleTapSeek: value);
+    final prefs = ref.read(sharedPreferencesProvider);
+    prefs.setBool(_useDoubleTapSeekKey, value);
+    _rebuildChewieControls();
+  }
+
+  void setPrewarmResult({
+    required bool attempted,
+    required bool succeeded,
+    int? latencyMs,
+  }) {
+    state = state.copyWith(
+      prewarmAttempted: attempted,
+      prewarmSucceeded: succeeded,
+      prewarmLatencyMs: latencyMs,
+    );
+  }
+
+  void _rebuildChewieControls() {
+    final videoController = state.videoPlayerController;
+    if (videoController == null || !videoController.value.isInitialized) {
+      return;
+    }
+
+    final existingChewie = state.chewieController;
+    final scene = state.activeScene;
+    final initializedAspectRatio = videoController.value.aspectRatio;
+    final metadataAspectRatio = scene == null ? null : _sceneAspectRatio(scene);
+    final resolvedAspectRatio =
+        (initializedAspectRatio.isFinite && initializedAspectRatio > 0)
+        ? initializedAspectRatio
+        : (metadataAspectRatio ?? (16 / 9));
+
+    final newChewie = ChewieController(
+      videoPlayerController: videoController,
+      autoPlay: videoController.value.isPlaying,
+      looping: false,
+      aspectRatio: resolvedAspectRatio,
+      allowFullScreen: true,
+      customControls: ScrubChewieControls(
+        useDoubleTapSeek: state.useDoubleTapSeek,
+      ),
+      placeholder: Container(color: Colors.black),
+    );
+
+    existingChewie?.dispose();
+    state = state.copyWith(chewieController: newChewie);
   }
 
   double? _sceneAspectRatio(Scene scene) {
@@ -172,7 +228,9 @@ class PlayerState extends _$PlayerState {
         looping: false,
         aspectRatio: resolvedAspectRatio,
         allowFullScreen: true,
-        customControls: const ScrubChewieControls(),
+        customControls: ScrubChewieControls(
+          useDoubleTapSeek: state.useDoubleTapSeek,
+        ),
         placeholder: Container(color: Colors.black),
       );
 
@@ -224,6 +282,7 @@ class PlayerState extends _$PlayerState {
     state = GlobalPlayerState(
       autoplayNext: state.autoplayNext,
       showVideoDebugInfo: state.showVideoDebugInfo,
+      useDoubleTapSeek: state.useDoubleTapSeek,
     );
   }
 

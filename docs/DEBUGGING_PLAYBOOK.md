@@ -33,8 +33,22 @@ Checks:
 5. Compare first request vs second request latency for same scene.
 
 Interpretation:
-- If MIME is valid and only first start is slow, likely backend warm-up/cold-start.
+- Prewarm is now best-effort and non-blocking for player startup; it should not gate first frame display.
+- If MIME is valid and first start is still slow after the non-blocking change, likely backend warm-up/cold-start.
 - If `src` shows `autoplay-next`, it implies the stream was initiated via PlaybackQueue.
+
+## Fullscreen seek gestures do not work
+
+Symptoms:
+- Drag seek or double-tap seek works inline but not in fullscreen.
+
+Checks:
+1. Verify seek interaction setting in Settings (`Drag` vs `Double-tap`).
+2. Confirm custom controls are active (not default Chewie controls).
+3. Ensure gestures are implemented inside `ScrubChewieControls` (fullscreen route uses controls widget).
+
+Interpretation:
+- Page-level overlays do not apply in fullscreen Chewie route; gesture handling must live in the controls layer.
 
 ## Schema mismatch issues
 

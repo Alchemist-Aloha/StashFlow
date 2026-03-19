@@ -1,7 +1,5 @@
 # Known Issues
 
-# Known Issues
-
 ## Closed Recently
 
 ### Scene rating and play-count sorting mismatch
