@@ -8,4 +8,5 @@ abstract class GalleryRepository {
     String? sort,
     bool? descending,
   });
+  Future<Gallery> getGalleryById(String id);
 }

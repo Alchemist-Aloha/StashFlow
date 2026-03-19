@@ -58,9 +58,12 @@
 
 - The remaining delay appears to be backend-side warm-up/cold-start behavior for initial stream access.
 - Client-side source choice is no longer the primary blocker for startup.
+- The `+prewarm` strategy works to establish an early connection, but server-side transcoding/initialization still introduces a hard delay for certain stream sources.
+- Contextual playback queue and Autoplay Next may mitigate perceived latency by buffering or initiating the next stream sooner, though pre-fetching the next stream in the background is not fully implemented.
 
 ### Next investigation ideas
 
 - Measure startup time on the server side for first request versus warmed request.
 - Compare startup latency between stream variants for the same scene under identical conditions.
+- Implement background stream pre-fetching for the upcoming scene in the PlaybackQueue.
 - Consider optional background prewarm earlier in app lifecycle (for users who opt in).

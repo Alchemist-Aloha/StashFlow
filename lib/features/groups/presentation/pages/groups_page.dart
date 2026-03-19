@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../providers/group_list_provider.dart';
@@ -85,6 +86,7 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: Text('ID: ${group.id}'),
+          onTap: () => context.push('/group/${group.id}'),
         ),
       ),
     );

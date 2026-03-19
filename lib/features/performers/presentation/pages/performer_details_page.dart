@@ -29,6 +29,21 @@ class PerformerDetailsPage extends ConsumerWidget {
     context.push('/scene/${randomScene.id}');
   }
 
+  int? _calculateAge(String? birthdate) {
+    if (birthdate == null || birthdate.isEmpty) return null;
+    try {
+      final bdate = DateTime.parse(birthdate);
+      final today = DateTime.now();
+      var age = today.year - bdate.year;
+      if (today.month < bdate.month || (today.month == bdate.month && today.day < bdate.day)) {
+        age--;
+      }
+      return age;
+    } catch (_) {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final performerAsync = ref.watch(performerDetailsProvider(performerId));
@@ -47,102 +62,167 @@ class PerformerDetailsPage extends ConsumerWidget {
         ],
       ),
       body: performerAsync.when(
-        data: (performer) => SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 300,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  image: performer.imagePath != null
-                      ? DecorationImage(
-                          image: NetworkImage(
-                            performer.imagePath!,
-                            headers: mediaHeaders,
-                          ),
-                          fit: BoxFit.cover,
-                        )
+        data: (performer) {
+          final age = _calculateAge(performer.birthdate);
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 300,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    image: performer.imagePath != null
+                        ? DecorationImage(
+                            image: NetworkImage(
+                              performer.imagePath!,
+                              headers: mediaHeaders,
+                            ),
+                            fit: BoxFit.cover,
+                          )
+                        : null,
+                    color: context.colors.surfaceVariant,
+                  ),
+                  child: performer.imagePath == null
+                      ? Icon(Icons.person, size: 100, color: context.colors.onSurfaceVariant.withValues(alpha: 0.5))
                       : null,
-                  color: context.colors.surfaceVariant,
                 ),
-                child: performer.imagePath == null
-                    ? Icon(Icons.person, size: 100, color: context.colors.onSurfaceVariant.withOpacity(0.5))
-                    : null,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      performer.name,
-                      style: context.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: context.colors.onSurface,
-                      ),
-                    ),
-                    if (performer.disambiguation != null)
+                Padding(
+                  padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        performer.disambiguation!,
-                        style: context.textTheme.titleMedium?.copyWith(
-                          color: context.colors.onSurface.withOpacity(0.6),
+                        performer.name,
+                        style: context.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: context.colors.onSurface,
                         ),
                       ),
-                    const SizedBox(height: AppTheme.spacingMedium),
-                    Wrap(
-                      spacing: AppTheme.spacingSmall,
-                      runSpacing: AppTheme.spacingSmall,
-                      children: [
-                        if (performer.gender != null) _buildChip(context, performer.gender!),
-                        if (performer.birthdate != null) _buildChip(context, performer.birthdate!),
-                        if (performer.country != null) _buildChip(context, performer.country!),
-                        if (performer.ethnicity != null) _buildChip(context, performer.ethnicity!),
-                        if (performer.heightCm != null) _buildChip(context, '${performer.heightCm} cm'),
-                        if (performer.eyeColor != null) _buildChip(context, performer.eyeColor!),
-                        if (performer.hairColor != null) _buildChip(context, performer.hairColor!),
+                      if (performer.disambiguation != null)
+                        Text(
+                          performer.disambiguation!,
+                          style: context.textTheme.titleMedium?.copyWith(
+                            color: context.colors.onSurface.withValues(alpha: 0.6),
+                          ),
+                        ),
+                      if (performer.aliasList.isNotEmpty) ...[
+                        const SizedBox(height: AppTheme.spacingSmall),
+                        Text(
+                          'Aliases: ${performer.aliasList.join(', ')}',
+                          style: context.textTheme.bodyMedium?.copyWith(
+                            color: context.colors.onSurface.withValues(alpha: 0.8),
+                          ),
+                        ),
                       ],
-                    ),
-                    const Divider(height: 32, color: Colors.grey),
-                    SectionHeader(
-                      title: 'Media',
-                      onViewAll: () => context.push('/performer/${performer.id}/media'),
-                    ),
-                    mediaAsync.when(
-                      data: (mediaItems) => MediaStrip(
-                        items: mediaItems
-                            .map((item) => MediaStripItem(
-                                  id: item.sceneId,
-                                  title: item.title,
-                                  thumbnailUrl: item.thumbnailUrl,
-                                  onTap: () => context.push('/scene/${item.sceneId}'),
-                                ))
-                            .toList(),
-                        headers: mediaHeaders,
+                      const SizedBox(height: AppTheme.spacingMedium),
+                      Wrap(
+                        spacing: AppTheme.spacingSmall,
+                        runSpacing: AppTheme.spacingSmall,
+                        children: [
+                          if (performer.gender != null) _buildChip(context, performer.gender!),
+                          if (age != null) _buildChip(context, '$age years old'),
+                          if (performer.birthdate != null) _buildChip(context, performer.birthdate!),
+                          if (performer.country != null) _buildChip(context, performer.country!),
+                          if (performer.ethnicity != null) _buildChip(context, performer.ethnicity!),
+                          if (performer.heightCm != null) _buildChip(context, '${performer.heightCm} cm'),
+                          if (performer.eyeColor != null) _buildChip(context, performer.eyeColor!),
+                          if (performer.hairColor != null) _buildChip(context, performer.hairColor!),
+                        ],
                       ),
-                      loading: () => const SizedBox(
-                        height: 100,
-                        child: Center(child: CircularProgressIndicator()),
+                      if (performer.tagNames.isNotEmpty) ...[
+                        const Divider(height: 32, color: Colors.grey),
+                        const SectionHeader(title: 'Tags', padding: EdgeInsets.zero),
+                        const SizedBox(height: AppTheme.spacingSmall),
+                        Wrap(
+                          spacing: AppTheme.spacingSmall,
+                          runSpacing: AppTheme.spacingSmall,
+                          children: List.generate(performer.tagNames.length, (index) {
+                            return ActionChip(
+                              label: Text(performer.tagNames[index], style: context.textTheme.bodySmall),
+                              backgroundColor: context.colors.surfaceVariant,
+                              side: BorderSide.none,
+                              visualDensity: VisualDensity.compact,
+                              onPressed: () {
+                                if (index < performer.tagIds.length) {
+                                  context.push('/tag/${performer.tagIds[index]}');
+                                }
+                              },
+                            );
+                          }),
+                        ),
+                      ],
+                      if (performer.urls.isNotEmpty) ...[
+                        const Divider(height: 32, color: Colors.grey),
+                        const SectionHeader(title: 'Links', padding: EdgeInsets.zero),
+                        const SizedBox(height: AppTheme.spacingSmall),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: performer.urls.map((url) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: AppTheme.spacingSmall),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.link, size: 16, color: context.colors.primary),
+                                  const SizedBox(width: AppTheme.spacingSmall),
+                                  Expanded(
+                                    child: Text(
+                                      url,
+                                      style: context.textTheme.bodyMedium?.copyWith(
+                                        color: context.colors.primary,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                      const Divider(height: 32, color: Colors.grey),
+                      SectionHeader(
+                        title: 'Media',
+                        onViewAll: () => context.push('/performer/${performer.id}/media'),
                       ),
-                      error: (err, stack) => Text(
-                        'Failed to load media: $err',
-                        style: TextStyle(color: context.colors.onSurface.withOpacity(0.7)),
+                      mediaAsync.when(
+                        data: (mediaItems) => MediaStrip(
+                          items: mediaItems
+                              .map((item) => MediaStripItem(
+                                    id: item.sceneId,
+                                    title: item.title,
+                                    thumbnailUrl: item.thumbnailUrl,
+                                    onTap: () => context.push('/scene/${item.sceneId}'),
+                                  ))
+                              .toList(),
+                          headers: mediaHeaders,
+                        ),
+                        loading: () => const SizedBox(
+                          height: 100,
+                          child: Center(child: CircularProgressIndicator()),
+                        ),
+                        error: (err, stack) => Text(
+                          'Failed to load media: $err',
+                          style: TextStyle(color: context.colors.onSurface.withValues(alpha: 0.7)),
+                        ),
                       ),
-                    ),
-                    const Divider(height: 32, color: Colors.grey),
-                    const SectionHeader(title: 'Details'),
-                    Text(
-                      performer.details ?? 'No details available.',
-                      style: context.textTheme.bodyMedium?.copyWith(
-                        color: context.colors.onSurface.withOpacity(0.8),
+                      const Divider(height: 32, color: Colors.grey),
+                      const SectionHeader(title: 'Details'),
+                      Text(
+                        performer.details ?? 'No details available.',
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          color: context.colors.onSurface.withValues(alpha: 0.8),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ),
+              ],
+            ),
+          );
+        },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('Error: $err')),
       ),

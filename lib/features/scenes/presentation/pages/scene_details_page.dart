@@ -149,6 +149,28 @@ class SceneDetailsPage extends ConsumerWidget {
                         ),
                         const Divider(height: 32, color: Colors.grey),
                       ],
+                      if (scene.tagNames.isNotEmpty) ...[
+                        const SectionHeader(title: 'Tags', padding: EdgeInsets.zero),
+                        const SizedBox(height: AppTheme.spacingSmall),
+                        Wrap(
+                          spacing: AppTheme.spacingSmall,
+                          runSpacing: AppTheme.spacingSmall,
+                          children: List.generate(scene.tagNames.length, (index) {
+                            return ActionChip(
+                              label: Text(scene.tagNames[index], style: context.textTheme.bodySmall),
+                              backgroundColor: context.colors.surfaceVariant,
+                              side: BorderSide.none,
+                              visualDensity: VisualDensity.compact,
+                              onPressed: () {
+                                if (index < scene.tagIds.length) {
+                                  context.push('/tag/${scene.tagIds[index]}');
+                                }
+                              },
+                            );
+                          }),
+                        ),
+                        const Divider(height: 32, color: Colors.grey),
+                      ],
                       const SectionHeader(title: 'Performers', padding: EdgeInsets.zero),
                       const SizedBox(height: AppTheme.spacingSmall),
                       ListView.separated(

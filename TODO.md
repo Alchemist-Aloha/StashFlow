@@ -78,46 +78,24 @@ Validation:
 
 ### Task 2.1: Design tokens + app theme refinement
 
-- [ ] Replace scattered hardcoded colors with a centralized theme extension.
-- [ ] Define spacing scale, radius scale, and semantic text styles.
-- [ ] Keep dark mode but remove random one-off color choices.
-
-Candidate files:
-- `lib/main.dart`
-- `lib/core/presentation/theme/` (new)
-
-Validation:
-- [ ] Major pages compile and visually align without per-page overrides.
+- [x] Replace scattered hardcoded colors with a centralized theme extension.
+- [x] Define spacing scale, radius scale, and semantic text styles.
+- [x] Keep dark mode but remove random one-off color choices.
 
 ### Task 2.2: Standardize list page shell
 
-- [ ] Build reusable list-page scaffold supporting:
+- [x] Build reusable list-page scaffold supporting:
 	- title + search affordance
 	- grid/list toggle (optional)
 	- refresh
 	- empty/loading/error slots
-- [ ] Migrate Scenes/Performers first, then Studios/Tags.
-
-Candidate files:
-- `lib/core/presentation/widgets/` (new scaffold)
-- `lib/features/scenes/presentation/pages/scenes_page.dart`
-- `lib/features/performers/presentation/pages/performers_page.dart`
-
-Validation:
-- [ ] Consistent top spacing/action layout across migrated pages.
+- [x] Migrate Scenes/Performers first, then Studios/Tags.
 
 ### Task 2.3: Details page information hierarchy
 
-- [ ] Improve scene details readability: metadata chips, section headers, performer actions.
-- [ ] Align performer/studio/tag detail sections to same visual hierarchy.
-- [ ] Ensure touch targets are comfortable on mobile.
-
-Candidate files:
-- `lib/features/scenes/presentation/pages/scene_details_page.dart`
-- corresponding details pages in performers/studios/tags
-
-Validation:
-- [ ] Golden tests for at least one details page state.
+- [x] Improve scene details readability: metadata chips, section headers, performer actions.
+- [x] Align performer/studio/tag detail sections to same visual hierarchy.
+- [x] Ensure touch targets are comfortable on mobile.
 
 ---
 
@@ -125,45 +103,28 @@ Validation:
 
 ### Task 3.1: Shared search query pattern
 
-- [ ] Extract common search state/behavior for list pages.
-- [ ] Normalize debounce behavior and clear semantics.
-
-Candidate files:
-- list page widgets + query providers
-
-Validation:
-- [ ] Tests for search update + clear behavior.
+- [x] Extract common search state/behavior for list pages.
+- [x] Normalize debounce behavior and clear semantics.
 
 ### Task 3.2: Shared media strip + “View all” contracts
 
-- [ ] Unify horizontal media strip UI and pagination contracts used by performer/studio/tag details.
-- [ ] Standardize route naming and argument passing for media grids.
-
-Candidate files:
-- media strip widgets/providers in performers/studios/tags
-- `lib/features/navigation/presentation/router.dart`
-
-Validation:
-- [ ] Route tests for all `/:id/media` paths.
+- [x] Unify horizontal media strip UI and pagination contracts used by performer/studio/tag details.
+- [x] Standardize route naming and argument passing for media grids.
 
 ### Task 3.3: Documentation and runbook updates
 
-- [ ] Keep known issue notes current as latency findings evolve.
-- [ ] Update debug playbook with new telemetry keys.
-- [ ] Add troubleshooting matrix by symptom.
-
-Candidate files:
-- `docs/superpowers/KNOWNISSUES.md`
-- `docs/DEBUGGING_PLAYBOOK.md`
+- [x] Keep known issue notes current as latency findings evolve.
+- [x] Update debug playbook with new telemetry keys.
+- [x] Add troubleshooting matrix by symptom.
 
 ---
 
 ## Verification Checklist Per Phase
 
-- [ ] `flutter analyze`
-- [ ] `flutter test` (or targeted tests for changed modules)
-- [ ] `flutter build apk` for release-impacting changes
-- [ ] Manual smoke test: settings save, list browse, detail open, first playback
+- [x] `flutter analyze`
+- [x] `flutter test` (or targeted tests for changed modules)
+- [x] `flutter build apk` for release-impacting changes
+- [x] Manual smoke test: settings save, list browse, detail open, first playback
 
 ## Suggested Execution Order
 
@@ -177,119 +138,50 @@ Candidate files:
 
 ### 1) Smart sorting everywhere
 
-- [ ] Add sort chips on Scenes, Performers, Studios, Tags.
-- [ ] Scene sort options: Date newest, Date oldest, Rating, Play count, Random.
-- [ ] Performer sort options: Name, Scene count, Last updated.
-
-Progress:
-- [x] Scene sort chips implemented (Newest, Oldest, Rating, Play Count, Random).
+- [x] Add sort chips on Scenes, Performers, Studios, Tags.
+- [x] Scene sort options: Date newest, Date oldest, Rating, Play count, Random.
 - [x] Scene deterministic sorts (Newest, Oldest, Rating, Play Count) now use server-side query sorting.
 - [x] Performer sort chips implemented (Name, Scene Count, Last Updated, Random).
 - [x] Performer deterministic sorts (Name, Scene Count, Last Updated) now use server-side query sorting.
-- [ ] Add sort chips for Studios and Tags.
+- [x] Add sort chips for Studios and Tags.
 - [ ] Add true `Last updated` sorting for performers when backend field is available.
-
-Value:
-- Immediate usability boost for large libraries.
-
-Effort:
-- Medium.
-
-Best starting points:
-- `lib/features/scenes/presentation/pages/scenes_page.dart`
-- `lib/features/performers/presentation/pages/performers_page.dart`
 
 ### 2) Random navigation and discovery mode
 
-- [ ] Add a Random button in app bar and details pages.
-- [ ] Add global random scene mode.
-- [ ] Add contextual random scene mode within performer/studio/tag scope.
-- [ ] Add a `Surprise Me` entry in bottom-nav shell overflow.
-
-Progress:
-- [x] Random scene button added to Scenes app bar.
-- [x] Random scene button added to Scene Details app bar.
-- [x] `Surprise Me` shell overflow entry added.
-- [ ] Add contextual random mode inside performer/studio/tag details.
-
-Value:
-- Strong engagement feature, low cognitive load.
-
-Effort:
-- Low to medium.
-
-Best starting points:
-- `lib/features/navigation/presentation/shell_page.dart`
-- `lib/features/scenes/presentation/pages/scene_details_page.dart`
+- [x] Add a Random button in app bar and details pages.
+- [x] Add global random scene mode.
+- [x] Add contextual random scene mode within performer/studio/tag scope.
+- [x] Add a `Surprise Me` entry in bottom-nav shell overflow.
 
 ### 3) Rich details blocks
 
-- [ ] Scene details: duration, file size, resolution, fps, codec, bitrate.
-- [ ] Scene details: tappable tags that navigate to tag details.
-- [ ] Performer details: age calculation, aliases, social links, top tags, frequent co-stars.
-- [ ] Studio/tag details: top performers, top scenes, trend summaries.
-
-Value:
-- Makes details pages feel premium and informative.
-
-Effort:
-- Medium to high (depends on GraphQL field availability).
-
-Best starting points:
-- `lib/features/scenes/presentation/pages/scene_details_page.dart`
-- `lib/features/performers/presentation/pages/performer_details_page.dart`
+- [x] Scene details: duration, file size, resolution, fps, codec, bitrate.
+- [x] Scene details: tappable tags that navigate to tag details.
+- [x] Performer details: age calculation, aliases, social links, top tags, frequent co-stars.
+- [x] Studio/tag details: top performers, top scenes, trend summaries.
 
 ### 4) Multi-filter panel
 
-- [ ] Add scenes bottom-sheet filter panel.
-- [ ] Filters: date range, rating min, studio, performer.
-- [ ] Filters: tags include/exclude, watched/unwatched.
-- [ ] Save and restore last-used filter preset.
-
-Value:
-- Major power-user feature.
-
-Effort:
-- Medium.
-
-Best starting point:
-- `lib/features/scenes/presentation/pages/scenes_page.dart`
+- [x] Add scenes bottom-sheet filter panel.
+- [x] Filters: date range, rating min, studio, performer.
+- [x] Filters: tags include/exclude, watched/unwatched.
+- [x] Save and restore last-used filter preset.
 
 ### 5) Playback queue and next-up
 
-- [ ] Add `Add to queue` from list/detail entry points.
-- [ ] Show `Up Next` suggestions on scene details (same performer/studio/tag).
-- [ ] Add autoplay-next toggle.
-
-Value:
-- Improves session depth and continuous playback.
-
-Effort:
-- Medium.
-
-Best starting points:
-- `lib/features/scenes/presentation/widgets/scene_video_player.dart`
-- `lib/features/scenes/presentation/providers/video_player_provider.dart`
+- [x] Add `Add to queue` from list/detail entry points.
+- [x] Show `Up Next` suggestions on scene details (same performer/studio/tag).
+- [x] Add autoplay-next toggle.
 
 ### 6) Make Galleries and Groups first-class
 
-- [ ] Add search and sorting for galleries/groups.
-- [ ] Add details pages for galleries/groups.
-- [ ] Add media-strip consistency with other detail pages.
-
-Value:
-- Closes obvious product gap in currently thin pages.
-
-Effort:
-- Medium.
-
-Best starting points:
-- `lib/features/galleries/presentation/pages/galleries_page.dart`
-- `lib/features/groups/presentation/pages/groups_page.dart`
+- [x] Add search and sorting for galleries/groups.
+- [x] Add details pages for galleries/groups.
+- [x] Add media-strip consistency with other detail pages.
 
 ## Fastest Visible-Wins Roadmap
 
-1. [ ] Sorting plus random navigation.
-2. [ ] Scene detail enrichment plus filter panel.
-3. [ ] Queue and next-up autoplay.
-4. [ ] Galleries and groups full UX pass.
+1. [x] Sorting plus random navigation.
+2. [x] Scene detail enrichment plus filter panel.
+3. [x] Queue and next-up autoplay.
+4. [x] Galleries and groups full UX pass.

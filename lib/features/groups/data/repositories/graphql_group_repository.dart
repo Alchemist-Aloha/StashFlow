@@ -21,6 +21,10 @@ class GraphQLGroupRepository implements GroupRepository {
           groups {
             id
             name
+            date
+            rating100
+            director
+            synopsis
           }
         }
       }
@@ -55,5 +59,34 @@ class GraphQLGroupRepository implements GroupRepository {
     return groupsJson
         .map((g) => Group.fromJson(g as Map<String, dynamic>))
         .toList();
+  }
+
+  @override
+  Future<Group> getGroupById(String id) async {
+    const query = r'''
+      query FindGroup($id: ID!) {
+        findGroup(id: $id) {
+          id
+          name
+          date
+          rating100
+          director
+          synopsis
+        }
+      }
+    ''';
+
+    final result = await client.query(
+      QueryOptions(
+        document: gql(query),
+        variables: {'id': id},
+      ),
+    );
+
+    if (result.hasException) throw result.exception!;
+    final data = result.data?['findGroup'];
+    if (data == null) throw Exception('Group not found');
+    
+    return Group.fromJson(data as Map<String, dynamic>);
   }
 }

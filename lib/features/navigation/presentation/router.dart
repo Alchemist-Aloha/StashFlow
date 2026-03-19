@@ -12,7 +12,9 @@ import '../../tags/presentation/pages/tags_page.dart';
 import '../../tags/presentation/pages/tag_details_page.dart';
 import '../../tags/presentation/pages/tag_media_grid_page.dart';
 import '../../galleries/presentation/pages/galleries_page.dart';
+import '../../galleries/presentation/pages/gallery_details_page.dart';
 import '../../groups/presentation/pages/groups_page.dart';
+import '../../groups/presentation/pages/group_details_page.dart';
 import '../../setup/presentation/settings_page.dart';
 import 'shell_page.dart';
 
@@ -86,6 +88,16 @@ GoRouter router(Ref ref) {
             path: '/tag/:id/media',
             builder: (context, state) =>
                 TagMediaGridPage(tagId: state.pathParameters['id']!),
+          ),
+          GoRoute(
+            path: '/gallery/:id',
+            builder: (context, state) =>
+                GalleryDetailsPage(galleryId: state.pathParameters['id']!),
+          ),
+          GoRoute(
+            path: '/group/:id',
+            builder: (context, state) =>
+                GroupDetailsPage(groupId: state.pathParameters['id']!),
           ),
           // Explore, Subscriptions, Library routes will be added later
         ],

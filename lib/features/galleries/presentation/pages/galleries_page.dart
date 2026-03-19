@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../providers/gallery_list_provider.dart';
@@ -85,6 +86,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: Text('ID: ${gallery.id}'),
+          onTap: () => context.push('/gallery/${gallery.id}'),
         ),
       ),
     );

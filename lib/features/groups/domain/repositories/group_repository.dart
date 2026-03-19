@@ -8,4 +8,5 @@ abstract class GroupRepository {
     String? sort,
     bool? descending,
   });
+  Future<Group> getGroupById(String id);
 }

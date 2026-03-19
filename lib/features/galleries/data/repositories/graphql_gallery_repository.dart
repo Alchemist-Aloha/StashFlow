@@ -21,6 +21,10 @@ class GraphQLGalleryRepository implements GalleryRepository {
           galleries {
             id
             title
+            date
+            rating100
+            image_count
+            details
           }
         }
       }
@@ -55,5 +59,34 @@ class GraphQLGalleryRepository implements GalleryRepository {
     return galleriesJson
         .map((g) => Gallery.fromJson(g as Map<String, dynamic>))
         .toList();
+  }
+
+  @override
+  Future<Gallery> getGalleryById(String id) async {
+    const query = r'''
+      query FindGallery($id: ID!) {
+        findGallery(id: $id) {
+          id
+          title
+          date
+          rating100
+          image_count
+          details
+        }
+      }
+    ''';
+
+    final result = await client.query(
+      QueryOptions(
+        document: gql(query),
+        variables: {'id': id},
+      ),
+    );
+
+    if (result.hasException) throw result.exception!;
+    final data = result.data?['findGallery'];
+    if (data == null) throw Exception('Gallery not found');
+    
+    return Gallery.fromJson(data as Map<String, dynamic>);
   }
 }
