@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
 import '../../domain/entities/scene.dart';
+import '../../domain/entities/scene_title_utils.dart';
 
 import '../providers/playback_queue_provider.dart';
 
@@ -51,7 +53,7 @@ class SceneCard extends ConsumerWidget {
       if (value == 'add_to_queue') {
         ref.read(playbackQueueProvider.notifier).add(scene);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Added "${scene.title}" to queue')),
+          SnackBar(content: Text('Added "${scene.displayTitle}" to queue')),
         );
       }
     });
@@ -123,11 +125,11 @@ class SceneCard extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        scene.title,
-                        style: const TextStyle(
+                        scene.displayTitle,
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
-                          color: Colors.white,
+                          color: context.colors.onSurface,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -135,7 +137,10 @@ class SceneCard extends ConsumerWidget {
                       const SizedBox(height: 4),
                       Text(
                         '${scene.studioName ?? "Unknown Studio"} • ${scene.date.year}',
-                        style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                        style: TextStyle(
+                          color: context.colors.onSurface.withValues(alpha: 0.75),
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),
@@ -147,7 +152,7 @@ class SceneCard extends ConsumerWidget {
                   icon: const Icon(
                     Icons.more_vert,
                     size: 20,
-                    color: Colors.white,
+                    color: null,
                   ),
                 ),
               ],
@@ -193,11 +198,11 @@ class SceneCard extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        scene.title,
-                        style: const TextStyle(
+                        scene.displayTitle,
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
-                          color: Colors.white,
+                          color: context.colors.onSurface,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -205,7 +210,10 @@ class SceneCard extends ConsumerWidget {
                       const SizedBox(height: 2),
                       Text(
                         scene.studioName ?? 'Unknown Studio',
-                        style: TextStyle(color: Colors.grey[400], fontSize: 10),
+                        style: TextStyle(
+                          color: context.colors.onSurface.withValues(alpha: 0.75),
+                          fontSize: 10,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -219,7 +227,7 @@ class SceneCard extends ConsumerWidget {
                   icon: const Icon(
                     Icons.more_vert,
                     size: 16,
-                    color: Colors.white,
+                    color: null,
                   ),
                 ),
               ],

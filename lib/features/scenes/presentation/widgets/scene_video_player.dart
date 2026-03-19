@@ -4,12 +4,14 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:video_player/video_player.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../providers/video_player_provider.dart';
 import '../../domain/entities/scene.dart';
+import '../../domain/entities/scene_title_utils.dart';
 import '../providers/playback_queue_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 
@@ -27,6 +29,24 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
 
   bool _isStarting = false;
   String? _autoStartedSceneId;
+
+  double _effectiveAspectRatio(VideoPlayerController? controller) {
+    final controllerRatio = controller?.value.aspectRatio;
+    if (controllerRatio != null && controllerRatio.isFinite && controllerRatio > 0) {
+      return controllerRatio;
+    }
+
+    if (widget.scene.files.isNotEmpty) {
+      final file = widget.scene.files.first;
+      final width = file.width;
+      final height = file.height;
+      if (width != null && height != null && width > 0 && height > 0) {
+        return width / height;
+      }
+    }
+
+    return 16 / 9;
+  }
 
   @override
   void initState() {
@@ -195,10 +215,11 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   Widget build(BuildContext context) {
     final playerState = ref.watch(playerStateProvider);
     final nextScene = ref.watch(playbackQueueProvider.notifier).getNextScene();
+    final aspectRatio = _effectiveAspectRatio(playerState.videoPlayerController);
 
     if (playerState.activeScene?.id != widget.scene.id) {
       return AspectRatio(
-        aspectRatio: 16 / 9,
+        aspectRatio: aspectRatio,
         child: Container(
           color: Colors.black,
           child: Center(
@@ -220,14 +241,14 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     final chewieController = playerState.chewieController;
 
     if (chewieController == null) {
-      return const AspectRatio(
-        aspectRatio: 16 / 9,
+      return AspectRatio(
+        aspectRatio: aspectRatio,
         child: Center(child: CircularProgressIndicator()),
       );
     }
 
     return AspectRatio(
-      aspectRatio: 16 / 9,
+      aspectRatio: aspectRatio,
       child: Stack(
         children: [
           Positioned.fill(child: Chewie(controller: chewieController)),
@@ -259,7 +280,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                 onPressed: () =>
                     ref.read(playerStateProvider.notifier).playNext(),
                 icon: const Icon(Icons.skip_next),
-                label: Text('Next: ${nextScene.title}'),
+                label: Text('Next: ${nextScene.displayTitle}'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black54,
                   foregroundColor: Colors.white,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../scenes/domain/entities/scene_title_utils.dart';
 import '../../../scenes/presentation/providers/video_player_provider.dart';
 
 class MiniPlayer extends ConsumerWidget {
@@ -15,13 +17,17 @@ class MiniPlayer extends ConsumerWidget {
 
     if (activeScene == null) return const SizedBox.shrink();
 
+    final displayTitle = activeScene.displayTitle;
+
     return GestureDetector(
       onTap: () => context.push('/scene/${activeScene.id}'),
       child: Container(
         height: 60,
         decoration: BoxDecoration(
-          color: Colors.grey[900],
-          border: Border(top: BorderSide(color: Colors.grey[800]!, width: 0.5)),
+          color: context.colors.surface,
+          border: Border(
+            top: BorderSide(color: context.colors.outline.withValues(alpha: 0.5), width: 0.5),
+          ),
         ),
         child: Row(
           children: [
@@ -41,16 +47,21 @@ class MiniPlayer extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    activeScene.title,
+                    displayTitle,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 14, color: Colors.white),
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: context.colors.onSurface,
+                    ),
                   ),
                   Text(
                     activeScene.studioName ?? '',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: context.colors.onSurface.withValues(alpha: 0.75),
+                    ),
                   ),
                 ],
               ),
@@ -60,12 +71,12 @@ class MiniPlayer extends ConsumerWidget {
                   ref.read(playerStateProvider.notifier).togglePlayPause(),
               icon: Icon(
                 playerState.isPlaying ? Icons.pause : Icons.play_arrow,
-                color: Colors.white,
+                color: context.colors.onSurface,
               ),
             ),
             IconButton(
               onPressed: () => ref.read(playerStateProvider.notifier).stop(),
-              icon: const Icon(Icons.close, color: Colors.white),
+              icon: Icon(Icons.close, color: context.colors.onSurface),
             ),
           ],
         ),

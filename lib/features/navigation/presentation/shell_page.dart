@@ -34,11 +34,12 @@ class ShellPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currentPath = GoRouterState.of(context).uri.path;
+    final hideMiniPlayer = currentPath.startsWith('/scene/');
     return Scaffold(
       body: Column(
         children: [
           Expanded(child: child),
-          const MiniPlayer(),
+          if (!hideMiniPlayer) const MiniPlayer(),
         ],
       ),
       bottomNavigationBar: SafeArea(

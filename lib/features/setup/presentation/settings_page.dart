@@ -344,9 +344,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   const SizedBox(height: 8),
                   SegmentedButton<ThemeMode>(
                     showSelectedIcon: false,
-                    style: ButtonStyle(
-                      visualDensity: VisualDensity.compact,
-                    ),
+                    style: ButtonStyle(visualDensity: VisualDensity.compact),
                     segments: const [
                       ButtonSegment<ThemeMode>(
                         value: ThemeMode.system,

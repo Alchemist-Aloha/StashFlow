@@ -9,6 +9,7 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
 import '../../../../core/presentation/widgets/media_strip.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
+import '../../domain/entities/scene_title_utils.dart';
 import '../../../studios/presentation/providers/studio_media_provider.dart';
 import '../providers/playback_queue_provider.dart';
 import '../providers/scene_details_provider.dart';
@@ -24,15 +25,6 @@ class SceneDetailsPage extends ConsumerStatefulWidget {
 }
 
 class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
-  static const Set<String> _genericFallbackNames = {
-    'stream',
-    'preview',
-    'screenshot',
-    'video',
-    'play',
-    'media',
-  };
-
   static const _collapsedDetailsLines = 6;
   static const _collapsedTagRowsHeight = 84.0;
   static const _collapsedPerformerRows = 2;
@@ -40,45 +32,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   bool _detailsExpanded = false;
   bool _tagsExpanded = false;
   bool _performersExpanded = false;
-
-  String _displayTitle({
-    required String title,
-    String? filePath,
-    String? streamPath,
-  }) {
-    final trimmed = title.trim();
-    if (trimmed.isNotEmpty) return trimmed;
-
-    final fromPath = _nameFromPath(filePath) ?? _nameFromPath(streamPath);
-    return (fromPath == null || fromPath.isEmpty) ? 'Untitled Scene' : fromPath;
-  }
-
-  String? _nameFromPath(String? rawPath) {
-    if (rawPath == null || rawPath.trim().isEmpty) return null;
-
-    final normalized = rawPath.replaceAll('\\', '/');
-    final parsed = Uri.tryParse(normalized);
-    final pathPart = (parsed?.hasScheme ?? false)
-        ? (parsed?.path ?? normalized)
-        : normalized;
-
-    final segments = pathPart
-        .split('/')
-        .where((part) => part.isNotEmpty)
-        .toList();
-    final lastSegment = segments.isEmpty ? '' : segments.last;
-    if (lastSegment.isEmpty) return null;
-
-    final decoded = Uri.decodeComponent(lastSegment);
-    final dotIndex = decoded.lastIndexOf('.');
-    final withoutExt = dotIndex > 0 ? decoded.substring(0, dotIndex) : decoded;
-    final cleaned = withoutExt.replaceAll(RegExp(r'[_\.]+'), ' ').trim();
-    if (cleaned.isEmpty) return null;
-
-    final lower = cleaned.toLowerCase();
-    if (_genericFallbackNames.contains(lower)) return null;
-    return cleaned;
-  }
 
   Future<void> _openRandomScene(BuildContext context) async {
     final randomScene = await ref
@@ -88,7 +41,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
     if (randomScene == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No scenes available for random navigation')),
+        const SnackBar(
+          content: Text('No scenes available for random navigation'),
+        ),
       );
       return;
     }
@@ -123,7 +78,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               onPressed: () {
                 ref.read(playbackQueueProvider.notifier).add(scene);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Added "${scene.title}" to queue')),
+                  SnackBar(
+                    content: Text('Added "${scene.displayTitle}" to queue'),
+                  ),
                 );
               },
             ),
@@ -145,7 +102,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           final primaryFile = scene.files.isNotEmpty ? scene.files.first : null;
           final detailsText = (scene.details ?? '').trim();
           final hasDetails = detailsText.isNotEmpty;
-          final canExpandDetails = detailsText.length > 260 || detailsText.contains('\n');
+          final canExpandDetails =
+              detailsText.length > 260 || detailsText.contains('\n');
 
           final tagIndexes = <int>[];
           for (var i = 0; i < scene.tagNames.length; i++) {
@@ -167,13 +125,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               performerIndexes.length > _collapsedPerformerRows;
 
           final canOpenStudio =
-              scene.studioId != null && (scene.studioName ?? '').trim().isNotEmpty;
+              scene.studioId != null &&
+              (scene.studioName ?? '').trim().isNotEmpty;
 
-          final displayTitle = _displayTitle(
-            title: scene.title,
-            filePath: scene.path,
-            streamPath: scene.paths.stream,
-          );
+          final displayTitle = scene.displayTitle;
 
           final mediaHeaders = ref.watch(mediaHeadersProvider);
           final studioMediaAsync = scene.studioId == null
@@ -205,7 +160,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                           if (scene.studioName != null)
                             GestureDetector(
                               onTap: canOpenStudio
-                                  ? () => context.push('/studio/${scene.studioId}')
+                                  ? () => context.push(
+                                      '/studio/${scene.studioId}',
+                                    )
                                   : null,
                               child: Text(
                                 scene.studioName!,
@@ -224,13 +181,17 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                             Text(
                               ' • ',
                               style: TextStyle(
-                                color: context.colors.onSurface.withValues(alpha: 0.5),
+                                color: context.colors.onSurface.withValues(
+                                  alpha: 0.5,
+                                ),
                               ),
                             ),
                           Text(
                             scene.date.year.toString(),
                             style: context.textTheme.titleMedium?.copyWith(
-                              color: context.colors.onSurface.withValues(alpha: 0.6),
+                              color: context.colors.onSurface.withValues(
+                                alpha: 0.6,
+                              ),
                             ),
                           ),
                         ],
@@ -306,10 +267,16 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                         const SizedBox(height: AppTheme.spacingSmall),
                         Text(
                           detailsText,
-                          maxLines: _detailsExpanded ? null : _collapsedDetailsLines,
-                          overflow: _detailsExpanded ? null : TextOverflow.ellipsis,
+                          maxLines: _detailsExpanded
+                              ? null
+                              : _collapsedDetailsLines,
+                          overflow: _detailsExpanded
+                              ? null
+                              : TextOverflow.ellipsis,
                           style: context.textTheme.bodyMedium?.copyWith(
-                            color: context.colors.onSurface.withValues(alpha: 0.8),
+                            color: context.colors.onSurface.withValues(
+                              alpha: 0.8,
+                            ),
                           ),
                         ),
                         const Divider(height: 32, color: Colors.grey),
@@ -327,7 +294,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                             if (canExpandTags)
                               TextButton(
                                 onPressed: () {
-                                  setState(() => _tagsExpanded = !_tagsExpanded);
+                                  setState(
+                                    () => _tagsExpanded = !_tagsExpanded,
+                                  );
                                 },
                                 child: Text(
                                   _tagsExpanded ? 'Show less' : 'Show more',
@@ -356,12 +325,15 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                                         scene.tagNames[index],
                                         style: context.textTheme.bodySmall,
                                       ),
-                                      backgroundColor: context.colors.surfaceVariant,
+                                      backgroundColor:
+                                          context.colors.surfaceVariant,
                                       side: BorderSide.none,
                                       visualDensity: VisualDensity.compact,
                                       onPressed: () {
                                         if (index < scene.tagIds.length) {
-                                          context.push('/tag/${scene.tagIds[index]}');
+                                          context.push(
+                                            '/tag/${scene.tagIds[index]}',
+                                          );
                                         }
                                       },
                                     ),
@@ -383,39 +355,49 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: _performersExpanded
                               ? performerIndexes.length
-                              : min(_collapsedPerformerRows, performerIndexes.length),
+                              : min(
+                                  _collapsedPerformerRows,
+                                  performerIndexes.length,
+                                ),
                           separatorBuilder: (context, index) =>
                               const SizedBox(height: AppTheme.spacingSmall),
                           itemBuilder: (context, index) {
                             final performerIndex = performerIndexes[index];
-                            final performerName = scene.performerNames[performerIndex].trim();
+                            final performerName = scene
+                                .performerNames[performerIndex]
+                                .trim();
                             final performerImagePath =
-                              performerIndex < scene.performerImagePaths.length
-                              ? scene.performerImagePaths[performerIndex]
-                              : null;
+                                performerIndex <
+                                    scene.performerImagePaths.length
+                                ? scene.performerImagePaths[performerIndex]
+                                : null;
                             final hasImage =
-                              performerImagePath != null &&
-                              performerImagePath.trim().isNotEmpty;
+                                performerImagePath != null &&
+                                performerImagePath.trim().isNotEmpty;
 
                             return ListTile(
                               contentPadding: EdgeInsets.zero,
                               leading: hasImage
                                   ? CircleAvatar(
-                                      backgroundColor: context.colors.surfaceVariant,
+                                      backgroundColor:
+                                          context.colors.surfaceVariant,
                                       foregroundImage: NetworkImage(
                                         performerImagePath,
                                         headers: mediaHeaders,
                                       ),
                                       child: const Icon(Icons.person),
                                     )
-                                  : const CircleAvatar(child: Icon(Icons.person)),
+                                  : const CircleAvatar(
+                                      child: Icon(Icons.person),
+                                    ),
                               title: Text(
                                 performerName,
                                 style: context.textTheme.bodyLarge,
                               ),
                               trailing: const Icon(Icons.chevron_right),
                               onTap: () {
-                                if (performerIndex < scene.performerIds.length) {
+                                if (performerIndex <
+                                    scene.performerIds.length) {
                                   context.push(
                                     '/performer/${scene.performerIds[performerIndex]}',
                                   );
@@ -430,7 +412,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                             child: TextButton(
                               onPressed: () {
                                 setState(
-                                  () => _performersExpanded = !_performersExpanded,
+                                  () => _performersExpanded =
+                                      !_performersExpanded,
                                 );
                               },
                               child: Text(
@@ -444,17 +427,20 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                         SectionHeader(
                           title: 'More From Studio',
                           onViewAll: canOpenStudio
-                              ? () => context.push('/studio/${scene.studioId}/media')
+                              ? () => context.push(
+                                  '/studio/${scene.studioId}/media',
+                                )
                               : null,
                           padding: EdgeInsets.zero,
                         ),
                         const SizedBox(height: AppTheme.spacingSmall),
                         studioMediaAsync.when(
                           data: (mediaItems) {
-                            final shuffled = mediaItems
-                                .where((item) => item.sceneId != scene.id)
-                                .toList()
-                              ..shuffle(Random(scene.id.hashCode));
+                            final shuffled =
+                                mediaItems
+                                    .where((item) => item.sceneId != scene.id)
+                                    .toList()
+                                  ..shuffle(Random(scene.id.hashCode));
 
                             return MediaStrip(
                               items: shuffled
@@ -463,7 +449,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                                       id: item.sceneId,
                                       title: item.title,
                                       thumbnailUrl: item.thumbnailUrl,
-                                      onTap: () => context.push('/scene/${item.sceneId}'),
+                                      onTap: () => context.push(
+                                        '/scene/${item.sceneId}',
+                                      ),
                                     ),
                                   )
                                   .toList(),
@@ -477,7 +465,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                           error: (err, stack) => Text(
                             'Failed to load studio media: $err',
                             style: TextStyle(
-                              color: context.colors.onSurface.withValues(alpha: 0.7),
+                              color: context.colors.onSurface.withValues(
+                                alpha: 0.7,
+                              ),
                             ),
                           ),
                         ),

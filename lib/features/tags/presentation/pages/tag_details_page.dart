@@ -27,7 +27,9 @@ class TagDetailsPage extends ConsumerWidget {
 
     if (randomTag == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No tags available for random navigation')),
+        const SnackBar(
+          content: Text('No tags available for random navigation'),
+        ),
       );
       return;
     }
@@ -42,9 +44,7 @@ class TagDetailsPage extends ConsumerWidget {
     final mediaHeaders = ref.watch(mediaHeadersProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tag Details'),
-      ),
+      appBar: AppBar(title: const Text('Tag Details')),
       floatingActionButton: FloatingActionButton.small(
         onPressed: () => _openRandomTag(context, ref),
         tooltip: 'Random tag',
@@ -85,19 +85,20 @@ class TagDetailsPage extends ConsumerWidget {
                     ),
                     mediaAsync.when(
                       data: (mediaItems) {
-                        final shuffledItems = [...mediaItems]..shuffle(Random());
+                        final shuffledItems = [...mediaItems]
+                          ..shuffle(Random());
                         return MediaStrip(
                           items: shuffledItems
-                            .map(
-                              (item) => MediaStripItem(
-                                id: item.sceneId,
-                                title: item.title,
-                                thumbnailUrl: item.thumbnailUrl,
-                                onTap: () =>
-                                    context.push('/scene/${item.sceneId}'),
-                              ),
-                            )
-                            .toList(),
+                              .map(
+                                (item) => MediaStripItem(
+                                  id: item.sceneId,
+                                  title: item.title,
+                                  thumbnailUrl: item.thumbnailUrl,
+                                  onTap: () =>
+                                      context.push('/scene/${item.sceneId}'),
+                                ),
+                              )
+                              .toList(),
                           headers: mediaHeaders,
                         );
                       },

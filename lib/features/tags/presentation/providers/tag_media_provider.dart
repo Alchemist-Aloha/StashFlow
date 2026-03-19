@@ -5,6 +5,7 @@ import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../scenes/data/graphql/scenes.graphql.dart';
+import '../../../scenes/domain/entities/scene_title_utils.dart';
 
 part 'tag_media_provider.g.dart';
 
@@ -53,7 +54,10 @@ FutureOr<List<TagMediaItem>> tagMedia(Ref ref, String tagId) async {
       .map(
         (scene) => TagMediaItem(
           sceneId: scene.id,
-          title: scene.title ?? 'Untitled',
+          title: buildSceneDisplayTitle(
+            title: scene.title,
+            streamPath: scene.paths.stream,
+          ),
           thumbnailUrl: resolveGraphqlMediaUrl(
             rawUrl: scene.paths.screenshot ?? scene.paths.preview,
             graphqlEndpoint: endpoint,
@@ -112,7 +116,10 @@ class TagMediaGrid extends _$TagMediaGrid {
         .map(
           (scene) => TagMediaItem(
             sceneId: scene.id,
-            title: scene.title ?? 'Untitled',
+            title: buildSceneDisplayTitle(
+              title: scene.title,
+              streamPath: scene.paths.stream,
+            ),
             thumbnailUrl: resolveGraphqlMediaUrl(
               rawUrl: scene.paths.screenshot ?? scene.paths.preview,
               graphqlEndpoint: endpoint,

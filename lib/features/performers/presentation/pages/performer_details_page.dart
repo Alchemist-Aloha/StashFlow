@@ -20,12 +20,17 @@ class PerformerDetailsPage extends ConsumerWidget {
   Future<void> _openRandomPerformer(BuildContext context, WidgetRef ref) async {
     final randomPerformer = await ref
         .read(performerListProvider.notifier)
-        .getRandomPerformer(useCurrentFilter: true, excludePerformerId: performerId);
+        .getRandomPerformer(
+          useCurrentFilter: true,
+          excludePerformerId: performerId,
+        );
     if (!context.mounted) return;
 
     if (randomPerformer == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No performers available for random navigation')),
+        const SnackBar(
+          content: Text('No performers available for random navigation'),
+        ),
       );
       return;
     }
@@ -39,7 +44,8 @@ class PerformerDetailsPage extends ConsumerWidget {
       final bdate = DateTime.parse(birthdate);
       final today = DateTime.now();
       var age = today.year - bdate.year;
-      if (today.month < bdate.month || (today.month == bdate.month && today.day < bdate.day)) {
+      if (today.month < bdate.month ||
+          (today.month == bdate.month && today.day < bdate.day)) {
         age--;
       }
       return age;
@@ -55,9 +61,7 @@ class PerformerDetailsPage extends ConsumerWidget {
     final mediaHeaders = ref.watch(mediaHeadersProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Performer Details'),
-      ),
+      appBar: AppBar(title: const Text('Performer Details')),
       floatingActionButton: FloatingActionButton.small(
         onPressed: () => _openRandomPerformer(context, ref),
         tooltip: 'Random performer',
@@ -112,7 +116,9 @@ class PerformerDetailsPage extends ConsumerWidget {
                         Text(
                           performer.disambiguation!,
                           style: context.textTheme.titleMedium?.copyWith(
-                            color: context.colors.onSurface.withValues(alpha: 0.6),
+                            color: context.colors.onSurface.withValues(
+                              alpha: 0.6,
+                            ),
                           ),
                         ),
                       if (performer.aliasList.isNotEmpty) ...[
@@ -120,7 +126,9 @@ class PerformerDetailsPage extends ConsumerWidget {
                         Text(
                           'Aliases: ${performer.aliasList.join(', ')}',
                           style: context.textTheme.bodyMedium?.copyWith(
-                            color: context.colors.onSurface.withValues(alpha: 0.8),
+                            color: context.colors.onSurface.withValues(
+                              alpha: 0.8,
+                            ),
                           ),
                         ),
                       ],
@@ -129,32 +137,50 @@ class PerformerDetailsPage extends ConsumerWidget {
                         spacing: AppTheme.spacingSmall,
                         runSpacing: AppTheme.spacingSmall,
                         children: [
-                          if (performer.gender != null) _buildChip(context, performer.gender!),
-                          if (age != null) _buildChip(context, '$age years old'),
-                          if (performer.birthdate != null) _buildChip(context, performer.birthdate!),
-                          if (performer.country != null) _buildChip(context, performer.country!),
-                          if (performer.ethnicity != null) _buildChip(context, performer.ethnicity!),
-                          if (performer.heightCm != null) _buildChip(context, '${performer.heightCm} cm'),
-                          if (performer.eyeColor != null) _buildChip(context, performer.eyeColor!),
-                          if (performer.hairColor != null) _buildChip(context, performer.hairColor!),
+                          if (performer.gender != null)
+                            _buildChip(context, performer.gender!),
+                          if (age != null)
+                            _buildChip(context, '$age years old'),
+                          if (performer.birthdate != null)
+                            _buildChip(context, performer.birthdate!),
+                          if (performer.country != null)
+                            _buildChip(context, performer.country!),
+                          if (performer.ethnicity != null)
+                            _buildChip(context, performer.ethnicity!),
+                          if (performer.heightCm != null)
+                            _buildChip(context, '${performer.heightCm} cm'),
+                          if (performer.eyeColor != null)
+                            _buildChip(context, performer.eyeColor!),
+                          if (performer.hairColor != null)
+                            _buildChip(context, performer.hairColor!),
                         ],
                       ),
                       if (performer.tagNames.isNotEmpty) ...[
                         const Divider(height: 32, color: Colors.grey),
-                        const SectionHeader(title: 'Tags', padding: EdgeInsets.zero),
+                        const SectionHeader(
+                          title: 'Tags',
+                          padding: EdgeInsets.zero,
+                        ),
                         const SizedBox(height: AppTheme.spacingSmall),
                         Wrap(
                           spacing: AppTheme.spacingSmall,
                           runSpacing: AppTheme.spacingSmall,
-                          children: List.generate(performer.tagNames.length, (index) {
+                          children: List.generate(performer.tagNames.length, (
+                            index,
+                          ) {
                             return ActionChip(
-                              label: Text(performer.tagNames[index], style: context.textTheme.bodySmall),
+                              label: Text(
+                                performer.tagNames[index],
+                                style: context.textTheme.bodySmall,
+                              ),
                               backgroundColor: context.colors.surfaceVariant,
                               side: BorderSide.none,
                               visualDensity: VisualDensity.compact,
                               onPressed: () {
                                 if (index < performer.tagIds.length) {
-                                  context.push('/tag/${performer.tagIds[index]}');
+                                  context.push(
+                                    '/tag/${performer.tagIds[index]}',
+                                  );
                                 }
                               },
                             );
@@ -163,24 +189,35 @@ class PerformerDetailsPage extends ConsumerWidget {
                       ],
                       if (performer.urls.isNotEmpty) ...[
                         const Divider(height: 32, color: Colors.grey),
-                        const SectionHeader(title: 'Links', padding: EdgeInsets.zero),
+                        const SectionHeader(
+                          title: 'Links',
+                          padding: EdgeInsets.zero,
+                        ),
                         const SizedBox(height: AppTheme.spacingSmall),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: performer.urls.map((url) {
                             return Padding(
-                              padding: const EdgeInsets.only(bottom: AppTheme.spacingSmall),
+                              padding: const EdgeInsets.only(
+                                bottom: AppTheme.spacingSmall,
+                              ),
                               child: Row(
                                 children: [
-                                  Icon(Icons.link, size: 16, color: context.colors.primary),
+                                  Icon(
+                                    Icons.link,
+                                    size: 16,
+                                    color: context.colors.primary,
+                                  ),
                                   const SizedBox(width: AppTheme.spacingSmall),
                                   Expanded(
                                     child: Text(
                                       url,
-                                      style: context.textTheme.bodyMedium?.copyWith(
-                                        color: context.colors.primary,
-                                        decoration: TextDecoration.underline,
-                                      ),
+                                      style: context.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            color: context.colors.primary,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -194,20 +231,25 @@ class PerformerDetailsPage extends ConsumerWidget {
                       const Divider(height: 32, color: Colors.grey),
                       SectionHeader(
                         title: 'Media',
-                        onViewAll: () => context.push('/performer/${performer.id}/media'),
+                        onViewAll: () =>
+                            context.push('/performer/${performer.id}/media'),
                       ),
                       mediaAsync.when(
                         data: (mediaItems) {
-                          final shuffledItems = [...mediaItems]..shuffle(Random());
+                          final shuffledItems = [...mediaItems]
+                            ..shuffle(Random());
                           return MediaStrip(
                             items: shuffledItems
-                              .map((item) => MediaStripItem(
+                                .map(
+                                  (item) => MediaStripItem(
                                     id: item.sceneId,
                                     title: item.title,
                                     thumbnailUrl: item.thumbnailUrl,
-                                    onTap: () => context.push('/scene/${item.sceneId}'),
-                                  ))
-                              .toList(),
+                                    onTap: () =>
+                                        context.push('/scene/${item.sceneId}'),
+                                  ),
+                                )
+                                .toList(),
                             headers: mediaHeaders,
                           );
                         },
@@ -217,7 +259,11 @@ class PerformerDetailsPage extends ConsumerWidget {
                         ),
                         error: (err, stack) => Text(
                           'Failed to load media: $err',
-                          style: TextStyle(color: context.colors.onSurface.withValues(alpha: 0.7)),
+                          style: TextStyle(
+                            color: context.colors.onSurface.withValues(
+                              alpha: 0.7,
+                            ),
+                          ),
                         ),
                       ),
                       const Divider(height: 32, color: Colors.grey),
@@ -225,7 +271,9 @@ class PerformerDetailsPage extends ConsumerWidget {
                       Text(
                         performer.details ?? 'No details available.',
                         style: context.textTheme.bodyMedium?.copyWith(
-                          color: context.colors.onSurface.withValues(alpha: 0.8),
+                          color: context.colors.onSurface.withValues(
+                            alpha: 0.8,
+                          ),
                         ),
                       ),
                     ],

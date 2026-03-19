@@ -7,6 +7,7 @@ import 'playback_queue_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../widgets/scrub_chewie_controls.dart';
 
 part 'video_player_provider.g.dart';
 
@@ -119,6 +120,17 @@ class PlayerState extends _$PlayerState {
     prefs.setBool(_showVideoDebugInfoKey, value);
   }
 
+  double? _sceneAspectRatio(Scene scene) {
+    if (scene.files.isEmpty) return null;
+    final file = scene.files.first;
+    final width = file.width;
+    final height = file.height;
+    if (width == null || height == null || width <= 0 || height <= 0) {
+      return null;
+    }
+    return width / height;
+  }
+
   Future<void> playScene(
     Scene scene,
     String streamUrl, {
@@ -171,12 +183,20 @@ class PlayerState extends _$PlayerState {
       await videoController.initialize();
       stopwatch.stop();
 
+      final initializedAspectRatio = videoController.value.aspectRatio;
+      final metadataAspectRatio = _sceneAspectRatio(scene);
+      final resolvedAspectRatio =
+          (initializedAspectRatio.isFinite && initializedAspectRatio > 0)
+          ? initializedAspectRatio
+          : (metadataAspectRatio ?? (16 / 9));
+
       final chewieController = ChewieController(
         videoPlayerController: videoController,
         autoPlay: true,
         looping: false,
-        aspectRatio: videoController.value.aspectRatio,
+        aspectRatio: resolvedAspectRatio,
         allowFullScreen: true,
+        customControls: const ScrubChewieControls(),
         placeholder: Container(color: Colors.black),
       );
 

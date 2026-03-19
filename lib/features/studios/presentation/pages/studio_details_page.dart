@@ -27,7 +27,9 @@ class StudioDetailsPage extends ConsumerWidget {
 
     if (randomStudio == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No studios available for random navigation')),
+        const SnackBar(
+          content: Text('No studios available for random navigation'),
+        ),
       );
       return;
     }
@@ -42,9 +44,7 @@ class StudioDetailsPage extends ConsumerWidget {
     final mediaHeaders = ref.watch(mediaHeadersProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Studio Details'),
-      ),
+      appBar: AppBar(title: const Text('Studio Details')),
       floatingActionButton: FloatingActionButton.small(
         onPressed: () => _openRandomStudio(context, ref),
         tooltip: 'Random studio',
@@ -124,19 +124,20 @@ class StudioDetailsPage extends ConsumerWidget {
                     ),
                     mediaAsync.when(
                       data: (mediaItems) {
-                        final shuffledItems = [...mediaItems]..shuffle(Random());
+                        final shuffledItems = [...mediaItems]
+                          ..shuffle(Random());
                         return MediaStrip(
                           items: shuffledItems
-                            .map(
-                              (item) => MediaStripItem(
-                                id: item.sceneId,
-                                title: item.title,
-                                thumbnailUrl: item.thumbnailUrl,
-                                onTap: () =>
-                                    context.push('/scene/${item.sceneId}'),
-                              ),
-                            )
-                            .toList(),
+                              .map(
+                                (item) => MediaStripItem(
+                                  id: item.sceneId,
+                                  title: item.title,
+                                  thumbnailUrl: item.thumbnailUrl,
+                                  onTap: () =>
+                                      context.push('/scene/${item.sceneId}'),
+                                ),
+                              )
+                              .toList(),
                           headers: mediaHeaders,
                         );
                       },
