@@ -155,4 +155,23 @@ class GraphQLStudioRepository implements StudioRepository {
       favorite: s.favorite,
     );
   }
+
+  @override
+  Future<void> setStudioFavorite(String id, bool favorite) async {
+    final result = await client.mutate(
+      MutationOptions(
+        document: gql(r'''
+          mutation UpdateStudioFavorite($id: ID!, $favorite: Boolean!) {
+            studioUpdate(input: { id: $id, favorite: $favorite }) {
+              id
+              favorite
+            }
+          }
+        '''),
+        variables: <String, dynamic>{'id': id, 'favorite': favorite},
+      ),
+    );
+
+    if (result.hasException) throw result.exception!;
+  }
 }

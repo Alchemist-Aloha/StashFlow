@@ -23,6 +23,7 @@ class FakeSceneRepository implements SceneRepository {
     String? sort,
     bool descending = true,
     bool? organized,
+    bool? performerFavorite,
     String? performerId,
     String? studioId,
     String? tagId,
@@ -40,6 +41,15 @@ class FakeSceneRepository implements SceneRepository {
   Future<Scene> getSceneById(String id) async {
     return _scenes.firstWhere((scene) => scene.id == id);
   }
+
+  @override
+  Future<void> updateSceneRating(String id, int rating100) async {}
+
+  @override
+  Future<void> incrementSceneOCounter(String id) async {}
+
+  @override
+  Future<void> incrementScenePlayCount(String id) async {}
 }
 
 void main() {

@@ -6,7 +6,6 @@ import '../../domain/entities/scene_filter.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/playback_queue_provider.dart';
 import '../widgets/scene_card.dart';
-import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
@@ -35,7 +34,6 @@ class ScenesPage extends ConsumerStatefulWidget {
 }
 
 class _ScenesPageState extends ConsumerState<ScenesPage> {
-  static const _sceneGridLayoutKey = 'scene_grid_layout';
   _SceneSortField _sortField = _SceneSortField.date;
   bool _sortDescending = true;
   String? _lastRandomSceneId;
@@ -253,12 +251,16 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                           _sortDescending = tempDescending;
                         });
                         _applyServerSort();
-                        await ref.read(sceneSortProvider.notifier).saveAsDefault();
+                        await ref
+                            .read(sceneSortProvider.notifier)
+                            .saveAsDefault();
                         if (context.mounted) {
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Sort preferences saved as default'),
+                              content: Text(
+                                'Sort preferences saved as default',
+                              ),
                             ),
                           );
                         }
@@ -283,8 +285,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    final isGridView = prefs.getBool(_sceneGridLayoutKey) ?? false;
+    final isGridView = ref.watch(sceneGridLayoutProvider);
     final scenesAsync = ref.watch(sceneListProvider);
     final filterState = ref.watch(sceneFilterStateProvider);
     final organizedOnly = ref.watch(sceneOrganizedOnlyProvider);

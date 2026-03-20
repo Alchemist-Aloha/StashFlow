@@ -9,6 +9,7 @@ abstract class SceneRepository {
     String? sort,
     bool descending = true,
     bool? organized,
+    bool? performerFavorite,
     String? performerId,
     String? studioId,
     String? tagId,
@@ -16,4 +17,6 @@ abstract class SceneRepository {
   });
   Future<Scene> getSceneById(String id);
   Future<void> updateSceneRating(String id, int rating100);
+  Future<void> incrementSceneOCounter(String id);
+  Future<void> incrementScenePlayCount(String id);
 }

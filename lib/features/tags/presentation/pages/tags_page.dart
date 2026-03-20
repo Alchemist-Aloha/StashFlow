@@ -8,14 +8,7 @@ import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../domain/entities/tag.dart';
 
-enum _TagSortOption {
-  name,
-  sceneCount,
-  parentCount,
-  lastUpdated,
-  createdAt,
-  random,
-}
+enum _TagSortOption { name, sceneCount, lastUpdated, createdAt, random }
 
 class TagsPage extends ConsumerStatefulWidget {
   const TagsPage({super.key});
@@ -38,7 +31,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
         _sortOption = switch (sortConfig.sort) {
           'name' => _TagSortOption.name,
           'scenes_count' => _TagSortOption.sceneCount,
-          'parent_count' => _TagSortOption.parentCount,
+          'parent_count' => _TagSortOption.name,
           'updated_at' => _TagSortOption.lastUpdated,
           'created_at' => _TagSortOption.createdAt,
           'random' => _TagSortOption.random,
@@ -58,7 +51,6 @@ class _TagsPageState extends ConsumerState<TagsPage> {
     final sortKey = switch (option) {
       _TagSortOption.name => 'name',
       _TagSortOption.sceneCount => 'scenes_count',
-      _TagSortOption.parentCount => 'parent_count',
       _TagSortOption.lastUpdated => 'updated_at',
       _TagSortOption.createdAt => 'created_at',
       _TagSortOption.random => 'random',
@@ -75,8 +67,6 @@ class _TagsPageState extends ConsumerState<TagsPage> {
         return 'Name';
       case _TagSortOption.sceneCount:
         return 'Scene Count';
-      case _TagSortOption.parentCount:
-        return 'Parent Count';
       case _TagSortOption.lastUpdated:
         return 'Updated At';
       case _TagSortOption.createdAt:
@@ -316,8 +306,9 @@ class _TagsPageState extends ConsumerState<TagsPage> {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content:
-                                Text('Filter preferences saved as default'),
+                            content: Text(
+                              'Filter preferences saved as default',
+                            ),
                           ),
                         );
                       }
