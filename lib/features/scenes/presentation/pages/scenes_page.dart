@@ -248,7 +248,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                         });
                         _applyServerSort();
                         await ref.read(sceneSortProvider.notifier).saveAsDefault();
-                        if (mounted) {
+                        if (context.mounted) {
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(

@@ -116,6 +116,19 @@ class StudioDetailsPage extends ConsumerWidget {
                           ),
                       ],
                     ),
+                    if (studio.details != null &&
+                        studio.details!.trim().isNotEmpty) ...[
+                      const Divider(height: 32, color: Colors.grey),
+                      const SectionHeader(title: 'Details'),
+                      Text(
+                        studio.details!,
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          color: context.colors.onSurface.withValues(
+                            alpha: 0.8,
+                          ),
+                        ),
+                      ),
+                    ],
                     const Divider(height: 32, color: Colors.grey),
                     SectionHeader(
                       title: 'Media',
@@ -154,19 +167,6 @@ class StudioDetailsPage extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    if (studio.details != null &&
-                        studio.details!.isNotEmpty) ...[
-                      const Divider(height: 32, color: Colors.grey),
-                      const SectionHeader(title: 'Details'),
-                      Text(
-                        studio.details!,
-                        style: context.textTheme.bodyMedium?.copyWith(
-                          color: context.colors.onSurface.withValues(
-                            alpha: 0.8,
-                          ),
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),

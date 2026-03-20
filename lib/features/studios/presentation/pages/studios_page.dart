@@ -185,7 +185,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                       });
                       _applyServerSort(_sortOption);
                       await ref.read(studioSortProvider.notifier).saveAsDefault();
-                      if (mounted) {
+                      if (context.mounted) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -292,7 +292,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                       await ref
                           .read(studioFavoritesOnlyProvider.notifier)
                           .saveAsDefault();
-                      if (mounted) {
+                      if (context.mounted) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(

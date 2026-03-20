@@ -78,6 +78,19 @@ class TagDetailsPage extends ConsumerWidget {
                         _buildChip(context, '${tag.galleryCount} galleries'),
                       ],
                     ),
+                    if (tag.description != null &&
+                        tag.description!.trim().isNotEmpty) ...[
+                      const Divider(height: 32, color: Colors.grey),
+                      const SectionHeader(title: 'Description'),
+                      Text(
+                        tag.description!,
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          color: context.colors.onSurface.withValues(
+                            alpha: 0.8,
+                          ),
+                        ),
+                      ),
+                    ],
                     const Divider(height: 32, color: Colors.grey),
                     SectionHeader(
                       title: 'Media',
@@ -115,19 +128,6 @@ class TagDetailsPage extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    if (tag.description != null &&
-                        tag.description!.trim().isNotEmpty) ...[
-                      const Divider(height: 32, color: Colors.grey),
-                      const SectionHeader(title: 'Description'),
-                      Text(
-                        tag.description!,
-                        style: context.textTheme.bodyMedium?.copyWith(
-                          color: context.colors.onSurface.withValues(
-                            alpha: 0.8,
-                          ),
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),
