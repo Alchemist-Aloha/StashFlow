@@ -8,6 +8,8 @@ abstract class PerformerRepository {
     String? sort,
     bool descending = true,
     bool favoritesOnly = false,
+    List<String>? genders,
   });
   Future<Performer> getPerformerById(String id);
+  Future<void> setPerformerFavorite(String id, bool favorite);
 }

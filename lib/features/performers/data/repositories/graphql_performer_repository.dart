@@ -21,6 +21,7 @@ class GraphQLPerformerRepository implements PerformerRepository {
     String? sort,
     bool descending = true,
     bool favoritesOnly = false,
+    List<String>? genders,
   }) async {
     QueryResult<Query$FindPerformers>? result;
     String? effectiveSort = sort == 'scene_count' ? 'scenes_count' : sort;
@@ -32,6 +33,7 @@ class GraphQLPerformerRepository implements PerformerRepository {
       sort: effectiveSort,
       descending: descending,
       favoritesOnly: favoritesOnly,
+      genders: genders,
     );
 
     // Some servers may still use scene_count; retry if scenes_count is rejected.
@@ -46,6 +48,7 @@ class GraphQLPerformerRepository implements PerformerRepository {
         sort: effectiveSort,
         descending: descending,
         favoritesOnly: favoritesOnly,
+        genders: genders,
       );
     }
 
@@ -63,6 +66,7 @@ class GraphQLPerformerRepository implements PerformerRepository {
         sort: null,
         descending: descending,
         favoritesOnly: favoritesOnly,
+        genders: genders,
       );
     }
 
@@ -128,8 +132,26 @@ class GraphQLPerformerRepository implements PerformerRepository {
     String? filter,
     String? sort,
     required bool descending,
-    required bool favoritesOnly,
+    bool favoritesOnly = false,
+    List<String>? genders,
   }) {
+    final genderEnums = (genders ?? const <String>[])
+        .map(fromJson$Enum$GenderEnum)
+        .toList();
+
+    final performerFilter =
+      (favoritesOnly || genderEnums.isNotEmpty)
+        ? Input$PerformerFilterType(
+        filter_favorites: favoritesOnly ? true : null,
+            gender: genderEnums.isEmpty
+                ? null
+                : Input$GenderCriterionInput(
+                    value_list: genderEnums,
+                    modifier: Enum$CriterionModifier.INCLUDES,
+                  ),
+          )
+        : null;
+
     return client.query$FindPerformers(
       Options$Query$FindPerformers(
         fetchPolicy: sort == 'random'
@@ -145,9 +167,7 @@ class GraphQLPerformerRepository implements PerformerRepository {
                 ? Enum$SortDirectionEnum.DESC
                 : Enum$SortDirectionEnum.ASC,
           ),
-          performer_filter: favoritesOnly
-              ? Input$PerformerFilterType(filter_favorites: true)
-              : null,
+          performer_filter: performerFilter,
         ),
       ),
     );
@@ -210,5 +230,27 @@ class GraphQLPerformerRepository implements PerformerRepository {
       tagIds: p.tags.map((t) => t.id).toList(),
       tagNames: p.tags.map((t) => t.name).toList(),
     );
+  }
+
+  @override
+  Future<void> setPerformerFavorite(String id, bool favorite) async {
+    final result = await client.mutate(
+      MutationOptions(
+        document: gql(r'''
+          mutation UpdatePerformerFavorite($id: ID!, $favorite: Boolean!) {
+            performerUpdate(input: { id: $id, favorite: $favorite }) {
+              id
+              favorite
+            }
+          }
+        '''),
+        variables: <String, dynamic>{
+          'id': id,
+          'favorite': favorite,
+        },
+      ),
+    );
+
+    if (result.hasException) throw result.exception!;
   }
 }

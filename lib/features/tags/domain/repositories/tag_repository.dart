@@ -10,4 +10,5 @@ abstract class TagRepository {
     bool favoritesOnly = false,
   });
   Future<Tag> getTagById(String id);
+  Future<void> setTagFavorite(String id, bool favorite);
 }

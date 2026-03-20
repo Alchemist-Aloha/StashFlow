@@ -24,18 +24,29 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppTheme.spacingMedium),
-      decoration: BoxDecoration(
-        color: context.colors.surface,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(AppTheme.radiusExtraLarge),
-        ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final safeBottom = MediaQuery.paddingOf(context).bottom;
+
+    return SafeArea(
+      top: false,
+      child: FractionallySizedBox(
+        heightFactor: 0.9,
+        child: Container(
+          padding: const EdgeInsets.all(AppTheme.spacingMedium),
+          decoration: BoxDecoration(
+            color: context.colors.surface,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(AppTheme.radiusExtraLarge),
+            ),
+          ),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.only(
+              bottom:
+                  bottomInset + safeBottom + AppTheme.spacingLarge,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -58,19 +69,32 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
           ),
           const SizedBox(height: AppTheme.spacingMedium),
           Text('Minimum Rating', style: context.textTheme.labelLarge),
-          Slider(
-            value: (_tempFilter.minRating ?? 0).toDouble(),
-            min: 0,
-            max: 100,
-            divisions: 5,
-            label: '${(_tempFilter.minRating ?? 0) ~/ 20} Stars',
-            onChanged: (value) {
-              setState(
-                () => _tempFilter = _tempFilter.copyWith(
-                  minRating: value.toInt(),
+          const SizedBox(height: AppTheme.spacingSmall),
+          Wrap(
+            spacing: 4,
+            runSpacing: 4,
+            children: [
+              ChoiceChip(
+                label: const Text('Any'),
+                selected: _tempFilter.minRating == null,
+                onSelected: (_) {
+                  setState(
+                    () => _tempFilter = _tempFilter.copyWith(minRating: null),
+                  );
+                },
+              ),
+              for (var stars = 1; stars <= 5; stars++)
+                ChoiceChip(
+                  label: Text('$stars'),
+                  selected: _tempFilter.minRating == stars * 20,
+                  onSelected: (_) {
+                    setState(
+                      () => _tempFilter =
+                          _tempFilter.copyWith(minRating: stars * 20),
+                    );
+                  },
                 ),
-              );
-            },
+            ],
           ),
           const SizedBox(height: AppTheme.spacingSmall),
           Text('Watched Status', style: context.textTheme.labelLarge),
@@ -121,24 +145,24 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
           const SizedBox(height: AppTheme.spacingSmall),
           Text('Orientation', style: context.textTheme.labelLarge),
           const SizedBox(height: AppTheme.spacingSmall),
-          Row(
+          Wrap(
+            spacing: AppTheme.spacingSmall,
+            runSpacing: AppTheme.spacingSmall,
             children: [
               _buildOrientationChip('LANDSCAPE', 'Landscape'),
-              const SizedBox(width: AppTheme.spacingSmall),
               _buildOrientationChip('PORTRAIT', 'Portrait'),
-              const SizedBox(width: AppTheme.spacingSmall),
               _buildOrientationChip('SQUARE', 'Square'),
             ],
           ),
           const SizedBox(height: AppTheme.spacingSmall),
           Text('Duration', style: context.textTheme.labelLarge),
           const SizedBox(height: AppTheme.spacingSmall),
-          Row(
+          Wrap(
+            spacing: AppTheme.spacingSmall,
+            runSpacing: AppTheme.spacingSmall,
             children: [
               _buildDurationChip(null, 300, '< 5m'),
-              const SizedBox(width: AppTheme.spacingSmall),
               _buildDurationChip(300, 1200, '5-20m'),
-              const SizedBox(width: AppTheme.spacingSmall),
               _buildDurationChip(1200, null, '> 20m'),
             ],
           ),
@@ -204,7 +228,10 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
             ),
           ),
           const SizedBox(height: AppTheme.spacingMedium),
-        ],
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

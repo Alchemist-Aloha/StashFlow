@@ -65,7 +65,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
       _PerformerSortOption.sceneCount => 'scenes_count',
       _PerformerSortOption.playCount => 'play_count',
       _PerformerSortOption.oCounter => 'o_counter',
-      _PerformerSortOption.rating => 'rating100',
+      _PerformerSortOption.rating => 'rating',
       _PerformerSortOption.lastUpdated => 'updated_at',
       _PerformerSortOption.createdAt => 'created_at',
       _PerformerSortOption.random => 'random',
@@ -263,8 +263,9 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
   }
 
   void _showFilterPanel() {
-    final currentFavoritesOnly = ref.read(performerFavoritesOnlyProvider);
-    var tempFavoritesOnly = currentFavoritesOnly;
+    final currentFilter = ref.read(performerFilterProvider);
+    bool tempFavoritesOnly = currentFilter.favoritesOnly;
+    final tempGenders = <String>[...currentFilter.genders];
 
     showModalBottomSheet(
       context: context,
@@ -297,6 +298,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                       onPressed: () {
                         setModalState(() {
                           tempFavoritesOnly = false;
+                          tempGenders.clear();
                         });
                       },
                       child: const Text('Reset'),
@@ -313,13 +315,52 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                   },
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),
+                Text('Gender', style: context.textTheme.labelLarge),
+                const SizedBox(height: AppTheme.spacingSmall),
+                Wrap(
+                  spacing: AppTheme.spacingSmall,
+                  runSpacing: AppTheme.spacingSmall,
+                  children: [
+                    ChoiceChip(
+                      label: const Text('Any'),
+                      selected: tempGenders.isEmpty,
+                      onSelected: (_) => setModalState(() => tempGenders.clear()),
+                    ),
+                    for (final option in const [
+                      ('FEMALE', 'Female'),
+                      ('MALE', 'Male'),
+                      ('TRANSGENDER_FEMALE', 'Trans Female'),
+                      ('TRANSGENDER_MALE', 'Trans Male'),
+                      ('NON_BINARY', 'Non-binary'),
+                      ('INTERSEX', 'Intersex'),
+                    ])
+                      ChoiceChip(
+                        label: Text(option.$2),
+                        selected: tempGenders.contains(option.$1),
+                        onSelected: (selected) => setModalState(() {
+                          if (selected) {
+                            if (!tempGenders.contains(option.$1)) {
+                              tempGenders.add(option.$1);
+                            }
+                          } else {
+                            tempGenders.remove(option.$1);
+                          }
+                        }),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: AppTheme.spacingMedium),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
                       ref
-                          .read(performerListProvider.notifier)
-                          .setFavoritesOnly(tempFavoritesOnly);
+                          .read(performerFilterProvider.notifier)
+                          .set(
+                            favoritesOnly: tempFavoritesOnly,
+                            genders: tempGenders,
+                          );
+                      ref.invalidate(performerListProvider);
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
@@ -330,6 +371,40 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                       ),
                     ),
                     child: const Text('Apply Filters'),
+                  ),
+                ),
+                const SizedBox(height: AppTheme.spacingSmall),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () async {
+                      ref
+                          .read(performerFilterProvider.notifier)
+                          .set(
+                            favoritesOnly: tempFavoritesOnly,
+                            genders: tempGenders,
+                          );
+                      await ref
+                          .read(performerFilterProvider.notifier)
+                          .saveAsDefault();
+                      ref.invalidate(performerListProvider);
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Filter preferences saved as default',
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppTheme.spacingMedium,
+                      ),
+                    ),
+                    child: const Text('Save as Default'),
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),
@@ -344,7 +419,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
   @override
   Widget build(BuildContext context) {
     final performersAsync = ref.watch(performerListProvider);
-    final favoritesOnly = ref.watch(performerFavoritesOnlyProvider);
+    final filterState = ref.watch(performerFilterProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final hasSortOverride =
         _sortOption != _PerformerSortOption.name || _sortDescending;
@@ -387,7 +462,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
               tooltip: 'Filter options',
               onPressed: _showFilterPanel,
             ),
-            if (favoritesOnly)
+            if (filterState.hasActiveFilters)
               Positioned(
                 right: 8,
                 top: 8,

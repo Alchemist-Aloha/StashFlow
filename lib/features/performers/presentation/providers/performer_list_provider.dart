@@ -10,6 +10,20 @@ import '../../../../core/utils/pagination.dart';
 
 part 'performer_list_provider.g.dart';
 
+class PerformerFilterState {
+  final bool favoritesOnly;
+  final List<String> genders;
+
+  const PerformerFilterState({
+    this.favoritesOnly = false,
+    this.genders = const <String>[],
+  });
+
+  static const empty = PerformerFilterState();
+
+  bool get hasActiveFilters => favoritesOnly || genders.isNotEmpty;
+}
+
 // Provider for Repository interface
 final performerRepositoryProvider = Provider<PerformerRepository>((ref) {
   final client = ref.watch(graphqlClientProvider);
@@ -48,6 +62,50 @@ class PerformerSearchQuery extends _$PerformerSearchQuery {
   void update(String query) => state = query;
 }
 
+final performerFilterProvider =
+    NotifierProvider<PerformerFilterNotifier, PerformerFilterState>(
+      PerformerFilterNotifier.new,
+    );
+
+class PerformerFilterNotifier extends Notifier<PerformerFilterState> {
+  static const _favoritesKey = 'performer_filter_favorites_only';
+  static const _genderKey = 'performer_filter_gender';
+
+  @override
+  PerformerFilterState build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    final savedGenders = prefs.getStringList(_genderKey);
+    final legacyGender = prefs.getString(_genderKey);
+    return PerformerFilterState(
+      favoritesOnly: prefs.getBool(_favoritesKey) ?? false,
+      genders: savedGenders ??
+          (legacyGender == null ? const <String>[] : <String>[legacyGender]),
+    );
+  }
+
+  void set({bool favoritesOnly = false, List<String> genders = const []}) {
+    state = PerformerFilterState(
+      favoritesOnly: favoritesOnly,
+      genders: List<String>.unmodifiable(genders),
+    );
+  }
+
+  void clear() {
+    state = PerformerFilterState.empty;
+  }
+
+  Future<void> saveAsDefault() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setBool(_favoritesKey, state.favoritesOnly);
+
+    if (state.genders.isEmpty) {
+      await prefs.remove(_genderKey);
+    } else {
+      await prefs.setStringList(_genderKey, state.genders);
+    }
+  }
+}
+
 final performerFavoritesOnlyProvider =
     NotifierProvider<PerformerFavoritesOnlyNotifier, bool>(
       PerformerFavoritesOnlyNotifier.new,
@@ -83,7 +141,7 @@ class PerformerList extends _$PerformerList {
     _isLoadingMore = false;
     final query = ref.watch(performerSearchQueryProvider);
     final sortConfig = ref.watch(performerSortProvider);
-    final favoritesOnly = ref.watch(performerFavoritesOnlyProvider);
+    final filterState = ref.watch(performerFilterProvider);
     final repository = ref.read(performerRepositoryProvider);
     return repository.findPerformers(
       page: _currentPage,
@@ -91,7 +149,8 @@ class PerformerList extends _$PerformerList {
       filter: query.isEmpty ? null : query,
       sort: sortConfig.sort,
       descending: sortConfig.descending,
-      favoritesOnly: favoritesOnly,
+      favoritesOnly: filterState.favoritesOnly,
+      genders: filterState.genders,
     );
   }
 
@@ -120,7 +179,7 @@ class PerformerList extends _$PerformerList {
     final repository = ref.read(performerRepositoryProvider);
     final query = ref.read(performerSearchQueryProvider);
     final sortConfig = ref.read(performerSortProvider);
-    final favoritesOnly = ref.read(performerFavoritesOnlyProvider);
+    final filterState = ref.read(performerFilterProvider);
 
     try {
       final nextPage = _currentPage + 1;
@@ -130,7 +189,8 @@ class PerformerList extends _$PerformerList {
         filter: query.isEmpty ? null : query,
         sort: sortConfig.sort,
         descending: sortConfig.descending,
-        favoritesOnly: favoritesOnly,
+        favoritesOnly: filterState.favoritesOnly,
+        genders: filterState.genders,
       );
 
       if (nextPerformers.isEmpty) {
@@ -157,9 +217,9 @@ class PerformerList extends _$PerformerList {
     final query = useCurrentFilter
         ? ref.read(performerSearchQueryProvider)
         : '';
-    final favoritesOnly = useCurrentFilter
-        ? ref.read(performerFavoritesOnlyProvider)
-        : false;
+    final filterState = useCurrentFilter
+      ? ref.read(performerFilterProvider)
+      : PerformerFilterState.empty;
 
     final attempts = excludePerformerId == null ? 1 : 3;
     for (var i = 0; i < attempts; i++) {
@@ -169,7 +229,8 @@ class PerformerList extends _$PerformerList {
         filter: query.isEmpty ? null : query,
         sort: 'random',
         descending: true,
-        favoritesOnly: favoritesOnly,
+        favoritesOnly: filterState.favoritesOnly,
+        genders: filterState.genders,
       );
       if (randomPage.isEmpty) continue;
       final candidate = randomPage.first;

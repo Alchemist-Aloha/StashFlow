@@ -1,5 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/data/graphql/graphql_client.dart';
+import '../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../scenes/presentation/pages/scenes_page.dart';
 import '../../scenes/presentation/pages/scene_details_page.dart';
 import '../../performers/presentation/pages/performers_page.dart';
@@ -21,6 +23,24 @@ part 'router.g.dart';
 GoRouter router(Ref ref) {
   return GoRouter(
     initialLocation: '/scenes',
+    redirect: (context, state) {
+      final prefs = ref.read(sharedPreferencesProvider);
+      final serverUrl =
+          normalizeGraphqlServerUrl(
+            prefs.getString('server_base_url')?.trim() ?? '',
+          );
+      final apiKey = prefs.getString('server_api_key')?.trim() ?? '';
+
+      final isConfigured = serverUrl.isNotEmpty && apiKey.isNotEmpty;
+      final isSettingsPath =
+          state.uri.path == '/settings' || state.uri.path.startsWith('/settings/');
+
+      if (!isConfigured && !isSettingsPath) {
+        return '/settings';
+      }
+
+      return null;
+    },
     routes: [
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {

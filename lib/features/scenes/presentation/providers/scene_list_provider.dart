@@ -22,6 +22,28 @@ final sceneOrganizedOnlyProvider = NotifierProvider<SceneOrganizedOnly, bool>(
   SceneOrganizedOnly.new,
 );
 
+final sceneGridLayoutProvider = NotifierProvider<SceneGridLayout, bool>(
+  SceneGridLayout.new,
+);
+
+class SceneGridLayout extends Notifier<bool> {
+  static const _storageKey = 'scene_grid_layout';
+
+  @override
+  bool build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getBool(_storageKey) ?? false;
+  }
+
+  Future<void> set(bool value) async {
+    if (state == value) return;
+    state = value;
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setBool(_storageKey, value);
+    ref.invalidate(sceneListProvider);
+  }
+}
+
 class SceneOrganizedOnly extends Notifier<bool> {
   static const _storageKey = 'scene_organized_only';
 

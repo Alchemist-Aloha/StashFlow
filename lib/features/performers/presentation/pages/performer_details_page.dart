@@ -109,12 +109,53 @@ class PerformerDetailsPage extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        performer.name,
-                        style: context.textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: context.colors.onSurface,
-                        ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              performer.name,
+                              style: context.textTheme.headlineMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: context.colors.onSurface,
+                                  ),
+                            ),
+                          ),
+                          IconButton.filledTonal(
+                            icon: Icon(
+                              performer.favorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                            ),
+                            tooltip: performer.favorite
+                                ? 'Remove favorite'
+                                : 'Add favorite',
+                            onPressed: () async {
+                              try {
+                                await ref
+                                    .read(performerRepositoryProvider)
+                                    .setPerformerFavorite(
+                                      performer.id,
+                                      !performer.favorite,
+                                    );
+                                ref.invalidate(
+                                  performerDetailsProvider(performer.id),
+                                );
+                                ref.invalidate(performerListProvider);
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Failed to update favorite: $e',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                          ),
+                        ],
                       ),
                       if (performer.disambiguation != null)
                         Text(

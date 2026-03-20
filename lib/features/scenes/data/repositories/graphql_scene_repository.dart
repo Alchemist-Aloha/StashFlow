@@ -22,6 +22,7 @@ class GraphQLSceneRepository implements SceneRepository {
     String? sort,
     bool descending = true,
     bool? organized,
+    bool? performerFavorite,
     String? performerId,
     String? studioId,
     String? tagId,
@@ -35,6 +36,7 @@ class GraphQLSceneRepository implements SceneRepository {
       sort: effectiveSort,
       descending: descending,
       organized: organized,
+      performerFavorite: performerFavorite,
       performerId: performerId,
       studioId: studioId,
       tagId: tagId,
@@ -52,6 +54,7 @@ class GraphQLSceneRepository implements SceneRepository {
         sort: effectiveSort,
         descending: descending,
         organized: organized,
+        performerFavorite: performerFavorite,
         performerId: performerId,
         studioId: studioId,
         tagId: tagId,
@@ -133,6 +136,7 @@ class GraphQLSceneRepository implements SceneRepository {
     String? sort,
     required bool descending,
     bool? organized,
+    bool? performerFavorite,
     String? performerId,
     String? studioId,
     String? tagId,
@@ -140,9 +144,7 @@ class GraphQLSceneRepository implements SceneRepository {
   }) {
     return client.query$FindScenes(
       Options$Query$FindScenes(
-        fetchPolicy: sort == 'random'
-            ? FetchPolicy.noCache
-            : FetchPolicy.cacheFirst,
+        fetchPolicy: FetchPolicy.networkOnly,
         variables: Variables$Query$FindScenes(
           filter: Input$FindFilterType(
             q: filter ?? sceneFilter?.searchQuery,
@@ -155,6 +157,7 @@ class GraphQLSceneRepository implements SceneRepository {
           ),
           scene_filter: Input$SceneFilterType(
             organized: organized,
+            performer_favorite: performerFavorite,
             performers:
                 (performerId != null ||
                     (sceneFilter?.performerIds?.isNotEmpty ?? false))
@@ -257,7 +260,10 @@ class GraphQLSceneRepository implements SceneRepository {
   @override
   Future<Scene> getSceneById(String id) async {
     final result = await client.query$FindScene(
-      Options$Query$FindScene(variables: Variables$Query$FindScene(id: id)),
+      Options$Query$FindScene(
+        fetchPolicy: FetchPolicy.networkOnly,
+        variables: Variables$Query$FindScene(id: id),
+      ),
     );
 
     if (result.hasException) throw result.exception!;
@@ -333,6 +339,42 @@ class GraphQLSceneRepository implements SceneRepository {
           id: id,
           rating: rating100,
         ),
+      ),
+    );
+
+    if (result.hasException) throw result.exception!;
+  }
+
+  @override
+  Future<void> incrementSceneOCounter(String id) async {
+    final result = await client.mutate(
+      MutationOptions(
+        document: gql(r'''
+          mutation SceneAddO($id: ID!) {
+            sceneAddO(id: $id) {
+              count
+            }
+          }
+        '''),
+        variables: <String, dynamic>{'id': id},
+      ),
+    );
+
+    if (result.hasException) throw result.exception!;
+  }
+
+  @override
+  Future<void> incrementScenePlayCount(String id) async {
+    final result = await client.mutate(
+      MutationOptions(
+        document: gql(r'''
+          mutation SceneAddPlay($id: ID!) {
+            sceneAddPlay(id: $id) {
+              count
+            }
+          }
+        '''),
+        variables: <String, dynamic>{'id': id},
       ),
     );
 

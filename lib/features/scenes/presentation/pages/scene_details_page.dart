@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -35,6 +36,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   bool _detailsExpanded = false;
   bool _tagsExpanded = false;
   bool _performersExpanded = false;
+  Timer? _playCountTimer;
+  String? _scheduledPlayCountSceneId;
+  final Set<String> _countedPlayScenes = <String>{};
 
   Future<void> _openRandomScene(BuildContext context) async {
     final randomScene = await ref
@@ -64,6 +68,42 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       return '$hours:${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
     }
     return '${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
+  }
+
+  void _schedulePlayCountIncrement(String sceneId) {
+    if (_countedPlayScenes.contains(sceneId)) return;
+    if (_scheduledPlayCountSceneId == sceneId) return;
+
+    _playCountTimer?.cancel();
+    _scheduledPlayCountSceneId = sceneId;
+    _playCountTimer = Timer(const Duration(seconds: 5), () async {
+      if (!mounted) return;
+      if (widget.sceneId != sceneId) return;
+
+      try {
+        await ref.read(sceneRepositoryProvider).incrementScenePlayCount(sceneId);
+        _countedPlayScenes.add(sceneId);
+        _scheduledPlayCountSceneId = null;
+        ref.invalidate(sceneDetailsProvider(sceneId));
+        ref.invalidate(sceneListProvider);
+        AppLogStore.instance.add(
+          'SceneDetailsPage auto play-count increment scene=$sceneId after 5s',
+          source: 'SceneDetailsPage',
+        );
+      } catch (e) {
+        _scheduledPlayCountSceneId = null;
+        AppLogStore.instance.add(
+          'SceneDetailsPage failed auto play-count increment scene=$sceneId error=$e',
+          source: 'SceneDetailsPage',
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _playCountTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -121,6 +161,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           : null,
       body: sceneAsync.when(
         data: (scene) {
+          _schedulePlayCountIncrement(scene.id);
+
           final primaryFile = scene.files.isNotEmpty ? scene.files.first : null;
           final detailsText = (scene.details ?? '').trim();
           final hasDetails = detailsText.isNotEmpty;
@@ -263,14 +305,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      Row(
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          Text(
-                            'Rating: ',
-                            style: context.textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
                           for (var i = 1; i <= 5; i++)
                             GestureDetector(
                               onTap: () async {
@@ -308,17 +347,53 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                               ),
                             ),
                           if (scene.rating100 != null && scene.rating100! > 0)
-                            Padding(
-                              padding: const EdgeInsets.only(left: 8.0),
-                              child: Text(
-                                (scene.rating100! / 20).toStringAsFixed(1),
-                                style: context.textTheme.bodyMedium?.copyWith(
-                                  color: context.colors.onSurface.withValues(
-                                    alpha: 0.7,
-                                  ),
+                            Text(
+                              (scene.rating100! / 20).toStringAsFixed(1),
+                              style: context.textTheme.bodyMedium?.copyWith(
+                                color: context.colors.onSurface.withValues(
+                                  alpha: 0.7,
                                 ),
                               ),
                             ),
+                          FilledButton.tonalIcon(
+                            onPressed: () async {
+                              try {
+                                await ref
+                                    .read(sceneRepositoryProvider)
+                                    .incrementSceneOCounter(scene.id);
+                                ref.invalidate(sceneDetailsProvider(scene.id));
+                                ref.invalidate(sceneListProvider);
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('O count incremented'),
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Failed to increment O count: $e',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                            style: FilledButton.styleFrom(
+                              visualDensity: VisualDensity.compact,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              minimumSize: const Size(0, 32),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 6,
+                              ),
+                            ),
+                            icon: const Icon(Icons.water_drop_outlined),
+                            label: Text('${scene.oCounter}'),
+                          ),
                         ],
                       ),
                       const Divider(height: 32, color: Colors.grey),
@@ -504,17 +579,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                           ),
                         const Divider(height: 32, color: Colors.grey),
                       ],
-                      if (scene.studioId != null) ...[
-                        SectionHeader(
-                          title: 'More From Studio',
-                          onViewAll: canOpenStudio
-                              ? () => context.push(
-                                  '/studios/studio/${scene.studioId}/media',
-                                )
-                              : null,
-                          padding: EdgeInsets.zero,
-                        ),
-                        const SizedBox(height: AppTheme.spacingSmall),
+                      if (scene.studioId != null)
                         studioMediaAsync.when(
                           data: (mediaItems) {
                             final shuffled =
@@ -523,36 +588,44 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                                     .toList()
                                   ..shuffle(Random(scene.id.hashCode));
 
-                            return MediaStrip(
-                              items: shuffled
-                                  .map(
-                                    (item) => MediaStripItem(
-                                      id: item.sceneId,
-                                      title: item.title,
-                                      thumbnailUrl: item.thumbnailUrl,
-                                      onTap: () => context.push(
-                                        '/scenes/scene/${item.sceneId}',
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                              headers: mediaHeaders,
+                            if (shuffled.isEmpty) {
+                              return const SizedBox.shrink();
+                            }
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SectionHeader(
+                                  title: 'More From Studio',
+                                  onViewAll: canOpenStudio
+                                      ? () => context.push(
+                                          '/studios/studio/${scene.studioId}/media',
+                                        )
+                                      : null,
+                                  padding: EdgeInsets.zero,
+                                ),
+                                const SizedBox(height: AppTheme.spacingSmall),
+                                MediaStrip(
+                                  items: shuffled
+                                      .map(
+                                        (item) => MediaStripItem(
+                                          id: item.sceneId,
+                                          title: item.title,
+                                          thumbnailUrl: item.thumbnailUrl,
+                                          onTap: () => context.push(
+                                            '/scenes/scene/${item.sceneId}',
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                                  headers: mediaHeaders,
+                                ),
+                              ],
                             );
                           },
-                          loading: () => const SizedBox(
-                            height: 100,
-                            child: Center(child: CircularProgressIndicator()),
-                          ),
-                          error: (err, stack) => Text(
-                            'Failed to load studio media: $err',
-                            style: TextStyle(
-                              color: context.colors.onSurface.withValues(
-                                alpha: 0.7,
-                              ),
-                            ),
-                          ),
+                          loading: () => const SizedBox.shrink(),
+                          error: (err, stack) => const SizedBox.shrink(),
                         ),
-                      ],
                     ],
                   ),
                 ),

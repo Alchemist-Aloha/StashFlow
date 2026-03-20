@@ -10,4 +10,5 @@ abstract class StudioRepository {
     bool favoritesOnly = false,
   });
   Future<Studio> getStudioById(String id);
+  Future<void> setStudioFavorite(String id, bool favorite);
 }

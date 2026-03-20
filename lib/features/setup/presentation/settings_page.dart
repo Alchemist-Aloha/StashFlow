@@ -40,7 +40,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   final _baseUrlFocusNode = FocusNode();
   final _apiKeyFocusNode = FocusNode();
   static const _preferSceneStreamsKey = 'prefer_scene_streams';
-  static const _sceneGridLayoutKey = 'scene_grid_layout';
   static const _autoplayNextKey = 'autoplay_next';
   static const _showVideoDebugInfoKey = 'show_video_debug_info';
   static const _useDoubleTapSeekKey = 'video_use_double_tap_seek';
@@ -121,7 +120,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final url = prefs.getString('server_base_url') ?? '';
     final apiKey = prefs.getString('server_api_key') ?? '';
     final preferSceneStreams = prefs.getBool(_preferSceneStreamsKey) ?? true;
-    final sceneGridLayout = prefs.getBool(_sceneGridLayoutKey) ?? false;
+    final sceneGridLayout = ref.read(sceneGridLayoutProvider);
     final autoplayNext = prefs.getBool(_autoplayNextKey) ?? false;
     final showVideoDebugInfo = prefs.getBool(_showVideoDebugInfoKey) ?? false;
     final useDoubleTapSeek = prefs.getBool(_useDoubleTapSeekKey) ?? true;
@@ -233,7 +232,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Future<void> _saveToggleSettings() async {
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setBool(_preferSceneStreamsKey, _preferSceneStreams);
-    await prefs.setBool(_sceneGridLayoutKey, _sceneGridLayout);
+    await ref.read(sceneGridLayoutProvider.notifier).set(_sceneGridLayout);
     await prefs.setBool(_autoplayNextKey, _autoplayNext);
     await prefs.setBool(_showVideoDebugInfoKey, _showVideoDebugInfo);
     await prefs.setBool(_useDoubleTapSeekKey, _useDoubleTapSeek);

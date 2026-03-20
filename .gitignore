@@ -47,3 +47,5 @@ app.*.map.json
 
 .gemini/
 gha-creds-*.json
+android/key.properties
+android/upload-keystore.jks
