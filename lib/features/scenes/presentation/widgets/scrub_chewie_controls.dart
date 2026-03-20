@@ -118,8 +118,7 @@ class _ScrubChewieControlsState extends State<ScrubChewieControls>
     final controller = _boundVideoController;
     final ratio = controller?.value.aspectRatio;
     await PipMode.enterIfAvailable(
-      aspectRatio:
-          ratio != null && ratio.isFinite && ratio > 0 ? ratio : null,
+      aspectRatio: ratio != null && ratio.isFinite && ratio > 0 ? ratio : null,
     );
   }
 

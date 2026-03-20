@@ -461,8 +461,10 @@ class PlayerState extends _$PlayerState {
 
       final duration = controller.value.duration;
       if (duration > Duration.zero && activeSceneId != null) {
-        final completionThreshold = duration - const Duration(milliseconds: 200);
-        final atEnd = controller.value.position >=
+        final completionThreshold =
+            duration - const Duration(milliseconds: 200);
+        final atEnd =
+            controller.value.position >=
             (completionThreshold > Duration.zero
                 ? completionThreshold
                 : Duration.zero);
