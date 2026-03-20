@@ -1,16 +1,12 @@
-# StashAppFlutter Simplified MVP Todo
+# Todo: Navigation and Discovery Enhancements
 
-## Phase 1: Core Functionality (MVP)
-- [x] Task 1: Ensure Scene & Performer entities have necessary fields for display
-- [x] Task 2: Implement robust Scene List with pagination and refresh
-- [x] Task 3: Basic Scene Detail Page (Metadata display)
-- [x] Task 4: Functional Video Player in Detail Page
-- [x] Task 5: Persistent Mini-Player synchronization
-- [x] Task 6: Basic text search in AppBar
-- [x] Task 7: Connection status indicator in Settings
+- [x] Task 1: Navigation Customization State <!-- id: 1 -->
+- [x] Task 2: Conditionally Show Random Buttons in List Pages <!-- id: 2 -->
+- [x] Task 3: Conditionally Show Random Buttons in Details Pages <!-- id: 3 -->
+- [x] Task 4: Advanced Discovery - Performers <!-- id: 4 -->
+- [x] Task 5: Advanced Discovery - Studios and Tags <!-- id: 5 -->
 
-## Phase 2: Future Modules (Reserved)
-- [ ] Task 8: Images & Galleries integration
-- [ ] Task 9: Advanced Filtering System
-- [ ] Task 10: Metadata mutations (Rating, Favoriting)
-- [ ] Task 11: Rich Playback (Markers, Resolution picker)
+# Todo: Playback and Rating Enhancements
+
+- [ ] Task 6: Dynamic Playback Sequence <!-- id: 6 -->
+- [ ] Task 7: Scene Rating UI and API <!-- id: 7 -->

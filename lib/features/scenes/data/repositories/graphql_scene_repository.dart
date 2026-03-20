@@ -324,4 +324,18 @@ class GraphQLSceneRepository implements SceneRepository {
       tagNames: s.tags.map((t) => t.name).toList(),
     );
   }
+
+  @override
+  Future<void> updateSceneRating(String id, int rating100) async {
+    final result = await client.mutate$UpdateSceneRating(
+      Options$Mutation$UpdateSceneRating(
+        variables: Variables$Mutation$UpdateSceneRating(
+          id: id,
+          rating: rating100,
+        ),
+      ),
+    );
+
+    if (result.hasException) throw result.exception!;
+  }
 }

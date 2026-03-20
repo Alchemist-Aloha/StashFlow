@@ -11,6 +11,7 @@ import '../providers/studio_details_provider.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/media_strip.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../providers/studio_list_provider.dart';
 
@@ -42,14 +43,17 @@ class StudioDetailsPage extends ConsumerWidget {
     final studioAsync = ref.watch(studioDetailsProvider(studioId));
     final mediaAsync = ref.watch(studioMediaProvider(studioId));
     final mediaHeaders = ref.watch(mediaHeadersProvider);
+    final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Studio Details')),
-      floatingActionButton: FloatingActionButton.small(
-        onPressed: () => _openRandomStudio(context, ref),
-        tooltip: 'Random studio',
-        child: const Icon(Icons.casino_outlined),
-      ),
+      floatingActionButton: randomNavigationEnabled
+          ? FloatingActionButton.small(
+              onPressed: () => _openRandomStudio(context, ref),
+              tooltip: 'Random studio',
+              child: const Icon(Icons.casino_outlined),
+            )
+          : null,
       body: studioAsync.when(
         data: (studio) => SingleChildScrollView(
           child: Column(
@@ -133,12 +137,12 @@ class StudioDetailsPage extends ConsumerWidget {
                     SectionHeader(
                       title: 'Media',
                       onViewAll: () =>
-                          context.push('/studio/${studio.id}/media'),
+                          context.push('/studios/studio/${studio.id}/media'),
                     ),
                     mediaAsync.when(
                       data: (mediaItems) {
                         final shuffledItems = [...mediaItems]
-                          ..shuffle(Random());
+                          ..shuffle(Random(studio.id.hashCode));
                         return MediaStrip(
                           items: shuffledItems
                               .map(
@@ -147,7 +151,7 @@ class StudioDetailsPage extends ConsumerWidget {
                                   title: item.title,
                                   thumbnailUrl: item.thumbnailUrl,
                                   onTap: () =>
-                                      context.push('/scene/${item.sceneId}'),
+                                      context.push('/scenes/scene/${item.sceneId}'),
                                 ),
                               )
                               .toList(),

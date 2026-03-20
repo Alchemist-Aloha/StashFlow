@@ -13,7 +13,7 @@ part of 'playback_queue_provider.dart';
 final playbackQueueProvider = PlaybackQueueProvider._();
 
 final class PlaybackQueueProvider
-    extends $NotifierProvider<PlaybackQueue, List<Scene>> {
+    extends $NotifierProvider<PlaybackQueue, PlaybackQueueState> {
   PlaybackQueueProvider._()
     : super(
         from: null,
@@ -33,27 +33,27 @@ final class PlaybackQueueProvider
   PlaybackQueue create() => PlaybackQueue();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(List<Scene> value) {
+  Override overrideWithValue(PlaybackQueueState value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<List<Scene>>(value),
+      providerOverride: $SyncValueProvider<PlaybackQueueState>(value),
     );
   }
 }
 
-String _$playbackQueueHash() => r'6dc2610e550b280f4cc99f01c4586d06d14d51d1';
+String _$playbackQueueHash() => r'292b41ff70dce49d5d245b9a41f871ca8fae7873';
 
-abstract class _$PlaybackQueue extends $Notifier<List<Scene>> {
-  List<Scene> build();
+abstract class _$PlaybackQueue extends $Notifier<PlaybackQueueState> {
+  PlaybackQueueState build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<List<Scene>, List<Scene>>;
+    final ref = this.ref as $Ref<PlaybackQueueState, PlaybackQueueState>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<List<Scene>, List<Scene>>,
-              List<Scene>,
+              AnyNotifier<PlaybackQueueState, PlaybackQueueState>,
+              PlaybackQueueState,
               Object?,
               Object?
             >;

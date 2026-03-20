@@ -6,6 +6,7 @@ part 'scene_details_provider.g.dart';
 
 @riverpod
 FutureOr<Scene> sceneDetails(Ref ref, String id) async {
-  final repository = ref.watch(sceneRepositoryProvider);
+  ref.keepAlive();
+  final repository = ref.read(sceneRepositoryProvider);
   return repository.getSceneById(id);
 }

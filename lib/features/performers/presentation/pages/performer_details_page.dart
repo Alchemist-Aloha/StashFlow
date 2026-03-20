@@ -10,6 +10,7 @@ import '../providers/performer_details_provider.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/media_strip.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../providers/performer_list_provider.dart';
 
@@ -59,14 +60,17 @@ class PerformerDetailsPage extends ConsumerWidget {
     final performerAsync = ref.watch(performerDetailsProvider(performerId));
     final mediaAsync = ref.watch(performerMediaProvider(performerId));
     final mediaHeaders = ref.watch(mediaHeadersProvider);
+    final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Performer Details')),
-      floatingActionButton: FloatingActionButton.small(
-        onPressed: () => _openRandomPerformer(context, ref),
-        tooltip: 'Random performer',
-        child: const Icon(Icons.casino_outlined),
-      ),
+      floatingActionButton: randomNavigationEnabled
+          ? FloatingActionButton.small(
+              onPressed: () => _openRandomPerformer(context, ref),
+              tooltip: 'Random performer',
+              child: const Icon(Icons.casino_outlined),
+            )
+          : null,
       body: performerAsync.when(
         data: (performer) {
           final age = _calculateAge(performer.birthdate);
@@ -245,12 +249,12 @@ class PerformerDetailsPage extends ConsumerWidget {
                       SectionHeader(
                         title: 'Media',
                         onViewAll: () =>
-                            context.push('/performer/${performer.id}/media'),
+                            context.push('/performers/performer/${performer.id}/media'),
                       ),
                       mediaAsync.when(
                         data: (mediaItems) {
                           final shuffledItems = [...mediaItems]
-                            ..shuffle(Random());
+                            ..shuffle(Random(performer.id.hashCode));
                           return MediaStrip(
                             items: shuffledItems
                                 .map(
@@ -259,7 +263,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                                     title: item.title,
                                     thumbnailUrl: item.thumbnailUrl,
                                     onTap: () =>
-                                        context.push('/scene/${item.sceneId}'),
+                                        context.push('/scenes/scene/${item.sceneId}'),
                                   ),
                                 )
                                 .toList(),

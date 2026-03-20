@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
 import '../../../../core/presentation/widgets/media_strip.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
@@ -14,6 +15,8 @@ import '../../../studios/presentation/providers/studio_media_provider.dart';
 import '../providers/playback_queue_provider.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
+import '../providers/video_player_provider.dart';
+import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../widgets/scene_video_player.dart';
 
 class SceneDetailsPage extends ConsumerStatefulWidget {
@@ -65,7 +68,25 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(playerStateProvider, (previous, next) {
+      final nextScene = next.activeScene;
+      final prevSceneId = previous?.activeScene?.id;
+      
+      if (nextScene != null && 
+          nextScene.id != widget.sceneId && 
+          prevSceneId == widget.sceneId) {
+        
+        AppLogStore.instance.add(
+          'SceneDetailsPage triggering navigation scene=${widget.sceneId} -> next=${nextScene.id}',
+          source: 'SceneDetailsPage',
+        );
+        
+        context.pushReplacement('/scenes/scene/${nextScene.id}');
+      }
+    });
+
     final sceneAsync = ref.watch(sceneDetailsProvider(widget.sceneId));
+    final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -89,14 +110,16 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           ),
         ],
       ),
-      floatingActionButton: sceneAsync.maybeWhen(
-        data: (_) => FloatingActionButton.small(
-          onPressed: () => _openRandomScene(context),
-          tooltip: 'Random scene',
-          child: const Icon(Icons.casino_outlined),
-        ),
-        orElse: () => null,
-      ),
+      floatingActionButton: randomNavigationEnabled
+          ? sceneAsync.maybeWhen(
+              data: (_) => FloatingActionButton.small(
+                onPressed: () => _openRandomScene(context),
+                tooltip: 'Random scene',
+                child: const Icon(Icons.casino_outlined),
+              ),
+              orElse: () => null,
+            )
+          : null,
       body: sceneAsync.when(
         data: (scene) {
           final primaryFile = scene.files.isNotEmpty ? scene.files.first : null;
@@ -161,7 +184,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                             GestureDetector(
                               onTap: canOpenStudio
                                   ? () => context.push(
-                                      '/studio/${scene.studioId}',
+                                      '/studios/studio/${scene.studioId}',
                                     )
                                   : null,
                               child: Text(
@@ -238,6 +261,53 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                             '${scene.playCount} plays',
                             icon: Icons.play_arrow,
                           ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Text(
+                            'Rating: ',
+                            style: context.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          for (var i = 1; i <= 5; i++)
+                            GestureDetector(
+                              onTap: () async {
+                                final currentRating = scene.rating100 ?? 0;
+                                final newRating = (currentRating == i * 20) ? 0 : i * 20;
+                                
+                                try {
+                                  await ref.read(sceneRepositoryProvider).updateSceneRating(scene.id, newRating);
+                                  ref.invalidate(sceneDetailsProvider(scene.id));
+                                  ref.invalidate(sceneListProvider);
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Failed to update rating: $e')),
+                                    );
+                                  }
+                                }
+                              },
+                              child: Icon(
+                                (scene.rating100 ?? 0) >= i * 20
+                                    ? Icons.star
+                                    : Icons.star_border,
+                                color: context.colors.ratingColor,
+                                size: 28,
+                              ),
+                            ),
+                          if (scene.rating100 != null && scene.rating100! > 0)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                (scene.rating100! / 20).toStringAsFixed(1),
+                                style: context.textTheme.bodyMedium?.copyWith(
+                                  color: context.colors.onSurface.withValues(alpha: 0.7),
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                       const Divider(height: 32, color: Colors.grey),
@@ -332,7 +402,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                                       onPressed: () {
                                         if (index < scene.tagIds.length) {
                                           context.push(
-                                            '/tag/${scene.tagIds[index]}',
+                                            '/tags/tag/${scene.tagIds[index]}',
                                           );
                                         }
                                       },
@@ -399,7 +469,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                                 if (performerIndex <
                                     scene.performerIds.length) {
                                   context.push(
-                                    '/performer/${scene.performerIds[performerIndex]}',
+                                    '/performers/performer/${scene.performerIds[performerIndex]}',
                                   );
                                 }
                               },
@@ -428,7 +498,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                           title: 'More From Studio',
                           onViewAll: canOpenStudio
                               ? () => context.push(
-                                  '/studio/${scene.studioId}/media',
+                                  '/studios/studio/${scene.studioId}/media',
                                 )
                               : null,
                           padding: EdgeInsets.zero,
@@ -450,7 +520,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                                       title: item.title,
                                       thumbnailUrl: item.thumbnailUrl,
                                       onTap: () => context.push(
-                                        '/scene/${item.sceneId}',
+                                        '/scenes/scene/${item.sceneId}',
                                       ),
                                     ),
                                   )

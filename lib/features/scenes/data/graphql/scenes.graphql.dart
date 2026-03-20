@@ -4743,3 +4743,557 @@ class _CopyWithStubImpl$Query$SceneStreams$findScene$sceneStreams<TRes>
   call({String? url, String? mime_type, String? label, String? $__typename}) =>
       _res;
 }
+
+class Variables$Mutation$UpdateSceneRating {
+  factory Variables$Mutation$UpdateSceneRating({
+    required String id,
+    required int rating,
+  }) => Variables$Mutation$UpdateSceneRating._({r'id': id, r'rating': rating});
+
+  Variables$Mutation$UpdateSceneRating._(this._$data);
+
+  factory Variables$Mutation$UpdateSceneRating.fromJson(
+    Map<String, dynamic> data,
+  ) {
+    final result$data = <String, dynamic>{};
+    final l$id = data['id'];
+    result$data['id'] = (l$id as String);
+    final l$rating = data['rating'];
+    result$data['rating'] = (l$rating as int);
+    return Variables$Mutation$UpdateSceneRating._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get id => (_$data['id'] as String);
+
+  int get rating => (_$data['rating'] as int);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$id = id;
+    result$data['id'] = l$id;
+    final l$rating = rating;
+    result$data['rating'] = l$rating;
+    return result$data;
+  }
+
+  CopyWith$Variables$Mutation$UpdateSceneRating<
+    Variables$Mutation$UpdateSceneRating
+  >
+  get copyWith => CopyWith$Variables$Mutation$UpdateSceneRating(this, (i) => i);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Mutation$UpdateSceneRating ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$rating = rating;
+    final lOther$rating = other.rating;
+    if (l$rating != lOther$rating) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$rating = rating;
+    return Object.hashAll([l$id, l$rating]);
+  }
+}
+
+abstract class CopyWith$Variables$Mutation$UpdateSceneRating<TRes> {
+  factory CopyWith$Variables$Mutation$UpdateSceneRating(
+    Variables$Mutation$UpdateSceneRating instance,
+    TRes Function(Variables$Mutation$UpdateSceneRating) then,
+  ) = _CopyWithImpl$Variables$Mutation$UpdateSceneRating;
+
+  factory CopyWith$Variables$Mutation$UpdateSceneRating.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Mutation$UpdateSceneRating;
+
+  TRes call({String? id, int? rating});
+}
+
+class _CopyWithImpl$Variables$Mutation$UpdateSceneRating<TRes>
+    implements CopyWith$Variables$Mutation$UpdateSceneRating<TRes> {
+  _CopyWithImpl$Variables$Mutation$UpdateSceneRating(
+    this._instance,
+    this._then,
+  );
+
+  final Variables$Mutation$UpdateSceneRating _instance;
+
+  final TRes Function(Variables$Mutation$UpdateSceneRating) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? id = _undefined, Object? rating = _undefined}) => _then(
+    Variables$Mutation$UpdateSceneRating._({
+      ..._instance._$data,
+      if (id != _undefined && id != null) 'id': (id as String),
+      if (rating != _undefined && rating != null) 'rating': (rating as int),
+    }),
+  );
+}
+
+class _CopyWithStubImpl$Variables$Mutation$UpdateSceneRating<TRes>
+    implements CopyWith$Variables$Mutation$UpdateSceneRating<TRes> {
+  _CopyWithStubImpl$Variables$Mutation$UpdateSceneRating(this._res);
+
+  TRes _res;
+
+  call({String? id, int? rating}) => _res;
+}
+
+class Mutation$UpdateSceneRating {
+  Mutation$UpdateSceneRating({this.sceneUpdate, this.$__typename = 'Mutation'});
+
+  factory Mutation$UpdateSceneRating.fromJson(Map<String, dynamic> json) {
+    final l$sceneUpdate = json['sceneUpdate'];
+    final l$$__typename = json['__typename'];
+    return Mutation$UpdateSceneRating(
+      sceneUpdate: l$sceneUpdate == null
+          ? null
+          : Mutation$UpdateSceneRating$sceneUpdate.fromJson(
+              (l$sceneUpdate as Map<String, dynamic>),
+            ),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Mutation$UpdateSceneRating$sceneUpdate? sceneUpdate;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$sceneUpdate = sceneUpdate;
+    _resultData['sceneUpdate'] = l$sceneUpdate?.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$sceneUpdate = sceneUpdate;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$sceneUpdate, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$UpdateSceneRating ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$sceneUpdate = sceneUpdate;
+    final lOther$sceneUpdate = other.sceneUpdate;
+    if (l$sceneUpdate != lOther$sceneUpdate) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$UpdateSceneRating
+    on Mutation$UpdateSceneRating {
+  CopyWith$Mutation$UpdateSceneRating<Mutation$UpdateSceneRating>
+  get copyWith => CopyWith$Mutation$UpdateSceneRating(this, (i) => i);
+}
+
+abstract class CopyWith$Mutation$UpdateSceneRating<TRes> {
+  factory CopyWith$Mutation$UpdateSceneRating(
+    Mutation$UpdateSceneRating instance,
+    TRes Function(Mutation$UpdateSceneRating) then,
+  ) = _CopyWithImpl$Mutation$UpdateSceneRating;
+
+  factory CopyWith$Mutation$UpdateSceneRating.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$UpdateSceneRating;
+
+  TRes call({
+    Mutation$UpdateSceneRating$sceneUpdate? sceneUpdate,
+    String? $__typename,
+  });
+  CopyWith$Mutation$UpdateSceneRating$sceneUpdate<TRes> get sceneUpdate;
+}
+
+class _CopyWithImpl$Mutation$UpdateSceneRating<TRes>
+    implements CopyWith$Mutation$UpdateSceneRating<TRes> {
+  _CopyWithImpl$Mutation$UpdateSceneRating(this._instance, this._then);
+
+  final Mutation$UpdateSceneRating _instance;
+
+  final TRes Function(Mutation$UpdateSceneRating) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? sceneUpdate = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Mutation$UpdateSceneRating(
+      sceneUpdate: sceneUpdate == _undefined
+          ? _instance.sceneUpdate
+          : (sceneUpdate as Mutation$UpdateSceneRating$sceneUpdate?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+
+  CopyWith$Mutation$UpdateSceneRating$sceneUpdate<TRes> get sceneUpdate {
+    final local$sceneUpdate = _instance.sceneUpdate;
+    return local$sceneUpdate == null
+        ? CopyWith$Mutation$UpdateSceneRating$sceneUpdate.stub(_then(_instance))
+        : CopyWith$Mutation$UpdateSceneRating$sceneUpdate(
+            local$sceneUpdate,
+            (e) => call(sceneUpdate: e),
+          );
+  }
+}
+
+class _CopyWithStubImpl$Mutation$UpdateSceneRating<TRes>
+    implements CopyWith$Mutation$UpdateSceneRating<TRes> {
+  _CopyWithStubImpl$Mutation$UpdateSceneRating(this._res);
+
+  TRes _res;
+
+  call({
+    Mutation$UpdateSceneRating$sceneUpdate? sceneUpdate,
+    String? $__typename,
+  }) => _res;
+
+  CopyWith$Mutation$UpdateSceneRating$sceneUpdate<TRes> get sceneUpdate =>
+      CopyWith$Mutation$UpdateSceneRating$sceneUpdate.stub(_res);
+}
+
+const documentNodeMutationUpdateSceneRating = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.mutation,
+      name: NameNode(value: 'UpdateSceneRating'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'id')),
+          type: NamedTypeNode(name: NameNode(value: 'ID'), isNonNull: true),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'rating')),
+          type: NamedTypeNode(name: NameNode(value: 'Int'), isNonNull: true),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'sceneUpdate'),
+            alias: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'input'),
+                value: ObjectValueNode(
+                  fields: [
+                    ObjectFieldNode(
+                      name: NameNode(value: 'id'),
+                      value: VariableNode(name: NameNode(value: 'id')),
+                    ),
+                    ObjectFieldNode(
+                      name: NameNode(value: 'rating100'),
+                      value: VariableNode(name: NameNode(value: 'rating')),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            directives: [],
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: 'id'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'rating100'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ],
+      ),
+    ),
+  ],
+);
+Mutation$UpdateSceneRating _parserFn$Mutation$UpdateSceneRating(
+  Map<String, dynamic> data,
+) => Mutation$UpdateSceneRating.fromJson(data);
+typedef OnMutationCompleted$Mutation$UpdateSceneRating =
+    FutureOr<void> Function(Map<String, dynamic>?, Mutation$UpdateSceneRating?);
+
+class Options$Mutation$UpdateSceneRating
+    extends graphql.MutationOptions<Mutation$UpdateSceneRating> {
+  Options$Mutation$UpdateSceneRating({
+    String? operationName,
+    required Variables$Mutation$UpdateSceneRating variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$UpdateSceneRating? typedOptimisticResult,
+    graphql.Context? context,
+    OnMutationCompleted$Mutation$UpdateSceneRating? onCompleted,
+    graphql.OnMutationUpdate<Mutation$UpdateSceneRating>? update,
+    graphql.OnError? onError,
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Mutation$UpdateSceneRating(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationUpdateSceneRating,
+         parserFn: _parserFn$Mutation$UpdateSceneRating,
+       );
+
+  final OnMutationCompleted$Mutation$UpdateSceneRating? onCompletedWithParsed;
+
+  @override
+  List<Object?> get properties => [
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
+}
+
+class WatchOptions$Mutation$UpdateSceneRating
+    extends graphql.WatchQueryOptions<Mutation$UpdateSceneRating> {
+  WatchOptions$Mutation$UpdateSceneRating({
+    String? operationName,
+    required Variables$Mutation$UpdateSceneRating variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$UpdateSceneRating? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeMutationUpdateSceneRating,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Mutation$UpdateSceneRating,
+       );
+}
+
+extension ClientExtension$Mutation$UpdateSceneRating on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Mutation$UpdateSceneRating>>
+  mutate$UpdateSceneRating(Options$Mutation$UpdateSceneRating options) async =>
+      await this.mutate(options);
+
+  graphql.ObservableQuery<Mutation$UpdateSceneRating>
+  watchMutation$UpdateSceneRating(
+    WatchOptions$Mutation$UpdateSceneRating options,
+  ) => this.watchMutation(options);
+}
+
+class Mutation$UpdateSceneRating$sceneUpdate {
+  Mutation$UpdateSceneRating$sceneUpdate({
+    required this.id,
+    this.rating100,
+    this.$__typename = 'Scene',
+  });
+
+  factory Mutation$UpdateSceneRating$sceneUpdate.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$id = json['id'];
+    final l$rating100 = json['rating100'];
+    final l$$__typename = json['__typename'];
+    return Mutation$UpdateSceneRating$sceneUpdate(
+      id: (l$id as String),
+      rating100: (l$rating100 as int?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final int? rating100;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$rating100 = rating100;
+    _resultData['rating100'] = l$rating100;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$rating100 = rating100;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$id, l$rating100, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$UpdateSceneRating$sceneUpdate ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$rating100 = rating100;
+    final lOther$rating100 = other.rating100;
+    if (l$rating100 != lOther$rating100) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$UpdateSceneRating$sceneUpdate
+    on Mutation$UpdateSceneRating$sceneUpdate {
+  CopyWith$Mutation$UpdateSceneRating$sceneUpdate<
+    Mutation$UpdateSceneRating$sceneUpdate
+  >
+  get copyWith =>
+      CopyWith$Mutation$UpdateSceneRating$sceneUpdate(this, (i) => i);
+}
+
+abstract class CopyWith$Mutation$UpdateSceneRating$sceneUpdate<TRes> {
+  factory CopyWith$Mutation$UpdateSceneRating$sceneUpdate(
+    Mutation$UpdateSceneRating$sceneUpdate instance,
+    TRes Function(Mutation$UpdateSceneRating$sceneUpdate) then,
+  ) = _CopyWithImpl$Mutation$UpdateSceneRating$sceneUpdate;
+
+  factory CopyWith$Mutation$UpdateSceneRating$sceneUpdate.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$UpdateSceneRating$sceneUpdate;
+
+  TRes call({String? id, int? rating100, String? $__typename});
+}
+
+class _CopyWithImpl$Mutation$UpdateSceneRating$sceneUpdate<TRes>
+    implements CopyWith$Mutation$UpdateSceneRating$sceneUpdate<TRes> {
+  _CopyWithImpl$Mutation$UpdateSceneRating$sceneUpdate(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$UpdateSceneRating$sceneUpdate _instance;
+
+  final TRes Function(Mutation$UpdateSceneRating$sceneUpdate) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? rating100 = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Mutation$UpdateSceneRating$sceneUpdate(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      rating100: rating100 == _undefined
+          ? _instance.rating100
+          : (rating100 as int?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Mutation$UpdateSceneRating$sceneUpdate<TRes>
+    implements CopyWith$Mutation$UpdateSceneRating$sceneUpdate<TRes> {
+  _CopyWithStubImpl$Mutation$UpdateSceneRating$sceneUpdate(this._res);
+
+  TRes _res;
+
+  call({String? id, int? rating100, String? $__typename}) => _res;
+}

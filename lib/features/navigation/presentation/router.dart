@@ -26,85 +26,107 @@ GoRouter router(Ref ref) {
   return GoRouter(
     initialLocation: '/scenes',
     routes: [
-      ShellRoute(
-        builder: (context, state, child) => ShellPage(child: child),
-        routes: [
-          GoRoute(
-            path: '/scenes',
-            builder: (context, state) => const ScenesPage(),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return ShellPage(navigationShell: navigationShell);
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/scenes',
+                builder: (context, state) => const ScenesPage(),
+                routes: [
+                  GoRoute(
+                    path: 'scene/:id',
+                    builder: (context, state) =>
+                        SceneDetailsPage(sceneId: state.pathParameters['id']!),
+                  ),
+                ],
+              ),
+            ],
           ),
-          GoRoute(
-            path: '/performers',
-            builder: (context, state) => const PerformersPage(),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/performers',
+                builder: (context, state) => const PerformersPage(),
+                routes: [
+                  GoRoute(
+                    path: 'performer/:id',
+                    builder: (context, state) => PerformerDetailsPage(
+                        performerId: state.pathParameters['id']!),
+                    routes: [
+                      GoRoute(
+                        path: 'media',
+                        builder: (context, state) => PerformerMediaGridPage(
+                          performerId: state.pathParameters['id']!,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
           ),
-          GoRoute(
-            path: '/settings',
-            builder: (context, state) => const SettingsPage(),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/studios',
+                builder: (context, state) => const StudiosPage(),
+                routes: [
+                  GoRoute(
+                    path: 'studio/:id',
+                    builder: (context, state) => StudioDetailsPage(
+                        studioId: state.pathParameters['id']!),
+                    routes: [
+                      GoRoute(
+                        path: 'media',
+                        builder: (context, state) => StudioMediaGridPage(
+                            studioId: state.pathParameters['id']!),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
           ),
-          GoRoute(
-            path: '/settings/logs',
-            builder: (context, state) => const DebugLogViewerPage(),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/tags',
+                builder: (context, state) => const TagsPage(),
+                routes: [
+                  GoRoute(
+                    path: 'tag/:id',
+                    builder: (context, state) =>
+                        TagDetailsPage(tagId: state.pathParameters['id']!),
+                    routes: [
+                      GoRoute(
+                        path: 'media',
+                        builder: (context, state) => TagMediaGridPage(
+                            tagId: state.pathParameters['id']!),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
           ),
-          GoRoute(
-            path: '/studios',
-            builder: (context, state) => const StudiosPage(),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/settings',
+                builder: (context, state) => const SettingsPage(),
+                routes: [
+                  GoRoute(
+                    path: 'logs',
+                    builder: (context, state) => const DebugLogViewerPage(),
+                  ),
+                ],
+              ),
+            ],
           ),
-          GoRoute(path: '/tags', builder: (context, state) => const TagsPage()),
-          GoRoute(
-            path: '/galleries',
-            builder: (context, state) => const GalleriesPage(),
-          ),
-          GoRoute(
-            path: '/groups',
-            builder: (context, state) => const GroupsPage(),
-          ),
-          GoRoute(
-            path: '/scene/:id',
-            builder: (context, state) =>
-                SceneDetailsPage(sceneId: state.pathParameters['id']!),
-          ),
-          GoRoute(
-            path: '/performer/:id',
-            builder: (context, state) =>
-                PerformerDetailsPage(performerId: state.pathParameters['id']!),
-          ),
-          GoRoute(
-            path: '/performer/:id/media',
-            builder: (context, state) => PerformerMediaGridPage(
-              performerId: state.pathParameters['id']!,
-            ),
-          ),
-          GoRoute(
-            path: '/studio/:id',
-            builder: (context, state) =>
-                StudioDetailsPage(studioId: state.pathParameters['id']!),
-          ),
-          GoRoute(
-            path: '/studio/:id/media',
-            builder: (context, state) =>
-                StudioMediaGridPage(studioId: state.pathParameters['id']!),
-          ),
-          GoRoute(
-            path: '/tag/:id',
-            builder: (context, state) =>
-                TagDetailsPage(tagId: state.pathParameters['id']!),
-          ),
-          GoRoute(
-            path: '/tag/:id/media',
-            builder: (context, state) =>
-                TagMediaGridPage(tagId: state.pathParameters['id']!),
-          ),
-          GoRoute(
-            path: '/gallery/:id',
-            builder: (context, state) =>
-                GalleryDetailsPage(galleryId: state.pathParameters['id']!),
-          ),
-          GoRoute(
-            path: '/group/:id',
-            builder: (context, state) =>
-                GroupDetailsPage(groupId: state.pathParameters['id']!),
-          ),
-          // Explore, Subscriptions, Library routes will be added later
         ],
       ),
     ],

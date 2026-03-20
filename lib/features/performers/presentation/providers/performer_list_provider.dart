@@ -77,13 +77,14 @@ class PerformerList extends _$PerformerList {
 
   @override
   FutureOr<List<Performer>> build() async {
+    ref.keepAlive();
     _currentPage = 1;
     _hasMore = true;
     _isLoadingMore = false;
     final query = ref.watch(performerSearchQueryProvider);
     final sortConfig = ref.watch(performerSortProvider);
     final favoritesOnly = ref.watch(performerFavoritesOnlyProvider);
-    final repository = ref.watch(performerRepositoryProvider);
+    final repository = ref.read(performerRepositoryProvider);
     return repository.findPerformers(
       page: _currentPage,
       perPage: _perPage,

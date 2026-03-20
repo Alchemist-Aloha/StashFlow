@@ -11,6 +11,7 @@ import '../providers/tag_details_provider.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/media_strip.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../providers/tag_list_provider.dart';
 
@@ -42,14 +43,17 @@ class TagDetailsPage extends ConsumerWidget {
     final tagAsync = ref.watch(tagDetailsProvider(tagId));
     final mediaAsync = ref.watch(tagMediaProvider(tagId));
     final mediaHeaders = ref.watch(mediaHeadersProvider);
+    final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Tag Details')),
-      floatingActionButton: FloatingActionButton.small(
-        onPressed: () => _openRandomTag(context, ref),
-        tooltip: 'Random tag',
-        child: const Icon(Icons.casino_outlined),
-      ),
+      floatingActionButton: randomNavigationEnabled
+          ? FloatingActionButton.small(
+              onPressed: () => _openRandomTag(context, ref),
+              tooltip: 'Random tag',
+              child: const Icon(Icons.casino_outlined),
+            )
+          : null,
       body: tagAsync.when(
         data: (tag) => SingleChildScrollView(
           child: Column(
@@ -94,12 +98,12 @@ class TagDetailsPage extends ConsumerWidget {
                     const Divider(height: 32, color: Colors.grey),
                     SectionHeader(
                       title: 'Media',
-                      onViewAll: () => context.push('/tag/${tag.id}/media'),
+                      onViewAll: () => context.push('/tags/tag/${tag.id}/media'),
                     ),
                     mediaAsync.when(
                       data: (mediaItems) {
                         final shuffledItems = [...mediaItems]
-                          ..shuffle(Random());
+                          ..shuffle(Random(tag.id.hashCode));
                         return MediaStrip(
                           items: shuffledItems
                               .map(
@@ -108,7 +112,7 @@ class TagDetailsPage extends ConsumerWidget {
                                   title: item.title,
                                   thumbnailUrl: item.thumbnailUrl,
                                   onTap: () =>
-                                      context.push('/scene/${item.sceneId}'),
+                                      context.push('/scenes/scene/${item.sceneId}'),
                                 ),
                               )
                               .toList(),

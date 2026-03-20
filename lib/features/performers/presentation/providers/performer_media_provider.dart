@@ -26,7 +26,8 @@ FutureOr<List<PerformerMediaItem>> performerMedia(
   Ref ref,
   String performerId,
 ) async {
-  final client = ref.watch(graphqlClientProvider);
+  ref.keepAlive();
+  final client = ref.read(graphqlClientProvider);
 
   final result = await client.query$FindScenes(
     Options$Query$FindScenes(
@@ -82,6 +83,7 @@ class PerformerMediaGrid extends _$PerformerMediaGrid {
 
   @override
   FutureOr<List<PerformerMediaItem>> build(String performerId) async {
+    ref.keepAlive();
     _performerId = performerId;
     _currentPage = 1;
     _hasMore = true;
@@ -92,7 +94,7 @@ class PerformerMediaGrid extends _$PerformerMediaGrid {
     String performerId,
     int page,
   ) async {
-    final client = ref.watch(graphqlClientProvider);
+    final client = ref.read(graphqlClientProvider);
 
     final result = await client.query$FindScenes(
       Options$Query$FindScenes(

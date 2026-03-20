@@ -2,12 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/tag_list_provider.dart';
+import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../domain/entities/tag.dart';
 
-enum _TagSortOption { name, sceneCount, imageCount }
+enum _TagSortOption {
+  name,
+  sceneCount,
+  imageCount,
+  performerCount,
+  markerCount,
+  parentCount,
+  childCount,
+  lastUpdated,
+  createdAt,
+  random,
+}
 
 class TagsPage extends ConsumerStatefulWidget {
   const TagsPage({super.key});
@@ -31,6 +43,13 @@ class _TagsPageState extends ConsumerState<TagsPage> {
           'name' => _TagSortOption.name,
           'scenes_count' => _TagSortOption.sceneCount,
           'image_count' => _TagSortOption.imageCount,
+          'performer_count' => _TagSortOption.performerCount,
+          'marker_count' => _TagSortOption.markerCount,
+          'parent_count' => _TagSortOption.parentCount,
+          'child_count' => _TagSortOption.childCount,
+          'updated_at' => _TagSortOption.lastUpdated,
+          'created_at' => _TagSortOption.createdAt,
+          'random' => _TagSortOption.random,
           _ => _TagSortOption.name,
         };
         _sortDescending = sortConfig.descending;
@@ -48,6 +67,13 @@ class _TagsPageState extends ConsumerState<TagsPage> {
       _TagSortOption.name => 'name',
       _TagSortOption.sceneCount => 'scenes_count',
       _TagSortOption.imageCount => 'image_count',
+      _TagSortOption.performerCount => 'performer_count',
+      _TagSortOption.markerCount => 'marker_count',
+      _TagSortOption.parentCount => 'parent_count',
+      _TagSortOption.childCount => 'child_count',
+      _TagSortOption.lastUpdated => 'updated_at',
+      _TagSortOption.createdAt => 'created_at',
+      _TagSortOption.random => 'random',
     };
 
     ref
@@ -63,6 +89,20 @@ class _TagsPageState extends ConsumerState<TagsPage> {
         return 'Scene Count';
       case _TagSortOption.imageCount:
         return 'Image Count';
+      case _TagSortOption.performerCount:
+        return 'Performer Count';
+      case _TagSortOption.markerCount:
+        return 'Marker Count';
+      case _TagSortOption.parentCount:
+        return 'Parent Count';
+      case _TagSortOption.childCount:
+        return 'Child Count';
+      case _TagSortOption.lastUpdated:
+        return 'Updated At';
+      case _TagSortOption.createdAt:
+        return 'Created At';
+      case _TagSortOption.random:
+        return 'Random';
     }
   }
 
@@ -342,6 +382,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
   Widget build(BuildContext context) {
     final tagsAsync = ref.watch(tagListProvider);
     final favoritesOnly = ref.watch(tagFavoritesOnlyProvider);
+    final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final hasSortOverride =
         _sortOption != _TagSortOption.name || _sortDescending;
 
@@ -416,14 +457,16 @@ class _TagsPageState extends ConsumerState<TagsPage> {
           ),
         ),
       ),
-      floatingActionButton: tagsAsync.maybeWhen(
-        data: (tags) => FloatingActionButton.small(
-          onPressed: _openRandomTag,
-          tooltip: 'Random tag',
-          child: const Icon(Icons.casino_outlined),
-        ),
-        orElse: () => null,
-      ),
+      floatingActionButton: randomNavigationEnabled
+          ? tagsAsync.maybeWhen(
+              data: (tags) => FloatingActionButton.small(
+                onPressed: _openRandomTag,
+                tooltip: 'Random tag',
+                child: const Icon(Icons.casino_outlined),
+              ),
+              orElse: () => null,
+            )
+          : null,
     );
   }
 }

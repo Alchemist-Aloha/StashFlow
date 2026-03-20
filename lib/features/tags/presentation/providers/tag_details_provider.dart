@@ -7,6 +7,7 @@ part 'tag_details_provider.g.dart';
 
 @riverpod
 FutureOr<Tag> tagDetails(Ref ref, String id) async {
-  final repository = ref.watch(tagRepositoryProvider);
+  ref.keepAlive();
+  final repository = ref.read(tagRepositoryProvider);
   return repository.getTagById(id);
 }

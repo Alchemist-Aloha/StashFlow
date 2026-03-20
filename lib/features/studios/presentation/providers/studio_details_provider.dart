@@ -7,6 +7,7 @@ part 'studio_details_provider.g.dart';
 
 @riverpod
 FutureOr<Studio> studioDetails(Ref ref, String id) async {
-  final repository = ref.watch(studioRepositoryProvider);
+  ref.keepAlive();
+  final repository = ref.read(studioRepositoryProvider);
   return repository.getStudioById(id);
 }

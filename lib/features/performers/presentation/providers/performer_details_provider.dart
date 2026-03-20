@@ -6,6 +6,7 @@ part 'performer_details_provider.g.dart';
 
 @riverpod
 FutureOr<Performer> performerDetails(Ref ref, String id) async {
-  final repository = ref.watch(performerRepositoryProvider);
+  ref.keepAlive();
+  final repository = ref.read(performerRepositoryProvider);
   return repository.getPerformerById(id);
 }

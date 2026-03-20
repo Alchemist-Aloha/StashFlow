@@ -107,6 +107,7 @@ class SceneList extends _$SceneList {
 
   @override
   FutureOr<List<Scene>> build() async {
+    ref.keepAlive();
     _currentPage = 1;
     _hasMore = true;
     _isLoadingMore = false;
@@ -114,7 +115,7 @@ class SceneList extends _$SceneList {
     final sortConfig = ref.watch(sceneSortProvider);
     final filter = ref.watch(sceneFilterStateProvider);
     final organizedOnly = ref.watch(sceneOrganizedOnlyProvider);
-    final repository = ref.watch(sceneRepositoryProvider);
+    final repository = ref.read(sceneRepositoryProvider);
 
     return repository.findScenes(
       page: _currentPage,

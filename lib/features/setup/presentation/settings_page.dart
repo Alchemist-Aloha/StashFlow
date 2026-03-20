@@ -25,6 +25,7 @@ import '../../tags/presentation/providers/tag_details_provider.dart';
 import '../../tags/presentation/providers/tag_list_provider.dart';
 import '../../tags/presentation/providers/tag_media_provider.dart';
 import 'providers/connection_provider.dart';
+import 'providers/navigation_customization_provider.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -53,6 +54,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   bool _useDoubleTapSeek = true;
   bool _enableBackgroundPlayback = false;
   bool _enableNativePip = false;
+  bool _showRandomNavigation = true;
   ThemeMode _themeMode = ThemeMode.system;
   bool _loading = true;
 
@@ -126,6 +128,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final enableBackgroundPlayback =
         prefs.getBool(_enableBackgroundPlaybackKey) ?? false;
     final enableNativePip = prefs.getBool(_enableNativePipKey) ?? false;
+    final showRandomNavigation = ref.read(randomNavigationEnabledProvider);
     final themeMode = ref.read(appThemeModeProvider);
     _baseUrlController.text = url;
     _apiKeyController.text = apiKey;
@@ -136,6 +139,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     _useDoubleTapSeek = useDoubleTapSeek;
     _enableBackgroundPlayback = enableBackgroundPlayback;
     _enableNativePip = enableNativePip;
+    _showRandomNavigation = showRandomNavigation;
     _themeMode = themeMode;
     setState(() => _loading = false);
   }
@@ -238,6 +242,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       _enableBackgroundPlayback,
     );
     await prefs.setBool(_enableNativePipKey, _enableNativePip);
+
+    ref.read(randomNavigationEnabledProvider.notifier).set(_showRandomNavigation);
 
     // Keep in-memory player state synchronized with persisted settings.
     final playerStateNotifier = ref.read(playerStateProvider.notifier);
@@ -407,6 +413,20 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         await _saveToggleSettings();
                       },
                     ),
+                  ),
+                  const SizedBox(height: AppTheme.spacingLarge),
+                  _buildSectionHeader('Navigation'),
+                  SwitchListTile.adaptive(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Show Random Navigation Buttons'),
+                    subtitle: const Text(
+                      'Enable/disable the floating casino buttons across list and details pages',
+                    ),
+                    value: _showRandomNavigation,
+                    onChanged: (value) async {
+                      setState(() => _showRandomNavigation = value);
+                      await _saveToggleSettings();
+                    },
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   _buildSectionHeader('Display'),

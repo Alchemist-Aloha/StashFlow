@@ -4,11 +4,23 @@ import 'package:go_router/go_router.dart';
 import '../../domain/entities/performer.dart';
 import '../providers/performer_list_provider.dart';
 import '../widgets/performer_card.dart';
+import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 
-enum _PerformerSortOption { name, sceneCount, lastUpdated, random }
+enum _PerformerSortOption {
+  name,
+  sceneCount,
+  imageCount,
+  galleryCount,
+  playCount,
+  oCounter,
+  rating,
+  lastUpdated,
+  createdAt,
+  random,
+}
 
 class PerformersPage extends ConsumerStatefulWidget {
   const PerformersPage({super.key});
@@ -31,7 +43,13 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
         _sortOption = switch (sortConfig.sort) {
           'name' => _PerformerSortOption.name,
           'scenes_count' => _PerformerSortOption.sceneCount,
+          'image_count' => _PerformerSortOption.imageCount,
+          'gallery_count' => _PerformerSortOption.galleryCount,
+          'play_count' => _PerformerSortOption.playCount,
+          'o_counter' => _PerformerSortOption.oCounter,
+          'rating100' => _PerformerSortOption.rating,
           'updated_at' => _PerformerSortOption.lastUpdated,
+          'created_at' => _PerformerSortOption.createdAt,
           'random' => _PerformerSortOption.random,
           _ => _PerformerSortOption.name,
         };
@@ -49,7 +67,13 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
     final sortKey = switch (option) {
       _PerformerSortOption.name => 'name',
       _PerformerSortOption.sceneCount => 'scenes_count',
+      _PerformerSortOption.imageCount => 'image_count',
+      _PerformerSortOption.galleryCount => 'gallery_count',
+      _PerformerSortOption.playCount => 'play_count',
+      _PerformerSortOption.oCounter => 'o_counter',
+      _PerformerSortOption.rating => 'rating100',
       _PerformerSortOption.lastUpdated => 'updated_at',
+      _PerformerSortOption.createdAt => 'created_at',
       _PerformerSortOption.random => 'random',
     };
 
@@ -64,8 +88,20 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
         return 'Name';
       case _PerformerSortOption.sceneCount:
         return 'Scene Count';
+      case _PerformerSortOption.imageCount:
+        return 'Image Count';
+      case _PerformerSortOption.galleryCount:
+        return 'Gallery Count';
+      case _PerformerSortOption.playCount:
+        return 'Play Count';
+      case _PerformerSortOption.oCounter:
+        return 'O-Counter';
+      case _PerformerSortOption.rating:
+        return 'Rating';
       case _PerformerSortOption.lastUpdated:
-        return 'Last Updated';
+        return 'Updated At';
+      case _PerformerSortOption.createdAt:
+        return 'Created At';
       case _PerformerSortOption.random:
         return 'Random';
     }
@@ -319,6 +355,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
   Widget build(BuildContext context) {
     final performersAsync = ref.watch(performerListProvider);
     final favoritesOnly = ref.watch(performerFavoritesOnlyProvider);
+    final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final hasSortOverride =
         _sortOption != _PerformerSortOption.name || _sortDescending;
 
@@ -386,14 +423,16 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
         performer: performer,
         onTap: () => context.push('/performer/${performer.id}'),
       ),
-      floatingActionButton: performersAsync.maybeWhen(
-        data: (performers) => FloatingActionButton.small(
-          onPressed: _openRandomPerformer,
-          tooltip: 'Random performer',
-          child: const Icon(Icons.casino_outlined),
-        ),
-        orElse: () => null,
-      ),
+      floatingActionButton: randomNavigationEnabled
+          ? performersAsync.maybeWhen(
+              data: (performers) => FloatingActionButton.small(
+                onPressed: _openRandomPerformer,
+                tooltip: 'Random performer',
+                child: const Icon(Icons.casino_outlined),
+              ),
+              orElse: () => null,
+            )
+          : null,
     );
   }
 }

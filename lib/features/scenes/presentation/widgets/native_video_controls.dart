@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 import '../../../../core/utils/pip_mode.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/utils/app_log_store.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
 import '../providers/video_player_provider.dart';
@@ -51,6 +52,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
   @override
   void initState() {
     super.initState();
+    AppLogStore.instance.add(
+      'NativeVideoControls init scene=${widget.scene.id}',
+      source: 'NativeVideoControls',
+    );
     WidgetsBinding.instance.addObserver(this);
     widget.controller.addListener(_onVideoTick);
     _wasPlaying = widget.controller.value.isPlaying;
@@ -63,6 +68,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
   void didUpdateWidget(covariant NativeVideoControls oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.controller != widget.controller) {
+      AppLogStore.instance.add(
+        'NativeVideoControls didUpdateWidget controllerChange scene=${widget.scene.id}',
+        source: 'NativeVideoControls',
+      );
       oldWidget.controller.removeListener(_onVideoTick);
       widget.controller.addListener(_onVideoTick);
     }
@@ -70,6 +79,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
 
   @override
   void dispose() {
+    AppLogStore.instance.add(
+      'NativeVideoControls dispose scene=${widget.scene.id}',
+      source: 'NativeVideoControls',
+    );
     WidgetsBinding.instance.removeObserver(this);
     _cancelAutoHide();
     widget.controller.removeListener(_onVideoTick);
@@ -92,6 +105,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
 
   void _onVideoTick() {
     if (!mounted) return;
+    
+    final isActive = ref.read(playerStateProvider).activeScene?.id == widget.scene.id;
+    if (!isActive) return;
 
     final isPlaying = widget.controller.value.isPlaying;
     if (isPlaying != _wasPlaying) {
@@ -155,12 +171,23 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
   }
 
   void _beginDragSeek() {
+    final isActive = ref.read(playerStateProvider).activeScene?.id == widget.scene.id;
+    if (!isActive) return;
+
     if (!widget.controller.value.isInitialized) return;
     _dragSeekStartPosition = widget.controller.value.position;
     _dragSeekAccumulatedDx = 0;
+    
+    AppLogStore.instance.add(
+      'NativeVideoControls beginDragSeek scene=${widget.scene.id}',
+      source: 'NativeVideoControls',
+    );
   }
 
   void _updateDragSeek(DragUpdateDetails details, double dragAreaWidth) {
+    final isActive = ref.read(playerStateProvider).activeScene?.id == widget.scene.id;
+    if (!isActive) return;
+
     final startPosition = _dragSeekStartPosition;
     if (!widget.controller.value.isInitialized || startPosition == null) return;
     if (dragAreaWidth <= 0) return;
@@ -226,8 +253,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
         : value.position.inMilliseconds.toDouble();
     final sliderValue = currentMs.clamp(0, durationMs.toDouble()).toDouble();
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
+    return PopScope(
+      canPop: !_isScrubbing,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
         return Stack(
           children: [
             // Layer 0: Background Gesture Area (Handles toggle and seek)
@@ -511,6 +540,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
           ],
         );
       },
+    ),
     );
   }
 }

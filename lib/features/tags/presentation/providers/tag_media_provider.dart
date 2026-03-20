@@ -23,7 +23,8 @@ class TagMediaItem {
 
 @riverpod
 FutureOr<List<TagMediaItem>> tagMedia(Ref ref, String tagId) async {
-  final client = ref.watch(graphqlClientProvider);
+  ref.keepAlive();
+  final client = ref.read(graphqlClientProvider);
 
   final result = await client.query$FindScenes(
     Options$Query$FindScenes(
@@ -79,6 +80,7 @@ class TagMediaGrid extends _$TagMediaGrid {
 
   @override
   FutureOr<List<TagMediaItem>> build(String tagId) async {
+    ref.keepAlive();
     _tagId = tagId;
     _currentPage = 1;
     _hasMore = true;
@@ -86,7 +88,7 @@ class TagMediaGrid extends _$TagMediaGrid {
   }
 
   Future<List<TagMediaItem>> _fetchPage(String tagId, int page) async {
-    final client = ref.watch(graphqlClientProvider);
+    final client = ref.read(graphqlClientProvider);
 
     final result = await client.query$FindScenes(
       Options$Query$FindScenes(

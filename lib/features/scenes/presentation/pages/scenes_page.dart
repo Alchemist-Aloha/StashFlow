@@ -4,8 +4,10 @@ import 'package:go_router/go_router.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../providers/scene_list_provider.dart';
+import '../providers/playback_queue_provider.dart';
 import '../widgets/scene_card.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
@@ -102,7 +104,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     }
 
     _lastRandomSceneId = randomScene.id;
-    context.push('/scene/${randomScene.id}');
+    context.push('/scenes/scene/${randomScene.id}');
   }
 
   void _showFilterPanel() {
@@ -282,6 +284,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     final scenesAsync = ref.watch(sceneListProvider);
     final filterState = ref.watch(sceneFilterStateProvider);
     final organizedOnly = ref.watch(sceneOrganizedOnlyProvider);
+    final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final hasActiveFilters =
         filterState != SceneFilter.empty() || organizedOnly;
 
@@ -350,16 +353,24 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       itemBuilder: (context, scene) => SceneCard(
         scene: scene,
         isGrid: isGridView,
-        onTap: () => context.push('/scene/${scene.id}'),
+        onTap: () {
+          final scenes = scenesAsync.value ?? [];
+          if (scenes.isNotEmpty) {
+            ref.read(playbackQueueProvider.notifier).setCurrentSequence(scenes);
+          }
+          context.push('/scenes/scene/${scene.id}');
+        },
       ),
-      floatingActionButton: scenesAsync.maybeWhen(
-        data: (scenes) => FloatingActionButton.small(
-          onPressed: _openRandomScene,
-          tooltip: 'Random scene',
-          child: const Icon(Icons.casino_outlined),
-        ),
-        orElse: () => null,
-      ),
+      floatingActionButton: randomNavigationEnabled
+          ? scenesAsync.maybeWhen(
+              data: (scenes) => FloatingActionButton.small(
+                onPressed: _openRandomScene,
+                tooltip: 'Random scene',
+                child: const Icon(Icons.casino_outlined),
+              ),
+              orElse: () => null,
+            )
+          : null,
     );
   }
 }

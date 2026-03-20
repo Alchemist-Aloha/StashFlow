@@ -76,3 +76,10 @@ query SceneStreams($id: ID!) {
     }
   }
 }
+
+mutation UpdateSceneRating($id: ID!, $rating: Int!) {
+  sceneUpdate(input: { id: $id, rating100: $rating }) {
+    id
+    rating100
+  }
+}

@@ -15,4 +15,5 @@ abstract class SceneRepository {
     SceneFilter? sceneFilter,
   });
   Future<Scene> getSceneById(String id);
+  Future<void> updateSceneRating(String id, int rating100);
 }

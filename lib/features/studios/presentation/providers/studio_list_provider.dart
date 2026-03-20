@@ -76,13 +76,14 @@ class StudioList extends _$StudioList {
 
   @override
   FutureOr<List<Studio>> build() async {
+    ref.keepAlive();
     _currentPage = 1;
     _hasMore = true;
     _isLoadingMore = false;
     final query = ref.watch(studioSearchQueryProvider);
     final sortConfig = ref.watch(studioSortProvider);
     final favoritesOnly = ref.watch(studioFavoritesOnlyProvider);
-    final repository = ref.watch(studioRepositoryProvider);
+    final repository = ref.read(studioRepositoryProvider);
     return repository.findStudios(
       page: _currentPage,
       perPage: _perPage,

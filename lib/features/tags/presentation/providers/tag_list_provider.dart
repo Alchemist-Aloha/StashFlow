@@ -76,13 +76,14 @@ class TagList extends _$TagList {
 
   @override
   FutureOr<List<Tag>> build() async {
+    ref.keepAlive();
     _currentPage = 1;
     _hasMore = true;
     _isLoadingMore = false;
     final query = ref.watch(tagSearchQueryProvider);
     final sortConfig = ref.watch(tagSortProvider);
     final favoritesOnly = ref.watch(tagFavoritesOnlyProvider);
-    final repository = ref.watch(tagRepositoryProvider);
+    final repository = ref.read(tagRepositoryProvider);
     return repository.findTags(
       page: _currentPage,
       perPage: _perPage,

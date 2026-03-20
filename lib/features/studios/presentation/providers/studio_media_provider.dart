@@ -23,7 +23,8 @@ class StudioMediaItem {
 
 @riverpod
 FutureOr<List<StudioMediaItem>> studioMedia(Ref ref, String studioId) async {
-  final client = ref.watch(graphqlClientProvider);
+  ref.keepAlive();
+  final client = ref.read(graphqlClientProvider);
 
   final result = await client.query$FindScenes(
     Options$Query$FindScenes(
@@ -79,6 +80,7 @@ class StudioMediaGrid extends _$StudioMediaGrid {
 
   @override
   FutureOr<List<StudioMediaItem>> build(String studioId) async {
+    ref.keepAlive();
     _studioId = studioId;
     _currentPage = 1;
     _hasMore = true;
@@ -86,7 +88,7 @@ class StudioMediaGrid extends _$StudioMediaGrid {
   }
 
   Future<List<StudioMediaItem>> _fetchPage(String studioId, int page) async {
-    final client = ref.watch(graphqlClientProvider);
+    final client = ref.read(graphqlClientProvider);
 
     final result = await client.query$FindScenes(
       Options$Query$FindScenes(
