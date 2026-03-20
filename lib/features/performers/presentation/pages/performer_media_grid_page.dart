@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/data/graphql/media_headers_provider.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
 import '../providers/performer_media_provider.dart';
 
 class PerformerMediaGridPage extends ConsumerWidget {
@@ -46,9 +47,9 @@ class PerformerMediaGridPage extends ConsumerWidget {
                 final item = items[index];
                 return InkWell(
                   onTap: () => context.push('/scene/${item.sceneId}'),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                     child: Stack(
                       fit: StackFit.expand,
                       children: [

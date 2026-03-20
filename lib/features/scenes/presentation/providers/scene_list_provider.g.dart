@@ -43,7 +43,7 @@ final class SceneSortProvider
   }
 }
 
-String _$sceneSortHash() => r'454670e56538ff99f93debc540b3367ad4a6334a';
+String _$sceneSortHash() => r'6ccbd9a05b0e63a80a3877f144c87fc96048f52c';
 
 abstract class _$SceneSort
     extends $Notifier<({bool descending, String? sort})> {
@@ -156,7 +156,7 @@ final class SceneFilterStateProvider
   }
 }
 
-String _$sceneFilterStateHash() => r'42514424785c20696ab809b6725584ab6b3184ce';
+String _$sceneFilterStateHash() => r'a3dd64e5090c31bc7fe9cd23d0c98d5c7b20282d';
 
 abstract class _$SceneFilterState extends $Notifier<SceneFilter> {
   SceneFilter build();

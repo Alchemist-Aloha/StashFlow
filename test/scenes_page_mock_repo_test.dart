@@ -8,6 +8,7 @@ import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.d
 import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scenes_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 
 class FakeSceneRepository implements SceneRepository {
   final List<Scene> _scenes;
@@ -80,7 +81,10 @@ void main() {
           sceneRepositoryProvider.overrideWithValue(repo),
           sharedPreferencesProvider.overrideWithValue(prefs),
         ],
-        child: const MaterialApp(home: ScenesPage()),
+        child: MaterialApp(
+          theme: AppTheme.lightTheme,
+          home: const ScenesPage(),
+        ),
       ),
     );
 
@@ -93,6 +97,6 @@ void main() {
     await tester.enterText(find.byType(TextField), 'zzz');
     await tester.pumpAndSettle();
 
-    expect(find.text('No scenes found'), findsOneWidget);
+    expect(find.text('No items found'), findsOneWidget);
   });
 }

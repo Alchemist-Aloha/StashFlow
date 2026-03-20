@@ -22,10 +22,16 @@ class ErrorStateView extends StatelessWidget {
           children: [
             const Icon(Icons.error_outline, size: 48, color: Colors.redAccent),
             const SizedBox(height: 12),
-            Text(message, textAlign: TextAlign.center),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+            ),
             if (onRetry != null) ...[
-              const SizedBox(height: 16),
-              ElevatedButton(onPressed: onRetry, child: Text(retryLabel)),
+              const SizedBox(height: 24),
+              FilledButton.tonal(onPressed: onRetry, child: Text(retryLabel)),
             ],
           ],
         ),

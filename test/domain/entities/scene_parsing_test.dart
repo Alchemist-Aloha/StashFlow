@@ -22,6 +22,8 @@ void main() {
             'video_codec': 'h264',
             'audio_codec': 'aac',
             'bit_rate': 5000000,
+            'duration': 300.0,
+            'frame_rate': 24.0,
           },
         ],
         'paths': {
@@ -31,8 +33,10 @@ void main() {
         },
         'studio_id': 's1',
         'studio_name': 'Test Studio',
+        'studio_image_path': null,
         'performer_ids': ['p1'],
         'performer_names': ['Performer 1'],
+        'performer_image_paths': [null],
         'tag_ids': ['t1'],
         'tag_names': ['Tag 1'],
       };
@@ -62,8 +66,10 @@ void main() {
         'paths': {'screenshot': null, 'preview': null, 'stream': null},
         'studio_id': null,
         'studio_name': null,
+        'studio_image_path': null,
         'performer_ids': [],
         'performer_names': [],
+        'performer_image_paths': [],
         'tag_ids': [],
         'tag_names': [],
       };

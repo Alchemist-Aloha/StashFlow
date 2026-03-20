@@ -9,6 +9,68 @@ part of 'tag_list_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(TagSort)
+final tagSortProvider = TagSortProvider._();
+
+final class TagSortProvider
+    extends $NotifierProvider<TagSort, ({bool descending, String? sort})> {
+  TagSortProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'tagSortProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$tagSortHash();
+
+  @$internal
+  @override
+  TagSort create() => TagSort();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(({bool descending, String? sort}) value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<({bool descending, String? sort})>(
+        value,
+      ),
+    );
+  }
+}
+
+String _$tagSortHash() => r'b6d1772514417e240f6e8650c5f20cf58e737504';
+
+abstract class _$TagSort extends $Notifier<({bool descending, String? sort})> {
+  ({bool descending, String? sort}) build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              ({bool descending, String? sort}),
+              ({bool descending, String? sort})
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                ({bool descending, String? sort}),
+                ({bool descending, String? sort})
+              >,
+              ({bool descending, String? sort}),
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(TagSearchQuery)
 final tagSearchQueryProvider = TagSearchQueryProvider._();
 
@@ -84,7 +146,7 @@ final class TagListProvider extends $AsyncNotifierProvider<TagList, List<Tag>> {
   TagList create() => TagList();
 }
 
-String _$tagListHash() => r'c7c81198d26f48959aa68341f6c3d91689297b64';
+String _$tagListHash() => r'48913339e5248d5eb819424aea1ecd05f3b46751';
 
 abstract class _$TagList extends $AsyncNotifier<List<Tag>> {
   FutureOr<List<Tag>> build();

@@ -21,7 +21,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Server base URL'), findsOneWidget);
+    expect(find.text('GraphQL server URL'), findsOneWidget);
     expect(find.text('API key'), findsOneWidget);
     expect(find.text('Settings'), findsOneWidget);
   });

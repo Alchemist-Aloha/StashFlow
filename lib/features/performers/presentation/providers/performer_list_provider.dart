@@ -5,6 +5,7 @@ import '../../domain/entities/performer.dart';
 import '../../domain/repositories/performer_repository.dart';
 import '../../data/repositories/graphql_performer_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
+import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/pagination.dart';
 
 part 'performer_list_provider.g.dart';
@@ -17,13 +18,25 @@ final performerRepositoryProvider = Provider<PerformerRepository>((ref) {
 
 @riverpod
 class PerformerSort extends _$PerformerSort {
+  static const _sortKey = 'performer_sort_field';
+  static const _descKey = 'performer_sort_descending';
+
   @override
   ({String? sort, bool descending}) build() {
-    return (sort: 'name', descending: false);
+    final prefs = ref.watch(sharedPreferencesProvider);
+    final sort = prefs.getString(_sortKey) ?? 'name';
+    final descending = prefs.getBool(_descKey) ?? false;
+    return (sort: sort, descending: descending);
   }
 
   void setSort({String? sort, bool descending = true}) {
     state = (sort: sort, descending: descending);
+  }
+
+  Future<void> saveAsDefault() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    if (state.sort != null) await prefs.setString(_sortKey, state.sort!);
+    await prefs.setBool(_descKey, state.descending);
   }
 }
 
@@ -41,8 +54,18 @@ final performerFavoritesOnlyProvider =
     );
 
 class PerformerFavoritesOnlyNotifier extends Notifier<bool> {
+  static const _storageKey = 'performer_favorites_only';
+
   @override
-  bool build() => false;
+  bool build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getBool(_storageKey) ?? false;
+  }
+
+  Future<void> saveAsDefault() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setBool(_storageKey, state);
+  }
 }
 
 @riverpod

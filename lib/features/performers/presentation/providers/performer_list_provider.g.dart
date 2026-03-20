@@ -44,7 +44,7 @@ final class PerformerSortProvider
   }
 }
 
-String _$performerSortHash() => r'4d1492d4b8c084795ab6a6c564026d91548a8bee';
+String _$performerSortHash() => r'7802a23e6c55b452015b6c2c83d1630c36673a6a';
 
 abstract class _$PerformerSort
     extends $Notifier<({bool descending, String? sort})> {

@@ -12,7 +12,17 @@ import '../../../../core/presentation/theme/app_theme.dart';
 
 import '../widgets/scene_filter_panel.dart';
 
-enum _SceneSortField { date, rating, playCount, random }
+enum _SceneSortField {
+  date,
+  rating,
+  playCount,
+  title,
+  duration,
+  bitrate,
+  framerate,
+  filesize,
+  random,
+}
 
 class ScenesPage extends ConsumerStatefulWidget {
   const ScenesPage({super.key});
@@ -31,6 +41,22 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final sortConfig = ref.read(sceneSortProvider);
+      setState(() {
+        _sortField = switch (sortConfig.sort) {
+          'date' => _SceneSortField.date,
+          'rating' => _SceneSortField.rating,
+          'play_count' => _SceneSortField.playCount,
+          'title' => _SceneSortField.title,
+          'duration' => _SceneSortField.duration,
+          'bitrate' => _SceneSortField.bitrate,
+          'framerate' => _SceneSortField.framerate,
+          'filesize' => _SceneSortField.filesize,
+          'random' => _SceneSortField.random,
+          _ => _SceneSortField.date,
+        };
+        _sortDescending = sortConfig.descending;
+      });
       _applyServerSort();
     });
   }
@@ -44,6 +70,11 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       _SceneSortField.date => 'date',
       _SceneSortField.rating => 'rating',
       _SceneSortField.playCount => 'play_count',
+      _SceneSortField.title => 'title',
+      _SceneSortField.duration => 'duration',
+      _SceneSortField.bitrate => 'bitrate',
+      _SceneSortField.framerate => 'framerate',
+      _SceneSortField.filesize => 'size',
       _SceneSortField.random => 'random',
     };
 
@@ -88,6 +119,11 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       _SceneSortField.date => 'Date',
       _SceneSortField.rating => 'Rating',
       _SceneSortField.playCount => 'Play Count',
+      _SceneSortField.title => 'Title',
+      _SceneSortField.duration => 'Duration',
+      _SceneSortField.bitrate => 'Bitrate',
+      _SceneSortField.framerate => 'Framerate',
+      _SceneSortField.filesize => 'Filesize',
       _SceneSortField.random => 'Random',
     };
   }
@@ -108,7 +144,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
               decoration: BoxDecoration(
                 color: context.colors.surface,
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(AppTheme.radiusLarge),
+                  top: Radius.circular(AppTheme.radiusExtraLarge),
                 ),
               ),
               child: Column(
@@ -159,26 +195,25 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                   const SizedBox(height: AppTheme.spacingMedium),
                   Text('Direction', style: context.textTheme.labelLarge),
                   const SizedBox(height: AppTheme.spacingSmall),
-                  Row(
-                    children: [
-                      ChoiceChip(
-                        label: const Text('Descending'),
-                        selected: tempDescending,
-                        onSelected: (selected) {
-                          if (!selected) return;
-                          setModalState(() => tempDescending = true);
-                        },
-                      ),
-                      const SizedBox(width: AppTheme.spacingSmall),
-                      ChoiceChip(
-                        label: const Text('Ascending'),
-                        selected: !tempDescending,
-                        onSelected: (selected) {
-                          if (!selected) return;
-                          setModalState(() => tempDescending = false);
-                        },
-                      ),
-                    ],
+                  SizedBox(
+                    width: double.infinity,
+                    child: SegmentedButton<bool>(
+                      segments: const [
+                        ButtonSegment(
+                          value: true,
+                          label: Text('Descending'),
+                          icon: Icon(Icons.arrow_downward),
+                        ),
+                        ButtonSegment(
+                          value: false,
+                          label: Text('Ascending'),
+                          icon: Icon(Icons.arrow_upward),
+                        ),
+                      ],
+                      selected: {tempDescending},
+                      onSelectionChanged: (value) =>
+                          setModalState(() => tempDescending = value.first),
+                    ),
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SizedBox(
@@ -200,6 +235,34 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                         ),
                       ),
                       child: const Text('Apply Sort'),
+                    ),
+                  ),
+                  const SizedBox(height: AppTheme.spacingSmall),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () async {
+                        setState(() {
+                          _sortField = tempField;
+                          _sortDescending = tempDescending;
+                        });
+                        _applyServerSort();
+                        await ref.read(sceneSortProvider.notifier).saveAsDefault();
+                        if (mounted) {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Sort preferences saved as default'),
+                            ),
+                          );
+                        }
+                      },
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppTheme.spacingMedium,
+                        ),
+                      ),
+                      child: const Text('Save as Default'),
                     ),
                   ),
                   const SizedBox(height: AppTheme.spacingMedium),

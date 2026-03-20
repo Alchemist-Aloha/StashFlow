@@ -77,42 +77,46 @@ class SceneCard extends ConsumerWidget {
     return InkWell(
       onTap: onTap,
       onLongPress: () => _showMenu(context, ref),
+      borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AspectRatio(
             aspectRatio: 16 / 9,
-            child: Stack(
-              children: [
-                Image.network(
-                  scene.paths.screenshot ??
-                      'https://via.placeholder.com/320x180',
-                  headers: mediaHeaders,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    color: Colors.grey[800],
-                    child: const Center(
-                      child: Icon(Icons.movie, color: Colors.white, size: 48),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+              child: Stack(
+                children: [
+                  Image.network(
+                    scene.paths.screenshot ??
+                        'https://via.placeholder.com/320x180',
+                    headers: mediaHeaders,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      color: Colors.grey[800],
+                      child: const Center(
+                        child: Icon(Icons.movie, color: Colors.white, size: 48),
+                      ),
                     ),
                   ),
-                ),
-                Positioned(
-                  bottom: 8,
-                  right: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 2,
-                    ),
-                    color: Colors.black.withAlpha(200),
-                    child: const Text(
-                      '00:00', // TODO: Add duration to Scene entity
-                      style: TextStyle(color: Colors.white, fontSize: 12),
+                  Positioned(
+                    bottom: 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 2,
+                      ),
+                      color: Colors.black.withAlpha(200),
+                      child: const Text(
+                        '00:00', // TODO: Add duration to Scene entity
+                        style: TextStyle(color: Colors.white, fontSize: 12),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           Padding(
@@ -169,20 +173,24 @@ class SceneCard extends ConsumerWidget {
     return InkWell(
       onTap: onTap,
       onLongPress: () => _showMenu(context, ref),
+      borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AspectRatio(
             aspectRatio: 16 / 9,
-            child: Image.network(
-              scene.paths.screenshot ?? 'https://via.placeholder.com/320x180',
-              headers: mediaHeaders,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                color: Colors.grey[800],
-                child: const Center(
-                  child: Icon(Icons.movie, color: Colors.white, size: 32),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+              child: Image.network(
+                scene.paths.screenshot ?? 'https://via.placeholder.com/320x180',
+                headers: mediaHeaders,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  color: Colors.grey[800],
+                  child: const Center(
+                    child: Icon(Icons.movie, color: Colors.white, size: 32),
+                  ),
                 ),
               ),
             ),

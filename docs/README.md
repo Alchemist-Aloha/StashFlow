@@ -4,12 +4,9 @@ This folder contains agent-focused project documentation.
 
 ## Start Here
 
-- [Agent Start Guide](./AGENT_START_HERE.md)
-- [Architecture Map](./ARCHITECTURE_MAP.md)
-- [Commands](./COMMANDS.md)
-- [Debugging Playbook](./DEBUGGING_PLAYBOOK.md)
-- [Change Checklist](./CHANGE_CHECKLIST.md)
-- [Known Issues](./KNOWNISSUES.md)
+- [Developer Guide](./DEVELOPER_GUIDE.md) (Architecture, Commands, Setup, UI Guidelines)
+- [Troubleshooting](./TROUBLESHOOTING.md) (Debugging Playbook, Known Issues)
+- [Roadmap](./ROADMAP.md) (Current Tasks and Plans)
 
 ## Current Implementation Notes (2026-03-19)
 
@@ -41,4 +38,4 @@ Use these docs to reduce exploration time, avoid repeated mistakes, and keep cha
 <!-- UI_GUIDELINE_REF -->
 
 ## UI Guideline Reference
-See [UIGUIDELINE.md](UIGUIDELINE.md) for current UI standards.
+See [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) for current UI standards.

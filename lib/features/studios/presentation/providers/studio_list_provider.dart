@@ -5,6 +5,7 @@ import '../../domain/entities/studio.dart';
 import '../../domain/repositories/studio_repository.dart';
 import '../../data/repositories/graphql_studio_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
+import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/pagination.dart';
 
 part 'studio_list_provider.g.dart';
@@ -13,6 +14,30 @@ final studioRepositoryProvider = Provider<StudioRepository>((ref) {
   final client = ref.watch(graphqlClientProvider);
   return GraphQLStudioRepository(client);
 });
+
+@riverpod
+class StudioSort extends _$StudioSort {
+  static const _sortKey = 'studio_sort_field';
+  static const _descKey = 'studio_sort_descending';
+
+  @override
+  ({String? sort, bool descending}) build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    final sort = prefs.getString(_sortKey) ?? 'name';
+    final descending = prefs.getBool(_descKey) ?? false;
+    return (sort: sort, descending: descending);
+  }
+
+  void setSort({String? sort, bool descending = true}) {
+    state = (sort: sort, descending: descending);
+  }
+
+  Future<void> saveAsDefault() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    if (state.sort != null) await prefs.setString(_sortKey, state.sort!);
+    await prefs.setBool(_descKey, state.descending);
+  }
+}
 
 @riverpod
 class StudioSearchQuery extends _$StudioSearchQuery {
@@ -28,8 +53,18 @@ final studioFavoritesOnlyProvider =
     );
 
 class StudioFavoritesOnlyNotifier extends Notifier<bool> {
+  static const _storageKey = 'studio_favorites_only';
+
   @override
-  bool build() => false;
+  bool build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getBool(_storageKey) ?? false;
+  }
+
+  Future<void> saveAsDefault() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setBool(_storageKey, state);
+  }
 }
 
 @riverpod
@@ -38,8 +73,6 @@ class StudioList extends _$StudioList {
   static const int _perPage = kDefaultPageSize;
   bool _hasMore = true;
   bool _isLoadingMore = false;
-  String? _sort;
-  bool? _descending;
 
   @override
   FutureOr<List<Studio>> build() async {
@@ -47,21 +80,26 @@ class StudioList extends _$StudioList {
     _hasMore = true;
     _isLoadingMore = false;
     final query = ref.watch(studioSearchQueryProvider);
+    final sortConfig = ref.watch(studioSortProvider);
     final favoritesOnly = ref.watch(studioFavoritesOnlyProvider);
     final repository = ref.watch(studioRepositoryProvider);
     return repository.findStudios(
       page: _currentPage,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
-      sort: _sort,
-      descending: _descending,
+      sort: sortConfig.sort,
+      descending: sortConfig.descending,
       favoritesOnly: favoritesOnly,
     );
   }
 
   void setSort({required String sort, required bool descending}) {
-    _sort = sort;
-    _descending = descending;
+    ref
+        .read(studioSortProvider.notifier)
+        .setSort(sort: sort, descending: descending);
+    _currentPage = 1;
+    _hasMore = true;
+    _isLoadingMore = false;
     ref.invalidateSelf();
   }
 
@@ -79,6 +117,7 @@ class StudioList extends _$StudioList {
     _isLoadingMore = true;
     final repository = ref.read(studioRepositoryProvider);
     final query = ref.read(studioSearchQueryProvider);
+    final sortConfig = ref.read(studioSortProvider);
     final favoritesOnly = ref.read(studioFavoritesOnlyProvider);
 
     try {
@@ -87,8 +126,8 @@ class StudioList extends _$StudioList {
         page: nextPage,
         perPage: _perPage,
         filter: query.isEmpty ? null : query,
-        sort: _sort,
-        descending: _descending,
+        sort: sortConfig.sort,
+        descending: sortConfig.descending,
         favoritesOnly: favoritesOnly,
       );
 

@@ -11,6 +11,7 @@ import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
 import '../providers/video_player_provider.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
@@ -360,7 +361,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: Colors.black.withAlpha(180),
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
                 ),
                 child: Text(
                   'mime: ${playerState.streamMimeType ?? 'unknown'}'

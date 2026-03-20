@@ -95,9 +95,10 @@ class AppTheme {
   static const spacingMedium = 16.0;
   static const spacingLarge = 24.0;
 
-  static const radiusSmall = 4.0;
-  static const radiusMedium = 8.0;
-  static const radiusLarge = 12.0;
+  static const radiusSmall = 8.0;
+  static const radiusMedium = 12.0;
+  static const radiusLarge = 16.0;
+  static const radiusExtraLarge = 28.0;
 
   static ThemeData _buildTheme(Brightness brightness) {
     final isDark = brightness == Brightness.dark;
@@ -137,6 +138,22 @@ class AppTheme {
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: colorScheme.primaryContainer,
         foregroundColor: colorScheme.onPrimaryContainer,
+      ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: SegmentedButton.styleFrom(
+          selectedBackgroundColor: colorScheme.primaryContainer,
+          selectedForegroundColor: colorScheme.onPrimaryContainer,
+        ),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          minimumSize: const Size.fromHeight(48),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          minimumSize: const Size.fromHeight(48),
+        ),
       ),
       extensions: [
         AppColors(

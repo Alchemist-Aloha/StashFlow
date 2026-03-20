@@ -22,6 +22,13 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final sortConfig = ref.read(groupSortProvider);
+      setState(() {
+        _sortOption = switch (sortConfig.sort) {
+          'name' => _GroupSortOption.name,
+          _ => _GroupSortOption.name,
+        };
+      });
       _applyServerSort(_sortOption);
     });
   }

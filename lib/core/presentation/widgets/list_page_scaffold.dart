@@ -55,6 +55,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 4.0,
         title: _isSearching
             ? TextField(
                 controller: _searchController,

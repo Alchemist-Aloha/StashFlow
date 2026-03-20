@@ -9,6 +9,69 @@ part of 'studio_list_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(StudioSort)
+final studioSortProvider = StudioSortProvider._();
+
+final class StudioSortProvider
+    extends $NotifierProvider<StudioSort, ({bool descending, String? sort})> {
+  StudioSortProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'studioSortProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$studioSortHash();
+
+  @$internal
+  @override
+  StudioSort create() => StudioSort();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(({bool descending, String? sort}) value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<({bool descending, String? sort})>(
+        value,
+      ),
+    );
+  }
+}
+
+String _$studioSortHash() => r'b26301f97dbbdc77c73cc921ab3ec3787d81ed7f';
+
+abstract class _$StudioSort
+    extends $Notifier<({bool descending, String? sort})> {
+  ({bool descending, String? sort}) build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              ({bool descending, String? sort}),
+              ({bool descending, String? sort})
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                ({bool descending, String? sort}),
+                ({bool descending, String? sort})
+              >,
+              ({bool descending, String? sort}),
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(StudioSearchQuery)
 final studioSearchQueryProvider = StudioSearchQueryProvider._();
 
@@ -85,7 +148,7 @@ final class StudioListProvider
   StudioList create() => StudioList();
 }
 
-String _$studioListHash() => r'ee966f2acc41b0763a9208daa21bf1d9827769c8';
+String _$studioListHash() => r'6f06d8bb36869db8e3674edaae20a70ddf745491';
 
 abstract class _$StudioList extends $AsyncNotifier<List<Studio>> {
   FutureOr<List<Studio>> build();

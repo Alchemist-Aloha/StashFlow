@@ -25,6 +25,16 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final sortConfig = ref.read(studioSortProvider);
+      setState(() {
+        _sortOption = switch (sortConfig.sort) {
+          'name' => _StudioSortOption.name,
+          'scenes_count' => _StudioSortOption.sceneCount,
+          'rating100' => _StudioSortOption.rating,
+          _ => _StudioSortOption.name,
+        };
+        _sortDescending = sortConfig.descending;
+      });
       _applyServerSort(_sortOption);
     });
   }
@@ -71,7 +81,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
             decoration: BoxDecoration(
               color: context.colors.surface,
               borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(AppTheme.radiusLarge),
+                top: Radius.circular(AppTheme.radiusExtraLarge),
               ),
             ),
             child: Column(
@@ -122,26 +132,25 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                 const SizedBox(height: AppTheme.spacingMedium),
                 Text('Direction', style: context.textTheme.labelLarge),
                 const SizedBox(height: AppTheme.spacingSmall),
-                Row(
-                  children: [
-                    ChoiceChip(
-                      label: const Text('Descending'),
-                      selected: tempDescending,
-                      onSelected: (selected) {
-                        if (!selected) return;
-                        setModalState(() => tempDescending = true);
-                      },
-                    ),
-                    const SizedBox(width: AppTheme.spacingSmall),
-                    ChoiceChip(
-                      label: const Text('Ascending'),
-                      selected: !tempDescending,
-                      onSelected: (selected) {
-                        if (!selected) return;
-                        setModalState(() => tempDescending = false);
-                      },
-                    ),
-                  ],
+                SizedBox(
+                  width: double.infinity,
+                  child: SegmentedButton<bool>(
+                    segments: const [
+                      ButtonSegment(
+                        value: true,
+                        label: Text('Descending'),
+                        icon: Icon(Icons.arrow_downward),
+                      ),
+                      ButtonSegment(
+                        value: false,
+                        label: Text('Ascending'),
+                        icon: Icon(Icons.arrow_upward),
+                      ),
+                    ],
+                    selected: {tempDescending},
+                    onSelectionChanged: (value) =>
+                        setModalState(() => tempDescending = value.first),
+                  ),
                 ),
                 const SizedBox(height: AppTheme.spacingLarge),
                 SizedBox(
@@ -163,6 +172,34 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                       ),
                     ),
                     child: const Text('Apply Sort'),
+                  ),
+                ),
+                const SizedBox(height: AppTheme.spacingSmall),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () async {
+                      setState(() {
+                        _sortOption = tempOption;
+                        _sortDescending = tempDescending;
+                      });
+                      _applyServerSort(_sortOption);
+                      await ref.read(studioSortProvider.notifier).saveAsDefault();
+                      if (mounted) {
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Sort preferences saved as default'),
+                          ),
+                        );
+                      }
+                    },
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppTheme.spacingMedium,
+                      ),
+                    ),
+                    child: const Text('Save as Default'),
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),
@@ -189,7 +226,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
             decoration: BoxDecoration(
               color: context.colors.surface,
               borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(AppTheme.radiusLarge),
+                top: Radius.circular(AppTheme.radiusExtraLarge),
               ),
             ),
             child: Column(
@@ -242,6 +279,35 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                       ),
                     ),
                     child: const Text('Apply Filters'),
+                  ),
+                ),
+                const SizedBox(height: AppTheme.spacingSmall),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () async {
+                      ref
+                          .read(studioListProvider.notifier)
+                          .setFavoritesOnly(tempFavoritesOnly);
+                      await ref
+                          .read(studioFavoritesOnlyProvider.notifier)
+                          .saveAsDefault();
+                      if (mounted) {
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content:
+                                Text('Filter preferences saved as default'),
+                          ),
+                        );
+                      }
+                    },
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppTheme.spacingMedium,
+                      ),
+                    ),
+                    child: const Text('Save as Default'),
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),

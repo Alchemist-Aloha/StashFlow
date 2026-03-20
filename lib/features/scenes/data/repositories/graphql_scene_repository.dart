@@ -201,6 +201,32 @@ class GraphQLSceneRepository implements SceneRepository {
                         : Enum$CriterionModifier.GREATER_THAN,
                   )
                 : null,
+            resolution: (sceneFilter?.resolutions?.isNotEmpty ?? false)
+                ? Input$ResolutionCriterionInput(
+                    value: fromJson$Enum$ResolutionEnum(
+                      sceneFilter!.resolutions!.first,
+                    ),
+                    modifier: Enum$CriterionModifier.EQUALS,
+                  )
+                : null,
+            orientation: (sceneFilter?.orientations?.isNotEmpty ?? false)
+                ? Input$OrientationCriterionInput(
+                    value: sceneFilter!.orientations!
+                        .map((o) => fromJson$Enum$OrientationEnum(o))
+                        .toList(),
+                  )
+                : null,
+            duration:
+                (sceneFilter?.minDuration != null ||
+                    sceneFilter?.maxDuration != null)
+                ? Input$IntCriterionInput(
+                    value: sceneFilter?.minDuration ?? 0,
+                    value2: sceneFilter?.maxDuration,
+                    modifier: sceneFilter?.maxDuration != null
+                        ? Enum$CriterionModifier.BETWEEN
+                        : Enum$CriterionModifier.GREATER_THAN,
+                  )
+                : null,
           ),
         ),
       ),

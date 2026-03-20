@@ -22,6 +22,13 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final sortConfig = ref.read(gallerySortProvider);
+      setState(() {
+        _sortOption = switch (sortConfig.sort) {
+          'title' => _GallerySortOption.title,
+          _ => _GallerySortOption.title,
+        };
+      });
       _applyServerSort(_sortOption);
     });
   }

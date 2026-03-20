@@ -26,6 +26,17 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final sortConfig = ref.read(performerSortProvider);
+      setState(() {
+        _sortOption = switch (sortConfig.sort) {
+          'name' => _PerformerSortOption.name,
+          'scenes_count' => _PerformerSortOption.sceneCount,
+          'updated_at' => _PerformerSortOption.lastUpdated,
+          'random' => _PerformerSortOption.random,
+          _ => _PerformerSortOption.name,
+        };
+        _sortDescending = sortConfig.descending;
+      });
       _applyServerSort(_sortOption);
     });
   }
@@ -94,7 +105,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
             decoration: BoxDecoration(
               color: context.colors.surface,
               borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(AppTheme.radiusLarge),
+                top: Radius.circular(AppTheme.radiusExtraLarge),
               ),
             ),
             child: Column(
@@ -145,26 +156,25 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                 const SizedBox(height: AppTheme.spacingMedium),
                 Text('Direction', style: context.textTheme.labelLarge),
                 const SizedBox(height: AppTheme.spacingSmall),
-                Row(
-                  children: [
-                    ChoiceChip(
-                      label: const Text('Descending'),
-                      selected: tempDescending,
-                      onSelected: (selected) {
-                        if (!selected) return;
-                        setModalState(() => tempDescending = true);
-                      },
-                    ),
-                    const SizedBox(width: AppTheme.spacingSmall),
-                    ChoiceChip(
-                      label: const Text('Ascending'),
-                      selected: !tempDescending,
-                      onSelected: (selected) {
-                        if (!selected) return;
-                        setModalState(() => tempDescending = false);
-                      },
-                    ),
-                  ],
+                SizedBox(
+                  width: double.infinity,
+                  child: SegmentedButton<bool>(
+                    segments: const [
+                      ButtonSegment(
+                        value: true,
+                        label: Text('Descending'),
+                        icon: Icon(Icons.arrow_downward),
+                      ),
+                      ButtonSegment(
+                        value: false,
+                        label: Text('Ascending'),
+                        icon: Icon(Icons.arrow_upward),
+                      ),
+                    ],
+                    selected: {tempDescending},
+                    onSelectionChanged: (value) =>
+                        setModalState(() => tempDescending = value.first),
+                  ),
                 ),
                 const SizedBox(height: AppTheme.spacingLarge),
                 SizedBox(
@@ -188,8 +198,37 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                     child: const Text('Apply Sort'),
                   ),
                 ),
-                const SizedBox(height: AppTheme.spacingMedium),
-              ],
+                const SizedBox(height: AppTheme.spacingSmall),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () async {
+                      setState(() {
+                        _sortOption = tempOption;
+                        _sortDescending = tempDescending;
+                      });
+                      _applyServerSort(_sortOption);
+                      await ref
+                          .read(performerSortProvider.notifier)
+                          .saveAsDefault();
+                      if (mounted) {
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Sort preferences saved as default'),
+                          ),
+                        );
+                      }
+                    },
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppTheme.spacingMedium,
+                      ),
+                    ),
+                    child: const Text('Save as Default'),
+                  ),
+                ),
+                const SizedBox(height: AppTheme.spacingMedium),              ],
             ),
           );
         },
@@ -212,7 +251,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
             decoration: BoxDecoration(
               color: context.colors.surface,
               borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(AppTheme.radiusLarge),
+                top: Radius.circular(AppTheme.radiusExtraLarge),
               ),
             ),
             child: Column(

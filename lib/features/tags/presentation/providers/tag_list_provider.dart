@@ -5,6 +5,7 @@ import '../../domain/entities/tag.dart';
 import '../../domain/repositories/tag_repository.dart';
 import '../../data/repositories/graphql_tag_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
+import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/pagination.dart';
 
 part 'tag_list_provider.g.dart';
@@ -13,6 +14,30 @@ final tagRepositoryProvider = Provider<TagRepository>((ref) {
   final client = ref.watch(graphqlClientProvider);
   return GraphQLTagRepository(client);
 });
+
+@riverpod
+class TagSort extends _$TagSort {
+  static const _sortKey = 'tag_sort_field';
+  static const _descKey = 'tag_sort_descending';
+
+  @override
+  ({String? sort, bool descending}) build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    final sort = prefs.getString(_sortKey) ?? 'name';
+    final descending = prefs.getBool(_descKey) ?? false;
+    return (sort: sort, descending: descending);
+  }
+
+  void setSort({String? sort, bool descending = true}) {
+    state = (sort: sort, descending: descending);
+  }
+
+  Future<void> saveAsDefault() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    if (state.sort != null) await prefs.setString(_sortKey, state.sort!);
+    await prefs.setBool(_descKey, state.descending);
+  }
+}
 
 @riverpod
 class TagSearchQuery extends _$TagSearchQuery {
@@ -28,8 +53,18 @@ final tagFavoritesOnlyProvider =
     );
 
 class TagFavoritesOnlyNotifier extends Notifier<bool> {
+  static const _storageKey = 'tag_favorites_only';
+
   @override
-  bool build() => false;
+  bool build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getBool(_storageKey) ?? false;
+  }
+
+  Future<void> saveAsDefault() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setBool(_storageKey, state);
+  }
 }
 
 @riverpod
@@ -38,8 +73,6 @@ class TagList extends _$TagList {
   static const int _perPage = kDefaultPageSize;
   bool _hasMore = true;
   bool _isLoadingMore = false;
-  String? _sort;
-  bool? _descending;
 
   @override
   FutureOr<List<Tag>> build() async {
@@ -47,21 +80,26 @@ class TagList extends _$TagList {
     _hasMore = true;
     _isLoadingMore = false;
     final query = ref.watch(tagSearchQueryProvider);
+    final sortConfig = ref.watch(tagSortProvider);
     final favoritesOnly = ref.watch(tagFavoritesOnlyProvider);
     final repository = ref.watch(tagRepositoryProvider);
     return repository.findTags(
       page: _currentPage,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
-      sort: _sort,
-      descending: _descending,
+      sort: sortConfig.sort,
+      descending: sortConfig.descending,
       favoritesOnly: favoritesOnly,
     );
   }
 
   void setSort({required String sort, required bool descending}) {
-    _sort = sort;
-    _descending = descending;
+    ref
+        .read(tagSortProvider.notifier)
+        .setSort(sort: sort, descending: descending);
+    _currentPage = 1;
+    _hasMore = true;
+    _isLoadingMore = false;
     ref.invalidateSelf();
   }
 
@@ -79,6 +117,7 @@ class TagList extends _$TagList {
     _isLoadingMore = true;
     final repository = ref.read(tagRepositoryProvider);
     final query = ref.read(tagSearchQueryProvider);
+    final sortConfig = ref.read(tagSortProvider);
     final favoritesOnly = ref.read(tagFavoritesOnlyProvider);
 
     try {
@@ -87,8 +126,8 @@ class TagList extends _$TagList {
         page: nextPage,
         perPage: _perPage,
         filter: query.isEmpty ? null : query,
-        sort: _sort,
-        descending: _descending,
+        sort: sortConfig.sort,
+        descending: sortConfig.descending,
         favoritesOnly: favoritesOnly,
       );
 

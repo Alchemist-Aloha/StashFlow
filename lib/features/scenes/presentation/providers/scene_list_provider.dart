@@ -1,11 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:math';
+import 'dart:convert';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../../domain/repositories/scene_repository.dart';
 import '../../data/repositories/graphql_scene_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
+import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/pagination.dart';
 
 part 'scene_list_provider.g.dart';
@@ -21,21 +23,43 @@ final sceneOrganizedOnlyProvider = NotifierProvider<SceneOrganizedOnly, bool>(
 );
 
 class SceneOrganizedOnly extends Notifier<bool> {
+  static const _storageKey = 'scene_organized_only';
+
   @override
-  bool build() => false;
+  bool build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getBool(_storageKey) ?? false;
+  }
 
   void set(bool value) => state = value;
+
+  Future<void> saveAsDefault() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setBool(_storageKey, state);
+  }
 }
 
 @riverpod
 class SceneSort extends _$SceneSort {
+  static const _sortKey = 'scene_sort_field';
+  static const _descKey = 'scene_sort_descending';
+
   @override
   ({String? sort, bool descending}) build() {
-    return (sort: 'date', descending: true);
+    final prefs = ref.watch(sharedPreferencesProvider);
+    final sort = prefs.getString(_sortKey) ?? 'date';
+    final descending = prefs.getBool(_descKey) ?? true;
+    return (sort: sort, descending: descending);
   }
 
   void setSort({String? sort, bool descending = true}) {
     state = (sort: sort, descending: descending);
+  }
+
+  Future<void> saveAsDefault() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    if (state.sort != null) await prefs.setString(_sortKey, state.sort!);
+    await prefs.setBool(_descKey, state.descending);
   }
 }
 
@@ -49,11 +73,29 @@ class SceneSearchQuery extends _$SceneSearchQuery {
 
 @riverpod
 class SceneFilterState extends _$SceneFilterState {
+  static const _storageKey = 'scene_filter_state';
+
   @override
-  SceneFilter build() => SceneFilter.empty();
+  SceneFilter build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    final jsonString = prefs.getString(_storageKey);
+    if (jsonString != null) {
+      try {
+        return SceneFilter.fromJson(jsonDecode(jsonString));
+      } catch (_) {
+        return SceneFilter.empty();
+      }
+    }
+    return SceneFilter.empty();
+  }
 
   void update(SceneFilter filter) => state = filter;
   void clear() => state = SceneFilter.empty();
+
+  Future<void> saveAsDefault() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setString(_storageKey, jsonEncode(state.toJson()));
+  }
 }
 
 @riverpod

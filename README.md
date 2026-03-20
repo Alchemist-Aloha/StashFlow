@@ -65,6 +65,6 @@ flutter build apk
 ## 📚 Internal Docs
 For architecture, known issues, and onboarding, see:
 - [Documentation Index](docs/README.md)
-- [Architecture Map](docs/ARCHITECTURE_MAP.md)
-- [Debugging Playbook](docs/DEBUGGING_PLAYBOOK.md)
-- [Known Issues](docs/KNOWNISSUES.md)
+- [Developer Guide](docs/DEVELOPER_GUIDE.md)
+- [Troubleshooting](docs/TROUBLESHOOTING.md)
+- [Roadmap](docs/ROADMAP.md)
