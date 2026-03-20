@@ -11,11 +11,8 @@ import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
-import '../../../../core/presentation/theme/app_theme.dart';
 import '../providers/video_player_provider.dart';
 import '../../domain/entities/scene.dart';
-import '../../domain/entities/scene_title_utils.dart';
-import '../providers/playback_queue_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import 'native_video_controls.dart';
 
@@ -304,7 +301,6 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   @override
   Widget build(BuildContext context) {
     final playerState = ref.watch(playerStateProvider);
-    final nextScene = ref.watch(playbackQueueProvider.notifier).getNextScene();
     final aspectRatio = _effectiveAspectRatio(
       playerState.videoPlayerController,
     );

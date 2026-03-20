@@ -228,6 +228,19 @@ class PerformerDetailsPage extends ConsumerWidget {
                           }).toList(),
                         ),
                       ],
+                      if (performer.details != null &&
+                          performer.details!.trim().isNotEmpty) ...[
+                        const Divider(height: 32, color: Colors.grey),
+                        const SectionHeader(title: 'Details'),
+                        Text(
+                          performer.details!,
+                          style: context.textTheme.bodyMedium?.copyWith(
+                            color: context.colors.onSurface.withValues(
+                              alpha: 0.8,
+                            ),
+                          ),
+                        ),
+                      ],
                       const Divider(height: 32, color: Colors.grey),
                       SectionHeader(
                         title: 'Media',
@@ -263,16 +276,6 @@ class PerformerDetailsPage extends ConsumerWidget {
                             color: context.colors.onSurface.withValues(
                               alpha: 0.7,
                             ),
-                          ),
-                        ),
-                      ),
-                      const Divider(height: 32, color: Colors.grey),
-                      const SectionHeader(title: 'Details'),
-                      Text(
-                        performer.details ?? 'No details available.',
-                        style: context.textTheme.bodyMedium?.copyWith(
-                          color: context.colors.onSurface.withValues(
-                            alpha: 0.8,
                           ),
                         ),
                       ),

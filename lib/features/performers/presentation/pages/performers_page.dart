@@ -211,7 +211,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                       await ref
                           .read(performerSortProvider.notifier)
                           .saveAsDefault();
-                      if (mounted) {
+                      if (context.mounted) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(

@@ -185,7 +185,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
                       });
                       _applyServerSort(_sortOption);
                       await ref.read(tagSortProvider.notifier).saveAsDefault();
-                      if (mounted) {
+                      if (context.mounted) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -292,7 +292,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
                       await ref
                           .read(tagFavoritesOnlyProvider.notifier)
                           .saveAsDefault();
-                      if (mounted) {
+                      if (context.mounted) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(

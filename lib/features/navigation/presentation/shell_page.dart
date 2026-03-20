@@ -50,7 +50,10 @@ class ShellPage extends StatelessWidget {
               child: NavigationBar(
                 selectedIndex: _selectedIndexForPath(currentPath),
                 destinations: const [
-                  NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
+                  NavigationDestination(
+                    icon: Icon(Icons.video_library),
+                    label: 'Scenes',
+                  ),
                   NavigationDestination(
                     icon: Icon(Icons.people),
                     label: 'Performers',

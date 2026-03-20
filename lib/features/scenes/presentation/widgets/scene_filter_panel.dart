@@ -186,7 +186,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                 await ref
                     .read(sceneOrganizedOnlyProvider.notifier)
                     .saveAsDefault();
-                if (mounted) {
+                if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
