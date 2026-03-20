@@ -51,7 +51,8 @@ GoRouter router(Ref ref) {
                   GoRoute(
                     path: 'performer/:id',
                     builder: (context, state) => PerformerDetailsPage(
-                        performerId: state.pathParameters['id']!),
+                      performerId: state.pathParameters['id']!,
+                    ),
                     routes: [
                       GoRoute(
                         path: 'media',
@@ -74,12 +75,14 @@ GoRouter router(Ref ref) {
                   GoRoute(
                     path: 'studio/:id',
                     builder: (context, state) => StudioDetailsPage(
-                        studioId: state.pathParameters['id']!),
+                      studioId: state.pathParameters['id']!,
+                    ),
                     routes: [
                       GoRoute(
                         path: 'media',
                         builder: (context, state) => StudioMediaGridPage(
-                            studioId: state.pathParameters['id']!),
+                          studioId: state.pathParameters['id']!,
+                        ),
                       ),
                     ],
                   ),
@@ -101,7 +104,8 @@ GoRouter router(Ref ref) {
                       GoRoute(
                         path: 'media',
                         builder: (context, state) => TagMediaGridPage(
-                            tagId: state.pathParameters['id']!),
+                          tagId: state.pathParameters['id']!,
+                        ),
                       ),
                     ],
                   ),
@@ -138,8 +142,9 @@ GoRouter router(Ref ref) {
         routes: [
           GoRoute(
             path: 'media',
-            builder: (context, state) =>
-                PerformerMediaGridPage(performerId: state.pathParameters['id']!),
+            builder: (context, state) => PerformerMediaGridPage(
+              performerId: state.pathParameters['id']!,
+            ),
           ),
         ],
       ),

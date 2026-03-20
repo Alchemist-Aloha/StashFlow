@@ -71,16 +71,15 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     ref.listen(playerStateProvider, (previous, next) {
       final nextScene = next.activeScene;
       final prevSceneId = previous?.activeScene?.id;
-      
-      if (nextScene != null && 
-          nextScene.id != widget.sceneId && 
+
+      if (nextScene != null &&
+          nextScene.id != widget.sceneId &&
           prevSceneId == widget.sceneId) {
-        
         AppLogStore.instance.add(
           'SceneDetailsPage triggering navigation scene=${widget.sceneId} -> next=${nextScene.id}',
           source: 'SceneDetailsPage',
         );
-        
+
         context.pushReplacement('/scenes/scene/${nextScene.id}');
       }
     });
@@ -276,16 +275,26 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                             GestureDetector(
                               onTap: () async {
                                 final currentRating = scene.rating100 ?? 0;
-                                final newRating = (currentRating == i * 20) ? 0 : i * 20;
-                                
+                                final newRating = (currentRating == i * 20)
+                                    ? 0
+                                    : i * 20;
+
                                 try {
-                                  await ref.read(sceneRepositoryProvider).updateSceneRating(scene.id, newRating);
-                                  ref.invalidate(sceneDetailsProvider(scene.id));
+                                  await ref
+                                      .read(sceneRepositoryProvider)
+                                      .updateSceneRating(scene.id, newRating);
+                                  ref.invalidate(
+                                    sceneDetailsProvider(scene.id),
+                                  );
                                   ref.invalidate(sceneListProvider);
                                 } catch (e) {
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Failed to update rating: $e')),
+                                      SnackBar(
+                                        content: Text(
+                                          'Failed to update rating: $e',
+                                        ),
+                                      ),
                                     );
                                   }
                                 }
@@ -304,7 +313,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                               child: Text(
                                 (scene.rating100! / 20).toStringAsFixed(1),
                                 style: context.textTheme.bodyMedium?.copyWith(
-                                  color: context.colors.onSurface.withValues(alpha: 0.7),
+                                  color: context.colors.onSurface.withValues(
+                                    alpha: 0.7,
+                                  ),
                                 ),
                               ),
                             ),

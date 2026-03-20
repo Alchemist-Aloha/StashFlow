@@ -23,6 +23,7 @@ enum _SceneSortField {
   bitrate,
   framerate,
   updatedAt,
+  createdAt,
   random,
 }
 
@@ -54,6 +55,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
           'bitrate' => _SceneSortField.bitrate,
           'framerate' => _SceneSortField.framerate,
           'updated_at' => _SceneSortField.updatedAt,
+          'created_at' => _SceneSortField.createdAt,
           'random' => _SceneSortField.random,
           _ => _SceneSortField.date,
         };
@@ -77,6 +79,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       _SceneSortField.bitrate => 'bitrate',
       _SceneSortField.framerate => 'framerate',
       _SceneSortField.updatedAt => 'updated_at',
+      _SceneSortField.createdAt => 'created_at',
       _SceneSortField.random => 'random',
     };
 
@@ -126,6 +129,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       _SceneSortField.bitrate => 'Bitrate',
       _SceneSortField.framerate => 'Framerate',
       _SceneSortField.updatedAt => 'Update Date',
+      _SceneSortField.createdAt => 'Created Date',
       _SceneSortField.random => 'Random',
     };
   }
