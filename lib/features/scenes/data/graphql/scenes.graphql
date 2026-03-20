@@ -10,6 +10,7 @@ fragment SlimSceneData on Scene {
   play_count
   files {
     path
+    duration
   }
   paths {
     screenshot

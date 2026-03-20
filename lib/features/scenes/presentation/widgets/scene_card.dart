@@ -59,20 +59,34 @@ class SceneCard extends ConsumerWidget {
     });
   }
 
+  String _formatDuration(double? duration) {
+    if (duration == null) return '--:--';
+    final seconds = duration.round();
+    final h = seconds ~/ 3600;
+    final m = (seconds % 3600) ~/ 60;
+    final s = seconds % 60;
+    if (h > 0) {
+      return '$h:${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
+    }
+    return '$m:${s.toString().padLeft(2, '0')}';
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mediaHeaders = ref.watch(mediaHeadersProvider);
+    final duration = scene.files.isNotEmpty ? scene.files.first.duration : null;
 
     if (isGrid) {
-      return _buildGridCard(context, ref, mediaHeaders);
+      return _buildGridCard(context, ref, mediaHeaders, duration);
     }
-    return _buildListCard(context, ref, mediaHeaders);
+    return _buildListCard(context, ref, mediaHeaders, duration);
   }
 
   Widget _buildListCard(
     BuildContext context,
     WidgetRef ref,
     Map<String, String> mediaHeaders,
+    double? duration,
   ) {
     return InkWell(
       onTap: onTap,
@@ -109,9 +123,10 @@ class SceneCard extends ConsumerWidget {
                         vertical: 2,
                       ),
                       color: Colors.black.withAlpha(200),
-                      child: const Text(
-                        '00:00', // TODO: Add duration to Scene entity
-                        style: TextStyle(color: Colors.white, fontSize: 12),
+                      child: Text(
+                        _formatDuration(duration),
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ),
                   ),
@@ -169,6 +184,7 @@ class SceneCard extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     Map<String, String> mediaHeaders,
+    double? duration,
   ) {
     return InkWell(
       onTap: onTap,
@@ -181,17 +197,38 @@ class SceneCard extends ConsumerWidget {
             aspectRatio: 16 / 9,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-              child: Image.network(
-                scene.paths.screenshot ?? 'https://via.placeholder.com/320x180',
-                headers: mediaHeaders,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: Colors.grey[800],
-                  child: const Center(
-                    child: Icon(Icons.movie, color: Colors.white, size: 32),
+              child: Stack(
+                children: [
+                  Image.network(
+                    scene.paths.screenshot ??
+                        'https://via.placeholder.com/320x180',
+                    headers: mediaHeaders,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      color: Colors.grey[800],
+                      child: const Center(
+                        child: Icon(Icons.movie, color: Colors.white, size: 32),
+                      ),
+                    ),
                   ),
-                ),
+                  Positioned(
+                    bottom: 4,
+                    right: 4,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 2,
+                      ),
+                      color: Colors.black.withAlpha(200),
+                      child: Text(
+                        _formatDuration(duration),
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 10),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

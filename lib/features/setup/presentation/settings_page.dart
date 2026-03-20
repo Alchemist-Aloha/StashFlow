@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:graphql/client.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/theme/theme_mode_provider.dart';
 import '../../galleries/presentation/providers/gallery_details_provider.dart';
 import '../../galleries/presentation/providers/gallery_list_provider.dart';
@@ -267,16 +268,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(AppTheme.spacingMedium),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('GraphQL server URL'),
-                  const SizedBox(height: 8),
+                  _buildConnectionStatusCard(),
+                  const SizedBox(height: AppTheme.spacingLarge),
+                  _buildSectionHeader('Server Configuration'),
+                  const SizedBox(height: AppTheme.spacingSmall),
                   TextField(
                     controller: _baseUrlController,
                     focusNode: _baseUrlFocusNode,
                     decoration: const InputDecoration(
+                      labelText: 'GraphQL server URL',
                       border: OutlineInputBorder(),
                       hintText: 'http://192.168.1.100:9999/graphql',
                       helperText:
@@ -290,13 +294,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       _saveServerSettings();
                     },
                   ),
-                  const SizedBox(height: 16),
-                  const Text('API key'),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppTheme.spacingMedium),
                   TextField(
                     controller: _apiKeyController,
                     focusNode: _apiKeyFocusNode,
                     decoration: const InputDecoration(
+                      labelText: 'API key',
                       border: OutlineInputBorder(),
                       hintText: 'Paste ApiKey header value',
                     ),
@@ -310,7 +313,20 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       _saveServerSettings();
                     },
                   ),
-                  const SizedBox(height: 12),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      onPressed: () async {
+                        _baseUrlController.text = '';
+                        _apiKeyController.text = '';
+                        await _saveServerSettings();
+                      },
+                      icon: const Icon(Icons.clear_all),
+                      label: const Text('Clear Server Settings'),
+                    ),
+                  ),
+                  const SizedBox(height: AppTheme.spacingLarge),
+                  _buildSectionHeader('Playback'),
                   SwitchListTile.adaptive(
                     contentPadding: EdgeInsets.zero,
                     title: const Text('Prefer sceneStreams first'),
@@ -325,18 +341,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   ),
                   SwitchListTile.adaptive(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Scenes Grid Layout'),
-                    subtitle: const Text(
-                      'When on, Scenes page uses grid view by default',
-                    ),
-                    value: _sceneGridLayout,
-                    onChanged: (value) async {
-                      setState(() => _sceneGridLayout = value);
-                      await _saveToggleSettings();
-                    },
-                  ),
-                  SwitchListTile.adaptive(
-                    contentPadding: EdgeInsets.zero,
                     title: const Text('Autoplay Next Scene'),
                     subtitle: const Text(
                       'Automatically play the next scene when current playback ends',
@@ -344,18 +348,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     value: _autoplayNext,
                     onChanged: (value) async {
                       setState(() => _autoplayNext = value);
-                      await _saveToggleSettings();
-                    },
-                  ),
-                  SwitchListTile.adaptive(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('Show Video Debug Info'),
-                    subtitle: const Text(
-                      'Display stream source and startup timing overlay on player',
-                    ),
-                    value: _showVideoDebugInfo,
-                    onChanged: (value) async {
-                      setState(() => _showVideoDebugInfo = value);
                       await _saveToggleSettings();
                     },
                   ),
@@ -416,6 +408,66 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       },
                     ),
                   ),
+                  const SizedBox(height: AppTheme.spacingLarge),
+                  _buildSectionHeader('Display'),
+                  SwitchListTile.adaptive(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Scenes Grid Layout'),
+                    subtitle: const Text(
+                      'When on, Scenes page uses grid view by default',
+                    ),
+                    value: _sceneGridLayout,
+                    onChanged: (value) async {
+                      setState(() => _sceneGridLayout = value);
+                      await _saveToggleSettings();
+                    },
+                  ),
+                  SwitchListTile.adaptive(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Show Video Debug Info'),
+                    subtitle: const Text(
+                      'Display stream source and startup timing overlay on player',
+                    ),
+                    value: _showVideoDebugInfo,
+                    onChanged: (value) async {
+                      setState(() => _showVideoDebugInfo = value);
+                      await _saveToggleSettings();
+                    },
+                  ),
+                  const SizedBox(height: AppTheme.spacingLarge),
+                  _buildSectionHeader('Appearance'),
+                  const SizedBox(height: AppTheme.spacingSmall),
+                  SizedBox(
+                    width: double.infinity,
+                    child: SegmentedButton<ThemeMode>(
+                      showSelectedIcon: false,
+                      style: ButtonStyle(visualDensity: VisualDensity.compact),
+                      segments: const [
+                        ButtonSegment<ThemeMode>(
+                          value: ThemeMode.system,
+                          icon: Icon(Icons.brightness_auto_outlined),
+                          label: Text('System'),
+                        ),
+                        ButtonSegment<ThemeMode>(
+                          value: ThemeMode.light,
+                          icon: Icon(Icons.light_mode_outlined),
+                          label: Text('Light'),
+                        ),
+                        ButtonSegment<ThemeMode>(
+                          value: ThemeMode.dark,
+                          icon: Icon(Icons.dark_mode_outlined),
+                          label: Text('Dark'),
+                        ),
+                      ],
+                      selected: {_themeMode},
+                      onSelectionChanged: (selection) {
+                        final selected = selection.first;
+                        _saveThemeMode(selected);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: AppTheme.spacingLarge),
+                  _buildSectionHeader('Diagnostics'),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const Icon(Icons.bug_report_outlined),
@@ -424,97 +476,93 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => context.push('/settings/logs'),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Appearance',
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                  const SizedBox(height: AppTheme.spacingLarge),
+                ],
+              ),
+            ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppTheme.spacingSmall),
+      child: Text(
+        title.toUpperCase(),
+        style: context.textTheme.labelMedium?.copyWith(
+          color: context.colors.primary,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildConnectionStatusCard() {
+    final statusInfo = ref.watch(connectionStatusProvider);
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+        side: BorderSide(
+          color: context.colors.outline.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.spacingMedium),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Connection Status',
+              style: context.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: AppTheme.spacingSmall),
+            statusInfo.when(
+              data: (version) => Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.green, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Connected (Stash $version)',
+                    style: const TextStyle(
+                      color: Colors.green,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  SegmentedButton<ThemeMode>(
-                    showSelectedIcon: false,
-                    style: ButtonStyle(visualDensity: VisualDensity.compact),
-                    segments: const [
-                      ButtonSegment<ThemeMode>(
-                        value: ThemeMode.system,
-                        icon: Icon(Icons.brightness_auto_outlined),
-                        label: Text('System'),
-                      ),
-                      ButtonSegment<ThemeMode>(
-                        value: ThemeMode.light,
-                        icon: Icon(Icons.light_mode_outlined),
-                        label: Text('Light'),
-                      ),
-                      ButtonSegment<ThemeMode>(
-                        value: ThemeMode.dark,
-                        icon: Icon(Icons.dark_mode_outlined),
-                        label: Text('Dark'),
-                      ),
-                    ],
-                    selected: {_themeMode},
-                    onSelectionChanged: (selection) {
-                      final selected = selection.first;
-                      _saveThemeMode(selected);
-                    },
+                ],
+              ),
+              loading: () => const Row(
+                children: [
+                  SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
                   ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      TextButton(
-                        onPressed: () async {
-                          _baseUrlController.text = '';
-                          _apiKeyController.text = '';
-                          await _saveServerSettings();
-                        },
-                        child: const Text('Clear'),
+                  SizedBox(width: 8),
+                  Text('Checking connection...'),
+                ],
+              ),
+              error: (error, stack) => Row(
+                children: [
+                  const Icon(Icons.error, color: Colors.red, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Failed: $error',
+                      style: const TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.w500,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  const Text(
-                    'Connection Status',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Consumer(
-                    builder: (context, ref, child) {
-                      final statusInfo = ref.watch(connectionStatusProvider);
-                      return statusInfo.when(
-                        data: (version) => Row(
-                          children: [
-                            const Icon(Icons.check_circle, color: Colors.green),
-                            const SizedBox(width: 8),
-                            Text('Connected (Stash $version)'),
-                          ],
-                        ),
-                        loading: () => const Row(
-                          children: [
-                            SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            ),
-                            SizedBox(width: 8),
-                            Text('Checking connection...'),
-                          ],
-                        ),
-                        error: (error, stack) => Row(
-                          children: [
-                            const Icon(Icons.error, color: Colors.red),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'Failed: $error',
-                                style: const TextStyle(color: Colors.red),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                    ),
                   ),
                 ],
               ),
             ),
+          ],
+        ),
+      ),
     );
   }
 }

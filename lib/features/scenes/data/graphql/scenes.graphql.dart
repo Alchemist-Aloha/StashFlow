@@ -552,6 +552,13 @@ const fragmentDefinitionSlimSceneData = FragmentDefinitionNode(
               selectionSet: null,
             ),
             FieldNode(
+              name: NameNode(value: 'duration'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
               name: NameNode(value: '__typename'),
               alias: null,
               arguments: [],
@@ -727,19 +734,24 @@ extension ClientExtension$Fragment$SlimSceneData on graphql.GraphQLClient {
 class Fragment$SlimSceneData$files {
   Fragment$SlimSceneData$files({
     required this.path,
+    required this.duration,
     this.$__typename = 'VideoFile',
   });
 
   factory Fragment$SlimSceneData$files.fromJson(Map<String, dynamic> json) {
     final l$path = json['path'];
+    final l$duration = json['duration'];
     final l$$__typename = json['__typename'];
     return Fragment$SlimSceneData$files(
       path: (l$path as String),
+      duration: (l$duration as num).toDouble(),
       $__typename: (l$$__typename as String),
     );
   }
 
   final String path;
+
+  final double duration;
 
   final String $__typename;
 
@@ -747,6 +759,8 @@ class Fragment$SlimSceneData$files {
     final _resultData = <String, dynamic>{};
     final l$path = path;
     _resultData['path'] = l$path;
+    final l$duration = duration;
+    _resultData['duration'] = l$duration;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -755,8 +769,9 @@ class Fragment$SlimSceneData$files {
   @override
   int get hashCode {
     final l$path = path;
+    final l$duration = duration;
     final l$$__typename = $__typename;
-    return Object.hashAll([l$path, l$$__typename]);
+    return Object.hashAll([l$path, l$duration, l$$__typename]);
   }
 
   @override
@@ -771,6 +786,11 @@ class Fragment$SlimSceneData$files {
     final l$path = path;
     final lOther$path = other.path;
     if (l$path != lOther$path) {
+      return false;
+    }
+    final l$duration = duration;
+    final lOther$duration = other.duration;
+    if (l$duration != lOther$duration) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -797,7 +817,7 @@ abstract class CopyWith$Fragment$SlimSceneData$files<TRes> {
   factory CopyWith$Fragment$SlimSceneData$files.stub(TRes res) =
       _CopyWithStubImpl$Fragment$SlimSceneData$files;
 
-  TRes call({String? path, String? $__typename});
+  TRes call({String? path, double? duration, String? $__typename});
 }
 
 class _CopyWithImpl$Fragment$SlimSceneData$files<TRes>
@@ -810,17 +830,23 @@ class _CopyWithImpl$Fragment$SlimSceneData$files<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? path = _undefined, Object? $__typename = _undefined}) =>
-      _then(
-        Fragment$SlimSceneData$files(
-          path: path == _undefined || path == null
-              ? _instance.path
-              : (path as String),
-          $__typename: $__typename == _undefined || $__typename == null
-              ? _instance.$__typename
-              : ($__typename as String),
-        ),
-      );
+  TRes call({
+    Object? path = _undefined,
+    Object? duration = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Fragment$SlimSceneData$files(
+      path: path == _undefined || path == null
+          ? _instance.path
+          : (path as String),
+      duration: duration == _undefined || duration == null
+          ? _instance.duration
+          : (duration as double),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Fragment$SlimSceneData$files<TRes>
@@ -829,7 +855,7 @@ class _CopyWithStubImpl$Fragment$SlimSceneData$files<TRes>
 
   TRes _res;
 
-  call({String? path, String? $__typename}) => _res;
+  call({String? path, double? duration, String? $__typename}) => _res;
 }
 
 class Fragment$SlimSceneData$paths {
@@ -2053,6 +2079,7 @@ extension ClientExtension$Fragment$SceneData on graphql.GraphQLClient {
 class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
   Fragment$SceneData$files({
     required this.path,
+    required this.duration,
     this.$__typename = 'VideoFile',
     required this.basename,
     required this.format,
@@ -2061,12 +2088,12 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
     required this.video_codec,
     required this.audio_codec,
     required this.bit_rate,
-    required this.duration,
     required this.frame_rate,
   });
 
   factory Fragment$SceneData$files.fromJson(Map<String, dynamic> json) {
     final l$path = json['path'];
+    final l$duration = json['duration'];
     final l$$__typename = json['__typename'];
     final l$basename = json['basename'];
     final l$format = json['format'];
@@ -2075,10 +2102,10 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
     final l$video_codec = json['video_codec'];
     final l$audio_codec = json['audio_codec'];
     final l$bit_rate = json['bit_rate'];
-    final l$duration = json['duration'];
     final l$frame_rate = json['frame_rate'];
     return Fragment$SceneData$files(
       path: (l$path as String),
+      duration: (l$duration as num).toDouble(),
       $__typename: (l$$__typename as String),
       basename: (l$basename as String),
       format: (l$format as String),
@@ -2087,12 +2114,13 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
       video_codec: (l$video_codec as String),
       audio_codec: (l$audio_codec as String),
       bit_rate: (l$bit_rate as int),
-      duration: (l$duration as num).toDouble(),
       frame_rate: (l$frame_rate as num).toDouble(),
     );
   }
 
   final String path;
+
+  final double duration;
 
   final String $__typename;
 
@@ -2110,14 +2138,14 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
 
   final int bit_rate;
 
-  final double duration;
-
   final double frame_rate;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
     final l$path = path;
     _resultData['path'] = l$path;
+    final l$duration = duration;
+    _resultData['duration'] = l$duration;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     final l$basename = basename;
@@ -2134,8 +2162,6 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
     _resultData['audio_codec'] = l$audio_codec;
     final l$bit_rate = bit_rate;
     _resultData['bit_rate'] = l$bit_rate;
-    final l$duration = duration;
-    _resultData['duration'] = l$duration;
     final l$frame_rate = frame_rate;
     _resultData['frame_rate'] = l$frame_rate;
     return _resultData;
@@ -2144,6 +2170,7 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
   @override
   int get hashCode {
     final l$path = path;
+    final l$duration = duration;
     final l$$__typename = $__typename;
     final l$basename = basename;
     final l$format = format;
@@ -2152,10 +2179,10 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
     final l$video_codec = video_codec;
     final l$audio_codec = audio_codec;
     final l$bit_rate = bit_rate;
-    final l$duration = duration;
     final l$frame_rate = frame_rate;
     return Object.hashAll([
       l$path,
+      l$duration,
       l$$__typename,
       l$basename,
       l$format,
@@ -2164,7 +2191,6 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
       l$video_codec,
       l$audio_codec,
       l$bit_rate,
-      l$duration,
       l$frame_rate,
     ]);
   }
@@ -2181,6 +2207,11 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
     final l$path = path;
     final lOther$path = other.path;
     if (l$path != lOther$path) {
+      return false;
+    }
+    final l$duration = duration;
+    final lOther$duration = other.duration;
+    if (l$duration != lOther$duration) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -2223,11 +2254,6 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
     if (l$bit_rate != lOther$bit_rate) {
       return false;
     }
-    final l$duration = duration;
-    final lOther$duration = other.duration;
-    if (l$duration != lOther$duration) {
-      return false;
-    }
     final l$frame_rate = frame_rate;
     final lOther$frame_rate = other.frame_rate;
     if (l$frame_rate != lOther$frame_rate) {
@@ -2254,6 +2280,7 @@ abstract class CopyWith$Fragment$SceneData$files<TRes> {
 
   TRes call({
     String? path,
+    double? duration,
     String? $__typename,
     String? basename,
     String? format,
@@ -2262,7 +2289,6 @@ abstract class CopyWith$Fragment$SceneData$files<TRes> {
     String? video_codec,
     String? audio_codec,
     int? bit_rate,
-    double? duration,
     double? frame_rate,
   });
 }
@@ -2279,6 +2305,7 @@ class _CopyWithImpl$Fragment$SceneData$files<TRes>
 
   TRes call({
     Object? path = _undefined,
+    Object? duration = _undefined,
     Object? $__typename = _undefined,
     Object? basename = _undefined,
     Object? format = _undefined,
@@ -2287,13 +2314,15 @@ class _CopyWithImpl$Fragment$SceneData$files<TRes>
     Object? video_codec = _undefined,
     Object? audio_codec = _undefined,
     Object? bit_rate = _undefined,
-    Object? duration = _undefined,
     Object? frame_rate = _undefined,
   }) => _then(
     Fragment$SceneData$files(
       path: path == _undefined || path == null
           ? _instance.path
           : (path as String),
+      duration: duration == _undefined || duration == null
+          ? _instance.duration
+          : (duration as double),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
@@ -2318,9 +2347,6 @@ class _CopyWithImpl$Fragment$SceneData$files<TRes>
       bit_rate: bit_rate == _undefined || bit_rate == null
           ? _instance.bit_rate
           : (bit_rate as int),
-      duration: duration == _undefined || duration == null
-          ? _instance.duration
-          : (duration as double),
       frame_rate: frame_rate == _undefined || frame_rate == null
           ? _instance.frame_rate
           : (frame_rate as double),
@@ -2336,6 +2362,7 @@ class _CopyWithStubImpl$Fragment$SceneData$files<TRes>
 
   call({
     String? path,
+    double? duration,
     String? $__typename,
     String? basename,
     String? format,
@@ -2344,7 +2371,6 @@ class _CopyWithStubImpl$Fragment$SceneData$files<TRes>
     String? video_codec,
     String? audio_codec,
     int? bit_rate,
-    double? duration,
     double? frame_rate,
   }) => _res;
 }

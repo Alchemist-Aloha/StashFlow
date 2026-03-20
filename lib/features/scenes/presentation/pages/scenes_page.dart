@@ -343,7 +343,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
               crossAxisCount: 2,
               crossAxisSpacing: AppTheme.spacingSmall,
               mainAxisSpacing: AppTheme.spacingSmall,
-              childAspectRatio: 0.8,
+              childAspectRatio: 1.0,
             )
           : null,
       padding: EdgeInsets.all(isGridView ? AppTheme.spacingSmall : 0),

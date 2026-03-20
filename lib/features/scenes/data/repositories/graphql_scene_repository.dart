@@ -75,7 +75,20 @@ class GraphQLSceneRepository implements SceneRepository {
             interactive: s.interactive,
             resumeTime: s.resume_time,
             playCount: s.play_count ?? 0,
-            files: [], // Slim data doesn't have files
+            files: s.files
+                .map(
+                  (f) => SceneFile(
+                    format: null,
+                    width: null,
+                    height: null,
+                    videoCodec: null,
+                    audioCodec: null,
+                    bitRate: null,
+                    duration: f.duration,
+                    frameRate: null,
+                  ),
+                )
+                .toList(),
             paths: ScenePaths(
               screenshot: resolveGraphqlMediaUrl(
                 rawUrl: s.paths.screenshot,
