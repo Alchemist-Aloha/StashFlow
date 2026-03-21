@@ -7,6 +7,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../domain/entities/scene.dart';
 import 'playback_queue_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
+import '../../../../core/utils/pip_mode.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
@@ -18,6 +19,7 @@ class GlobalPlayerState {
   final VideoPlayerController? videoPlayerController;
   final bool isPlaying;
   final bool isFullScreen;
+  final bool isInPipMode;
   final String? streamMimeType;
   final String? streamLabel;
   final String? streamSource;
@@ -36,6 +38,7 @@ class GlobalPlayerState {
     this.videoPlayerController,
     this.isPlaying = false,
     this.isFullScreen = false,
+    this.isInPipMode = false,
     this.streamMimeType,
     this.streamLabel,
     this.streamSource,
@@ -55,6 +58,7 @@ class GlobalPlayerState {
     VideoPlayerController? videoPlayerController,
     bool? isPlaying,
     bool? isFullScreen,
+    bool? isInPipMode,
     String? streamMimeType,
     String? streamLabel,
     String? streamSource,
@@ -76,6 +80,7 @@ class GlobalPlayerState {
           : (videoPlayerController ?? this.videoPlayerController),
       isPlaying: isPlaying ?? this.isPlaying,
       isFullScreen: isFullScreen ?? this.isFullScreen,
+      isInPipMode: isInPipMode ?? this.isInPipMode,
       streamMimeType: clearActive
           ? null
           : (streamMimeType ?? this.streamMimeType),
@@ -120,8 +125,11 @@ class PlayerState extends _$PlayerState {
     ref.keepAlive();
 
     ref.onDispose(() {
+      PipMode.isInPipMode.removeListener(_onPipModeChanged);
       unawaited(_disposeControllers());
     });
+
+    PipMode.isInPipMode.addListener(_onPipModeChanged);
 
     final prefs = ref.read(sharedPreferencesProvider);
     return GlobalPlayerState(
@@ -131,7 +139,12 @@ class PlayerState extends _$PlayerState {
       enableBackgroundPlayback:
           prefs.getBool(_enableBackgroundPlaybackKey) ?? false,
       enableNativePip: prefs.getBool(_enableNativePipKey) ?? false,
+      isInPipMode: PipMode.isInPipMode.value,
     );
+  }
+
+  void _onPipModeChanged() {
+    state = state.copyWith(isInPipMode: PipMode.isInPipMode.value);
   }
 
   void setAutoplayNext(bool value) {
