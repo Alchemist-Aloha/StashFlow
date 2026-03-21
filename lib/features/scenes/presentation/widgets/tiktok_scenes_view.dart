@@ -609,11 +609,13 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                   const SizedBox(height: 16),
                   _OverlayButton(
                     icon: Icons.fullscreen,
+                    tooltip: 'Toggle Fullscreen',
                     onTap: _toggleFullScreen,
                   ),
                   const SizedBox(height: 16),
                   _OverlayButton(
                     icon: Icons.info_outline,
+                    tooltip: 'Scene Details',
                     onTap: () {
                       context.push('/scenes/scene/${widget.scene.id}');
                     },
@@ -629,21 +631,25 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
 
 class _OverlayButton extends StatelessWidget {
   final IconData icon;
+  final String? tooltip;
   final VoidCallback onTap;
 
-  const _OverlayButton({required this.icon, required this.onTap});
+  const _OverlayButton({required this.icon, this.tooltip, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.5),
-          shape: BoxShape.circle,
+      child: Tooltip(
+        message: tooltip ?? '',
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.5),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: Colors.white, size: 28),
         ),
-        child: Icon(icon, color: Colors.white, size: 28),
       ),
     );
   }

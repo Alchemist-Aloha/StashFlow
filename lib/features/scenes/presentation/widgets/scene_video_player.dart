@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:video_player/video_player.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
@@ -15,6 +16,7 @@ import '../providers/video_player_provider.dart';
 import '../../domain/entities/scene.dart';
 import '../../data/repositories/stream_resolver.dart';
 import 'native_video_controls.dart';
+import 'tiktok_scenes_view.dart';
 
 class SceneVideoPlayer extends ConsumerStatefulWidget {
   final Scene scene;
@@ -375,12 +377,17 @@ class FullscreenPlayerPage extends ConsumerStatefulWidget {
 }
 
 class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
+  late PlayerState _playerStateNotifier;
+  late FullScreenMode _fullScreenModeNotifier;
+
   @override
   void initState() {
     super.initState();
+    _playerStateNotifier = ref.read(playerStateProvider.notifier);
+    _fullScreenModeNotifier = ref.read(fullScreenModeProvider.notifier);
     _enterFullscreen();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(playerStateProvider.notifier).setFullScreen(true);
+      _playerStateNotifier.setFullScreen(true);
     });
   }
 
@@ -401,12 +408,11 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    // Ensure fullScreen state is reset on any exit (back gesture, toggle, pop)
-    // Use read() here because we are in dispose.
+    // Safe to use saved notifiers during dispose, but wrap in microtask to avoid 
+    // "modifying provider while building" errors in some Flutter lifecycle states.
     Future.microtask(() {
-      if (ref.mounted) {
-        ref.read(playerStateProvider.notifier).setFullScreen(false);
-      }
+      _playerStateNotifier.setFullScreen(false);
+      _fullScreenModeNotifier.set(false);
     });
     super.dispose();
   }
