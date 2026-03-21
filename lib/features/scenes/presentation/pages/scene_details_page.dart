@@ -503,9 +503,31 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                         const Divider(height: 32, color: Colors.grey),
                       ],
                       if (hasPerformers) ...[
-                        const SectionHeader(
-                          title: 'Performers',
-                          padding: EdgeInsets.zero,
+                        Row(
+                          children: [
+                            Text(
+                              'Performers',
+                              style: context.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: context.colors.onSurface,
+                              ),
+                            ),
+                            const Spacer(),
+                            if (canExpandPerformers)
+                              TextButton(
+                                onPressed: () {
+                                  setState(
+                                    () => _performersExpanded =
+                                        !_performersExpanded,
+                                  );
+                                },
+                                child: Text(
+                                  _performersExpanded
+                                      ? 'Show less'
+                                      : 'Show more',
+                                ),
+                              ),
+                          ],
                         ),
                         const SizedBox(height: AppTheme.spacingSmall),
                         ListView.separated(
@@ -564,21 +586,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                             );
                           },
                         ),
-                        if (canExpandPerformers)
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: TextButton(
-                              onPressed: () {
-                                setState(
-                                  () => _performersExpanded =
-                                      !_performersExpanded,
-                                );
-                              },
-                              child: Text(
-                                _performersExpanded ? 'Show less' : 'Show more',
-                              ),
-                            ),
-                          ),
                         const Divider(height: 32, color: Colors.grey),
                       ],
                       if (scene.studioId != null)
