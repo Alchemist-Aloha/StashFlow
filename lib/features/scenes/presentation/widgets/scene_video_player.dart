@@ -295,6 +295,11 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
           ),
         ),
       );
+      // Ensure state is reset when the pushed route is popped, 
+      // regardless of how it was popped.
+      if (mounted) {
+        ref.read(playerStateProvider.notifier).setFullScreen(false);
+      }
     }
   }
 
@@ -371,8 +376,8 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
 }
 
 class FullscreenPlayerPage extends ConsumerStatefulWidget {
-  final Scene scene;
-  const FullscreenPlayerPage({required this.scene, super.key});
+  final String sceneId;
+  const FullscreenPlayerPage({required this.sceneId, super.key});
 
   @override
   ConsumerState<FullscreenPlayerPage> createState() => _FullscreenPlayerPageState();
@@ -405,6 +410,13 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+    // Ensure fullScreen state is reset on any exit (back gesture, toggle, pop)
+    // Use read() here because we are in dispose.
+    Future.microtask(() {
+      if (ref.mounted) {
+        ref.read(playerStateProvider.notifier).setFullScreen(false);
+      }
+    });
     super.dispose();
   }
 
@@ -412,43 +424,48 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
   Widget build(BuildContext context) {
     final playerState = ref.watch(playerStateProvider);
     final controller = playerState.videoPlayerController;
+    final scene = playerState.activeScene;
 
-    if (controller == null || !controller.value.isInitialized) {
-      return Container(
-        color: Colors.black,
-        child: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    return PopScope(
-      canPop: true,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) {
-          ref.read(playerStateProvider.notifier).setFullScreen(false);
-        }
-      },
-      child: Material(
-        color: Colors.black,
-        child: SizedBox.expand(
-          child: Stack(
+    if (controller == null || !controller.value.isInitialized || scene == null || scene.id != widget.sceneId) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Positioned.fill(
-                child: Center(
-                  child: AspectRatio(
-                    aspectRatio: controller.value.aspectRatio,
-                    child: VideoPlayer(controller),
-                  ),
-                ),
-              ),
-              NativeVideoControls(
-                controller: controller,
-                useDoubleTapSeek: playerState.useDoubleTapSeek,
-                enableNativePip: playerState.enableNativePip,
-                onFullScreenToggle: () => Navigator.of(context, rootNavigator: true).pop(),
-                scene: widget.scene,
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text(
+                'Initializing player...',
+                style: const TextStyle(color: Colors.white70),
               ),
             ],
           ),
+        ),
+      );
+    }
+
+    return Material(
+      color: Colors.black,
+      child: SizedBox.expand(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Center(
+                child: AspectRatio(
+                  aspectRatio: controller.value.aspectRatio,
+                  child: VideoPlayer(controller),
+                ),
+              ),
+            ),
+            NativeVideoControls(
+              controller: controller,
+              useDoubleTapSeek: playerState.useDoubleTapSeek,
+              enableNativePip: playerState.enableNativePip,
+              onFullScreenToggle: () => Navigator.of(context).pop(),
+              scene: scene,
+            ),
+          ],
         ),
       ),
     );
