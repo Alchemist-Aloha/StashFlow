@@ -6,6 +6,7 @@ import '../../domain/entities/scene_filter.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/playback_queue_provider.dart';
 import '../widgets/scene_card.dart';
+import '../widgets/tiktok_scenes_view.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
@@ -285,11 +286,13 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isTiktokLayout = ref.watch(sceneTiktokLayoutProvider);
     final isGridView = ref.watch(sceneGridLayoutProvider);
     final scenesAsync = ref.watch(sceneListProvider);
     final filterState = ref.watch(sceneFilterStateProvider);
     final organizedOnly = ref.watch(sceneOrganizedOnlyProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
+    final isFullScreen = ref.watch(fullScreenModeProvider);
     final hasActiveFilters =
         filterState != SceneFilter.empty() || organizedOnly;
 
@@ -298,6 +301,8 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       searchHint: 'Search scenes...',
       onSearchChanged: _onSearchChanged,
       provider: scenesAsync,
+      customBody: isTiktokLayout ? const TiktokScenesView() : null,
+      hideAppBar: isTiktokLayout && isFullScreen,
       onRefresh: () => ref.refresh(sceneListProvider.future),
       onFetchNextPage: () =>
           ref.read(sceneListProvider.notifier).fetchNextPage(),
@@ -366,7 +371,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
           context.push('/scenes/scene/${scene.id}');
         },
       ),
-      floatingActionButton: randomNavigationEnabled
+      floatingActionButton: (randomNavigationEnabled && !isTiktokLayout)
           ? scenesAsync.maybeWhen(
               data: (scenes) => FloatingActionButton.small(
                 onPressed: _openRandomScene,

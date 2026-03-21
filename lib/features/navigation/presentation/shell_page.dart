@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../scenes/presentation/providers/video_player_provider.dart';
+import '../../scenes/presentation/providers/scene_list_provider.dart';
+import '../../scenes/presentation/widgets/tiktok_scenes_view.dart';
 import 'widgets/mini_player.dart';
 
 class ShellPage extends ConsumerWidget {
@@ -23,12 +25,21 @@ class ShellPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentPath = GoRouterState.of(context).uri.path;
-    final activeSceneId = ref.watch(playerStateProvider).activeScene?.id;
+    final playerState = ref.watch(playerStateProvider);
+    final activeSceneId = playerState.activeScene?.id;
     final pathSceneId = _extractSceneIdFromPath(currentPath);
+    final isTiktokFullScreen = ref.watch(fullScreenModeProvider);
+    final isFullScreen = playerState.isFullScreen || isTiktokFullScreen;
+    final isTiktokLayout = ref.watch(sceneTiktokLayoutProvider);
+    
+    final onScenesPage = currentPath == '/scenes';
+    
     final hideMiniPlayer =
-        activeSceneId != null &&
+        (activeSceneId != null &&
         pathSceneId != null &&
-        activeSceneId == pathSceneId;
+        activeSceneId == pathSceneId) || 
+        isFullScreen ||
+        (isTiktokLayout && onScenesPage);
 
     return Scaffold(
       body: Column(
@@ -37,7 +48,7 @@ class ShellPage extends ConsumerWidget {
           if (!hideMiniPlayer) const MiniPlayer(),
         ],
       ),
-      bottomNavigationBar: SafeArea(
+      bottomNavigationBar: isFullScreen ? null : SafeArea(
         top: false,
         child: Row(
           children: [

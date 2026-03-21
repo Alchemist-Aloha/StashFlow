@@ -164,8 +164,8 @@ void main() {
     await tester.tap(find.widgetWithText(NavigationDestination, 'Settings'));
     await tester.pumpAndSettle();
     // Verification that we are on Settings page
-    expect(find.text('Server URL'), findsWidgets);
-    expect(find.text('API Key'), findsWidgets);
+    expect(find.text('GraphQL server URL'), findsWidgets);
+    expect(find.text('API key'), findsWidgets);
 
     // Navigate back to Scenes
     await tester.tap(find.widgetWithText(NavigationDestination, 'Scenes'));

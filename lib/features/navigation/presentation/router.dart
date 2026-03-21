@@ -15,6 +15,7 @@ import '../../tags/presentation/pages/tag_details_page.dart';
 import '../../tags/presentation/pages/tag_media_grid_page.dart';
 import '../../setup/presentation/settings_page.dart';
 import '../../setup/presentation/debug_log_viewer_page.dart';
+import '../../scenes/presentation/widgets/scene_video_player.dart';
 import 'shell_page.dart';
 
 part 'router.g.dart';
@@ -57,6 +58,20 @@ GoRouter router(Ref ref) {
                     path: 'scene/:id',
                     builder: (context, state) =>
                         SceneDetailsPage(sceneId: state.pathParameters['id']!),
+                    routes: [
+                      GoRoute(
+                        path: 'fullscreen',
+                        builder: (context, state) => FullscreenPlayerPage(
+                          sceneId: state.pathParameters['id']!,
+                        ),
+                      ),
+                    ],
+                  ),
+                  GoRoute(
+                    path: 'fullscreen/:id',
+                    builder: (context, state) => FullscreenPlayerPage(
+                      sceneId: state.pathParameters['id']!,
+                    ),
                   ),
                 ],
               ),

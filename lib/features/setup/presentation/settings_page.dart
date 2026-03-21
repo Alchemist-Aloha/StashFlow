@@ -48,6 +48,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   bool _preferSceneStreams = true;
   bool _sceneGridLayout = false;
+  bool _sceneTiktokLayout = false;
   bool _autoplayNext = false;
   bool _showVideoDebugInfo = false;
   bool _useDoubleTapSeek = true;
@@ -121,6 +122,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final apiKey = prefs.getString('server_api_key') ?? '';
     final preferSceneStreams = prefs.getBool(_preferSceneStreamsKey) ?? true;
     final sceneGridLayout = ref.read(sceneGridLayoutProvider);
+    final sceneTiktokLayout = ref.read(sceneTiktokLayoutProvider);
     final autoplayNext = prefs.getBool(_autoplayNextKey) ?? false;
     final showVideoDebugInfo = prefs.getBool(_showVideoDebugInfoKey) ?? false;
     final useDoubleTapSeek = prefs.getBool(_useDoubleTapSeekKey) ?? true;
@@ -133,6 +135,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     _apiKeyController.text = apiKey;
     _preferSceneStreams = preferSceneStreams;
     _sceneGridLayout = sceneGridLayout;
+    _sceneTiktokLayout = sceneTiktokLayout;
     _autoplayNext = autoplayNext;
     _showVideoDebugInfo = showVideoDebugInfo;
     _useDoubleTapSeek = useDoubleTapSeek;
@@ -233,6 +236,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setBool(_preferSceneStreamsKey, _preferSceneStreams);
     await ref.read(sceneGridLayoutProvider.notifier).set(_sceneGridLayout);
+    await ref.read(sceneTiktokLayoutProvider.notifier).set(_sceneTiktokLayout);
     await prefs.setBool(_autoplayNextKey, _autoplayNext);
     await prefs.setBool(_showVideoDebugInfoKey, _showVideoDebugInfo);
     await prefs.setBool(_useDoubleTapSeekKey, _useDoubleTapSeek);
@@ -431,17 +435,55 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   _buildSectionHeader('Display'),
-                  SwitchListTile.adaptive(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('Scenes Grid Layout'),
-                    subtitle: const Text(
-                      'When on, Scenes page uses grid view by default',
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingSmall),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Scenes Layout', style: TextStyle(fontSize: 16)),
+                              const SizedBox(height: 4),
+                              Text('Choose the default layout for the Scenes page', style: TextStyle(fontSize: 14, color: context.colors.onSurfaceVariant)),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: AppTheme.spacingMedium),
+                        DropdownMenu<String>(
+                          initialSelection: _sceneTiktokLayout
+                                  ? 'tiktok'
+                                  : (_sceneGridLayout ? 'grid' : 'list'),
+                          onSelected: (String? value) async {
+                            if (value == null) return;
+                            setState(() {
+                              _sceneTiktokLayout = value == 'tiktok';
+                              _sceneGridLayout = value == 'grid';
+                            });
+                            await _saveToggleSettings();
+                          },
+                          dropdownMenuEntries: const [
+                            DropdownMenuEntry<String>(
+                              value: 'list',
+                              label: '1 Column',
+                              leadingIcon: Icon(Icons.view_list),
+                            ),
+                            DropdownMenuEntry<String>(
+                              value: 'grid',
+                              label: '2 Column',
+                              leadingIcon: Icon(Icons.grid_view),
+                            ),
+                            DropdownMenuEntry<String>(
+                              value: 'tiktok',
+                              label: 'Infinite Scroll',
+                              leadingIcon: Icon(Icons.swipe_up),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                    value: _sceneGridLayout,
-                    onChanged: (value) async {
-                      setState(() => _sceneGridLayout = value);
-                      await _saveToggleSettings();
-                    },
                   ),
                   SwitchListTile.adaptive(
                     contentPadding: EdgeInsets.zero,

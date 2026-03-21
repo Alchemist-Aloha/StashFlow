@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:video_player/video_player.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
@@ -15,6 +16,7 @@ import '../providers/video_player_provider.dart';
 import '../../domain/entities/scene.dart';
 import '../../data/repositories/stream_resolver.dart';
 import 'native_video_controls.dart';
+import 'tiktok_scenes_view.dart';
 
 class SceneVideoPlayer extends ConsumerStatefulWidget {
   final Scene scene;
@@ -286,15 +288,11 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   Future<void> _toggleFullScreen() async {
     final playerState = ref.read(playerStateProvider);
     if (playerState.isFullScreen) {
-      Navigator.of(context, rootNavigator: true).pop();
+      if (context.mounted) {
+        context.pop();
+      }
     } else {
-      await Navigator.of(context, rootNavigator: true).push(
-        MaterialPageRoute<void>(
-          builder: (context) => FullscreenPlayerPage(
-            scene: widget.scene,
-          ),
-        ),
-      );
+      context.push('/scenes/scene/${widget.scene.id}/fullscreen');
     }
   }
 
@@ -371,20 +369,25 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
 }
 
 class FullscreenPlayerPage extends ConsumerStatefulWidget {
-  final Scene scene;
-  const FullscreenPlayerPage({required this.scene, super.key});
+  final String sceneId;
+  const FullscreenPlayerPage({required this.sceneId, super.key});
 
   @override
   ConsumerState<FullscreenPlayerPage> createState() => _FullscreenPlayerPageState();
 }
 
 class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
+  late PlayerState _playerStateNotifier;
+  late FullScreenMode _fullScreenModeNotifier;
+
   @override
   void initState() {
     super.initState();
+    _playerStateNotifier = ref.read(playerStateProvider.notifier);
+    _fullScreenModeNotifier = ref.read(fullScreenModeProvider.notifier);
     _enterFullscreen();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(playerStateProvider.notifier).setFullScreen(true);
+      _playerStateNotifier.setFullScreen(true);
     });
   }
 
@@ -405,6 +408,12 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+    // Safe to use saved notifiers during dispose, but wrap in microtask to avoid 
+    // "modifying provider while building" errors in some Flutter lifecycle states.
+    Future.microtask(() {
+      _playerStateNotifier.setFullScreen(false);
+      _fullScreenModeNotifier.set(false);
+    });
     super.dispose();
   }
 
@@ -412,42 +421,48 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
   Widget build(BuildContext context) {
     final playerState = ref.watch(playerStateProvider);
     final controller = playerState.videoPlayerController;
+    final scene = playerState.activeScene;
 
-    if (controller == null || !controller.value.isInitialized) {
-      return Container(
-        color: Colors.black,
-        child: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    return PopScope(
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) {
-          ref.read(playerStateProvider.notifier).setFullScreen(false);
-        }
-      },
-      child: Material(
-        color: Colors.black,
-        child: SizedBox.expand(
-          child: Stack(
+    if (controller == null || !controller.value.isInitialized || scene == null || scene.id != widget.sceneId) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Positioned.fill(
-                child: Center(
-                  child: AspectRatio(
-                    aspectRatio: controller.value.aspectRatio,
-                    child: VideoPlayer(controller),
-                  ),
-                ),
-              ),
-              NativeVideoControls(
-                controller: controller,
-                useDoubleTapSeek: playerState.useDoubleTapSeek,
-                enableNativePip: playerState.enableNativePip,
-                onFullScreenToggle: () => Navigator.of(context, rootNavigator: true).pop(),
-                scene: widget.scene,
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text(
+                'Initializing player...',
+                style: const TextStyle(color: Colors.white70),
               ),
             ],
           ),
+        ),
+      );
+    }
+
+    return Material(
+      color: Colors.black,
+      child: SizedBox.expand(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Center(
+                child: AspectRatio(
+                  aspectRatio: controller.value.aspectRatio,
+                  child: VideoPlayer(controller),
+                ),
+              ),
+            ),
+            NativeVideoControls(
+              controller: controller,
+              useDoubleTapSeek: playerState.useDoubleTapSeek,
+              enableNativePip: playerState.enableNativePip,
+              onFullScreenToggle: () => Navigator.of(context).pop(),
+              scene: scene,
+            ),
+          ],
         ),
       ),
     );

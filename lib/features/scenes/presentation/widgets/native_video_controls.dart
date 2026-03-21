@@ -517,6 +517,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                   },
                                 ),
                               IconButton(
+                                tooltip: 'Toggle Fullscreen',
                                 icon: Icon(
                                   isFullScreen
                                       ? Icons.fullscreen_exit_rounded

@@ -26,6 +26,28 @@ final sceneGridLayoutProvider = NotifierProvider<SceneGridLayout, bool>(
   SceneGridLayout.new,
 );
 
+final sceneTiktokLayoutProvider = NotifierProvider<SceneTiktokLayout, bool>(
+  SceneTiktokLayout.new,
+);
+
+class SceneTiktokLayout extends Notifier<bool> {
+  static const _storageKey = 'scene_tiktok_layout';
+
+  @override
+  bool build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getBool(_storageKey) ?? false;
+  }
+
+  Future<void> set(bool value) async {
+    if (state == value) return;
+    state = value;
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setBool(_storageKey, value);
+    ref.invalidate(sceneListProvider);
+  }
+}
+
 class SceneGridLayout extends Notifier<bool> {
   static const _storageKey = 'scene_grid_layout';
 

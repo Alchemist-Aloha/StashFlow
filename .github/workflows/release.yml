@@ -32,6 +32,24 @@ jobs:
           
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Decode Android keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/upload-keystore.jks
+
+      - name: Create key.properties
+        run: |
+          cat > android/key.properties <<EOF
+          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          storeFile=upload-keystore.jks
+          EOF
+
+      - name: Verify signing files
+        run: |
+          test -f android/upload-keystore.jks
+          test -f android/key.properties
         
       - name: Build APK
         run: flutter build apk --release
@@ -49,3 +67,4 @@ jobs:
           files: build/app/outputs/flutter-apk/app-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      

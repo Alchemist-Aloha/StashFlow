@@ -11,7 +11,8 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     required this.searchHint,
     required this.onSearchChanged,
     required this.provider,
-    required this.itemBuilder,
+    this.itemBuilder,
+    this.customBody,
     this.gridDelegate,
     this.actions = const [],
     this.sortBar,
@@ -20,13 +21,15 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     this.onFetchNextPage,
     this.floatingActionButton,
     this.padding = const EdgeInsets.all(AppTheme.spacingMedium),
+    this.hideAppBar = false,
   });
 
   final String title;
   final String searchHint;
   final ValueChanged<String> onSearchChanged;
   final AsyncValue<List<T>> provider;
-  final Widget Function(BuildContext context, T item) itemBuilder;
+  final Widget Function(BuildContext context, T item)? itemBuilder;
+  final Widget? customBody;
   final SliverGridDelegate? gridDelegate;
   final List<Widget> actions;
   final Widget? sortBar;
@@ -35,6 +38,7 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
   final VoidCallback? onFetchNextPage;
   final Widget? floatingActionButton;
   final EdgeInsetsGeometry padding;
+  final bool hideAppBar;
 
   @override
   ConsumerState<ListPageScaffold<T>> createState() =>
@@ -54,7 +58,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: widget.hideAppBar ? null : AppBar(
         scrolledUnderElevation: 4.0,
         title: _isSearching
             ? TextField(
@@ -99,7 +103,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
         children: [
           if (widget.sortBar != null) widget.sortBar!,
           Expanded(
-            child: RefreshIndicator(
+            child: widget.customBody ?? RefreshIndicator(
               onRefresh: widget.onRefresh ?? () async {},
               child: widget.provider.when(
                 data: (items) {
@@ -129,13 +133,13 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                             gridDelegate: widget.gridDelegate!,
                             itemCount: items.length,
                             itemBuilder: (context, index) =>
-                                widget.itemBuilder(context, items[index]),
+                                widget.itemBuilder!(context, items[index]),
                           )
                         : ListView.builder(
                             padding: widget.padding,
                             itemCount: items.length,
                             itemBuilder: (context, index) =>
-                                widget.itemBuilder(context, items[index]),
+                                widget.itemBuilder!(context, items[index]),
                           ),
                   );
                 },
