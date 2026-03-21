@@ -1,6 +1,6 @@
 _Historical note (2026-03-19): This document is retained for planning/spec context and may not reflect the current implementation exactly._
 
-# StashAppFlutter GraphQL API Integration Implementation Plan
+# StashFlow GraphQL API Integration Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 

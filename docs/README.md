@@ -8,6 +8,15 @@ This folder contains agent-focused project documentation.
 - [Troubleshooting](./TROUBLESHOOTING.md) (Debugging Playbook, Known Issues)
 - [Roadmap](./ROADMAP.md) (Current Tasks and Plans)
 
+## Current Implementation Notes (2026-03-20)
+
+- Dedicated full-screen navigation route (`/fullscreen/:id`) implemented for robust back-gesture and orientation management.
+- Global setting added to toggle visibility of "Random" navigation/discovery buttons.
+- Dynamic "Playlist" strategy implemented: "Play Next" now follows the current query sequence (sort/filter) if the manual queue is empty.
+- Scene rating functionality (1-100 range) integrated into `SceneDetailsPage` with a 5-star UI.
+- Expanded sorting options for Performers, Studios, and Tags (Rating, Date Created, Scene/Image/Gallery counts).
+- Standard and TikTok views updated to use `context.push()` for entering full-screen mode.
+
 ## Current Implementation Notes (2026-03-19)
 
 - Scenes/Performers/Studios/Tags use bottom-sheet sort and filter menus.

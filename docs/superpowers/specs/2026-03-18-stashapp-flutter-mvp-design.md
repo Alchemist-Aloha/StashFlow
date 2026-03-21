@@ -1,9 +1,9 @@
 _Historical note (2026-03-19): This document is retained for planning/spec context and may not reflect the current implementation exactly._
 
-# StashAppFlutter MVP Design Specification
+# StashFlow MVP Design Specification
 
 ## 1. Overview
-StashAppFlutter is a mobile-first Flutter client for the Stash media server. The MVP focuses on a "YouTube-style" experience for browsing and playing video scenes, built on a foundation that allows for future expansion into images, galleries, and full metadata management.
+StashFlow is a mobile-first Flutter client for the Stash media server. The MVP focuses on a "YouTube-style" experience for browsing and playing video scenes, built on a foundation that allows for future expansion into images, galleries, and full metadata management.
 
 ## 2. Architecture
 The application follows a **Per-Feature Clean Architecture** pattern.

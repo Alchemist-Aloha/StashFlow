@@ -38,6 +38,7 @@ dependencies:
   go_router: ^17.1.0
   graphql_flutter: ^5.3.0
   video_player: ^2.11.1
+  audio_service: ^0.18.17
   wakelock_plus: ^1.2.11
   shared_preferences: ^2.5.4
   flutter_hooks: ^0.21.3+1
@@ -49,6 +50,7 @@ dependencies:
   freezed_annotation: ^3.1.0
   riverpod_annotation: ^4.0.2
   graphql: ^5.2.4
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

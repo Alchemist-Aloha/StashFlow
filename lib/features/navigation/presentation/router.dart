@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/data/graphql/graphql_client.dart';
@@ -61,16 +62,31 @@ GoRouter router(Ref ref) {
                     routes: [
                       GoRoute(
                         path: 'fullscreen',
-                        builder: (context, state) => FullscreenPlayerPage(
-                          sceneId: state.pathParameters['id']!,
+                        pageBuilder: (context, state) => CustomTransitionPage(
+                          key: state.pageKey,
+                          child: FullscreenPlayerPage(
+                            sceneId: state.pathParameters['id']!,
+                          ),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) =>
+                                  FadeTransition(
+                                      opacity: animation, child: child),
+                          transitionDuration: const Duration(milliseconds: 200),
                         ),
                       ),
                     ],
                   ),
                   GoRoute(
                     path: 'fullscreen/:id',
-                    builder: (context, state) => FullscreenPlayerPage(
-                      sceneId: state.pathParameters['id']!,
+                    pageBuilder: (context, state) => CustomTransitionPage(
+                      key: state.pageKey,
+                      child: FullscreenPlayerPage(
+                        sceneId: state.pathParameters['id']!,
+                      ),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) =>
+                              FadeTransition(opacity: animation, child: child),
+                      transitionDuration: const Duration(milliseconds: 200),
                     ),
                   ),
                 ],

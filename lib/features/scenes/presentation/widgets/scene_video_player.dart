@@ -342,27 +342,33 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
 
     return AspectRatio(
       aspectRatio: aspectRatio,
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: Container(
-              color: Colors.black,
-              child: Center(
-                child: AspectRatio(
-                  aspectRatio: controller.value.aspectRatio,
-                  child: VideoPlayer(controller),
+      child: Hero(
+        tag: 'scene_player_${widget.scene.id}',
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Container(
+                color: Colors.black,
+                child: Center(
+                  child: AspectRatio(
+                    aspectRatio: controller.value.aspectRatio,
+                    child: VideoPlayer(controller),
+                  ),
                 ),
               ),
             ),
-          ),
-          NativeVideoControls(
-            controller: controller,
-            useDoubleTapSeek: playerState.useDoubleTapSeek,
-            enableNativePip: playerState.enableNativePip,
-            onFullScreenToggle: _toggleFullScreen,
-            scene: widget.scene,
-          ),
-        ],
+            Material(
+              color: Colors.transparent,
+              child: NativeVideoControls(
+                controller: controller,
+                useDoubleTapSeek: playerState.useDoubleTapSeek,
+                enableNativePip: playerState.enableNativePip,
+                onFullScreenToggle: _toggleFullScreen,
+                scene: widget.scene,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -385,8 +391,9 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
     super.initState();
     _playerStateNotifier = ref.read(playerStateProvider.notifier);
     _fullScreenModeNotifier = ref.read(fullScreenModeProvider.notifier);
-    _enterFullscreen();
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _enterFullscreen();
       _playerStateNotifier.setFullScreen(true);
     });
   }
@@ -444,25 +451,28 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
 
     return Material(
       color: Colors.black,
-      child: SizedBox.expand(
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Center(
-                child: AspectRatio(
-                  aspectRatio: controller.value.aspectRatio,
-                  child: VideoPlayer(controller),
+      child: Hero(
+        tag: 'scene_player_${widget.sceneId}',
+        child: SizedBox.expand(
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Center(
+                  child: AspectRatio(
+                    aspectRatio: controller.value.aspectRatio,
+                    child: VideoPlayer(controller),
+                  ),
                 ),
               ),
-            ),
-            NativeVideoControls(
-              controller: controller,
-              useDoubleTapSeek: playerState.useDoubleTapSeek,
-              enableNativePip: playerState.enableNativePip,
-              onFullScreenToggle: () => Navigator.of(context).pop(),
-              scene: scene,
-            ),
-          ],
+              NativeVideoControls(
+                controller: controller,
+                useDoubleTapSeek: playerState.useDoubleTapSeek,
+                enableNativePip: playerState.enableNativePip,
+                onFullScreenToggle: () => Navigator.of(context).pop(),
+                scene: scene,
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,6 +1,6 @@
 _Historical note (2026-03-19): This document is retained for planning/spec context and may not reflect the current implementation exactly._
 
-# StashAppFlutter Initial Setup Implementation Plan
+# StashFlow Initial Setup Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -104,13 +104,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'StashAppFlutter',
+      title: 'StashFlow',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple, brightness: Brightness.dark),
         useMaterial3: true,
       ),
       home: const Scaffold(
-        body: Center(child: Text('StashAppFlutter Placeholder')),
+        body: Center(child: Text('StashFlow Placeholder')),
       ),
     );
   }

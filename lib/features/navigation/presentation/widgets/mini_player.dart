@@ -12,8 +12,8 @@ class MiniPlayer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final playerState = ref.watch(playerStateProvider);
-    final activeScene = playerState.activeScene;
+    final activeScene = ref.watch(playerStateProvider.select((s) => s.activeScene));
+    final isPlaying = ref.watch(playerStateProvider.select((s) => s.isPlaying));
     final mediaHeaders = ref.watch(mediaHeadersProvider);
 
     if (activeScene == null) return const SizedBox.shrink();
@@ -41,6 +41,7 @@ class MiniPlayer extends ConsumerWidget {
                 activeScene.paths.screenshot ?? '',
                 headers: mediaHeaders,
                 fit: BoxFit.cover,
+                cacheWidth: 320,
                 errorBuilder: (c, e, s) => const Icon(Icons.movie),
               ),
             ),
@@ -72,7 +73,7 @@ class MiniPlayer extends ConsumerWidget {
               onPressed: () =>
                   ref.read(playerStateProvider.notifier).togglePlayPause(),
               icon: Icon(
-                playerState.isPlaying ? Icons.pause : Icons.play_arrow,
+                isPlaying ? Icons.pause : Icons.play_arrow,
                 color: context.colors.onSurface,
               ),
             ),

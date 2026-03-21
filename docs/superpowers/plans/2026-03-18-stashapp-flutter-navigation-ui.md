@@ -1,6 +1,6 @@
 _Historical note (2026-03-19): This document is retained for planning/spec context and may not reflect the current implementation exactly._
 
-# StashAppFlutter Navigation & Initial UI Implementation Plan
+# StashFlow Navigation & Initial UI Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -64,7 +64,7 @@ class MyApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     return MaterialApp.router(
       routerConfig: router,
-      title: 'StashAppFlutter',
+      title: 'StashFlow',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple, brightness: Brightness.dark),
         useMaterial3: true,

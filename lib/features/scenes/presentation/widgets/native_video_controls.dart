@@ -100,7 +100,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     final isFullScreen = ref.read(playerStateProvider).isFullScreen;
     if (!isFullScreen) return;
     
-    unawaited(PipMode.enterIfAvailable());
+    unawaited(PipMode.enterIfAvailable(aspectRatio: controller.value.aspectRatio));
   }
 
   void _onVideoTick() {
@@ -241,6 +241,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
   @override
   Widget build(BuildContext context) {
     final playerState = ref.watch(playerStateProvider);
+
+    if (playerState.isInPipMode) {
+      return const SizedBox.shrink();
+    }
+
     final value = widget.controller.value;
     final duration = value.duration;
     final durationMs = math.max(1, duration.inMilliseconds);
@@ -512,7 +517,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                       // Small delay to allow transition
                                       await Future.delayed(const Duration(milliseconds: 150));
                                     }
-                                    await PipMode.enterIfAvailable();
+                                    await PipMode.enterIfAvailable(aspectRatio: widget.controller.value.aspectRatio);
                                     _showControlsTemporarily();
                                   },
                                 ),

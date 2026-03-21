@@ -1,4 +1,4 @@
-# 📱 StashAppFlutter
+# 📱 StashFlow
 ### Your Stash library, everywhere.
 
 A mobile-first Flutter client for your **Stash** server. Designed for seamless browsing, effortless discovery, and high-quality playback on the go.
@@ -20,7 +20,7 @@ A mobile-first Flutter client for your **Stash** server. Designed for seamless b
 
 ## 🚀 Getting Started
 
-1. **Download:** Grab the latest APK from the [Releases](https://github.com/Alchemist-Aloha/StashAppFlutter/releases) page.
+1. **Download:** Grab the latest APK from the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page.
 2. **Connect:** Open the app ➔ Settings ➔ Enter your **Server URL** and **API Key**.
 3. **Browse:** Your library will automatically sync and be ready for action.
 

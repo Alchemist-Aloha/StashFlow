@@ -289,15 +289,17 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     final isTiktokLayout = ref.watch(sceneTiktokLayoutProvider);
     final isGridView = ref.watch(sceneGridLayoutProvider);
     final scenesAsync = ref.watch(sceneListProvider);
-    final filterState = ref.watch(sceneFilterStateProvider);
+    
+    // Use select for more granular watching where possible
+    final filterActive = ref.watch(sceneFilterStateProvider.select((s) => s != SceneFilter.empty()));
     final organizedOnly = ref.watch(sceneOrganizedOnlyProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final isFullScreen = ref.watch(fullScreenModeProvider);
-    final hasActiveFilters =
-        filterState != SceneFilter.empty() || organizedOnly;
+    
+    final hasActiveFilters = filterActive || organizedOnly;
 
     return ListPageScaffold<Scene>(
-      title: 'Stash',
+      title: 'StashFlow',
       searchHint: 'Search scenes...',
       onSearchChanged: _onSearchChanged,
       provider: scenesAsync,

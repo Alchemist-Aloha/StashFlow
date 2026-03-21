@@ -107,6 +107,7 @@ class SceneCard extends ConsumerWidget {
                     headers: mediaHeaders,
                     width: double.infinity,
                     fit: BoxFit.cover,
+                    cacheWidth: 640,
                     errorBuilder: (context, error, stackTrace) => Container(
                       color: Colors.grey[800],
                       child: const Center(
@@ -205,6 +206,7 @@ class SceneCard extends ConsumerWidget {
                     headers: mediaHeaders,
                     width: double.infinity,
                     fit: BoxFit.cover,
+                    cacheWidth: 320,
                     errorBuilder: (context, error, stackTrace) => Container(
                       color: Colors.grey[800],
                       child: const Center(

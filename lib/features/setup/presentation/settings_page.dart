@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:graphql/client.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
@@ -538,6 +539,42 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     subtitle: const Text('Open a live view of in-app logs'),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => context.push('/settings/logs'),
+                  ),
+                  const SizedBox(height: AppTheme.spacingLarge),
+                  _buildSectionHeader('About'),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.code),
+                    title: const Text('GitHub Repository'),
+                    subtitle: const Text('View source code and report issues'),
+                    trailing: const Icon(Icons.open_in_new, size: 20),
+                    onTap: () async {
+                      final url = Uri.parse(
+                        'https://github.com/Alchemist-Aloha/StashFlow',
+                      );
+                      try {
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(
+                            url,
+                            mode: LaunchMode.externalApplication,
+                          );
+                        } else {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Could not open GitHub link'),
+                              ),
+                            );
+                          }
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error: $e')),
+                          );
+                        }
+                      }
+                    },
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                 ],

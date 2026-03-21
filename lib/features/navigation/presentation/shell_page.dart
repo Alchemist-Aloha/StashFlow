@@ -41,53 +41,55 @@ class ShellPage extends ConsumerWidget {
         isFullScreen ||
         (isTiktokLayout && onScenesPage);
 
-    return Scaffold(
-      body: Column(
-        children: [
-          Expanded(child: navigationShell),
-          if (!hideMiniPlayer) const MiniPlayer(),
-        ],
-      ),
-      bottomNavigationBar: isFullScreen ? null : SafeArea(
-        top: false,
-        child: Row(
+    return PopScope(
+      canPop: !context.canPop(),
+      child: Scaffold(
+        body: Column(
           children: [
-            Expanded(
-              child: NavigationBar(
-                selectedIndex: navigationShell.currentIndex,
-                destinations: const [
-                  NavigationDestination(
-                    icon: Icon(Icons.video_library),
-                    label: 'Scenes',
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.people),
-                    label: 'Performers',
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.business),
-                    label: 'Studios',
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.local_offer),
-                    label: 'Tags',
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.settings),
-                    label: 'Settings',
-                  ),
-                ],
-                onDestinationSelected: (index) {
-                  navigationShell.goBranch(
-                    index,
-                    initialLocation: index == navigationShell.currentIndex,
-                  );
-                },
-              ),
-            ),
+            Expanded(child: navigationShell),
+            if (!hideMiniPlayer) const MiniPlayer(),
           ],
         ),
+        bottomNavigationBar: isFullScreen ? null : SafeArea(
+          top: false,
+          child: Row(
+            children: [
+              Expanded(
+                child: NavigationBar(
+                  selectedIndex: navigationShell.currentIndex,
+                  destinations: const [
+                    NavigationDestination(
+                      icon: Icon(Icons.video_library),
+                      label: 'Scenes',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.people),
+                      label: 'Performers',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.business),
+                      label: 'Studios',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.local_offer),
+                      label: 'Tags',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.settings),
+                      label: 'Settings',
+                    ),
+                  ],
+                  onDestinationSelected: (index) {
+                    navigationShell.goBranch(
+                      index,
+                      initialLocation: index == navigationShell.currentIndex,
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-    );
-  }
+    );  }
 }
