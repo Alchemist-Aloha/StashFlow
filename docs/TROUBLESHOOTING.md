@@ -110,8 +110,6 @@ Symptoms:
 Checks:
 1. Remove unsupported fields from operation documents.
 2. Regenerate code (`dart run build_runner build --delete-conflicting-outputs`).
-3. Re-run analyze/tests.
-
 ## Sorting/filtering errors from backend
 
 Symptoms:
@@ -147,11 +145,16 @@ If broken:
 <!-- UI_GUIDELINE_REF -->
 
 ## UI Guideline Reference
-See [UIGUIDELINE.md](UIGUIDELINE.md) for current UI standards.
+See [#ui-guideline](#ui-guideline) for current UI standards.
 
 # Known Issues
 
 ## Closed Recently
+
+### Scene rating and play-count sorting mismatch
+
+- Status: Closed (2026-03-20)
+- Resolution: Implemented official `rating100` and `play_count` sort keys from server schema and added 5-star rating UI.
 
 ### Stream resolver failed when query returned data with cache re-read exception
 
@@ -248,4 +251,4 @@ See [UIGUIDELINE.md](UIGUIDELINE.md) for current UI standards.
 <!-- UI_GUIDELINE_REF -->
 
 ## UI Guideline Reference
-See [UIGUIDELINE.md](UIGUIDELINE.md) for current UI standards.
+See [#ui-guideline](#ui-guideline) for current UI standards.

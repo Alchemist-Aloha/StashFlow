@@ -1,6 +1,6 @@
 _Historical note (2026-03-19): This document is retained for planning/spec context and may not reflect the current implementation exactly._
 
-# StashAppFlutter Functions + UI Improvement Plan (2026-03-19)
+# StashFlow Functions + UI Improvement Plan (2026-03-19)
 
 > For agent workers: execute in small vertical slices and verify each slice with `flutter analyze` + targeted tests.
 

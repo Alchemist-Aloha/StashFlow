@@ -1,4 +1,4 @@
-# Spec: StashAppFlutter README Improvement
+# Spec: StashFlow README Improvement
 
 Improve the project's `README.md` to be more appealing to end-users by focusing on features, visuals, and ease of use.
 
@@ -9,9 +9,9 @@ Improve the project's `README.md` to be more appealing to end-users by focusing 
 -   Provide a clear "Getting Started" path for users.
 
 ## Section 1: Hero & Vision
--   **Title:** StashAppFlutter - Your Stash library, everywhere.
+-   **Title:** StashFlow - Your Stash library, everywhere.
 -   **Pitch:** A mobile-first Flutter client for your Stash server, designed for seamless browsing and high-quality playback on the go.
--   **Visuals:** Use a Markdown image tag placeholder for a "Feature Showcase" screenshot (e.g., `![StashAppFlutter Showcase](docs/assets/showcase.png)`).
+-   **Visuals:** Use a Markdown image tag placeholder for a "Feature Showcase" screenshot (e.g., `![StashFlow Showcase](docs/assets/showcase.png)`).
 
 ## Section 2: Key Features (The "Why")
 -   🎬 **Seamless Playback:** Integrated video player with support for multiple streaming strategies and startup diagnostics.

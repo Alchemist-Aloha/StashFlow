@@ -550,13 +550,29 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     trailing: const Icon(Icons.open_in_new, size: 20),
                     onTap: () async {
                       final url = Uri.parse(
-                        'https://github.com/Alchemist-Aloha/StashAppFlutter',
+                        'https://github.com/Alchemist-Aloha/StashFlow',
                       );
-                      if (await canLaunchUrl(url)) {
-                        await launchUrl(
-                          url,
-                          mode: LaunchMode.externalApplication,
-                        );
+                      try {
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(
+                            url,
+                            mode: LaunchMode.externalApplication,
+                          );
+                        } else {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Could not open GitHub link'),
+                              ),
+                            );
+                          }
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error: $e')),
+                          );
+                        }
                       }
                     },
                   ),

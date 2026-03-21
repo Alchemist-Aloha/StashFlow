@@ -2,8 +2,8 @@
 
 ## 1) Understand the current baseline
 
-1. Read known issues first: `docs/KNOWNISSUES.md`.
-2. Scan architecture map: `docs/ARCHITECTURE_MAP.md`.
+1. Read known issues first: [TROUBLESHOOTING.md](./TROUBLESHOOTING.md).
+2. Scan architecture map: [#architecture-map](#architecture-map).
 3. Check project health quickly:
    - `flutter analyze`
    - `flutter test`
@@ -48,7 +48,7 @@
 <!-- UI_GUIDELINE_REF -->
 
 ## UI Guideline Reference
-See [UIGUIDELINE.md](UIGUIDELINE.md) for current UI standards.
+See [#ui-guideline](#ui-guideline) for current UI standards.
 
 # Architecture Map
 
@@ -111,7 +111,7 @@ See [UIGUIDELINE.md](UIGUIDELINE.md) for current UI standards.
 <!-- UI_GUIDELINE_REF -->
 
 ## UI Guideline Reference
-See [UIGUIDELINE.md](UIGUIDELINE.md) for current UI standards.
+See [#ui-guideline](#ui-guideline) for current UI standards.
 
 # Commands
 
@@ -167,7 +167,7 @@ flutter pub get
 <!-- UI_GUIDELINE_REF -->
 
 ## UI Guideline Reference
-See [UIGUIDELINE.md](UIGUIDELINE.md) for current UI standards.
+See [#ui-guideline](#ui-guideline) for current UI standards.
 
 # Change Checklist
 
@@ -203,12 +203,12 @@ Use this before closing a task.
 <!-- UI_GUIDELINE_REF -->
 
 ## UI Guideline Reference
-See [UIGUIDELINE.md](UIGUIDELINE.md) for current UI standards.
+See [#ui-guideline](#ui-guideline) for current UI standards.
 
 # UI Guideline
 
 ## Purpose
-This document defines practical UI standards for the StashAppFlutter project.
+This document defines practical UI standards for the StashFlow project.
 Use these rules for new UI work and when refactoring existing screens.
 
 ## Core Principles

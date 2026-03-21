@@ -1,6 +1,15 @@
-# StashAppFlutter Functions + UI Improvement Plan (2026-03-19)
+# StashFlow Functions + UI Improvement Plan (2026-03-19)
+
+> Status update (2026-03-20): Full-screen navigation, random nav toggle, dynamic playlist strategy, and scene rating functionality are now implemented.
 
 > Status update (2026-03-19): Core roadmap items in this plan are largely completed. Keep this file as historical tracking and move new work to fresh dated plan docs.
+
+> Latest delta (2026-03-20):
+> - [x] Implemented dedicated `/fullscreen/:id` route for robust navigation.
+> - [x] Added global setting to toggle "Random" discovery buttons.
+> - [x] Implemented dynamic "Playlist" strategy (Play Next follows current sequence).
+> - [x] Added scene rating UI and mutation support.
+> - [x] Expanded sorting for Performers, Studios, and Tags.
 
 > Latest delta (2026-03-19, evening):
 > - [x] Mini-player tap no longer intentionally restarts current playback session.

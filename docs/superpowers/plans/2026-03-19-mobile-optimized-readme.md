@@ -18,12 +18,12 @@
 - [ ] **Step 1: Replace existing title and description with high-impact "Mobile-First" messaging.**
 
 ```markdown
-# 📱 StashAppFlutter
+# 📱 StashFlow
 ### Your Stash library, everywhere.
 
 A mobile-first Flutter client for your **Stash** server. Designed for seamless browsing, effortless discovery, and high-quality playback on the go.
 
-![StashAppFlutter Showcase](docs/assets/showcase.png)
+![StashFlow Showcase](docs/assets/showcase.png)
 *(Screenshot coming soon)*
 ```
 
@@ -70,7 +70,7 @@ git commit -m "docs: add scannable features section to README"
 ```markdown
 ## 🚀 Getting Started
 
-1. **Download:** Grab the latest APK from the [Releases](https://github.com/Alchemist-Aloha/StashAppFlutter/releases) page.
+1. **Download:** Grab the latest APK from the [Releases](https://github.com/Alchemist-Aloha/StashFlow/releases) page.
 2. **Connect:** Open the app ➔ Settings ➔ Enter your **Server URL** and **API Key**.
 3. **Browse:** Your library will automatically sync and be ready for action.
 

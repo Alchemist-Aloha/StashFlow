@@ -2,18 +2,25 @@
 
 ## Short-term Goals
 
-- [ ] in scene details full scrren view, scroll back will take it back to scene list.
-- [ ] **System integration** Connect video playback to android system video api
-- [ ] **Infinite scroll improvement** 
+- [x] In scene details fullscreen view, swipe back returns to scene list/details.
+- [x] Add rating UI widget and backend mutation support.
+- [ ] **System integration:** Connect video playback to android system video api.
+- [ ] **Infinite scroll improvement:** 
     - long press swipe up to speed up more
     - send watched after 5 seconds to graphql server
-    - add rating ui widget that fit the infinite scroll ui. 
-the tiktok layout rating works but doesnt automatically update the widget itself. fix this.
+
+## Recently Completed (2026-03-20)
+
+- [x] Dedicated `/fullscreen/:id` route for robust navigation.
+- [x] Global toggle for "Random" discovery buttons.
+- [x] Dynamic "Playlist" strategy (Play Next follows current sequence).
+- [x] Advanced sorting/filtering for Performers, Studios, and Tags.
+
 
 
 ## Long-term Goals
 
 - [ ] **Extended Scraping:** Implement metadata scraping functionality for Performers and Studios.
 - [ ] **Batch Operations:** Develop batch scraping capabilities for updating multiple items simultaneously.
-- [ ] **Playlist Strategy Review:** Evaluate the necessity of a formal "Playlist" feature versus dynamically using the current query sequence (following the active sort order).
-- [ ] **Playback Queue Fixes:** Investigate and fix the "Play Next" logic to ensure reliable transitions between scenes in the queue.
+- [x] **Playlist Strategy:** Implemented dynamic query sequence for "Play Next".
+- [ ] **Playback Queue Fixes:** Investigate and fix the "Play Next" logic to ensure reliable transitions between scenes in the manual queue.

@@ -76,7 +76,7 @@ class MyApp extends ConsumerWidget {
     final themeMode = ref.watch(appThemeModeProvider);
     return MaterialApp.router(
       routerConfig: router,
-      title: 'StashAppFlutter',
+      title: 'StashFlow',
       themeMode: themeMode,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,

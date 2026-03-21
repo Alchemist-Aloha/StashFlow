@@ -1,9 +1,9 @@
 _Historical note (2026-03-19): This document is retained for planning/spec context and may not reflect the current implementation exactly._
 
-# StashAppFlutter Design Specification
+# StashFlow Design Specification
 
 ## Overview
-StashAppFlutter is a mobile-first Flutter application designed to replicate the functionality of the `StashAppAndroid` TV app, optimized for mobile devices with a YouTube-style UI/UX.
+StashFlow is a mobile-first Flutter application designed to replicate the functionality of the `StashAppAndroid` TV app, optimized for mobile devices with a YouTube-style UI/UX.
 
 ## Target Platform
 - **Android Only** (initially, with potential for iOS).
