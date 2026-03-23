@@ -49,3 +49,5 @@ app.*.map.json
 gha-creds-*.json
 android/key.properties
 android/upload-keystore.jks
+
+/docs/superpowers/
