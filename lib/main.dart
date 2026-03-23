@@ -11,6 +11,7 @@ import 'package:audio_service/audio_service.dart';
 
 import 'core/presentation/theme/app_theme.dart';
 import 'core/presentation/theme/theme_mode_provider.dart';
+import 'core/presentation/theme/theme_color_provider.dart';
 
 StashMediaHandler? mediaHandler;
 
@@ -74,12 +75,14 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final themeMode = ref.watch(appThemeModeProvider);
+    final seedColor = ref.watch(appThemeColorProvider);
+
     return MaterialApp.router(
       routerConfig: router,
       title: 'StashFlow',
       themeMode: themeMode,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: AppTheme.buildTheme(Brightness.light, seedColor),
+      darkTheme: AppTheme.buildTheme(Brightness.dark, seedColor),
     );
   }
 }
