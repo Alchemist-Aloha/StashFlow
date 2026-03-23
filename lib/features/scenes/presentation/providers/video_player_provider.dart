@@ -426,8 +426,11 @@ class PlayerState extends _$PlayerState {
   Future<void> playNext() async {
     if (!ref.mounted) return;
 
-    final nextScene = ref.read(playbackQueueProvider.notifier).getNextScene();
+    final queueNotifier = ref.read(playbackQueueProvider.notifier);
+    final nextScene = queueNotifier.getNextScene();
+    
     if (nextScene != null) {
+      queueNotifier.playNext(); // Increment index in queue
       final resolver = ref.read(streamResolverProvider.notifier);
       final choice = await resolver.resolvePreferredStream(nextScene);
       if (choice != null) {
