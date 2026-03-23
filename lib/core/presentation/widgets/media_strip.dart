@@ -51,7 +51,11 @@ class MediaStrip extends StatelessWidget {
           final item = items[index];
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (context.mounted) {
-              StashImage.prefetch(context, imageUrl: item.thumbnailUrl, headers: headers);
+              StashImage.prefetch(
+                context,
+                imageUrl: item.thumbnailUrl,
+                headers: headers,
+              );
             }
           });
           return InkWell(

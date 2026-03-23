@@ -39,7 +39,9 @@ class StashImage extends ConsumerWidget {
     required String? imageUrl,
     Map<String, String>? headers,
   }) async {
-    if (imageUrl == null || imageUrl.isEmpty || _prefetched.contains(imageUrl)) {
+    if (imageUrl == null ||
+        imageUrl.isEmpty ||
+        _prefetched.contains(imageUrl)) {
       return;
     }
 
