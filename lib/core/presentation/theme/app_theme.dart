@@ -100,10 +100,10 @@ class AppTheme {
   static const radiusLarge = 16.0;
   static const radiusExtraLarge = 28.0;
 
-  static ThemeData _buildTheme(Brightness brightness) {
+  static ThemeData buildTheme(Brightness brightness, Color seedColor) {
     final isDark = brightness == Brightness.dark;
     final colorScheme = ColorScheme.fromSeed(
-      seedColor: const Color(0xFF0F766E),
+      seedColor: seedColor,
       brightness: brightness,
     );
 
@@ -174,9 +174,6 @@ class AppTheme {
       ],
     );
   }
-
-  static final lightTheme = _buildTheme(Brightness.light);
-  static final darkTheme = _buildTheme(Brightness.dark);
 }
 
 extension AppThemeX on BuildContext {
