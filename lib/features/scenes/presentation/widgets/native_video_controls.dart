@@ -323,29 +323,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                 ),
               ),
 
-            // Next Scene Button
-            if (nextScene != null)
-              Positioned(
-                bottom: _controlsVisible ? 130 : 16,
-                right: 16,
-                child: AnimatedOpacity(
-                  opacity: _controlsVisible ? 1 : 0,
-                  duration: const Duration(milliseconds: 180),
-                  child: IgnorePointer(
-                    ignoring: !_controlsVisible,
-                    child: ElevatedButton.icon(
-                      onPressed: () => ref.read(playerStateProvider.notifier).playNext(),
-                      icon: const Icon(Icons.skip_next),
-                      label: Text('Next: ${nextScene.displayTitle}'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black54,
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
             // Bottom Control Bar
             Align(
               alignment: Alignment.bottomCenter,
@@ -437,6 +414,24 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                   },
                                 ),
                               ),
+                              if (nextScene != null) ...[
+                                const SizedBox(width: 8),
+                                Material(
+                                  color: const Color(0x30FFFFFF),
+                                  shape: const CircleBorder(),
+                                  child: IconButton(
+                                    iconSize: 24,
+                                    icon: const Icon(
+                                      Icons.skip_next_rounded,
+                                      color: Colors.white,
+                                    ),
+                                    onPressed: () {
+                                      ref.read(playerStateProvider.notifier).playNext();
+                                      _showControlsTemporarily();
+                                    },
+                                  ),
+                                ),
+                              ],
                               const SizedBox(width: 8),
                               Text(
                                 '${_format(Duration(milliseconds: sliderValue.round()))} / ${_format(duration)}',
