@@ -62,6 +62,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   final _customHexController = TextEditingController();
   final _customHexFocusNode = FocusNode();
   Color _seedColor = const Color(0xFF0F766E);
+  bool _forceShowCustom = false;
   bool _preferSceneStreams = true;
   bool _sceneGridLayout = false;
   bool _sceneTiktokLayout = false;
@@ -182,7 +183,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   }
 
   Future<void> _saveThemeColor(Color color) async {
-    setState(() => _seedColor = color);
+    setState(() {
+      _seedColor = color;
+      _forceShowCustom = false;
+    });
     await ref.read(appThemeColorProvider.notifier).setThemeColor(color);
   }
 
@@ -650,7 +654,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   }
 
   Widget _buildColorSelector() {
-    final isCustom = !_presetColors.contains(_seedColor);
+    final isCustom = _forceShowCustom || !_presetColors.contains(_seedColor);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -680,7 +684,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               if (value.length == 8) {
                 final colorValue = int.tryParse(value, radix: 16);
                 if (colorValue != null) {
-                  _saveThemeColor(Color(colorValue));
+                  // Don't reset _forceShowCustom while typing if it's already true
+                  _seedColor = Color(colorValue);
+                  ref.read(appThemeColorProvider.notifier).setThemeColor(_seedColor);
                 }
               }
             },
@@ -692,8 +698,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   Widget _buildColorSwatch(Color? color) {
     final isSelected = color == null
-        ? !_presetColors.contains(_seedColor)
-        : _seedColor == color;
+        ? (!_presetColors.contains(_seedColor) || _forceShowCustom)
+        : (_seedColor == color && !_forceShowCustom);
     final displayColor = color ?? _seedColor;
 
     return Padding(
@@ -702,14 +708,16 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         onTap: () {
           if (color != null) {
             _saveThemeColor(color);
-          } else if (!_presetColors.contains(_seedColor)) {
-            // Already custom, just focus
-            _customHexFocusNode.requestFocus();
           } else {
-            // Switch to custom, use current as base
-            _customHexController.text =
-                _seedColor.value.toRadixString(16).padLeft(8, '0').toUpperCase();
-            setState(() {}); // Show text field
+            // Switch to/focus custom mode
+            setState(() {
+              _forceShowCustom = true;
+              if (_customHexController.text.isEmpty) {
+                _customHexController.text =
+                    _seedColor.value.toRadixString(16).padLeft(8, '0').toUpperCase();
+              }
+            });
+            _customHexFocusNode.requestFocus();
           }
         },
         borderRadius: BorderRadius.circular(20),
