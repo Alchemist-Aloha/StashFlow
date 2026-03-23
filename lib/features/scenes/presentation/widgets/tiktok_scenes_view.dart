@@ -513,6 +513,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
         context.pop();
       }
     } else {
+      final router = GoRouter.of(context);
       final playerNotifier = ref.read(playerStateProvider.notifier);
       final globalState = ref.read(playerStateProvider);
       final controller = widget.controller;
@@ -537,9 +538,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
         }
       }
 
-      if (context.mounted) {
-        context.push('/scenes/fullscreen/${widget.scene.id}');
-      }
+      router.push('/scenes/fullscreen/${widget.scene.id}');
     }
   }
 
@@ -710,14 +709,13 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                       ),
                     ],
                     const SizedBox(height: 8),
-                    if (widget.scene.date != null)
-                      Text(
-                        widget.scene.date.toString().split(' ')[0],
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                        ),
+                    Text(
+                      widget.scene.date.toString().split(' ')[0],
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
                       ),
+                    ),
                   ],
                 ),
               ),

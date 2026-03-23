@@ -5,12 +5,14 @@ import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/playback_queue_provider.dart';
+import '../providers/video_player_provider.dart';
 import '../widgets/scene_card.dart';
 import '../widgets/tiktok_scenes_view.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 import '../widgets/scene_filter_panel.dart';
 
@@ -27,6 +29,15 @@ enum _SceneSortField {
   random,
 }
 
+/// The main browsing page for scenes.
+///
+/// This page supports three layout modes:
+/// 1. **List**: Standard vertical list of large [SceneCard]s.
+/// 2. **Grid**: Two-column grid of compact [SceneCard]s.
+/// 3. **TikTok**: Infinite scrolling full-screen video feed via [TiktokScenesView].
+///
+/// It also provides comprehensive sorting and filtering capabilities, search integration,
+/// and a random navigation feature ("Casino mode").
 class ScenesPage extends ConsumerStatefulWidget {
   const ScenesPage({super.key});
 
@@ -286,6 +297,19 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<GlobalPlayerState>(playerStateProvider, (previous, next) {
+      // Handle full-screen auto-exit
+      if (previous?.isFullScreen == true && next.isFullScreen == false) {
+        if (context.mounted && GoRouter.of(context).canPop()) {
+           AppLogStore.instance.add(
+            'ScenesPage: popping fullscreen view',
+            source: 'ScenesPage',
+          );
+          context.pop();
+        }
+      }
+    });
+
     final isTiktokLayout = ref.watch(sceneTiktokLayoutProvider);
     final isGridView = ref.watch(sceneGridLayoutProvider);
     final scenesAsync = ref.watch(sceneListProvider);

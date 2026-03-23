@@ -19,6 +19,17 @@ import '../providers/video_player_provider.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../widgets/scene_video_player.dart';
 
+/// A detailed view for a single scene.
+///
+/// This page displays:
+/// * A video player ([SceneVideoPlayer]) at the top.
+/// * Scene metadata (title, studio, date, performers, tags).
+/// * Related media strips (scenes from the same studio, performers, etc.).
+/// * Direct file information.
+///
+/// It also handles sophisticated navigation logic:
+/// * Listens to [playerStateProvider] to auto-navigate to the next scene when the current one ends.
+/// * Pops the immersive fullscreen view automatically when playback transitions to a new scene.
 class SceneDetailsPage extends ConsumerStatefulWidget {
   final String sceneId;
   const SceneDetailsPage({required this.sceneId, super.key});

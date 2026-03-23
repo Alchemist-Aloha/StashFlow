@@ -420,14 +420,20 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
 
   @override
   void dispose() {
-    // Restore system UI and portrait orientations.
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    // Restore system UI and FORCE portrait orientation first
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
+    ]).then((_) {
+      // Then allow other orientations if needed, though usually we just want portrait for the list
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
+    });
+    
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     
     // Notify providers that we've exited fullscreen.
     Future.microtask(() {
