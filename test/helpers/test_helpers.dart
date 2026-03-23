@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -167,7 +168,7 @@ class MockTagRepository extends MockRepositoryState<Tag> implements TagRepositor
 Future<void> pumpTestWidget(
   WidgetTester tester, {
   required Widget child,
-  List overrides = const [],
+  List<dynamic> overrides = const [],
   SharedPreferences? prefs,
 }) async {
   final finalPrefs = prefs ?? await SharedPreferences.getInstance();

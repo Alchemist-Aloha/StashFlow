@@ -1,7 +1,7 @@
 # 📱 StashFlow
 ### Your Stash library, everywhere.
 
-A mobile-first Flutter client for your **Stash** server. Designed for seamless browsing, effortless discovery, and high-quality playback on the go.
+A native Android mobile client for your **Stash** server. Designed for seamless browsing, effortless discovery, and high-quality playback on the go.
 
 ## 📸 Screenshots
 
@@ -68,3 +68,5 @@ For architecture, known issues, and onboarding, see:
 - [Developer Guide](docs/DEVELOPER_GUIDE.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
 - [Roadmap](docs/ROADMAP.md)
+
+- [Hosted documentation (Live)](https://alchemist-aloha.github.io/StashFlow/) — Official hosted docs and API reference.
