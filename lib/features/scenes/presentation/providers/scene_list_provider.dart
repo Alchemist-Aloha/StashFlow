@@ -10,6 +10,7 @@ import '../../data/repositories/graphql_scene_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/pagination.dart';
+import 'playback_queue_provider.dart';
 
 part 'scene_list_provider.g.dart';
 

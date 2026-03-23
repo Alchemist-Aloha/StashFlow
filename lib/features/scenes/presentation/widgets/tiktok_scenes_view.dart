@@ -10,6 +10,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../domain/entities/scene.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/video_player_provider.dart';
+import '../providers/playback_queue_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
