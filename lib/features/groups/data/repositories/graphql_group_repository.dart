@@ -32,6 +32,7 @@ class GraphQLGroupRepository implements GroupRepository {
 
     final result = await client.query(
       QueryOptions(
+        fetchPolicy: FetchPolicy.cacheAndNetwork,
         document: gql(query),
         variables: {
           'filter': {
@@ -78,6 +79,7 @@ class GraphQLGroupRepository implements GroupRepository {
 
     final result = await client.query(
       QueryOptions(
+        fetchPolicy: FetchPolicy.cacheFirst,
         document: gql(query),
         variables: {'id': id},
       ),

@@ -101,8 +101,8 @@ class GraphQLTagRepository implements TagRepository {
     return client.query$FindTags(
       Options$Query$FindTags(
         fetchPolicy: sort == 'random'
-            ? FetchPolicy.noCache
-            : FetchPolicy.cacheFirst,
+          ? FetchPolicy.noCache
+          : FetchPolicy.cacheAndNetwork,
         variables: Variables$Query$FindTags(
           filter: Input$FindFilterType(
             q: filter,
@@ -132,7 +132,10 @@ class GraphQLTagRepository implements TagRepository {
   @override
   Future<Tag> getTagById(String id) async {
     final result = await client.query$FindTag(
-      Options$Query$FindTag(variables: Variables$Query$FindTag(id: id)),
+      Options$Query$FindTag(
+        fetchPolicy: FetchPolicy.cacheFirst,
+        variables: Variables$Query$FindTag(id: id),
+      ),
     );
 
     if (result.hasException) throw result.exception!;

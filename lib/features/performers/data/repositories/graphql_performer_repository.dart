@@ -154,8 +154,8 @@ class GraphQLPerformerRepository implements PerformerRepository {
     return client.query$FindPerformers(
       Options$Query$FindPerformers(
         fetchPolicy: sort == 'random'
-            ? FetchPolicy.noCache
-            : FetchPolicy.cacheFirst,
+          ? FetchPolicy.noCache
+          : FetchPolicy.cacheAndNetwork,
         variables: Variables$Query$FindPerformers(
           filter: Input$FindFilterType(
             q: filter,
@@ -184,6 +184,7 @@ class GraphQLPerformerRepository implements PerformerRepository {
   Future<Performer> getPerformerById(String id) async {
     final result = await client.query$FindPerformer(
       Options$Query$FindPerformer(
+        fetchPolicy: FetchPolicy.cacheFirst,
         variables: Variables$Query$FindPerformer(id: id),
       ),
     );
