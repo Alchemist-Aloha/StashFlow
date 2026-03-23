@@ -498,8 +498,13 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
           final padding = AppTheme.spacingMedium * 2;
           const crossAxisCount = 3;
           final availableWidth = MediaQuery.of(context).size.width - padding;
-          final itemWidth = (availableWidth - (AppTheme.spacingMedium * (crossAxisCount - 1))) / crossAxisCount;
-          final initialCount = performers.length < kPrefetchDistance ? performers.length : kPrefetchDistance;
+          final itemWidth =
+              (availableWidth -
+                  (AppTheme.spacingMedium * (crossAxisCount - 1))) /
+              crossAxisCount;
+          final initialCount = performers.length < kPrefetchDistance
+              ? performers.length
+              : kPrefetchDistance;
           for (var i = 0; i < initialCount; i++) {
             final avatar = performers[i].imagePath;
             if (avatar != null && avatar.isNotEmpty) {

@@ -303,7 +303,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       // Handle full-screen auto-exit
       if (previous?.isFullScreen == true && next.isFullScreen == false) {
         if (context.mounted && GoRouter.of(context).canPop()) {
-           AppLogStore.instance.add(
+          AppLogStore.instance.add(
             'ScenesPage: popping fullscreen view',
             source: 'ScenesPage',
           );
@@ -315,14 +315,16 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     final isTiktokLayout = ref.watch(sceneTiktokLayoutProvider);
     final isGridView = ref.watch(sceneGridLayoutProvider);
     final scenesAsync = ref.watch(sceneListProvider);
-    
+
     // Use select for more granular watching where possible
-    final filterActive = ref.watch(sceneFilterStateProvider.select((s) => s != SceneFilter.empty()));
+    final filterActive = ref.watch(
+      sceneFilterStateProvider.select((s) => s != SceneFilter.empty()),
+    );
     final organizedOnly = ref.watch(sceneOrganizedOnlyProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final isFullScreen = ref.watch(fullScreenModeProvider);
     final scrollController = ref.watch(sceneScrollControllerProvider);
-    
+
     final hasActiveFilters = filterActive || organizedOnly;
 
     // Prefetch first N thumbnails once on initial data arrival (avoids
@@ -333,12 +335,16 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
           _didPrefetchInitialScenes = true;
           WidgetsBinding.instance.addPostFrameCallback((_) {
             final int kPrefetchDistance = StashImage.defaultPrefetchDistance;
-            final count = items.length < kPrefetchDistance ? items.length : kPrefetchDistance;
+            final count = items.length < kPrefetchDistance
+                ? items.length
+                : kPrefetchDistance;
             if (isGridView) {
               final padding = AppTheme.spacingSmall * 2;
               const crossAxisCount = 2;
-              final availableWidth = MediaQuery.of(context).size.width - padding;
-              final itemWidth = (availableWidth - AppTheme.spacingSmall) / crossAxisCount;
+              final availableWidth =
+                  MediaQuery.of(context).size.width - padding;
+              final itemWidth =
+                  (availableWidth - AppTheme.spacingSmall) / crossAxisCount;
               for (var i = 0; i < count; i++) {
                 StashImage.prefetch(
                   context,

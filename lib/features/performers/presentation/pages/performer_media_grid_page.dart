@@ -28,12 +28,16 @@ class PerformerMediaGridPage extends ConsumerWidget {
           const crossAxisCount = 2;
           const crossAxisSpacing = 10.0;
           const mainAxisSpacing = 10.0;
-          final availableWidth = MediaQuery.of(context).size.width - padding * 2;
-          final itemWidth = (availableWidth - crossAxisSpacing) / crossAxisCount;
+          final availableWidth =
+              MediaQuery.of(context).size.width - padding * 2;
+          final itemWidth =
+              (availableWidth - crossAxisSpacing) / crossAxisCount;
           final itemHeight = itemWidth * (12 / 16);
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            final initialCount = items.length < kPrefetchDistance ? items.length : kPrefetchDistance;
+            final initialCount = items.length < kPrefetchDistance
+                ? items.length
+                : kPrefetchDistance;
             for (var i = 0; i < initialCount; i++) {
               StashImage.prefetch(
                 context,
@@ -55,8 +59,14 @@ class PerformerMediaGridPage extends ConsumerWidget {
 
               final offset = scrollInfo.metrics.pixels;
               final stride = itemHeight + mainAxisSpacing;
-              final visibleRow = ((offset) / stride).floor().clamp(0, (items.length - 1));
-              final visibleIndex = (visibleRow * crossAxisCount).clamp(0, items.length - 1);
+              final visibleRow = ((offset) / stride).floor().clamp(
+                0,
+                (items.length - 1),
+              );
+              final visibleIndex = (visibleRow * crossAxisCount).clamp(
+                0,
+                items.length - 1,
+              );
 
               for (var i = 1; i <= kPrefetchDistance; i++) {
                 final ahead = visibleIndex + i;

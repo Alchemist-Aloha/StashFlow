@@ -10,19 +10,24 @@ class _Shimmer extends StatefulWidget {
   final Widget child;
   final Duration duration;
 
-  const _Shimmer({required this.child, this.duration = const Duration(milliseconds: 1200)});
+  const _Shimmer({
+    required this.child,
+    this.duration = const Duration(milliseconds: 1200),
+  });
 
   @override
   State<_Shimmer> createState() => _ShimmerState();
 }
 
-class _ShimmerState extends State<_Shimmer> with SingleTickerProviderStateMixin {
+class _ShimmerState extends State<_Shimmer>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: widget.duration)..repeat();
+    _controller = AnimationController(vsync: this, duration: widget.duration)
+      ..repeat();
   }
 
   @override

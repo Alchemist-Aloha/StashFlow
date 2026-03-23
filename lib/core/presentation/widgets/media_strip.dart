@@ -45,7 +45,9 @@ class MediaStrip extends StatelessWidget {
     // are warmed before the user scrolls. Also compute stride to account
     // for separators and padding so visible index calculation matches layout.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final initialCount = items.length < kPrefetchDistance ? items.length : kPrefetchDistance;
+      final initialCount = items.length < kPrefetchDistance
+          ? items.length
+          : kPrefetchDistance;
       for (var i = 0; i < initialCount; i++) {
         StashImage.prefetch(
           context,
@@ -69,7 +71,9 @@ class MediaStrip extends StatelessWidget {
           final contentPadding = AppTheme.spacingMedium;
           final separatorWidth = AppTheme.spacingSmall;
           final stride = itemWidth + separatorWidth;
-          final visibleIndex = ((offset + contentPadding) / stride).floor().clamp(0, items.length - 1);
+          final visibleIndex = ((offset + contentPadding) / stride)
+              .floor()
+              .clamp(0, items.length - 1);
 
           for (var i = 1; i <= kPrefetchDistance; i++) {
             final ahead = visibleIndex + i;
@@ -94,7 +98,9 @@ class MediaStrip extends StatelessWidget {
           return false;
         },
         child: ListView.separated(
-          padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppTheme.spacingMedium,
+          ),
           scrollDirection: Axis.horizontal,
           itemCount: items.length,
           separatorBuilder: (_, _) =>
@@ -120,7 +126,9 @@ class MediaStrip extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        AppTheme.radiusMedium,
+                      ),
                       child: StashImage(
                         imageUrl: item.thumbnailUrl,
                         width: itemWidth,
