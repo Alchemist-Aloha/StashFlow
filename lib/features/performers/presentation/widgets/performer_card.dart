@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../domain/entities/performer.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
 
 class PerformerCard extends ConsumerWidget {
   final Performer performer;
@@ -26,11 +27,11 @@ class PerformerCard extends ConsumerWidget {
                   headers: mediaHeaders,
                   fit: BoxFit.cover,
                   errorBuilder: (c, e, s) => Container(
-                    color: Colors.grey[800],
-                    child: const Icon(
+                    color: context.colors.surfaceVariant,
+                    child: Icon(
                       Icons.person,
                       size: 48,
-                      color: Colors.white,
+                      color: context.colors.onSurfaceVariant,
                     ),
                   ),
                 ),
@@ -40,8 +41,8 @@ class PerformerCard extends ConsumerWidget {
           const SizedBox(height: 8),
           Text(
             performer.name,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: context.colors.onSurface,
               fontWeight: FontWeight.bold,
               fontSize: 14,
             ),
@@ -50,7 +51,10 @@ class PerformerCard extends ConsumerWidget {
           ),
           Text(
             '${performer.sceneCount} scenes',
-            style: const TextStyle(color: Colors.grey, fontSize: 12),
+            style: TextStyle(
+              color: context.colors.onSurfaceVariant,
+              fontSize: 12,
+            ),
           ),
         ],
       ),

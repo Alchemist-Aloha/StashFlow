@@ -64,7 +64,7 @@ class GalleryDetailsPage extends ConsumerWidget {
                       ],
                     ),
                     if (gallery.details != null && gallery.details!.isNotEmpty) ...[
-                      const Divider(height: 32, color: Colors.grey),
+                      Divider(height: 32, color: context.colors.outline.withValues(alpha: 0.2)),
                       const SectionHeader(title: 'Details', padding: EdgeInsets.zero),
                       const SizedBox(height: AppTheme.spacingSmall),
                       Text(

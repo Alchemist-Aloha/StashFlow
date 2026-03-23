@@ -64,7 +64,7 @@ class GroupDetailsPage extends ConsumerWidget {
                       ],
                     ),
                     if (group.synopsis != null && group.synopsis!.isNotEmpty) ...[
-                      const Divider(height: 32, color: Colors.grey),
+                      Divider(height: 32, color: context.colors.outline.withValues(alpha: 0.2)),
                       const SectionHeader(title: 'Synopsis', padding: EdgeInsets.zero),
                       const SizedBox(height: AppTheme.spacingSmall),
                       Text(

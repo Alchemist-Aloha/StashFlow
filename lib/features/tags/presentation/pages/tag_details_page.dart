@@ -119,7 +119,7 @@ class TagDetailsPage extends ConsumerWidget {
                     ),
                     if (tag.description != null &&
                         tag.description!.trim().isNotEmpty) ...[
-                      const Divider(height: 32, color: Colors.grey),
+                      Divider(height: 32, color: context.colors.outline.withValues(alpha: 0.2)),
                       const SectionHeader(title: 'Description'),
                       Text(
                         tag.description!,
@@ -130,7 +130,7 @@ class TagDetailsPage extends ConsumerWidget {
                         ),
                       ),
                     ],
-                    const Divider(height: 32, color: Colors.grey),
+                    Divider(height: 32, color: context.colors.outline.withValues(alpha: 0.2)),
                     SectionHeader(
                       title: 'Media',
                       onViewAll: () =>

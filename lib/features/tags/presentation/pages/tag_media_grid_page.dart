@@ -56,10 +56,10 @@ class TagMediaGridPage extends ConsumerWidget {
                           headers: mediaHeaders,
                           fit: BoxFit.cover,
                           errorBuilder: (c, e, s) => Container(
-                            color: Colors.grey[800],
-                            child: const Icon(
+                            color: context.colors.surfaceVariant,
+                            child: Icon(
                               Icons.movie,
-                              color: Colors.white70,
+                              color: context.colors.onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -68,7 +68,7 @@ class TagMediaGridPage extends ConsumerWidget {
                           right: 0,
                           bottom: 0,
                           child: Container(
-                            color: Colors.black.withAlpha(170),
+                            color: Colors.black.withValues(alpha: 0.6),
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8,
                               vertical: 6,

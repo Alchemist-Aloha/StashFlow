@@ -398,7 +398,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                           ),
                         ],
                       ),
-                      const Divider(height: 32, color: Colors.grey),
+                      Divider(height: 32, color: context.colors.outline.withValues(alpha: 0.2)),
                       if (hasDetails) ...[
                         Row(
                           children: [
@@ -437,7 +437,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                             ),
                           ),
                         ),
-                        const Divider(height: 32, color: Colors.grey),
+                        Divider(height: 32, color: context.colors.outline.withValues(alpha: 0.2)),
                       ],
                       if (hasTags) ...[
                         Row(
@@ -500,7 +500,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                             ),
                           ),
                         ),
-                        const Divider(height: 32, color: Colors.grey),
+                        Divider(height: 32, color: context.colors.outline.withValues(alpha: 0.2)),
                       ],
                       if (hasPerformers) ...[
                         Row(
@@ -586,7 +586,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                             );
                           },
                         ),
-                        const Divider(height: 32, color: Colors.grey),
+                        Divider(height: 32, color: context.colors.outline.withValues(alpha: 0.2)),
                       ],
                       if (scene.studioId != null)
                         studioMediaAsync.when(
