@@ -8,6 +8,7 @@ import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/theme/theme_mode_provider.dart';
+import '../../../../core/presentation/theme/theme_color_provider.dart';
 import '../../galleries/presentation/providers/gallery_details_provider.dart';
 import '../../galleries/presentation/providers/gallery_list_provider.dart';
 import '../../groups/presentation/providers/group_details_provider.dart';
@@ -48,6 +49,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   static const _enableBackgroundPlaybackKey = 'video_background_playback';
   static const _enableNativePipKey = 'video_native_pip';
 
+  static const _presetColors = [
+    Color(0xFF0F766E), // Teal
+    Color(0xFF2196F3), // Blue
+    Color(0xFF9C27B0), // Purple
+    Color(0xFFFF9800), // Orange
+    Color(0xFFF44336), // Red
+    Color(0xFF4CAF50), // Green
+    Color(0xFF9E9E9E), // Grey
+  ];
+
+  final _customHexController = TextEditingController();
+  final _customHexFocusNode = FocusNode();
+  Color _seedColor = const Color(0xFF0F766E);
   bool _preferSceneStreams = true;
   bool _sceneGridLayout = false;
   bool _sceneTiktokLayout = false;
@@ -110,11 +124,16 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     super.initState();
     _baseUrlFocusNode.addListener(_onTextFieldFocusChanged);
     _apiKeyFocusNode.addListener(_onTextFieldFocusChanged);
+    _customHexFocusNode.addListener(_onTextFieldFocusChanged);
     _load();
   }
 
   void _onTextFieldFocusChanged() {
-    if (_baseUrlFocusNode.hasFocus || _apiKeyFocusNode.hasFocus) return;
+    if (_baseUrlFocusNode.hasFocus ||
+        _apiKeyFocusNode.hasFocus ||
+        _customHexFocusNode.hasFocus) {
+      return;
+    }
     _saveServerSettings();
   }
 
@@ -133,6 +152,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final enableNativePip = prefs.getBool(_enableNativePipKey) ?? false;
     final showRandomNavigation = ref.read(randomNavigationEnabledProvider);
     final themeMode = ref.read(appThemeModeProvider);
+    final seedColor = ref.read(appThemeColorProvider);
+
     _baseUrlController.text = url;
     _apiKeyController.text = apiKey;
     _preferSceneStreams = preferSceneStreams;
@@ -145,12 +166,24 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     _enableNativePip = enableNativePip;
     _showRandomNavigation = showRandomNavigation;
     _themeMode = themeMode;
+    _seedColor = seedColor;
+
+    if (!_presetColors.contains(seedColor)) {
+      _customHexController.text =
+          seedColor.value.toRadixString(16).padLeft(8, '0').toUpperCase();
+    }
+
     setState(() => _loading = false);
   }
 
   Future<void> _saveThemeMode(ThemeMode mode) async {
     setState(() => _themeMode = mode);
     await ref.read(appThemeModeProvider.notifier).setThemeMode(mode);
+  }
+
+  Future<void> _saveThemeColor(Color color) async {
+    setState(() => _seedColor = color);
+    await ref.read(appThemeColorProvider.notifier).setThemeColor(color);
   }
 
   Future<void> _saveServerSettings() async {
@@ -270,10 +303,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   void dispose() {
     _baseUrlController.dispose();
     _apiKeyController.dispose();
+    _customHexController.dispose();
     _baseUrlFocusNode
       ..removeListener(_onTextFieldFocusChanged)
       ..dispose();
     _apiKeyFocusNode
+      ..removeListener(_onTextFieldFocusChanged)
+      ..dispose();
+    _customHexFocusNode
       ..removeListener(_onTextFieldFocusChanged)
       ..dispose();
     super.dispose();
@@ -514,6 +551,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   const SizedBox(height: AppTheme.spacingLarge),
                   _buildSectionHeader('Appearance'),
                   const SizedBox(height: AppTheme.spacingSmall),
+                  _buildColorSelector(),
+                  const SizedBox(height: AppTheme.spacingMedium),
                   SizedBox(
                     width: double.infinity,
                     child: SegmentedButton<ThemeMode>(
@@ -605,6 +644,104 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           color: context.colors.primary,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.2,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildColorSelector() {
+    final isCustom = !_presetColors.contains(_seedColor);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              ..._presetColors.map((color) => _buildColorSwatch(color)),
+              _buildColorSwatch(null), // Custom
+            ],
+          ),
+        ),
+        if (isCustom) ...[
+          const SizedBox(height: AppTheme.spacingMedium),
+          TextField(
+            controller: _customHexController,
+            focusNode: _customHexFocusNode,
+            decoration: const InputDecoration(
+              labelText: 'Custom Hex Color',
+              hintText: 'FF0F766E',
+              prefixText: '#',
+              helperText: 'Enter an 8-digit ARGB hex code',
+            ),
+            maxLength: 8,
+            onChanged: (value) {
+              if (value.length == 8) {
+                final colorValue = int.tryParse(value, radix: 16);
+                if (colorValue != null) {
+                  _saveThemeColor(Color(colorValue));
+                }
+              }
+            },
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildColorSwatch(Color? color) {
+    final isSelected = color == null
+        ? !_presetColors.contains(_seedColor)
+        : _seedColor == color;
+    final displayColor = color ?? _seedColor;
+
+    return Padding(
+      padding: const EdgeInsets.only(right: AppTheme.spacingSmall),
+      child: InkWell(
+        onTap: () {
+          if (color != null) {
+            _saveThemeColor(color);
+          } else if (!_presetColors.contains(_seedColor)) {
+            // Already custom, just focus
+            _customHexFocusNode.requestFocus();
+          } else {
+            // Switch to custom, use current as base
+            _customHexController.text =
+                _seedColor.value.toRadixString(16).padLeft(8, '0').toUpperCase();
+            setState(() {}); // Show text field
+          }
+        },
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: displayColor,
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: isSelected
+                  ? context.colors.onSurface
+                  : context.colors.outline.withValues(alpha: 0.2),
+              width: isSelected ? 3 : 1,
+            ),
+          ),
+          child: color == null && !isSelected
+              ? Icon(
+                  Icons.palette_outlined,
+                  size: 20,
+                  color:
+                      displayColor.computeLuminance() > 0.5 ? Colors.black : Colors.white,
+                )
+              : isSelected
+                  ? Icon(
+                      Icons.check,
+                      size: 20,
+                      color: displayColor.computeLuminance() > 0.5
+                          ? Colors.black
+                          : Colors.white,
+                    )
+                  : null,
         ),
       ),
     );
