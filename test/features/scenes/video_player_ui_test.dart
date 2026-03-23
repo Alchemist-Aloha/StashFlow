@@ -6,7 +6,6 @@ import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_details_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_details_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
-import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_video_player.dart';
 
 import '../../helpers/test_helpers.dart';
 
@@ -14,7 +13,10 @@ void main() {
   late SharedPreferences prefs;
 
   setUp(() async {
-    SharedPreferences.setMockInitialValues({'prefer_scene_streams': false});
+    SharedPreferences.setMockInitialValues({
+      'prefer_scene_streams': false,
+      'server_base_url': 'http://localhost:9999',
+    });
     prefs = await SharedPreferences.getInstance();
   });
 

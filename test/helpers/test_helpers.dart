@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:riverpod/riverpod.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,19 +9,15 @@ import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provi
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
 import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
-import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 
 import 'package:stash_app_flutter/features/performers/domain/entities/performer.dart';
 import 'package:stash_app_flutter/features/performers/domain/repositories/performer_repository.dart';
-import 'package:stash_app_flutter/features/performers/presentation/providers/performer_list_provider.dart';
 
 import 'package:stash_app_flutter/features/studios/domain/entities/studio.dart';
 import 'package:stash_app_flutter/features/studios/domain/repositories/studio_repository.dart';
-import 'package:stash_app_flutter/features/studios/presentation/providers/studio_list_provider.dart';
 
 import 'package:stash_app_flutter/features/tags/domain/entities/tag.dart';
 import 'package:stash_app_flutter/features/tags/domain/repositories/tag_repository.dart';
-import 'package:stash_app_flutter/features/tags/presentation/providers/tag_list_provider.dart';
 
 import 'package:stash_app_flutter/core/presentation/widgets/error_state_view.dart';
 

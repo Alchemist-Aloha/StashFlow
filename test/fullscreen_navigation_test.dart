@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:video_player/video_player.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
@@ -10,7 +9,6 @@ import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
 import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
-import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_details_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/tiktok_scenes_view.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_details_page.dart';
