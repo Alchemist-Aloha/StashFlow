@@ -5,13 +5,15 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
 
-import '../providers/playback_queue_provider.dart';
-
+/// A card widget that displays a summary of a [Scene].
+///
+/// This component is used throughout the app in lists and grids to show 
+/// a thumbnail, title, studio, and duration. It supports:
+/// * Two layout modes: [isGrid] = true (compact) and false (full-width list).
+/// * Authenticated image loading using headers from [mediaHeadersProvider].
+/// * Formatting of the scene duration (e.g., 'HH:mm:ss' or 'mm:ss').
+/// * A contextual menu (long-press or more-vert icon).
 class SceneCard extends ConsumerWidget {
-  final Scene scene;
-  final bool isGrid;
-  final VoidCallback? onTap;
-
   const SceneCard({
     required this.scene,
     this.isGrid = false,
@@ -19,6 +21,16 @@ class SceneCard extends ConsumerWidget {
     super.key,
   });
 
+  /// The scene data to display.
+  final Scene scene;
+  
+  /// Whether to display in a compact grid format or a wide list format.
+  final bool isGrid;
+  
+  /// Callback triggered when the card is tapped.
+  final VoidCallback? onTap;
+
+  /// Displays the contextual action menu for the scene.
   void _showMenu(BuildContext context, WidgetRef ref) {
     final RenderBox button = context.findRenderObject() as RenderBox;
     final RenderBox overlay =
@@ -38,27 +50,12 @@ class SceneCard extends ConsumerWidget {
       context: context,
       position: position,
       items: [
-        const PopupMenuItem(
-          value: 'add_to_queue',
-          child: ListTile(
-            leading: Icon(Icons.queue_play_next),
-            title: Text('Add to queue'),
-            contentPadding: EdgeInsets.zero,
-            visualDensity: VisualDensity.compact,
-          ),
-        ),
+        // No items for now, or add other items if needed
       ],
-    ).then((value) {
-      if (!context.mounted) return;
-      if (value == 'add_to_queue') {
-        ref.read(playbackQueueProvider.notifier).add(scene);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Added "${scene.displayTitle}" to queue')),
-        );
-      }
-    });
+    );
   }
 
+  /// Formats seconds into a human-readable duration string.
   String _formatDuration(double? duration) {
     if (duration == null) return '--:--';
     final seconds = duration.round();
@@ -82,6 +79,7 @@ class SceneCard extends ConsumerWidget {
     return _buildListCard(context, ref, mediaHeaders, duration);
   }
 
+  /// Builds the full-width list variant of the card.
   Widget _buildListCard(
     BuildContext context,
     WidgetRef ref,
@@ -181,6 +179,7 @@ class SceneCard extends ConsumerWidget {
     );
   }
 
+  /// Builds the compact grid variant of the card.
   Widget _buildGridCard(
     BuildContext context,
     WidgetRef ref,

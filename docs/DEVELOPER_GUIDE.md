@@ -271,3 +271,4 @@ When adding or changing UI behavior:
 - update the relevant docs in `docs/`,
 - note theme and accessibility implications,
 - include any new interaction patterns.
+- include detailed docstrings in the code. 

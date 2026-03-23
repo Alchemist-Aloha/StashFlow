@@ -18,9 +18,19 @@ import '../../data/repositories/stream_resolver.dart';
 import 'native_video_controls.dart';
 import 'tiktok_scenes_view.dart';
 
+/// A comprehensive video player widget for a single [Scene].
+///
+/// This widget handles the entire playback lifecycle:
+/// 1. **Startup**: Resolves the best stream (direct or transcoded) using [StreamResolver].
+/// 2. **Probing**: Verifies stream availability and MIME types via HTTP headers.
+/// 3. **Prewarming**: Initiates a 'Range: bytes=0-0' request to minimize time-to-first-frame.
+/// 4. **State Sync**: Coordinates with [playerStateProvider] for global control.
+/// 5. **UI**: Displays the video surface with [NativeVideoControls] and handles fullscreen.
 class SceneVideoPlayer extends ConsumerStatefulWidget {
-  final Scene scene;
   const SceneVideoPlayer({required this.scene, super.key});
+
+  /// The scene to play.
+  final Scene scene;
 
   @override
   ConsumerState<SceneVideoPlayer> createState() => _SceneVideoPlayerState();
@@ -28,11 +38,19 @@ class SceneVideoPlayer extends ConsumerStatefulWidget {
 
 class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   static const _preferSceneStreamsKey = 'prefer_scene_streams';
+  
+  /// Static future to prevent redundant prewarm requests across widget rebuilds.
   static Future<_PrewarmResult>? _pathsStreamPrewarmFuture;
 
   bool _isStarting = false;
   String? _autoStartedSceneId;
 
+  /// Determines the aspect ratio to use for the player container.
+  /// 
+  /// Priority:
+  /// 1. Current [VideoPlayerController] initialized ratio.
+  /// 2. Metadata from the first file in [widget.scene.files].
+  /// 3. Default 16:9.
   double _effectiveAspectRatio(VideoPlayerController? controller) {
     final controllerRatio = controller?.value.aspectRatio;
     if (controllerRatio != null &&
@@ -64,6 +82,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   @override
   void didUpdateWidget(covariant SceneVideoPlayer oldWidget) {
     super.didUpdateWidget(oldWidget);
+    // Restart playback if the scene ID has changed
     if (oldWidget.scene.id != widget.scene.id) {
       _autoStartedSceneId = null;
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -72,10 +91,12 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     }
   }
 
+  /// Initiates the complex playback startup sequence.
   Future<void> _startPlaybackIfNeeded({bool force = false}) async {
     if (!mounted || _isStarting) return;
 
     final playerState = ref.read(playerStateProvider);
+    // Don't auto-start if already playing or starting this specific scene
     if (!force && _autoStartedSceneId == widget.scene.id) return;
     if (!force && playerState.activeScene?.id == widget.scene.id) return;
 
@@ -92,6 +113,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
         source: 'player_startup',
       );
 
+      // 1. Resolve the best stream choice
       final choice = preferSceneStreams
           ? await resolver.resolvePreferredStream(widget.scene)
           : null;
@@ -110,6 +132,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
         source: 'player_startup',
       );
 
+      // 2. Start prewarming the 'direct' stream URL in the background
       final prewarmFuture = _prewarmPathsStreamOnce(mediaHeaders);
 
       if (streamUrl.isEmpty) {
@@ -120,6 +143,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
         return;
       }
 
+      // 3. Probe MIME type if unknown to ensure proper controller selection
       if (mimeType == 'unknown') {
         final mimeProbeStopwatch = Stopwatch()..start();
         final probedMime = await resolver.probeMimeTypeFromHeaders(
@@ -134,14 +158,10 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
             'startup header-probe scene=${widget.scene.id} mime=$probedMime elapsed=${mimeProbeStopwatch.elapsedMilliseconds}ms',
             source: 'player_startup',
           );
-        } else {
-          AppLogStore.instance.add(
-            'startup header-probe scene=${widget.scene.id} mime=unknown elapsed=${mimeProbeStopwatch.elapsedMilliseconds}ms',
-            source: 'player_startup',
-          );
         }
       }
 
+      // 4. Dispatch the actual play command to the global provider
       _autoStartedSceneId = widget.scene.id;
       final playSceneStopwatch = Stopwatch()..start();
       await ref
@@ -164,6 +184,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
         source: 'player_startup',
       );
 
+      // 5. Update state with prewarm results once they arrive
       unawaited(
         prewarmFuture.then((result) {
           if (!mounted) return;
@@ -177,11 +198,6 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                 succeeded: result.succeeded,
                 latencyMs: result.latencyMs,
               );
-
-          AppLogStore.instance.add(
-            'startup prewarm-result scene=${widget.scene.id} attempted=${result.attempted} success=${result.succeeded} latency=${result.latencyMs ?? -1}ms',
-            source: 'player_startup',
-          );
         }),
       );
     } catch (error, stack) {
@@ -198,13 +214,10 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     }
   }
 
+  /// Initiates a background prewarm for the scene's direct stream path.
   Future<_PrewarmResult> _prewarmPathsStreamOnce(Map<String, String> headers) {
     final existingFuture = _pathsStreamPrewarmFuture;
     if (existingFuture != null) {
-      AppLogStore.instance.add(
-        'startup prewarm reused scene=${widget.scene.id}',
-        source: 'player_startup',
-      );
       return existingFuture;
     }
 
@@ -219,27 +232,20 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       rawUrl: rawStreamUrl,
       graphqlEndpoint: graphqlEndpoint,
     );
+    
     if (streamUrl.isEmpty) {
-      AppLogStore.instance.add(
-        'startup prewarm skipped scene=${widget.scene.id} reason=empty_stream_url',
-        source: 'player_startup',
-      );
       _pathsStreamPrewarmFuture = Future<_PrewarmResult>.value(
         const _PrewarmResult(attempted: false, succeeded: false),
       );
       return _pathsStreamPrewarmFuture!;
     }
 
-    AppLogStore.instance.add(
-      'startup prewarm start scene=${widget.scene.id} url=$streamUrl',
-      source: 'player_startup',
-    );
-
     final future = _prewarmStreamRequest(streamUrl, headers);
     _pathsStreamPrewarmFuture = future;
     return future;
   }
 
+  /// Sends a HEAD/GET Range request to pre-establish TCP/TLS connections with the server.
   Future<_PrewarmResult> _prewarmStreamRequest(
     String streamUrl,
     Map<String, String> headers,
@@ -285,6 +291,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     }
   }
 
+  /// Toggles between inline and immersive fullscreen mode.
   Future<void> _toggleFullScreen() async {
     final playerState = ref.read(playerStateProvider);
     if (playerState.isFullScreen) {
@@ -299,17 +306,12 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   @override
   Widget build(BuildContext context) {
     final playerState = ref.watch(playerStateProvider);
-    final isActive = playerState.activeScene?.id == widget.scene.id;
     
-    AppLogStore.instance.add(
-      'SceneVideoPlayer build scene=${widget.scene.id} isActive=$isActive hasController=${playerState.videoPlayerController != null}',
-      source: 'SceneVideoPlayer',
-    );
-
     final aspectRatio = _effectiveAspectRatio(
       playerState.videoPlayerController,
     );
 
+    // If this player isn't active, show a placeholder with a play button.
     if (playerState.activeScene?.id != widget.scene.id) {
       return AspectRatio(
         aspectRatio: aspectRatio,
@@ -333,6 +335,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
 
     final controller = playerState.videoPlayerController;
 
+    // Show loading indicator while the global controller initializes.
     if (controller == null || !controller.value.isInitialized) {
       return AspectRatio(
         aspectRatio: aspectRatio,
@@ -340,6 +343,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       );
     }
 
+    // Main playback surface.
     return AspectRatio(
       aspectRatio: aspectRatio,
       child: Hero(
@@ -374,9 +378,16 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   }
 }
 
+/// An immersive fullscreen page for the active video player.
+///
+/// This page locks the orientation to landscape and hides system bars.
+/// It uses a [Hero] transition to seamlessly hand off the video surface
+/// from the inline [SceneVideoPlayer].
 class FullscreenPlayerPage extends ConsumerStatefulWidget {
-  final String sceneId;
   const FullscreenPlayerPage({required this.sceneId, super.key});
+
+  /// The ID of the scene currently being played.
+  final String sceneId;
 
   @override
   ConsumerState<FullscreenPlayerPage> createState() => _FullscreenPlayerPageState();
@@ -398,6 +409,7 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
     });
   }
 
+  /// Sets up the immersive landscape environment.
   void _enterFullscreen() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     SystemChrome.setPreferredOrientations([
@@ -408,15 +420,22 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
 
   @override
   void dispose() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    // Restore system UI and FORCE portrait orientation first
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
-    // Safe to use saved notifiers during dispose, but wrap in microtask to avoid 
-    // "modifying provider while building" errors in some Flutter lifecycle states.
+    ]).then((_) {
+      // Then allow other orientations if needed, though usually we just want portrait for the list
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
+    });
+    
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    
+    // Notify providers that we've exited fullscreen.
     Future.microtask(() {
       _playerStateNotifier.setFullScreen(false);
       _fullScreenModeNotifier.set(false);
@@ -430,6 +449,7 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
     final controller = playerState.videoPlayerController;
     final scene = playerState.activeScene;
 
+    // Error handling for state mismatches during transition.
     if (controller == null || !controller.value.isInitialized || scene == null || scene.id != widget.sceneId) {
       return Scaffold(
         backgroundColor: Colors.black,
@@ -479,6 +499,7 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
   }
 }
 
+/// Internal class tracking the result of a prewarm request.
 class _PrewarmResult {
   const _PrewarmResult({
     required this.attempted,

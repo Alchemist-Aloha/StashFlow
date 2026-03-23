@@ -12,6 +12,9 @@ Uri _withGraphqlPathIfMissing(Uri uri) {
   return uri;
 }
 
+/// Normalizes a user-provided server URL to a valid GraphQL endpoint.
+/// 
+/// Ensures the URL has a scheme (defaults to https) and includes the `/graphql` path.
 String normalizeGraphqlServerUrl(String url) {
   final trimmed = url.trim();
   if (trimmed.isEmpty) return '';
@@ -29,13 +32,17 @@ String normalizeGraphqlServerUrl(String url) {
   return '';
 }
 
+/// A trigger to notify listeners when [SharedPreferences] settings are manually updated.
 @riverpod
 class SharedPreferencesTrigger extends _$SharedPreferencesTrigger {
   @override
   int build() => 0;
+  
+  /// Increments the revision counter to trigger dependency rebuilds.
   void trigger() => state++;
 }
 
+/// Provider for the normalized Stash server URL.
 @riverpod
 String serverUrl(Ref ref) {
   ref.watch(sharedPreferencesTriggerProvider);
@@ -44,6 +51,7 @@ String serverUrl(Ref ref) {
   return normalizeGraphqlServerUrl(storedServerUrl);
 }
 
+/// Provider for the Stash server API Key.
 @riverpod
 String serverApiKey(Ref ref) {
   ref.watch(sharedPreferencesTriggerProvider);
@@ -51,6 +59,11 @@ String serverApiKey(Ref ref) {
   return prefs.getString('server_api_key')?.trim() ?? '';
 }
 
+/// A centralized [GraphQLClient] provider for all feature repositories.
+/// 
+/// This client is automatically re-initialized whenever [serverUrl]
+/// or [serverApiKey] changes. It handles the [HttpLink] setup with the 
+/// correct `ApiKey` header required by Stash.
 @riverpod
 GraphQLClient graphqlClient(Ref ref) {
   final url = ref.watch(serverUrlProvider);

@@ -10,6 +10,7 @@ class AppThemeColorNotifier extends Notifier<Color> {
   Color build() {
     final prefs = ref.read(sharedPreferencesProvider);
     final colorValue = prefs.getInt(appThemeSeedColorPreferenceKey);
+    // Use standard Color constructor with 32-bit int value
     return colorValue != null ? Color(colorValue) : defaultSeedColor;
   }
 
@@ -17,7 +18,8 @@ class AppThemeColorNotifier extends Notifier<Color> {
     if (state == color) return;
     state = color;
     final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setInt(appThemeSeedColorPreferenceKey, color.value);
+    // Store as 32-bit ARGB integer
+    await prefs.setInt(appThemeSeedColorPreferenceKey, color.toARGB32());
   }
 }
 

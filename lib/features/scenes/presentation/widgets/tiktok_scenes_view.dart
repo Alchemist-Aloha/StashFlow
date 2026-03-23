@@ -10,6 +10,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../domain/entities/scene.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/video_player_provider.dart';
+import '../providers/playback_queue_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
@@ -28,6 +29,17 @@ final fullScreenModeProvider = NotifierProvider<FullScreenMode, bool>(
   FullScreenMode.new,
 );
 
+/// A vertical-scrolling "TikTok-style" view for discovering scenes.
+///
+/// This widget manages its own pool of [VideoPlayerController]s to ensure
+/// smooth scrolling and low-latency playback as the user swipes through videos.
+///
+/// Key responsibilities:
+/// - Handling vertical page transitions using [PageView].
+/// - Implementing a "windowing" strategy for video controllers (pre-initializing
+///   neighboring videos and disposing of distant ones).
+/// - Synchronizing with system media controls (MediaSession).
+/// - Providing unique interactions like long-press to speed up.
 class TiktokScenesView extends ConsumerStatefulWidget {
   const TiktokScenesView({super.key});
 
@@ -37,12 +49,14 @@ class TiktokScenesView extends ConsumerStatefulWidget {
 
 class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
   final PageController _pageController = PageController();
+  
+  /// The index of the currently visible scene.
   int _currentIndex = 0;
 
-  // Map of scene ID to controller
+  /// Active video controllers indexed by scene ID.
   final Map<String, VideoPlayerController> _controllers = {};
   
-  // Future that tracks initialization
+  /// Initialization futures to prevent redundant setup calls.
   final Map<String, Future<void>> _initFutures = {};
 
   @override
@@ -132,6 +146,9 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
       setState(() {
         _currentIndex = newIndex;
       });
+      
+      // Sync with global playback queue
+      ref.read(playbackQueueProvider.notifier).setIndex(newIndex);
       
       // Debounce controller management to wait for the swipe to settle
       _manageTimer?.cancel();
@@ -230,6 +247,26 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
           : Duration.zero,
       speed: controller.value.playbackSpeed,
     );
+
+    // Auto play next logic for TikTok View
+    final playerState = ref.read(playerStateProvider);
+    if (playerState.autoplayNext) {
+      if (controller.value.position >= controller.value.duration &&
+          controller.value.duration > Duration.zero &&
+          !controller.value.isPlaying) {
+        
+        // Use a flag or check to ensure we only advance once
+        if (_pageController.hasClients) {
+          final page = _pageController.page?.round() ?? _currentIndex;
+          if (page == _currentIndex) {
+             _pageController.nextPage(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          }
+        }
+      }
+    }
   }
 
   Future<void> _initializeController(Scene scene) async {
@@ -246,7 +283,9 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
       _controllers[scene.id] = controller;
       await controller.initialize();
-      controller.setLooping(true);
+      
+      final autoplayNext = ref.read(playerStateProvider).autoplayNext;
+      controller.setLooping(!autoplayNext);
 
       if (mounted) {
         setState(() {}); // Trigger rebuild to show the first frame
@@ -467,14 +506,39 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
     );
   }
 
-  void _toggleFullScreen() {
+  Future<void> _toggleFullScreen() async {
     final isFullScreen = ref.read(fullScreenModeProvider);
     if (isFullScreen) {
       if (context.mounted) {
         context.pop();
       }
     } else {
-      context.push('/scenes/fullscreen/${widget.scene.id}');
+      final router = GoRouter.of(context);
+      final playerNotifier = ref.read(playerStateProvider.notifier);
+      final globalState = ref.read(playerStateProvider);
+      final controller = widget.controller;
+
+      if (globalState.activeScene?.id != widget.scene.id && controller != null) {
+        // TikTok has its own controller, but FullscreenPage uses the global one.
+        // We need to tell the global player to take over this scene.
+        final resolver = ref.read(streamResolverProvider.notifier);
+        final choice = await resolver.resolvePreferredStream(widget.scene);
+        if (choice != null) {
+          final headers = ref.read(mediaHeadersProvider);
+          await playerNotifier.playScene(
+            widget.scene,
+            choice.url,
+            mimeType: choice.mimeType,
+            streamLabel: choice.label,
+            streamSource: 'tiktok-fullscreen',
+            httpHeaders: headers,
+          );
+          // Seek to the same position as TikTok's local controller
+          await ref.read(playerStateProvider).videoPlayerController?.seekTo(controller.value.position);
+        }
+      }
+
+      router.push('/scenes/fullscreen/${widget.scene.id}');
     }
   }
 
@@ -645,14 +709,13 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                       ),
                     ],
                     const SizedBox(height: 8),
-                    if (widget.scene.date != null)
-                      Text(
-                        widget.scene.date.toString().split(' ')[0],
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                        ),
+                    Text(
+                      widget.scene.date.toString().split(' ')[0],
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
                       ),
+                    ),
                   ],
                 ),
               ),

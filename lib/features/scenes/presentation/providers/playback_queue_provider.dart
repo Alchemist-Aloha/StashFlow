@@ -1,76 +1,154 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/scene.dart';
-import 'video_player_provider.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 part 'playback_queue_provider.g.dart';
 
+/// Represents the current state of the playback queue.
 class PlaybackQueueState {
-  final List<Scene> manualQueue;
-  final List<Scene> currentSequence;
+  /// The list of scenes in the current playback sequence.
+  final List<Scene> sequence;
+  
+  /// The index of the currently active scene within the [sequence].
+  /// A value of -1 indicates no scene is currently selected or active.
+  final int currentIndex;
 
   PlaybackQueueState({
-    this.manualQueue = const [],
-    this.currentSequence = const [],
+    this.sequence = const [],
+    this.currentIndex = -1,
   });
 
   PlaybackQueueState copyWith({
-    List<Scene>? manualQueue,
-    List<Scene>? currentSequence,
+    List<Scene>? sequence,
+    int? currentIndex,
   }) {
     return PlaybackQueueState(
-      manualQueue: manualQueue ?? this.manualQueue,
-      currentSequence: currentSequence ?? this.currentSequence,
+      sequence: sequence ?? this.sequence,
+      currentIndex: currentIndex ?? this.currentIndex,
     );
   }
 }
 
-@riverpod
+/// A notifier that manages the sequence of scenes for continuous playback.
+///
+/// This provider is marked as `keepAlive: true` to ensure that the playback
+/// sequence is preserved across navigation transitions (e.g., between
+/// Grid view, TikTok view, and Scene Details).
+///
+/// It acts as the single source of truth for "Next" and "Previous" navigation
+/// within a given context (like the main scene list).
+@Riverpod(keepAlive: true)
 class PlaybackQueue extends _$PlaybackQueue {
   @override
   PlaybackQueueState build() {
+    AppLogStore.instance.add(
+      'PlaybackQueue build: initializing fresh state',
+      source: 'playback_queue',
+    );
     return PlaybackQueueState();
   }
 
-  void add(Scene scene) {
-    if (!state.manualQueue.any((s) => s.id == scene.id)) {
-      state = state.copyWith(manualQueue: [...state.manualQueue, scene]);
-    }
-  }
+  /// Updates the current sequence of scenes.
+  ///
+  /// If [initialIndex] is -1, the queue will attempt to preserve its current
+  /// position if the new list is a subset of the current one (e.g., during pagination).
+  /// This prevents the "Next" button from being disabled or resetting to the start
+  /// when the scene list refreshes in the background.
+  void setSequence(List<Scene> scenes, int initialIndex) {
+    AppLogStore.instance.add(
+      'PlaybackQueue setSequence: scenes=${scenes.length}, initialIndex=$initialIndex',
+      source: 'playback_queue',
+    );
 
-  void remove(String sceneId) {
+    // Same-list / subset detection logic:
+    // If the new list matches our current sequence's start, we avoid resetting the index
+    // if the caller passed -1 (which usually means "just refresh the data").
+    if (state.sequence.length >= scenes.length && scenes.isNotEmpty && state.sequence.isNotEmpty) {
+      if (state.sequence[0].id == scenes[0].id) {
+        AppLogStore.instance.add(
+          'PlaybackQueue setSequence: detected same/subset list, checking index',
+          source: 'playback_queue',
+        );
+        if (initialIndex != -1) {
+          state = state.copyWith(currentIndex: initialIndex);
+        }
+        return;
+      }
+    }
+
     state = state.copyWith(
-      manualQueue: state.manualQueue.where((s) => s.id != sceneId).toList(),
+      sequence: scenes,
+      currentIndex: initialIndex,
     );
   }
 
-  void clear() {
-    state = state.copyWith(manualQueue: []);
+  /// Appends new scenes to the existing sequence.
+  /// Typically used for infinite scroll/pagination.
+  void updateSequence(List<Scene> scenes) {
+    AppLogStore.instance.add(
+      'PlaybackQueue updateSequence: adding ${scenes.length} scenes to current ${state.sequence.length}',
+      source: 'playback_queue',
+    );
+    state = state.copyWith(sequence: [...state.sequence, ...scenes]);
   }
 
-  void setCurrentSequence(List<Scene> scenes) {
-    state = state.copyWith(currentSequence: scenes);
+  /// Explicitly sets the current index in the queue.
+  /// Typically called when a user selects a specific scene from a list.
+  void setIndex(int index) {
+    AppLogStore.instance.add(
+      'PlaybackQueue setIndex: $index (current=${state.currentIndex}, total=${state.sequence.length})',
+      source: 'playback_queue',
+    );
+    if (index >= 0 && index < state.sequence.length) {
+      state = state.copyWith(currentIndex: index);
+    }
   }
 
+  /// Synchronizes the queue index by finding a scene ID within the current sequence.
+  /// Useful for recovering state after a deep link or app restart.
+  void findAndSetIndex(String sceneId) {
+    if (sceneId.isEmpty) return;
+    final index = state.sequence.indexWhere((s) => s.id == sceneId);
+    AppLogStore.instance.add(
+      'PlaybackQueue findAndSetIndex: sceneId=$sceneId, found at index $index',
+      source: 'playback_queue',
+    );
+    if (index != -1) {
+      state = state.copyWith(currentIndex: index);
+    }
+  }
+
+  /// Returns the next scene in the sequence, if any.
   Scene? getNextScene() {
-    final activeScene = ref.read(playerStateProvider).activeScene;
-    if (activeScene == null) return null;
-
-    // 1. Check manual queue first
-    final manualIndex = state.manualQueue.indexWhere((s) => s.id == activeScene.id);
-    if (manualIndex != -1 && manualIndex < state.manualQueue.length - 1) {
-      return state.manualQueue[manualIndex + 1];
+    AppLogStore.instance.add(
+      'PlaybackQueue getNextScene: current=${state.currentIndex}, total=${state.sequence.length}',
+      source: 'playback_queue',
+    );
+    if (state.currentIndex >= 0 && state.currentIndex < state.sequence.length - 1) {
+      final nextScene = state.sequence[state.currentIndex + 1];
+      AppLogStore.instance.add(
+        'PlaybackQueue getNextScene: returning ${nextScene.id}',
+        source: 'playback_queue',
+      );
+      return nextScene;
     }
-
-    // 2. Fallback to current sequence (query list)
-    final seqIndex = state.currentSequence.indexWhere((s) => s.id == activeScene.id);
-    if (seqIndex != -1 && seqIndex < state.currentSequence.length - 1) {
-      return state.currentSequence[seqIndex + 1];
-    }
-    
+    AppLogStore.instance.add(
+      'PlaybackQueue getNextScene: no next scene available',
+      source: 'playback_queue',
+    );
     return null;
   }
 
-  void fillFromList(List<Scene> scenes) {
-    state = state.copyWith(manualQueue: scenes);
+  /// Increments the current index. This should be called *after* 
+  /// confirming that a next scene is available and playback has started.
+  void playNext() {
+    final nextIndex = state.currentIndex + 1;
+    AppLogStore.instance.add(
+      'PlaybackQueue playNext: nextIndex=$nextIndex, total=${state.sequence.length}',
+      source: 'playback_queue',
+    );
+    if (nextIndex < state.sequence.length) {
+      state = state.copyWith(currentIndex: nextIndex);
+    }
   }
 }

@@ -9,24 +9,46 @@ import '../../domain/entities/scene.dart';
 
 part 'stream_resolver.g.dart';
 
+/// Represents a potential video stream candidate for a scene.
 class StreamChoice {
   const StreamChoice({required this.url, required this.mimeType, this.label});
+  
+  /// The absolute URL to the video stream.
   final String url;
+  
+  /// The MIME type of the stream (e.g., 'video/mp4', 'application/vnd.apple.mpegurl').
   final String mimeType;
+  
+  /// A human-readable label from the server (e.g., 'Direct', 'HLS').
   final String? label;
 
+  /// Calculates a priority score for this stream candidate.
+  /// 
+  /// Preference order:
+  /// 1. Direct MP4 (300) - Lowest latency, highest compatibility.
+  /// 2. General MP4 (250)
+  /// 3. HLS/M3U8 (200) - Best for adaptive bitrate but higher startup latency.
+  /// 4. DASH (150)
+  /// 5. Others (100)
   int get score {
     final lowerMime = mimeType.toLowerCase();
     final lowerLabel = (label ?? '').toLowerCase();
     if (lowerMime.contains('mpegurl') || lowerMime.contains('hls')) return 200;
     if (lowerMime.contains('dash')) return 150;
-    // Prefer direct stream (fastest, no manifest parsing needed)
     if (lowerMime.contains('mp4') && lowerLabel.contains('direct')) return 300;
     if (lowerMime.contains('mp4')) return 250;
     return 100;
   }
 }
 
+/// A utility that resolves the best available video stream for a given [Scene].
+/// 
+/// Stash provides multiple ways to stream a scene:
+/// 1. Direct file paths (if the client has network access to the storage).
+/// 2. Scene-specific stream endpoints (transcoded or direct-from-server).
+/// 
+/// This class handles the logic of choosing between these options based on 
+/// user preferences and stream availability.
 @riverpod
 class StreamResolver extends _$StreamResolver {
   @override
@@ -35,10 +57,18 @@ class StreamResolver extends _$StreamResolver {
     ref.keepAlive();
   }
 
+  /// Resolves the preferred stream URL and its metadata for a given [scene].
+  /// 
+  /// It first attempts to fetch available stream options from the Stash API.
+  /// If multiple options are available, it selects the best one based on [StreamChoice.score].
+  /// 
+  /// If no API streams are found, it falls back to the scene's direct path.
   Future<StreamChoice?> resolvePreferredStream(Scene scene) async {
     final client = ref.read(graphqlClientProvider);
     final mediaHeaders = ref.read(mediaHeadersProvider);
     final queryStopwatch = Stopwatch()..start();
+    
+    // Fetch available stream endpoints for the scene
     final result = await client.query(
       QueryOptions(
         document: gql('''
@@ -94,6 +124,7 @@ class StreamResolver extends _$StreamResolver {
         ? (client.link as HttpLink).uri
         : Uri.parse(scene.paths.stream ?? 'https://localhost/graphql');
 
+    // Fallback to scene direct path if no API streams exist
     if (streams.isEmpty) {
       final streamUrl = scene.paths.stream ?? '';
       if (streamUrl.isEmpty) return null;
@@ -122,11 +153,13 @@ class StreamResolver extends _$StreamResolver {
 
     if (candidates.isEmpty) return null;
 
+    // Prioritize candidates by compatibility score
     candidates.sort((a, b) => b.score.compareTo(a.score));
 
     StreamChoice? best;
     var probeCount = 0;
-    const maxProbes = 2;
+    const maxProbes = 2; // Limit network probing to avoid excessive startup delay
+    
     for (final choice in candidates) {
       final shouldProbe =
           probeCount < maxProbes && _shouldProbeByHeaders(choice);
@@ -136,6 +169,7 @@ class StreamResolver extends _$StreamResolver {
       }
 
       probeCount++;
+      // Probe headers to check for actual MIME type (detect HTML wrapper pages)
       final probedMime = await probeMimeTypeFromHeaders(
         choice.url,
         mediaHeaders,
@@ -171,6 +205,7 @@ class StreamResolver extends _$StreamResolver {
     return best;
   }
 
+  /// Determines if a stream choice needs an HTTP probe to confirm its content type.
   bool _shouldProbeByHeaders(StreamChoice choice) {
     final lowerMime = choice.mimeType.toLowerCase();
     final lowerLabel = (choice.label ?? '').toLowerCase();
@@ -226,6 +261,7 @@ class StreamResolver extends _$StreamResolver {
         : redacted;
   }
 
+  /// Guesses the MIME type from a URL string if not provided by the API.
   String guessMimeType(String url, {String? label}) {
     final uri = Uri.tryParse(url);
     final path = (uri?.path ?? url).toLowerCase();
@@ -287,6 +323,8 @@ class StreamResolver extends _$StreamResolver {
     return 'unknown';
   }
 
+  /// Probes a URL using an HTTP HEAD/GET request to determine the actual 
+  /// MIME type from the 'Content-Type' header.
   Future<String?> probeMimeTypeFromHeaders(
     String url,
     Map<String, String> headers,

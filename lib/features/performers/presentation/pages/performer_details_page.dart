@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../providers/performer_media_provider.dart';
 import '../providers/performer_details_provider.dart';
@@ -231,7 +232,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                           }),
                         ),
                       ],
-                      if (performer.urls.isNotEmpty) ...[
+                        if (performer.urls.isNotEmpty) ...[
                         const Divider(height: 32, color: Colors.grey),
                         const SectionHeader(
                           title: 'Links',
@@ -245,28 +246,58 @@ class PerformerDetailsPage extends ConsumerWidget {
                               padding: const EdgeInsets.only(
                                 bottom: AppTheme.spacingSmall,
                               ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.link,
-                                    size: 16,
-                                    color: context.colors.primary,
-                                  ),
-                                  const SizedBox(width: AppTheme.spacingSmall),
-                                  Expanded(
-                                    child: Text(
-                                      url,
-                                      style: context.textTheme.bodyMedium
-                                          ?.copyWith(
-                                            color: context.colors.primary,
-                                            decoration:
-                                                TextDecoration.underline,
-                                          ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+                              child: InkWell(
+                                onTap: () async {
+                                  final uri = Uri.tryParse(url);
+                                  if (uri == null) return;
+                                  try {
+                                    if (await canLaunchUrl(uri)) {
+                                      await launchUrl(uri,
+                                          mode:
+                                              LaunchMode.externalApplication);
+                                    } else {
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                              content:
+                                                  Text('Could not open $url')),
+                                        );
+                                      }
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(content: Text('Error: $e')),
+                                      );
+                                    }
+                                  }
+                                },
+                                borderRadius: BorderRadius.circular(4),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.link,
+                                      size: 16,
+                                      color: context.colors.primary,
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(
+                                        width: AppTheme.spacingSmall),
+                                    Expanded(
+                                      child: Text(
+                                        url,
+                                        style: context.textTheme.bodyMedium
+                                            ?.copyWith(
+                                          color: context.colors.primary,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             );
                           }).toList(),

@@ -1,7 +1,16 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/services.dart';
 
+/// A bridge between the application's video players and the system media session.
+/// 
+/// [StashMediaHandler] uses the `audio_service` package to:
+/// 1. Show media notifications on the lock screen and notification shade.
+/// 2. Handle remote control events (play, pause, skip, seek) from headphones, 
+///    Bluetooth devices, and the system UI.
+/// 3. Provide metadata (title, studio, duration) to the OS.
 class StashMediaHandler extends BaseAudioHandler {
+  
+  /// Updates the metadata shown in the system media notification.
   void updateMetadata({
     required String id,
     required String title,
@@ -19,6 +28,7 @@ class StashMediaHandler extends BaseAudioHandler {
     ));
   }
 
+  /// Updates the playback state (playing/paused, position) in the system media session.
   void updatePlaybackState({
     required bool isPlaying,
     Duration? position,
@@ -46,12 +56,22 @@ class StashMediaHandler extends BaseAudioHandler {
     ));
   }
 
-  // These will be overridden by the provider to link back to the player
+  /// Callback for toggling play state. Linked to the active player provider.
   Future<void> Function()? onPlayCallback;
+  
+  /// Callback for pausing playback.
   Future<void> Function()? onPauseCallback;
+  
+  /// Callback for stopping playback.
   Future<void> Function()? onStopCallback;
+  
+  /// Callback for seeking to a specific position.
   Future<void> Function(Duration)? onSeekCallback;
+  
+  /// Callback for skipping to the next item in the queue.
   Future<void> Function()? onSkipToNextCallback;
+  
+  /// Callback for skipping to the previous item.
   Future<void> Function()? onSkipToPreviousCallback;
 
   @override

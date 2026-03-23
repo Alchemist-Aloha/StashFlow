@@ -4,6 +4,14 @@ import '../theme/app_theme.dart';
 import 'error_state_view.dart';
 import '../../utils/pagination.dart';
 
+/// A standardized scaffold for all list and grid pages in StashFlow.
+///
+/// This widget provides a consistent layout for browsing content, including:
+/// * An [AppBar] with integrated search and custom actions.
+/// * An optional [sortBar] for filtering or ordering results.
+/// * Automatic handling of [AsyncValue] states (loading, error, data).
+/// * Built-in [RefreshIndicator] and pagination logic.
+/// * Support for both [ListView] and [GridView] layouts.
 class ListPageScaffold<T> extends ConsumerStatefulWidget {
   const ListPageScaffold({
     super.key,
@@ -25,21 +33,52 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     this.scrollController,
   });
 
+  /// The page title displayed in the AppBar.
   final String title;
+  
+  /// The hint text shown in the search field.
   final String searchHint;
+  
+  /// Callback triggered when the search query changes.
   final ValueChanged<String> onSearchChanged;
+  
+  /// The [AsyncValue] provider supplying the list of items [T].
   final AsyncValue<List<T>> provider;
+  
+  /// Builder function for individual list/grid items.
   final Widget Function(BuildContext context, T item)? itemBuilder;
+  
+  /// Optional custom body to replace the default list/grid view.
   final Widget? customBody;
+  
+  /// Delegate for grid layouts. If null, a [ListView] is used.
   final SliverGridDelegate? gridDelegate;
+  
+  /// Custom actions for the AppBar.
   final List<Widget> actions;
+  
+  /// Optional widget displayed between the AppBar and the list (e.g., a filter chip row).
   final Widget? sortBar;
+  
+  /// Message displayed when the data list is empty.
   final String emptyMessage;
+  
+  /// Callback for the [RefreshIndicator].
   final Future<void> Function()? onRefresh;
+  
+  /// Callback triggered when scrolling near the bottom (infinite scroll).
   final VoidCallback? onFetchNextPage;
+  
+  /// Optional FAB for the page.
   final Widget? floatingActionButton;
+  
+  /// Padding applied to the list/grid.
   final EdgeInsetsGeometry padding;
+  
+  /// If true, the AppBar is omitted.
   final bool hideAppBar;
+  
+  /// Custom [ScrollController] for tracking scroll position externally.
   final ScrollController? scrollController;
 
   @override

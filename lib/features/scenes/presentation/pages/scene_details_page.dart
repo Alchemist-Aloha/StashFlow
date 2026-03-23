@@ -13,13 +13,23 @@ import '../../../../core/presentation/widgets/media_strip.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../domain/entities/scene_title_utils.dart';
 import '../../../studios/presentation/providers/studio_media_provider.dart';
-import '../providers/playback_queue_provider.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/video_player_provider.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../widgets/scene_video_player.dart';
 
+/// A detailed view for a single scene.
+///
+/// This page displays:
+/// * A video player ([SceneVideoPlayer]) at the top.
+/// * Scene metadata (title, studio, date, performers, tags).
+/// * Related media strips (scenes from the same studio, performers, etc.).
+/// * Direct file information.
+///
+/// It also handles sophisticated navigation logic:
+/// * Listens to [playerStateProvider] to auto-navigate to the next scene when the current one ends.
+/// * Pops the immersive fullscreen view automatically when playback transitions to a new scene.
 class SceneDetailsPage extends ConsumerStatefulWidget {
   final String sceneId;
   const SceneDetailsPage({required this.sceneId, super.key});
@@ -112,13 +122,29 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   Widget build(BuildContext context) {
     ref.listen(playerStateProvider, (previous, next) {
       final nextScene = next.activeScene;
-      final prevSceneId = previous?.activeScene?.id;
-
-      if (nextScene != null &&
-          nextScene.id != widget.sceneId &&
-          prevSceneId == widget.sceneId) {
+      
+      // Handle full-screen auto-exit
+      // Only the page that was active during fullscreen should handle the pop
+      if (previous?.isFullScreen == true && next.isFullScreen == false && previous?.activeScene?.id == widget.sceneId) {
+        if (context.mounted && GoRouter.of(context).canPop()) {
+           AppLogStore.instance.add(
+            'SceneDetailsPage [${widget.sceneId}] popping fullscreen view',
+            source: 'SceneDetailsPage',
+          );
+          context.pop();
+        }
+      }
+      
+      // Navigate to next scene if:
+      // 1. A new scene is active
+      // 2. It's different from THIS page's scene
+      // 3. THIS page's scene was the one that just finished (previous.activeScene)
+      if (nextScene != null && 
+          nextScene.id != widget.sceneId && 
+          previous?.activeScene?.id == widget.sceneId) {
+        
         AppLogStore.instance.add(
-          'SceneDetailsPage triggering navigation scene=${widget.sceneId} -> next=${nextScene.id}',
+          'SceneDetailsPage [${widget.sceneId}] navigating to next scene: ${nextScene.id}',
           source: 'SceneDetailsPage',
         );
 
@@ -132,24 +158,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Scene Details'),
-        actions: [
-          sceneAsync.when(
-            data: (scene) => IconButton(
-              icon: const Icon(Icons.queue_play_next),
-              tooltip: 'Add to queue',
-              onPressed: () {
-                ref.read(playbackQueueProvider.notifier).add(scene);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Added "${scene.displayTitle}" to queue'),
-                  ),
-                );
-              },
-            ),
-            loading: () => const SizedBox.shrink(),
-            error: (_, _) => const SizedBox.shrink(),
-          ),
-        ],
       ),
       floatingActionButton: randomNavigationEnabled
           ? sceneAsync.maybeWhen(

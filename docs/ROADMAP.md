@@ -1,10 +1,35 @@
 # StashFlow Functions + UI Improvement Plan (2026-03-19)
 
+> Status update (2026-03-23): PlaybackQueue stability issues resolved. Autoplay-next now works reliably across Scene Details and TikTok views. Full-screen transitions and state synchronization are hardened.
+
 > Status update (2026-03-20): Full-screen navigation, random nav toggle, dynamic playlist strategy, and scene rating functionality are now implemented.
 
 > Status update (2026-03-19): Core roadmap items in this plan are largely completed. Keep this file as historical tracking and move new work to fresh dated plan docs.
 
+> Latest delta (2026-03-23):
+- [x] Hardened `PlaybackQueue` persistence (fixed `isAutoDispose` regeneration bug).
+- [x] Implemented index recovery and same-list detection in `PlaybackQueue.setSequence`.
+- [x] Resolved "double-skip" autoplay bug via transition guards in `PlayerState`.
+- [x] Fixed SceneDetailsPage UI desync (page now follows background player advances).
+- [x] Integrated `autoplayNext` into TikTok view (auto-scroll on finish).
+- [x] Implemented full-screen auto-exit and fixed TikTok-to-Fullscreen state handoff.
+- [x] Instrumented core playback providers with persistent `AppLogStore` logging.
+
+> Latest delta (2026-03-22):
+> - [x] **v1.3.0 Release**: Refactored GraphQL client using Riverpod providers for better state lifecycle.
+> - [x] **License**: Officially added GNU General Public License v3 to the project.
+> - [x] **Testing Stability**: Added comprehensive widget tests for Performers, Studios, Tags, and Video Player.
+> - [x] **Infrastructure**: Unified application ID and namespace for StashFlow branding.
+
+> Latest delta (2026-03-21):
+> - [x] **v1.2.0 Release**: Integrated `audio_service` for system-level media notification support.
+> - [x] **TikTok View**: Implemented vertical-scroll "TikTok" layout with long-press speed control and quick-rating.
+> - [x] **PiP Mode**: Added native Picture-in-Picture support with aspect ratio preservation.
+> - [x] **Fullscreen UX**: Added Hero animations for seamless player transitions and improved GoRouter integration.
+> - [x] **Layout Flexibility**: Added Scenes layout toggle (Grid vs TikTok) in settings.
+
 > Latest delta (2026-03-20):
+
 > - [x] Implemented dedicated `/fullscreen/:id` route for robust navigation.
 > - [x] Added global setting to toggle "Random" discovery buttons.
 > - [x] Implemented dynamic "Playlist" strategy (Play Next follows current sequence).
@@ -17,8 +42,6 @@
 > - [x] Added granular startup telemetry including Chewie build/wait phases.
 > - [x] Fixed resolver cache-miss handling when valid stream data is returned.
 > - [x] Fixed title fallback crash on malformed percent-encoding.
-> - [ ] Continue validating provider lifecycle/disposal race seen in startup logs under rapid transitions.
-> - [ ] Validate Caddy/upstream cold-path behavior as primary first-play delay source.
 
 > For agent workers: execute in small vertical slices and verify each slice with `flutter analyze` + targeted tests.
 

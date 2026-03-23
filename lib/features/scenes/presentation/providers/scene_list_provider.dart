@@ -10,6 +10,8 @@ import '../../data/repositories/graphql_scene_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/pagination.dart';
+import '../../../../core/utils/app_log_store.dart';
+import 'playback_queue_provider.dart';
 
 part 'scene_list_provider.g.dart';
 
@@ -167,6 +169,14 @@ class SceneFilterState extends _$SceneFilterState {
   }
 }
 
+/// A notifier that manages the primary list of scenes with support for
+/// filtering, sorting, and infinite pagination.
+///
+/// This provider is responsible for:
+/// - Initializing and refreshing the scene list from the [SceneRepository].
+/// - Managing the current page state and loading more scenes as the user scrolls.
+/// - Providing search and filtering capabilities.
+/// - Synchronizing the initial playback sequence with the [playbackQueueProvider].
 @riverpod
 class SceneList extends _$SceneList {
   int _currentPage = 1;
@@ -176,17 +186,20 @@ class SceneList extends _$SceneList {
 
   @override
   FutureOr<List<Scene>> build() async {
+    // Keep the list alive so navigation doesn't reset pagination
     ref.keepAlive();
+    
     _currentPage = 1;
     _hasMore = true;
     _isLoadingMore = false;
+    
     final query = ref.watch(sceneSearchQueryProvider);
     final sortConfig = ref.watch(sceneSortProvider);
     final filter = ref.watch(sceneFilterStateProvider);
     final organizedOnly = ref.watch(sceneOrganizedOnlyProvider);
     final repository = ref.read(sceneRepositoryProvider);
 
-    return repository.findScenes(
+    final scenes = await repository.findScenes(
       page: _currentPage,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
@@ -195,6 +208,19 @@ class SceneList extends _$SceneList {
       organized: organizedOnly ? true : null,
       sceneFilter: filter,
     );
+
+    // Initialize playback queue sequence with the initial load.
+    // We use index -1 to allow the queue to recover its index if the 
+    // user is already playing something and just refreshed the list.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      AppLogStore.instance.add(
+        'SceneList build: initializing playback queue with ${scenes.length} scenes',
+        source: 'scene_list',
+      );
+      ref.read(playbackQueueProvider.notifier).setSequence(scenes, -1);
+    });
+
+    return scenes;
   }
 
   void setSort({String? sort, bool descending = true}) {
@@ -234,6 +260,12 @@ class SceneList extends _$SceneList {
       } else {
         _currentPage = nextPage;
         state = AsyncData([...state.value ?? [], ...nextScenes]);
+        AppLogStore.instance.add(
+          'SceneList fetchNextPage: updating playback queue with ${nextScenes.length} more scenes',
+          source: 'scene_list',
+        );
+        // Update playback queue sequence
+        ref.read(playbackQueueProvider.notifier).updateSequence(nextScenes);
       }
     } catch (e) {
       // In a real app, you might want to show a snackbar for error during pagination

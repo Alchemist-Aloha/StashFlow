@@ -3,6 +3,9 @@
 
 A native Android mobile client for your **Stash** server. Designed for seamless browsing, effortless discovery, and high-quality playback on the go.
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-1.3.1-green.svg)](pubspec.yaml)
+
 ## 📸 Screenshots
 
 <p align="center">
@@ -12,11 +15,16 @@ A native Android mobile client for your **Stash** server. Designed for seamless 
 
 ## ✨ Key Features
 
-- 🎬 **Seamless Playback:** Integrated video player with support for multiple streaming strategies and startup diagnostics.
-- 👤 **Rich Browsing:** Explore Scenes, Performers, Studios, and Tags with native-feel pagination and fast search.
-- 🎲 **Discovery Tools:** Floating "Random" actions to find hidden gems in your library across all categories.
-- 🔍 **Advanced Filtering:** Powerful menu-based sorting and filtering to find exactly what you're looking for.
-- 🛠️ **Native Customization:** Configure your server connection, UI preferences (Grid/List layouts), and streaming quality in one place.
+- 🎬 **Seamless Playback:** Integrated video player with support for multiple streaming strategies, startup diagnostics, and **Autoplay Next**.
+- 🎵 **System Integration:** Full support for `audio_service` (media notifications/lock screen controls) and **Picture-in-Picture (PiP)** mode.
+- 👤 **Rich Browsing:** Explore Scenes, Performers, Studios, Tags, Galleries, and Groups with native-feel pagination and fast search.
+- 📱 **Flexible Layouts:** Choose between a classic **Grid/List** view or a modern **TikTok-style** vertical scroll layout for discovery.
+- 🎲 **Discovery Tools:** Floating "Random" actions and "Surprise Me" entries to find hidden gems in your library.
+- 🔍 **Advanced Filtering:** Powerful menu-based sorting (Date, Rating, Play Count, Random) and multi-filter sheets.
+- 🛠️ **Native Customization:** Configure your server connection, UI preferences, and streaming quality in one place.
+
+> [!IMPORTANT]
+> **TikTok Layout (WIP):** The vertical scroll (TikTok-style) layout is currently in active development. You may encounter stability issues with scene ratings or entering/exiting fullscreen playback directly from this view. Refinements are ongoing.
 
 ## 🚀 Getting Started
 
@@ -26,9 +34,12 @@ A native Android mobile client for your **Stash** server. Designed for seamless 
 
 ### ⚙️ Runtime Settings
 Tailor your experience in the app settings:
-- `server_base_url` & `server_api_key`
-- `prefer_scene_streams` (Toggle stream strategies)
-- `scene_grid_layout` (Switch between single/double column)
+- `server_base_url` & `server_api_key`: Connection details.
+- `prefer_scene_streams`: Toggle between direct file paths and scene-specific stream resolution.
+- `scene_layout_mode`: Switch between **Grid** and **TikTok** view.
+- `autoplay_next`: Enable continuous playback in details and TikTok views.
+- `video_background_playback`: Continue audio when app is minimized.
+- `video_native_pip`: Enable auto-PiP on Android.
 
 ---
 
@@ -36,14 +47,14 @@ Tailor your experience in the app settings:
 
 ### Tech Stack
 - **Flutter** & **GoRouter**
-- **Riverpod** (State Management)
+- **Riverpod** & **Hooks** (State Management)
 - **GraphQL** (`graphql_flutter` + `codegen`)
-- **SharedPreferences**
+- **Video Player** + **Audio Service** (Native-feel playback)
 
 ### Project Structure
-- `lib/core` shared infrastructure
+- `lib/core` shared infrastructure (theme, logs, providers)
 - `lib/features/*` feature modules (domain/data/presentation)
-- `graphql/` schema and GraphQL documents
+- `graphql/` schema and GraphQL documents for code generation
 
 ### Development
 ```bash
@@ -64,9 +75,8 @@ flutter build apk
 
 ## 📚 Internal Docs
 For architecture, known issues, and onboarding, see:
-- [Documentation Index](docs/README.md)
+- [Documentation Index](docs/GEMINI.md)
 - [Developer Guide](docs/DEVELOPER_GUIDE.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
 - [Roadmap](docs/ROADMAP.md)
-
 - [Hosted documentation (Live)](https://alchemist-aloha.github.io/StashFlow/) — Official hosted docs and API reference.

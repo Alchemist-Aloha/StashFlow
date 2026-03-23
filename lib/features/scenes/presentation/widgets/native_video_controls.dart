@@ -9,7 +9,6 @@ import '../../../../core/utils/pip_mode.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../domain/entities/scene.dart';
-import '../../domain/entities/scene_title_utils.dart';
 import '../providers/video_player_provider.dart';
 import '../providers/playback_queue_provider.dart';
 
@@ -251,7 +250,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     final durationMs = math.max(1, duration.inMilliseconds);
     final playbackSpeed = value.playbackSpeed;
     final isFullScreen = playerState.isFullScreen;
-    final nextScene = ref.watch(playbackQueueProvider.notifier).getNextScene();
+    final queueState = ref.watch(playbackQueueProvider);
+    final nextScene = (queueState.currentIndex >= 0 &&
+            queueState.currentIndex < queueState.sequence.length - 1)
+        ? queueState.sequence[queueState.currentIndex + 1]
+        : null;
 
     final currentMs = _isScrubbing
         ? _scrubMs
@@ -317,29 +320,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                         '${playerState.prewarmAttempted != true ? '' : '  prewarm: ${playerState.prewarmSucceeded == true ? 'ok' : 'fail'}${playerState.prewarmLatencyMs == null ? '' : '/${playerState.prewarmLatencyMs}ms'}'}'
                         '${playerState.startupLatencyMs == null ? '' : '  start: ${playerState.startupLatencyMs}ms'}',
                         style: const TextStyle(color: Colors.white70, fontSize: 11),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-            // Next Scene Button
-            if (nextScene != null)
-              Positioned(
-                bottom: _controlsVisible ? 130 : 16,
-                right: 16,
-                child: AnimatedOpacity(
-                  opacity: _controlsVisible ? 1 : 0,
-                  duration: const Duration(milliseconds: 180),
-                  child: IgnorePointer(
-                    ignoring: !_controlsVisible,
-                    child: ElevatedButton.icon(
-                      onPressed: () => ref.read(playerStateProvider.notifier).playNext(),
-                      icon: const Icon(Icons.skip_next),
-                      label: Text('Next: ${nextScene.displayTitle}'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black54,
-                        foregroundColor: Colors.white,
                       ),
                     ),
                   ),
@@ -437,6 +417,24 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                   },
                                 ),
                               ),
+                              if (nextScene != null && !isFullScreen) ...[
+                                const SizedBox(width: 8),
+                                Material(
+                                  color: const Color(0x30FFFFFF),
+                                  shape: const CircleBorder(),
+                                  child: IconButton(
+                                    iconSize: 24,
+                                    icon: const Icon(
+                                      Icons.skip_next_rounded,
+                                      color: Colors.white,
+                                    ),
+                                    onPressed: () {
+                                      ref.read(playerStateProvider.notifier).playNext();
+                                      _showControlsTemporarily();
+                                    },
+                                  ),
+                                ),
+                              ],
                               const SizedBox(width: 8),
                               Text(
                                 '${_format(Duration(milliseconds: sliderValue.round()))} / ${_format(duration)}',

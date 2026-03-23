@@ -7,7 +7,6 @@ import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
 import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
-import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/main.dart';
 
 class MockSceneRepository implements SceneRepository {
@@ -50,7 +49,10 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
-    SharedPreferences.setMockInitialValues({'prefer_scene_streams': false});
+    SharedPreferences.setMockInitialValues({
+      'prefer_scene_streams': false,
+      'server_base_url': 'http://localhost:9999',
+    });
     final prefs = await SharedPreferences.getInstance();
 
     final testScene = Scene(
