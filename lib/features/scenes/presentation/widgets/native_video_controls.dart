@@ -9,7 +9,6 @@ import '../../../../core/utils/pip_mode.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../domain/entities/scene.dart';
-import '../../domain/entities/scene_title_utils.dart';
 import '../providers/video_player_provider.dart';
 import '../providers/playback_queue_provider.dart';
 

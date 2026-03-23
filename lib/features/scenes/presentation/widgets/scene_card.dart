@@ -5,8 +5,6 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
 
-import '../providers/playback_queue_provider.dart';
-
 /// A card widget that displays a summary of a [Scene].
 ///
 /// This component is used throughout the app in lists and grids to show 

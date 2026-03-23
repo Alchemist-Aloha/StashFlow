@@ -13,7 +13,6 @@ import '../../../../core/presentation/widgets/media_strip.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../domain/entities/scene_title_utils.dart';
 import '../../../studios/presentation/providers/studio_media_provider.dart';
-import '../providers/playback_queue_provider.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/video_player_provider.dart';
