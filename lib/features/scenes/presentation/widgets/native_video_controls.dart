@@ -251,7 +251,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     final durationMs = math.max(1, duration.inMilliseconds);
     final playbackSpeed = value.playbackSpeed;
     final isFullScreen = playerState.isFullScreen;
-    final nextScene = ref.watch(playbackQueueProvider.notifier).getNextScene();
+    final queueState = ref.watch(playbackQueueProvider);
+    final nextScene = (queueState.currentIndex >= 0 &&
+            queueState.currentIndex < queueState.sequence.length - 1)
+        ? queueState.sequence[queueState.currentIndex + 1]
+        : null;
 
     final currentMs = _isScrubbing
         ? _scrubMs
