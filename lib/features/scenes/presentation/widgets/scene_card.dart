@@ -38,25 +38,9 @@ class SceneCard extends ConsumerWidget {
       context: context,
       position: position,
       items: [
-        const PopupMenuItem(
-          value: 'add_to_queue',
-          child: ListTile(
-            leading: Icon(Icons.queue_play_next),
-            title: Text('Add to queue'),
-            contentPadding: EdgeInsets.zero,
-            visualDensity: VisualDensity.compact,
-          ),
-        ),
+        // No items for now, or add other items if needed
       ],
-    ).then((value) {
-      if (!context.mounted) return;
-      if (value == 'add_to_queue') {
-        ref.read(playbackQueueProvider.notifier).add(scene);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Added "${scene.displayTitle}" to queue')),
-        );
-      }
-    });
+    );
   }
 
   String _formatDuration(double? duration) {

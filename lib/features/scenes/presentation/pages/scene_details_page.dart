@@ -132,24 +132,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Scene Details'),
-        actions: [
-          sceneAsync.when(
-            data: (scene) => IconButton(
-              icon: const Icon(Icons.queue_play_next),
-              tooltip: 'Add to queue',
-              onPressed: () {
-                ref.read(playbackQueueProvider.notifier).add(scene);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Added "${scene.displayTitle}" to queue'),
-                  ),
-                );
-              },
-            ),
-            loading: () => const SizedBox.shrink(),
-            error: (_, _) => const SizedBox.shrink(),
-          ),
-        ],
       ),
       floatingActionButton: randomNavigationEnabled
           ? sceneAsync.maybeWhen(
