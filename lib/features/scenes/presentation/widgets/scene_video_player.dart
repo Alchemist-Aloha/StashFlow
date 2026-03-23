@@ -306,7 +306,6 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   @override
   Widget build(BuildContext context) {
     final playerState = ref.watch(playerStateProvider);
-    final isActive = playerState.activeScene?.id == widget.scene.id;
     
     final aspectRatio = _effectiveAspectRatio(
       playerState.videoPlayerController,

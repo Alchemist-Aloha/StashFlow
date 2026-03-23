@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/data/graphql/graphql_client.dart';
-import '../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../scenes/presentation/pages/scenes_page.dart';
 import '../../scenes/presentation/pages/scene_details_page.dart';
 import '../../performers/presentation/pages/performers_page.dart';
@@ -21,18 +20,22 @@ import 'shell_page.dart';
 
 part 'router.g.dart';
 
+/// Central application router defined using GoRouter and Riverpod.
+/// 
+/// This provider creates a [GoRouter] instance that handles:
+/// 1. Tab-based navigation via [StatefulShellRoute].
+/// 2. Deep linking to scenes, performers, studios, and tags.
+/// 3. Redirection to the settings page if the Stash server is not configured.
+/// 4. Immersive fullscreen transitions for the video player.
 @riverpod
 GoRouter router(Ref ref) {
   // Use listen to react to configuration changes without rebuilding the router itself.
   // This prevents the app from resetting to the initial location when settings change.
   ref.listen(serverUrlProvider, (previous, next) {
     if ((previous == null || previous.isEmpty) && next.isNotEmpty) {
-      // If we just became configured, we might want to redirect, 
-      // but GoRouter handles redirect logic internally if we notify it.
+      // If we just became configured, we might want to notify or refresh.
     }
   });
-
-  final serverUrl = ref.read(serverUrlProvider);
 
   return GoRouter(
     initialLocation: '/scenes',
@@ -45,6 +48,7 @@ GoRouter router(Ref ref) {
           state.uri.path == '/settings' ||
           state.uri.path.startsWith('/settings/');
 
+      // Force redirection to settings if the server URL is missing
       if (!isConfigured && !isSettingsPath) {
         return '/settings';
       }
