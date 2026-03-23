@@ -24,7 +24,7 @@ Future<void> main() async {
     mediaHandler = await AudioService.init(
       builder: _buildMediaHandler,
       config: const AudioServiceConfig(
-        androidNotificationChannelId: 'com.github.damontecres.stash_app_flutter.channel.audio',
+        androidNotificationChannelId: 'com.github.alchemistaloha.stash_app_flutter.channel.audio',
         androidNotificationChannelName: 'StashFlow Playback',
         androidNotificationOngoing: false,
         androidStopForegroundOnPause: true,

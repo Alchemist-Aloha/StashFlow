@@ -1,4 +1,4 @@
-package com.github.damontecres.stash_app_flutter
+package com.github.alchemistaloha.stash_app_flutter
 
 import android.app.PictureInPictureParams
 import android.content.res.Configuration
