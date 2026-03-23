@@ -295,6 +295,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     final organizedOnly = ref.watch(sceneOrganizedOnlyProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final isFullScreen = ref.watch(fullScreenModeProvider);
+    final scrollController = ref.watch(sceneScrollControllerProvider);
     
     final hasActiveFilters = filterActive || organizedOnly;
 
@@ -304,6 +305,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       onSearchChanged: _onSearchChanged,
       provider: scenesAsync,
       customBody: isTiktokLayout ? const TiktokScenesView() : null,
+      scrollController: scrollController,
       hideAppBar: isTiktokLayout && isFullScreen,
       onRefresh: () => ref.refresh(sceneListProvider.future),
       onFetchNextPage: () =>

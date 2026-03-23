@@ -80,6 +80,12 @@ class ShellPage extends ConsumerWidget {
                     ),
                   ],
                   onDestinationSelected: (index) {
+                    if (index == 0 && navigationShell.currentIndex == 0) {
+                      final isTiktokLayout = ref.read(sceneTiktokLayoutProvider);
+                      if (!isTiktokLayout) {
+                        ref.read(sceneScrollControllerProvider.notifier).scrollToTop();
+                      }
+                    }
                     navigationShell.goBranch(
                       index,
                       initialLocation: index == navigationShell.currentIndex,

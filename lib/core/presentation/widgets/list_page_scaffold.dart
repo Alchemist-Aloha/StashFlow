@@ -22,6 +22,7 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     this.floatingActionButton,
     this.padding = const EdgeInsets.all(AppTheme.spacingMedium),
     this.hideAppBar = false,
+    this.scrollController,
   });
 
   final String title;
@@ -39,6 +40,7 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
   final Widget? floatingActionButton;
   final EdgeInsetsGeometry padding;
   final bool hideAppBar;
+  final ScrollController? scrollController;
 
   @override
   ConsumerState<ListPageScaffold<T>> createState() =>
@@ -129,6 +131,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                     },
                     child: widget.gridDelegate != null
                         ? GridView.builder(
+                            controller: widget.scrollController,
                             padding: widget.padding,
                             gridDelegate: widget.gridDelegate!,
                             itemCount: items.length,
@@ -136,6 +139,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                 widget.itemBuilder!(context, items[index]),
                           )
                         : ListView.builder(
+                            controller: widget.scrollController,
                             padding: widget.padding,
                             itemCount: items.length,
                             itemBuilder: (context, index) =>

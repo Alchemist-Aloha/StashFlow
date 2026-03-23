@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:math';
 import 'dart:convert';
@@ -29,6 +30,30 @@ final sceneGridLayoutProvider = NotifierProvider<SceneGridLayout, bool>(
 final sceneTiktokLayoutProvider = NotifierProvider<SceneTiktokLayout, bool>(
   SceneTiktokLayout.new,
 );
+
+final sceneScrollControllerProvider =
+    NotifierProvider<SceneScrollController, ScrollController>(
+      SceneScrollController.new,
+    );
+
+class SceneScrollController extends Notifier<ScrollController> {
+  @override
+  ScrollController build() {
+    final controller = ScrollController();
+    ref.onDispose(controller.dispose);
+    return controller;
+  }
+
+  void scrollToTop() {
+    if (state.hasClients) {
+      state.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+}
 
 class SceneTiktokLayout extends Notifier<bool> {
   static const _storageKey = 'scene_tiktok_layout';
