@@ -1,76 +1,63 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/scene.dart';
-import 'video_player_provider.dart';
 
 part 'playback_queue_provider.g.dart';
 
 class PlaybackQueueState {
-  final List<Scene> manualQueue;
-  final List<Scene> currentSequence;
+  final List<Scene> sequence;
+  final int currentIndex;
 
   PlaybackQueueState({
-    this.manualQueue = const [],
-    this.currentSequence = const [],
+    this.sequence = const [],
+    this.currentIndex = -1,
   });
 
   PlaybackQueueState copyWith({
-    List<Scene>? manualQueue,
-    List<Scene>? currentSequence,
+    List<Scene>? sequence,
+    int? currentIndex,
   }) {
     return PlaybackQueueState(
-      manualQueue: manualQueue ?? this.manualQueue,
-      currentSequence: currentSequence ?? this.currentSequence,
+      sequence: sequence ?? this.sequence,
+      currentIndex: currentIndex ?? this.currentIndex,
     );
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class PlaybackQueue extends _$PlaybackQueue {
   @override
   PlaybackQueueState build() {
     return PlaybackQueueState();
   }
 
-  void add(Scene scene) {
-    if (!state.manualQueue.any((s) => s.id == scene.id)) {
-      state = state.copyWith(manualQueue: [...state.manualQueue, scene]);
-    }
-  }
-
-  void remove(String sceneId) {
+  void setSequence(List<Scene> scenes, int initialIndex) {
     state = state.copyWith(
-      manualQueue: state.manualQueue.where((s) => s.id != sceneId).toList(),
+      sequence: scenes,
+      currentIndex: initialIndex,
     );
   }
 
-  void clear() {
-    state = state.copyWith(manualQueue: []);
+  void updateSequence(List<Scene> scenes) {
+    state = state.copyWith(sequence: [...state.sequence, ...scenes]);
   }
 
-  void setCurrentSequence(List<Scene> scenes) {
-    state = state.copyWith(currentSequence: scenes);
+  void setIndex(int index) {
+    if (index >= 0 && index < state.sequence.length) {
+      state = state.copyWith(currentIndex: index);
+    }
   }
 
   Scene? getNextScene() {
-    final activeScene = ref.read(playerStateProvider).activeScene;
-    if (activeScene == null) return null;
-
-    // 1. Check manual queue first
-    final manualIndex = state.manualQueue.indexWhere((s) => s.id == activeScene.id);
-    if (manualIndex != -1 && manualIndex < state.manualQueue.length - 1) {
-      return state.manualQueue[manualIndex + 1];
+    if (state.currentIndex >= 0 && state.currentIndex < state.sequence.length - 1) {
+      return state.sequence[state.currentIndex + 1];
     }
-
-    // 2. Fallback to current sequence (query list)
-    final seqIndex = state.currentSequence.indexWhere((s) => s.id == activeScene.id);
-    if (seqIndex != -1 && seqIndex < state.currentSequence.length - 1) {
-      return state.currentSequence[seqIndex + 1];
-    }
-    
     return null;
   }
 
-  void fillFromList(List<Scene> scenes) {
-    state = state.copyWith(manualQueue: scenes);
+  void playNext() {
+    final nextIndex = state.currentIndex + 1;
+    if (nextIndex < state.sequence.length) {
+      state = state.copyWith(currentIndex: nextIndex);
+    }
   }
 }
