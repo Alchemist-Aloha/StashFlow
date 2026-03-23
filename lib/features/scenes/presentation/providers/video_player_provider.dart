@@ -429,6 +429,9 @@ class PlayerState extends _$PlayerState {
       'PlayerState _handleVideoFinished: active=${state.activeScene?.id} autoplay=${state.autoplayNext}',
       source: 'player_provider',
     );
+    if (state.isFullScreen) {
+      setFullScreen(false);
+    }
     if (state.autoplayNext) {
       playNext();
     }

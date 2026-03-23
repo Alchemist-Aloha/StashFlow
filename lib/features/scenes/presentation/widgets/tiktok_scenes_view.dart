@@ -234,6 +234,26 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
           : Duration.zero,
       speed: controller.value.playbackSpeed,
     );
+
+    // Auto play next logic for TikTok View
+    final playerState = ref.read(playerStateProvider);
+    if (playerState.autoplayNext) {
+      if (controller.value.position >= controller.value.duration &&
+          controller.value.duration > Duration.zero &&
+          !controller.value.isPlaying) {
+        
+        // Use a flag or check to ensure we only advance once
+        if (_pageController.hasClients) {
+          final page = _pageController.page?.round() ?? _currentIndex;
+          if (page == _currentIndex) {
+             _pageController.nextPage(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          }
+        }
+      }
+    }
   }
 
   Future<void> _initializeController(Scene scene) async {
@@ -250,7 +270,9 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
       _controllers[scene.id] = controller;
       await controller.initialize();
-      controller.setLooping(true);
+      
+      final autoplayNext = ref.read(playerStateProvider).autoplayNext;
+      controller.setLooping(!autoplayNext);
 
       if (mounted) {
         setState(() {}); // Trigger rebuild to show the first frame

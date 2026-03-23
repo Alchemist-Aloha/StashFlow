@@ -418,7 +418,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                   },
                                 ),
                               ),
-                              if (nextScene != null) ...[
+                              if (nextScene != null && !isFullScreen) ...[
                                 const SizedBox(width: 8),
                                 Material(
                                   color: const Color(0x30FFFFFF),
