@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/settings_page.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 
 void main() {
   testWidgets('Settings page shows server fields', (WidgetTester tester) async {
@@ -16,7 +17,10 @@ void main() {
         overrides: [
           sharedPreferencesProvider.overrideWithValue(sharedPreferences),
         ],
-        child: const MaterialApp(home: SettingsPage()),
+        child: MaterialApp(
+          theme: AppTheme.lightTheme,
+          home: const SettingsPage(),
+        ),
       ),
     );
     await tester.pumpAndSettle();

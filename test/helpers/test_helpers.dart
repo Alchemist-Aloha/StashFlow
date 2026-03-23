@@ -171,6 +171,11 @@ Future<void> pumpTestWidget(
   List<dynamic> overrides = const [],
   SharedPreferences? prefs,
 }) async {
+  if (prefs == null) {
+    SharedPreferences.setMockInitialValues({
+      'server_base_url': 'http://localhost:9999',
+    });
+  }
   final finalPrefs = prefs ?? await SharedPreferences.getInstance();
 
   await tester.pumpWidget(
