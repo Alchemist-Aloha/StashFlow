@@ -80,6 +80,6 @@ GraphQLClient graphqlClient(Ref ref) {
 
   return GraphQLClient(
     link: httpLink,
-    cache: GraphQLCache(store: InMemoryStore()),
+    cache: GraphQLCache(store: HiveStore()),
   );
 }
