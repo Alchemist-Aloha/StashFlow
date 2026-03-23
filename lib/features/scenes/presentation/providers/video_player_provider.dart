@@ -119,6 +119,7 @@ class PlayerState extends _$PlayerState {
 
   VideoPlayerController? _videoControllerRef;
   String? _firstFrameLoggedSceneId;
+  bool _isTransitioning = false;
 
   @override
   GlobalPlayerState build() {
@@ -137,7 +138,13 @@ class PlayerState extends _$PlayerState {
     mediaHandler?.onPauseCallback = () async => togglePlayPause();
     mediaHandler?.onStopCallback = () async => stop();
     mediaHandler?.onSeekCallback = (pos) async => state.videoPlayerController?.seekTo(pos);
-    mediaHandler?.onSkipToNextCallback = () async => playNext();
+    mediaHandler?.onSkipToNextCallback = () async {
+      AppLogStore.instance.add(
+        'PlayerState mediaHandler.onSkipToNextCallback',
+        source: 'player_provider',
+      );
+      return playNext();
+    };
 
     final prefs = ref.read(sharedPreferencesProvider);
     return GlobalPlayerState(
@@ -418,6 +425,10 @@ class PlayerState extends _$PlayerState {
   }
 
   void _handleVideoFinished() {
+    AppLogStore.instance.add(
+      'PlayerState _handleVideoFinished: active=${state.activeScene?.id} autoplay=${state.autoplayNext}',
+      source: 'player_provider',
+    );
     if (state.autoplayNext) {
       playNext();
     }
@@ -425,25 +436,61 @@ class PlayerState extends _$PlayerState {
 
   Future<void> playNext() async {
     if (!ref.mounted) return;
+    if (_isTransitioning) {
+      AppLogStore.instance.add(
+        'PlayerState playNext: already transitioning, skipping',
+        source: 'player_provider',
+      );
+      return;
+    }
 
-    final queueNotifier = ref.read(playbackQueueProvider.notifier);
-    final nextScene = queueNotifier.getNextScene();
-    
-    if (nextScene != null) {
-      queueNotifier.playNext(); // Increment index in queue
-      final resolver = ref.read(streamResolverProvider.notifier);
-      final choice = await resolver.resolvePreferredStream(nextScene);
-      if (choice != null) {
-        final mediaHeaders = ref.read(mediaHeadersProvider);
-        await playScene(
-          nextScene,
-          choice.url,
-          mimeType: choice.mimeType,
-          streamLabel: choice.label,
-          streamSource: 'autoplay-next',
-          httpHeaders: mediaHeaders,
+    _isTransitioning = true;
+    try {
+      AppLogStore.instance.add(
+        'PlayerState playNext: currentActive=${state.activeScene?.id}',
+        source: 'player_provider',
+      );
+
+      final queueNotifier = ref.read(playbackQueueProvider.notifier);
+      final nextScene = queueNotifier.getNextScene();
+      
+      AppLogStore.instance.add(
+        'PlayerState playNext: nextSceneFound=${nextScene?.id}',
+        source: 'player_provider',
+      );
+
+      if (nextScene != null) {
+        AppLogStore.instance.add(
+          'PlayerState playNext: moving to ${nextScene.id}',
+          source: 'player_provider',
+        );
+        queueNotifier.playNext(); // Increment index in queue
+        final resolver = ref.read(streamResolverProvider.notifier);
+        final choice = await resolver.resolvePreferredStream(nextScene);
+        if (choice != null) {
+          final mediaHeaders = ref.read(mediaHeadersProvider);
+          await playScene(
+            nextScene,
+            choice.url,
+            mimeType: choice.mimeType,
+            streamLabel: choice.label,
+            streamSource: 'autoplay-next',
+            httpHeaders: mediaHeaders,
+          );
+        } else {
+          AppLogStore.instance.add(
+            'PlayerState playNext: failed to resolve stream for ${nextScene.id}',
+            source: 'player_provider',
+          );
+        }
+      } else {
+        AppLogStore.instance.add(
+          'PlayerState playNext: no next scene found',
+          source: 'player_provider',
         );
       }
+    } finally {
+      _isTransitioning = false;
     }
   }
 }

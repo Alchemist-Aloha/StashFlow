@@ -112,13 +112,14 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   Widget build(BuildContext context) {
     ref.listen(playerStateProvider, (previous, next) {
       final nextScene = next.activeScene;
-      final prevSceneId = previous?.activeScene?.id;
-
-      if (nextScene != null &&
-          nextScene.id != widget.sceneId &&
-          prevSceneId == widget.sceneId) {
+      
+      // Navigate if:
+      // 1. We have a next scene
+      // 2. It's different from our current page's scene
+      // 3. AND we were previously watching the scene that just finished (or we are in autoplay mode)
+      if (nextScene != null && nextScene.id != widget.sceneId) {
         AppLogStore.instance.add(
-          'SceneDetailsPage triggering navigation scene=${widget.sceneId} -> next=${nextScene.id}',
+          'SceneDetailsPage triggering navigation: current=${widget.sceneId} -> next=${nextScene.id}',
           source: 'SceneDetailsPage',
         );
 

@@ -20,7 +20,7 @@ final class PlaybackQueueProvider
         argument: null,
         retry: null,
         name: r'playbackQueueProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -41,7 +41,7 @@ final class PlaybackQueueProvider
   }
 }
 
-String _$playbackQueueHash() => r'292b41ff70dce49d5d245b9a41f871ca8fae7873';
+String _$playbackQueueHash() => r'b1352e1a894c9de6323884ffee069228ee6009d9';
 
 abstract class _$PlaybackQueue extends $Notifier<PlaybackQueueState> {
   PlaybackQueueState build();

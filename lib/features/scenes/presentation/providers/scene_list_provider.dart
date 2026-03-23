@@ -10,6 +10,7 @@ import '../../data/repositories/graphql_scene_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/pagination.dart';
+import '../../../../core/utils/app_log_store.dart';
 import 'playback_queue_provider.dart';
 
 part 'scene_list_provider.g.dart';
@@ -199,6 +200,10 @@ class SceneList extends _$SceneList {
 
     // Initialize playback queue sequence with initial load
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      AppLogStore.instance.add(
+        'SceneList build: initializing playback queue with ${scenes.length} scenes',
+        source: 'scene_list',
+      );
       ref.read(playbackQueueProvider.notifier).setSequence(scenes, -1);
     });
 
@@ -242,6 +247,10 @@ class SceneList extends _$SceneList {
       } else {
         _currentPage = nextPage;
         state = AsyncData([...state.value ?? [], ...nextScenes]);
+        AppLogStore.instance.add(
+          'SceneList fetchNextPage: updating playback queue with ${nextScenes.length} more scenes',
+          source: 'scene_list',
+        );
         // Update playback queue sequence
         ref.read(playbackQueueProvider.notifier).updateSequence(nextScenes);
       }
