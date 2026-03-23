@@ -186,7 +186,7 @@ class SceneList extends _$SceneList {
     final organizedOnly = ref.watch(sceneOrganizedOnlyProvider);
     final repository = ref.read(sceneRepositoryProvider);
 
-    return repository.findScenes(
+    final scenes = await repository.findScenes(
       page: _currentPage,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
@@ -195,6 +195,13 @@ class SceneList extends _$SceneList {
       organized: organizedOnly ? true : null,
       sceneFilter: filter,
     );
+
+    // Initialize playback queue sequence with initial load
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(playbackQueueProvider.notifier).setSequence(scenes, -1);
+    });
+
+    return scenes;
   }
 
   void setSort({String? sort, bool descending = true}) {
@@ -234,6 +241,8 @@ class SceneList extends _$SceneList {
       } else {
         _currentPage = nextPage;
         state = AsyncData([...state.value ?? [], ...nextScenes]);
+        // Update playback queue sequence
+        ref.read(playbackQueueProvider.notifier).updateSequence(nextScenes);
       }
     } catch (e) {
       // In a real app, you might want to show a snackbar for error during pagination

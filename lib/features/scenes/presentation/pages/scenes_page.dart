@@ -364,17 +364,21 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
             )
           : null,
       padding: EdgeInsets.all(isGridView ? AppTheme.spacingSmall : 0),
-      itemBuilder: (context, scene) => SceneCard(
-        scene: scene,
-        isGrid: isGridView,
-        onTap: () {
-          final scenes = scenesAsync.value ?? [];
-          if (scenes.isNotEmpty) {
-            ref.read(playbackQueueProvider.notifier).setCurrentSequence(scenes);
-          }
-          context.push('/scenes/scene/${scene.id}');
-        },
-      ),
+      itemBuilder: (context, scene) {
+        final scenes = scenesAsync.value ?? [];
+        final index = scenes.indexWhere((s) => s.id == scene.id);
+        
+        return SceneCard(
+          scene: scene,
+          isGrid: isGridView,
+          onTap: () {
+            if (index != -1) {
+              ref.read(playbackQueueProvider.notifier).setIndex(index);
+            }
+            context.push('/scenes/scene/${scene.id}');
+          },
+        );
+      },
       floatingActionButton: (randomNavigationEnabled && !isTiktokLayout)
           ? scenesAsync.maybeWhen(
               data: (scenes) => FloatingActionButton.small(
