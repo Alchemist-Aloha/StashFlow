@@ -59,14 +59,30 @@ class SceneCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final duration = scene.files.isNotEmpty ? scene.files.first.duration : null;
 
+    // Use primary file's aspect ratio if available, default to 16/9.
+    // This ensures the image fills the container perfectly without distortion
+    // (no stretching) and minimizes cropping in list view.
+    final double? fileAspectRatio =
+        (scene.files.isNotEmpty &&
+            scene.files.first.width != null &&
+            scene.files.first.height != null)
+        ? scene.files.first.width!.toDouble() /
+              scene.files.first.height!.toDouble()
+        : null;
+
     if (isGrid) {
-      return _buildGridCard(context, ref, duration);
+      return _buildGridCard(context, ref, duration, fileAspectRatio ?? 16 / 9);
     }
-    return _buildListCard(context, ref, duration);
+    return _buildListCard(context, ref, duration, fileAspectRatio ?? 16 / 9);
   }
 
   /// Builds the full-width list variant of the card.
-  Widget _buildListCard(BuildContext context, WidgetRef ref, double? duration) {
+  Widget _buildListCard(
+    BuildContext context,
+    WidgetRef ref,
+    double? duration,
+    double aspectRatio,
+  ) {
     return InkWell(
       onTap: onTap,
       onLongPress: () => _showMenu(context, ref),
@@ -75,16 +91,15 @@ class SceneCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AspectRatio(
-            aspectRatio: 16 / 9,
+            aspectRatio: aspectRatio.clamp(0.5, 2.5),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
               child: Stack(
                 children: [
                   StashImage(
-                    imageUrl:
-                        scene.paths.screenshot ??
-                        'https://via.placeholder.com/320x180',
+                    imageUrl: scene.paths.screenshot,
                     width: double.infinity,
+                    height: double.infinity,
                     fit: BoxFit.cover,
                     memCacheWidth: 640,
                   ),
@@ -157,7 +172,12 @@ class SceneCard extends ConsumerWidget {
   }
 
   /// Builds the compact grid variant of the card.
-  Widget _buildGridCard(BuildContext context, WidgetRef ref, double? duration) {
+  Widget _buildGridCard(
+    BuildContext context,
+    WidgetRef ref,
+    double? duration,
+    double aspectRatio,
+  ) {
     return InkWell(
       onTap: onTap,
       onLongPress: () => _showMenu(context, ref),
@@ -166,16 +186,15 @@ class SceneCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AspectRatio(
-            aspectRatio: 16 / 9,
+            aspectRatio: 16 / 9, // Keep grid items consistent
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
               child: Stack(
                 children: [
                   StashImage(
-                    imageUrl:
-                        scene.paths.screenshot ??
-                        'https://via.placeholder.com/320x180',
+                    imageUrl: scene.paths.screenshot,
                     width: double.infinity,
+                    height: double.infinity,
                     fit: BoxFit.cover,
                     memCacheWidth: 320,
                   ),

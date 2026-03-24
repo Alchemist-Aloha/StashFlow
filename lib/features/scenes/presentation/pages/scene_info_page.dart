@@ -80,7 +80,10 @@ class SceneInfoSheet extends ConsumerWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             ListTile(
-                              leading: Icon(Icons.business, color: theme.colorScheme.primary),
+                              leading: Icon(
+                                Icons.business,
+                                color: theme.colorScheme.primary,
+                              ),
                               title: const Text('Studio'),
                               subtitle: Text(studioName ?? 'Unknown'),
                               enabled: hasStudio && scene.studioId != null,
@@ -90,13 +93,18 @@ class SceneInfoSheet extends ConsumerWidget {
                               ),
                               onTap: hasStudio && scene.studioId != null
                                   ? () {
-                                      context.push('/studios/studio/${scene.studioId}');
+                                      context.push(
+                                        '/studios/studio/${scene.studioId}',
+                                      );
                                     }
                                   : null,
                             ),
                             const Divider(height: 1),
                             ListTile(
-                              leading: Icon(Icons.group, color: theme.colorScheme.secondary),
+                              leading: Icon(
+                                Icons.group,
+                                color: theme.colorScheme.secondary,
+                              ),
                               title: const Text('Performers'),
                               subtitle: Text(
                                 performerCount > 0
@@ -118,39 +126,53 @@ class SceneInfoSheet extends ConsumerWidget {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: performerCount,
-                            separatorBuilder: (context, index) => const SizedBox(height: 8),
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 8),
                             itemBuilder: (context, index) {
-                              final performerName = scene.performerNames[index].trim();
-                              final performerId = index < scene.performerIds.length
+                              final performerName = scene.performerNames[index]
+                                  .trim();
+                              final performerId =
+                                  index < scene.performerIds.length
                                   ? scene.performerIds[index]
                                   : null;
-                              final performerImagePath = index < scene.performerImagePaths.length
+                              final performerImagePath =
+                                  index < scene.performerImagePaths.length
                                   ? scene.performerImagePaths[index]
                                   : null;
-                              final hasImage = performerImagePath != null && performerImagePath.trim().isNotEmpty;
+                              final hasImage =
+                                  performerImagePath != null &&
+                                  performerImagePath.trim().isNotEmpty;
 
                               return ListTile(
                                 contentPadding: EdgeInsets.zero,
                                 leading: hasImage
                                     ? CircleAvatar(
-                                        backgroundColor: theme.colorScheme.surfaceVariant,
-                                        foregroundImage: CachedNetworkImageProvider(
-                                          performerImagePath!,
-                                          headers: mediaHeaders,
-                                        ),
+                                        backgroundColor:
+                                            theme.colorScheme.surfaceVariant,
+                                        foregroundImage:
+                                            CachedNetworkImageProvider(
+                                              performerImagePath!,
+                                              headers: mediaHeaders,
+                                            ),
                                         child: const Icon(Icons.person),
                                       )
                                     : const CircleAvatar(
                                         child: Icon(Icons.person),
                                       ),
                                 title: Text(
-                                  performerName.isNotEmpty ? performerName : 'Unknown Performer',
+                                  performerName.isNotEmpty
+                                      ? performerName
+                                      : 'Unknown Performer',
                                   style: theme.textTheme.bodyLarge,
                                 ),
                                 trailing: const Icon(Icons.chevron_right),
-                                onTap: performerId != null && performerId.trim().isNotEmpty
+                                onTap:
+                                    performerId != null &&
+                                        performerId.trim().isNotEmpty
                                     ? () {
-                                        context.push('/performers/performer/$performerId');
+                                        context.push(
+                                          '/performers/performer/$performerId',
+                                        );
                                       }
                                     : null,
                               );
@@ -169,4 +191,3 @@ class SceneInfoSheet extends ConsumerWidget {
     );
   }
 }
-

@@ -108,11 +108,15 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       final padding = AppTheme.spacingSmall * 2;
       const crossAxisCount = 2;
       final availableWidth = MediaQuery.of(context).size.width - padding;
-      final itemWidth = (availableWidth - AppTheme.spacingSmall) / crossAxisCount;
+      final itemWidth =
+          (availableWidth - AppTheme.spacingSmall) / crossAxisCount;
       final itemHeight = itemWidth * (12 / 16);
       final stride = itemHeight + AppTheme.spacingSmall;
       final visibleRow = (offset / stride).floor().clamp(0, scenes.length - 1);
-      final visibleIndex = (visibleRow * crossAxisCount).clamp(0, scenes.length - 1);
+      final visibleIndex = (visibleRow * crossAxisCount).clamp(
+        0,
+        scenes.length - 1,
+      );
 
       for (var i = 1; i <= kPrefetchDistance; i++) {
         final ahead = visibleIndex + i;
@@ -135,7 +139,10 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     } else {
       // List layout: use measured extent when available, otherwise a conservative estimate.
       final stride = _measuredItemExtent ?? 300.0;
-      final visibleIndex = (offset / stride).floor().clamp(0, scenes.length - 1);
+      final visibleIndex = (offset / stride).floor().clamp(
+        0,
+        scenes.length - 1,
+      );
 
       for (var i = 1; i <= kPrefetchDistance; i++) {
         final ahead = visibleIndex + i;
@@ -507,16 +514,14 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       ],
       gridDelegate: isGridView
           ? const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: AppTheme.spacingSmall,
-                  mainAxisSpacing: AppTheme.spacingSmall,
-                  // Match the SceneCard compact grid height (image + metadata)
-                  // SceneCard uses an image AspectRatio of 16/9 and a small
-                  // metadata row; total item height ≈ imageHeight * (12/16).
-                  // This gives a childAspectRatio of 16/12 (~1.333) which
-                  // prevents the image from being stretched inside the grid cell.
-                  childAspectRatio: 4 / 3,
-                )
+              crossAxisCount: 2,
+              crossAxisSpacing: AppTheme.spacingSmall,
+              mainAxisSpacing: AppTheme.spacingMedium,
+              // Taller items to allow more space for Title and Studio metadata.
+              // A ratio of 1.15 (down from 1.33) provides significantly more
+              // vertical breathing room below the 16:9 image.
+              childAspectRatio: 1.15,
+            )
           : null,
       padding: EdgeInsets.all(isGridView ? AppTheme.spacingSmall : 0),
       itemBuilder: (context, scene) {
@@ -547,7 +552,8 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
         // Measure first item height once to speed up visible-index math for list layout.
         if (index == 0) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (_measuredItemExtent == null && _firstItemKey.currentContext != null) {
+            if (_measuredItemExtent == null &&
+                _firstItemKey.currentContext != null) {
               final size = _firstItemKey.currentContext!.size;
               if (size != null) {
                 setState(() {

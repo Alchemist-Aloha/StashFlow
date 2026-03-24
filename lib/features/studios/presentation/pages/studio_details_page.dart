@@ -62,13 +62,15 @@ class StudioDetailsPage extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (studio.imagePath != null && studio.imagePath!.trim().isNotEmpty)
+              if (studio.imagePath != null &&
+                  studio.imagePath!.trim().isNotEmpty)
                 FutureBuilder<bool>(
                   future: () async {
                     final path = studio.imagePath!.trim();
                     try {
                       // Check cache first for a valid file
-                      final info = await StashImage.cacheManager.getFileFromCache(path);
+                      final info = await StashImage.cacheManager
+                          .getFileFromCache(path);
                       if (info != null) {
                         final file = info.file;
                         if (await file.exists()) {
@@ -95,7 +97,8 @@ class StudioDetailsPage extends ConsumerWidget {
                         );
                       } catch (_) {}
 
-                      final info2 = await StashImage.cacheManager.getFileFromCache(path);
+                      final info2 = await StashImage.cacheManager
+                          .getFileFromCache(path);
                       if (info2 == null) return false;
                       final file2 = info2.file;
                       if (!await file2.exists()) return false;
