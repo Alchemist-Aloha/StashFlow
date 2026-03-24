@@ -88,19 +88,6 @@ GoRouter router(Ref ref) {
                       ),
                     ],
                   ),
-                  GoRoute(
-                    path: 'fullscreen/:id',
-                    pageBuilder: (context, state) => CustomTransitionPage(
-                      key: state.pageKey,
-                      child: FullscreenPlayerPage(
-                        sceneId: state.pathParameters['id']!,
-                      ),
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) =>
-                              FadeTransition(opacity: animation, child: child),
-                      transitionDuration: const Duration(milliseconds: 200),
-                    ),
-                  ),
                 ],
               ),
             ],

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
+import '../pages/scene_info_page.dart';
 
 /// A card widget that displays a summary of a [Scene].
 ///
@@ -30,28 +32,13 @@ class SceneCard extends ConsumerWidget {
   /// Callback triggered when the card is tapped.
   final VoidCallback? onTap;
 
-  /// Displays the contextual action menu for the scene.
+  /// Displays a custom scene info sheet for navigation actions.
   void _showMenu(BuildContext context, WidgetRef ref) {
-    final RenderBox button = context.findRenderObject() as RenderBox;
-    final RenderBox overlay =
-        Navigator.of(context).overlay!.context.findRenderObject() as RenderBox;
-    final RelativeRect position = RelativeRect.fromRect(
-      Rect.fromPoints(
-        button.localToGlobal(Offset.zero, ancestor: overlay),
-        button.localToGlobal(
-          button.size.bottomRight(Offset.zero),
-          ancestor: overlay,
-        ),
-      ),
-      Offset.zero & overlay.size,
-    );
-
-    showMenu(
+    showModalBottomSheet(
       context: context,
-      position: position,
-      items: [
-        // No items for now, or add other items if needed
-      ],
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => SceneInfoSheet(scene: scene),
     );
   }
 

@@ -380,18 +380,9 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<GlobalPlayerState>(playerStateProvider, (previous, next) {
-      // Handle full-screen auto-exit
-      if (previous?.isFullScreen == true && next.isFullScreen == false) {
-        if (context.mounted && GoRouter.of(context).canPop()) {
-          AppLogStore.instance.add(
-            'ScenesPage: popping fullscreen view',
-            source: 'ScenesPage',
-          );
-          context.pop();
-        }
-      }
-    });
+    // Fullscreen auto-exit is handled by the SceneDetailsPage so the
+    // ScenesPage should not pop routes when the player toggles fullscreen.
+    // This avoids double-pop behavior that could remove the details route.
 
     final isTiktokLayout = ref.watch(sceneTiktokLayoutProvider);
     final isGridView = ref.watch(sceneGridLayoutProvider);
@@ -516,11 +507,16 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       ],
       gridDelegate: isGridView
           ? const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: AppTheme.spacingSmall,
-              mainAxisSpacing: AppTheme.spacingSmall,
-              childAspectRatio: 1.0,
-            )
+                  crossAxisCount: 2,
+                  crossAxisSpacing: AppTheme.spacingSmall,
+                  mainAxisSpacing: AppTheme.spacingSmall,
+                  // Match the SceneCard compact grid height (image + metadata)
+                  // SceneCard uses an image AspectRatio of 16/9 and a small
+                  // metadata row; total item height ≈ imageHeight * (12/16).
+                  // This gives a childAspectRatio of 16/12 (~1.333) which
+                  // prevents the image from being stretched inside the grid cell.
+                  childAspectRatio: 4 / 3,
+                )
           : null,
       padding: EdgeInsets.all(isGridView ? AppTheme.spacingSmall : 0),
       itemBuilder: (context, scene) {

@@ -14,8 +14,7 @@ import '../providers/playback_queue_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
-import '../../../../main.dart'; // To access mediaHandler
-import 'native_video_controls.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 class FullScreenMode extends Notifier<bool> {
   @override
@@ -64,45 +63,6 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
     super.initState();
     _pageController.addListener(_onScroll);
     WakelockPlus.enable();
-    
-    // Link system media controls to TikTok controllers
-    mediaHandler?.onPlayCallback = () async {
-      final scenes = ref.read(sceneListProvider).value;
-      if (scenes != null && _currentIndex < scenes.length) {
-        final controller = _controllers[scenes[_currentIndex].id];
-        await controller?.play();
-      }
-    };
-    mediaHandler?.onPauseCallback = () async {
-      final scenes = ref.read(sceneListProvider).value;
-      if (scenes != null && _currentIndex < scenes.length) {
-        final controller = _controllers[scenes[_currentIndex].id];
-        await controller?.pause();
-      }
-    };
-    mediaHandler?.onSkipToNextCallback = () async {
-      if (_pageController.hasClients) {
-        await _pageController.nextPage(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-      }
-    };
-    mediaHandler?.onSkipToPreviousCallback = () async {
-      if (_pageController.hasClients) {
-        await _pageController.previousPage(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-      }
-    };
-    mediaHandler?.onSeekCallback = (pos) async {
-      final scenes = ref.read(sceneListProvider).value;
-      if (scenes != null && _currentIndex < scenes.length) {
-        final controller = _controllers[scenes[_currentIndex].id];
-        await controller?.seekTo(pos);
-      }
-    };
   }
 
   @override
@@ -110,17 +70,20 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
     _manageTimer?.cancel();
     _pageController.removeListener(_onScroll);
     _pageController.dispose();
+    
+    final globalController = ref.read(playerStateProvider).videoPlayerController;
     for (final controller in _controllers.values) {
-      controller.dispose();
+      if (controller != globalController) {
+        controller.dispose();
+      } else {
+        AppLogStore.instance.add(
+          'TiktokScenesView: skipping dispose of promoted controller in dispose()',
+          source: 'TiktokScenesView',
+        );
+      }
     }
     _controllers.clear();
     WakelockPlus.disable();
-    // Clear callbacks to avoid calling disposed TikTok controllers
-    mediaHandler?.onPlayCallback = null;
-    mediaHandler?.onPauseCallback = null;
-    mediaHandler?.onSkipToNextCallback = null;
-    mediaHandler?.onSkipToPreviousCallback = null;
-    mediaHandler?.onSeekCallback = null;
     
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     SystemChrome.setPreferredOrientations([
@@ -160,8 +123,14 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
   Future<void> _manageControllers() async {
     final scenesAsync = ref.read(sceneListProvider);
-    if (!scenesAsync.hasValue) return;
+    if (!scenesAsync.hasValue || !mounted) return;
     
+    // Safety check: only manage if we are likely the active view
+    final router = GoRouter.of(context);
+    final currentPath = router.routeInformationProvider.value.uri.path;
+    // We only take over if we are at the root scenes page (TikTok feed)
+    if (currentPath != '/scenes') return;
+
     final scenes = scenesAsync.value!;
     if (scenes.isEmpty) return;
 
@@ -194,76 +163,59 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
       }
     }
 
+    // Handle global player synchronization for the active scene
+    final currentSceneId = scenes[_currentIndex].id;
+    final activeTikTokController = _controllers[currentSceneId];
+    final playerNotifier = ref.read(playerStateProvider.notifier);
+    final globalPlayer = ref.read(playerStateProvider);
+
+    // 1. If global player is already playing this scene, it might be returning from DetailsPage.
+    // In this case, we don't want to stop it! We want to take its controller into our pool.
+    if (globalPlayer.activeScene?.id == currentSceneId && 
+        globalPlayer.videoPlayerController != null &&
+        globalPlayer.videoPlayerController?.value.isInitialized == true &&
+        globalPlayer.videoPlayerController != activeTikTokController) {
+      
+      AppLogStore.instance.add(
+        'TiktokScenesView: sync global player to tiktok pool for $currentSceneId',
+        source: 'TiktokScenesView',
+      );
+      
+      // Take the global controller into our pool, replacing any preloaded one
+      final oldLocal = _controllers[currentSceneId];
+      _controllers[currentSceneId] = globalPlayer.videoPlayerController!;
+      // Important: don't dispose if it was the same controller, but we checked != above
+      if (oldLocal != null && oldLocal != globalPlayer.videoPlayerController) {
+        oldLocal.dispose();
+      }
+    } 
+    // 2. Otherwise, if global player is idle or playing something else, 
+    // promote our local active controller to global so DetailsPage/MiniPlayer can use it.
+    else if (globalPlayer.activeScene?.id != currentSceneId && 
+             activeTikTokController != null && 
+             activeTikTokController.value.isInitialized) {
+      AppLogStore.instance.add(
+        'TiktokScenesView: promoting local controller to global for $currentSceneId',
+        source: 'TiktokScenesView',
+      );
+      unawaited(playerNotifier.attachController(
+        scenes[_currentIndex], 
+        activeTikTokController,
+        streamSource: 'tiktok-promotion',
+      ));
+    }
+
     // Play current, pause others
     for (final entry in _controllers.entries) {
       final id = entry.key;
       final controller = entry.value;
-      if (id == scenes[_currentIndex].id) {
+      if (id == currentSceneId) {
         if (!controller.value.isPlaying) {
-          // Stop global player if it's playing to avoid audio overlap
-          final globalPlayer = ref.read(playerStateProvider);
-          if (globalPlayer.activeScene != null) {
-            ref.read(playerStateProvider.notifier).stop();
-          }
           controller.play();
         }
-        
-        // Update Media Session
-        final currentScene = scenes[_currentIndex];
-        mediaHandler?.updateMetadata(
-          id: currentScene.id,
-          title: currentScene.title,
-          studio: currentScene.studioName,
-          thumbnailUri: currentScene.paths.screenshot,
-          duration: controller.value.duration,
-        );
-        
-        // Listener for playback state
-        controller.removeListener(_syncMediaSession);
-        controller.addListener(_syncMediaSession);
       } else {
         if (controller.value.isPlaying) {
           controller.pause();
-        }
-        controller.removeListener(_syncMediaSession);
-      }
-    }
-  }
-
-  void _syncMediaSession() {
-    final scenesAsync = ref.read(sceneListProvider);
-    if (!scenesAsync.hasValue) return;
-    final scenes = scenesAsync.value!;
-    if (_currentIndex >= scenes.length) return;
-    
-    final controller = _controllers[scenes[_currentIndex].id];
-    if (controller == null) return;
-
-    mediaHandler?.updatePlaybackState(
-      isPlaying: controller.value.isPlaying,
-      position: controller.value.position,
-      bufferedPosition: controller.value.buffered.isNotEmpty 
-          ? controller.value.buffered.last.end 
-          : Duration.zero,
-      speed: controller.value.playbackSpeed,
-    );
-
-    // Auto play next logic for TikTok View
-    final playerState = ref.read(playerStateProvider);
-    if (playerState.autoplayNext) {
-      if (controller.value.position >= controller.value.duration &&
-          controller.value.duration > Duration.zero &&
-          !controller.value.isPlaying) {
-        
-        // Use a flag or check to ensure we only advance once
-        if (_pageController.hasClients) {
-          final page = _pageController.page?.round() ?? _currentIndex;
-          if (page == _currentIndex) {
-             _pageController.nextPage(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-            );
-          }
         }
       }
     }
@@ -306,50 +258,47 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
   @override
   Widget build(BuildContext context) {
     final scenesAsync = ref.watch(sceneListProvider);
-    final isFullScreen = ref.watch(fullScreenModeProvider);
+    final playerState = ref.watch(playerStateProvider);
 
-    return PopScope(
-      canPop: !isFullScreen,
-      onPopInvokedWithResult: (didPop, result) {
-        if (!didPop && isFullScreen) {
-          ref.read(fullScreenModeProvider.notifier).set(false);
-          SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-          SystemChrome.setPreferredOrientations([
-            DeviceOrientation.portraitUp,
-            DeviceOrientation.portraitDown,
-            DeviceOrientation.landscapeLeft,
-            DeviceOrientation.landscapeRight,
-          ]);
+    return scenesAsync.when(
+      data: (scenes) {
+        if (scenes.isEmpty) {
+          return const Center(child: Text('No scenes found'));
         }
+
+        // Initialize first batch if needed
+        if (_controllers.isEmpty && _initFutures.isEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _manageControllers();
+          });
+        }
+
+        return PageView.builder(
+          controller: _pageController,
+          scrollDirection: Axis.vertical,
+          itemCount: scenes.length,
+          itemBuilder: (context, index) {
+            final scene = scenes[index];
+            final isCurrent = index == _currentIndex;
+            
+            // Use global controller for the active item to ensure seamless transitions
+            // to/from DetailsPage where the global player is used.
+            VideoPlayerController? controller;
+            if (isCurrent && playerState.activeScene?.id == scene.id) {
+               controller = playerState.videoPlayerController;
+            } else {
+               controller = _controllers[scene.id];
+            }
+
+            return TiktokSceneItem(
+              scene: scene,
+              controller: controller,
+            );
+          },
+        );
       },
-      child: scenesAsync.when(
-        data: (scenes) {
-          if (scenes.isEmpty) {
-            return const Center(child: Text('No scenes found'));
-          }
-  
-          // Initialize first batch if needed
-          if (_controllers.isEmpty && _initFutures.isEmpty) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              _manageControllers();
-            });
-          }
-  
-          return PageView.builder(
-            controller: _pageController,
-            scrollDirection: Axis.vertical,
-            itemCount: scenes.length,
-            itemBuilder: (context, index) {
-              return TiktokSceneItem(
-                scene: scenes[index],
-                controller: _controllers[scenes[index].id],
-              );
-            },
-          );
-        },
-        loading: () => const Center(child: CircularProgressContext()),
-        error: (e, st) => Center(child: Text('Error: $e')),
-      ),
+      loading: () => const Center(child: CircularProgressContext()),
+      error: (e, st) => Center(child: Text('Error: $e')),
     );
   }
 }
@@ -506,6 +455,34 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
     );
   }
 
+  Future<void> _handoffToGlobalPlayer() async {
+    final playerNotifier = ref.read(playerStateProvider.notifier);
+    final globalState = ref.read(playerStateProvider);
+    final controller = widget.controller;
+
+    if (controller == null || !controller.value.isInitialized) return;
+
+    if (globalState.activeScene?.id != widget.scene.id || 
+        globalState.videoPlayerController != controller) {
+      
+      AppLogStore.instance.add(
+        'TiktokSceneItem: handing off to global player for ${widget.scene.id}',
+        source: 'TiktokScenesView',
+      );
+
+      final resolver = ref.read(streamResolverProvider.notifier);
+      final choice = await resolver.resolvePreferredStream(widget.scene);
+      
+      await playerNotifier.attachController(
+        widget.scene,
+        controller,
+        streamMimeType: choice?.mimeType,
+        streamLabel: choice?.label,
+        streamSource: 'tiktok-handoff',
+      );
+    }
+  }
+
   Future<void> _toggleFullScreen() async {
     final isFullScreen = ref.read(fullScreenModeProvider);
     if (isFullScreen) {
@@ -513,39 +490,19 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
         context.pop();
       }
     } else {
-      final router = GoRouter.of(context);
-      final playerNotifier = ref.read(playerStateProvider.notifier);
-      final globalState = ref.read(playerStateProvider);
-      final controller = widget.controller;
+      await _handoffToGlobalPlayer();
 
-      if (globalState.activeScene?.id != widget.scene.id && controller != null) {
-        // TikTok has its own controller, but FullscreenPage uses the global one.
-        // We need to tell the global player to take over this scene.
-        final resolver = ref.read(streamResolverProvider.notifier);
-        final choice = await resolver.resolvePreferredStream(widget.scene);
-        if (choice != null) {
-          final headers = ref.read(mediaHeadersProvider);
-          await playerNotifier.playScene(
-            widget.scene,
-            choice.url,
-            mimeType: choice.mimeType,
-            streamLabel: choice.label,
-            streamSource: 'tiktok-fullscreen',
-            httpHeaders: headers,
-          );
-          // Seek to the same position as TikTok's local controller
-          await ref.read(playerStateProvider).videoPlayerController?.seekTo(controller.value.position);
-        }
+      if (context.mounted) {
+        // Navigate to details THEN fullscreen for robust back stack
+        final router = GoRouter.of(context);
+        router.push('/scenes/scene/${widget.scene.id}');
+        router.push('/scenes/scene/${widget.scene.id}/fullscreen');
       }
-
-      router.push('/scenes/fullscreen/${widget.scene.id}');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isFullScreen = ref.watch(fullScreenModeProvider);
-    final playerState = ref.watch(playerStateProvider);
     final controller = widget.controller;
 
     return RepaintBoundary(
@@ -569,221 +526,214 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
           ),
 
           if (controller != null && controller.value.isInitialized) ...[
-            if (isFullScreen)
-              NativeVideoControls(
-                controller: controller,
-                useDoubleTapSeek: playerState.useDoubleTapSeek,
-                enableNativePip: playerState.enableNativePip,
-                onFullScreenToggle: _toggleFullScreen,
-                scene: widget.scene,
-              )
-            else ...[
-              // TikTok touch area
-              Positioned.fill(
-                child: GestureDetector(
-                  onTap: () {
-                    if (controller.value.isPlaying) {
-                      controller.pause();
-                    } else {
-                      controller.play();
+            // TikTok touch area
+            Positioned.fill(
+              child: GestureDetector(
+                onTap: () {
+                  if (controller.value.isPlaying) {
+                    controller.pause();
+                  } else {
+                    controller.play();
+                  }
+                },
+                onLongPressStart: (_) {
+                  _originalSpeed = controller.value.playbackSpeed;
+                  _currentSpeed = 5.0;
+                  controller.setPlaybackSpeed(_currentSpeed);
+                  setState(() => _isSpeedingUp = true);
+                },
+                onLongPressMoveUpdate: (details) {
+                  final dy = details.localOffsetFromOrigin.dy;
+                  if (dy < 0) {
+                    // Increase speed up to 20x
+                    final extraSpeed = (-dy / 10).clamp(0, 15);
+                    final newSpeed = 5.0 + extraSpeed;
+                    if (newSpeed != _currentSpeed) {
+                      setState(() => _currentSpeed = newSpeed);
+                      controller.setPlaybackSpeed(_currentSpeed);
                     }
-                  },
-                  onLongPressStart: (_) {
-                    _originalSpeed = controller.value.playbackSpeed;
-                    _currentSpeed = 5.0;
-                    controller.setPlaybackSpeed(_currentSpeed);
-                    setState(() => _isSpeedingUp = true);
-                  },
-                  onLongPressMoveUpdate: (details) {
-                    final dy = details.localOffsetFromOrigin.dy;
-                    if (dy < 0) {
-                      // Increase speed up to 20x
-                      final extraSpeed = (-dy / 10).clamp(0, 15);
-                      final newSpeed = 5.0 + extraSpeed;
-                      if (newSpeed != _currentSpeed) {
-                        setState(() => _currentSpeed = newSpeed);
-                        controller.setPlaybackSpeed(_currentSpeed);
-                      }
-                    }
-                  },
-                  onLongPressEnd: (_) {
-                    controller.setPlaybackSpeed(_originalSpeed);
-                    setState(() => _isSpeedingUp = false);
-                  },
-                ),
+                  }
+                },
+                onLongPressEnd: (_) {
+                  controller.setPlaybackSpeed(_originalSpeed);
+                  setState(() => _isSpeedingUp = false);
+                },
               ),
+            ),
 
-              if (_isSpeedingUp)
-                Positioned(
-                  top: 50,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.black54,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            '${_currentSpeed.toStringAsFixed(1)}x Speed',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          const Icon(Icons.fast_forward,
-                              color: Colors.white, size: 20),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
-              // Gradient overlay
+            if (_isSpeedingUp)
               Positioned(
-                bottom: 0,
+                top: 50,
                 left: 0,
                 right: 0,
-                height: 300,
-                child: IgnorePointer(
+                child: Center(
                   child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [
-                          Colors.black.withValues(alpha: 0.8),
-                          Colors.transparent,
-                        ],
-                      ),
+                      color: Colors.black54,
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                  ),
-                ),
-              ),
-
-              // Metadata overlay
-              Positioned(
-                bottom: 20,
-                left: 16,
-                right: 80, // Space for right buttons
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.scene.title.isNotEmpty
-                          ? widget.scene.title
-                          : 'Scene ${widget.scene.id}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (widget.scene.studioName != null &&
-                        widget.scene.studioName!.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      GestureDetector(
-                        onTap: () {
-                          if (widget.scene.studioId != null) {
-                            context.push(
-                                '/studios/studio/${widget.scene.studioId}');
-                          }
-                        },
-                        child: Text(
-                          widget.scene.studioName!,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '${_currentSpeed.toStringAsFixed(1)}x Speed',
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            decoration: TextDecoration.underline,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ),
-                    ],
-                    const SizedBox(height: 8),
-                    Text(
-                      widget.scene.date.toString().split(' ')[0],
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Minimum Progress Bar
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: SizedBox(
-                  height: 2,
-                  child: VideoProgressIndicator(
-                    controller,
-                    allowScrubbing: true,
-                    padding: EdgeInsets.zero,
-                    colors: VideoProgressColors(
-                      playedColor: Colors.white.withValues(alpha: 0.8),
-                      bufferedColor: Colors.white.withValues(alpha: 0.2),
-                      backgroundColor: Colors.transparent,
+                        const SizedBox(width: 8),
+                        const Icon(Icons.fast_forward,
+                            color: Colors.white, size: 20),
+                      ],
                     ),
                   ),
                 ),
               ),
 
-              // Right side buttons
-              Positioned(
-                bottom: 20,
-                right: 8,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Column(
-                      children: [
-                        _OverlayButton(
-                          icon: (widget.scene.rating100 ?? 0) > 0
-                              ? Icons.star
-                              : Icons.star_border,
-                          onTap: _showRatingPicker,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          (widget.scene.rating100 ?? 0) > 0
-                              ? (widget.scene.rating100! / 20)
-                                  .toStringAsFixed(1)
-                              : '-',
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 12),
-                        ),
+            // Gradient overlay
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: 300,
+              child: IgnorePointer(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.8),
+                        Colors.transparent,
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    _OverlayButton(
-                      icon: Icons.fullscreen,
-                      tooltip: 'Toggle Fullscreen',
-                      onTap: _toggleFullScreen,
-                    ),
-                    const SizedBox(height: 16),
-                    _OverlayButton(
-                      icon: Icons.info_outline,
-                      tooltip: 'Scene Details',
-                      onTap: () {
-                        context.push('/scenes/scene/${widget.scene.id}');
-                      },
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ],
+            ),
+
+            // Metadata overlay
+            Positioned(
+              bottom: 20,
+              left: 16,
+              right: 80, // Space for right buttons
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.scene.title.isNotEmpty
+                        ? widget.scene.title
+                        : 'Scene ${widget.scene.id}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (widget.scene.studioName != null &&
+                      widget.scene.studioName!.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    GestureDetector(
+                      onTap: () {
+                        if (widget.scene.studioId != null) {
+                          context.push(
+                              '/studios/studio/${widget.scene.studioId}');
+                        }
+                      },
+                      child: Text(
+                        widget.scene.studioName!,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 8),
+                  Text(
+                    widget.scene.date.toString().split(' ')[0],
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Minimum Progress Bar
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: SizedBox(
+                height: 2,
+                child: VideoProgressIndicator(
+                  controller,
+                  allowScrubbing: true,
+                  padding: EdgeInsets.zero,
+                  colors: VideoProgressColors(
+                    playedColor: Colors.white.withValues(alpha: 0.8),
+                    bufferedColor: Colors.white.withValues(alpha: 0.2),
+                    backgroundColor: Colors.transparent,
+                  ),
+                ),
+              ),
+            ),
+
+            // Right side buttons
+            Positioned(
+              bottom: 20,
+              right: 8,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Column(
+                    children: [
+                      _OverlayButton(
+                        icon: (widget.scene.rating100 ?? 0) > 0
+                            ? Icons.star
+                            : Icons.star_border,
+                        onTap: _showRatingPicker,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        (widget.scene.rating100 ?? 0) > 0
+                            ? (widget.scene.rating100! / 20)
+                                .toStringAsFixed(1)
+                            : '-',
+                        style: const TextStyle(
+                            color: Colors.white, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  _OverlayButton(
+                    icon: Icons.fullscreen,
+                    tooltip: 'Toggle Fullscreen',
+                    onTap: _toggleFullScreen,
+                  ),
+                  const SizedBox(height: 16),
+                  _OverlayButton(
+                    icon: Icons.info_outline,
+                    tooltip: 'Scene Details',
+                    onTap: () async {
+                      await _handoffToGlobalPlayer();
+                      if (mounted) {
+                        context.push('/scenes/scene/${widget.scene.id}');
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
           ],
         ],
       ),

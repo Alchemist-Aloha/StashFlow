@@ -5,31 +5,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:video_player/video_player.dart';
-import '../../../../core/data/graphql/graphql_client.dart';
-import '../../../../core/data/graphql/media_headers_provider.dart';
-import '../../../../core/data/graphql/url_resolver.dart';
-import '../../../../core/data/preferences/shared_preferences_provider.dart';
-import '../../../../core/utils/app_log_store.dart';
-import '../providers/video_player_provider.dart';
-import '../../domain/entities/scene.dart';
-import '../../data/repositories/stream_resolver.dart';
-import 'native_video_controls.dart';
-import 'tiktok_scenes_view.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
-/// A comprehensive video player widget for a single [Scene].
+import '../../domain/entities/scene.dart';
+import '../providers/video_player_provider.dart';
+import '../../data/repositories/stream_resolver.dart';
+import '../../../../core/data/graphql/media_headers_provider.dart';
+import '../../../../core/utils/app_log_store.dart';
+import 'native_video_controls.dart';
+
+/// A comprehensive video player for Stash scenes.
 ///
-/// This widget handles the entire playback lifecycle:
-/// 1. **Startup**: Resolves the best stream (direct or transcoded) using [StreamResolver].
-/// 2. **Probing**: Verifies stream availability and MIME types via HTTP headers.
-/// 3. **Prewarming**: Initiates a 'Range: bytes=0-0' request to minimize time-to-first-frame.
-/// 4. **State Sync**: Coordinates with [playerStateProvider] for global control.
-/// 5. **UI**: Displays the video surface with [NativeVideoControls] and handles fullscreen.
+/// This widget handles both inline and immersive fullscreen playback.
+/// It uses the global [PlayerState] to maintain session continuity during
+/// navigation.
 class SceneVideoPlayer extends ConsumerStatefulWidget {
   const SceneVideoPlayer({required this.scene, super.key});
 
-  /// The scene to play.
+  /// The scene to be played.
   final Scene scene;
 
   @override
@@ -37,241 +31,108 @@ class SceneVideoPlayer extends ConsumerStatefulWidget {
 }
 
 class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
-  static const _preferSceneStreamsKey = 'prefer_scene_streams';
-  
-  /// Static future to prevent redundant prewarm requests across widget rebuilds.
-  static Future<_PrewarmResult>? _pathsStreamPrewarmFuture;
-
+  /// Local state to track initial player startup for UI feedback.
   bool _isStarting = false;
-  String? _autoStartedSceneId;
-
-  /// Determines the aspect ratio to use for the player container.
-  /// 
-  /// Priority:
-  /// 1. Current [VideoPlayerController] initialized ratio.
-  /// 2. Metadata from the first file in [widget.scene.files].
-  /// 3. Default 16:9.
-  double _effectiveAspectRatio(VideoPlayerController? controller) {
-    final controllerRatio = controller?.value.aspectRatio;
-    if (controllerRatio != null &&
-        controllerRatio.isFinite &&
-        controllerRatio > 0) {
-      return controllerRatio;
-    }
-
-    if (widget.scene.files.isNotEmpty) {
-      final file = widget.scene.files.first;
-      final width = file.width;
-      final height = file.height;
-      if (width != null && height != null && width > 0 && height > 0) {
-        return width / height;
-      }
-    }
-
-    return 16 / 9;
-  }
 
   @override
   void initState() {
     super.initState();
+    // Prewarm the stream if this scene is not yet active.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startPlaybackIfNeeded();
     });
   }
 
-  @override
-  void didUpdateWidget(covariant SceneVideoPlayer oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Restart playback if the scene ID has changed
-    if (oldWidget.scene.id != widget.scene.id) {
-      _autoStartedSceneId = null;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _startPlaybackIfNeeded();
-      });
-    }
-  }
-
-  /// Initiates the complex playback startup sequence.
+  /// Automatically start playback if this scene is designated as active,
+  /// or if requested by the user.
   Future<void> _startPlaybackIfNeeded({bool force = false}) async {
-    if (!mounted || _isStarting) return;
-
     final playerState = ref.read(playerStateProvider);
-    // Don't auto-start if already playing or starting this specific scene
-    if (!force && _autoStartedSceneId == widget.scene.id) return;
-    if (!force && playerState.activeScene?.id == widget.scene.id) return;
+
+    // If we're already active, just resume or stay as-is.
+    if (playerState.activeScene?.id == widget.scene.id) {
+      if (playerState.videoPlayerController != null &&
+          !playerState.videoPlayerController!.value.isPlaying) {
+        playerState.videoPlayerController!.play();
+      }
+      return;
+    }
+
+    // Only auto-play if we are forcing it or if no other video is playing.
+    if (!force && playerState.activeScene != null) {
+      return;
+    }
 
     setState(() => _isStarting = true);
-    final startupStopwatch = Stopwatch()..start();
     try {
-      final prefs = ref.read(sharedPreferencesProvider);
-      final preferSceneStreams = prefs.getBool(_preferSceneStreamsKey) ?? true;
       final resolver = ref.read(streamResolverProvider.notifier);
-      final resolveStopwatch = Stopwatch()..start();
-
-      AppLogStore.instance.add(
-        'startup begin scene=${widget.scene.id} preferSceneStreams=$preferSceneStreams',
-        source: 'player_startup',
+      
+      // Perform a background "prewarm" to fetch stream URL and test connectivity.
+      final prewarmResult = await _prewarmStream(widget.scene);
+      ref.read(playerStateProvider.notifier).setPrewarmResult(
+        attempted: prewarmResult.attempted,
+        succeeded: prewarmResult.succeeded,
+        latencyMs: prewarmResult.latencyMs,
       );
 
-      // 1. Resolve the best stream choice
-      final choice = preferSceneStreams
-          ? await resolver.resolvePreferredStream(widget.scene)
-          : null;
-      resolveStopwatch.stop();
-
-      final streamUrl = choice?.url ?? widget.scene.paths.stream ?? '';
-      var mimeType = choice?.mimeType ?? resolver.guessMimeType(streamUrl);
-      final streamLabel = choice?.label;
-      var streamSource = choice == null
-          ? (preferSceneStreams ? 'paths.stream' : 'paths.stream(direct)')
-          : 'sceneStreams';
-      final mediaHeaders = ref.read(mediaHeadersProvider);
-
-      AppLogStore.instance.add(
-        'startup select scene=${widget.scene.id} source=$streamSource mime=$mimeType label=${streamLabel ?? '-'} resolve=${resolveStopwatch.elapsedMilliseconds}ms',
-        source: 'player_startup',
-      );
-
-      // 2. Start prewarming the 'direct' stream URL in the background
-      final prewarmFuture = _prewarmPathsStreamOnce(mediaHeaders);
-
-      if (streamUrl.isEmpty) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No stream URL available')),
+      final choice = await resolver.resolvePreferredStream(widget.scene);
+      if (choice != null && mounted) {
+        final mediaHeaders = ref.read(mediaHeadersProvider);
+        await ref.read(playerStateProvider.notifier).playScene(
+          widget.scene,
+          choice.url,
+          mimeType: choice.mimeType,
+          streamLabel: choice.label,
+          streamSource: force ? 'manual-start' : 'auto-start',
+          httpHeaders: mediaHeaders,
+          prewarmAttempted: prewarmResult.attempted,
+          prewarmSucceeded: prewarmResult.succeeded,
+          prewarmLatencyMs: prewarmResult.latencyMs,
         );
-        return;
       }
-
-      // 3. Probe MIME type if unknown to ensure proper controller selection
-      if (mimeType == 'unknown') {
-        final mimeProbeStopwatch = Stopwatch()..start();
-        final probedMime = await resolver.probeMimeTypeFromHeaders(
-          streamUrl,
-          mediaHeaders,
-        );
-        mimeProbeStopwatch.stop();
-        if (probedMime != null && probedMime.isNotEmpty) {
-          mimeType = probedMime;
-          streamSource = '$streamSource+header';
-          AppLogStore.instance.add(
-            'startup header-probe scene=${widget.scene.id} mime=$probedMime elapsed=${mimeProbeStopwatch.elapsedMilliseconds}ms',
-            source: 'player_startup',
-          );
-        }
-      }
-
-      // 4. Dispatch the actual play command to the global provider
-      _autoStartedSceneId = widget.scene.id;
-      final playSceneStopwatch = Stopwatch()..start();
-      await ref
-          .read(playerStateProvider.notifier)
-          .playScene(
-            widget.scene,
-            streamUrl,
-            mimeType: mimeType,
-            streamLabel: streamLabel,
-            streamSource: streamSource,
-            httpHeaders: mediaHeaders,
-            prewarmAttempted: false,
-            prewarmSucceeded: false,
-          );
-      playSceneStopwatch.stop();
-
-      startupStopwatch.stop();
-      AppLogStore.instance.add(
-        'startup playScene-dispatched scene=${widget.scene.id} elapsed=${startupStopwatch.elapsedMilliseconds}ms playScene=${playSceneStopwatch.elapsedMilliseconds}ms source=$streamSource mime=$mimeType',
-        source: 'player_startup',
-      );
-
-      // 5. Update state with prewarm results once they arrive
-      unawaited(
-        prewarmFuture.then((result) {
-          if (!mounted) return;
-          final activeSceneId = ref.read(playerStateProvider).activeScene?.id;
-          if (activeSceneId != widget.scene.id) return;
-
-          ref
-              .read(playerStateProvider.notifier)
-              .setPrewarmResult(
-                attempted: result.attempted,
-                succeeded: result.succeeded,
-                latencyMs: result.latencyMs,
-              );
-        }),
-      );
-    } catch (error, stack) {
-      startupStopwatch.stop();
-      AppLogStore.instance.add(
-        'startup error scene=${widget.scene.id} elapsed=${startupStopwatch.elapsedMilliseconds}ms error=$error\n$stack',
-        source: 'player_startup',
-      );
-      rethrow;
     } finally {
-      if (mounted) {
-        setState(() => _isStarting = false);
+      if (mounted) setState(() => _isStarting = false);
+    }
+  }
+
+  /// Returns the intended aspect ratio for the video container.
+  /// Falls back to 16/9 if metadata is unavailable.
+  double _effectiveAspectRatio(VideoPlayerController? controller) {
+    if (controller != null && controller.value.isInitialized) {
+      return controller.value.aspectRatio;
+    }
+    // Try using scene file metadata if the controller is still loading.
+    if (widget.scene.files.isNotEmpty) {
+      final f = widget.scene.files.first;
+      if (f.width != null && f.height != null && f.height! > 0) {
+        return f.width! / f.height!;
       }
     }
+    return 16 / 9;
   }
 
-  /// Initiates a background prewarm for the scene's direct stream path.
-  Future<_PrewarmResult> _prewarmPathsStreamOnce(Map<String, String> headers) {
-    final existingFuture = _pathsStreamPrewarmFuture;
-    if (existingFuture != null) {
-      return existingFuture;
-    }
-
-    final rawStreamUrl = widget.scene.paths.stream ?? '';
-    final client = ref.read(graphqlClientProvider);
-    final graphqlEndpoint = client.link is HttpLink
-        ? (client.link as HttpLink).uri
-        : Uri.parse(
-            rawStreamUrl.isEmpty ? 'https://localhost/graphql' : rawStreamUrl,
-          );
-    final streamUrl = resolveGraphqlMediaUrl(
-      rawUrl: rawStreamUrl,
-      graphqlEndpoint: graphqlEndpoint,
-    );
-    
-    if (streamUrl.isEmpty) {
-      _pathsStreamPrewarmFuture = Future<_PrewarmResult>.value(
-        const _PrewarmResult(attempted: false, succeeded: false),
-      );
-      return _pathsStreamPrewarmFuture!;
-    }
-
-    final future = _prewarmStreamRequest(streamUrl, headers);
-    _pathsStreamPrewarmFuture = future;
-    return future;
-  }
-
-  /// Sends a HEAD/GET Range request to pre-establish TCP/TLS connections with the server.
-  Future<_PrewarmResult> _prewarmStreamRequest(
-    String streamUrl,
-    Map<String, String> headers,
-  ) async {
+  /// Attempts to "warm up" the stream by making a lightweight HEAD or GET
+  /// request to ensure the URL is valid and the server is responsive.
+  Future<_PrewarmResult> _prewarmStream(Scene scene) async {
     final stopwatch = Stopwatch()..start();
-    final uri = Uri.tryParse(streamUrl);
-    if (uri == null) {
-      stopwatch.stop();
-      return _PrewarmResult(
-        attempted: false,
-        succeeded: false,
-        latencyMs: stopwatch.elapsedMilliseconds,
-      );
-    }
-
     final client = HttpClient();
-    client.connectionTimeout = const Duration(seconds: 3);
+    client.connectionTimeout = const Duration(seconds: 5);
 
     try {
-      final req = await client
-          .openUrl('GET', uri)
-          .timeout(const Duration(seconds: 3));
-      headers.forEach(req.headers.set);
-      req.headers.set('Range', 'bytes=0-0');
+      final resolver = ref.read(streamResolverProvider.notifier);
+      final choice = await resolver.resolvePreferredStream(scene);
+      if (choice == null) return const _PrewarmResult(attempted: false, succeeded: false);
 
-      final res = await req.close().timeout(const Duration(seconds: 4));
+      final uri = Uri.parse(choice.url);
+      final request = await client.getUrl(uri);
+      
+      final headers = ref.read(mediaHeadersProvider);
+      headers.forEach((key, value) {
+        request.headers.add(key, value);
+      });
+
+      final response = await request.close();
+      final res = await response.timeout(const Duration(seconds: 5));
+      // Drain response to ensure connection is properly closed/reused.
       await res.drain<void>();
       stopwatch.stop();
       return _PrewarmResult(
@@ -361,14 +222,16 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                 ),
               ),
             ),
-            Material(
-              color: Colors.transparent,
-              child: NativeVideoControls(
-                controller: controller,
-                useDoubleTapSeek: playerState.useDoubleTapSeek,
-                enableNativePip: playerState.enableNativePip,
-                onFullScreenToggle: _toggleFullScreen,
-                scene: widget.scene,
+            Positioned.fill(
+              child: Material(
+                color: Colors.transparent,
+                child: NativeVideoControls(
+                  controller: controller,
+                  useDoubleTapSeek: playerState.useDoubleTapSeek,
+                  enableNativePip: playerState.enableNativePip,
+                  onFullScreenToggle: _toggleFullScreen,
+                  scene: widget.scene,
+                ),
               ),
             ),
           ],
@@ -394,63 +257,54 @@ class FullscreenPlayerPage extends ConsumerStatefulWidget {
 }
 
 class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
-  late PlayerState _playerStateNotifier;
-  late FullScreenMode _fullScreenModeNotifier;
-
   @override
   void initState() {
     super.initState();
-    _playerStateNotifier = ref.read(playerStateProvider.notifier);
-    _fullScreenModeNotifier = ref.read(fullScreenModeProvider.notifier);
-    
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _enterFullscreen();
-      _playerStateNotifier.setFullScreen(true);
-    });
-  }
-
-  /// Sets up the immersive landscape environment.
-  void _enterFullscreen() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
+    // Request landscape and hide system UI immediately upon entering fullscreen.
+    _enterFullScreen();
   }
 
   @override
   void dispose() {
-    // Restore system UI and FORCE portrait orientation first
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]).then((_) {
-      // Then allow other orientations if needed, though usually we just want portrait for the list
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-      ]);
-    });
-    
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    
-    // Notify providers that we've exited fullscreen.
-    Future.microtask(() {
-      _playerStateNotifier.setFullScreen(false);
-      _fullScreenModeNotifier.set(false);
-    });
+    // Reset orientation and show system UI upon leaving fullscreen.
+    _exitFullScreen();
     super.dispose();
+  }
+
+  Future<void> _enterFullScreen() async {
+    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    if (mounted) {
+      ref.read(playerStateProvider.notifier).setFullScreen(true);
+    }
+  }
+
+  Future<void> _exitFullScreen() async {
+    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    if (mounted) {
+      ref.read(playerStateProvider.notifier).setFullScreen(false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final playerState = ref.watch(playerStateProvider);
-    final controller = playerState.videoPlayerController;
-    final scene = playerState.activeScene;
+    final sceneId = widget.sceneId;
 
-    // Error handling for state mismatches during transition.
-    if (controller == null || !controller.value.isInitialized || scene == null || scene.id != widget.sceneId) {
+    // We must have an active scene that matches the one we're trying to show.
+    final scene = playerState.activeScene;
+    final controller = playerState.videoPlayerController;
+
+    if (scene == null || scene.id != sceneId || controller == null) {
       return Scaffold(
         backgroundColor: Colors.black,
         body: Center(

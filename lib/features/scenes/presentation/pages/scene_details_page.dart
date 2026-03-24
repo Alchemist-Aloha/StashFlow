@@ -146,7 +146,13 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       if (previous?.isFullScreen == true &&
           next.isFullScreen == false &&
           previous?.activeScene?.id == widget.sceneId) {
-        if (context.mounted && GoRouter.of(context).canPop()) {
+        final router = GoRouter.of(context);
+        final isCurrentlyFullscreen =
+            router.routeInformationProvider.value.uri.path.endsWith(
+              '/fullscreen',
+            );
+
+        if (context.mounted && isCurrentlyFullscreen && router.canPop()) {
           AppLogStore.instance.add(
             'SceneDetailsPage [${widget.sceneId}] popping fullscreen view',
             source: 'SceneDetailsPage',

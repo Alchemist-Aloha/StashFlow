@@ -252,15 +252,40 @@ class StashImage extends ConsumerWidget {
 
     // Start prefetch early to improve perceived loading for subsequent child requests.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (context.mounted) {
-        StashImage.prefetch(
-          context,
-          imageUrl: imageUrl,
-          headers: headers,
-          memCacheWidth: memCacheWidth,
-          memCacheHeight: memCacheHeight,
-        );
-      }
+      if (!context.mounted) return;
+
+      final url = imageUrl;
+      if (url == null || url.isEmpty) return;
+
+      // Remove obviously-corrupt cached files (very small size) before
+      // attempting to prefetch or render. This prevents persistent
+      // "Invalid image data" errors when cache contains truncated files.
+      () async {
+        try {
+          final info = await cacheManager.getFileFromCache(url);
+          if (info != null) {
+            final file = info.file;
+            if (await file.exists()) {
+              final len = await file.length();
+              if (len < 64) {
+                await cacheManager.removeFile(url);
+              }
+            } else {
+              await cacheManager.removeFile(url);
+            }
+          }
+        } catch (_) {}
+
+        if (context.mounted) {
+          StashImage.prefetch(
+            context,
+            imageUrl: url,
+            headers: headers,
+            memCacheWidth: memCacheWidth,
+            memCacheHeight: memCacheHeight,
+          );
+        }
+      }();
     });
 
     return _RetryingCachedImage(

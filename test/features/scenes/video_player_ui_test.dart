@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_details_page.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_details_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 
@@ -126,6 +127,31 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.water_drop_outlined));
     await tester.pump(const Duration(milliseconds: 500));
+  });
+
+  testWidgets('SceneCard three-dot opens scene info page', (tester) async {
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: Scaffold(
+        body: SceneCard(scene: testScene, isGrid: false),
+      ),
+    );
+
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(find.byIcon(Icons.more_vert), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(find.textContaining('Scene details'), findsOneWidget);
+    expect(find.text('Studio'), findsOneWidget);
+    expect(find.text('Test Studio'), findsOneWidget);
+    expect(find.text('Performers'), findsOneWidget);
   });
 
   test(

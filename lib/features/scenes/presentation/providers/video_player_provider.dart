@@ -173,6 +173,10 @@ class PlayerState extends _$PlayerState {
   /// especially when triggered by multiple listeners (e.g. video finish + UI button).
   bool _isTransitioning = false;
 
+  /// Whether the current controller was "borrowed" (e.g. from TikTok view)
+  /// and should not be disposed by this provider when stopping/switching.
+  bool _isUsingBorrowedController = false;
+
   @override
   GlobalPlayerState build() {
     // Keep player state alive across route transitions to avoid restarting media.
@@ -271,17 +275,21 @@ class PlayerState extends _$PlayerState {
     bool? prewarmAttempted,
     bool? prewarmSucceeded,
     int? prewarmLatencyMs,
+    Duration? initialPosition,
   }) async {
     final allowBackgroundPlayback = state.enableBackgroundPlayback;
 
     AppLogStore.instance.add(
-      'provider playScene begin scene=${scene.id} source=${streamSource ?? '-'} mime=${mimeType ?? '-'}',
+      'provider playScene begin scene=${scene.id} source=${streamSource ?? '-'} mime=${mimeType ?? '-'} initialPos=${initialPosition?.inMilliseconds}ms',
       source: 'player_provider',
     );
 
     if (state.activeScene?.id == scene.id &&
         state.videoPlayerController != null) {
       _videoControllerRef ??= state.videoPlayerController;
+      if (initialPosition != null) {
+        await state.videoPlayerController?.seekTo(initialPosition);
+      }
       state.videoPlayerController?.play();
       AppLogStore.instance.add(
         'provider playScene replay-active scene=${scene.id}',
@@ -306,6 +314,7 @@ class PlayerState extends _$PlayerState {
 
     // Stop current
     await _disposeControllers();
+    _isUsingBorrowedController = false;
     if (!ref.mounted) return;
 
     final stopwatch = Stopwatch()..start();
@@ -338,6 +347,11 @@ class PlayerState extends _$PlayerState {
         await _disposeControllers();
         return;
       }
+
+      if (initialPosition != null) {
+        await videoController.seekTo(initialPosition);
+      }
+
       stopwatch.stop();
       final initializeElapsedMs = stopwatch.elapsedMilliseconds;
       AppLogStore.instance.add(
@@ -381,6 +395,64 @@ class PlayerState extends _$PlayerState {
         await _disposeControllers();
       }
     }
+  }
+
+  /// Takes over an existing [VideoPlayerController] for a given [Scene].
+  ///
+  /// This is used for seamless handoff from TikTok view to immersive views.
+  Future<void> attachController(
+    Scene scene,
+    VideoPlayerController controller, {
+    String? streamMimeType,
+    String? streamLabel,
+    String? streamSource,
+  }) async {
+    if (!ref.mounted) return;
+
+    AppLogStore.instance.add(
+      'provider attachController scene=${scene.id} source=${streamSource ?? '-'}',
+      source: 'player_provider',
+    );
+
+    // If already active, just reuse
+    if (state.activeScene?.id == scene.id &&
+        state.videoPlayerController == controller) {
+      return;
+    }
+
+    // Stop current, but don't dispose the one we are about to attach!
+    if (state.activeScene != null && state.videoPlayerController != controller) {
+       await _disposeControllers();
+    }
+    
+    _videoControllerRef = controller;
+    _firstFrameLoggedSceneId = null;
+    _isUsingBorrowedController = true;
+
+    state = state.copyWith(
+      activeScene: scene,
+      videoPlayerController: controller,
+      isPlaying: controller.value.isPlaying,
+      streamMimeType: streamMimeType,
+      streamLabel: streamLabel,
+      streamSource: streamSource,
+      startupLatencyMs: 0, // Attached, no initialization latency to report
+    );
+
+    mediaHandler?.updateMetadata(
+      id: scene.id,
+      title: scene.title,
+      studio: scene.studioName,
+      thumbnailUri: scene.paths.screenshot,
+      duration: controller.value.duration,
+    );
+
+    if (!isTestMode) {
+      unawaited(WakelockPlus.enable());
+    }
+
+    controller.removeListener(_videoListener);
+    controller.addListener(_videoListener);
   }
 
   void togglePlayPause() {
@@ -433,6 +505,7 @@ class PlayerState extends _$PlayerState {
   Future<void> _disposeControllers() async {
     if (isTestMode) {
       _videoControllerRef = null;
+      _isUsingBorrowedController = false;
       return;
     }
 
@@ -441,8 +514,20 @@ class PlayerState extends _$PlayerState {
         (ref.mounted ? state.videoPlayerController : null);
     _videoControllerRef = null;
 
-    videoController?.removeListener(_videoListener);
-    await videoController?.dispose();
+    if (videoController != null) {
+      videoController.removeListener(_videoListener);
+      
+      if (_isUsingBorrowedController) {
+        AppLogStore.instance.add(
+          'provider skipping dispose of borrowed controller',
+          source: 'player_provider',
+        );
+        _isUsingBorrowedController = false;
+      } else {
+        await videoController.dispose();
+      }
+    }
+    
     await WakelockPlus.disable();
   }
 

@@ -3,11 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
+import 'package:stash_app_flutter/core/data/graphql/graphql_client.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
 import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
+import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/tiktok_scenes_view.dart';
@@ -26,6 +29,17 @@ import 'package:stash_app_flutter/features/tags/domain/repositories/tag_reposito
 import 'package:stash_app_flutter/features/tags/presentation/providers/tag_list_provider.dart';
 
 import 'package:stash_app_flutter/main.dart';
+
+class MockStreamResolver extends StreamResolver {
+  @override
+  Future<StreamChoice?> resolvePreferredStream(Scene scene) async {
+    return StreamChoice(
+      url: scene.paths.stream ?? '',
+      mimeType: 'video/mp4',
+      label: 'Direct',
+    );
+  }
+}
 
 class MockSceneRepository implements SceneRepository {
   final List<Scene> scenes;
@@ -109,6 +123,19 @@ class MockTagRepository implements TagRepository {
 
 void main() {
   late SharedPreferences prefs;
+  final mockGraphQLClient = GraphQLClient(
+    link: Link.function((request, [forward]) async* {
+      yield Response(
+        data: <String, dynamic>{
+          'sceneStreams': [],
+          'findScene': {'sceneStreams': []},
+        },
+        response: <String, dynamic>{},
+      );
+    }),
+    cache: GraphQLCache(store: InMemoryStore()),
+  );
+
   final testScene = Scene(
     id: '1',
     title: 'Test Scene',
@@ -195,6 +222,8 @@ void main() {
     return ProviderScope(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
+        graphqlClientProvider.overrideWithValue(mockGraphQLClient),
+        streamResolverProvider.overrideWith(MockStreamResolver.new),
         sceneRepositoryProvider.overrideWithValue(
           MockSceneRepository([testScene, nextScene]),
         ),
@@ -252,6 +281,10 @@ void main() {
     // 5. Verify we are back in Scene Details and state is reset
     expect(find.text('Scene Details'), findsOneWidget);
     expect(container.read(playerStateProvider).isFullScreen, isFalse);
+
+    // Final cleanup
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
   });
 
   testWidgets(
@@ -269,7 +302,7 @@ void main() {
 
       // Open initial scene detail
       await tester.tap(find.text('Test Scene'));
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 1));
 
       expect(find.text('Scene Details'), findsOneWidget);
       expect(find.text('Test Scene'), findsOneWidget);
@@ -283,15 +316,15 @@ void main() {
       playerNotifier.state = playerNotifier.state.copyWith(
         activeScene: testScene,
       );
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 500));
 
       playerNotifier.state = playerNotifier.state.copyWith(activeScene: null);
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 500));
 
       playerNotifier.state = playerNotifier.state.copyWith(
         activeScene: nextScene,
       );
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 1));
 
       expect(find.text('Next Scene'), findsOneWidget);
       expect(find.text('Test Scene'), findsNothing);
@@ -318,9 +351,10 @@ void main() {
     // 1. Verify TikTok layout
     expect(find.byType(TiktokScenesView), findsOneWidget);
 
-    // 2. Trigger Fullscreen navigation manually
+    // 2. Trigger Fullscreen navigation manually (following the new robust flow)
     final context = tester.element(find.byType(TiktokScenesView));
-    context.push('/scenes/fullscreen/${testScene.id}');
+    context.push('/scenes/scene/${testScene.id}');
+    context.push('/scenes/scene/${testScene.id}/fullscreen');
 
     await tester.pump(const Duration(seconds: 1));
     await tester.pump(const Duration(seconds: 1));
@@ -328,16 +362,27 @@ void main() {
     // 3. Verify Fullscreen
     expect(find.text('Initializing player...'), findsOneWidget);
 
-    // 4. Simulate Back
+    // 4. Simulate Back (should go to Details)
     await tester.binding.handlePopRoute();
     await tester.pump(const Duration(seconds: 1));
     await tester.pump(const Duration(seconds: 1));
 
-    // 5. Verify back in TikTok feed
+    // 5. Verify back in Scene Details
+    expect(find.text('Scene Details'), findsOneWidget);
+
+    // 6. Simulate Back again (should go to TikTok)
+    await tester.binding.handlePopRoute();
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 1));
+
     expect(find.byType(TiktokScenesView), findsOneWidget);
     final container = ProviderScope.containerOf(
       tester.element(find.byType(TiktokScenesView)),
     );
     expect(container.read(playerStateProvider).isFullScreen, isFalse);
+
+    // Final cleanup
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
   });
 }
