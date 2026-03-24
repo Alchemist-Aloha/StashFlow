@@ -123,4 +123,49 @@ void main() {
     await tester.tap(find.byIcon(Icons.water_drop_outlined));
     await tester.pump(const Duration(milliseconds: 500));
   });
+
+  test('shouldRouteToNextScene supports transient null active scene transitions', () {
+    final nextScene = Scene(
+      id: 's2',
+      title: 'Next Scene',
+      date: DateTime(2024, 1, 2),
+      rating100: 60,
+      oCounter: 2,
+      organized: true,
+      interactive: false,
+      resumeTime: null,
+      playCount: 1,
+      files: [],
+      paths: const ScenePaths(
+        screenshot: null,
+        preview: null,
+        stream: 'http://test.com/stream2.mp4',
+      ),
+      studioId: 'st1',
+      studioName: 'Test Studio',
+      studioImagePath: null,
+      performerIds: [],
+      performerNames: [],
+      performerImagePaths: [],
+      tagIds: [],
+      tagNames: [],
+    );
+
+    expect(
+      shouldRouteToNextScene('s1', testScene, 's1', nextScene),
+      isTrue,
+    );
+    expect(
+      shouldRouteToNextScene('s1', null, 's1', nextScene),
+      isTrue,
+    );
+    expect(
+      shouldRouteToNextScene('s1', testScene, 's1', testScene),
+      isFalse,
+    );
+    expect(
+      shouldRouteToNextScene('s1', testScene, 's1', null),
+      isFalse,
+    );
+  });
 }

@@ -122,6 +122,43 @@ void main() {
     tagNames: [],
   );
 
+  final nextScene = Scene(
+    id: '2',
+    title: 'Next Scene',
+    date: DateTime.now().add(const Duration(days: 1)),
+    rating100: 90,
+    oCounter: 3,
+    organized: true,
+    interactive: false,
+    resumeTime: null,
+    playCount: 1,
+    files: [
+      const SceneFile(
+        format: 'mp4',
+        width: 1920,
+        height: 1080,
+        videoCodec: 'h264',
+        audioCodec: 'aac',
+        bitRate: 5000,
+        duration: 100.0,
+        frameRate: 30.0,
+      )
+    ],
+    paths: const ScenePaths(
+      screenshot: 'http://localhost/thumb2.jpg',
+      preview: 'http://localhost/preview2.mp4',
+      stream: 'http://localhost/stream2.mp4',
+    ),
+    studioId: null,
+    studioName: 'Test Studio',
+    studioImagePath: null,
+    performerIds: [],
+    performerNames: [],
+    performerImagePaths: [],
+    tagIds: [],
+    tagNames: [],
+  );
+
   setUp(() async {
     SharedPreferences.setMockInitialValues({
       'server_base_url': 'http://localhost',
@@ -134,7 +171,7 @@ void main() {
     return ProviderScope(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
-        sceneRepositoryProvider.overrideWithValue(MockSceneRepository([testScene])),
+        sceneRepositoryProvider.overrideWithValue(MockSceneRepository([testScene, nextScene])),
         performerRepositoryProvider.overrideWithValue(MockPerformerRepository()),
         studioRepositoryProvider.overrideWithValue(MockStudioRepository()),
         tagRepositoryProvider.overrideWithValue(MockTagRepository()),
@@ -183,6 +220,41 @@ void main() {
     // 5. Verify we are back in Scene Details and state is reset
     expect(find.text('Scene Details'), findsOneWidget);
     expect(container.read(playerStateProvider).isFullScreen, isFalse);
+  });
+
+  testWidgets('SceneDetailsPage updates route when playback moves via activeScene null transition', (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(createTestWidget());
+    await tester.pumpAndSettle();
+
+    // Open initial scene detail
+    await tester.tap(find.text('Test Scene'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Scene Details'), findsOneWidget);
+    expect(find.text('Test Scene'), findsOneWidget);
+
+    final container = ProviderScope.containerOf(tester.element(find.byType(SceneDetailsPage)));
+    final playerNotifier = container.read(playerStateProvider.notifier);
+
+    // Simulate exact transition from provider: current->null->next
+    playerNotifier.state = playerNotifier.state.copyWith(activeScene: testScene);
+    await tester.pumpAndSettle();
+
+    playerNotifier.state = playerNotifier.state.copyWith(activeScene: null);
+    await tester.pumpAndSettle();
+
+    playerNotifier.state = playerNotifier.state.copyWith(activeScene: nextScene);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Next Scene'), findsOneWidget);
+    expect(find.text('Test Scene'), findsNothing);
   });
 
   testWidgets('Robust Fullscreen Navigation: TikTok -> Fullscreen -> Back', (WidgetTester tester) async {

@@ -18,9 +18,10 @@ import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/video_player_provider.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
+import '../../domain/entities/scene.dart';
 import '../widgets/scene_video_player.dart';
 
-/// A detailed view for a single scene.
+/// A detailed view for a single scene,
 ///
 /// This page displays:
 /// * A video player ([SceneVideoPlayer]) at the top.
@@ -31,6 +32,19 @@ import '../widgets/scene_video_player.dart';
 /// It also handles sophisticated navigation logic:
 /// * Listens to [playerStateProvider] to auto-navigate to the next scene when the current one ends.
 /// * Pops the immersive fullscreen view automatically when playback transitions to a new scene.
+
+bool shouldRouteToNextScene(
+  String currentPageSceneId,
+  Scene? previousActiveScene,
+  String? lastKnownActiveSceneId,
+  Scene? nextScene,
+) {
+  final previousId = previousActiveScene?.id ?? lastKnownActiveSceneId;
+  return nextScene != null &&
+      nextScene.id != currentPageSceneId &&
+      previousId == currentPageSceneId;
+}
+
 class SceneDetailsPage extends ConsumerStatefulWidget {
   final String sceneId;
   const SceneDetailsPage({required this.sceneId, super.key});
@@ -47,6 +61,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   bool _detailsExpanded = false;
   bool _tagsExpanded = false;
   bool _performersExpanded = false;
+  String? _lastKnownActiveSceneId;
   Timer? _playCountTimer;
   String? _scheduledPlayCountSceneId;
   final Set<String> _countedPlayScenes = <String>{};
@@ -123,6 +138,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   Widget build(BuildContext context) {
     ref.listen(playerStateProvider, (previous, next) {
       final nextScene = next.activeScene;
+      final previousActiveSceneId = previous?.activeScene?.id ?? _lastKnownActiveSceneId;
 
       // Handle full-screen auto-exit
       // Only the page that was active during fullscreen should handle the pop
@@ -138,19 +154,28 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         }
       }
 
-      // Navigate to next scene if:
-      // 1. A new scene is active
-      // 2. It's different from THIS page's scene
-      // 3. THIS page's scene was the one that just finished (previous.activeScene)
-      if (nextScene != null &&
-          nextScene.id != widget.sceneId &&
-          previous?.activeScene?.id == widget.sceneId) {
+      // Navigate to next scene if provider indicates we just moved from the current scene
+      if (shouldRouteToNextScene(
+        widget.sceneId,
+        previous?.activeScene,
+        _lastKnownActiveSceneId,
+        nextScene,
+      )) {
         AppLogStore.instance.add(
-          'SceneDetailsPage [${widget.sceneId}] navigating to next scene: ${nextScene.id}',
+          'SceneDetailsPage [${widget.sceneId}] navigating to next scene: ${nextScene?.id}',
           source: 'SceneDetailsPage',
         );
 
-        context.pushReplacement('/scenes/scene/${nextScene.id}');
+        if (nextScene != null) {
+          context.pushReplacement('/scenes/scene/${nextScene.id}');
+        }
+      }
+
+      // Keep the most recent active scene ID in case the provider emits a transient null state
+      if (nextScene?.id != null) {
+        _lastKnownActiveSceneId = nextScene!.id;
+      } else if (previousActiveSceneId != null) {
+        _lastKnownActiveSceneId = previousActiveSceneId;
       }
     });
 
