@@ -71,6 +71,12 @@ class LocalMockSceneRepository implements SceneRepository {
     if (sort == 'title') {
       result.sort((a, b) => a.title.compareTo(b.title));
       if (descending) result = result.reversed.toList();
+    } else if (sort == 'o_counter') {
+      result.sort((a, b) => a.oCounter.compareTo(b.oCounter));
+      if (descending) result = result.reversed.toList();
+    } else if (sort == 'rating') {
+      result.sort((a, b) => (a.rating100 ?? 0).compareTo(b.rating100 ?? 0));
+      if (descending) result = result.reversed.toList();
     }
 
     return result;
@@ -110,7 +116,7 @@ void main() {
     WidgetTester tester,
   ) async {
     // Increase surface size for integration tests
-    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.physicalSize = const Size(1200, 5000);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() {
       tester.view.resetPhysicalSize();
@@ -121,6 +127,7 @@ void main() {
 
     await pumpTestWidget(
       tester,
+      wrapWithApp: false,
       overrides: [
         sceneRepositoryProvider.overrideWithValue(mockRepo),
         sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
@@ -137,7 +144,7 @@ void main() {
       ),
     );
 
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     // Verify initial list
     expect(find.text('Apple Scene'), findsOneWidget);
@@ -148,44 +155,53 @@ void main() {
     await tester.pump();
     await tester.enterText(find.byType(TextField), 'Apple');
     await tester.pump(const Duration(milliseconds: 500));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     expect(find.text('Apple Scene'), findsOneWidget);
     expect(find.text('Zebra Scene'), findsNothing);
 
     // Clear Search
     await tester.tap(find.byIcon(Icons.close));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     expect(find.text('Apple Scene'), findsOneWidget);
     expect(find.text('Zebra Scene'), findsOneWidget);
 
     // Test Sorting (Title Descending)
     await tester.tap(find.byIcon(Icons.sort));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 2));
 
-    await tester.tap(find.text('Title'));
-    await tester.pump();
+    final titleSort = find.text('Title');
+    await tester.scrollUntilVisible(titleSort, 200.0, scrollable: find.byType(Scrollable).last);
+    await tester.tap(titleSort);
+    await tester.pump(const Duration(milliseconds: 500));
 
     await tester.tap(find.text('Descending'));
-    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
 
-    await tester.tap(find.text('Apply Sort'));
-    await tester.pumpAndSettle();
+    final applySort = find.text('Apply Sort');
+    await tester.scrollUntilVisible(applySort, 200.0, scrollable: find.byType(Scrollable).last);
+    await tester.tap(applySort);
+    await tester.pump(const Duration(seconds: 1));
 
+    // Re-verify positions
     final zebraPos = tester.getCenter(find.text('Zebra Scene')).dy;
     final applePos = tester.getCenter(find.text('Apple Scene')).dy;
     expect(zebraPos < applePos, isTrue);
 
     // Test Filtering (Organized only)
     await tester.tap(find.byIcon(Icons.filter_list));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 2));
 
-    await tester.tap(find.text('Organized only'));
-    await tester.pump();
+    final organizedOnly = find.text('Organized only');
+    await tester.scrollUntilVisible(organizedOnly, 200.0, scrollable: find.byType(Scrollable).last);
+    await tester.tap(organizedOnly);
+    await tester.pump(const Duration(milliseconds: 500));
 
-    await tester.tap(find.text('Apply Filters'));
-    await tester.pumpAndSettle();
+    final applyFilters = find.text('Apply Filters');
+    await tester.scrollUntilVisible(applyFilters, 200.0, scrollable: find.byType(Scrollable).last);
+    await tester.tap(applyFilters);
+    await tester.pump(const Duration(seconds: 1));
 
     expect(find.text('Apple Scene'), findsOneWidget);
     expect(find.text('Zebra Scene'), findsNothing);
@@ -195,7 +211,7 @@ void main() {
     WidgetTester tester,
   ) async {
     // Increase surface size for integration tests
-    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.physicalSize = const Size(1200, 5000);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() {
       tester.view.resetPhysicalSize();
@@ -206,6 +222,54 @@ void main() {
 
     await pumpTestWidget(
       tester,
+      wrapWithApp: false,
+      overrides: [
+        sceneRepositoryProvider.overrideWithValue(mockRepo),
+        sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
+        sceneGridLayoutProvider.overrideWith(TestSceneGridLayout.new),
+      ],
+      child: Consumer(
+        builder: (context, ref, _) {
+          final goRouter = ref.watch(routerProvider);
+          return MaterialApp.router(
+            routerConfig: goRouter,
+            theme: AppTheme.darkTheme,
+          );
+        },
+      ),
+    );
+
+    await tester.pump(const Duration(seconds: 1));
+
+    await tester.tap(find.text('Apple Scene'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(find.text('Apple Scene'), findsAtLeast(1));
+
+    if (find.byIcon(Icons.arrow_back).evaluate().isNotEmpty) {
+      await tester.tap(find.byIcon(Icons.arrow_back));
+    } else if (find.byType(BackButton).evaluate().isNotEmpty) {
+      await tester.tap(find.byType(BackButton));
+    }
+
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('Zebra Scene'), findsOneWidget);
+  });
+
+  testWidgets('Integration: Adaptive Navigation (Mobile vs Tablet)', (
+    WidgetTester tester,
+  ) async {
+    final mockRepo = LocalMockSceneRepository(testScenes);
+
+    // 1. Test Mobile (NavigationBar)
+    tester.view.physicalSize = const Size(400, 800);
+    tester.view.devicePixelRatio = 1.0;
+
+    await pumpTestWidget(
+      tester,
+      wrapWithApp: false,
       overrides: [
         sceneRepositoryProvider.overrideWithValue(mockRepo),
         sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
@@ -223,21 +287,17 @@ void main() {
     );
 
     await tester.pumpAndSettle();
+    expect(find.byType(NavigationBar), findsOneWidget);
+    expect(find.byType(NavigationRail), findsNothing);
 
-    await tester.tap(find.text('Apple Scene'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
+    // 2. Test Tablet (NavigationRail)
+    tester.view.physicalSize = const Size(1200, 800);
     await tester.pumpAndSettle();
 
-    expect(find.text('Apple Scene'), findsAtLeast(1));
+    expect(find.byType(NavigationRail), findsOneWidget);
+    expect(find.byType(NavigationBar), findsNothing);
 
-    if (find.byIcon(Icons.arrow_back).evaluate().isNotEmpty) {
-      await tester.tap(find.byIcon(Icons.arrow_back));
-    } else if (find.byType(BackButton).evaluate().isNotEmpty) {
-      await tester.tap(find.byType(BackButton));
-    }
-
-    await tester.pumpAndSettle();
-    expect(find.text('Zebra Scene'), findsOneWidget);
+    tester.view.resetPhysicalSize();
+    tester.view.resetDevicePixelRatio();
   });
 }
