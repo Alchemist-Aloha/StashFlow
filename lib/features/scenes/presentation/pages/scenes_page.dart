@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:math';
 import '../../domain/entities/scene.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../domain/entities/scene_filter.dart';
@@ -14,6 +15,7 @@ import '../../../setup/presentation/providers/navigation_customization_provider.
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/app_log_store.dart';
+import '../../../../core/utils/responsive.dart';
 
 import '../widgets/scene_filter_panel.dart';
 
@@ -109,6 +111,10 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     super.dispose();
   }
 
+  int _getGridColumnCount(BuildContext context) {
+    return Responsive.isMobile(context) ? 2 : 3;
+  }
+
   /// Handles intelligent image prefetching based on scroll position.
   ///
   /// This method calculates which items are likely to become visible soon
@@ -127,10 +133,10 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     if (ref.read(sceneGridLayoutProvider)) {
       // Grid layout: compute item sizes based on viewport width and fixed columns.
       final padding = AppTheme.spacingSmall * 2;
-      const crossAxisCount = 2;
+      final crossAxisCount = _getGridColumnCount(context);
       final availableWidth = MediaQuery.of(context).size.width - padding;
       final itemWidth =
-          (availableWidth - AppTheme.spacingSmall) / crossAxisCount;
+          (availableWidth - (AppTheme.spacingSmall * (crossAxisCount - 1))) / crossAxisCount;
       // Note: itemHeight here is an estimate; actual height depends on childAspectRatio.
       final itemHeight = itemWidth * (1 / 1.15); 
       final stride = itemHeight + AppTheme.spacingMedium;
@@ -206,48 +212,29 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       _SceneSortField.createdAt => 'created_at',
       _SceneSortField.random => 'random',
     };
-
-    ref
-        .read(sceneListProvider.notifier)
-        .setSort(sort: sortKey, descending: _sortDescending);
+    ref.read(sceneSortProvider.notifier).setSort(sort: sortKey, descending: _sortDescending);
   }
 
-  /// Fetches a random scene from the backend and navigates to its details page.
-  ///
-  /// This "Casino mode" respect the currently active filters and search query.
-  Future<void> _openRandomScene() async {
-    final randomScene = await ref
-        .read(sceneListProvider.notifier)
-        .getRandomScene(
-          useCurrentFilter: true,
-          excludeSceneId: _lastRandomSceneId,
-        );
-    if (!mounted) return;
-
-    if (randomScene == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No scenes available for random navigation'),
-        ),
-      );
-      return;
-    }
-
-    _lastRandomSceneId = randomScene.id;
-    context.push('/scenes/scene/${randomScene.id}');
+  /// Opens the "Casino mode" random scene view.
+  void _openRandomScene() {
+    final scenes = ref.read(sceneListProvider).value ?? [];
+    if (scenes.isEmpty) return;
+    
+    // Choose a random scene that wasn't the last one we picked.
+    final random = Random();
+    int index;
+    do {
+      index = random.nextInt(scenes.length);
+    } while (scenes.length > 1 && scenes[index].id == _lastRandomSceneId);
+    
+    _lastRandomSceneId = scenes[index].id;
+    
+    // Set the queue and navigate to details.
+    ref.read(playbackQueueProvider.notifier).setIndex(index);
+    context.push('/scenes/scene/${scenes[index].id}');
   }
 
-  /// Opens the filter bottom sheet for advanced criteria.
-  void _showFilterPanel() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const SceneFilterPanel(),
-    );
-  }
-
-  /// Returns a human-readable label for a sort field.
+  /// Formats a [_SceneSortField] enum value for display in the UI.
   String _sortFieldLabel(_SceneSortField field) {
     return switch (field) {
       _SceneSortField.date => 'Date',
@@ -257,161 +244,166 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       _SceneSortField.duration => 'Duration',
       _SceneSortField.bitrate => 'Bitrate',
       _SceneSortField.framerate => 'Framerate',
-      _SceneSortField.updatedAt => 'Update Date',
-      _SceneSortField.createdAt => 'Created Date',
+      _SceneSortField.updatedAt => 'Updated At',
+      _SceneSortField.createdAt => 'Created At',
       _SceneSortField.random => 'Random',
     };
   }
 
-  /// Opens the sort configuration bottom sheet.
+  /// Displays the sort selection bottom sheet.
   void _showSortPanel() {
-    var tempField = _sortField;
-    var tempDescending = _sortDescending;
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) {
+        _SceneSortField tempField = _sortField;
+        bool tempDescending = _sortDescending;
+
         return StatefulBuilder(
           builder: (context, setModalState) {
-            return Container(
-              padding: const EdgeInsets.all(AppTheme.spacingMedium),
-              decoration: BoxDecoration(
-                color: context.colors.surface,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(AppTheme.radiusExtraLarge),
-                ),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Sort Scenes',
-                        style: context.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          setModalState(() {
-                            tempField = _SceneSortField.date;
-                            tempDescending = true;
-                          });
-                        },
-                        child: const Text('Reset'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppTheme.spacingMedium),
-                  Text('Sort Method', style: context.textTheme.labelLarge),
-                  const SizedBox(height: AppTheme.spacingSmall),
-                  Wrap(
-                    spacing: AppTheme.spacingSmall,
-                    runSpacing: AppTheme.spacingSmall,
-                    children: _SceneSortField.values
-                        .map(
-                          (field) => ChoiceChip(
-                            label: Text(_sortFieldLabel(field)),
-                            selected: tempField == field,
-                            onSelected: (selected) {
-                              if (!selected) return;
-                              setModalState(() {
-                                tempField = field;
-                              });
-                            },
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(AppTheme.spacingLarge),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Sort Scenes',
+                          style: context.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
                           ),
-                        )
-                        .toList(),
-                  ),
-                  const SizedBox(height: AppTheme.spacingMedium),
-                  Text('Direction', style: context.textTheme.labelLarge),
-                  const SizedBox(height: AppTheme.spacingSmall),
-                  SizedBox(
-                    width: double.infinity,
-                    child: SegmentedButton<bool>(
-                      segments: const [
-                        ButtonSegment(
-                          value: true,
-                          label: Text('Descending'),
-                          icon: Icon(Icons.arrow_downward),
                         ),
-                        ButtonSegment(
-                          value: false,
-                          label: Text('Ascending'),
-                          icon: Icon(Icons.arrow_upward),
+                        TextButton(
+                          onPressed: () {
+                            setModalState(() {
+                              tempField = _SceneSortField.date;
+                              tempDescending = true;
+                            });
+                          },
+                          child: const Text('Reset'),
                         ),
                       ],
-                      selected: {tempDescending},
-                      onSelectionChanged: (value) =>
-                          setModalState(() => tempDescending = value.first),
                     ),
-                  ),
-                  const SizedBox(height: AppTheme.spacingLarge),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _sortField = tempField;
-                          _sortDescending = tempDescending;
-                        });
-                        _applyServerSort();
-                        Navigator.pop(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: context.colors.primary,
-                        foregroundColor: context.colors.onPrimary,
-                        padding: const EdgeInsets.symmetric(
-                          vertical: AppTheme.spacingMedium,
-                        ),
-                      ),
-                      child: const Text('Apply Sort'),
-                    ),
-                  ),
-                  const SizedBox(height: AppTheme.spacingSmall),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: () async {
-                        setState(() {
-                          _sortField = tempField;
-                          _sortDescending = tempDescending;
-                        });
-                        _applyServerSort();
-                        await ref
-                            .read(sceneSortProvider.notifier)
-                            .saveAsDefault();
-                        if (context.mounted) {
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Sort preferences saved as default',
-                              ),
+                    const SizedBox(height: AppTheme.spacingMedium),
+                    Text('Sort Method', style: context.textTheme.labelLarge),
+                    const SizedBox(height: AppTheme.spacingSmall),
+                    Wrap(
+                      spacing: AppTheme.spacingSmall,
+                      runSpacing: AppTheme.spacingSmall,
+                      children: _SceneSortField.values
+                          .map(
+                            (field) => ChoiceChip(
+                              label: Text(_sortFieldLabel(field)),
+                              selected: tempField == field,
+                              onSelected: (selected) {
+                                if (!selected) return;
+                                setModalState(() {
+                                  tempField = field;
+                                });
+                              },
                             ),
-                          );
-                        }
-                      },
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: AppTheme.spacingMedium,
-                        ),
-                      ),
-                      child: const Text('Save as Default'),
+                          )
+                          .toList(),
                     ),
-                  ),
-                  const SizedBox(height: AppTheme.spacingMedium),
-                ],
+                    const SizedBox(height: AppTheme.spacingMedium),
+                    Text('Direction', style: context.textTheme.labelLarge),
+                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(
+                      width: double.infinity,
+                      child: SegmentedButton<bool>(
+                        segments: const [
+                          ButtonSegment(
+                            value: true,
+                            label: Text('Descending'),
+                            icon: Icon(Icons.arrow_downward),
+                          ),
+                          ButtonSegment(
+                            value: false,
+                            label: Text('Ascending'),
+                            icon: Icon(Icons.arrow_upward),
+                          ),
+                        ],
+                        selected: {tempDescending},
+                        onSelectionChanged: (value) =>
+                            setModalState(() => tempDescending = value.first),
+                      ),
+                    ),
+                    const SizedBox(height: AppTheme.spacingLarge),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _sortField = tempField;
+                            _sortDescending = tempDescending;
+                          });
+                          _applyServerSort();
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: context.colors.primary,
+                          foregroundColor: context.colors.onPrimary,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: AppTheme.spacingMedium,
+                          ),
+                        ),
+                        child: const Text('Apply Sort'),
+                      ),
+                    ),
+                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: () async {
+                          setState(() {
+                            _sortField = tempField;
+                            _sortDescending = tempDescending;
+                          });
+                          _applyServerSort();
+                          await ref
+                              .read(sceneSortProvider.notifier)
+                              .saveAsDefault();
+                          if (context.mounted) {
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Sort preferences saved as default',
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: AppTheme.spacingMedium,
+                          ),
+                        ),
+                        child: const Text('Save as Default'),
+                      ),
+                    ),
+                    const SizedBox(height: AppTheme.spacingMedium),
+                  ],
+                ),
               ),
             );
           },
         );
       },
+    );
+  }
+
+  /// Displays the filter configuration bottom sheet.
+  void _showFilterPanel() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const SceneFilterPanel(),
     );
   }
 
@@ -459,11 +451,11 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                 : kPrefetchDistance;
             if (isGridView) {
               final padding = AppTheme.spacingSmall * 2;
-              const crossAxisCount = 2;
+              final crossAxisCount = _getGridColumnCount(context);
               final availableWidth =
                   MediaQuery.of(context).size.width - padding;
               final itemWidth =
-                  (availableWidth - AppTheme.spacingSmall) / crossAxisCount;
+                  (availableWidth - (AppTheme.spacingSmall * (crossAxisCount - 1))) / crossAxisCount;
               for (var i = 0; i < count; i++) {
                 StashImage.prefetch(
                   context,
@@ -543,8 +535,8 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
         ),
       ],
       gridDelegate: isGridView
-          ? const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
+          ? SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: _getGridColumnCount(context),
               crossAxisSpacing: AppTheme.spacingSmall,
               mainAxisSpacing: AppTheme.spacingMedium,
               // Taller items to allow more space for Title and Studio metadata.

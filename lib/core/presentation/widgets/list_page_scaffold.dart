@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme/app_theme.dart';
+import '../../utils/responsive.dart';
 import 'error_state_view.dart';
 import '../../utils/pagination.dart';
 
@@ -31,6 +32,7 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     this.padding = const EdgeInsets.all(AppTheme.spacingMedium),
     this.hideAppBar = false,
     this.scrollController,
+    this.useResponsiveGrid = true,
   });
 
   /// The page title displayed in the AppBar.
@@ -81,6 +83,9 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
   /// Custom [ScrollController] for tracking scroll position externally.
   final ScrollController? scrollController;
 
+  /// Whether to automatically adapt the grid column count for larger screens.
+  final bool useResponsiveGrid;
+
   @override
   ConsumerState<ListPageScaffold<T>> createState() =>
       _ListPageScaffoldState<T>();
@@ -94,6 +99,25 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  SliverGridDelegate _getResponsiveGridDelegate(BuildContext context) {
+    final delegate = widget.gridDelegate!;
+    if (!widget.useResponsiveGrid || Responsive.isMobile(context)) {
+      return delegate;
+    }
+
+    if (delegate is SliverGridDelegateWithFixedCrossAxisCount) {
+      return SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: delegate.mainAxisSpacing,
+        crossAxisSpacing: delegate.crossAxisSpacing,
+        childAspectRatio: delegate.childAspectRatio,
+        mainAxisExtent: delegate.mainAxisExtent,
+      );
+    }
+
+    return delegate;
   }
 
   @override
@@ -172,7 +196,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                         ? GridView.builder(
                             controller: widget.scrollController,
                             padding: widget.padding,
-                            gridDelegate: widget.gridDelegate!,
+                            gridDelegate: _getResponsiveGridDelegate(context),
                             itemCount: items.length,
                             itemBuilder: (context, index) =>
                                 widget.itemBuilder!(context, items[index]),
