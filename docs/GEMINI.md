@@ -29,9 +29,9 @@ This folder contains agent-focused project documentation.
 
 ## Current Implementation Notes (2026-03-24)
 
-- Refined Scenes layout options: 1 Column (List), 2 Column (Grid), and TikTok (Infinite Scroll).
-- Optimized 1 Column (List) view with dynamic aspect ratios based on scene metadata to prevent image distortion.
-- Improved 2 Column (Grid) layout with increased vertical breathing room (`childAspectRatio: 1.15`) and row spacing (`mainAxisSpacing: 16dp`) for metadata.
+- Refined Scenes layout options: List, Grid, and TikTok (Infinite Scroll).
+- Optimized List view with dynamic aspect ratios based on scene metadata to prevent image distortion.
+- Improved Grid layout with increased vertical breathing room (`childAspectRatio: 1.15`) and row spacing (`mainAxisSpacing: 16dp`) for metadata.
 - Ensured all scene thumbnails use `BoxFit.cover` with `double.infinity` dimensions to perfectly fill their containers.
 - Simplified Scenes page UI by moving layout selection exclusively to the Settings page.
 - Added detailed docstrings to `ScenesPage` and `SceneCard` documenting the layout and prefetch logic.

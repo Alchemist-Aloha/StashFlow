@@ -550,12 +550,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           dropdownMenuEntries: const [
                             DropdownMenuEntry<String>(
                               value: 'list',
-                              label: '1 Column',
+                              label: 'List',
                               leadingIcon: Icon(Icons.view_list),
                             ),
                             DropdownMenuEntry<String>(
                               value: 'grid',
-                              label: '2 Column',
+                              label: 'Grid',
                               leadingIcon: Icon(Icons.grid_view),
                             ),
                             DropdownMenuEntry<String>(

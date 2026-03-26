@@ -92,7 +92,7 @@ See [#ui-guideline](#ui-guideline) for current UI standards.
 - `server_base_url`
 - `server_api_key`
 - `prefer_scene_streams`
-- `scene_grid_layout` (Controls the 2-column grid vs 1-column list)
+- `scene_grid_layout` (Controls the Grid vs List view)
 - `scene_tiktok_layout` (Enables the infinite scroll vertical video feed)
 
 ## List UX Pattern (current)
@@ -104,7 +104,7 @@ See [#ui-guideline](#ui-guideline) for current UI standards.
 - Random discovery via `FloatingActionButton.small`
 - **Responsive Grids**: Automatically scales column counts based on device width (Mobile < 600px, Tablet >= 600px). Supports `mobileCrossAxisCount` and `tabletCrossAxisCount` overrides.
 - **Performers Specific**: Uses circular thumbnails with 3 columns on mobile and 5 on tablet.
-- **Scenes Specific**: Supports three layout modes (1 Column, 2 Column, TikTok) configured via Settings. List view uses dynamic aspect ratios to match media content. Grid view uses an optimized 1.15 aspect ratio for metadata breathing room.
+- **Scenes Specific**: Supports three layout modes (List, Grid, TikTok) configured via Settings. List view uses dynamic aspect ratios to match media content. Grid view uses an optimized 1.15 aspect ratio for metadata breathing room.
 
 ## GraphQL Source of Truth
 
