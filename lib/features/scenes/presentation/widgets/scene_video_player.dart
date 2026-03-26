@@ -291,13 +291,21 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
   }
 
   Future<void> _enterFullScreen() async {
-    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    await SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
-    if (mounted) {
-      ref.read(playerStateProvider.notifier).setFullScreen(true);
+    try {
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
+    } catch (e) {
+      AppLogStore.instance.add(
+        'FullscreenPlayerPage [${widget.sceneId}] error entering fullscreen: $e',
+        source: 'FullscreenPlayerPage',
+      );
+    } finally {
+      if (mounted) {
+        ref.read(playerStateProvider.notifier).setFullScreen(true);
+      }
     }
   }
 
@@ -402,11 +410,11 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                   useDoubleTapSeek: playerState.useDoubleTapSeek,
                   enableNativePip: playerState.enableNativePip,
                   onFullScreenToggle: () {
-                    // Logic: we want to exit fullscreen.
-                    // We check both state and path for redundancy.
-                    if (!_isPopping && (isFullScreen || isInFullscreenPath)) {
+                    // If we are in FullscreenPlayerPage, the toggle button always exits.
+                    if (!_isPopping) {
                       _isPopping = true;
-                      // Update state immediately before popping
+                      // Update state immediately before popping.
+                      // _exitFullScreen will also be called via deactivate() for extra safety.
                       ref.read(playerStateProvider.notifier).setFullScreen(false);
                       router?.pop();
                     }
