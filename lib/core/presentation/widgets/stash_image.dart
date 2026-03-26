@@ -8,11 +8,9 @@ import '../../data/graphql/media_headers_provider.dart';
 // Lightweight in-file shimmer placeholder — avoids an extra package dependency.
 class _Shimmer extends StatefulWidget {
   final Widget child;
-  final Duration duration;
 
   const _Shimmer({
     required this.child,
-    this.duration = const Duration(milliseconds: 1200),
   });
 
   @override
@@ -33,8 +31,6 @@ class _RetryingCachedImage extends StatefulWidget {
     this.fit,
     this.memCacheWidth,
     this.memCacheHeight,
-    this.maxRetries = 2,
-    super.key,
   });
 
   final String imageUrl;
@@ -45,7 +41,7 @@ class _RetryingCachedImage extends StatefulWidget {
   final BoxFit? fit;
   final int? memCacheWidth;
   final int? memCacheHeight;
-  final int maxRetries;
+  static const int maxRetries = 2;
 
   @override
   State<_RetryingCachedImage> createState() => _RetryingCachedImageState();
@@ -55,7 +51,7 @@ class _RetryingCachedImageState extends State<_RetryingCachedImage> {
   int _attempt = 0;
 
   Future<void> _handleError() async {
-    if (_attempt >= widget.maxRetries) return;
+    if (_attempt >= _RetryingCachedImage.maxRetries) return;
     _attempt++;
 
     try {
@@ -122,8 +118,10 @@ class _ShimmerState extends State<_Shimmer>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: widget.duration)
-      ..repeat();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat();
   }
 
   @override
@@ -212,6 +210,7 @@ class StashImage extends ConsumerWidget {
     while (_ongoingPrefetches >= _maxConcurrentPrefetch) {
       await Future.delayed(const Duration(milliseconds: 50));
     }
+    if (!context.mounted) return;
     _ongoingPrefetches++;
     try {
       final baseProvider = CachedNetworkImageProvider(

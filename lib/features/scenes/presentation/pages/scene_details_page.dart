@@ -607,7 +607,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                   ? CircleAvatar(
                       backgroundColor: context.colors.surfaceVariant,
                       foregroundImage: CachedNetworkImageProvider(
-                        performerImagePath!,
+                        performerImagePath,
                         headers: mediaHeaders,
                       ),
                       child: const Icon(Icons.person),

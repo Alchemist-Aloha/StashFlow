@@ -47,7 +47,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
   Timer? _hideControlsTimer;
   Duration? _dragSeekStartPosition;
   double _dragSeekAccumulatedDx = 0;
-  double? _aspectRatioOverride;
 
   @override
   void initState() {

@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:video_player/video_player.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../domain/entities/scene.dart';
 import '../providers/video_player_provider.dart';
@@ -135,7 +134,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       });
 
       final response = await request.close();
-      final res = await response.timeout(const Duration(seconds: 5));
+      final res = response.timeout(const Duration(seconds: 5));
       // Drain response to ensure connection is properly closed/reused.
       await res.drain<void>();
       stopwatch.stop();
@@ -336,7 +335,6 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
     final isInFullscreenPath = currentPath.endsWith('/fullscreen');
 
     final playerState = ref.watch(playerStateProvider);
-    final isFullScreen = playerState.isFullScreen;
 
     // Automatically exit fullscreen if the global player state indicates it's no longer fullscreen
     // This handles scenarios like the video ending and the player state reset.
@@ -383,7 +381,7 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
     }
 
     return PopScope(
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
           _isPopping = true;
           // Ensure state is updated immediately on back-swipe

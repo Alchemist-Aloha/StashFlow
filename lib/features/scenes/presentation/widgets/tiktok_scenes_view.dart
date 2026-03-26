@@ -428,7 +428,9 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                           .read(sceneRepositoryProvider)
                           .updateSceneRating(widget.scene.id, starValue);
                       ref.invalidate(sceneListProvider);
-                      if (context.mounted) Navigator.pop(context);
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                      }
                     },
                   );
                 }),
@@ -443,7 +445,9 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                       .read(sceneRepositoryProvider)
                       .updateSceneRating(widget.scene.id, 0);
                   ref.invalidate(sceneListProvider);
-                  if (context.mounted) Navigator.pop(context);
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                  }
                 },
                 child: const Text('Clear Rating'),
               ),
@@ -490,11 +494,11 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
         context.pop();
       }
     } else {
+      final router = GoRouter.of(context);
       await _handoffToGlobalPlayer();
 
-      if (context.mounted) {
+      if (mounted) {
         // Navigate to details THEN fullscreen for robust back stack
-        final router = GoRouter.of(context);
         router.push('/scenes/scene/${widget.scene.id}');
         router.push('/scenes/scene/${widget.scene.id}/fullscreen');
       }
@@ -726,7 +730,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                     tooltip: 'Scene Details',
                     onTap: () async {
                       await _handoffToGlobalPlayer();
-                      if (mounted) {
+                      if (context.mounted) {
                         context.push('/scenes/scene/${widget.scene.id}');
                       }
                     },

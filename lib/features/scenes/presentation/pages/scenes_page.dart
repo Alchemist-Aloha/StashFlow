@@ -7,14 +7,12 @@ import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/playback_queue_provider.dart';
-import '../providers/video_player_provider.dart';
 import '../widgets/scene_card.dart';
 import '../widgets/tiktok_scenes_view.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
-import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/utils/responsive.dart';
 
 import '../widgets/scene_filter_panel.dart';
@@ -553,7 +551,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
         final index = scenes.indexWhere((s) => s.id == scene.id);
 
         // Attach scroll listener once (after controller becomes available).
-        if (!_didAttachScrollListener && scrollController != null) {
+        if (!_didAttachScrollListener) {
           _didAttachScrollListener = true;
           _attachedScrollController = scrollController;
           try {

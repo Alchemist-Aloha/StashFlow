@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:go_router/go_router.dart';
 
@@ -89,12 +88,14 @@ class StudioDetailsPage extends ConsumerWidget {
 
                       // Attempt to prefetch and validate again
                       try {
-                        await StashImage.prefetch(
-                          context,
-                          imageUrl: path,
-                          headers: mediaHeaders,
-                          memCacheWidth: 800,
-                        );
+                        if (context.mounted) {
+                          await StashImage.prefetch(
+                            context,
+                            imageUrl: path,
+                            headers: mediaHeaders,
+                            memCacheWidth: 800,
+                          );
+                        }
                       } catch (_) {}
 
                       final info2 = await StashImage.cacheManager

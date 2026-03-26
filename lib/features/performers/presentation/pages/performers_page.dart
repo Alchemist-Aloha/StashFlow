@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../domain/entities/performer.dart';
-import '../../../../core/presentation/widgets/stash_image.dart';
 import '../providers/performer_list_provider.dart';
 import '../widgets/performer_card.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';

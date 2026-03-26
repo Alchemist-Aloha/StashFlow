@@ -38,7 +38,7 @@ class SceneInfoSheet extends ConsumerWidget {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.onSurface.withOpacity(0.25),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.25),
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -70,7 +70,7 @@ class SceneInfoSheet extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: theme.colorScheme.shadow.withOpacity(0.08),
+                              color: theme.colorScheme.shadow.withValues(alpha: 0.08),
                               blurRadius: 24,
                               offset: const Offset(0, 8),
                             ),
@@ -148,10 +148,10 @@ class SceneInfoSheet extends ConsumerWidget {
                                 leading: hasImage
                                     ? CircleAvatar(
                                         backgroundColor:
-                                            theme.colorScheme.surfaceVariant,
+                                            theme.colorScheme.surfaceContainerHighest,
                                         foregroundImage:
                                             CachedNetworkImageProvider(
-                                              performerImagePath!,
+                                              performerImagePath,
                                               headers: mediaHeaders,
                                             ),
                                         child: const Icon(Icons.person),
