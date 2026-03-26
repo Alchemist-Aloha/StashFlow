@@ -9,6 +9,12 @@
     - long press swipe up to speed up more
     - send watched after 5 seconds to graphql server
 
+## Recently Completed (2026-03-25)
+
+- [x] **Tablet Optimization**: Adaptive navigation (sidebar) and responsive grid layouts.
+- [x] **Performers UI**: 3/5 column grid with non-stretching circular thumbnails.
+- [x] **Adaptive Grid**: Customizable column counts in `ListPageScaffold`.
+
 ## Recently Completed (2026-03-20)
 
 - [x] Dedicated `/fullscreen/:id` route for robust navigation.

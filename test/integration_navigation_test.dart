@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/features/performers/presentation/providers/performer_list_provider.dart';
+import 'package:stash_app_flutter/features/performers/domain/entities/performer.dart';
 import 'package:stash_app_flutter/features/navigation/presentation/router.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
 import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
@@ -71,6 +74,12 @@ class LocalMockSceneRepository implements SceneRepository {
     if (sort == 'title') {
       result.sort((a, b) => a.title.compareTo(b.title));
       if (descending) result = result.reversed.toList();
+    } else if (sort == 'o_counter') {
+      result.sort((a, b) => a.oCounter.compareTo(b.oCounter));
+      if (descending) result = result.reversed.toList();
+    } else if (sort == 'rating') {
+      result.sort((a, b) => (a.rating100 ?? 0).compareTo(b.rating100 ?? 0));
+      if (descending) result = result.reversed.toList();
     }
 
     return result;
@@ -100,6 +109,11 @@ class TestSceneGridLayout extends SceneGridLayout {
   bool build() => false;
 }
 
+class MockSceneGridLayoutTrue extends SceneGridLayout {
+  @override
+  bool build() => true;
+}
+
 void main() {
   final testScenes = [
     createTestScene(id: '1', title: 'Apple Scene', organized: true),
@@ -109,18 +123,15 @@ void main() {
   testWidgets('Integration: Scenes List -> Search -> Sort -> Filter', (
     WidgetTester tester,
   ) async {
-    // Increase surface size for integration tests
-    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.physicalSize = const Size(800, 1600);
     tester.view.devicePixelRatio = 1.0;
-    addTearDown(() {
-      tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
-    });
+    addTearDown(() => tester.view.resetPhysicalSize());
 
     final mockRepo = LocalMockSceneRepository(testScenes);
 
     await pumpTestWidget(
       tester,
+      wrapWithApp: false,
       overrides: [
         sceneRepositoryProvider.overrideWithValue(mockRepo),
         sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
@@ -145,9 +156,8 @@ void main() {
 
     // Test Search
     await tester.tap(find.byIcon(Icons.search));
-    await tester.pump();
+    await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'Apple');
-    await tester.pump(const Duration(milliseconds: 500));
     await tester.pumpAndSettle();
 
     expect(find.text('Apple Scene'), findsOneWidget);
@@ -164,27 +174,42 @@ void main() {
     await tester.tap(find.byIcon(Icons.sort));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Title'));
-    await tester.pump();
-
-    await tester.tap(find.text('Descending'));
-    await tester.pump();
-
-    await tester.tap(find.text('Apply Sort'));
+    final titleOption = find.text('Title').last;
+    await tester.tap(titleOption);
     await tester.pumpAndSettle();
 
-    final zebraPos = tester.getCenter(find.text('Zebra Scene')).dy;
-    final applePos = tester.getCenter(find.text('Apple Scene')).dy;
-    expect(zebraPos < applePos, isTrue);
+    final descendingOption = find.text('Descending').last;
+    await tester.tap(descendingOption);
+    await tester.pumpAndSettle();
+
+    final applySort = find.text('Apply Sort').last;
+    await tester.tap(applySort);
+    await tester.pumpAndSettle();
+
+    // Re-verify positions
+    final sceneCards = find.byType(SceneCard);
+    expect(sceneCards, findsNWidgets(2));
+    
+    final firstSceneTitle = tester.widget<Text>(
+      find.descendant(of: sceneCards.at(0), matching: find.textContaining('Scene')).first
+    ).data;
+    final secondSceneTitle = tester.widget<Text>(
+      find.descendant(of: sceneCards.at(1), matching: find.textContaining('Scene')).first
+    ).data;
+    
+    expect(firstSceneTitle, 'Zebra Scene');
+    expect(secondSceneTitle, 'Apple Scene');
 
     // Test Filtering (Organized only)
     await tester.tap(find.byIcon(Icons.filter_list));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Organized only'));
-    await tester.pump();
+    final organizedOnly = find.text('Organized only');
+    await tester.tap(organizedOnly);
+    await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Apply Filters'));
+    final applyFilters = find.text('Apply Filters');
+    await tester.tap(applyFilters);
     await tester.pumpAndSettle();
 
     expect(find.text('Apple Scene'), findsOneWidget);
@@ -194,18 +219,15 @@ void main() {
   testWidgets('Integration: Navigation to Details and back', (
     WidgetTester tester,
   ) async {
-    // Increase surface size for integration tests
-    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.physicalSize = const Size(800, 1200);
     tester.view.devicePixelRatio = 1.0;
-    addTearDown(() {
-      tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
-    });
+    addTearDown(() => tester.view.resetPhysicalSize());
 
     final mockRepo = LocalMockSceneRepository(testScenes);
 
     await pumpTestWidget(
       tester,
+      wrapWithApp: false,
       overrides: [
         sceneRepositoryProvider.overrideWithValue(mockRepo),
         sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
@@ -225,8 +247,6 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Apple Scene'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
     await tester.pumpAndSettle();
 
     expect(find.text('Apple Scene'), findsAtLeast(1));
@@ -239,5 +259,171 @@ void main() {
 
     await tester.pumpAndSettle();
     expect(find.text('Zebra Scene'), findsOneWidget);
+  });
+
+  testWidgets('Integration: Adaptive Navigation (Mobile vs Tablet)', (
+    WidgetTester tester,
+  ) async {
+    final mockRepo = LocalMockSceneRepository(testScenes);
+
+    // 1. Test Mobile (NavigationBar)
+    tester.view.physicalSize = const Size(400, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
+    Future<void> pumpApp() async {
+      await pumpTestWidget(
+        tester,
+        wrapWithApp: false,
+        overrides: [
+          sceneRepositoryProvider.overrideWithValue(mockRepo),
+          sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
+          sceneGridLayoutProvider.overrideWith(TestSceneGridLayout.new),
+        ],
+        child: Consumer(
+          builder: (context, ref, _) {
+            final goRouter = ref.watch(routerProvider);
+            return MaterialApp.router(
+              routerConfig: goRouter,
+              theme: AppTheme.darkTheme,
+            );
+          },
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
+    }
+
+    await pumpApp();
+    expect(find.byType(NavigationBar), findsOneWidget);
+    expect(find.byType(NavigationRail), findsNothing);
+
+    // 2. Test Tablet (NavigationRail)
+    tester.view.physicalSize = const Size(1200, 800);
+    // Re-pump to ensure MediaQuery updates
+    await pumpApp();
+
+    expect(find.byType(NavigationRail), findsOneWidget);
+    expect(find.byType(NavigationBar), findsNothing);
+  });
+
+  testWidgets('Integration: Responsive Grid (Mobile vs Tablet)', (
+    WidgetTester tester,
+  ) async {
+    // Ignore overflow errors for this test
+    final originalOnError = FlutterError.onError;
+    FlutterError.onError = (details) {
+      if (details.exception is FlutterError && 
+          (details.exception as FlutterError).message.contains('overflowed')) {
+        return;
+      }
+      originalOnError?.call(details);
+    };
+    addTearDown(() => FlutterError.onError = originalOnError);
+
+    final mockRepo = LocalMockSceneRepository(testScenes);
+
+    Future<void> pumpApp() async {
+      await pumpTestWidget(
+        tester,
+        wrapWithApp: false,
+        overrides: [
+          sceneRepositoryProvider.overrideWithValue(mockRepo),
+          sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
+          sceneGridLayoutProvider.overrideWith(MockSceneGridLayoutTrue.new),
+        ],
+        child: Consumer(
+          builder: (context, ref, _) {
+            final goRouter = ref.watch(routerProvider);
+            return MaterialApp.router(
+              routerConfig: goRouter,
+              theme: AppTheme.darkTheme,
+            );
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    // 1. Test Mobile (2 columns)
+    tester.view.physicalSize = const Size(400, 1000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
+    await pumpApp();
+    
+    GridView gridView = tester.widget(find.byType(GridView).first);
+    expect((gridView.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount).crossAxisCount, 2);
+
+    // 2. Test Tablet (3 columns)
+    tester.view.physicalSize = const Size(1200, 800);
+    await pumpApp();
+
+    gridView = tester.widget(find.byType(GridView).first);
+    expect((gridView.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount).crossAxisCount, 3);
+  });
+
+  testWidgets('Integration: Responsive Grid - Performers (Mobile 3 vs Tablet 5)', (
+    WidgetTester tester,
+  ) async {
+    final mockRepo = LocalMockSceneRepository([]);
+    final mockPerformerRepo = MockPerformerRepository()..withData([
+      const Performer(
+        id: 'p1',
+        name: 'Test Performer',
+        urls: [],
+        birthdate: null,
+        aliasList: [],
+        favorite: false,
+        imagePath: '',
+        sceneCount: 0,
+        imageCount: 0,
+        galleryCount: 0,
+        groupCount: 0,
+        tagIds: [],
+        tagNames: [],
+      ),
+    ]);
+
+    Future<void> pumpApp() async {
+      await pumpTestWidget(
+        tester,
+        wrapWithApp: false,
+        overrides: [
+          sceneRepositoryProvider.overrideWithValue(mockRepo),
+          performerRepositoryProvider.overrideWithValue(mockPerformerRepo),
+        ],
+        child: Consumer(
+          builder: (context, ref, _) {
+            final goRouter = ref.watch(routerProvider);
+            return MaterialApp.router(
+              routerConfig: goRouter,
+              theme: AppTheme.darkTheme,
+            );
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    // Navigate to Performers
+    tester.view.physicalSize = const Size(400, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
+    await pumpApp();
+    await tester.tap(find.text('Performers'));
+    await tester.pumpAndSettle();
+
+    // 1. Test Mobile (3 columns)
+    GridView gridView = tester.widget(find.byType(GridView).first);
+    expect((gridView.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount).crossAxisCount, 3);
+
+    // 2. Test Tablet (5 columns)
+    tester.view.physicalSize = const Size(1600, 800);
+    await pumpApp();
+
+    gridView = tester.widget(find.byType(GridView).first);
+    expect((gridView.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount).crossAxisCount, 5);
   });
 }

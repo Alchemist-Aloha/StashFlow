@@ -371,14 +371,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       _saveServerSettings();
                     },
                   ),
-                  Row(
+                  Wrap(
+                    spacing: AppTheme.spacingSmall,
+                    runSpacing: AppTheme.spacingSmall,
                     children: [
                       ElevatedButton.icon(
                         onPressed: () => _saveServerSettings(),
                         icon: const Icon(Icons.sync),
                         label: const Text('Test Connection'),
                       ),
-                      const SizedBox(width: AppTheme.spacingSmall),
                       TextButton.icon(
                         onPressed: () async {
                           _baseUrlController.text = '';
@@ -440,38 +441,66 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       await _saveToggleSettings();
                     },
                   ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('Seek Interaction'),
-                    subtitle: Text(
-                      _useDoubleTapSeek
-                          ? 'Double-tap left/right to seek 10s'
-                          : 'Drag the timeline to seek',
-                    ),
-                    trailing: SegmentedButton<bool>(
-                      showSelectedIcon: false,
-                      style: ButtonStyle(
-                        visualDensity: VisualDensity.compact,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      segments: const [
-                        ButtonSegment<bool>(
-                          value: false,
-                          icon: Icon(Icons.drag_indicator),
-                          label: Text('Drag'),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isNarrow = constraints.maxWidth < 450;
+                      final titleWidget = const Text('Seek Interaction');
+                      final subtitleWidget = Text(
+                        _useDoubleTapSeek
+                            ? 'Double-tap left/right to seek 10s'
+                            : 'Drag the timeline to seek',
+                      );
+                      final trailingWidget = SegmentedButton<bool>(
+                        showSelectedIcon: false,
+                        style: ButtonStyle(
+                          visualDensity: VisualDensity.compact,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        ButtonSegment<bool>(
-                          value: true,
-                          icon: Icon(Icons.touch_app_outlined),
-                          label: Text('Double-tap'),
-                        ),
-                      ],
-                      selected: {_useDoubleTapSeek},
-                      onSelectionChanged: (selection) async {
-                        setState(() => _useDoubleTapSeek = selection.first);
-                        await _saveToggleSettings();
-                      },
-                    ),
+                        segments: const [
+                          ButtonSegment<bool>(
+                            value: false,
+                            icon: Icon(Icons.drag_indicator),
+                            label: Text('Drag'),
+                          ),
+                          ButtonSegment<bool>(
+                            value: true,
+                            icon: Icon(Icons.touch_app_outlined),
+                            label: Text('Double-tap'),
+                          ),
+                        ],
+                        selected: {_useDoubleTapSeek},
+                        onSelectionChanged: (selection) async {
+                          setState(() => _useDoubleTapSeek = selection.first);
+                          await _saveToggleSettings();
+                        },
+                      );
+
+                      if (isNarrow) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              titleWidget,
+                              const SizedBox(height: 4),
+                              subtitleWidget,
+                              const SizedBox(height: 12),
+                              SizedBox(
+                                width: double.infinity,
+                                child: trailingWidget,
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      return ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: titleWidget,
+                        subtitle: subtitleWidget,
+                        trailing: trailingWidget,
+                      );
+                    },
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   _buildSectionHeader('Navigation'),
@@ -521,12 +550,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           dropdownMenuEntries: const [
                             DropdownMenuEntry<String>(
                               value: 'list',
-                              label: '1 Column',
+                              label: 'List',
                               leadingIcon: Icon(Icons.view_list),
                             ),
                             DropdownMenuEntry<String>(
                               value: 'grid',
-                              label: '2 Column',
+                              label: 'Grid',
                               leadingIcon: Icon(Icons.grid_view),
                             ),
                             DropdownMenuEntry<String>(
@@ -780,11 +809,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 children: [
                   const Icon(Icons.check_circle, color: Colors.green, size: 20),
                   const SizedBox(width: 8),
-                  Text(
-                    'Connected (Stash $version)',
-                    style: const TextStyle(
-                      color: Colors.green,
-                      fontWeight: FontWeight.w500,
+                  Expanded(
+                    child: Text(
+                      'Connected (Stash $version)',
+                      style: const TextStyle(
+                        color: Colors.green,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],
@@ -797,7 +828,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
                   SizedBox(width: 8),
-                  Text('Checking connection...'),
+                  Expanded(child: Text('Checking connection...')),
                 ],
               ),
               error: (error, stack) => Row(

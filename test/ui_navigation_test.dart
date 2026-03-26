@@ -134,8 +134,8 @@ void main() {
   testWidgets('UI Navigation thoroughly tests bottom tabs routing', (
     WidgetTester tester,
   ) async {
-    // Large view to avoid bottom overflow and ensure navbar is visible
-    tester.view.physicalSize = const Size(800, 1600);
+    // Use mobile width to ensure NavigationBar is used
+    tester.view.physicalSize = const Size(400, 1600);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 

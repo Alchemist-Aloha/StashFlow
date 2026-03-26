@@ -262,6 +262,10 @@ class PlayerState extends _$PlayerState {
   }
 
   void setFullScreen(bool value) {
+    AppLogStore.instance.add(
+      'PlayerState setFullScreen: $value',
+      source: 'player_provider',
+    );
     state = state.copyWith(isFullScreen: value);
   }
 

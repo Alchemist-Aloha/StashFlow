@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme/app_theme.dart';
+import '../../utils/responsive.dart';
 import 'error_state_view.dart';
 import '../../utils/pagination.dart';
 
@@ -31,6 +32,9 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     this.padding = const EdgeInsets.all(AppTheme.spacingMedium),
     this.hideAppBar = false,
     this.scrollController,
+    this.useResponsiveGrid = true,
+    this.mobileCrossAxisCount,
+    this.tabletCrossAxisCount,
   });
 
   /// The page title displayed in the AppBar.
@@ -81,6 +85,15 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
   /// Custom [ScrollController] for tracking scroll position externally.
   final ScrollController? scrollController;
 
+  /// Whether to automatically adapt the grid column count for larger screens.
+  final bool useResponsiveGrid;
+
+  /// Optional override for the number of columns on mobile.
+  final int? mobileCrossAxisCount;
+
+  /// Optional override for the number of columns on tablet.
+  final int? tabletCrossAxisCount;
+
   @override
   ConsumerState<ListPageScaffold<T>> createState() =>
       _ListPageScaffoldState<T>();
@@ -94,6 +107,38 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  SliverGridDelegate _getResponsiveGridDelegate(BuildContext context) {
+    final delegate = widget.gridDelegate!;
+    if (delegate is! SliverGridDelegateWithFixedCrossAxisCount) {
+      return delegate;
+    }
+
+    final width = MediaQuery.sizeOf(context).width;
+    final isMobile = width < Responsive.mobileBreakpoint;
+    final isTablet = width >= Responsive.mobileBreakpoint && width < Responsive.tabletBreakpoint;
+
+    int count = delegate.crossAxisCount;
+
+    if (isMobile && widget.mobileCrossAxisCount != null) {
+      count = widget.mobileCrossAxisCount!;
+    } else if (isTablet && widget.tabletCrossAxisCount != null) {
+      count = widget.tabletCrossAxisCount!;
+    } else if (width >= Responsive.tabletBreakpoint && widget.tabletCrossAxisCount != null) {
+      // Also apply tablet count for desktop if desktop count is not specified
+      count = widget.tabletCrossAxisCount!;
+    } else if (widget.useResponsiveGrid && !isMobile) {
+      count = 3;
+    }
+
+    return SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: count,
+      mainAxisSpacing: delegate.mainAxisSpacing,
+      crossAxisSpacing: delegate.crossAxisSpacing,
+      childAspectRatio: delegate.childAspectRatio,
+      mainAxisExtent: delegate.mainAxisExtent,
+    );
   }
 
   @override
@@ -172,7 +217,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                         ? GridView.builder(
                             controller: widget.scrollController,
                             padding: widget.padding,
-                            gridDelegate: widget.gridDelegate!,
+                            gridDelegate: _getResponsiveGridDelegate(context),
                             itemCount: items.length,
                             itemBuilder: (context, index) =>
                                 widget.itemBuilder!(context, items[index]),

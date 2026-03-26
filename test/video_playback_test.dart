@@ -8,6 +8,10 @@ import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.d
 import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/main.dart';
+import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart';
+import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
+import 'package:stash_app_flutter/features/studios/presentation/providers/studio_media_provider.dart';
+import 'helpers/test_helpers.dart';
 
 class MockSceneRepository implements SceneRepository {
   final List<Scene> scenes;
@@ -88,6 +92,9 @@ void main() {
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
           sceneRepositoryProvider.overrideWithValue(repo),
+          studioMediaProvider.overrideWith((ref, id) => const []),
+          streamResolverProvider.overrideWith(MockStreamResolver.new),
+          mediaHeadersProvider.overrideWithValue(const {}),
         ],
         child: const MyApp(),
       ),

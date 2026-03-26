@@ -92,7 +92,7 @@ See [#ui-guideline](#ui-guideline) for current UI standards.
 - `server_base_url`
 - `server_api_key`
 - `prefer_scene_streams`
-- `scene_grid_layout` (Controls the 2-column grid vs 1-column list)
+- `scene_grid_layout` (Controls the Grid vs List view)
 - `scene_tiktok_layout` (Enables the infinite scroll vertical video feed)
 
 ## List UX Pattern (current)
@@ -102,7 +102,9 @@ See [#ui-guideline](#ui-guideline) for current UI standards.
 - Sort and filter via modal bottom sheets
 - Active sort/filter indicators in app bar actions
 - Random discovery via `FloatingActionButton.small`
-- **Scenes Specific**: Supports three layout modes (1 Column, 2 Column, TikTok) configured via Settings. List view uses dynamic aspect ratios to match media content. Grid view uses a optimized 1.15 aspect ratio for metadata breathing room.
+- **Responsive Grids**: Automatically scales column counts based on device width (Mobile < 600px, Tablet >= 600px). Supports `mobileCrossAxisCount` and `tabletCrossAxisCount` overrides.
+- **Performers Specific**: Uses circular thumbnails with 3 columns on mobile and 5 on tablet.
+- **Scenes Specific**: Supports three layout modes (List, Grid, TikTok) configured via Settings. List view uses dynamic aspect ratios to match media content. Grid view uses an optimized 1.15 aspect ratio for metadata breathing room.
 
 ## GraphQL Source of Truth
 
@@ -128,7 +130,11 @@ flutter test
 ## Build APK
 
 ```bash
+# Universal APK
 flutter build apk
+
+# Split by ABI (recommended for deployment)
+flutter build apk --split-per-abi
 ```
 
 ## Fast smoke flow after UI/data changes
@@ -227,7 +233,8 @@ Use these rules for new UI work and when refactoring existing screens.
 
 ## Layout
 - Use consistent spacing from `AppTheme` constants.
-- Use responsive layouts that work on narrow phones and wider screens.
+- **Adaptive UI**: Use `NavigationRail` for tablets (>= 600px) and `NavigationBar` for phones.
+- **Responsive Grids**: Use `ListPageScaffold` with width-aware column counts to optimize screen usage.
 - Avoid fixed-width assumptions unless required by a specific component.
 - For media surfaces, prefer dynamic aspect ratio from metadata/controller values.
 

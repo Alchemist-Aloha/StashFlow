@@ -64,30 +64,32 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
 
     setState(() => _isStarting = true);
     try {
+      if (!mounted) return;
       final resolver = ref.read(streamResolverProvider.notifier);
-      
+
       // Perform a background "prewarm" to fetch stream URL and test connectivity.
       final prewarmResult = await _prewarmStream(widget.scene);
+      if (!mounted) return;
       ref.read(playerStateProvider.notifier).setPrewarmResult(
-        attempted: prewarmResult.attempted,
-        succeeded: prewarmResult.succeeded,
-        latencyMs: prewarmResult.latencyMs,
-      );
+            attempted: prewarmResult.attempted,
+            succeeded: prewarmResult.succeeded,
+            latencyMs: prewarmResult.latencyMs,
+          );
 
       final choice = await resolver.resolvePreferredStream(widget.scene);
       if (choice != null && mounted) {
         final mediaHeaders = ref.read(mediaHeadersProvider);
         await ref.read(playerStateProvider.notifier).playScene(
-          widget.scene,
-          choice.url,
-          mimeType: choice.mimeType,
-          streamLabel: choice.label,
-          streamSource: force ? 'manual-start' : 'auto-start',
-          httpHeaders: mediaHeaders,
-          prewarmAttempted: prewarmResult.attempted,
-          prewarmSucceeded: prewarmResult.succeeded,
-          prewarmLatencyMs: prewarmResult.latencyMs,
-        );
+              widget.scene,
+              choice.url,
+              mimeType: choice.mimeType,
+              streamLabel: choice.label,
+              streamSource: force ? 'manual-start' : 'auto-start',
+              httpHeaders: mediaHeaders,
+              prewarmAttempted: prewarmResult.attempted,
+              prewarmSucceeded: prewarmResult.succeeded,
+              prewarmLatencyMs: prewarmResult.latencyMs,
+            );
       }
     } finally {
       if (mounted) setState(() => _isStarting = false);
@@ -118,6 +120,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     client.connectionTimeout = const Duration(seconds: 5);
 
     try {
+      if (!mounted) return const _PrewarmResult(attempted: false, succeeded: false);
       final resolver = ref.read(streamResolverProvider.notifier);
       final choice = await resolver.resolvePreferredStream(scene);
       if (choice == null) return const _PrewarmResult(attempted: false, succeeded: false);
@@ -125,6 +128,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       final uri = Uri.parse(choice.url);
       final request = await client.getUrl(uri);
       
+      if (!mounted) return const _PrewarmResult(attempted: false, succeeded: false);
       final headers = ref.read(mediaHeadersProvider);
       headers.forEach((key, value) {
         request.headers.add(key, value);
@@ -154,11 +158,18 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
 
   /// Toggles between inline and immersive fullscreen mode.
   Future<void> _toggleFullScreen() async {
+    if (!mounted) return;
+
     final playerState = ref.read(playerStateProvider);
-    if (playerState.isFullScreen) {
-      if (context.mounted) {
-        context.pop();
-      }
+    final router = GoRouter.maybeOf(context);
+    
+    // We check both state and path for maximum robustness.
+    // If we are in fullscreen state OR on the fullscreen path, we want to exit.
+    final currentPath = router?.routeInformationProvider.value.uri.path ?? '';
+    final isInFullscreenPath = currentPath.endsWith('/fullscreen');
+    
+    if (playerState.isFullScreen || isInFullscreenPath) {
+      router?.pop();
     } else {
       context.push('/scenes/scene/${widget.scene.id}/fullscreen');
     }
@@ -257,6 +268,8 @@ class FullscreenPlayerPage extends ConsumerStatefulWidget {
 }
 
 class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
+  bool _isPopping = false;
+
   @override
   void initState() {
     super.initState();
@@ -265,39 +278,85 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
   }
 
   @override
-  void dispose() {
+  void deactivate() {
     // Reset orientation and show system UI upon leaving fullscreen.
+    // We use deactivate instead of dispose because ref access is still safe here.
     _exitFullScreen();
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
     super.dispose();
   }
 
   Future<void> _enterFullScreen() async {
-    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    await SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
-    if (mounted) {
-      ref.read(playerStateProvider.notifier).setFullScreen(true);
+    try {
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
+    } catch (e) {
+      AppLogStore.instance.add(
+        'FullscreenPlayerPage [${widget.sceneId}] error entering fullscreen: $e',
+        source: 'FullscreenPlayerPage',
+      );
+    } finally {
+      if (mounted) {
+        ref.read(playerStateProvider.notifier).setFullScreen(true);
+      }
     }
   }
 
-  Future<void> _exitFullScreen() async {
-    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    await SystemChrome.setPreferredOrientations([
+  void _exitFullScreen() {
+    // Reset state early so parent pages (like ShellPage) rebuild correctly.
+    // We use a post-frame callback to avoid "Tried to modify a provider while 
+    // the widget tree was building" errors during route transitions.
+    final notifier = ref.read(playerStateProvider.notifier);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifier.setFullScreen(false);
+    });
+
+    // Reset orientation and show system UI. 
+    // These are async but don't need to be awaited for the state change.
+    unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge));
+    unawaited(SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
-    ]);
-    if (mounted) {
-      ref.read(playerStateProvider.notifier).setFullScreen(false);
-    }
+    ]));
   }
 
   @override
   Widget build(BuildContext context) {
+    final router = GoRouter.maybeOf(context);
+    final currentPath = router?.routeInformationProvider.value.uri.path ?? '';
+    final isInFullscreenPath = currentPath.endsWith('/fullscreen');
+
     final playerState = ref.watch(playerStateProvider);
+    final isFullScreen = playerState.isFullScreen;
+
+    // Automatically exit fullscreen if the global player state indicates it's no longer fullscreen
+    // This handles scenarios like the video ending and the player state reset.
+    // By listening here instead of the parent page, we avoid race conditions
+    // where the parent page might pop twice if the user manually popped first.
+    ref.listen(playerStateProvider, (previous, next) {
+      if (previous?.isFullScreen == true && next.isFullScreen == false) {
+        // Only trigger a pop if we are not already in the process of popping
+        // and we are actually on the fullscreen path.
+        if (context.mounted && !_isPopping && isInFullscreenPath) {
+          AppLogStore.instance.add(
+            'FullscreenPlayerPage [${widget.sceneId}] auto-exiting fullscreen',
+            source: 'FullscreenPlayerPage',
+          );
+          _isPopping = true;
+          router?.pop();
+        }
+      }
+    });
+
     final sceneId = widget.sceneId;
 
     // We must have an active scene that matches the one we're trying to show.
@@ -323,29 +382,47 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
       );
     }
 
-    return Material(
-      color: Colors.black,
-      child: Hero(
-        tag: 'scene_player_${widget.sceneId}',
-        child: SizedBox.expand(
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: Center(
-                  child: AspectRatio(
-                    aspectRatio: controller.value.aspectRatio,
-                    child: VideoPlayer(controller),
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          _isPopping = true;
+          // Ensure state is updated immediately on back-swipe
+          ref.read(playerStateProvider.notifier).setFullScreen(false);
+        }
+      },
+      child: Material(
+        color: Colors.black,
+        child: Hero(
+          tag: 'scene_player_${widget.sceneId}',
+          child: SizedBox.expand(
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Center(
+                    child: AspectRatio(
+                      aspectRatio: controller.value.aspectRatio,
+                      child: VideoPlayer(controller),
+                    ),
                   ),
                 ),
-              ),
-              NativeVideoControls(
-                controller: controller,
-                useDoubleTapSeek: playerState.useDoubleTapSeek,
-                enableNativePip: playerState.enableNativePip,
-                onFullScreenToggle: () => Navigator.of(context).pop(),
-                scene: scene,
-              ),
-            ],
+                NativeVideoControls(
+                  controller: controller,
+                  useDoubleTapSeek: playerState.useDoubleTapSeek,
+                  enableNativePip: playerState.enableNativePip,
+                  onFullScreenToggle: () {
+                    // If we are in FullscreenPlayerPage, the toggle button always exits.
+                    if (!_isPopping) {
+                      _isPopping = true;
+                      // Update state immediately before popping.
+                      // _exitFullScreen will also be called via deactivate() for extra safety.
+                      ref.read(playerStateProvider.notifier).setFullScreen(false);
+                      router?.pop();
+                    }
+                  },
+                  scene: scene,
+                ),
+              ],
+            ),
           ),
         ),
       ),

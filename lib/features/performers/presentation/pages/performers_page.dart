@@ -485,38 +485,13 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
       ],
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
-        crossAxisSpacing: AppTheme.spacingMedium,
-        mainAxisSpacing: AppTheme.spacingMedium,
-        childAspectRatio: 0.7,
+        crossAxisSpacing: AppTheme.spacingSmall,
+        mainAxisSpacing: AppTheme.spacingSmall,
+        childAspectRatio: 0.85,
       ),
+      mobileCrossAxisCount: 3,
+      tabletCrossAxisCount: 5,
       itemBuilder: (context, performer) {
-        // initial prefetch for the grid of performers
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          final int kPrefetchDistance = StashImage.defaultPrefetchDistance;
-          final performers = performersAsync.value ?? [];
-          if (performers.isEmpty) return;
-          final padding = AppTheme.spacingMedium * 2;
-          const crossAxisCount = 3;
-          final availableWidth = MediaQuery.of(context).size.width - padding;
-          final itemWidth =
-              (availableWidth -
-                  (AppTheme.spacingMedium * (crossAxisCount - 1))) /
-              crossAxisCount;
-          final initialCount = performers.length < kPrefetchDistance
-              ? performers.length
-              : kPrefetchDistance;
-          for (var i = 0; i < initialCount; i++) {
-            final avatar = performers[i].imagePath;
-            if (avatar != null && avatar.isNotEmpty) {
-              StashImage.prefetch(
-                context,
-                imageUrl: avatar,
-                memCacheWidth: (itemWidth * 2).toInt(),
-              );
-            }
-          }
-        });
-
         return PerformerCard(
           performer: performer,
           onTap: () => context.push('/performers/performer/${performer.id}'),

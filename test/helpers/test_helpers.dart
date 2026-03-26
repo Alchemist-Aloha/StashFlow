@@ -21,6 +21,10 @@ import 'package:stash_app_flutter/features/tags/domain/repositories/tag_reposito
 
 import 'package:stash_app_flutter/core/presentation/widgets/error_state_view.dart';
 
+import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart';
+import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
+import 'package:stash_app_flutter/features/studios/presentation/providers/studio_media_provider.dart';
+
 /// Base class for manual mock repositories with common state control
 class MockRepositoryState<T> {
   List<T> data = [];
@@ -40,6 +44,22 @@ class MockRepositoryState<T> {
   void withError(String message) {
     errorMessage = message;
     shouldThrow = true;
+  }
+}
+
+class MockStreamResolver extends StreamResolver {
+  @override
+  void build() {}
+
+  @override
+  Future<StreamChoice?> resolvePreferredStream(Scene scene) async {
+    if (scene.paths.stream != null) {
+      return StreamChoice(
+        url: scene.paths.stream!,
+        mimeType: 'video/mp4',
+      );
+    }
+    return null;
   }
 }
 
@@ -165,6 +185,7 @@ Future<void> pumpTestWidget(
   required Widget child,
   List<dynamic> overrides = const [],
   SharedPreferences? prefs,
+  bool wrapWithApp = true,
 }) async {
   if (prefs == null) {
     SharedPreferences.setMockInitialValues({
@@ -177,12 +198,17 @@ Future<void> pumpTestWidget(
     ProviderScope(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(finalPrefs),
+        studioMediaProvider.overrideWith((ref, id) => const []),
+        streamResolverProvider.overrideWith(MockStreamResolver.new),
+        mediaHeadersProvider.overrideWithValue(const {}),
         ...overrides,
       ],
-      child: MaterialApp(
-        theme: AppTheme.darkTheme,
-        home: child,
-      ),
+      child: wrapWithApp
+          ? MaterialApp(
+              theme: AppTheme.darkTheme,
+              home: child,
+            )
+          : child,
     ),
   );
 }

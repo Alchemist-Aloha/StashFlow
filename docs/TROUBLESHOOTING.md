@@ -110,6 +110,20 @@ Symptoms:
 Checks:
 1. Remove unsupported fields from operation documents.
 2. Regenerate code (`dart run build_runner build --delete-conflicting-outputs`).
+
+## Responsive UI and Testing issues
+
+Symptoms:
+- Tablet layout (NavigationRail) showing on phone or vice versa.
+- Grid column counts not updating as expected.
+- Widget tests failing with "HitTest missed" or "Offset outside bounds" errors when using bottom sheets.
+
+Checks:
+1. **Breakpoints**: Verify `Responsive` utility breakpoints (Mobile < 600px, Tablet >= 600px).
+2. **MediaQuery Caching**: In tests, re-pump the widget tree (`tester.pumpWidget`) after changing `physicalSize` to ensure `MediaQuery` caches are refreshed.
+3. **Hit Test Failures**: Avoid extremely large `physicalSize` values in tests (e.g. height > 2500) as `showModalBottomSheet` may calculate offsets that land outside the root view. Prefer standard sizes (800x1200) and use `tester.scrollUntilVisible`.
+4. **Circular Thumbnails**: If images are stretched, ensure `LayoutBuilder` is used to provide square constraints to `ClipOval`.
+
 ## Sorting/filtering errors from backend
 
 Symptoms:

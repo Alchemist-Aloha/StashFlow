@@ -6,6 +6,13 @@
 
 > Status update (2026-03-19): Core roadmap items in this plan are largely completed. Keep this file as historical tracking and move new work to fresh dated plan docs.
 
+> Latest delta (2026-03-25):
+- [x] **Tablet Optimization**: Implemented adaptive navigation with `NavigationRail` for tablets.
+- [x] **Responsive Grid System**: Enhanced `ListPageScaffold` with custom mobile/tablet column counts.
+- [x] **Performers UI**: Optimized performers list with 3 columns (mobile) / 5 columns (tablet) and circular thumbnails.
+- [x] **Layout Resiliency**: Refactored settings and status rows to handle narrow screen widths without overflow.
+- [x] **Optimized Builds**: Documented and verified split-ABI APK build process.
+
 > Latest delta (2026-03-23):
 - [x] Hardened `PlaybackQueue` persistence (fixed `isAutoDispose` regeneration bug).
 - [x] Implemented index recovery and same-list detection in `PlaybackQueue.setSequence`.

@@ -9,6 +9,16 @@ import 'package:stash_app_flutter/features/performers/presentation/widgets/perfo
 
 import '../../helpers/test_helpers.dart';
 
+class MockPerformerSort extends PerformerSort {
+  @override
+  ({String? sort, bool descending}) build() => (sort: 'name', descending: false);
+}
+
+class MockPerformerSearchQuery extends PerformerSearchQuery {
+  @override
+  String build() => '';
+}
+
 void main() {
   late SharedPreferences prefs;
 
@@ -54,15 +64,24 @@ void main() {
   );
 
   testWidgets('PerformersPage displays list of performers', (tester) async {
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
     final mockRepo = MockPerformerRepository()..withData([testPerformer, testPerformer2]);
     
     await pumpTestWidget(
       tester,
       prefs: prefs,
-      overrides: [performerRepositoryProvider.overrideWithValue(mockRepo)],
+      overrides: [
+        performerRepositoryProvider.overrideWithValue(mockRepo),
+        performerSortProvider.overrideWith(MockPerformerSort.new),
+        performerSearchQueryProvider.overrideWith(MockPerformerSearchQuery.new),
+        performerFilterProvider.overrideWith(PerformerFilterNotifier.new),
+      ],
       child: const PerformersPage(),
     );
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     expect(find.byType(PerformerCard), findsNWidgets(2));
     expect(find.text('Test Performer'), findsOneWidget);
@@ -70,55 +89,77 @@ void main() {
   });
 
   testWidgets('PerformersPage search filters list', (tester) async {
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
     final mockRepo = MockPerformerRepository()..withData([testPerformer, testPerformer2]);
     
     await pumpTestWidget(
       tester,
       prefs: prefs,
-      overrides: [performerRepositoryProvider.overrideWithValue(mockRepo)],
+      overrides: [
+        performerRepositoryProvider.overrideWithValue(mockRepo),
+        performerSortProvider.overrideWith(MockPerformerSort.new),
+        performerSearchQueryProvider.overrideWith(MockPerformerSearchQuery.new),
+        performerFilterProvider.overrideWith(PerformerFilterNotifier.new),
+      ],
       child: const PerformersPage(),
     );
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     // Open search
     await tester.tap(find.byIcon(Icons.search));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     // Mock data update on search query change (normally repo handles filtering)
     mockRepo.withData([testPerformer2]);
 
     await tester.enterText(find.byType(TextField), 'Alice');
-    await tester.pumpAndSettle();
+    // We might need multiple pumps if it's a debounced search, 
+    // but here it seems immediate in the provider.
+    await tester.pump(const Duration(seconds: 1));
 
     expect(find.descendant(of: find.byType(PerformerCard), matching: find.text('Alice')), findsOneWidget);
     expect(find.descendant(of: find.byType(PerformerCard), matching: find.text('Test Performer')), findsNothing);
   });
 
   testWidgets('PerformersPage filters by favorites only', (tester) async {
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
     final mockRepo = MockPerformerRepository()..withData([testPerformer, testPerformer2]);
     
     await pumpTestWidget(
       tester,
       prefs: prefs,
-      overrides: [performerRepositoryProvider.overrideWithValue(mockRepo)],
+      overrides: [
+        performerRepositoryProvider.overrideWithValue(mockRepo),
+        performerSortProvider.overrideWith(MockPerformerSort.new),
+        performerSearchQueryProvider.overrideWith(MockPerformerSearchQuery.new),
+        performerFilterProvider.overrideWith(PerformerFilterNotifier.new),
+      ],
       child: const PerformersPage(),
     );
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     // Open filter
     await tester.tap(find.byIcon(Icons.filter_list));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     // Change mock to reflect filtered data
     mockRepo.withData([testPerformer2]);
 
-    // Tap favorites only switch
-    await tester.tap(find.byType(SwitchListTile));
-    await tester.pumpAndSettle();
+    // Tap favorites only switch (scroll if needed)
+    final switchFinder = find.byType(SwitchListTile);
+    await tester.ensureVisible(switchFinder);
+    await tester.tap(switchFinder, warnIfMissed: false);
+    await tester.pump(const Duration(milliseconds: 500));
     
     // Apply filter
     await tester.tap(find.text('Apply Filters'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     expect(find.descendant(of: find.byType(PerformerCard), matching: find.text('Alice')), findsOneWidget);
     expect(find.descendant(of: find.byType(PerformerCard), matching: find.text('Test Performer')), findsNothing);

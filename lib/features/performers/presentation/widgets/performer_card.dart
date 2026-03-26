@@ -14,39 +14,56 @@ class PerformerCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return InkWell(
       onTap: onTap,
-      child: Column(
-        children: [
-          Expanded(
-            child: ClipOval(
-              child: AspectRatio(
-                aspectRatio: 1,
-                child: StashImage(
-                  imageUrl: performer.imagePath ?? '',
-                  fit: BoxFit.cover,
-                  memCacheWidth: 200,
-                ),
+      borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final size = constraints.maxWidth < constraints.maxHeight
+                      ? constraints.maxWidth
+                      : constraints.maxHeight;
+                  return Center(
+                    child: SizedBox(
+                      width: size,
+                      height: size,
+                      child: ClipOval(
+                        child: StashImage(
+                          imageUrl: performer.imagePath ?? '',
+                          fit: BoxFit.cover,
+                          memCacheWidth: 300,
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            performer.name,
-            style: TextStyle(
-              color: context.colors.onSurface,
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
+            const SizedBox(height: 8),
+            Text(
+              performer.name,
+              style: TextStyle(
+                color: context.colors.onSurface,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            '${performer.sceneCount} scenes',
-            style: TextStyle(
-              color: context.colors.onSurfaceVariant,
-              fontSize: 12,
+            Text(
+              '${performer.sceneCount} scenes',
+              style: TextStyle(
+                color: context.colors.onSurfaceVariant,
+                fontSize: 10,
+              ),
+              textAlign: TextAlign.center,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

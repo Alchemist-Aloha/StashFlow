@@ -8,11 +8,30 @@ This folder contains agent-focused project documentation.
 - [Troubleshooting](./TROUBLESHOOTING.md) (Debugging Playbook, Known Issues)
 - [Roadmap](./ROADMAP.md) (Current Tasks and Plans)
 
+## Current Implementation Notes (2026-03-25)
+
+- **Tablet Optimization:**
+    - Implemented **Adaptive Navigation**: side-rail (`NavigationRail`) for screens >= 600px width, bottom-bar (`NavigationBar`) for smaller screens.
+    - Updated `ShellPage` to handle responsive layout transitions while maintaining consistent routing.
+- **Responsive Grid System:**
+    - Enhanced `ListPageScaffold` to support `mobileCrossAxisCount` and `tabletCrossAxisCount` overrides.
+    - Simplified grid delegate logic to use width-based breakpoint checks directly for more reliable layout switching.
+    - **Performers List:** Optimized with 3 columns on mobile and 5 columns on tablet.
+    - **Scene/Studio/Tag Grids:** Refined to 2 columns on mobile and 3 columns on tablet.
+- **Performer UI Refinement:**
+    - Switched to **circular thumbnails** for performers using `ClipOval`.
+    - Integrated `LayoutBuilder` in `PerformerCard` to ensure perfectly square aspect ratios for circles, preventing vertical/horizontal stretching regardless of grid cell dimensions.
+- **Robustness & Testing:**
+    - Refactored `SettingsPage` layouts (Seek Interaction, Connection Status) to use `Wrap` and `Expanded` to prevent overflows on extremely narrow screens.
+    - Updated integration tests to use `physicalSize` and re-pumping logic to accurately verify responsive behaviors.
+- **Build Process:**
+    - Verified and documented `flutter build apk --split-per-abi` for optimized deployment sizes.
+
 ## Current Implementation Notes (2026-03-24)
 
-- Refined Scenes layout options: 1 Column (List), 2 Column (Grid), and TikTok (Infinite Scroll).
-- Optimized 1 Column (List) view with dynamic aspect ratios based on scene metadata to prevent image distortion.
-- Improved 2 Column (Grid) layout with increased vertical breathing room (`childAspectRatio: 1.15`) and row spacing (`mainAxisSpacing: 16dp`) for metadata.
+- Refined Scenes layout options: List, Grid, and TikTok (Infinite Scroll).
+- Optimized List view with dynamic aspect ratios based on scene metadata to prevent image distortion.
+- Improved Grid layout with increased vertical breathing room (`childAspectRatio: 1.15`) and row spacing (`mainAxisSpacing: 16dp`) for metadata.
 - Ensured all scene thumbnails use `BoxFit.cover` with `double.infinity` dimensions to perfectly fill their containers.
 - Simplified Scenes page UI by moving layout selection exclusively to the Settings page.
 - Added detailed docstrings to `ScenesPage` and `SceneCard` documenting the layout and prefetch logic.
