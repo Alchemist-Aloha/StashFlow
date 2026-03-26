@@ -17,6 +17,7 @@ import '../../domain/entities/scene_title_utils.dart';
 import '../../../studios/presentation/providers/studio_media_provider.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
+import '../widgets/scene_scrape_view.dart';
 import '../providers/video_player_provider.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../domain/entities/scene.dart';
@@ -402,9 +403,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
             FilledButton.tonalIcon(
               onPressed: () async {
                 try {
-                  await ref
-                      .read(sceneRepositoryProvider)
-                      .incrementSceneOCounter(scene.id);
+                  await ref.read(sceneRepositoryProvider).incrementSceneOCounter(scene.id);
                   ref.invalidate(sceneDetailsProvider(scene.id));
                   ref.invalidate(sceneListProvider);
                   if (context.mounted) {
@@ -428,6 +427,23 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               ),
               icon: const Icon(Icons.water_drop_outlined),
               label: Text('${scene.oCounter}'),
+            ),
+            const SizedBox(width: 8),
+            FilledButton.tonalIcon(
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (_) => SceneScrapeView(sceneId: scene.id),
+                );
+              },
+              style: FilledButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                minimumSize: const Size(0, 32),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              ),
+              icon: const Icon(Icons.search),
+              label: const Text('Scrape'),
             ),
           ],
         ),

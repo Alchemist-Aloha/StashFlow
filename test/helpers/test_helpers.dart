@@ -9,6 +9,8 @@ import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provi
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
 import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
+import 'package:stash_app_flutter/features/scenes/domain/models/scraper.dart';
+import 'package:stash_app_flutter/features/scenes/domain/models/scraped_scene.dart';
 
 import 'package:stash_app_flutter/features/performers/domain/entities/performer.dart';
 import 'package:stash_app_flutter/features/performers/domain/repositories/performer_repository.dart';
@@ -98,6 +100,23 @@ class MockSceneRepository extends MockRepositoryState<Scene> implements SceneRep
 
   @override
   Future<void> incrementScenePlayCount(String id) async {}
+
+  @override
+  Future<List<Scraper>> listScrapers({required List<String> types}) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    return [];
+  }
+
+  @override
+  Future<List<ScrapedScene>> scrapeSingleScene({required String scraperId, required String sceneId}) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    return [];
+  }
+
+  @override
+  Future<void> saveScrapedScene({required String sceneId, required ScrapedScene scraped, bool mergeValues = false}) async {
+    if (shouldThrow) throw Exception(errorMessage);
+  }
 }
 
 class MockPerformerRepository extends MockRepositoryState<Performer> implements PerformerRepository {

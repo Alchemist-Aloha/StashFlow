@@ -595,7 +595,7 @@ packages:
     source: hosted
     version: "0.15.6"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: "87721a4a50b19c7f1d49001e51409bddc46303966ce89a65af4f4e6004896412"
@@ -1173,7 +1173,7 @@ packages:
     source: hosted
     version: "1.12.1"
   state_notifier:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: state_notifier
       sha256: b8677376aa54f2d7c58280d5a007f9e8774f1968d1fb1c096adcb4792fba29bb
