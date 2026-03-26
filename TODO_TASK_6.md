@@ -1,7 +1,0 @@
-- [ ] Task 1: Update scenes repo
-- [ ] Task 2: Update performers repo
-- [ ] Task 3: Update studios repo
-- [ ] Task 4: Update tags repo
-- [ ] Task 5: Update galleries repo
-- [ ] Task 6: Update groups repo
-- [ ] Task 7: Final verification & commit
