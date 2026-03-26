@@ -8,6 +8,7 @@ import '../../performers/presentation/providers/performer_list_provider.dart';
 import '../../studios/presentation/providers/studio_list_provider.dart';
 import '../../tags/presentation/providers/tag_list_provider.dart';
 import '../../scenes/presentation/widgets/tiktok_scenes_view.dart';
+import '../../../core/utils/app_log_store.dart';
 import 'widgets/mini_player.dart';
 
 class ShellPage extends ConsumerWidget {

@@ -142,26 +142,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       final previousActiveSceneId =
           previous?.activeScene?.id ?? _lastKnownActiveSceneId;
 
-      // Handle full-screen auto-exit
-      // Only the page that was active during fullscreen should handle the pop
-      if (previous?.isFullScreen == true &&
-          next.isFullScreen == false &&
-          previous?.activeScene?.id == widget.sceneId) {
-        final router = GoRouter.of(context);
-        final isCurrentlyFullscreen =
-            router.routeInformationProvider.value.uri.path.endsWith(
-              '/fullscreen',
-            );
-
-        if (context.mounted && isCurrentlyFullscreen && router.canPop()) {
-          AppLogStore.instance.add(
-            'SceneDetailsPage [${widget.sceneId}] popping fullscreen view',
-            source: 'SceneDetailsPage',
-          );
-          context.pop();
-        }
-      }
-
       // Navigate to next scene if provider indicates we just moved from the current scene
       if (shouldRouteToNextScene(
         widget.sceneId,
