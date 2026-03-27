@@ -8,12 +8,33 @@ part of 'video_player_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// A centralized notifier managing the global video player lifecycle.
+///
+/// This class handles:
+/// - Controller initialization and disposal.
+/// - Synchronization with system media controls (MediaSession).
+/// - Handling transitions between scenes (Play Next).
+/// - Managing UI-related playback settings (PiP, Fullscreen).
 
 @ProviderFor(PlayerState)
 final playerStateProvider = PlayerStateProvider._();
 
+/// A centralized notifier managing the global video player lifecycle.
+///
+/// This class handles:
+/// - Controller initialization and disposal.
+/// - Synchronization with system media controls (MediaSession).
+/// - Handling transitions between scenes (Play Next).
+/// - Managing UI-related playback settings (PiP, Fullscreen).
 final class PlayerStateProvider
     extends $NotifierProvider<PlayerState, GlobalPlayerState> {
+  /// A centralized notifier managing the global video player lifecycle.
+  ///
+  /// This class handles:
+  /// - Controller initialization and disposal.
+  /// - Synchronization with system media controls (MediaSession).
+  /// - Handling transitions between scenes (Play Next).
+  /// - Managing UI-related playback settings (PiP, Fullscreen).
   PlayerStateProvider._()
     : super(
         from: null,
@@ -41,7 +62,15 @@ final class PlayerStateProvider
   }
 }
 
-String _$playerStateHash() => r'083716a5946df128516e046059ee74916678b1b5';
+String _$playerStateHash() => r'69bd310681349145aae145c39575387892592273';
+
+/// A centralized notifier managing the global video player lifecycle.
+///
+/// This class handles:
+/// - Controller initialization and disposal.
+/// - Synchronization with system media controls (MediaSession).
+/// - Handling transitions between scenes (Play Next).
+/// - Managing UI-related playback settings (PiP, Fullscreen).
 
 abstract class _$PlayerState extends $Notifier<GlobalPlayerState> {
   GlobalPlayerState build();

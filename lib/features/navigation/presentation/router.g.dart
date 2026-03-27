@@ -8,13 +8,35 @@ part of 'router.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Central application router defined using GoRouter and Riverpod.
+///
+/// This provider creates a [GoRouter] instance that handles:
+/// 1. Tab-based navigation via [StatefulShellRoute].
+/// 2. Deep linking to scenes, performers, studios, and tags.
+/// 3. Redirection to the settings page if the Stash server is not configured.
+/// 4. Immersive fullscreen transitions for the video player.
 
 @ProviderFor(router)
 final routerProvider = RouterProvider._();
 
+/// Central application router defined using GoRouter and Riverpod.
+///
+/// This provider creates a [GoRouter] instance that handles:
+/// 1. Tab-based navigation via [StatefulShellRoute].
+/// 2. Deep linking to scenes, performers, studios, and tags.
+/// 3. Redirection to the settings page if the Stash server is not configured.
+/// 4. Immersive fullscreen transitions for the video player.
+
 final class RouterProvider
     extends $FunctionalProvider<GoRouter, GoRouter, GoRouter>
     with $Provider<GoRouter> {
+  /// Central application router defined using GoRouter and Riverpod.
+  ///
+  /// This provider creates a [GoRouter] instance that handles:
+  /// 1. Tab-based navigation via [StatefulShellRoute].
+  /// 2. Deep linking to scenes, performers, studios, and tags.
+  /// 3. Redirection to the settings page if the Stash server is not configured.
+  /// 4. Immersive fullscreen transitions for the video player.
   RouterProvider._()
     : super(
         from: null,
@@ -48,4 +70,4 @@ final class RouterProvider
   }
 }
 
-String _$routerHash() => r'350e208f91ad847cbf5cb56c404f36ec3c30d16e';
+String _$routerHash() => r'52526512c3e347aac40c71916d5f2909399641a3';

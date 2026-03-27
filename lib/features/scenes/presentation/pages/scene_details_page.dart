@@ -20,6 +20,7 @@ import '../providers/scene_list_provider.dart';
 import '../widgets/scene_scrape_view.dart';
 import '../providers/video_player_provider.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
+import '../../../setup/presentation/providers/scrape_customization_provider.dart';
 import '../../domain/entities/scene.dart';
 import '../widgets/scene_video_player.dart';
 
@@ -170,6 +171,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
     final sceneAsync = ref.watch(sceneDetailsProvider(widget.sceneId));
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
+    final scrapeEnabled = ref.watch(scrapeEnabledProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Scene Details')),
@@ -203,8 +205,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                         SceneVideoPlayer(scene: scene),
                         Padding(
                           padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                          child: _buildMainInfo(context, scene),
+                          child: _buildMainInfo(context, scene, scrapeEnabled),
                         ),
+
                       ],
                     ),
                   ),
@@ -245,7 +248,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildMainInfo(context, scene),
+                      _buildMainInfo(context, scene, scrapeEnabled),
                       _buildTagsSection(context, scene),
                       _buildPerformersSection(context, scene),
                       _buildMoreFromStudioSection(context, scene),
@@ -265,7 +268,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
   }
 
-  Widget _buildMainInfo(BuildContext context, Scene scene) {
+  Widget _buildMainInfo(BuildContext context, Scene scene, bool scrapeEnabled) {
     final primaryFile = scene.files.isNotEmpty ? scene.files.first : null;
     final detailsText = (scene.details ?? '').trim();
     final hasDetails = detailsText.isNotEmpty;
@@ -436,23 +439,25 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               icon: const Icon(Icons.water_drop_outlined),
               label: Text('${scene.oCounter}'),
             ),
-            const SizedBox(width: 8),
-            FilledButton.tonalIcon(
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (_) => SceneScrapeView(sceneId: scene.id),
-                );
-              },
-              style: FilledButton.styleFrom(
-                visualDensity: VisualDensity.compact,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                minimumSize: const Size(0, 32),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            if (scrapeEnabled) const SizedBox(width: 8),
+            if (scrapeEnabled)
+              FilledButton.tonalIcon(
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (_) => SceneScrapeView(sceneId: scene.id),
+                  );
+                },
+                style: FilledButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  minimumSize: const Size(0, 32),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                ),
+                icon: const Icon(Icons.search),
+                label: const Text('Scrape'),
               ),
-              icon: const Icon(Icons.search),
-              label: const Text('Scrape'),
-            ),
           ],
         ),
         Divider(

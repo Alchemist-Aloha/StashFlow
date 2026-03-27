@@ -13,48 +13,50 @@ class SceneScrapeView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Select Scraper',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 12),
-            FutureBuilder<List<Scraper>>(
-              future: ref
-                  .read(sceneScrapeProvider)
-                  .listAvailableScrapers(types: ['SCENE']),
-              builder: (context, snap) {
-                if (snap.connectionState != ConnectionState.done) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                final list = snap.data ?? [];
-                if (list.isEmpty) return const Text('No scrapers available');
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Select Scraper',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 12),
+              FutureBuilder<List<Scraper>>(
+                future: ref
+                    .read(sceneScrapeProvider)
+                    .listAvailableScrapers(types: ['SCENE']),
+                builder: (context, snap) {
+                  if (snap.connectionState != ConnectionState.done) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final list = snap.data ?? [];
+                  if (list.isEmpty) return const Text('No scrapers available');
 
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: list
-                      .map(
-                        (s) => ListTile(
-                          title: Text(s.name),
-                          subtitle: s.description != null
-                              ? Text(s.description!)
-                              : null,
-                          onTap: () async {
-                            Navigator.of(context).pop();
-                            _runScrapeAndShowEditor(context, ref, s.id);
-                          },
-                        ),
-                      )
-                      .toList(),
-                );
-              },
-            ),
-          ],
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: list
+                        .map(
+                          (s) => ListTile(
+                            title: Text(s.name),
+                            subtitle: s.description != null
+                                ? Text(s.description!)
+                                : null,
+                            onTap: () async {
+                              Navigator.of(context).pop();
+                              _runScrapeAndShowEditor(context, ref, s.id);
+                            },
+                          ),
+                        )
+                        .toList(),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
