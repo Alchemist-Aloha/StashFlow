@@ -193,6 +193,7 @@ class StashImage extends ConsumerWidget {
   final int? memCacheHeight;
 
   static final Set<String> _prefetched = <String>{};
+  static final Set<String> _cacheCheckedUrls = <String>{};
   static const int defaultPrefetchDistance = 10;
   static const int _maxConcurrentPrefetch = 2;
   static int _ongoingPrefetches = 0;
@@ -208,6 +209,11 @@ class StashImage extends ConsumerWidget {
 
     final dedupeKey = '$imageUrl|w${memCacheWidth ?? 0}h${memCacheHeight ?? 0}';
     if (_prefetched.contains(dedupeKey)) return;
+
+    // Optimistically mark as prefetched to prevent concurrent attempts
+    // from queuing up while we wait on the throttle limit or IO
+    _prefetched.add(dedupeKey);
+
     // Throttle concurrent prefetches to avoid saturating network / IO.
     while (_ongoingPrefetches >= _maxConcurrentPrefetch) {
       await Future.delayed(const Duration(milliseconds: 50));
@@ -232,11 +238,9 @@ class StashImage extends ConsumerWidget {
       }
 
       await precacheImage(provider, context);
-      // Mark as prefetched only after successful precache so failures
-      // don't permanently prevent future attempts.
-      _prefetched.add(dedupeKey);
     } catch (_) {
-      // ignore prefetch failures; user experience should fall back gracefully.
+      // If it failed to prefetch, allow future attempts to try again
+      _prefetched.remove(dedupeKey);
     } finally {
       _ongoingPrefetches--;
     }
@@ -250,43 +254,48 @@ class StashImage extends ConsumerWidget {
 
     final headers = ref.watch(mediaHeadersProvider);
 
-    // Start prefetch early to improve perceived loading for subsequent child requests.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!context.mounted) return;
+    // Ensure we only schedule the costly cache-check once per imageUrl during lifetime
+    if (!_cacheCheckedUrls.contains(imageUrl)) {
+      _cacheCheckedUrls.add(imageUrl!);
 
-      final url = imageUrl;
-      if (url == null || url.isEmpty) return;
+      // Start prefetch early to improve perceived loading for subsequent child requests.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!context.mounted) return;
 
-      // Remove obviously-corrupt cached files (very small size) before
-      // attempting to prefetch or render. This prevents persistent
-      // "Invalid image data" errors when cache contains truncated files.
-      () async {
-        try {
-          final info = await cacheManager.getFileFromCache(url);
-          if (info != null) {
-            final file = info.file;
-            if (await file.exists()) {
-              final len = await file.length();
-              if (len < 64) {
+        final url = imageUrl;
+        if (url == null || url.isEmpty) return;
+
+        // Remove obviously-corrupt cached files (very small size) before
+        // attempting to prefetch or render. This prevents persistent
+        // "Invalid image data" errors when cache contains truncated files.
+        () async {
+          try {
+            final info = await cacheManager.getFileFromCache(url);
+            if (info != null) {
+              final file = info.file;
+              if (await file.exists()) {
+                final len = await file.length();
+                if (len < 64) {
+                  await cacheManager.removeFile(url);
+                }
+              } else {
                 await cacheManager.removeFile(url);
               }
-            } else {
-              await cacheManager.removeFile(url);
             }
-          }
-        } catch (_) {}
+          } catch (_) {}
 
-        if (context.mounted) {
-          StashImage.prefetch(
-            context,
-            imageUrl: url,
-            headers: headers,
-            memCacheWidth: memCacheWidth,
-            memCacheHeight: memCacheHeight,
-          );
-        }
-      }();
-    });
+          if (context.mounted) {
+            StashImage.prefetch(
+              context,
+              imageUrl: url,
+              headers: headers,
+              memCacheWidth: memCacheWidth,
+              memCacheHeight: memCacheHeight,
+            );
+          }
+        }();
+      });
+    }
 
     return _RetryingCachedImage(
       imageUrl: imageUrl!,
