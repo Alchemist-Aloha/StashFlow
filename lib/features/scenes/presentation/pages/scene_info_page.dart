@@ -70,7 +70,9 @@ class SceneInfoSheet extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: theme.colorScheme.shadow.withValues(alpha: 0.08),
+                              color: theme.colorScheme.shadow.withValues(
+                                alpha: 0.08,
+                              ),
                               blurRadius: 24,
                               offset: const Offset(0, 8),
                             ),
@@ -147,8 +149,9 @@ class SceneInfoSheet extends ConsumerWidget {
                                 contentPadding: EdgeInsets.zero,
                                 leading: hasImage
                                     ? CircleAvatar(
-                                        backgroundColor:
-                                            theme.colorScheme.surfaceContainerHighest,
+                                        backgroundColor: theme
+                                            .colorScheme
+                                            .surfaceContainerHighest,
                                         foregroundImage:
                                             CachedNetworkImageProvider(
                                               performerImagePath,

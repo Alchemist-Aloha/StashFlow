@@ -188,11 +188,11 @@ class SceneList extends _$SceneList {
   FutureOr<List<Scene>> build() async {
     // Keep the list alive so navigation doesn't reset pagination
     ref.keepAlive();
-    
+
     _currentPage = 1;
     _hasMore = true;
     _isLoadingMore = false;
-    
+
     final query = ref.watch(sceneSearchQueryProvider);
     final sortConfig = ref.watch(sceneSortProvider);
     final filter = ref.watch(sceneFilterStateProvider);
@@ -210,7 +210,7 @@ class SceneList extends _$SceneList {
     );
 
     // Initialize playback queue sequence with the initial load.
-    // We use index -1 to allow the queue to recover its index if the 
+    // We use index -1 to allow the queue to recover its index if the
     // user is already playing something and just refreshed the list.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       AppLogStore.instance.add(

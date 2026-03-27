@@ -192,70 +192,90 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           final useTwoColumns = !Responsive.isMobile(context);
 
           if (useTwoColumns) {
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Left Column: Video, Title, Info, Details (61.8%)
-                Expanded(
-                  flex: 618,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SceneVideoPlayer(scene: scene),
-                        Padding(
-                          padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                          child: _buildMainInfo(context, scene, scrapeEnabled),
-                        ),
-
-                      ],
+            return RefreshIndicator(
+              onRefresh: () async {
+                ref.invalidate(sceneDetailsProvider(widget.sceneId));
+                return ref.read(sceneDetailsProvider(widget.sceneId).future);
+              },
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Left Column: Video, Title, Info, Details (61.8%)
+                  Expanded(
+                    flex: 618,
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SceneVideoPlayer(scene: scene),
+                          Padding(
+                            padding: const EdgeInsets.all(
+                              AppTheme.spacingMedium,
+                            ),
+                            child: _buildMainInfo(
+                              context,
+                              scene,
+                              scrapeEnabled,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                // Divider
-                VerticalDivider(
-                  width: 1,
-                  thickness: 1,
-                  color: context.colors.outline.withValues(alpha: 0.1),
-                ),
-                // Right Column: Tags, Performers, More from Studio (38.2%)
-                Expanded(
-                  flex: 382,
-                  child: SingleChildScrollView(
+                  // Divider
+                  VerticalDivider(
+                    width: 1,
+                    thickness: 1,
+                    color: context.colors.outline.withValues(alpha: 0.1),
+                  ),
+                  // Right Column: Tags, Performers, More from Studio (38.2%)
+                  Expanded(
+                    flex: 382,
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildTagsSection(context, scene),
+                          _buildPerformersSection(context, scene),
+                          _buildMoreFromStudioSection(context, scene),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          // Mobile View (Default Column)
+          return RefreshIndicator(
+            onRefresh: () async {
+              ref.invalidate(sceneDetailsProvider(widget.sceneId));
+              return ref.read(sceneDetailsProvider(widget.sceneId).future);
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SceneVideoPlayer(scene: scene),
+                  Padding(
                     padding: const EdgeInsets.all(AppTheme.spacingMedium),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        _buildMainInfo(context, scene, scrapeEnabled),
                         _buildTagsSection(context, scene),
                         _buildPerformersSection(context, scene),
                         _buildMoreFromStudioSection(context, scene),
                       ],
                     ),
                   ),
-                ),
-              ],
-            );
-          }
-
-          // Mobile View (Default Column)
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SceneVideoPlayer(scene: scene),
-                Padding(
-                  padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildMainInfo(context, scene, scrapeEnabled),
-                      _buildTagsSection(context, scene),
-                      _buildPerformersSection(context, scene),
-                      _buildMoreFromStudioSection(context, scene),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },
@@ -452,8 +472,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                   visualDensity: VisualDensity.compact,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   minimumSize: const Size(0, 32),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 6,
+                  ),
                 ),
                 icon: const Icon(Icons.search),
                 label: const Text('Scrape'),

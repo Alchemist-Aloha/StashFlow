@@ -40,19 +40,22 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
   void _applyServerSort(_GallerySortOption option) {
     switch (option) {
       case _GallerySortOption.title:
-        ref.read(galleryListProvider.notifier).setSort(sort: 'title', descending: false);
+        ref
+            .read(galleryListProvider.notifier)
+            .setSort(sort: 'title', descending: false);
         break;
     }
   }
 
   Widget _buildSortBar() {
-    const options = [
-      (_GallerySortOption.title, 'Title'),
-    ];
+    const options = [(_GallerySortOption.title, 'Title')];
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium, vertical: AppTheme.spacingSmall),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppTheme.spacingMedium,
+        vertical: AppTheme.spacingSmall,
+      ),
       child: Row(
         children: [
           for (final option in options) ...[
@@ -82,10 +85,14 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
       onSearchChanged: _onSearchChanged,
       provider: galleriesAsync,
       onRefresh: () => ref.refresh(galleryListProvider.future),
-      onFetchNextPage: () => ref.read(galleryListProvider.notifier).fetchNextPage(),
+      onFetchNextPage: () =>
+          ref.read(galleryListProvider.notifier).fetchNextPage(),
       sortBar: _buildSortBar(),
       itemBuilder: (context, gallery) => Card(
-        margin: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium, vertical: 4),
+        margin: const EdgeInsets.symmetric(
+          horizontal: AppTheme.spacingMedium,
+          vertical: 4,
+        ),
         child: ListTile(
           leading: const Icon(Icons.photo_library),
           title: Text(

@@ -37,7 +37,8 @@ class TagMediaGridPage extends ConsumerWidget {
           final availableWidth =
               MediaQuery.of(context).size.width - padding * 2;
           final itemWidth =
-              (availableWidth - (crossAxisSpacing * (crossAxisCount - 1))) / crossAxisCount;
+              (availableWidth - (crossAxisSpacing * (crossAxisCount - 1))) /
+              crossAxisCount;
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
             final initialCount = items.length < kPrefetchDistance
@@ -56,9 +57,7 @@ class TagMediaGridPage extends ConsumerWidget {
           return NotificationListener<ScrollNotification>(
             onNotification: (ScrollNotification scrollInfo) {
               if (shouldLoadNextPage(scrollInfo.metrics)) {
-                ref
-                    .read(tagMediaGridProvider(tagId).notifier)
-                    .fetchNextPage();
+                ref.read(tagMediaGridProvider(tagId).notifier).fetchNextPage();
               }
 
               // Prefetch on scroll

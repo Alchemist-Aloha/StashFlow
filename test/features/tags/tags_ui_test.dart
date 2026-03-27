@@ -28,7 +28,7 @@ void main() {
 
   testWidgets('TagsPage displays list of tags', (tester) async {
     final mockRepo = MockTagRepository()..withData([testTag]);
-    
+
     await pumpTestWidget(
       tester,
       prefs: prefs,

@@ -134,9 +134,10 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       final crossAxisCount = _getGridColumnCount(context);
       final availableWidth = MediaQuery.of(context).size.width - padding;
       final itemWidth =
-          (availableWidth - (AppTheme.spacingSmall * (crossAxisCount - 1))) / crossAxisCount;
+          (availableWidth - (AppTheme.spacingSmall * (crossAxisCount - 1))) /
+          crossAxisCount;
       // Note: itemHeight here is an estimate; actual height depends on childAspectRatio.
-      final itemHeight = itemWidth * (1 / 1.15); 
+      final itemHeight = itemWidth * (1 / 1.15);
       final stride = itemHeight + AppTheme.spacingMedium;
       final visibleRow = (offset / stride).floor().clamp(0, scenes.length - 1);
       final visibleIndex = (visibleRow * crossAxisCount).clamp(
@@ -210,23 +211,25 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       _SceneSortField.createdAt => 'created_at',
       _SceneSortField.random => 'random',
     };
-    ref.read(sceneSortProvider.notifier).setSort(sort: sortKey, descending: _sortDescending);
+    ref
+        .read(sceneSortProvider.notifier)
+        .setSort(sort: sortKey, descending: _sortDescending);
   }
 
   /// Opens the "Casino mode" random scene view.
   void _openRandomScene() {
     final scenes = ref.read(sceneListProvider).value ?? [];
     if (scenes.isEmpty) return;
-    
+
     // Choose a random scene that wasn't the last one we picked.
     final random = Random();
     int index;
     do {
       index = random.nextInt(scenes.length);
     } while (scenes.length > 1 && scenes[index].id == _lastRandomSceneId);
-    
+
     _lastRandomSceneId = scenes[index].id;
-    
+
     // Set the queue and navigate to details.
     ref.read(playbackQueueProvider.notifier).setIndex(index);
     context.push('/scenes/scene/${scenes[index].id}');
@@ -455,7 +458,9 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
               final availableWidth =
                   MediaQuery.of(context).size.width - padding;
               final itemWidth =
-                  (availableWidth - (AppTheme.spacingSmall * (crossAxisCount - 1))) / crossAxisCount;
+                  (availableWidth -
+                      (AppTheme.spacingSmall * (crossAxisCount - 1))) /
+                  crossAxisCount;
               for (var i = 0; i < count; i++) {
                 StashImage.prefetch(
                   context,

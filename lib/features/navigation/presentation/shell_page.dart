@@ -36,13 +36,13 @@ class ShellPage extends ConsumerWidget {
     final isFullScreen = playerState.isFullScreen || isTiktokFullScreen;
     final isTiktokLayout = ref.watch(sceneTiktokLayoutProvider);
     final isMobile = Responsive.isMobile(context);
-    
+
     final onScenesPage = currentPath == '/scenes';
-    
+
     final hideMiniPlayer =
         (activeSceneId != null &&
-        pathSceneId != null &&
-        activeSceneId == pathSceneId) || 
+            pathSceneId != null &&
+            activeSceneId == pathSceneId) ||
         isFullScreen ||
         (isTiktokLayout && onScenesPage);
 
@@ -73,26 +73,11 @@ class ShellPage extends ConsumerWidget {
     }
 
     final navigationDestinations = const [
-      NavigationDestination(
-        icon: Icon(Icons.video_library),
-        label: 'Scenes',
-      ),
-      NavigationDestination(
-        icon: Icon(Icons.people),
-        label: 'Performers',
-      ),
-      NavigationDestination(
-        icon: Icon(Icons.business),
-        label: 'Studios',
-      ),
-      NavigationDestination(
-        icon: Icon(Icons.local_offer),
-        label: 'Tags',
-      ),
-      NavigationDestination(
-        icon: Icon(Icons.settings),
-        label: 'Settings',
-      ),
+      NavigationDestination(icon: Icon(Icons.video_library), label: 'Scenes'),
+      NavigationDestination(icon: Icon(Icons.people), label: 'Performers'),
+      NavigationDestination(icon: Icon(Icons.business), label: 'Studios'),
+      NavigationDestination(icon: Icon(Icons.local_offer), label: 'Tags'),
+      NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
     ];
 
     final navigationRailDestinations = const [
@@ -144,20 +129,22 @@ class ShellPage extends ConsumerWidget {
       canPop: !context.canPop(),
       child: Scaffold(
         body: bodyContent,
-        bottomNavigationBar: (isFullScreen || !isMobile) ? null : SafeArea(
-          top: false,
-          child: Row(
-            children: [
-              Expanded(
-                child: NavigationBar(
-                  selectedIndex: navigationShell.currentIndex,
-                  destinations: navigationDestinations,
-                  onDestinationSelected: onDestinationSelected,
+        bottomNavigationBar: (isFullScreen || !isMobile)
+            ? null
+            : SafeArea(
+                top: false,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: NavigationBar(
+                        selectedIndex: navigationShell.currentIndex,
+                        destinations: navigationDestinations,
+                        onDestinationSelected: onDestinationSelected,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
       ),
     );
   }

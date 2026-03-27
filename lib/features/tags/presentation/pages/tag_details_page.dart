@@ -55,124 +55,144 @@ class TagDetailsPage extends ConsumerWidget {
             )
           : null,
       body: tagAsync.when(
-        data: (tag) => SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            tag.name,
-                            style: context.textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: context.colors.onSurface,
+        data: (tag) => RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(tagDetailsProvider(tagId));
+            ref.invalidate(tagMediaProvider(tagId));
+            await Future.wait([
+              ref.read(tagDetailsProvider(tagId).future),
+              ref.read(tagMediaProvider(tagId).future),
+            ]);
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              tag.name,
+                              style: context.textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: context.colors.onSurface,
+                              ),
+                            ),
+                          ),
+                          IconButton.filledTonal(
+                            icon: Icon(
+                              tag.favorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                            ),
+                            tooltip: tag.favorite
+                                ? 'Remove favorite'
+                                : 'Add favorite',
+                            onPressed: () async {
+                              try {
+                                await ref
+                                    .read(tagRepositoryProvider)
+                                    .setTagFavorite(tag.id, !tag.favorite);
+                                ref.invalidate(tagDetailsProvider(tag.id));
+                                ref.invalidate(tagListProvider);
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Failed to update favorite: $e',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: AppTheme.spacingMedium),
+                      Wrap(
+                        spacing: AppTheme.spacingSmall,
+                        runSpacing: AppTheme.spacingSmall,
+                        children: [
+                          _buildChip(context, '${tag.sceneCount} scenes'),
+                          _buildChip(
+                            context,
+                            '${tag.performerCount} performers',
+                          ),
+                          _buildChip(context, '${tag.imageCount} images'),
+                          _buildChip(context, '${tag.galleryCount} galleries'),
+                        ],
+                      ),
+                      if (tag.description != null &&
+                          tag.description!.trim().isNotEmpty) ...[
+                        Divider(
+                          height: 32,
+                          color: context.colors.outline.withValues(alpha: 0.2),
+                        ),
+                        const SectionHeader(title: 'Description'),
+                        Text(
+                          tag.description!,
+                          style: context.textTheme.bodyMedium?.copyWith(
+                            color: context.colors.onSurface.withValues(
+                              alpha: 0.8,
                             ),
                           ),
                         ),
-                        IconButton.filledTonal(
-                          icon: Icon(
-                            tag.favorite
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                          ),
-                          tooltip: tag.favorite
-                              ? 'Remove favorite'
-                              : 'Add favorite',
-                          onPressed: () async {
-                            try {
-                              await ref
-                                  .read(tagRepositoryProvider)
-                                  .setTagFavorite(tag.id, !tag.favorite);
-                              ref.invalidate(tagDetailsProvider(tag.id));
-                              ref.invalidate(tagListProvider);
-                            } catch (e) {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      'Failed to update favorite: $e',
+                      ],
+                      Divider(
+                        height: 32,
+                        color: context.colors.outline.withValues(alpha: 0.2),
+                      ),
+                      SectionHeader(
+                        title: 'Media',
+                        onViewAll: () =>
+                            context.push('/tags/tag/${tag.id}/media'),
+                      ),
+                      mediaAsync.when(
+                        data: (mediaItems) {
+                          final shuffledItems = [...mediaItems]
+                            ..shuffle(Random(tag.id.hashCode));
+                          return MediaStrip(
+                            items: shuffledItems
+                                .map(
+                                  (item) => MediaStripItem(
+                                    id: item.sceneId,
+                                    title: item.title,
+                                    thumbnailUrl: item.thumbnailUrl,
+                                    onTap: () => context.push(
+                                      '/scenes/scene/${item.sceneId}',
                                     ),
                                   ),
-                                );
-                              }
-                            }
-                          },
+                                )
+                                .toList(),
+                            headers: mediaHeaders,
+                          );
+                        },
+                        loading: () => const SizedBox(
+                          height: 100,
+                          child: Center(child: CircularProgressIndicator()),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: AppTheme.spacingMedium),
-                    Wrap(
-                      spacing: AppTheme.spacingSmall,
-                      runSpacing: AppTheme.spacingSmall,
-                      children: [
-                        _buildChip(context, '${tag.sceneCount} scenes'),
-                        _buildChip(context, '${tag.performerCount} performers'),
-                        _buildChip(context, '${tag.imageCount} images'),
-                        _buildChip(context, '${tag.galleryCount} galleries'),
-                      ],
-                    ),
-                    if (tag.description != null &&
-                        tag.description!.trim().isNotEmpty) ...[
-                      Divider(height: 32, color: context.colors.outline.withValues(alpha: 0.2)),
-                      const SectionHeader(title: 'Description'),
-                      Text(
-                        tag.description!,
-                        style: context.textTheme.bodyMedium?.copyWith(
-                          color: context.colors.onSurface.withValues(
-                            alpha: 0.8,
+                        error: (err, stack) => Text(
+                          'Failed to load media: $err',
+                          style: TextStyle(
+                            color: context.colors.onSurface.withValues(
+                              alpha: 0.7,
+                            ),
                           ),
                         ),
                       ),
                     ],
-                    Divider(height: 32, color: context.colors.outline.withValues(alpha: 0.2)),
-                    SectionHeader(
-                      title: 'Media',
-                      onViewAll: () =>
-                          context.push('/tags/tag/${tag.id}/media'),
-                    ),
-                    mediaAsync.when(
-                      data: (mediaItems) {
-                        final shuffledItems = [...mediaItems]
-                          ..shuffle(Random(tag.id.hashCode));
-                        return MediaStrip(
-                          items: shuffledItems
-                              .map(
-                                (item) => MediaStripItem(
-                                  id: item.sceneId,
-                                  title: item.title,
-                                  thumbnailUrl: item.thumbnailUrl,
-                                  onTap: () => context.push(
-                                    '/scenes/scene/${item.sceneId}',
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                          headers: mediaHeaders,
-                        );
-                      },
-                      loading: () => const SizedBox(
-                        height: 100,
-                        child: Center(child: CircularProgressIndicator()),
-                      ),
-                      error: (err, stack) => Text(
-                        'Failed to load media: $err',
-                        style: TextStyle(
-                          color: context.colors.onSurface.withValues(
-                            alpha: 0.7,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         loading: () => const Center(child: CircularProgressIndicator()),

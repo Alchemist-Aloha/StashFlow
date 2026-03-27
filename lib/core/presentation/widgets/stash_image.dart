@@ -9,9 +9,7 @@ import '../../data/graphql/media_headers_provider.dart';
 class _Shimmer extends StatefulWidget {
   final Widget child;
 
-  const _Shimmer({
-    required this.child,
-  });
+  const _Shimmer({required this.child});
 
   @override
   State<_Shimmer> createState() => _ShimmerState();

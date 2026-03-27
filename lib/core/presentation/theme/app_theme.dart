@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// Custom theme extension for StashFlow-specific semantic colors.
 ///
-/// This provides a type-safe way to access colors that aren't part of the 
+/// This provides a type-safe way to access colors that aren't part of the
 /// standard Material [ColorScheme], such as specific ratings or custom surface levels.
 @immutable
 class AppColors extends ThemeExtension<AppColors> {
@@ -96,33 +96,33 @@ class AppColors extends ThemeExtension<AppColors> {
 
 /// The central design system for StashFlow.
 ///
-/// This class defines standard constants for spacing and border radii, 
+/// This class defines standard constants for spacing and border radii,
 /// ensuring visual consistency across all pages and widgets.
 class AppTheme {
   /// Standard padding/margin for secondary elements (8dp).
   static const spacingSmall = 8.0;
-  
+
   /// Primary layout spacing used between major UI components (16dp).
   static const spacingMedium = 16.0;
-  
+
   /// Larger spacing for grouping distinct sections (24dp).
   static const spacingLarge = 24.0;
 
   /// Corner radius for standard small elements like chips.
   static const radiusSmall = 8.0;
-  
+
   /// Corner radius for standard cards and containers.
   static const radiusMedium = 12.0;
-  
+
   /// Corner radius for large modal-like components.
   static const radiusLarge = 16.0;
-  
+
   /// Corner radius for major surface areas.
   static const radiusExtraLarge = 28.0;
 
   /// Builds a [ThemeData] instance based on the provided [brightness] and [seedColor].
-  /// 
-  /// Configures Material 3, custom component themes (AppBars, Cards, Buttons), 
+  ///
+  /// Configures Material 3, custom component themes (AppBars, Cards, Buttons),
   /// and attaches the [AppColors] extension.
   static ThemeData buildTheme(Brightness brightness, Color seedColor) {
     final isDark = brightness == Brightness.dark;
@@ -170,14 +170,10 @@ class AppTheme {
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          minimumSize: const Size.fromHeight(48),
-        ),
+        style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          minimumSize: const Size.fromHeight(48),
-        ),
+        style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
       ),
       extensions: [
         AppColors(
@@ -200,8 +196,11 @@ class AppTheme {
   }
 
   /// Default light theme using a teal seed.
-  static final lightTheme = buildTheme(Brightness.light, const Color(0xFF0F766E));
-  
+  static final lightTheme = buildTheme(
+    Brightness.light,
+    const Color(0xFF0F766E),
+  );
+
   /// Default dark theme using a teal seed.
   static final darkTheme = buildTheme(Brightness.dark, const Color(0xFF0F766E));
 }
@@ -210,7 +209,7 @@ class AppTheme {
 extension AppThemeX on BuildContext {
   /// Access to the [AppColors] custom theme extension.
   AppColors get colors => Theme.of(this).extension<AppColors>()!;
-  
+
   /// Access to the standard [TextTheme].
   TextTheme get textTheme => Theme.of(this).textTheme;
 }

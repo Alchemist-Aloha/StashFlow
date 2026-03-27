@@ -28,7 +28,7 @@ void main() {
 
   testWidgets('StudiosPage displays list of studios', (tester) async {
     final mockRepo = MockStudioRepository()..withData([testStudio]);
-    
+
     await pumpTestWidget(
       tester,
       prefs: prefs,

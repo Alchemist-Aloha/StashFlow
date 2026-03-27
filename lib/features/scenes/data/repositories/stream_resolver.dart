@@ -12,18 +12,18 @@ part 'stream_resolver.g.dart';
 /// Represents a potential video stream candidate for a scene.
 class StreamChoice {
   const StreamChoice({required this.url, required this.mimeType, this.label});
-  
+
   /// The absolute URL to the video stream.
   final String url;
-  
+
   /// The MIME type of the stream (e.g., 'video/mp4', 'application/vnd.apple.mpegurl').
   final String mimeType;
-  
+
   /// A human-readable label from the server (e.g., 'Direct', 'HLS').
   final String? label;
 
   /// Calculates a priority score for this stream candidate.
-  /// 
+  ///
   /// Preference order:
   /// 1. Direct MP4 (300) - Lowest latency, highest compatibility.
   /// 2. General MP4 (250)
@@ -42,12 +42,12 @@ class StreamChoice {
 }
 
 /// A utility that resolves the best available video stream for a given [Scene].
-/// 
+///
 /// Stash provides multiple ways to stream a scene:
 /// 1. Direct file paths (if the client has network access to the storage).
 /// 2. Scene-specific stream endpoints (transcoded or direct-from-server).
-/// 
-/// This class handles the logic of choosing between these options based on 
+///
+/// This class handles the logic of choosing between these options based on
 /// user preferences and stream availability.
 @riverpod
 class StreamResolver extends _$StreamResolver {
@@ -58,16 +58,16 @@ class StreamResolver extends _$StreamResolver {
   }
 
   /// Resolves the preferred stream URL and its metadata for a given [scene].
-  /// 
+  ///
   /// It first attempts to fetch available stream options from the Stash API.
   /// If multiple options are available, it selects the best one based on [StreamChoice.score].
-  /// 
+  ///
   /// If no API streams are found, it falls back to the scene's direct path.
   Future<StreamChoice?> resolvePreferredStream(Scene scene) async {
     final client = ref.read(graphqlClientProvider);
     final mediaHeaders = ref.read(mediaHeadersProvider);
     final queryStopwatch = Stopwatch()..start();
-    
+
     // Fetch available stream endpoints for the scene
     final result = await client.query(
       QueryOptions(
@@ -158,8 +158,9 @@ class StreamResolver extends _$StreamResolver {
 
     StreamChoice? best;
     var probeCount = 0;
-    const maxProbes = 2; // Limit network probing to avoid excessive startup delay
-    
+    const maxProbes =
+        2; // Limit network probing to avoid excessive startup delay
+
     for (final choice in candidates) {
       final shouldProbe =
           probeCount < maxProbes && _shouldProbeByHeaders(choice);
@@ -323,7 +324,7 @@ class StreamResolver extends _$StreamResolver {
     return 'unknown';
   }
 
-  /// Probes a URL using an HTTP HEAD/GET request to determine the actual 
+  /// Probes a URL using an HTTP HEAD/GET request to determine the actual
   /// MIME type from the 'Content-Type' header.
   Future<String?> probeMimeTypeFromHeaders(
     String url,

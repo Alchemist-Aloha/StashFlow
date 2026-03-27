@@ -40,19 +40,22 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
   void _applyServerSort(_GroupSortOption option) {
     switch (option) {
       case _GroupSortOption.name:
-        ref.read(groupListProvider.notifier).setSort(sort: 'name', descending: false);
+        ref
+            .read(groupListProvider.notifier)
+            .setSort(sort: 'name', descending: false);
         break;
     }
   }
 
   Widget _buildSortBar() {
-    const options = [
-      (_GroupSortOption.name, 'Name'),
-    ];
+    const options = [(_GroupSortOption.name, 'Name')];
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium, vertical: AppTheme.spacingSmall),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppTheme.spacingMedium,
+        vertical: AppTheme.spacingSmall,
+      ),
       child: Row(
         children: [
           for (final option in options) ...[
@@ -82,10 +85,14 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
       onSearchChanged: _onSearchChanged,
       provider: groupsAsync,
       onRefresh: () => ref.refresh(groupListProvider.future),
-      onFetchNextPage: () => ref.read(groupListProvider.notifier).fetchNextPage(),
+      onFetchNextPage: () =>
+          ref.read(groupListProvider.notifier).fetchNextPage(),
       sortBar: _buildSortBar(),
       itemBuilder: (context, group) => Card(
-        margin: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium, vertical: 4),
+        margin: const EdgeInsets.symmetric(
+          horizontal: AppTheme.spacingMedium,
+          vertical: 4,
+        ),
         child: ListTile(
           leading: const Icon(Icons.group_work),
           title: Text(

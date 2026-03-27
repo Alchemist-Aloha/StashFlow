@@ -76,290 +76,302 @@ class PerformerDetailsPage extends ConsumerWidget {
       body: performerAsync.when(
         data: (performer) {
           final age = _calculateAge(performer.birthdate);
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 300,
-                  width: double.infinity,
-                  color: context.colors.surfaceVariant,
-                  child: performer.imagePath != null
-                      ? StashImage(
-                          imageUrl: performer.imagePath!,
-                          fit: BoxFit.contain,
-                          memCacheWidth: 600,
-                        )
-                      : Icon(
-                          Icons.person,
-                          size: 100,
-                          color: context.colors.onSurfaceVariant.withValues(
-                            alpha: 0.5,
+          return RefreshIndicator(
+            onRefresh: () async {
+              ref.invalidate(performerDetailsProvider(performerId));
+              ref.invalidate(performerMediaProvider(performerId));
+              await Future.wait([
+                ref.read(performerDetailsProvider(performerId).future),
+                ref.read(performerMediaProvider(performerId).future),
+              ]);
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 300,
+                    width: double.infinity,
+                    color: context.colors.surfaceVariant,
+                    child: performer.imagePath != null
+                        ? StashImage(
+                            imageUrl: performer.imagePath!,
+                            fit: BoxFit.contain,
+                            memCacheWidth: 600,
+                          )
+                        : Icon(
+                            Icons.person,
+                            size: 100,
+                            color: context.colors.onSurfaceVariant.withValues(
+                              alpha: 0.5,
+                            ),
                           ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                performer.name,
+                                style: context.textTheme.headlineMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: context.colors.onSurface,
+                                    ),
+                              ),
+                            ),
+                            IconButton.filledTonal(
+                              icon: Icon(
+                                performer.favorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                              ),
+                              tooltip: performer.favorite
+                                  ? 'Remove favorite'
+                                  : 'Add favorite',
+                              onPressed: () async {
+                                try {
+                                  await ref
+                                      .read(performerRepositoryProvider)
+                                      .setPerformerFavorite(
+                                        performer.id,
+                                        !performer.favorite,
+                                      );
+                                  ref.invalidate(
+                                    performerDetailsProvider(performer.id),
+                                  );
+                                  ref.invalidate(performerListProvider);
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Failed to update favorite: $e',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                            ),
+                          ],
                         ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              performer.name,
-                              style: context.textTheme.headlineMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: context.colors.onSurface,
+                        if (performer.disambiguation != null)
+                          Text(
+                            performer.disambiguation!,
+                            style: context.textTheme.titleMedium?.copyWith(
+                              color: context.colors.onSurface.withValues(
+                                alpha: 0.6,
                               ),
                             ),
                           ),
-                          IconButton.filledTonal(
-                            icon: Icon(
-                              performer.favorite
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
+                        if (performer.aliasList.isNotEmpty) ...[
+                          const SizedBox(height: AppTheme.spacingSmall),
+                          Text(
+                            'Aliases: ${performer.aliasList.join(', ')}',
+                            style: context.textTheme.bodyMedium?.copyWith(
+                              color: context.colors.onSurface.withValues(
+                                alpha: 0.8,
+                              ),
                             ),
-                            tooltip: performer.favorite
-                                ? 'Remove favorite'
-                                : 'Add favorite',
-                            onPressed: () async {
-                              try {
-                                await ref
-                                    .read(performerRepositoryProvider)
-                                    .setPerformerFavorite(
-                                      performer.id,
-                                      !performer.favorite,
-                                    );
-                                ref.invalidate(
-                                  performerDetailsProvider(performer.id),
-                                );
-                                ref.invalidate(performerListProvider);
-                              } catch (e) {
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        'Failed to update favorite: $e',
-                                      ),
-                                    ),
-                                  );
-                                }
-                              }
-                            },
                           ),
                         ],
-                      ),
-                      if (performer.disambiguation != null)
-                        Text(
-                          performer.disambiguation!,
-                          style: context.textTheme.titleMedium?.copyWith(
-                            color: context.colors.onSurface.withValues(
-                              alpha: 0.6,
-                            ),
-                          ),
-                        ),
-                      if (performer.aliasList.isNotEmpty) ...[
-                        const SizedBox(height: AppTheme.spacingSmall),
-                        Text(
-                          'Aliases: ${performer.aliasList.join(', ')}',
-                          style: context.textTheme.bodyMedium?.copyWith(
-                            color: context.colors.onSurface.withValues(
-                              alpha: 0.8,
-                            ),
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: AppTheme.spacingMedium),
-                      Wrap(
-                        spacing: AppTheme.spacingSmall,
-                        runSpacing: AppTheme.spacingSmall,
-                        children: [
-                          if (performer.gender != null)
-                            _buildChip(context, performer.gender!),
-                          if (age != null)
-                            _buildChip(context, '$age years old'),
-                          if (performer.birthdate != null)
-                            _buildChip(context, performer.birthdate!),
-                          if (performer.country != null)
-                            _buildChip(context, performer.country!),
-                          if (performer.ethnicity != null)
-                            _buildChip(context, performer.ethnicity!),
-                          if (performer.heightCm != null)
-                            _buildChip(context, '${performer.heightCm} cm'),
-                          if (performer.eyeColor != null)
-                            _buildChip(context, performer.eyeColor!),
-                          if (performer.hairColor != null)
-                            _buildChip(context, performer.hairColor!),
-                        ],
-                      ),
-                      if (performer.tagNames.isNotEmpty) ...[
-                        const Divider(height: 32, color: Colors.grey),
-                        const SectionHeader(
-                          title: 'Tags',
-                          padding: EdgeInsets.zero,
-                        ),
-                        const SizedBox(height: AppTheme.spacingSmall),
+                        const SizedBox(height: AppTheme.spacingMedium),
                         Wrap(
                           spacing: AppTheme.spacingSmall,
                           runSpacing: AppTheme.spacingSmall,
-                          children: List.generate(performer.tagNames.length, (
-                            index,
-                          ) {
-                            return ActionChip(
-                              label: Text(
-                                performer.tagNames[index],
-                                style: context.textTheme.bodySmall,
-                              ),
-                              backgroundColor: context.colors.surfaceVariant,
-                              side: BorderSide.none,
-                              visualDensity: VisualDensity.compact,
-                              onPressed: () {
-                                if (index < performer.tagIds.length) {
-                                  context.push(
-                                    '/tag/${performer.tagIds[index]}',
-                                  );
-                                }
-                              },
-                            );
-                          }),
+                          children: [
+                            if (performer.gender != null)
+                              _buildChip(context, performer.gender!),
+                            if (age != null)
+                              _buildChip(context, '$age years old'),
+                            if (performer.birthdate != null)
+                              _buildChip(context, performer.birthdate!),
+                            if (performer.country != null)
+                              _buildChip(context, performer.country!),
+                            if (performer.ethnicity != null)
+                              _buildChip(context, performer.ethnicity!),
+                            if (performer.heightCm != null)
+                              _buildChip(context, '${performer.heightCm} cm'),
+                            if (performer.eyeColor != null)
+                              _buildChip(context, performer.eyeColor!),
+                            if (performer.hairColor != null)
+                              _buildChip(context, performer.hairColor!),
+                          ],
                         ),
-                      ],
-                      if (performer.urls.isNotEmpty) ...[
-                        const Divider(height: 32, color: Colors.grey),
-                        const SectionHeader(
-                          title: 'Links',
-                          padding: EdgeInsets.zero,
-                        ),
-                        const SizedBox(height: AppTheme.spacingSmall),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: performer.urls.map((url) {
-                            return Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: AppTheme.spacingSmall,
-                              ),
-                              child: InkWell(
-                                onTap: () async {
-                                  final uri = Uri.tryParse(url);
-                                  if (uri == null) return;
-                                  try {
-                                    if (await canLaunchUrl(uri)) {
-                                      await launchUrl(
-                                        uri,
-                                        mode: LaunchMode.externalApplication,
-                                      );
-                                    } else {
+                        if (performer.tagNames.isNotEmpty) ...[
+                          const Divider(height: 32, color: Colors.grey),
+                          const SectionHeader(
+                            title: 'Tags',
+                            padding: EdgeInsets.zero,
+                          ),
+                          const SizedBox(height: AppTheme.spacingSmall),
+                          Wrap(
+                            spacing: AppTheme.spacingSmall,
+                            runSpacing: AppTheme.spacingSmall,
+                            children: List.generate(performer.tagNames.length, (
+                              index,
+                            ) {
+                              return ActionChip(
+                                label: Text(
+                                  performer.tagNames[index],
+                                  style: context.textTheme.bodySmall,
+                                ),
+                                backgroundColor: context.colors.surfaceVariant,
+                                side: BorderSide.none,
+                                visualDensity: VisualDensity.compact,
+                                onPressed: () {
+                                  if (index < performer.tagIds.length) {
+                                    context.push(
+                                      '/tag/${performer.tagIds[index]}',
+                                    );
+                                  }
+                                },
+                              );
+                            }),
+                          ),
+                        ],
+                        if (performer.urls.isNotEmpty) ...[
+                          const Divider(height: 32, color: Colors.grey),
+                          const SectionHeader(
+                            title: 'Links',
+                            padding: EdgeInsets.zero,
+                          ),
+                          const SizedBox(height: AppTheme.spacingSmall),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: performer.urls.map((url) {
+                              return Padding(
+                                padding: const EdgeInsets.only(
+                                  bottom: AppTheme.spacingSmall,
+                                ),
+                                child: InkWell(
+                                  onTap: () async {
+                                    final uri = Uri.tryParse(url);
+                                    if (uri == null) return;
+                                    try {
+                                      if (await canLaunchUrl(uri)) {
+                                        await launchUrl(
+                                          uri,
+                                          mode: LaunchMode.externalApplication,
+                                        );
+                                      } else {
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                'Could not open $url',
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      }
+                                    } catch (e) {
                                       if (context.mounted) {
                                         ScaffoldMessenger.of(
                                           context,
                                         ).showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              'Could not open $url',
-                                            ),
-                                          ),
+                                          SnackBar(content: Text('Error: $e')),
                                         );
                                       }
                                     }
-                                  } catch (e) {
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(content: Text('Error: $e')),
-                                      );
-                                    }
-                                  }
-                                },
-                                borderRadius: BorderRadius.circular(4),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.link,
-                                      size: 16,
-                                      color: context.colors.primary,
-                                    ),
-                                    const SizedBox(
-                                      width: AppTheme.spacingSmall,
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        url,
-                                        style: context.textTheme.bodyMedium
-                                            ?.copyWith(
-                                              color: context.colors.primary,
-                                              decoration:
-                                                  TextDecoration.underline,
-                                            ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                                  },
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.link,
+                                        size: 16,
+                                        color: context.colors.primary,
+                                      ),
+                                      const SizedBox(
+                                        width: AppTheme.spacingSmall,
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          url,
+                                          style: context.textTheme.bodyMedium
+                                              ?.copyWith(
+                                                color: context.colors.primary,
+                                                decoration:
+                                                    TextDecoration.underline,
+                                              ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                        if (performer.details != null &&
+                            performer.details!.trim().isNotEmpty) ...[
+                          const Divider(height: 32, color: Colors.grey),
+                          const SectionHeader(title: 'Details'),
+                          Text(
+                            performer.details!,
+                            style: context.textTheme.bodyMedium?.copyWith(
+                              color: context.colors.onSurface.withValues(
+                                alpha: 0.8,
+                              ),
+                            ),
+                          ),
+                        ],
+                        const Divider(height: 32, color: Colors.grey),
+                        SectionHeader(
+                          title: 'Media',
+                          onViewAll: () => context.push(
+                            '/performers/performer/${performer.id}/media',
+                          ),
+                        ),
+                        mediaAsync.when(
+                          data: (mediaItems) {
+                            final shuffledItems = [...mediaItems]
+                              ..shuffle(Random(performer.id.hashCode));
+                            return MediaStrip(
+                              items: shuffledItems
+                                  .map(
+                                    (item) => MediaStripItem(
+                                      id: item.sceneId,
+                                      title: item.title,
+                                      thumbnailUrl: item.thumbnailUrl,
+                                      onTap: () => context.push(
+                                        '/scenes/scene/${item.sceneId}',
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
+                                  )
+                                  .toList(),
+                              headers: mediaHeaders,
                             );
-                          }).toList(),
-                        ),
-                      ],
-                      if (performer.details != null &&
-                          performer.details!.trim().isNotEmpty) ...[
-                        const Divider(height: 32, color: Colors.grey),
-                        const SectionHeader(title: 'Details'),
-                        Text(
-                          performer.details!,
-                          style: context.textTheme.bodyMedium?.copyWith(
-                            color: context.colors.onSurface.withValues(
-                              alpha: 0.8,
+                          },
+                          loading: () => const SizedBox(
+                            height: 100,
+                            child: Center(child: CircularProgressIndicator()),
+                          ),
+                          error: (err, stack) => Text(
+                            'Failed to load media: $err',
+                            style: TextStyle(
+                              color: context.colors.onSurface.withValues(
+                                alpha: 0.7,
+                              ),
                             ),
                           ),
                         ),
                       ],
-                      const Divider(height: 32, color: Colors.grey),
-                      SectionHeader(
-                        title: 'Media',
-                        onViewAll: () => context.push(
-                          '/performers/performer/${performer.id}/media',
-                        ),
-                      ),
-                      mediaAsync.when(
-                        data: (mediaItems) {
-                          final shuffledItems = [...mediaItems]
-                            ..shuffle(Random(performer.id.hashCode));
-                          return MediaStrip(
-                            items: shuffledItems
-                                .map(
-                                  (item) => MediaStripItem(
-                                    id: item.sceneId,
-                                    title: item.title,
-                                    thumbnailUrl: item.thumbnailUrl,
-                                    onTap: () => context.push(
-                                      '/scenes/scene/${item.sceneId}',
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                            headers: mediaHeaders,
-                          );
-                        },
-                        loading: () => const SizedBox(
-                          height: 100,
-                          child: Center(child: CircularProgressIndicator()),
-                        ),
-                        error: (err, stack) => Text(
-                          'Failed to load media: $err',
-                          style: TextStyle(
-                            color: context.colors.onSurface.withValues(
-                              alpha: 0.7,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

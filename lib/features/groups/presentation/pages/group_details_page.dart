@@ -15,69 +15,88 @@ class GroupDetailsPage extends ConsumerWidget {
     final groupAsync = ref.watch(groupDetailsProvider(groupId));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Group Details'),
-      ),
+      appBar: AppBar(title: const Text('Group Details')),
       body: groupAsync.when(
-        data: (group) => SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 240,
-                width: double.infinity,
-                color: context.colors.surfaceVariant,
-                child: Center(
-                  child: Icon(
-                    Icons.group_work,
-                    size: 72,
-                    color: context.colors.onSurfaceVariant.withValues(alpha: 0.5),
+        data: (group) => RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(groupDetailsProvider(groupId));
+            return ref.read(groupDetailsProvider(groupId).future);
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 240,
+                  width: double.infinity,
+                  color: context.colors.surfaceVariant,
+                  child: Center(
+                    child: Icon(
+                      Icons.group_work,
+                      size: 72,
+                      color: context.colors.onSurfaceVariant.withValues(
+                        alpha: 0.5,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      group.name.isEmpty ? 'Untitled group' : group.name,
-                      style: context.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: context.colors.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: AppTheme.spacingMedium),
-                    Wrap(
-                      spacing: AppTheme.spacingSmall,
-                      runSpacing: AppTheme.spacingSmall,
-                      children: [
-                        if (group.date != null) _buildChip(context, group.date!),
-                        if (group.director != null && group.director!.isNotEmpty) _buildChip(context, 'Director: ${group.director}'),
-                        if (group.rating100 != null)
-                          _buildChip(
-                            context,
-                            'Rating: ${(group.rating100! / 20).toStringAsFixed(1)}',
-                            icon: Icons.star,
-                            iconColor: context.colors.ratingColor,
-                          ),
-                      ],
-                    ),
-                    if (group.synopsis != null && group.synopsis!.isNotEmpty) ...[
-                      Divider(height: 32, color: context.colors.outline.withValues(alpha: 0.2)),
-                      const SectionHeader(title: 'Synopsis', padding: EdgeInsets.zero),
-                      const SizedBox(height: AppTheme.spacingSmall),
+                Padding(
+                  padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        group.synopsis!,
-                        style: context.textTheme.bodyMedium?.copyWith(
-                          color: context.colors.onSurface.withValues(alpha: 0.8),
+                        group.name.isEmpty ? 'Untitled group' : group.name,
+                        style: context.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: context.colors.onSurface,
                         ),
                       ),
+                      const SizedBox(height: AppTheme.spacingMedium),
+                      Wrap(
+                        spacing: AppTheme.spacingSmall,
+                        runSpacing: AppTheme.spacingSmall,
+                        children: [
+                          if (group.date != null)
+                            _buildChip(context, group.date!),
+                          if (group.director != null &&
+                              group.director!.isNotEmpty)
+                            _buildChip(context, 'Director: ${group.director}'),
+                          if (group.rating100 != null)
+                            _buildChip(
+                              context,
+                              'Rating: ${(group.rating100! / 20).toStringAsFixed(1)}',
+                              icon: Icons.star,
+                              iconColor: context.colors.ratingColor,
+                            ),
+                        ],
+                      ),
+                      if (group.synopsis != null &&
+                          group.synopsis!.isNotEmpty) ...[
+                        Divider(
+                          height: 32,
+                          color: context.colors.outline.withValues(alpha: 0.2),
+                        ),
+                        const SectionHeader(
+                          title: 'Synopsis',
+                          padding: EdgeInsets.zero,
+                        ),
+                        const SizedBox(height: AppTheme.spacingSmall),
+                        Text(
+                          group.synopsis!,
+                          style: context.textTheme.bodyMedium?.copyWith(
+                            color: context.colors.onSurface.withValues(
+                              alpha: 0.8,
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -89,9 +108,20 @@ class GroupDetailsPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildChip(BuildContext context, String label, {IconData? icon, Color? iconColor}) {
+  Widget _buildChip(
+    BuildContext context,
+    String label, {
+    IconData? icon,
+    Color? iconColor,
+  }) {
     return Chip(
-      avatar: icon != null ? Icon(icon, size: 16, color: iconColor ?? context.colors.onSurfaceVariant) : null,
+      avatar: icon != null
+          ? Icon(
+              icon,
+              size: 16,
+              color: iconColor ?? context.colors.onSurfaceVariant,
+            )
+          : null,
       label: Text(label, style: context.textTheme.bodySmall),
       backgroundColor: context.colors.surfaceVariant,
       side: BorderSide.none,

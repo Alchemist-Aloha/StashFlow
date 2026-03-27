@@ -425,10 +425,11 @@ class PlayerState extends _$PlayerState {
     }
 
     // Stop current, but don't dispose the one we are about to attach!
-    if (state.activeScene != null && state.videoPlayerController != controller) {
-       await _disposeControllers();
+    if (state.activeScene != null &&
+        state.videoPlayerController != controller) {
+      await _disposeControllers();
     }
-    
+
     _videoControllerRef = controller;
     _firstFrameLoggedSceneId = null;
     _isUsingBorrowedController = true;
@@ -520,7 +521,7 @@ class PlayerState extends _$PlayerState {
 
     if (videoController != null) {
       videoController.removeListener(_videoListener);
-      
+
       if (_isUsingBorrowedController) {
         AppLogStore.instance.add(
           'provider skipping dispose of borrowed controller',
@@ -531,7 +532,7 @@ class PlayerState extends _$PlayerState {
         await videoController.dispose();
       }
     }
-    
+
     await WakelockPlus.disable();
   }
 
@@ -617,7 +618,8 @@ class PlayerState extends _$PlayerState {
       // scene in the existing sequence. This helps when `setSequence` was
       // called with -1 to preserve an external index but the queue hasn't
       // been initialized for this session.
-      if (queueNotifier.state.currentIndex == -1 && state.activeScene?.id != null) {
+      if (queueNotifier.state.currentIndex == -1 &&
+          state.activeScene?.id != null) {
         AppLogStore.instance.add(
           'PlayerState playNext: queue index unset, attempting to find active scene in sequence=${state.activeScene?.id}',
           source: 'player_provider',

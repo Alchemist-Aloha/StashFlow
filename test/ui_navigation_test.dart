@@ -61,8 +61,7 @@ class MockSceneRepository implements SceneRepository {
   Future<List<ScrapedScene>> scrapeSingleScene({
     required String scraperId,
     required String sceneId,
-  }) async =>
-      [];
+  }) async => [];
 
   @override
   Future<void> saveScrapedScene({
@@ -76,14 +75,12 @@ class MockSceneRepository implements SceneRepository {
   @override
   Future<Map<String, List<Map<String, dynamic>>>> findPerformerCandidates(
     List<String> queries,
-  ) async =>
-      {};
+  ) async => {};
 
   @override
   Future<Map<String, List<Map<String, dynamic>>>> findTagCandidates(
     List<String> tags,
-  ) async =>
-      {};
+  ) async => {};
 }
 
 class MockPerformerRepository implements PerformerRepository {

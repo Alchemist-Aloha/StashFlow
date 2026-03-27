@@ -8,20 +8,14 @@ part 'playback_queue_provider.g.dart';
 class PlaybackQueueState {
   /// The list of scenes in the current playback sequence.
   final List<Scene> sequence;
-  
+
   /// The index of the currently active scene within the [sequence].
   /// A value of -1 indicates no scene is currently selected or active.
   final int currentIndex;
 
-  PlaybackQueueState({
-    this.sequence = const [],
-    this.currentIndex = -1,
-  });
+  PlaybackQueueState({this.sequence = const [], this.currentIndex = -1});
 
-  PlaybackQueueState copyWith({
-    List<Scene>? sequence,
-    int? currentIndex,
-  }) {
+  PlaybackQueueState copyWith({List<Scene>? sequence, int? currentIndex}) {
     return PlaybackQueueState(
       sequence: sequence ?? this.sequence,
       currentIndex: currentIndex ?? this.currentIndex,
@@ -63,7 +57,9 @@ class PlaybackQueue extends _$PlaybackQueue {
     // Same-list / subset detection logic:
     // If the new list matches our current sequence's start, we avoid resetting the index
     // if the caller passed -1 (which usually means "just refresh the data").
-    if (state.sequence.length >= scenes.length && scenes.isNotEmpty && state.sequence.isNotEmpty) {
+    if (state.sequence.length >= scenes.length &&
+        scenes.isNotEmpty &&
+        state.sequence.isNotEmpty) {
       if (state.sequence[0].id == scenes[0].id) {
         AppLogStore.instance.add(
           'PlaybackQueue setSequence: detected same/subset list, checking index',
@@ -76,10 +72,7 @@ class PlaybackQueue extends _$PlaybackQueue {
       }
     }
 
-    state = state.copyWith(
-      sequence: scenes,
-      currentIndex: initialIndex,
-    );
+    state = state.copyWith(sequence: scenes, currentIndex: initialIndex);
   }
 
   /// Appends new scenes to the existing sequence.
@@ -124,7 +117,8 @@ class PlaybackQueue extends _$PlaybackQueue {
       'PlaybackQueue getNextScene: current=${state.currentIndex}, total=${state.sequence.length}',
       source: 'playback_queue',
     );
-    if (state.currentIndex >= 0 && state.currentIndex < state.sequence.length - 1) {
+    if (state.currentIndex >= 0 &&
+        state.currentIndex < state.sequence.length - 1) {
       final nextScene = state.sequence[state.currentIndex + 1];
       AppLogStore.instance.add(
         'PlaybackQueue getNextScene: returning ${nextScene.id}',
@@ -139,7 +133,7 @@ class PlaybackQueue extends _$PlaybackQueue {
     return null;
   }
 
-  /// Increments the current index. This should be called *after* 
+  /// Increments the current index. This should be called *after*
   /// confirming that a next scene is available and playback has started.
   void playNext() {
     final nextIndex = state.currentIndex + 1;

@@ -37,7 +37,8 @@ class StudioMediaGridPage extends ConsumerWidget {
           final availableWidth =
               MediaQuery.of(context).size.width - padding * 2;
           final itemWidth =
-              (availableWidth - (crossAxisSpacing * (crossAxisCount - 1))) / crossAxisCount;
+              (availableWidth - (crossAxisSpacing * (crossAxisCount - 1))) /
+              crossAxisCount;
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
             final initialCount = items.length < kPrefetchDistance

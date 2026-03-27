@@ -69,7 +69,9 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       // Perform a background "prewarm" to fetch stream URL and test connectivity.
       final prewarmResult = await _prewarmStream(widget.scene);
       if (!mounted) return;
-      ref.read(playerStateProvider.notifier).setPrewarmResult(
+      ref
+          .read(playerStateProvider.notifier)
+          .setPrewarmResult(
             attempted: prewarmResult.attempted,
             succeeded: prewarmResult.succeeded,
             latencyMs: prewarmResult.latencyMs,
@@ -78,7 +80,9 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       final choice = await resolver.resolvePreferredStream(widget.scene);
       if (choice != null && mounted) {
         final mediaHeaders = ref.read(mediaHeadersProvider);
-        await ref.read(playerStateProvider.notifier).playScene(
+        await ref
+            .read(playerStateProvider.notifier)
+            .playScene(
               widget.scene,
               choice.url,
               mimeType: choice.mimeType,
@@ -119,15 +123,18 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     client.connectionTimeout = const Duration(seconds: 5);
 
     try {
-      if (!mounted) return const _PrewarmResult(attempted: false, succeeded: false);
+      if (!mounted)
+        return const _PrewarmResult(attempted: false, succeeded: false);
       final resolver = ref.read(streamResolverProvider.notifier);
       final choice = await resolver.resolvePreferredStream(scene);
-      if (choice == null) return const _PrewarmResult(attempted: false, succeeded: false);
+      if (choice == null)
+        return const _PrewarmResult(attempted: false, succeeded: false);
 
       final uri = Uri.parse(choice.url);
       final request = await client.getUrl(uri);
-      
-      if (!mounted) return const _PrewarmResult(attempted: false, succeeded: false);
+
+      if (!mounted)
+        return const _PrewarmResult(attempted: false, succeeded: false);
       final headers = ref.read(mediaHeadersProvider);
       headers.forEach((key, value) {
         request.headers.add(key, value);
@@ -161,12 +168,12 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
 
     final playerState = ref.read(playerStateProvider);
     final router = GoRouter.maybeOf(context);
-    
+
     // We check both state and path for maximum robustness.
     // If we are in fullscreen state OR on the fullscreen path, we want to exit.
     final currentPath = router?.routeInformationProvider.value.uri.path ?? '';
     final isInFullscreenPath = currentPath.endsWith('/fullscreen');
-    
+
     if (playerState.isFullScreen || isInFullscreenPath) {
       router?.pop();
     } else {
@@ -177,7 +184,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   @override
   Widget build(BuildContext context) {
     final playerState = ref.watch(playerStateProvider);
-    
+
     final aspectRatio = _effectiveAspectRatio(
       playerState.videoPlayerController,
     );
@@ -263,7 +270,8 @@ class FullscreenPlayerPage extends ConsumerStatefulWidget {
   final String sceneId;
 
   @override
-  ConsumerState<FullscreenPlayerPage> createState() => _FullscreenPlayerPageState();
+  ConsumerState<FullscreenPlayerPage> createState() =>
+      _FullscreenPlayerPageState();
 }
 
 class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
@@ -310,22 +318,24 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
 
   void _exitFullScreen() {
     // Reset state early so parent pages (like ShellPage) rebuild correctly.
-    // We use a post-frame callback to avoid "Tried to modify a provider while 
+    // We use a post-frame callback to avoid "Tried to modify a provider while
     // the widget tree was building" errors during route transitions.
     final notifier = ref.read(playerStateProvider.notifier);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       notifier.setFullScreen(false);
     });
 
-    // Reset orientation and show system UI. 
+    // Reset orientation and show system UI.
     // These are async but don't need to be awaited for the state change.
     unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge));
-    unawaited(SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]));
+    unawaited(
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]),
+    );
   }
 
   @override
@@ -413,7 +423,9 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                       _isPopping = true;
                       // Update state immediately before popping.
                       // _exitFullScreen will also be called via deactivate() for extra safety.
-                      ref.read(playerStateProvider.notifier).setFullScreen(false);
+                      ref
+                          .read(playerStateProvider.notifier)
+                          .setFullScreen(false);
                       router?.pop();
                     }
                   },

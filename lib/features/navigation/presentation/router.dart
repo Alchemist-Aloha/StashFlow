@@ -21,7 +21,7 @@ import 'shell_page.dart';
 part 'router.g.dart';
 
 /// Central application router defined using GoRouter and Riverpod.
-/// 
+///
 /// This provider creates a [GoRouter] instance that handles:
 /// 1. Tab-based navigation via [StatefulShellRoute].
 /// 2. Deep linking to scenes, performers, studios, and tags.
@@ -42,7 +42,7 @@ GoRouter router(Ref ref) {
     redirect: (context, state) {
       // Re-read inside redirect to get latest values during navigation
       final currentUrl = ref.read(serverUrlProvider);
-      
+
       final isConfigured = currentUrl.isNotEmpty;
       final isSettingsPath =
           state.uri.path == '/settings' ||
@@ -82,7 +82,9 @@ GoRouter router(Ref ref) {
                           transitionsBuilder:
                               (context, animation, secondaryAnimation, child) =>
                                   FadeTransition(
-                                      opacity: animation, child: child),
+                                    opacity: animation,
+                                    child: child,
+                                  ),
                           transitionDuration: const Duration(milliseconds: 200),
                         ),
                       ),

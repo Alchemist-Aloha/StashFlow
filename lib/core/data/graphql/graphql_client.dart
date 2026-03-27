@@ -78,12 +78,13 @@ GraphQLClient graphqlClient(Ref ref) {
   // Use an in-memory cache during widget tests to avoid requiring Hive
   // initialization (which `initHiveForFlutter()` normally performs in
   // `main()`). Tests run with the `FLUTTER_TEST` environment flag.
-  const bool isTestMode = bool.fromEnvironment('FLUTTER_TEST', defaultValue: false);
+  const bool isTestMode = bool.fromEnvironment(
+    'FLUTTER_TEST',
+    defaultValue: false,
+  );
 
   return GraphQLClient(
     link: httpLink,
-    cache: isTestMode
-        ? GraphQLCache()
-        : GraphQLCache(store: HiveStore()),
+    cache: isTestMode ? GraphQLCache() : GraphQLCache(store: HiveStore()),
   );
 }

@@ -11,7 +11,8 @@ import '../../helpers/test_helpers.dart';
 
 class MockPerformerSort extends PerformerSort {
   @override
-  ({String? sort, bool descending}) build() => (sort: 'name', descending: false);
+  ({String? sort, bool descending}) build() =>
+      (sort: 'name', descending: false);
 }
 
 class MockPerformerSearchQuery extends PerformerSearchQuery {
@@ -68,8 +69,9 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() => tester.view.resetPhysicalSize());
 
-    final mockRepo = MockPerformerRepository()..withData([testPerformer, testPerformer2]);
-    
+    final mockRepo = MockPerformerRepository()
+      ..withData([testPerformer, testPerformer2]);
+
     await pumpTestWidget(
       tester,
       prefs: prefs,
@@ -93,8 +95,9 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() => tester.view.resetPhysicalSize());
 
-    final mockRepo = MockPerformerRepository()..withData([testPerformer, testPerformer2]);
-    
+    final mockRepo = MockPerformerRepository()
+      ..withData([testPerformer, testPerformer2]);
+
     await pumpTestWidget(
       tester,
       prefs: prefs,
@@ -116,12 +119,24 @@ void main() {
     mockRepo.withData([testPerformer2]);
 
     await tester.enterText(find.byType(TextField), 'Alice');
-    // We might need multiple pumps if it's a debounced search, 
+    // We might need multiple pumps if it's a debounced search,
     // but here it seems immediate in the provider.
     await tester.pump(const Duration(seconds: 1));
 
-    expect(find.descendant(of: find.byType(PerformerCard), matching: find.text('Alice')), findsOneWidget);
-    expect(find.descendant(of: find.byType(PerformerCard), matching: find.text('Test Performer')), findsNothing);
+    expect(
+      find.descendant(
+        of: find.byType(PerformerCard),
+        matching: find.text('Alice'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(PerformerCard),
+        matching: find.text('Test Performer'),
+      ),
+      findsNothing,
+    );
   });
 
   testWidgets('PerformersPage filters by favorites only', (tester) async {
@@ -129,8 +144,9 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() => tester.view.resetPhysicalSize());
 
-    final mockRepo = MockPerformerRepository()..withData([testPerformer, testPerformer2]);
-    
+    final mockRepo = MockPerformerRepository()
+      ..withData([testPerformer, testPerformer2]);
+
     await pumpTestWidget(
       tester,
       prefs: prefs,
@@ -156,12 +172,24 @@ void main() {
     await tester.ensureVisible(switchFinder);
     await tester.tap(switchFinder, warnIfMissed: false);
     await tester.pump(const Duration(milliseconds: 500));
-    
+
     // Apply filter
     await tester.tap(find.text('Apply Filters'));
     await tester.pump(const Duration(seconds: 1));
 
-    expect(find.descendant(of: find.byType(PerformerCard), matching: find.text('Alice')), findsOneWidget);
-    expect(find.descendant(of: find.byType(PerformerCard), matching: find.text('Test Performer')), findsNothing);
+    expect(
+      find.descendant(
+        of: find.byType(PerformerCard),
+        matching: find.text('Alice'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(PerformerCard),
+        matching: find.text('Test Performer'),
+      ),
+      findsNothing,
+    );
   });
 }

@@ -24,7 +24,8 @@ abstract class Scene with _$Scene {
     @JsonKey(name: 'studio_image_path') required String? studioImagePath,
     @JsonKey(name: 'performer_ids') required List<String> performerIds,
     @JsonKey(name: 'performer_names') required List<String> performerNames,
-    @JsonKey(name: 'performer_image_paths') required List<String?> performerImagePaths,
+    @JsonKey(name: 'performer_image_paths')
+    required List<String?> performerImagePaths,
     @JsonKey(name: 'tag_ids') required List<String> tagIds,
     @JsonKey(name: 'tag_names') required List<String> tagNames,
   }) = _Scene;

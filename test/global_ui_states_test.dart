@@ -98,7 +98,8 @@ void main() {
     });
 
     testWidgets('Performers page shows error and retries', (tester) async {
-      final mockRepo = MockPerformerRepository()..withError('Failed to fetch performers');
+      final mockRepo = MockPerformerRepository()
+        ..withError('Failed to fetch performers');
       await pumpTestWidget(
         tester,
         prefs: prefs,
@@ -107,8 +108,11 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.errorView(message: 'Failed to fetch performers'), findsOneWidget);
-      
+      expect(
+        find.errorView(message: 'Failed to fetch performers'),
+        findsOneWidget,
+      );
+
       mockRepo.withData([]);
       await tester.tap(find.retryButton());
       await tester.pumpAndSettle();

@@ -6,7 +6,10 @@ class SectionHeader extends StatelessWidget {
     super.key,
     required this.title,
     this.onViewAll,
-    this.padding = const EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium, vertical: AppTheme.spacingSmall),
+    this.padding = const EdgeInsets.symmetric(
+      horizontal: AppTheme.spacingMedium,
+      vertical: AppTheme.spacingSmall,
+    ),
   });
 
   final String title;
@@ -28,10 +31,7 @@ class SectionHeader extends StatelessWidget {
           ),
           const Spacer(),
           if (onViewAll != null)
-            TextButton(
-              onPressed: onViewAll,
-              child: const Text('View all'),
-            ),
+            TextButton(onPressed: onViewAll, child: const Text('View all')),
         ],
       ),
     );

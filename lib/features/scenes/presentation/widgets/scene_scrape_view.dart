@@ -256,11 +256,15 @@ class _SceneScrapeEditViewState extends ConsumerState<SceneScrapeEditView> {
                         final tagIds = selectedTagIds.values
                             .where((v) => v.isNotEmpty)
                             .toList();
-                        await ref.read(sceneScrapeProvider).saveScraped(
+                        await ref
+                            .read(sceneScrapeProvider)
+                            .saveScraped(
                               sceneId: widget.sceneId,
                               scraped: widget.scraped,
                               merge: false,
-                              performerIds: performerIds.isEmpty ? null : performerIds,
+                              performerIds: performerIds.isEmpty
+                                  ? null
+                                  : performerIds,
                               tagIds: tagIds.isEmpty ? null : tagIds,
                             );
                         if (!mounted) return;
@@ -311,7 +315,9 @@ class _SceneScrapeEditViewState extends ConsumerState<SceneScrapeEditView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ListTile(title: Text(p.name ?? (p.urls.isNotEmpty ? p.urls.first : 'Unknown'))),
+        ListTile(
+          title: Text(p.name ?? (p.urls.isNotEmpty ? p.urls.first : 'Unknown')),
+        ),
         if (candidates.isEmpty)
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),

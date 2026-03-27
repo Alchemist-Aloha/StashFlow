@@ -90,14 +90,14 @@ void main() {
     test('setSequence preserves index if same list and index is -1', () {
       final container = createContainer();
       final scene1 = mockScene(id: '1', title: 'S1');
-      
+
       // Set initial sequence and index
       container.read(playbackQueueProvider.notifier).setSequence([scene1], 0);
       expect(container.read(playbackQueueProvider).currentIndex, 0);
 
       // Re-set same sequence with -1 (like SceneList build does)
       container.read(playbackQueueProvider.notifier).setSequence([scene1], -1);
-      
+
       // Should STILL be 0
       expect(container.read(playbackQueueProvider).currentIndex, 0);
     });
@@ -107,9 +107,14 @@ void main() {
       final scene1 = mockScene(id: '1', title: 'S1');
       final scene2 = mockScene(id: '2', title: 'S2');
 
-      container.read(playbackQueueProvider.notifier).setSequence([scene1, scene2], 0);
-      
-      final next = container.read(playbackQueueProvider.notifier).getNextScene();
+      container.read(playbackQueueProvider.notifier).setSequence([
+        scene1,
+        scene2,
+      ], 0);
+
+      final next = container
+          .read(playbackQueueProvider.notifier)
+          .getNextScene();
       expect(next?.id, '2');
     });
 
@@ -118,9 +123,12 @@ void main() {
       final scene1 = mockScene(id: '1', title: 'S1');
       final scene2 = mockScene(id: '2', title: 'S2');
 
-      container.read(playbackQueueProvider.notifier).setSequence([scene1, scene2], 0);
+      container.read(playbackQueueProvider.notifier).setSequence([
+        scene1,
+        scene2,
+      ], 0);
       container.read(playbackQueueProvider.notifier).playNext();
-      
+
       final state = container.read(playbackQueueProvider);
       expect(state.currentIndex, 1);
     });

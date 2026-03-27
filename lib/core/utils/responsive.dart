@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class Responsive {
   /// Width threshold for mobile devices.
   static const double mobileBreakpoint = 600;
-  
+
   /// Width threshold for tablet devices.
   static const double tabletBreakpoint = 1200;
 
