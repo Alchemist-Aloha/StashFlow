@@ -9,6 +9,8 @@ import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_car
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
 import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
+import 'package:stash_app_flutter/features/scenes/domain/models/scraper.dart';
+import 'package:stash_app_flutter/features/scenes/domain/models/scraped_scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'helpers/test_helpers.dart';
 
@@ -96,6 +98,37 @@ class LocalMockSceneRepository implements SceneRepository {
   Future<void> incrementSceneOCounter(String id) async {}
   @override
   Future<void> incrementScenePlayCount(String id) async {}
+
+  @override
+  Future<List<Scraper>> listScrapers({required List<String> types}) async => [];
+
+  @override
+  Future<List<ScrapedScene>> scrapeSingleScene({
+    required String scraperId,
+    required String sceneId,
+  }) async =>
+      [];
+
+  @override
+  Future<void> saveScrapedScene({
+    required String sceneId,
+    required ScrapedScene scraped,
+    bool mergeValues = false,
+    List<String>? performerIds,
+    List<String>? tagIds,
+  }) async {}
+
+  @override
+  Future<Map<String, List<Map<String, dynamic>>>> findPerformerCandidates(
+    List<String> queries,
+  ) async =>
+      {};
+
+  @override
+  Future<Map<String, List<Map<String, dynamic>>>> findTagCandidates(
+    List<String> tags,
+  ) async =>
+      {};
 }
 
 // Simple test notifiers to override the layout state
