@@ -63,6 +63,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Color _seedColor = const Color(0xFF0F766E);
   bool _forceShowCustom = false;
   bool _preferSceneStreams = true;
+  bool _obscureApiKey = true;
   bool _sceneGridLayout = false;
   bool _sceneTiktokLayout = false;
   bool _autoplayNext = false;
@@ -356,14 +357,24 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   TextField(
                     controller: _apiKeyController,
                     focusNode: _apiKeyFocusNode,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'API key',
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                       hintText: 'Paste ApiKey header value',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureApiKey ? Icons.visibility : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureApiKey = !_obscureApiKey;
+                          });
+                        },
+                      ),
                     ),
                     autocorrect: false,
                     enableSuggestions: false,
-                    obscureText: true,
+                    obscureText: _obscureApiKey,
                     textInputAction: TextInputAction.done,
                     onSubmitted: (_) => _saveServerSettings(),
                     onEditingComplete: () {
