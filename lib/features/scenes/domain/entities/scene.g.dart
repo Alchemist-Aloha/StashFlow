@@ -22,6 +22,7 @@ _Scene _$SceneFromJson(Map<String, dynamic> json) => _Scene(
       .map((e) => SceneFile.fromJson(e as Map<String, dynamic>))
       .toList(),
   paths: ScenePaths.fromJson(json['paths'] as Map<String, dynamic>),
+  urls: (json['urls'] as List<dynamic>).map((e) => e as String).toList(),
   studioId: json['studio_id'] as String?,
   studioName: json['studio_name'] as String?,
   studioImagePath: json['studio_image_path'] as String?,
@@ -54,6 +55,7 @@ Map<String, dynamic> _$SceneToJson(_Scene instance) => <String, dynamic>{
   'play_count': instance.playCount,
   'files': instance.files,
   'paths': instance.paths,
+  'urls': instance.urls,
   'studio_id': instance.studioId,
   'studio_name': instance.studioName,
   'studio_image_path': instance.studioImagePath,

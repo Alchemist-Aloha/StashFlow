@@ -105,6 +105,7 @@ void main() {
         preview: null,
         stream: 'http://test.com/stream.mp4',
       ),
+      urls: [],
       studioId: null,
       studioName: null,
       studioImagePath: null,

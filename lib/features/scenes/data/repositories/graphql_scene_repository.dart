@@ -111,6 +111,7 @@ class GraphQLSceneRepository implements SceneRepository {
                 graphqlEndpoint: _graphqlEndpoint,
               ),
             ),
+            urls: const [],
             studioId: s.studio?.id,
             studioName: s.studio?.name,
             studioImagePath: resolveGraphqlMediaUrl(
@@ -315,6 +316,7 @@ class GraphQLSceneRepository implements SceneRepository {
           graphqlEndpoint: _graphqlEndpoint,
         ),
       ),
+      urls: s.urls,
       studioId: s.studio?.id,
       studioName: s.studio?.name,
       studioImagePath: resolveGraphqlMediaUrl(

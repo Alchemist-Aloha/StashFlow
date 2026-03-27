@@ -19,6 +19,7 @@ abstract class Scene with _$Scene {
     @JsonKey(name: 'play_count') required int playCount,
     required List<SceneFile> files,
     required ScenePaths paths,
+    @JsonKey(name: 'urls') required List<String> urls,
     @JsonKey(name: 'studio_id') required String? studioId,
     @JsonKey(name: 'studio_name') required String? studioName,
     @JsonKey(name: 'studio_image_path') required String? studioImagePath,

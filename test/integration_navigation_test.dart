@@ -32,6 +32,7 @@ Scene createTestScene({
     playCount: 0,
     files: [],
     paths: const ScenePaths(screenshot: null, preview: null, stream: null),
+    urls: [],
     studioId: null,
     studioName: 'Test Studio',
     studioImagePath: null,
