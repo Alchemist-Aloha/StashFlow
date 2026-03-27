@@ -17,7 +17,6 @@ import '../../domain/entities/scene_title_utils.dart';
 import '../../../studios/presentation/providers/studio_media_provider.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
-import '../widgets/scene_scrape_view.dart';
 import '../widgets/scene_edit_dialog.dart';
 import '../providers/video_player_provider.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
@@ -482,27 +481,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 ),
                 icon: const Icon(Icons.edit_outlined),
                 label: const Text('Edit'),
-              ),
-            if (scrapeEnabled) const SizedBox(width: 8),
-            if (scrapeEnabled)
-              FilledButton.tonalIcon(
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (_) => SceneScrapeView(sceneId: scene.id),
-                  );
-                },
-                style: FilledButton.styleFrom(
-                  visualDensity: VisualDensity.compact,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  minimumSize: const Size(0, 32),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 6,
-                  ),
-                ),
-                icon: const Icon(Icons.search),
-                label: const Text('Scrape'),
               ),
           ],
         ),

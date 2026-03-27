@@ -8,6 +8,20 @@ This folder contains agent-focused project documentation.
 - [Troubleshooting](./TROUBLESHOOTING.md) (Debugging Playbook, Known Issues)
 - [Roadmap](./ROADMAP.md) (Current Tasks and Plans)
 
+### Scene editor
+
+The Scene Details editor (metadata scraping and manual edits) is documented in the Developer Guide under "Scene Details Editor — dev notes". See [docs/DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md) for testing guidance and provider notes.
+
+## Quick Build & Run
+
+Quick commands to get the project running locally:
+
+For release builds use:
+
+```bash
+flutter build apk --split-per-abi
+```
+
 ## Current Implementation Notes (2026-03-25)
 
 - **Tablet Optimization:**

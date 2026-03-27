@@ -29,6 +29,7 @@ abstract class SceneRepository {
     bool mergeValues = false,
     List<String>? performerIds,
     List<String>? tagIds,
+    String? studioId,
   });
 
   /// For each scraped performer (by name/url) return a list of candidate performers

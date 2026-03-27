@@ -123,18 +123,21 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     client.connectionTimeout = const Duration(seconds: 5);
 
     try {
-      if (!mounted)
+      if (!mounted) {
         return const _PrewarmResult(attempted: false, succeeded: false);
+      }
       final resolver = ref.read(streamResolverProvider.notifier);
       final choice = await resolver.resolvePreferredStream(scene);
-      if (choice == null)
+      if (choice == null) {
         return const _PrewarmResult(attempted: false, succeeded: false);
+      }
 
       final uri = Uri.parse(choice.url);
       final request = await client.getUrl(uri);
 
-      if (!mounted)
+      if (!mounted) {
         return const _PrewarmResult(attempted: false, succeeded: false);
+      }
       final headers = ref.read(mediaHeadersProvider);
       headers.forEach((key, value) {
         request.headers.add(key, value);

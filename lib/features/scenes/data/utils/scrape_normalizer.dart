@@ -45,6 +45,10 @@ Map<String, dynamic> buildSceneUpdateInputFromScraped(ScrapedScene s) {
     }
   }
 
+  if (s.studioId != null) {
+    input['studio_id'] = s.studioId;
+  }
+
   // Note: performers and tags should be reconciled to IDs before being added to this input
   return input;
 }

@@ -17,6 +17,7 @@ class CallTrackingMockSceneRepository extends MockSceneRepository {
     bool mergeValues = false,
     List<String>? performerIds,
     List<String>? tagIds,
+    String? studioId,
   }) async {
     saveCalled = true;
     lastScraped = scraped;

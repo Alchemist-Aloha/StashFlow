@@ -23,6 +23,7 @@ A native Android mobile client for your **Stash** server. Designed for seamless 
 - 🎲 **Discovery Tools:** Floating "Random" actions and "Surprise Me" entries to find hidden gems in your library.
 - 🔍 **Advanced Filtering:** Powerful menu-based sorting (Date, Rating, Play Count, Random) and multi-filter sheets.
 - 🛠️ **Native Customization:** Configure your server connection, UI preferences, and streaming quality in one place.
+-  **Scene Details Editor** Metadata editing & scraping.
 
 > [!IMPORTANT]
 > **TikTok Layout (WIP):** The vertical scroll (TikTok-style) layout is currently in active development. You may encounter stability issues with scene ratings or entering/exiting fullscreen playback directly from this view. Refinements are ongoing.
@@ -73,6 +74,7 @@ flutter run
 ```bash
 flutter build apk
 ```
+
 
 ## 📚 Internal Docs
 For architecture, known issues, and onboarding, see:

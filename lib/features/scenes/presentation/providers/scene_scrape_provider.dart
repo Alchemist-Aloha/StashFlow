@@ -36,6 +36,7 @@ class SceneScrapeNotifier {
       mergeValues: merge,
       performerIds: performerIds,
       tagIds: tagIds,
+      studioId: scraped.studioId,
     );
   }
 

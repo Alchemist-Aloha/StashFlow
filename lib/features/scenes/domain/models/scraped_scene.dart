@@ -55,6 +55,7 @@ class ScrapedScene {
   final List<ScrapedTag> tags;
   final List<ScrapedPerformer> performers;
   final String? image; // base64 encoded image data
+  final String? studioId;
 
   ScrapedScene({
     this.remoteSiteId,
@@ -65,6 +66,7 @@ class ScrapedScene {
     List<ScrapedTag>? tags,
     List<ScrapedPerformer>? performers,
     this.image,
+    this.studioId,
   }) : urls = urls ?? [],
        tags = tags ?? [],
        performers = performers ?? [];
@@ -86,6 +88,7 @@ class ScrapedScene {
             .toList() ??
         [],
     image: json['image'] as String?,
+    studioId: json['studio_id'] as String?,
   );
 
   Map<String, dynamic> toJson() => {
@@ -97,5 +100,6 @@ class ScrapedScene {
     'tags': tags.map((t) => t.toJson()).toList(),
     'performers': performers.map((p) => p.toJson()).toList(),
     'image': image,
+    'studio_id': studioId,
   };
 }

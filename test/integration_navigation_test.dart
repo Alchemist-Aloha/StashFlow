@@ -116,6 +116,7 @@ class LocalMockSceneRepository implements SceneRepository {
     bool mergeValues = false,
     List<String>? performerIds,
     List<String>? tagIds,
+    String? studioId,
   }) async {}
 
   @override

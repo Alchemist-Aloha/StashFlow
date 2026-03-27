@@ -530,7 +530,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     contentPadding: EdgeInsets.zero,
                     title: Row(
                       children: [
-                        const Expanded(child: Text('Show Scrape Button')),
+                        const Expanded(child: Text('Show Edit Button')),
                         const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -552,7 +552,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       ],
                     ),
                     subtitle: const Text(
-                      'Enable/disable the scrape button on scene details page',
+                      'Enable/disable the edit button on scene details page',
                     ),
                     value: _showScrapeButton,
                     onChanged: (value) async {

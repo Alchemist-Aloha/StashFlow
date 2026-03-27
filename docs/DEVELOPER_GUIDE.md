@@ -45,6 +45,16 @@
 - Sort/filter controls should use app bar actions + bottom sheets.
 - Random discovery actions should use floating action buttons on list pages.
 
+## Scene Details Editor — dev notes
+
+- Location: `SceneDetailsPage` opens the editor dialog implemented in `lib/features/scenes/presentation/widgets/scene_edit_dialog.dart`.
+- Feature toggle: The editor/scrape UI is controlled by `scrapeEnabledProvider` (backed by the `show_scrape_button` SharedPreferences key). Toggle in Settings to enable scraping/editing in the running app.
+- Behavior summary: The editor can run configured scrapers, merge or replace metadata, preview scraped images (supports `data:` URIs), and save changes via `sceneScrapeProvider.saveScraped(...)`. On success the dialog invalidates `sceneDetailsProvider(id)` and `sceneListProvider` to refresh UI state.
+- Testing guidance:
+  - Wrap widgets in `ProviderScope` and override `sceneScrapeProvider` with a test double that implements `scrapeScene(...)` and `saveScraped(...)` to avoid network or repository side effects.
+  - If the app uses synchronous provider consumers at startup, initialize required singletons (for example `SharedPreferences`) in `main()` or override the provider in tests to avoid flaky initialization.
+  - After changing providers or generated files, run `dart run build_runner build --delete-conflicting-outputs`.
+
 <!-- UI_GUIDELINE_REF -->
 
 ## UI Guideline Reference

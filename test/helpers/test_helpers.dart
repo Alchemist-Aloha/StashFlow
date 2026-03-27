@@ -121,6 +121,7 @@ class MockSceneRepository extends MockRepositoryState<Scene>
     bool mergeValues = false,
     List<String>? performerIds,
     List<String>? tagIds,
+    String? studioId,
   }) async {
     if (shouldThrow) throw Exception(errorMessage);
   }

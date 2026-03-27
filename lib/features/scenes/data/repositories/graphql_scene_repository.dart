@@ -520,12 +520,14 @@ class GraphQLSceneRepository implements SceneRepository {
     bool mergeValues = false,
     List<String>? performerIds,
     List<String>? tagIds,
+    String? studioId,
   }) async {
-    // If caller supplied explicit performer/tag ids (user-selected), use them.
+    // If caller supplied explicit performer/tag/studio ids (user-selected), use them.
     // Otherwise reconcile automatically.
     final resolvedPerformerIds =
         performerIds ?? await _reconcilePerformers(scraped.performers);
     final resolvedTagIds = tagIds ?? await _reconcileTags(scraped.tags);
+    final resolvedStudioId = studioId ?? scraped.studioId;
 
     var normalized = buildSceneUpdateInputFromScraped(scraped);
 
@@ -534,6 +536,7 @@ class GraphQLSceneRepository implements SceneRepository {
       normalized['performer_ids'] = resolvedPerformerIds;
     }
     if (resolvedTagIds.isNotEmpty) normalized['tag_ids'] = resolvedTagIds;
+    if (resolvedStudioId != null) normalized['studio_id'] = resolvedStudioId;
 
     validateSceneUpdateInput(normalized);
 
