@@ -19,35 +19,33 @@ String? _cleanUrl(String? url) {
   return trimmed;
 }
 
-List<String> _normalizeTags(List<String> tags) {
-  final seen = <String>{};
-  final out = <String>[];
-  for (var t in tags) {
-    final cleaned = t.trim().toLowerCase();
-    if (cleaned.isEmpty) continue;
-    if (seen.add(cleaned)) out.add(cleaned);
-  }
-  return out;
-}
-
 Map<String, dynamic> buildSceneUpdateInputFromScraped(ScrapedScene s) {
   final input = <String, dynamic>{};
 
-  if (s.title != null && s.title!.trim().isNotEmpty) input['title'] = s.title!.trim();
-  if (s.details != null && s.details!.trim().isNotEmpty) input['details'] = s.details!.trim();
+  if (s.title != null && s.title!.trim().isNotEmpty) {
+    input['title'] = s.title!.trim();
+  }
+  if (s.details != null && s.details!.trim().isNotEmpty) {
+    input['details'] = s.details!.trim();
+  }
 
-  final url = _cleanUrl(s.url);
-  if (url != null) input['urls'] = [url];
+  final cleanedUrls = s.urls.map(_cleanUrl).whereType<String>().toList();
+  if (cleanedUrls.isNotEmpty) input['urls'] = cleanedUrls;
 
   final date = _normalizeDate(s.date);
   if (date != null) input['date'] = date;
 
-  if (s.imageUrl != null && _cleanUrl(s.imageUrl) != null) input['cover_image'] = _cleanUrl(s.imageUrl);
+  if (s.image != null) {
+    // Stash expects the image data, usually as a data URL or just base64 depending on version
+    // Standard schema says "base64 encoded data URL"
+    if (!s.image!.startsWith('data:')) {
+      input['cover_image'] = 'data:image/jpeg;base64,${s.image}';
+    } else {
+      input['cover_image'] = s.image;
+    }
+  }
 
-  final tags = _normalizeTags(s.tags);
-  if (tags.isNotEmpty) input['tag_names'] = tags;
-
-  // Note: performer reconciliation should be handled separately; here we only prepare basic fields
+  // Note: performers and tags should be reconciled to IDs before being added to this input
   return input;
 }
 
@@ -59,7 +57,9 @@ void validateSceneUpdateInput(Map<String, dynamic> input) {
     'urls',
     'date',
     'cover_image',
-    'tag_names',
+    'tag_ids',
+    'performer_ids',
+    'studio_id',
   };
 
   if (input.keys.toSet().intersection(allowedKeys).isEmpty) {
@@ -68,7 +68,7 @@ void validateSceneUpdateInput(Map<String, dynamic> input) {
 
   if (input.containsKey('date')) {
     final d = input['date'];
-    if (d is! String || !RegExp(r'^\d{4}-\d{2}-\d{2}\$').hasMatch(d)) {
+    if (d is! String || !RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(d)) {
       throw ArgumentError('Invalid date format (expected YYYY-MM-DD): $d');
     }
   }
@@ -79,7 +79,8 @@ void validateSceneUpdateInput(Map<String, dynamic> input) {
     for (var raw in urls) {
       final u = raw as String;
       final parsed = Uri.tryParse(u);
-      if (parsed == null || (parsed.scheme != 'http' && parsed.scheme != 'https')) {
+      if (parsed == null ||
+          (parsed.scheme != 'http' && parsed.scheme != 'https')) {
         throw ArgumentError('Invalid URL: $u');
       }
     }

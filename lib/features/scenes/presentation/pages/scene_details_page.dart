@@ -20,6 +20,7 @@ import '../providers/scene_list_provider.dart';
 import '../widgets/scene_scrape_view.dart';
 import '../providers/video_player_provider.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
+import '../../../setup/presentation/providers/scrape_customization_provider.dart';
 import '../../domain/entities/scene.dart';
 import '../widgets/scene_video_player.dart';
 
@@ -170,6 +171,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
     final sceneAsync = ref.watch(sceneDetailsProvider(widget.sceneId));
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
+    final scrapeEnabled = ref.watch(scrapeEnabledProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Scene Details')),
@@ -203,8 +205,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                         SceneVideoPlayer(scene: scene),
                         Padding(
                           padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                          child: _buildMainInfo(context, scene),
+                          child: _buildMainInfo(context, scene, scrapeEnabled),
                         ),
+
                       ],
                     ),
                   ),
@@ -245,7 +248,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildMainInfo(context, scene),
+                      _buildMainInfo(context, scene, scrapeEnabled),
                       _buildTagsSection(context, scene),
                       _buildPerformersSection(context, scene),
                       _buildMoreFromStudioSection(context, scene),
@@ -265,7 +268,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
   }
 
-  Widget _buildMainInfo(BuildContext context, Scene scene) {
+  Widget _buildMainInfo(BuildContext context, Scene scene, bool scrapeEnabled) {
     final primaryFile = scene.files.isNotEmpty ? scene.files.first : null;
     final detailsText = (scene.details ?? '').trim();
     final hasDetails = detailsText.isNotEmpty;
@@ -356,7 +359,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 icon: Icons.star,
                 iconColor: context.colors.ratingColor,
               ),
-            _buildChip(context, '${scene.playCount} plays', icon: Icons.play_arrow),
+            _buildChip(
+              context,
+              '${scene.playCount} plays',
+              icon: Icons.play_arrow,
+            ),
           ],
         ),
         const SizedBox(height: 16),
@@ -403,7 +410,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
             FilledButton.tonalIcon(
               onPressed: () async {
                 try {
-                  await ref.read(sceneRepositoryProvider).incrementSceneOCounter(scene.id);
+                  await ref
+                      .read(sceneRepositoryProvider)
+                      .incrementSceneOCounter(scene.id);
                   ref.invalidate(sceneDetailsProvider(scene.id));
                   ref.invalidate(sceneListProvider);
                   if (context.mounted) {
@@ -414,7 +423,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 } catch (e) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Failed to increment O count: $e')),
+                      SnackBar(
+                        content: Text('Failed to increment O count: $e'),
+                      ),
                     );
                   }
                 }
@@ -428,23 +439,25 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               icon: const Icon(Icons.water_drop_outlined),
               label: Text('${scene.oCounter}'),
             ),
-            const SizedBox(width: 8),
-            FilledButton.tonalIcon(
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (_) => SceneScrapeView(sceneId: scene.id),
-                );
-              },
-              style: FilledButton.styleFrom(
-                visualDensity: VisualDensity.compact,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                minimumSize: const Size(0, 32),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            if (scrapeEnabled) const SizedBox(width: 8),
+            if (scrapeEnabled)
+              FilledButton.tonalIcon(
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (_) => SceneScrapeView(sceneId: scene.id),
+                  );
+                },
+                style: FilledButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  minimumSize: const Size(0, 32),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                ),
+                icon: const Icon(Icons.search),
+                label: const Text('Scrape'),
               ),
-              icon: const Icon(Icons.search),
-              label: const Text('Scrape'),
-            ),
           ],
         ),
         Divider(
@@ -570,7 +583,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       }
     }
     final hasPerformers = performerIndexes.isNotEmpty;
-    final canExpandPerformers = performerIndexes.length > _collapsedPerformerRows;
+    final canExpandPerformers =
+        performerIndexes.length > _collapsedPerformerRows;
 
     if (!hasPerformers) return const SizedBox.shrink();
 
@@ -612,10 +626,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
             final performerName = scene.performerNames[performerIndex].trim();
             final performerImagePath =
                 performerIndex < scene.performerImagePaths.length
-                    ? scene.performerImagePaths[performerIndex]
-                    : null;
+                ? scene.performerImagePaths[performerIndex]
+                : null;
             final hasImage =
-                performerImagePath != null && performerImagePath.trim().isNotEmpty;
+                performerImagePath != null &&
+                performerImagePath.trim().isNotEmpty;
 
             return ListTile(
               contentPadding: EdgeInsets.zero,
@@ -629,10 +644,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                       child: const Icon(Icons.person),
                     )
                   : const CircleAvatar(child: Icon(Icons.person)),
-              title: Text(
-                performerName,
-                style: context.textTheme.bodyLarge,
-              ),
+              title: Text(performerName, style: context.textTheme.bodyLarge),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 if (performerIndex < scene.performerIds.length) {
@@ -662,10 +674,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
     return studioMediaAsync.when(
       data: (mediaItems) {
-        final shuffled = mediaItems
-            .where((item) => item.sceneId != scene.id)
-            .toList()
-          ..shuffle(Random(scene.id.hashCode));
+        final shuffled =
+            mediaItems.where((item) => item.sceneId != scene.id).toList()
+              ..shuffle(Random(scene.id.hashCode));
 
         if (shuffled.isEmpty) {
           return const SizedBox.shrink();
@@ -677,7 +688,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
             SectionHeader(
               title: 'More From Studio',
               onViewAll: canOpenStudio
-                  ? () => context.push('/studios/studio/${scene.studioId}/media')
+                  ? () =>
+                        context.push('/studios/studio/${scene.studioId}/media')
                   : null,
               padding: EdgeInsets.zero,
             ),
@@ -689,7 +701,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                       id: item.sceneId,
                       title: item.title,
                       thumbnailUrl: item.thumbnailUrl,
-                      onTap: () => context.push('/scenes/scene/${item.sceneId}'),
+                      onTap: () =>
+                          context.push('/scenes/scene/${item.sceneId}'),
                     ),
                   )
                   .toList(),

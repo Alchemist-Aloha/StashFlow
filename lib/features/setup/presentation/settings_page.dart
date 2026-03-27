@@ -29,6 +29,7 @@ import '../../tags/presentation/providers/tag_list_provider.dart';
 import '../../tags/presentation/providers/tag_media_provider.dart';
 import 'providers/connection_provider.dart';
 import 'providers/navigation_customization_provider.dart';
+import 'providers/scrape_customization_provider.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -71,6 +72,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   bool _enableBackgroundPlayback = false;
   bool _enableNativePip = false;
   bool _showRandomNavigation = true;
+  bool _showScrapeButton = false;
   ThemeMode _themeMode = ThemeMode.system;
   bool _loading = true;
 
@@ -151,6 +153,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         prefs.getBool(_enableBackgroundPlaybackKey) ?? false;
     final enableNativePip = prefs.getBool(_enableNativePipKey) ?? false;
     final showRandomNavigation = ref.read(randomNavigationEnabledProvider);
+    final showScrapeButton = ref.read(scrapeEnabledProvider);
     final themeMode = ref.read(appThemeModeProvider);
     final seedColor = ref.read(appThemeColorProvider);
 
@@ -165,6 +168,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     _enableBackgroundPlayback = enableBackgroundPlayback;
     _enableNativePip = enableNativePip;
     _showRandomNavigation = showRandomNavigation;
+    _showScrapeButton = showScrapeButton;
     _themeMode = themeMode;
     _seedColor = seedColor;
 
@@ -292,6 +296,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     ref
         .read(randomNavigationEnabledProvider.notifier)
         .set(_showRandomNavigation);
+
+    ref.read(scrapeEnabledProvider.notifier).set(_showScrapeButton);
 
     // Keep in-memory player state synchronized with persisted settings.
     final playerStateNotifier = ref.read(playerStateProvider.notifier);
@@ -513,6 +519,40 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     value: _showRandomNavigation,
                     onChanged: (value) async {
                       setState(() => _showRandomNavigation = value);
+                      await _saveToggleSettings();
+                    },
+                  ),
+                  SwitchListTile.adaptive(
+                    contentPadding: EdgeInsets.zero,
+                    title: Row(
+                      children: [
+                        const Expanded(child: Text('Show Scrape Button')),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: context.colors.surfaceVariant,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'WIP',
+                            style: context.textTheme.labelSmall?.copyWith(
+                              color: context.colors.onSurfaceVariant,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    subtitle: const Text(
+                      'Enable/disable the scrape button on scene details page',
+                    ),
+                    value: _showScrapeButton,
+                    onChanged: (value) async {
+                      setState(() => _showScrapeButton = value);
                       await _saveToggleSettings();
                     },
                   ),

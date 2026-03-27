@@ -8,12 +8,36 @@ part of 'stream_resolver.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// A utility that resolves the best available video stream for a given [Scene].
+///
+/// Stash provides multiple ways to stream a scene:
+/// 1. Direct file paths (if the client has network access to the storage).
+/// 2. Scene-specific stream endpoints (transcoded or direct-from-server).
+///
+/// This class handles the logic of choosing between these options based on
+/// user preferences and stream availability.
 
 @ProviderFor(StreamResolver)
 final streamResolverProvider = StreamResolverProvider._();
 
+/// A utility that resolves the best available video stream for a given [Scene].
+///
+/// Stash provides multiple ways to stream a scene:
+/// 1. Direct file paths (if the client has network access to the storage).
+/// 2. Scene-specific stream endpoints (transcoded or direct-from-server).
+///
+/// This class handles the logic of choosing between these options based on
+/// user preferences and stream availability.
 final class StreamResolverProvider
     extends $NotifierProvider<StreamResolver, void> {
+  /// A utility that resolves the best available video stream for a given [Scene].
+  ///
+  /// Stash provides multiple ways to stream a scene:
+  /// 1. Direct file paths (if the client has network access to the storage).
+  /// 2. Scene-specific stream endpoints (transcoded or direct-from-server).
+  ///
+  /// This class handles the logic of choosing between these options based on
+  /// user preferences and stream availability.
   StreamResolverProvider._()
     : super(
         from: null,
@@ -42,6 +66,15 @@ final class StreamResolverProvider
 }
 
 String _$streamResolverHash() => r'adf64a3a13c35fea19191d6b3cb38b265e225090';
+
+/// A utility that resolves the best available video stream for a given [Scene].
+///
+/// Stash provides multiple ways to stream a scene:
+/// 1. Direct file paths (if the client has network access to the storage).
+/// 2. Scene-specific stream endpoints (transcoded or direct-from-server).
+///
+/// This class handles the logic of choosing between these options based on
+/// user preferences and stream availability.
 
 abstract class _$StreamResolver extends $Notifier<void> {
   void build();

@@ -176,11 +176,36 @@ abstract class _$SceneFilterState extends $Notifier<SceneFilter> {
   }
 }
 
+/// A notifier that manages the primary list of scenes with support for
+/// filtering, sorting, and infinite pagination.
+///
+/// This provider is responsible for:
+/// - Initializing and refreshing the scene list from the [SceneRepository].
+/// - Managing the current page state and loading more scenes as the user scrolls.
+/// - Providing search and filtering capabilities.
+/// - Synchronizing the initial playback sequence with the [playbackQueueProvider].
+
 @ProviderFor(SceneList)
 final sceneListProvider = SceneListProvider._();
 
+/// A notifier that manages the primary list of scenes with support for
+/// filtering, sorting, and infinite pagination.
+///
+/// This provider is responsible for:
+/// - Initializing and refreshing the scene list from the [SceneRepository].
+/// - Managing the current page state and loading more scenes as the user scrolls.
+/// - Providing search and filtering capabilities.
+/// - Synchronizing the initial playback sequence with the [playbackQueueProvider].
 final class SceneListProvider
     extends $AsyncNotifierProvider<SceneList, List<Scene>> {
+  /// A notifier that manages the primary list of scenes with support for
+  /// filtering, sorting, and infinite pagination.
+  ///
+  /// This provider is responsible for:
+  /// - Initializing and refreshing the scene list from the [SceneRepository].
+  /// - Managing the current page state and loading more scenes as the user scrolls.
+  /// - Providing search and filtering capabilities.
+  /// - Synchronizing the initial playback sequence with the [playbackQueueProvider].
   SceneListProvider._()
     : super(
         from: null,
@@ -201,6 +226,15 @@ final class SceneListProvider
 }
 
 String _$sceneListHash() => r'0475d99e7ddfa8094a13ef6e5d1ac8bdaef3e293';
+
+/// A notifier that manages the primary list of scenes with support for
+/// filtering, sorting, and infinite pagination.
+///
+/// This provider is responsible for:
+/// - Initializing and refreshing the scene list from the [SceneRepository].
+/// - Managing the current page state and loading more scenes as the user scrolls.
+/// - Providing search and filtering capabilities.
+/// - Synchronizing the initial playback sequence with the [playbackQueueProvider].
 
 abstract class _$SceneList extends $AsyncNotifier<List<Scene>> {
   FutureOr<List<Scene>> build();

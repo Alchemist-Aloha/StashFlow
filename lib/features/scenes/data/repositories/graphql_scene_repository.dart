@@ -1,9 +1,9 @@
-import 'dart:convert';
 import 'package:graphql/client.dart';
-import 'package:http/http.dart' as http;
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../graphql/scenes.graphql.dart';
+import '../../../performers/data/graphql/performers.graphql.dart';
+import '../../../tags/data/graphql/tags.graphql.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../../domain/repositories/scene_repository.dart';
@@ -387,14 +387,58 @@ class GraphQLSceneRepository implements SceneRepository {
   }
 
   @override
+  Future<Map<String, List<Map<String, dynamic>>>> findPerformerCandidates(
+    List<String> queries,
+  ) async {
+    final results = <String, List<Map<String, dynamic>>>{};
+    for (final q in queries) {
+      if (q.trim().isEmpty) continue;
+      final result = await client.query$FindPerformers(
+        Options$Query$FindPerformers(
+          variables: Variables$Query$FindPerformers(
+            filter: Input$FindFilterType(q: q),
+          ),
+        ),
+      );
+      if (result.hasException) continue;
+      results[q] =
+          (result.data?['findPerformers']?['performers'] as List<dynamic>?)
+              ?.cast<Map<String, dynamic>>() ??
+          [];
+    }
+    return results;
+  }
+
+  @override
+  Future<Map<String, List<Map<String, dynamic>>>> findTagCandidates(
+    List<String> tags,
+  ) async {
+    final results = <String, List<Map<String, dynamic>>>{};
+    for (final t in tags) {
+      if (t.trim().isEmpty) continue;
+      final result = await client.query$FindTags(
+        Options$Query$FindTags(
+          variables: Variables$Query$FindTags(
+            filter: Input$FindFilterType(q: t),
+          ),
+        ),
+      );
+      if (result.hasException) continue;
+      results[t] =
+          (result.data?['findTags']?['tags'] as List<dynamic>?)
+              ?.cast<Map<String, dynamic>>() ??
+          [];
+    }
+    return results;
+  }
+
+  @override
   Future<List<Scraper>> listScrapers({required List<String> types}) async {
     final doc = gql(r'''
       query ListScrapers($types: [ScrapeContentType!]!) {
         listScrapers(types: $types) {
           id
           name
-          description
-          types
         }
       }
     ''');
@@ -409,7 +453,7 @@ class GraphQLSceneRepository implements SceneRepository {
     if (raw == null) return [];
 
     return raw
-        .map((e) => Scraper.fromJson((e as Map).map((k, v) => MapEntry(k as String, v))))
+        .map((e) => Scraper.fromJson((e as Map).cast<String, dynamic>()))
         .toList();
   }
 
@@ -421,18 +465,28 @@ class GraphQLSceneRepository implements SceneRepository {
     final doc = gql(r'''
       query ScrapeSingleScene($source: ScraperSourceInput!, $input: ScrapeSingleSceneInput!) {
         scrapeSingleScene(source: $source, input: $input) {
-          id
           title
+          code
           details
+          director
+          urls
           date
-          url
-          tags
-          image_url
-          performers {
-            id
+          image
+          remote_site_id
+          studio {
             name
-            url
-            image_url
+            stored_id
+          }
+          tags {
+            name
+            stored_id
+          }
+          performers {
+            name
+            remote_site_id
+            urls
+            images
+            stored_id
           }
         }
       }
@@ -443,7 +497,9 @@ class GraphQLSceneRepository implements SceneRepository {
       'input': {'scene_id': sceneId},
     };
 
-    final result = await client.query(QueryOptions(document: doc, variables: variables));
+    final result = await client.query(
+      QueryOptions(document: doc, variables: variables),
+    );
 
     if (result.hasException) throw result.exception!;
 
@@ -465,25 +521,16 @@ class GraphQLSceneRepository implements SceneRepository {
   }) async {
     // If caller supplied explicit performer/tag ids (user-selected), use them.
     // Otherwise reconcile automatically.
-    final resolvedPerformerIds = performerIds ?? await _reconcilePerformers(scraped.performers);
+    final resolvedPerformerIds =
+        performerIds ?? await _reconcilePerformers(scraped.performers);
     final resolvedTagIds = tagIds ?? await _reconcileTags(scraped.tags);
 
     var normalized = buildSceneUpdateInputFromScraped(scraped);
 
-    // If the scraper provided an image URL, attempt to download, validate and
-    // encode as a base64 data URL so the server can accept it as `cover_image`.
-    try {
-      final cover = normalized['cover_image'] as String?;
-      if (cover != null && (cover.startsWith('http://') || cover.startsWith('https://'))) {
-        final dataUrl = await _downloadAndEncodeImage(cover);
-        if (dataUrl != null) normalized['cover_image'] = dataUrl;
-      }
-    } catch (_) {
-      // If image pipeline fails, continue using the original cover value.
-    }
-
     // Inject resolved ids
-    if (resolvedPerformerIds.isNotEmpty) normalized['performer_ids'] = resolvedPerformerIds;
+    if (resolvedPerformerIds.isNotEmpty) {
+      normalized['performer_ids'] = resolvedPerformerIds;
+    }
     if (resolvedTagIds.isNotEmpty) normalized['tag_ids'] = resolvedTagIds;
 
     validateSceneUpdateInput(normalized);
@@ -498,11 +545,16 @@ class GraphQLSceneRepository implements SceneRepository {
         }
       ''');
 
-      final result = await client.mutate(MutationOptions(document: doc, variables: {
-        'source': [sceneId],
-        'destination': sceneId,
-        'values': normalized,
-      }));
+      final result = await client.mutate(
+        MutationOptions(
+          document: doc,
+          variables: {
+            'source': [sceneId],
+            'destination': sceneId,
+            'values': normalized,
+          },
+        ),
+      );
 
       if (result.hasException) throw result.exception!;
     } else {
@@ -512,86 +564,16 @@ class GraphQLSceneRepository implements SceneRepository {
         }
       ''');
 
-      final result = await client.mutate(MutationOptions(document: doc, variables: {'input': input}));
+      final result = await client.mutate(
+        MutationOptions(document: doc, variables: {'input': input}),
+      );
       if (result.hasException) throw result.exception!;
     }
   }
 
-  // Maximum bytes to download for cover images (5 MB)
-  static const int _maxImageBytes = 5 * 1024 * 1024;
-
-  Future<String?> _downloadAndEncodeImage(String url) async {
-    final uri = Uri.tryParse(url);
-    if (uri == null) return null;
-
-    final resp = await http.get(uri, headers: {'Accept': 'image/*'});
-    if (resp.statusCode != 200) return null;
-
-    final contentType = resp.headers['content-type'] ?? '';
-    if (!contentType.startsWith('image/')) return null;
-
-    final contentLengthHeader = resp.headers['content-length'];
-    if (contentLengthHeader != null) {
-      final len = int.tryParse(contentLengthHeader);
-      if (len != null && len > _maxImageBytes) return null;
-    }
-
-    final bytes = resp.bodyBytes;
-    if (bytes.isEmpty || bytes.length > _maxImageBytes) return null;
-
-    final b64 = base64Encode(bytes);
-    return 'data:$contentType;base64,$b64';
-  }
-
-  @override
-  Future<Map<String, List<Map<String, dynamic>>>> findPerformerCandidates(List<String> queries) async {
-    final map = <String, List<Map<String, dynamic>>>{};
-    if (queries.isEmpty) return map;
-
-    final findDoc = gql(r'''
-      query FindPerformers($filter: FindFilterType) {
-        findPerformers(filter: $filter) { performers { id name urls image_path } }
-      }
-    ''');
-
-    for (final q in queries) {
-      final trimmed = q.trim();
-      if (trimmed.isEmpty) continue;
-      final result = await client.query(QueryOptions(document: findDoc, variables: {'filter': {'q': trimmed}}));
-      if (result.hasException) throw result.exception!;
-      final raw = result.data?['findPerformers'] as Map<String, dynamic>?;
-      final found = (raw?['performers'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
-      map[q] = found;
-    }
-
-    return map;
-  }
-
-  @override
-  Future<Map<String, List<Map<String, dynamic>>>> findTagCandidates(List<String> tags) async {
-    final map = <String, List<Map<String, dynamic>>>{};
-    if (tags.isEmpty) return map;
-
-    final findDoc = gql(r'''
-      query FindTags($filter: FindFilterType) {
-        findTags(filter: $filter) { tags { id name } }
-      }
-    ''');
-
-    for (final t in tags) {
-      final trimmed = t.trim();
-      if (trimmed.isEmpty) continue;
-      final result = await client.query(QueryOptions(document: findDoc, variables: {'filter': {'q': trimmed}}));
-      if (result.hasException) throw result.exception!;
-      final raw = result.data?['findTags'] as Map<String, dynamic>?;
-      final found = (raw?['tags'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
-      map[t] = found;
-    }
-
-    return map;
-  }
-
-  Future<List<String>> _reconcilePerformers(List<ScrapedPerformer> performers) async {
+  Future<List<String>> _reconcilePerformers(
+    List<ScrapedPerformer> performers,
+  ) async {
     final ids = <String>[];
     if (performers.isEmpty) return ids;
 
@@ -609,33 +591,48 @@ class GraphQLSceneRepository implements SceneRepository {
     ''');
 
     for (final p in performers) {
-      if ((p.id ?? '').isNotEmpty) {
-        ids.add(p.id!);
+      if (p.storedId != null && p.storedId!.isNotEmpty) {
+        ids.add(p.storedId!);
         continue;
       }
 
       // Try to find by name first
-      final q = p.name ?? p.url ?? '';
-      if (q.isEmpty) continue;
+      final nameQuery = p.name ?? (p.urls.isNotEmpty ? p.urls.first : '');
+      if (nameQuery.isEmpty) continue;
 
-      final result = await client.query(QueryOptions(document: findDoc, variables: {'filter': {'q': q}}));
+      final result = await client.query(
+        QueryOptions(
+          document: findDoc,
+          variables: {
+            'filter': {'q': nameQuery},
+          },
+        ),
+      );
       if (result.hasException) throw result.exception!;
 
       final raw = result.data?['findPerformers'] as Map<String, dynamic>?;
-      final found = (raw?['performers'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+      final found =
+          (raw?['performers'] as List<dynamic>?)
+              ?.cast<Map<String, dynamic>>() ??
+          [];
 
       String? chosenId;
       for (final f in found) {
         final name = f['name'] as String?;
         final urls = (f['urls'] as List<dynamic>?)?.cast<String>() ?? [];
-        if (name != null && p.name != null && name.toLowerCase() == p.name!.toLowerCase()) {
+        if (name != null &&
+            p.name != null &&
+            name.toLowerCase() == p.name!.toLowerCase()) {
           chosenId = f['id'] as String?;
           break;
         }
-        if (p.url != null && urls.contains(p.url)) {
-          chosenId = f['id'] as String?;
-          break;
+        for (final pUrl in p.urls) {
+          if (urls.contains(pUrl)) {
+            chosenId = f['id'] as String?;
+            break;
+          }
         }
+        if (chosenId != null) break;
       }
 
       if (chosenId != null) {
@@ -644,19 +641,25 @@ class GraphQLSceneRepository implements SceneRepository {
       }
 
       // Create performer when no candidate found
-      final input = <String, dynamic>{'name': p.name ?? q};
-      if (p.url != null) input['urls'] = [p.url];
+      final input = <String, dynamic>{'name': p.name ?? nameQuery};
+      if (p.urls.isNotEmpty) input['urls'] = p.urls;
+      if (p.images.isNotEmpty) input['image'] = p.images.first;
 
-      final createResult = await client.mutate(MutationOptions(document: createDoc, variables: {'input': input}));
+      final createResult = await client.mutate(
+        MutationOptions(document: createDoc, variables: {'input': input}),
+      );
       if (createResult.hasException) throw createResult.exception!;
-      final created = (createResult.data?['performerCreate'] as Map<String, dynamic>?);
-      if (created != null && created['id'] != null) ids.add(created['id'] as String);
+      final created =
+          (createResult.data?['performerCreate'] as Map<String, dynamic>?);
+      if (created != null && created['id'] != null) {
+        ids.add(created['id'] as String);
+      }
     }
 
     return ids;
   }
 
-  Future<List<String>> _reconcileTags(List<String> tags) async {
+  Future<List<String>> _reconcileTags(List<ScrapedTag> tags) async {
     final ids = <String>[];
     if (tags.isEmpty) return ids;
 
@@ -671,14 +674,27 @@ class GraphQLSceneRepository implements SceneRepository {
     ''');
 
     for (final t in tags) {
-      final q = t.trim();
+      if (t.storedId != null && t.storedId!.isNotEmpty) {
+        ids.add(t.storedId!);
+        continue;
+      }
+
+      final q = t.name.trim();
       if (q.isEmpty) continue;
 
-      final result = await client.query(QueryOptions(document: findDoc, variables: {'filter': {'q': q}}));
+      final result = await client.query(
+        QueryOptions(
+          document: findDoc,
+          variables: {
+            'filter': {'q': q},
+          },
+        ),
+      );
       if (result.hasException) throw result.exception!;
 
       final raw = result.data?['findTags'] as Map<String, dynamic>?;
-      final found = (raw?['tags'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+      final found =
+          (raw?['tags'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
 
       String? chosenId;
       for (final f in found) {
@@ -694,10 +710,20 @@ class GraphQLSceneRepository implements SceneRepository {
         continue;
       }
 
-      final createResult = await client.mutate(MutationOptions(document: createDoc, variables: {'input': {'name': q}}));
+      final createResult = await client.mutate(
+        MutationOptions(
+          document: createDoc,
+          variables: {
+            'input': {'name': q},
+          },
+        ),
+      );
       if (createResult.hasException) throw createResult.exception!;
-      final created = (createResult.data?['tagCreate'] as Map<String, dynamic>?);
-      if (created != null && created['id'] != null) ids.add(created['id'] as String);
+      final created =
+          (createResult.data?['tagCreate'] as Map<String, dynamic>?);
+      if (created != null && created['id'] != null) {
+        ids.add(created['id'] as String);
+      }
     }
 
     return ids;
