@@ -4,26 +4,34 @@
 A native Android mobile client for your **Stash** server. Designed for seamless browsing, effortless discovery, and high-quality playback on the go.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.4.3-green.svg)](pubspec.yaml)
+[![Version](https://img.shields.io/badge/version-1.5.0-green.svg)](pubspec.yaml)
 
 ## 📸 Screenshots
 
 <p align="center">
 	<img src="asset/scenes.jpg" alt="Scenes feed" width="280" />
-	<img src="asset/scene_details.jpg" alt="Scene details playback" width="280" />
+	<img src="asset/scene_filter.jpg" alt="Scenes filter" width="280" />
+	<img src="asset/scene_sort.jpg" alt="Scenes sort" width="280" />
 </p>
-
+<p align="center">
+	<img src="asset/scene_details.jpg" alt="Scene details playback" width="280" />
+	<img src="asset/edit_scene.jpg" alt="Scene details editor" width="280" />
+	<img src="asset/settings.jpg" alt="Setting page" width="280" />
+</p>
 ## ✨ Key Features
 
-- 📱 **Adaptive UI:** Fully optimized for both phones and tablets. Features a side **Navigation Rail** and expanded grid layouts (up to 5 columns) on larger screens.
-- 🎬 **Seamless Playback:** Integrated video player with support for multiple streaming strategies, startup diagnostics, and **Autoplay Next**.
-- 🎵 **System Integration:** Full support for `audio_service` (media notifications/lock screen controls) and **Picture-in-Picture (PiP)** mode.
-- 👤 **Rich Browsing:** Explore Scenes, Performers, Studios, Tags, Galleries, and Groups with native-feel pagination and fast search.
+- 📱 **Adaptive UI:** Fully optimized for both phones and tablets. Features a side **Navigation Rail** and intelligent grid layouts that scale up to 5 columns on larger screens.
+- 🎬 **Seamless Playback:** Integrated video player with support for multiple streaming strategies, startup diagnostics, **Autoplay Next**, and continuous playback queue management.
+- 🎵 **System Integration:** Full support for `audio_service` (media notifications/lock screen controls), background audio playback, and **Picture-in-Picture (PiP)** mode.
+- 👤 **Rich Browsing:** Explore Scenes, Performers, Studios, Tags, Galleries, and Groups with native-feel pagination and fast global search.
 - 📱 **Flexible Layouts:** Choose between a classic **Grid/List** view or a modern **TikTok-style** vertical scroll layout for discovery.
 - 🎲 **Discovery Tools:** Floating "Random" actions and "Surprise Me" entries to find hidden gems in your library.
-- 🔍 **Advanced Filtering:** Powerful menu-based sorting (Date, Rating, Play Count, Random) and multi-filter sheets.
+- 🔍 **Advanced Filtering:** Powerful menu-based sorting (Date, Rating, Play Count, Random) and comprehensive multi-filter sheets.
+- 🛠️ **Metadata Editor:** Full-screen editor to update Scene **Title**, **Details**, **Date**, and **URLs**.
+- 🏷️ **Entity Association:** Easily manage and assign **Studios**, **Performers**, and **Tags** from within the edit page using searchable pickers.
+- 📡 **Smart Scraping:** Integrated metadata scraping with support for selecting from multiple results and **automatic merging** of matched library entities.
+- ⚡ **Performance Optimized:** Advanced **Image Deduplication**, prefetching logic, and automatic recovery from corrupt cache files ensure a smooth, low-latency experience.
 - 🛠️ **Native Customization:** Configure your server connection, UI preferences, and streaming quality in one place.
--  **Scene Details Editor** Metadata editing & scraping.
 
 > [!IMPORTANT]
 > **TikTok Layout (WIP):** The vertical scroll (TikTok-style) layout is currently in active development. You may encounter stability issues with scene ratings or entering/exiting fullscreen playback directly from this view. Refinements are ongoing.
