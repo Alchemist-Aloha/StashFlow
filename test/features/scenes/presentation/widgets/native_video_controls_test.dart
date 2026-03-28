@@ -97,6 +97,7 @@ void main() {
     resumeTime: null,
     playCount: 0,
     files: [],
+    urls: [],
     paths: const ScenePaths(screenshot: null, preview: null, stream: null),
     studioId: '',
     studioName: '',
