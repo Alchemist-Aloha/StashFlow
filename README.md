@@ -4,7 +4,7 @@
 A native Android mobile client for your **Stash** server. Designed for seamless browsing, effortless discovery, and high-quality playback on the go.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.4.3-green.svg)](pubspec.yaml)
+[![Version](https://img.shields.io/badge/version-1.5.0-green.svg)](pubspec.yaml)
 
 ## 📸 Screenshots
 
