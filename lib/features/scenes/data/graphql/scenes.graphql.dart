@@ -16,8 +16,10 @@ class Fragment$SlimSceneData {
     this.play_count,
     required this.files,
     required this.paths,
+    required this.urls,
     this.studio,
     required this.performers,
+    required this.tags,
     this.$__typename = 'Scene',
   });
 
@@ -33,8 +35,10 @@ class Fragment$SlimSceneData {
     final l$play_count = json['play_count'];
     final l$files = json['files'];
     final l$paths = json['paths'];
+    final l$urls = json['urls'];
     final l$studio = json['studio'];
     final l$performers = json['performers'];
+    final l$tags = json['tags'];
     final l$$__typename = json['__typename'];
     return Fragment$SlimSceneData(
       id: (l$id as String),
@@ -56,6 +60,7 @@ class Fragment$SlimSceneData {
       paths: Fragment$SlimSceneData$paths.fromJson(
         (l$paths as Map<String, dynamic>),
       ),
+      urls: (l$urls as List<dynamic>).map((e) => (e as String)).toList(),
       studio: l$studio == null
           ? null
           : Fragment$SlimSceneData$studio.fromJson(
@@ -64,6 +69,13 @@ class Fragment$SlimSceneData {
       performers: (l$performers as List<dynamic>)
           .map(
             (e) => Fragment$SlimSceneData$performers.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
+      tags: (l$tags as List<dynamic>)
+          .map(
+            (e) => Fragment$SlimSceneData$tags.fromJson(
               (e as Map<String, dynamic>),
             ),
           )
@@ -94,9 +106,13 @@ class Fragment$SlimSceneData {
 
   final Fragment$SlimSceneData$paths paths;
 
+  final List<String> urls;
+
   final Fragment$SlimSceneData$studio? studio;
 
   final List<Fragment$SlimSceneData$performers> performers;
+
+  final List<Fragment$SlimSceneData$tags> tags;
 
   final String $__typename;
 
@@ -124,10 +140,14 @@ class Fragment$SlimSceneData {
     _resultData['files'] = l$files.map((e) => e.toJson()).toList();
     final l$paths = paths;
     _resultData['paths'] = l$paths.toJson();
+    final l$urls = urls;
+    _resultData['urls'] = l$urls.map((e) => e).toList();
     final l$studio = studio;
     _resultData['studio'] = l$studio?.toJson();
     final l$performers = performers;
     _resultData['performers'] = l$performers.map((e) => e.toJson()).toList();
+    final l$tags = tags;
+    _resultData['tags'] = l$tags.map((e) => e.toJson()).toList();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -146,8 +166,10 @@ class Fragment$SlimSceneData {
     final l$play_count = play_count;
     final l$files = files;
     final l$paths = paths;
+    final l$urls = urls;
     final l$studio = studio;
     final l$performers = performers;
+    final l$tags = tags;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -161,8 +183,10 @@ class Fragment$SlimSceneData {
       l$play_count,
       Object.hashAll(l$files.map((v) => v)),
       l$paths,
+      Object.hashAll(l$urls.map((v) => v)),
       l$studio,
       Object.hashAll(l$performers.map((v) => v)),
+      Object.hashAll(l$tags.map((v) => v)),
       l$$__typename,
     ]);
   }
@@ -237,6 +261,18 @@ class Fragment$SlimSceneData {
     if (l$paths != lOther$paths) {
       return false;
     }
+    final l$urls = urls;
+    final lOther$urls = other.urls;
+    if (l$urls.length != lOther$urls.length) {
+      return false;
+    }
+    for (int i = 0; i < l$urls.length; i++) {
+      final l$urls$entry = l$urls[i];
+      final lOther$urls$entry = lOther$urls[i];
+      if (l$urls$entry != lOther$urls$entry) {
+        return false;
+      }
+    }
     final l$studio = studio;
     final lOther$studio = other.studio;
     if (l$studio != lOther$studio) {
@@ -251,6 +287,18 @@ class Fragment$SlimSceneData {
       final l$performers$entry = l$performers[i];
       final lOther$performers$entry = lOther$performers[i];
       if (l$performers$entry != lOther$performers$entry) {
+        return false;
+      }
+    }
+    final l$tags = tags;
+    final lOther$tags = other.tags;
+    if (l$tags.length != lOther$tags.length) {
+      return false;
+    }
+    for (int i = 0; i < l$tags.length; i++) {
+      final l$tags$entry = l$tags[i];
+      final lOther$tags$entry = lOther$tags[i];
+      if (l$tags$entry != lOther$tags$entry) {
         return false;
       }
     }
@@ -289,8 +337,10 @@ abstract class CopyWith$Fragment$SlimSceneData<TRes> {
     int? play_count,
     List<Fragment$SlimSceneData$files>? files,
     Fragment$SlimSceneData$paths? paths,
+    List<String>? urls,
     Fragment$SlimSceneData$studio? studio,
     List<Fragment$SlimSceneData$performers>? performers,
+    List<Fragment$SlimSceneData$tags>? tags,
     String? $__typename,
   });
   TRes files(
@@ -309,6 +359,14 @@ abstract class CopyWith$Fragment$SlimSceneData<TRes> {
         CopyWith$Fragment$SlimSceneData$performers<
           Fragment$SlimSceneData$performers
         >
+      >,
+    )
+    _fn,
+  );
+  TRes tags(
+    Iterable<Fragment$SlimSceneData$tags> Function(
+      Iterable<
+        CopyWith$Fragment$SlimSceneData$tags<Fragment$SlimSceneData$tags>
       >,
     )
     _fn,
@@ -337,8 +395,10 @@ class _CopyWithImpl$Fragment$SlimSceneData<TRes>
     Object? play_count = _undefined,
     Object? files = _undefined,
     Object? paths = _undefined,
+    Object? urls = _undefined,
     Object? studio = _undefined,
     Object? performers = _undefined,
+    Object? tags = _undefined,
     Object? $__typename = _undefined,
   }) => _then(
     Fragment$SlimSceneData(
@@ -369,12 +429,18 @@ class _CopyWithImpl$Fragment$SlimSceneData<TRes>
       paths: paths == _undefined || paths == null
           ? _instance.paths
           : (paths as Fragment$SlimSceneData$paths),
+      urls: urls == _undefined || urls == null
+          ? _instance.urls
+          : (urls as List<String>),
       studio: studio == _undefined
           ? _instance.studio
           : (studio as Fragment$SlimSceneData$studio?),
       performers: performers == _undefined || performers == null
           ? _instance.performers
           : (performers as List<Fragment$SlimSceneData$performers>),
+      tags: tags == _undefined || tags == null
+          ? _instance.tags
+          : (tags as List<Fragment$SlimSceneData$tags>),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
@@ -430,6 +496,21 @@ class _CopyWithImpl$Fragment$SlimSceneData<TRes>
       ),
     ).toList(),
   );
+
+  TRes tags(
+    Iterable<Fragment$SlimSceneData$tags> Function(
+      Iterable<
+        CopyWith$Fragment$SlimSceneData$tags<Fragment$SlimSceneData$tags>
+      >,
+    )
+    _fn,
+  ) => call(
+    tags: _fn(
+      _instance.tags.map(
+        (e) => CopyWith$Fragment$SlimSceneData$tags(e, (i) => i),
+      ),
+    ).toList(),
+  );
 }
 
 class _CopyWithStubImpl$Fragment$SlimSceneData<TRes>
@@ -450,8 +531,10 @@ class _CopyWithStubImpl$Fragment$SlimSceneData<TRes>
     int? play_count,
     List<Fragment$SlimSceneData$files>? files,
     Fragment$SlimSceneData$paths? paths,
+    List<String>? urls,
     Fragment$SlimSceneData$studio? studio,
     List<Fragment$SlimSceneData$performers>? performers,
+    List<Fragment$SlimSceneData$tags>? tags,
     String? $__typename,
   }) => _res;
 
@@ -464,6 +547,8 @@ class _CopyWithStubImpl$Fragment$SlimSceneData<TRes>
       CopyWith$Fragment$SlimSceneData$studio.stub(_res);
 
   performers(_fn) => _res;
+
+  tags(_fn) => _res;
 }
 
 const fragmentDefinitionSlimSceneData = FragmentDefinitionNode(
@@ -607,6 +692,13 @@ const fragmentDefinitionSlimSceneData = FragmentDefinitionNode(
         ),
       ),
       FieldNode(
+        name: NameNode(value: 'urls'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+      FieldNode(
         name: NameNode(value: 'studio'),
         alias: null,
         arguments: [],
@@ -667,6 +759,37 @@ const fragmentDefinitionSlimSceneData = FragmentDefinitionNode(
             ),
             FieldNode(
               name: NameNode(value: 'image_path'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: '__typename'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+          ],
+        ),
+      ),
+      FieldNode(
+        name: NameNode(value: 'tags'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: SelectionSetNode(
+          selections: [
+            FieldNode(
+              name: NameNode(value: 'id'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'name'),
               alias: null,
               arguments: [],
               directives: [],
@@ -1306,6 +1429,131 @@ class _CopyWithStubImpl$Fragment$SlimSceneData$performers<TRes>
       _res;
 }
 
+class Fragment$SlimSceneData$tags {
+  Fragment$SlimSceneData$tags({
+    required this.id,
+    required this.name,
+    this.$__typename = 'Tag',
+  });
+
+  factory Fragment$SlimSceneData$tags.fromJson(Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$$__typename = json['__typename'];
+    return Fragment$SlimSceneData$tags(
+      id: (l$id as String),
+      name: (l$name as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$id, l$name, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$SlimSceneData$tags ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$SlimSceneData$tags
+    on Fragment$SlimSceneData$tags {
+  CopyWith$Fragment$SlimSceneData$tags<Fragment$SlimSceneData$tags>
+  get copyWith => CopyWith$Fragment$SlimSceneData$tags(this, (i) => i);
+}
+
+abstract class CopyWith$Fragment$SlimSceneData$tags<TRes> {
+  factory CopyWith$Fragment$SlimSceneData$tags(
+    Fragment$SlimSceneData$tags instance,
+    TRes Function(Fragment$SlimSceneData$tags) then,
+  ) = _CopyWithImpl$Fragment$SlimSceneData$tags;
+
+  factory CopyWith$Fragment$SlimSceneData$tags.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$SlimSceneData$tags;
+
+  TRes call({String? id, String? name, String? $__typename});
+}
+
+class _CopyWithImpl$Fragment$SlimSceneData$tags<TRes>
+    implements CopyWith$Fragment$SlimSceneData$tags<TRes> {
+  _CopyWithImpl$Fragment$SlimSceneData$tags(this._instance, this._then);
+
+  final Fragment$SlimSceneData$tags _instance;
+
+  final TRes Function(Fragment$SlimSceneData$tags) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Fragment$SlimSceneData$tags(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      name: name == _undefined || name == null
+          ? _instance.name
+          : (name as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Fragment$SlimSceneData$tags<TRes>
+    implements CopyWith$Fragment$SlimSceneData$tags<TRes> {
+  _CopyWithStubImpl$Fragment$SlimSceneData$tags(this._res);
+
+  TRes _res;
+
+  call({String? id, String? name, String? $__typename}) => _res;
+}
+
 class Fragment$SceneData implements Fragment$SlimSceneData {
   Fragment$SceneData({
     required this.id,
@@ -1319,13 +1567,13 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     this.play_count,
     required this.files,
     required this.paths,
+    required this.urls,
     this.studio,
     required this.performers,
+    required this.tags,
     this.$__typename = 'Scene',
     this.details,
-    required this.urls,
     this.director,
-    required this.tags,
   });
 
   factory Fragment$SceneData.fromJson(Map<String, dynamic> json) {
@@ -1340,13 +1588,13 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     final l$play_count = json['play_count'];
     final l$files = json['files'];
     final l$paths = json['paths'];
+    final l$urls = json['urls'];
     final l$studio = json['studio'];
     final l$performers = json['performers'];
+    final l$tags = json['tags'];
     final l$$__typename = json['__typename'];
     final l$details = json['details'];
-    final l$urls = json['urls'];
     final l$director = json['director'];
-    final l$tags = json['tags'];
     return Fragment$SceneData(
       id: (l$id as String),
       title: (l$title as String?),
@@ -1366,6 +1614,7 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
       paths: Fragment$SceneData$paths.fromJson(
         (l$paths as Map<String, dynamic>),
       ),
+      urls: (l$urls as List<dynamic>).map((e) => (e as String)).toList(),
       studio: l$studio == null
           ? null
           : Fragment$SceneData$studio.fromJson(
@@ -1378,16 +1627,15 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
             ),
           )
           .toList(),
-      $__typename: (l$$__typename as String),
-      details: (l$details as String?),
-      urls: (l$urls as List<dynamic>).map((e) => (e as String)).toList(),
-      director: (l$director as String?),
       tags: (l$tags as List<dynamic>)
           .map(
             (e) =>
                 Fragment$SceneData$tags.fromJson((e as Map<String, dynamic>)),
           )
           .toList(),
+      $__typename: (l$$__typename as String),
+      details: (l$details as String?),
+      director: (l$director as String?),
     );
   }
 
@@ -1413,19 +1661,19 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
 
   final Fragment$SceneData$paths paths;
 
+  final List<String> urls;
+
   final Fragment$SceneData$studio? studio;
 
   final List<Fragment$SceneData$performers> performers;
+
+  final List<Fragment$SceneData$tags> tags;
 
   final String $__typename;
 
   final String? details;
 
-  final List<String> urls;
-
   final String? director;
-
-  final List<Fragment$SceneData$tags> tags;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
@@ -1451,20 +1699,20 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     _resultData['files'] = l$files.map((e) => e.toJson()).toList();
     final l$paths = paths;
     _resultData['paths'] = l$paths.toJson();
+    final l$urls = urls;
+    _resultData['urls'] = l$urls.map((e) => e).toList();
     final l$studio = studio;
     _resultData['studio'] = l$studio?.toJson();
     final l$performers = performers;
     _resultData['performers'] = l$performers.map((e) => e.toJson()).toList();
+    final l$tags = tags;
+    _resultData['tags'] = l$tags.map((e) => e.toJson()).toList();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     final l$details = details;
     _resultData['details'] = l$details;
-    final l$urls = urls;
-    _resultData['urls'] = l$urls.map((e) => e).toList();
     final l$director = director;
     _resultData['director'] = l$director;
-    final l$tags = tags;
-    _resultData['tags'] = l$tags.map((e) => e.toJson()).toList();
     return _resultData;
   }
 
@@ -1481,13 +1729,13 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     final l$play_count = play_count;
     final l$files = files;
     final l$paths = paths;
+    final l$urls = urls;
     final l$studio = studio;
     final l$performers = performers;
+    final l$tags = tags;
     final l$$__typename = $__typename;
     final l$details = details;
-    final l$urls = urls;
     final l$director = director;
-    final l$tags = tags;
     return Object.hashAll([
       l$id,
       l$title,
@@ -1500,13 +1748,13 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
       l$play_count,
       Object.hashAll(l$files.map((v) => v)),
       l$paths,
+      Object.hashAll(l$urls.map((v) => v)),
       l$studio,
       Object.hashAll(l$performers.map((v) => v)),
+      Object.hashAll(l$tags.map((v) => v)),
       l$$__typename,
       l$details,
-      Object.hashAll(l$urls.map((v) => v)),
       l$director,
-      Object.hashAll(l$tags.map((v) => v)),
     ]);
   }
 
@@ -1580,6 +1828,18 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     if (l$paths != lOther$paths) {
       return false;
     }
+    final l$urls = urls;
+    final lOther$urls = other.urls;
+    if (l$urls.length != lOther$urls.length) {
+      return false;
+    }
+    for (int i = 0; i < l$urls.length; i++) {
+      final l$urls$entry = l$urls[i];
+      final lOther$urls$entry = lOther$urls[i];
+      if (l$urls$entry != lOther$urls$entry) {
+        return false;
+      }
+    }
     final l$studio = studio;
     final lOther$studio = other.studio;
     if (l$studio != lOther$studio) {
@@ -1597,33 +1857,6 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
         return false;
       }
     }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
-    }
-    final l$details = details;
-    final lOther$details = other.details;
-    if (l$details != lOther$details) {
-      return false;
-    }
-    final l$urls = urls;
-    final lOther$urls = other.urls;
-    if (l$urls.length != lOther$urls.length) {
-      return false;
-    }
-    for (int i = 0; i < l$urls.length; i++) {
-      final l$urls$entry = l$urls[i];
-      final lOther$urls$entry = lOther$urls[i];
-      if (l$urls$entry != lOther$urls$entry) {
-        return false;
-      }
-    }
-    final l$director = director;
-    final lOther$director = other.director;
-    if (l$director != lOther$director) {
-      return false;
-    }
     final l$tags = tags;
     final lOther$tags = other.tags;
     if (l$tags.length != lOther$tags.length) {
@@ -1635,6 +1868,21 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
       if (l$tags$entry != lOther$tags$entry) {
         return false;
       }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    final l$details = details;
+    final lOther$details = other.details;
+    if (l$details != lOther$details) {
+      return false;
+    }
+    final l$director = director;
+    final lOther$director = other.director;
+    if (l$director != lOther$director) {
+      return false;
     }
     return true;
   }
@@ -1666,13 +1914,13 @@ abstract class CopyWith$Fragment$SceneData<TRes> {
     int? play_count,
     List<Fragment$SceneData$files>? files,
     Fragment$SceneData$paths? paths,
+    List<String>? urls,
     Fragment$SceneData$studio? studio,
     List<Fragment$SceneData$performers>? performers,
+    List<Fragment$SceneData$tags>? tags,
     String? $__typename,
     String? details,
-    List<String>? urls,
     String? director,
-    List<Fragment$SceneData$tags>? tags,
   });
   TRes files(
     Iterable<Fragment$SceneData$files> Function(
@@ -1720,13 +1968,13 @@ class _CopyWithImpl$Fragment$SceneData<TRes>
     Object? play_count = _undefined,
     Object? files = _undefined,
     Object? paths = _undefined,
+    Object? urls = _undefined,
     Object? studio = _undefined,
     Object? performers = _undefined,
+    Object? tags = _undefined,
     Object? $__typename = _undefined,
     Object? details = _undefined,
-    Object? urls = _undefined,
     Object? director = _undefined,
-    Object? tags = _undefined,
   }) => _then(
     Fragment$SceneData(
       id: id == _undefined || id == null ? _instance.id : (id as String),
@@ -1756,25 +2004,25 @@ class _CopyWithImpl$Fragment$SceneData<TRes>
       paths: paths == _undefined || paths == null
           ? _instance.paths
           : (paths as Fragment$SceneData$paths),
+      urls: urls == _undefined || urls == null
+          ? _instance.urls
+          : (urls as List<String>),
       studio: studio == _undefined
           ? _instance.studio
           : (studio as Fragment$SceneData$studio?),
       performers: performers == _undefined || performers == null
           ? _instance.performers
           : (performers as List<Fragment$SceneData$performers>),
+      tags: tags == _undefined || tags == null
+          ? _instance.tags
+          : (tags as List<Fragment$SceneData$tags>),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
       details: details == _undefined ? _instance.details : (details as String?),
-      urls: urls == _undefined || urls == null
-          ? _instance.urls
-          : (urls as List<String>),
       director: director == _undefined
           ? _instance.director
           : (director as String?),
-      tags: tags == _undefined || tags == null
-          ? _instance.tags
-          : (tags as List<Fragment$SceneData$tags>),
     ),
   );
 
@@ -1854,13 +2102,13 @@ class _CopyWithStubImpl$Fragment$SceneData<TRes>
     int? play_count,
     List<Fragment$SceneData$files>? files,
     Fragment$SceneData$paths? paths,
+    List<String>? urls,
     Fragment$SceneData$studio? studio,
     List<Fragment$SceneData$performers>? performers,
+    List<Fragment$SceneData$tags>? tags,
     String? $__typename,
     String? details,
-    List<String>? urls,
     String? director,
-    List<Fragment$SceneData$tags>? tags,
   }) => _res;
 
   files(_fn) => _res;
@@ -2822,7 +3070,7 @@ class _CopyWithStubImpl$Fragment$SceneData$performers<TRes>
       _res;
 }
 
-class Fragment$SceneData$tags {
+class Fragment$SceneData$tags implements Fragment$SlimSceneData$tags {
   Fragment$SceneData$tags({
     required this.id,
     required this.name,
