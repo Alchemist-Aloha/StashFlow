@@ -28,6 +28,10 @@ fragment SlimSceneData on Scene {
     name
     image_path
   }
+  tags {
+    id
+    name
+  }
 }
 
 fragment SceneData on Scene {

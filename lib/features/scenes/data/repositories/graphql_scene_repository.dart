@@ -111,7 +111,7 @@ class GraphQLSceneRepository implements SceneRepository {
                 graphqlEndpoint: _graphqlEndpoint,
               ),
             ),
-            urls: const [],
+            urls: s.urls,
             studioId: s.studio?.id,
             studioName: s.studio?.name,
             studioImagePath: resolveGraphqlMediaUrl(
@@ -128,8 +128,8 @@ class GraphQLSceneRepository implements SceneRepository {
                   ),
                 )
                 .toList(),
-            tagIds: [],
-            tagNames: [],
+            tagIds: s.tags.map((t) => t.id).toList(),
+            tagNames: s.tags.map((t) => t.name).toList(),
           ),
         )
         .toList();

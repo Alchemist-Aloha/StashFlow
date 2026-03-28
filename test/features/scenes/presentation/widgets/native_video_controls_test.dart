@@ -99,7 +99,6 @@ void main() {
     files: [],
     urls: [],
     paths: const ScenePaths(screenshot: null, preview: null, stream: null),
-    urls: [],
     studioId: '',
     studioName: '',
     studioImagePath: null,
