@@ -46,6 +46,7 @@ void main() {
     resumeTime: null,
     playCount: 10,
     files: [],
+    urls: [],
     paths: const ScenePaths(
       screenshot: null,
       preview: null,

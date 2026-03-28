@@ -15,6 +15,7 @@ Scene mockScene({required String id, required String title}) {
     resumeTime: 0.0,
     playCount: 0,
     files: [],
+    urls: [],
     paths: const ScenePaths(screenshot: '', preview: '', stream: ''),
     urls: [],
     studioId: 's1',
