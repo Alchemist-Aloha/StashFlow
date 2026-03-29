@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/presentation/theme/app_theme.dart';
-import '../../../../core/presentation/theme/theme_mode_provider.dart';
-import '../../../../core/presentation/theme/theme_color_provider.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/presentation/theme/theme_mode_provider.dart';
+import 'package:stash_app_flutter/core/presentation/theme/theme_color_provider.dart';
 
 class AppearanceSettingsPage extends ConsumerStatefulWidget {
   const AppearanceSettingsPage({super.key});
@@ -39,7 +39,6 @@ class _AppearanceSettingsPageState extends ConsumerState<AppearanceSettingsPage>
     if (_customHexFocusNode.hasFocus) {
       return;
     }
-    // Hex is saved onChanged if valid, but we could trigger more here if needed.
   }
 
   Future<void> _load() async {

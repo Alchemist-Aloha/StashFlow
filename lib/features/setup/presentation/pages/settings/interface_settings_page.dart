@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/presentation/theme/app_theme.dart';
-import '../presentation/providers/navigation_customization_provider.dart';
-import '../presentation/providers/scrape_customization_provider.dart';
-import '../../scenes/presentation/providers/scene_list_provider.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/features/setup/presentation/providers/navigation_customization_provider.dart';
+import 'package:stash_app_flutter/features/setup/presentation/providers/scrape_customization_provider.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 
 class InterfaceSettingsPage extends ConsumerStatefulWidget {
   const InterfaceSettingsPage({super.key});
@@ -35,12 +35,12 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   }
 
   Future<void> _saveSettings() async {
-    await ref
+    ref
         .read(randomNavigationEnabledProvider.notifier)
         .set(_showRandomNavigation);
-    await ref.read(scrapeEnabledProvider.notifier).set(_showScrapeButton);
-    await ref.read(sceneGridLayoutProvider.notifier).set(_sceneGridLayout);
-    await ref.read(sceneTiktokLayoutProvider.notifier).set(_sceneTiktokLayout);
+    ref.read(scrapeEnabledProvider.notifier).set(_showScrapeButton);
+    ref.read(sceneGridLayoutProvider.notifier).set(_sceneGridLayout);
+    ref.read(sceneTiktokLayoutProvider.notifier).set(_sceneTiktokLayout);
   }
 
   @override

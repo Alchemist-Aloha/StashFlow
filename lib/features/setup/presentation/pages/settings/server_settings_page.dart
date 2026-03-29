@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:graphql/client.dart';
-import '../../../../core/data/graphql/graphql_client.dart';
-import '../../../../core/data/graphql/media_headers_provider.dart';
-import '../../../../core/data/preferences/shared_preferences_provider.dart';
-import '../../../../core/presentation/theme/app_theme.dart';
-import '../../galleries/presentation/providers/gallery_details_provider.dart';
-import '../../galleries/presentation/providers/gallery_list_provider.dart';
-import '../../groups/presentation/providers/group_details_provider.dart';
-import '../../groups/presentation/providers/group_list_provider.dart';
-import '../../performers/presentation/providers/performer_details_provider.dart';
-import '../../performers/presentation/providers/performer_list_provider.dart';
-import '../../performers/presentation/providers/performer_media_provider.dart';
-import '../../scenes/data/repositories/stream_resolver.dart';
-import '../../scenes/presentation/providers/scene_details_provider.dart';
-import '../../scenes/presentation/providers/scene_list_provider.dart';
-import '../../scenes/presentation/providers/video_player_provider.dart';
-import '../../studios/presentation/providers/studio_details_provider.dart';
-import '../../studios/presentation/providers/studio_list_provider.dart';
-import '../../studios/presentation/providers/studio_media_provider.dart';
-import '../../tags/presentation/providers/tag_details_provider.dart';
-import '../../tags/presentation/providers/tag_list_provider.dart';
-import '../../tags/presentation/providers/tag_media_provider.dart';
-import '../data/graphql/version.graphql.dart';
-import '../presentation/providers/connection_provider.dart';
+import 'package:stash_app_flutter/core/data/graphql/graphql_client.dart';
+import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart';
+import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_details_provider.dart';
+import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_list_provider.dart';
+import 'package:stash_app_flutter/features/groups/presentation/providers/group_details_provider.dart';
+import 'package:stash_app_flutter/features/groups/presentation/providers/group_list_provider.dart';
+import 'package:stash_app_flutter/features/performers/presentation/providers/performer_details_provider.dart';
+import 'package:stash_app_flutter/features/performers/presentation/providers/performer_list_provider.dart';
+import 'package:stash_app_flutter/features/performers/presentation/providers/performer_media_provider.dart';
+import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_details_provider.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
+import 'package:stash_app_flutter/features/studios/presentation/providers/studio_details_provider.dart';
+import 'package:stash_app_flutter/features/studios/presentation/providers/studio_list_provider.dart';
+import 'package:stash_app_flutter/features/studios/presentation/providers/studio_media_provider.dart';
+import 'package:stash_app_flutter/features/tags/presentation/providers/tag_details_provider.dart';
+import 'package:stash_app_flutter/features/tags/presentation/providers/tag_list_provider.dart';
+import 'package:stash_app_flutter/features/tags/presentation/providers/tag_media_provider.dart';
+import 'package:stash_app_flutter/features/setup/data/graphql/version.graphql.dart';
+import 'package:stash_app_flutter/features/setup/presentation/providers/connection_provider.dart';
 
 class ServerSettingsPage extends ConsumerStatefulWidget {
   const ServerSettingsPage({super.key});
@@ -299,7 +299,7 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-        side: BorderSide(color: context.colors.outline.withValues(alpha: 0.2)),
+        side: BorderSide(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(AppTheme.spacingMedium),
@@ -308,7 +308,7 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
           children: [
             Text(
               'Connection Status',
-              style: context.textTheme.titleSmall?.copyWith(
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),

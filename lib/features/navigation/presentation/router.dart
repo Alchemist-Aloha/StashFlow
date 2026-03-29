@@ -13,7 +13,6 @@ import '../../studios/presentation/pages/studio_media_grid_page.dart';
 import '../../tags/presentation/pages/tags_page.dart';
 import '../../tags/presentation/pages/tag_details_page.dart';
 import '../../tags/presentation/pages/tag_media_grid_page.dart';
-import '../../setup/presentation/settings_page.dart';
 import '../../setup/presentation/pages/settings/settings_hub_page.dart';
 import '../../setup/presentation/pages/settings/server_settings_page.dart';
 import '../../setup/presentation/pages/settings/playback_settings_page.dart';
