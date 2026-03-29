@@ -14,6 +14,12 @@ import '../../tags/presentation/pages/tags_page.dart';
 import '../../tags/presentation/pages/tag_details_page.dart';
 import '../../tags/presentation/pages/tag_media_grid_page.dart';
 import '../../setup/presentation/settings_page.dart';
+import '../../setup/presentation/pages/settings/settings_hub_page.dart';
+import '../../setup/presentation/pages/settings/server_settings_page.dart';
+import '../../setup/presentation/pages/settings/playback_settings_page.dart';
+import '../../setup/presentation/pages/settings/appearance_settings_page.dart';
+import '../../setup/presentation/pages/settings/interface_settings_page.dart';
+import '../../setup/presentation/pages/settings/support_settings_page.dart';
 import '../../setup/presentation/debug_log_viewer_page.dart';
 import '../../scenes/presentation/widgets/scene_video_player.dart';
 import 'shell_page.dart';
@@ -169,8 +175,28 @@ GoRouter router(Ref ref) {
             routes: [
               GoRoute(
                 path: '/settings',
-                builder: (context, state) => const SettingsPage(),
+                builder: (context, state) => const SettingsHubPage(),
                 routes: [
+                  GoRoute(
+                    path: 'server',
+                    builder: (context, state) => const ServerSettingsPage(),
+                  ),
+                  GoRoute(
+                    path: 'playback',
+                    builder: (context, state) => const PlaybackSettingsPage(),
+                  ),
+                  GoRoute(
+                    path: 'appearance',
+                    builder: (context, state) => const AppearanceSettingsPage(),
+                  ),
+                  GoRoute(
+                    path: 'interface',
+                    builder: (context, state) => const InterfaceSettingsPage(),
+                  ),
+                  GoRoute(
+                    path: 'support',
+                    builder: (context, state) => const SupportSettingsPage(),
+                  ),
                   GoRoute(
                     path: 'logs',
                     builder: (context, state) => const DebugLogViewerPage(),
