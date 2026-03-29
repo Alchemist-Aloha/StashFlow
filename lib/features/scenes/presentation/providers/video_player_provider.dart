@@ -269,6 +269,26 @@ class PlayerState extends _$PlayerState {
     state = state.copyWith(isFullScreen: value);
   }
 
+  /// Proactively resolve the stream URL for the next scene in the queue
+  /// and store it in the StreamResolver cache.
+  void _prewarmNext() {
+    final queue = ref.read(playbackQueueProvider);
+    final nextIndex = queue.currentIndex + 1;
+    if (nextIndex < queue.sequence.length) {
+      final nextScene = queue.sequence[nextIndex];
+      AppLogStore.instance.add(
+        'PlayerState prewarming next scene=${nextScene.id} at index=$nextIndex',
+        source: 'player_provider',
+      );
+      // Fire and forget resolution into cache
+      unawaited(
+        ref
+            .read(streamResolverProvider.notifier)
+            .resolvePreferredStream(nextScene),
+      );
+    }
+  }
+
   Future<void> playScene(
     Scene scene,
     String streamUrl, {
@@ -387,6 +407,9 @@ class PlayerState extends _$PlayerState {
 
       videoController.addListener(_videoListener);
       unawaited(videoController.play());
+
+      // Prepare for the next scene in the queue
+      _prewarmNext();
     } catch (e) {
       debugPrint('Error initializing video player: $e');
       AppLogStore.instance.add(
@@ -458,6 +481,9 @@ class PlayerState extends _$PlayerState {
 
     controller.removeListener(_videoListener);
     controller.addListener(_videoListener);
+
+    // Prepare for the next scene in the queue
+    _prewarmNext();
   }
 
   void togglePlayPause() {

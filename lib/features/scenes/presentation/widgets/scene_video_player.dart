@@ -66,32 +66,28 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       if (!mounted) return;
       final resolver = ref.read(streamResolverProvider.notifier);
 
-      // Perform a background "prewarm" to fetch stream URL and test connectivity.
-      final prewarmResult = await _prewarmStream(widget.scene);
-      if (!mounted) return;
-      ref
-          .read(playerStateProvider.notifier)
-          .setPrewarmResult(
-            attempted: prewarmResult.attempted,
-            succeeded: prewarmResult.succeeded,
-            latencyMs: prewarmResult.latencyMs,
-          );
+      // Perform a background "prewarm" to test connectivity.
+      // We don't await this here to avoid blocking player initialization.
+      unawaited(_prewarmStream(widget.scene).then((prewarmResult) {
+        if (mounted) {
+          ref.read(playerStateProvider.notifier).setPrewarmResult(
+                attempted: prewarmResult.attempted,
+                succeeded: prewarmResult.succeeded,
+                latencyMs: prewarmResult.latencyMs,
+              );
+        }
+      }));
 
       final choice = await resolver.resolvePreferredStream(widget.scene);
       if (choice != null && mounted) {
         final mediaHeaders = ref.read(mediaHeadersProvider);
-        await ref
-            .read(playerStateProvider.notifier)
-            .playScene(
+        await ref.read(playerStateProvider.notifier).playScene(
               widget.scene,
               choice.url,
               mimeType: choice.mimeType,
               streamLabel: choice.label,
               streamSource: force ? 'manual-start' : 'auto-start',
               httpHeaders: mediaHeaders,
-              prewarmAttempted: prewarmResult.attempted,
-              prewarmSucceeded: prewarmResult.succeeded,
-              prewarmLatencyMs: prewarmResult.latencyMs,
             );
       }
     } finally {
@@ -133,7 +129,8 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       }
 
       final uri = Uri.parse(choice.url);
-      final request = await client.getUrl(uri);
+      // Use HEAD request instead of GET for lightweight connection prewarm.
+      final request = await client.headUrl(uri);
 
       if (!mounted) {
         return const _PrewarmResult(attempted: false, succeeded: false);
@@ -144,13 +141,11 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       });
 
       final response = await request.close();
-      final res = response.timeout(const Duration(seconds: 5));
-      // Drain response to ensure connection is properly closed/reused.
-      await res.drain<void>();
+      // No longer need to drain as HEAD response body is empty.
       stopwatch.stop();
       return _PrewarmResult(
         attempted: true,
-        succeeded: true,
+        succeeded: response.statusCode < 400,
         latencyMs: stopwatch.elapsedMilliseconds,
       );
     } catch (_) {

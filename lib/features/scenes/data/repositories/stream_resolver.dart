@@ -51,6 +51,9 @@ class StreamChoice {
 /// user preferences and stream availability.
 @riverpod
 class StreamResolver extends _$StreamResolver {
+  /// In-memory cache for resolved stream URLs.
+  final Map<String, StreamChoice> _urlCache = {};
+
   @override
   void build() {
     // Keep resolver alive during async stream selection/probing work.
@@ -64,6 +67,14 @@ class StreamResolver extends _$StreamResolver {
   ///
   /// If no API streams are found, it falls back to the scene's direct path.
   Future<StreamChoice?> resolvePreferredStream(Scene scene) async {
+    if (_urlCache.containsKey(scene.id)) {
+      AppLogStore.instance.add(
+        'resolver hit cache scene=${scene.id} url=${_shortUrl(_urlCache[scene.id]!.url)}',
+        source: 'stream_resolver',
+      );
+      return _urlCache[scene.id];
+    }
+
     final client = ref.read(graphqlClientProvider);
     final mediaHeaders = ref.read(mediaHeadersProvider);
     final queryStopwatch = Stopwatch()..start();
@@ -197,6 +208,7 @@ class StreamResolver extends _$StreamResolver {
     }
 
     best ??= candidates.first;
+    _urlCache[scene.id] = best;
 
     AppLogStore.instance.add(
       'selected stream scene=${scene.id} candidates=${candidates.length} mime=${best.mimeType} label=${best.label ?? '-'} url=${_shortUrl(best.url)}',
@@ -237,7 +249,8 @@ class StreamResolver extends _$StreamResolver {
   String _shortUrl(String url) {
     final uri = Uri.tryParse(url);
     if (uri == null) return url;
-    return '${uri.scheme}://${uri.host}${uri.path}';
+    final portPart = uri.hasPort ? ':${uri.port}' : '';
+    return '${uri.scheme}://${uri.host}$portPart${uri.path}';
   }
 
   String? _summarizeException(OperationException? exception) {
