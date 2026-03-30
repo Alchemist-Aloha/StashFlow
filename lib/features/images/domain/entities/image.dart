@@ -11,10 +11,22 @@ abstract class Image with _$Image {
     @JsonKey(name: 'rating100') int? rating100,
     String? date,
     @Default([]) List<String> urls,
+    required List<ImageFile> files,
     required ImagePaths paths,
   }) = _Image;
 
   factory Image.fromJson(Map<String, dynamic> json) => _$ImageFromJson(json);
+}
+
+@freezed
+abstract class ImageFile with _$ImageFile {
+  const factory ImageFile({
+    required int width,
+    required int height,
+  }) = _ImageFile;
+
+  factory ImageFile.fromJson(Map<String, dynamic> json) =>
+      _$ImageFileFromJson(json);
 }
 
 @freezed

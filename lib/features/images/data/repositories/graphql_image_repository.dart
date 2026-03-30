@@ -25,6 +25,10 @@ class GraphQLImageRepository implements ImageRepository {
             rating100
             date
             urls
+            visual_files {
+              width
+              height
+            }
             paths {
               thumbnail
               preview
@@ -58,9 +62,11 @@ class GraphQLImageRepository implements ImageRepository {
 
     final imagesJson =
         result.data?['findImages']?['images'] as List<dynamic>? ?? [];
-    return imagesJson
-        .map((i) => Image.fromJson(i as Map<String, dynamic>))
-        .toList();
+    return imagesJson.map((i) {
+      final map = Map<String, dynamic>.from(i as Map<String, dynamic>);
+      map['files'] = map['visual_files'];
+      return Image.fromJson(map);
+    }).toList();
   }
 
   @override
@@ -73,6 +79,10 @@ class GraphQLImageRepository implements ImageRepository {
           rating100
           date
           urls
+          visual_files {
+            width
+            height
+          }
           paths {
             thumbnail
             preview
@@ -94,6 +104,8 @@ class GraphQLImageRepository implements ImageRepository {
     final data = result.data?['findImage'];
     if (data == null) throw Exception('Image not found');
 
-    return Image.fromJson(data as Map<String, dynamic>);
+    final map = Map<String, dynamic>.from(data as Map<String, dynamic>);
+    map['files'] = map['visual_files'];
+    return Image.fromJson(map);
   }
 }

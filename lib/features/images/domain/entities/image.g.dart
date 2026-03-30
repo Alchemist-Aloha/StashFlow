@@ -14,6 +14,9 @@ _Image _$ImageFromJson(Map<String, dynamic> json) => _Image(
   urls:
       (json['urls'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const [],
+  files: (json['files'] as List<dynamic>)
+      .map((e) => ImageFile.fromJson(e as Map<String, dynamic>))
+      .toList(),
   paths: ImagePaths.fromJson(json['paths'] as Map<String, dynamic>),
 );
 
@@ -23,8 +26,17 @@ Map<String, dynamic> _$ImageToJson(_Image instance) => <String, dynamic>{
   'rating100': instance.rating100,
   'date': instance.date,
   'urls': instance.urls,
+  'files': instance.files,
   'paths': instance.paths,
 };
+
+_ImageFile _$ImageFileFromJson(Map<String, dynamic> json) => _ImageFile(
+  width: (json['width'] as num).toInt(),
+  height: (json['height'] as num).toInt(),
+);
+
+Map<String, dynamic> _$ImageFileToJson(_ImageFile instance) =>
+    <String, dynamic>{'width': instance.width, 'height': instance.height};
 
 _ImagePaths _$ImagePathsFromJson(Map<String, dynamic> json) => _ImagePaths(
   thumbnail: json['thumbnail'] as String?,
