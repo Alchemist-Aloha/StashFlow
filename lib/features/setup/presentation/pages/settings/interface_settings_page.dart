@@ -9,7 +9,8 @@ class InterfaceSettingsPage extends ConsumerStatefulWidget {
   const InterfaceSettingsPage({super.key});
 
   @override
-  ConsumerState<InterfaceSettingsPage> createState() => _InterfaceSettingsPageState();
+  ConsumerState<InterfaceSettingsPage> createState() =>
+      _InterfaceSettingsPageState();
 }
 
 class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
@@ -180,10 +181,10 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
       child: Text(
         title.toUpperCase(),
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
-            ),
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
+        ),
       ),
     );
   }

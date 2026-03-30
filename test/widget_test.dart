@@ -8,7 +8,9 @@ import 'package:stash_app_flutter/features/setup/presentation/pages/settings/set
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 
 void main() {
-  testWidgets('Settings page shows category tiles', (WidgetTester tester) async {
+  testWidgets('Settings page shows category tiles', (
+    WidgetTester tester,
+  ) async {
     SharedPreferences.setMockInitialValues(<String, Object>{});
     final sharedPreferences = await SharedPreferences.getInstance();
 

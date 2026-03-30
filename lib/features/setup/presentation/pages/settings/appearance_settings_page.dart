@@ -8,10 +8,12 @@ class AppearanceSettingsPage extends ConsumerStatefulWidget {
   const AppearanceSettingsPage({super.key});
 
   @override
-  ConsumerState<AppearanceSettingsPage> createState() => _AppearanceSettingsPageState();
+  ConsumerState<AppearanceSettingsPage> createState() =>
+      _AppearanceSettingsPageState();
 }
 
-class _AppearanceSettingsPageState extends ConsumerState<AppearanceSettingsPage> {
+class _AppearanceSettingsPageState
+    extends ConsumerState<AppearanceSettingsPage> {
   static const _presetColors = [
     Color(0xFF0F766E), // Teal
     Color(0xFF2196F3), // Blue
@@ -140,10 +142,10 @@ class _AppearanceSettingsPageState extends ConsumerState<AppearanceSettingsPage>
       child: Text(
         title.toUpperCase(),
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
-            ),
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
+        ),
       ),
     );
   }
@@ -229,7 +231,9 @@ class _AppearanceSettingsPageState extends ConsumerState<AppearanceSettingsPage>
             border: Border.all(
               color: isSelected
                   ? Theme.of(context).colorScheme.onSurface
-                  : Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+                  : Theme.of(
+                      context,
+                    ).colorScheme.outline.withValues(alpha: 0.2),
               width: isSelected ? 3 : 1,
             ),
           ),
@@ -242,14 +246,14 @@ class _AppearanceSettingsPageState extends ConsumerState<AppearanceSettingsPage>
                       : Colors.white,
                 )
               : isSelected
-                  ? Icon(
-                      Icons.check,
-                      size: 20,
-                      color: displayColor.computeLuminance() > 0.5
-                          ? Colors.black
-                          : Colors.white,
-                    )
-                  : null,
+              ? Icon(
+                  Icons.check,
+                  size: 20,
+                  color: displayColor.computeLuminance() > 0.5
+                      ? Colors.black
+                      : Colors.white,
+                )
+              : null,
         ),
       ),
     );

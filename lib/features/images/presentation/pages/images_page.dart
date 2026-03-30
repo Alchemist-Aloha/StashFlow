@@ -44,7 +44,9 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
   void _applyServerSort(_ImageSortOption option) {
     switch (option) {
       case _ImageSortOption.date:
-        ref.read(imageListProvider.notifier).setSort(sort: 'date', descending: true);
+        ref
+            .read(imageListProvider.notifier)
+            .setSort(sort: 'date', descending: true);
         break;
       case _ImageSortOption.rating:
         ref
@@ -52,7 +54,9 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
             .setSort(sort: 'rating100', descending: true);
         break;
       case _ImageSortOption.title:
-        ref.read(imageListProvider.notifier).setSort(sort: 'title', descending: false);
+        ref
+            .read(imageListProvider.notifier)
+            .setSort(sort: 'title', descending: false);
         break;
     }
   }
@@ -93,7 +97,9 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
         ),
         if (filter.galleryId != null)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppTheme.spacingMedium,
+            ),
             child: Row(
               children: [
                 InputChip(
@@ -134,8 +140,9 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
               viewType == MediaViewType.galleries,
             ],
             onPressed: (index) {
-              final newType =
-                  index == 0 ? MediaViewType.images : MediaViewType.galleries;
+              final newType = index == 0
+                  ? MediaViewType.images
+                  : MediaViewType.galleries;
               ref.read(mediaViewToggleProvider.notifier).setView(newType);
               if (newType == MediaViewType.images) {
                 context.go('/media/images');

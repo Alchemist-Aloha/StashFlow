@@ -13,18 +13,21 @@ void main() {
   });
 
   group('updateMetadata', () {
-    test('updates mediaItem with default values when only required args provided', () async {
-      handler.updateMetadata(id: '1', title: 'Test Title');
+    test(
+      'updates mediaItem with default values when only required args provided',
+      () async {
+        handler.updateMetadata(id: '1', title: 'Test Title');
 
-      final mediaItem = await handler.mediaItem.first;
+        final mediaItem = await handler.mediaItem.first;
 
-      expect(mediaItem?.id, '1');
-      expect(mediaItem?.title, 'Test Title');
-      expect(mediaItem?.album, 'Stash');
-      expect(mediaItem?.artist, 'Stash');
-      expect(mediaItem?.duration, isNull);
-      expect(mediaItem?.artUri, isNull);
-    });
+        expect(mediaItem?.id, '1');
+        expect(mediaItem?.title, 'Test Title');
+        expect(mediaItem?.album, 'Stash');
+        expect(mediaItem?.artist, 'Stash');
+        expect(mediaItem?.duration, isNull);
+        expect(mediaItem?.artUri, isNull);
+      },
+    );
 
     test('updates mediaItem with provided values', () async {
       handler.updateMetadata(
@@ -67,9 +70,7 @@ void main() {
     });
 
     test('updates playbackState when paused', () async {
-      handler.updatePlaybackState(
-        isPlaying: false,
-      );
+      handler.updatePlaybackState(isPlaying: false);
 
       final state = await handler.playbackState.first;
 
@@ -162,11 +163,11 @@ void main() {
       bool popCalled = false;
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(SystemChannels.platform, (message) async {
-        if (message.method == 'SystemNavigator.pop') {
-          popCalled = true;
-        }
-        return null;
-      });
+            if (message.method == 'SystemNavigator.pop') {
+              popCalled = true;
+            }
+            return null;
+          });
 
       await handler.onTaskRemoved();
 

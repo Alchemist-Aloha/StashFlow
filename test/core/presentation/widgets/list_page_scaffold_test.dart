@@ -8,10 +8,7 @@ import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 void main() {
   Widget buildTestApp(Widget child) {
     return ProviderScope(
-      child: MaterialApp(
-        theme: AppTheme.lightTheme,
-        home: child,
-      ),
+      child: MaterialApp(theme: AppTheme.lightTheme, home: child),
     );
   }
 
@@ -68,8 +65,9 @@ void main() {
       expect(find.textContaining('An error occurred'), findsOneWidget);
     });
 
-    testWidgets('shows list view when gridDelegate is null',
-        (WidgetTester tester) async {
+    testWidgets('shows list view when gridDelegate is null', (
+      WidgetTester tester,
+    ) async {
       final items = ['Item 1', 'Item 2', 'Item 3'];
       await tester.pumpWidget(
         buildTestApp(
@@ -89,8 +87,9 @@ void main() {
       }
     });
 
-    testWidgets('shows grid view when gridDelegate is provided',
-        (WidgetTester tester) async {
+    testWidgets('shows grid view when gridDelegate is provided', (
+      WidgetTester tester,
+    ) async {
       final items = ['Item 1', 'Item 2', 'Item 3'];
       await tester.pumpWidget(
         buildTestApp(
@@ -114,8 +113,9 @@ void main() {
       }
     });
 
-    testWidgets('toggles search bar when search icon is tapped',
-        (WidgetTester tester) async {
+    testWidgets('toggles search bar when search icon is tapped', (
+      WidgetTester tester,
+    ) async {
       String searchQuery = '';
       await tester.pumpWidget(
         buildTestApp(
@@ -178,8 +178,9 @@ void main() {
       expect(find.text('Custom Sort Bar'), findsOneWidget);
     });
 
-    testWidgets('displays custom floatingActionButton',
-        (WidgetTester tester) async {
+    testWidgets('displays custom floatingActionButton', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestApp(
           ListPageScaffold<String>(

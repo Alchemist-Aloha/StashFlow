@@ -51,8 +51,13 @@ class GraphQLImageRepository implements ImageRepository {
             'direction': descending == true ? 'DESC' : 'ASC',
           },
           'image_filter': {
-            if (filter != null) 'title': {'value': filter, 'modifier': 'INCLUDES'},
-            if (galleryId != null) 'galleries': {'value': [galleryId], 'modifier': 'INCLUDES'},
+            if (filter != null)
+              'title': {'value': filter, 'modifier': 'INCLUDES'},
+            if (galleryId != null)
+              'galleries': {
+                'value': [galleryId],
+                'modifier': 'INCLUDES',
+              },
           },
         },
       ),

@@ -62,7 +62,7 @@ final class PlayerStateProvider
   }
 }
 
-String _$playerStateHash() => r'69bd310681349145aae145c39575387892592273';
+String _$playerStateHash() => r'801ebf98a59a472704a0659e77322deecffb1888';
 
 /// A centralized notifier managing the global video player lifecycle.
 ///

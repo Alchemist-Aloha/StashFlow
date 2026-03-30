@@ -30,14 +30,17 @@ void main() {
                 'rating100': 80,
                 'date': '2023-01-01',
                 'urls': ['http://test.com/img.jpg'],
+                'visual_files': [
+                  {'width': 100, 'height': 100},
+                ],
                 'paths': {
                   'thumbnail': 'thumb.jpg',
                   'preview': 'prev.jpg',
                   'image': 'full.jpg',
-                }
-              }
-            ]
-          }
+                },
+              },
+            ],
+          },
         },
         options: QueryOptions(document: gql('')),
       );
@@ -62,12 +65,15 @@ void main() {
             'rating100': 80,
             'date': '2023-01-01',
             'urls': ['http://test.com/img.jpg'],
+            'visual_files': [
+              {'width': 100, 'height': 100},
+            ],
             'paths': {
               'thumbnail': 'thumb.jpg',
               'preview': 'prev.jpg',
               'image': 'full.jpg',
-            }
-          }
+            },
+          },
         },
         options: QueryOptions(document: gql('')),
       );
@@ -85,9 +91,9 @@ void main() {
       final mockQueryResult = QueryResult(
         source: QueryResultSource.network,
         options: QueryOptions(document: gql('')),
-        exception: OperationException(graphqlErrors: [
-          const GraphQLError(message: 'Error'),
-        ]),
+        exception: OperationException(
+          graphqlErrors: [const GraphQLError(message: 'Error')],
+        ),
       );
 
       when(mockClient.query(any)).thenAnswer((_) async => mockQueryResult);

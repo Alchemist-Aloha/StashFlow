@@ -1,6 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../domain/entities/image.dart';
+import '../../domain/entities/image.dart' as entity;
 import '../../domain/repositories/image_repository.dart';
 import '../../data/repositories/graphql_image_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
@@ -13,6 +14,26 @@ final imageRepositoryProvider = Provider<ImageRepository>((ref) {
   final client = ref.watch(graphqlClientProvider);
   return GraphQLImageRepository(client);
 });
+
+@riverpod
+class ImageScrollController extends _$ImageScrollController {
+  @override
+  ScrollController build() {
+    final controller = ScrollController();
+    ref.onDispose(controller.dispose);
+    return controller;
+  }
+
+  void scrollToTop() {
+    if (state.hasClients) {
+      state.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+}
 
 @riverpod
 class ImageSort extends _$ImageSort {
@@ -77,7 +98,7 @@ class MediaViewToggle extends _$MediaViewToggle {
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setString(_storageKey, next.name);
   }
-  
+
   Future<void> setView(MediaViewType type) async {
     if (state == type) return;
     state = type;
@@ -94,7 +115,7 @@ class ImageList extends _$ImageList {
   bool _isLoadingMore = false;
 
   @override
-  FutureOr<List<Image>> build() async {
+  FutureOr<List<entity.Image>> build() async {
     ref.keepAlive();
     _currentPage = 1;
     _hasMore = true;

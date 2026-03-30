@@ -92,8 +92,9 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
               viewType == MediaViewType.galleries,
             ],
             onPressed: (index) {
-              final newType =
-                  index == 0 ? MediaViewType.images : MediaViewType.galleries;
+              final newType = index == 0
+                  ? MediaViewType.images
+                  : MediaViewType.galleries;
               ref.read(mediaViewToggleProvider.notifier).setView(newType);
               if (newType == MediaViewType.images) {
                 context.go('/media/images');
@@ -127,10 +128,10 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
       tabletCrossAxisCount: 4,
       itemBuilder: (context, gallery) => InkWell(
         onTap: () {
+          ref.read(imageFilterStateProvider.notifier).setGalleryId(gallery.id);
           ref
-              .read(imageFilterStateProvider.notifier)
-              .setGalleryId(gallery.id);
-          ref.read(mediaViewToggleProvider.notifier).setView(MediaViewType.images);
+              .read(mediaViewToggleProvider.notifier)
+              .setView(MediaViewType.images);
           context.go('/media/images');
         },
         child: Card(

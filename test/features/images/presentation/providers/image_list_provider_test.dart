@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image.dart';
@@ -34,6 +33,7 @@ void main() {
       final image = Image(
         id: '1',
         title: 'Test',
+        files: [],
         paths: const ImagePaths(image: 'test.jpg'),
       );
       mockRepository.withData([image]);
@@ -55,11 +55,12 @@ void main() {
       // Create new container to check persistence
       final sharedPrefs = await SharedPreferences.getInstance();
       final newContainer = ProviderContainer(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(sharedPrefs),
-        ],
+        overrides: [sharedPreferencesProvider.overrideWithValue(sharedPrefs)],
       );
-      expect(newContainer.read(mediaViewToggleProvider), MediaViewType.galleries);
+      expect(
+        newContainer.read(mediaViewToggleProvider),
+        MediaViewType.galleries,
+      );
     });
 
     test('ImageSort persists state', () async {
@@ -70,9 +71,7 @@ void main() {
       // Create new container to check persistence
       final sharedPrefs = await SharedPreferences.getInstance();
       final newContainer = ProviderContainer(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(sharedPrefs),
-        ],
+        overrides: [sharedPreferencesProvider.overrideWithValue(sharedPrefs)],
       );
       final sortState = newContainer.read(imageSortProvider);
       expect(sortState.sort, 'rating');

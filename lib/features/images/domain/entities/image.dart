@@ -20,10 +20,8 @@ abstract class Image with _$Image {
 
 @freezed
 abstract class ImageFile with _$ImageFile {
-  const factory ImageFile({
-    required int width,
-    required int height,
-  }) = _ImageFile;
+  const factory ImageFile({required int width, required int height}) =
+      _ImageFile;
 
   factory ImageFile.fromJson(Map<String, dynamic> json) =>
       _$ImageFileFromJson(json);

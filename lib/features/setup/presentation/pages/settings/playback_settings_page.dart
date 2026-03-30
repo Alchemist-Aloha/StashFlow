@@ -8,7 +8,8 @@ class PlaybackSettingsPage extends ConsumerStatefulWidget {
   const PlaybackSettingsPage({super.key});
 
   @override
-  ConsumerState<PlaybackSettingsPage> createState() => _PlaybackSettingsPageState();
+  ConsumerState<PlaybackSettingsPage> createState() =>
+      _PlaybackSettingsPageState();
 }
 
 class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
@@ -157,7 +158,9 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
           _useDoubleTapSeek
               ? 'Double-tap left/right to seek 10s'
               : 'Drag the timeline to seek',
-          style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         );
         final trailingWidget = SegmentedButton<bool>(
           showSelectedIcon: false,
@@ -194,10 +197,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                 const SizedBox(height: 4),
                 subtitleWidget,
                 const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: trailingWidget,
-                ),
+                SizedBox(width: double.infinity, child: trailingWidget),
               ],
             ),
           );

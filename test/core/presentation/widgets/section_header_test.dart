@@ -14,11 +14,7 @@ void main() {
   group('SectionHeader', () {
     testWidgets('renders title correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
-        buildTestApp(
-          const SectionHeader(
-            title: 'Test Title',
-          ),
-        ),
+        buildTestApp(const SectionHeader(title: 'Test Title')),
       );
 
       final titleFinder = find.text('Test Title');
@@ -28,34 +24,31 @@ void main() {
       expect(textWidget.style?.fontWeight, FontWeight.bold);
     });
 
-    testWidgets('renders \'View all\' button when onViewAll is provided', (WidgetTester tester) async {
+    testWidgets('renders \'View all\' button when onViewAll is provided', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
-        buildTestApp(
-          SectionHeader(
-            title: 'Test Title',
-            onViewAll: () {},
-          ),
-        ),
+        buildTestApp(SectionHeader(title: 'Test Title', onViewAll: () {})),
       );
 
       expect(find.text('View all'), findsOneWidget);
       expect(find.byType(TextButton), findsOneWidget);
     });
 
-    testWidgets('does not render \'View all\' button when onViewAll is null', (WidgetTester tester) async {
+    testWidgets('does not render \'View all\' button when onViewAll is null', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
-        buildTestApp(
-          const SectionHeader(
-            title: 'Test Title',
-          ),
-        ),
+        buildTestApp(const SectionHeader(title: 'Test Title')),
       );
 
       expect(find.text('View all'), findsNothing);
       expect(find.byType(TextButton), findsNothing);
     });
 
-    testWidgets('triggers onViewAll callback when \'View all\' is tapped', (WidgetTester tester) async {
+    testWidgets('triggers onViewAll callback when \'View all\' is tapped', (
+      WidgetTester tester,
+    ) async {
       bool callbackFired = false;
       await tester.pumpWidget(
         buildTestApp(
@@ -77,32 +70,32 @@ void main() {
       expect(callbackFired, isTrue);
     });
 
-    testWidgets('applies default padding when not provided', (WidgetTester tester) async {
+    testWidgets('applies default padding when not provided', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
-        buildTestApp(
-          const SectionHeader(
-            title: 'Test Title',
-          ),
-        ),
+        buildTestApp(const SectionHeader(title: 'Test Title')),
       );
 
       final paddingFinder = find.byType(Padding).first;
       final paddingWidget = tester.widget<Padding>(paddingFinder);
 
-      expect(paddingWidget.padding, const EdgeInsets.symmetric(
-        horizontal: AppTheme.spacingMedium,
-        vertical: AppTheme.spacingSmall,
-      ));
+      expect(
+        paddingWidget.padding,
+        const EdgeInsets.symmetric(
+          horizontal: AppTheme.spacingMedium,
+          vertical: AppTheme.spacingSmall,
+        ),
+      );
     });
 
-    testWidgets('applies custom padding when provided', (WidgetTester tester) async {
+    testWidgets('applies custom padding when provided', (
+      WidgetTester tester,
+    ) async {
       const customPadding = EdgeInsets.all(20.0);
       await tester.pumpWidget(
         buildTestApp(
-          const SectionHeader(
-            title: 'Test Title',
-            padding: customPadding,
-          ),
+          const SectionHeader(title: 'Test Title', padding: customPadding),
         ),
       );
 

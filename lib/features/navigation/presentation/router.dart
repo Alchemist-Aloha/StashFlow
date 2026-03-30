@@ -285,9 +285,8 @@ GoRouter router(Ref ref) {
       ),
       GoRoute(
         path: '/image/:id',
-        builder: (context, state) => ImageFullscreenPage(
-          imageId: state.pathParameters['id']!,
-        ),
+        builder: (context, state) =>
+            ImageFullscreenPage(imageId: state.pathParameters['id']!),
       ),
     ],
   );

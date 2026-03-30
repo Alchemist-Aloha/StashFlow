@@ -6,21 +6,19 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../domain/entities/image.dart' as entity;
 
 class ImageCard extends ConsumerWidget {
-  const ImageCard({
-    required this.image,
-    this.onTap,
-    super.key,
-  });
+  const ImageCard({required this.image, this.onTap, super.key});
 
   final entity.Image image;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final double aspectRatio = (image.files.isNotEmpty &&
+    final double aspectRatio =
+        (image.files.isNotEmpty &&
             image.files.first.width > 0 &&
             image.files.first.height > 0)
-        ? image.files.first.width.toDouble() / image.files.first.height.toDouble()
+        ? image.files.first.width.toDouble() /
+              image.files.first.height.toDouble()
         : 1.0;
 
     return InkWell(
@@ -48,7 +46,10 @@ class ImageCard extends ConsumerWidget {
                   bottom: 4,
                   right: 4,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black.withAlpha(150),
                       borderRadius: BorderRadius.circular(4),
@@ -59,7 +60,7 @@ class ImageCard extends ConsumerWidget {
                         const Icon(Icons.star, color: Colors.amber, size: 10),
                         const SizedBox(width: 2),
                         Text(
-                          '${(image.rating100! / 20).toStringAsFixed(1)}',
+                          (image.rating100! / 20).toStringAsFixed(1),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,

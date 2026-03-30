@@ -28,10 +28,7 @@ void main() {
     test('formattedTimestamp pads correctly', () {
       // 0 hours, 5 mins, 9 seconds, 7 ms
       final timestamp = DateTime(2023, 1, 1, 0, 5, 9, 7);
-      final entry = AppLogEntry(
-        timestamp: timestamp,
-        message: 'Padding test',
-      );
+      final entry = AppLogEntry(timestamp: timestamp, message: 'Padding test');
 
       // '00:05:09.007'
       expect(entry.formattedTimestamp, '00:05:09.007');

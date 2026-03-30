@@ -16,7 +16,9 @@ void main() {
     );
   }
 
-  testWidgets('MarqueeText builds successfully and displays text', (WidgetTester tester) async {
+  testWidgets('MarqueeText builds successfully and displays text', (
+    WidgetTester tester,
+  ) async {
     const text = 'Short';
     await tester.pumpWidget(buildTestWidget(const MarqueeText(text: text)));
 
@@ -24,21 +26,31 @@ void main() {
     expect(find.text(text), findsOneWidget);
   });
 
-  testWidgets('MarqueeText updates properly when text changes', (WidgetTester tester) async {
+  testWidgets('MarqueeText updates properly when text changes', (
+    WidgetTester tester,
+  ) async {
     // Run async so that any Future.delayed can finish.
     await tester.runAsync(() async {
-      await tester.pumpWidget(buildTestWidget(const MarqueeText(
-        text: 'Initial Text',
-        pauseDuration: Duration(milliseconds: 1),
-        scrollDuration: Duration(milliseconds: 1),
-      )));
+      await tester.pumpWidget(
+        buildTestWidget(
+          const MarqueeText(
+            text: 'Initial Text',
+            pauseDuration: Duration(milliseconds: 1),
+            scrollDuration: Duration(milliseconds: 1),
+          ),
+        ),
+      );
       expect(find.text('Initial Text'), findsOneWidget);
 
-      await tester.pumpWidget(buildTestWidget(const MarqueeText(
-        text: 'Updated Text',
-        pauseDuration: Duration(milliseconds: 1),
-        scrollDuration: Duration(milliseconds: 1),
-      )));
+      await tester.pumpWidget(
+        buildTestWidget(
+          const MarqueeText(
+            text: 'Updated Text',
+            pauseDuration: Duration(milliseconds: 1),
+            scrollDuration: Duration(milliseconds: 1),
+          ),
+        ),
+      );
       await tester.pump(); // Allow didUpdateWidget to process
 
       expect(find.text('Initial Text'), findsNothing);
@@ -51,18 +63,23 @@ void main() {
     });
   });
 
-  testWidgets('MarqueeText triggers scroll logic for long text', (WidgetTester tester) async {
-    const longText = 'This is a very long text that should definitely trigger the marquee scrolling behavior because it exceeds the constrained width of 100 pixels.';
+  testWidgets('MarqueeText triggers scroll logic for long text', (
+    WidgetTester tester,
+  ) async {
+    const longText =
+        'This is a very long text that should definitely trigger the marquee scrolling behavior because it exceeds the constrained width of 100 pixels.';
 
     await tester.runAsync(() async {
       // Set smaller durations to speed up test execution
-      await tester.pumpWidget(buildTestWidget(
-        const MarqueeText(
-          text: longText,
-          scrollDuration: Duration(milliseconds: 50),
-          pauseDuration: Duration(milliseconds: 10),
+      await tester.pumpWidget(
+        buildTestWidget(
+          const MarqueeText(
+            text: longText,
+            scrollDuration: Duration(milliseconds: 50),
+            pauseDuration: Duration(milliseconds: 10),
+          ),
         ),
-      ));
+      );
 
       expect(find.byType(MarqueeText), findsOneWidget);
       expect(find.text(longText), findsOneWidget);

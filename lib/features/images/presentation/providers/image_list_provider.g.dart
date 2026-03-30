@@ -9,6 +9,59 @@ part of 'image_list_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(ImageScrollController)
+final imageScrollControllerProvider = ImageScrollControllerProvider._();
+
+final class ImageScrollControllerProvider
+    extends $NotifierProvider<ImageScrollController, ScrollController> {
+  ImageScrollControllerProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'imageScrollControllerProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$imageScrollControllerHash();
+
+  @$internal
+  @override
+  ImageScrollController create() => ImageScrollController();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ScrollController value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ScrollController>(value),
+    );
+  }
+}
+
+String _$imageScrollControllerHash() =>
+    r'2c34a7df2c05bbcf57cae15dbc5250e11fbf34df';
+
+abstract class _$ImageScrollController extends $Notifier<ScrollController> {
+  ScrollController build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<ScrollController, ScrollController>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<ScrollController, ScrollController>,
+              ScrollController,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(ImageSort)
 final imageSortProvider = ImageSortProvider._();
 
@@ -232,7 +285,7 @@ abstract class _$MediaViewToggle extends $Notifier<MediaViewType> {
 final imageListProvider = ImageListProvider._();
 
 final class ImageListProvider
-    extends $AsyncNotifierProvider<ImageList, List<Image>> {
+    extends $AsyncNotifierProvider<ImageList, List<entity.Image>> {
   ImageListProvider._()
     : super(
         from: null,
@@ -252,19 +305,20 @@ final class ImageListProvider
   ImageList create() => ImageList();
 }
 
-String _$imageListHash() => r'beb47e3b13492d6fbe17990d16b83b4846869c10';
+String _$imageListHash() => r'90728386ed63d98a117524317c8fc347970cab4b';
 
-abstract class _$ImageList extends $AsyncNotifier<List<Image>> {
-  FutureOr<List<Image>> build();
+abstract class _$ImageList extends $AsyncNotifier<List<entity.Image>> {
+  FutureOr<List<entity.Image>> build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<AsyncValue<List<Image>>, List<Image>>;
+    final ref =
+        this.ref as $Ref<AsyncValue<List<entity.Image>>, List<entity.Image>>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<List<Image>>, List<Image>>,
-              AsyncValue<List<Image>>,
+              AnyNotifier<AsyncValue<List<entity.Image>>, List<entity.Image>>,
+              AsyncValue<List<entity.Image>>,
               Object?,
               Object?
             >;

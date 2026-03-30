@@ -299,7 +299,9 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-        side: BorderSide(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2)),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+        ),
       ),
       child: Padding(
         padding: const EdgeInsets.all(AppTheme.spacingMedium),
@@ -308,9 +310,9 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
           children: [
             Text(
               'Connection Status',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: AppTheme.spacingSmall),
             statusInfo.when(
