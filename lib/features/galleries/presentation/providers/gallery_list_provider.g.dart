@@ -9,6 +9,59 @@ part of 'gallery_list_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(GalleryScrollController)
+final galleryScrollControllerProvider = GalleryScrollControllerProvider._();
+
+final class GalleryScrollControllerProvider
+    extends $NotifierProvider<GalleryScrollController, ScrollController> {
+  GalleryScrollControllerProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'galleryScrollControllerProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$galleryScrollControllerHash();
+
+  @$internal
+  @override
+  GalleryScrollController create() => GalleryScrollController();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ScrollController value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ScrollController>(value),
+    );
+  }
+}
+
+String _$galleryScrollControllerHash() =>
+    r'2901a6523a5af7edcb053c9c1b9ad4daca29d29b';
+
+abstract class _$GalleryScrollController extends $Notifier<ScrollController> {
+  ScrollController build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<ScrollController, ScrollController>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<ScrollController, ScrollController>,
+              ScrollController,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(GallerySort)
 final gallerySortProvider = GallerySortProvider._();
 
