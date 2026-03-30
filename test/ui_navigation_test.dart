@@ -198,9 +198,9 @@ void main() {
     // Tap Settings Tab
     await tester.tap(find.widgetWithText(NavigationDestination, 'Settings'));
     await tester.pumpAndSettle();
-    // Verification that we are on Settings page
-    expect(find.text('GraphQL server URL'), findsWidgets);
-    expect(find.text('API key'), findsWidgets);
+    // Verification that we are on Settings Hub page
+    expect(find.text('Server'), findsWidgets);
+    expect(find.text('Playback'), findsWidgets);
 
     // Navigate back to Scenes
     await tester.tap(find.widgetWithText(NavigationDestination, 'Scenes'));
