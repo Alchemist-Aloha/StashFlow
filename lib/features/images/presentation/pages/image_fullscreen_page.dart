@@ -31,14 +31,15 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage>
   void initState() {
     super.initState();
     _pageController = PageController();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 200),
-    )..addListener(() {
-        if (_animation != null) {
-          _transformationController.value = _animation!.value;
-        }
-      });
+    _animationController =
+        AnimationController(
+          vsync: this,
+          duration: const Duration(milliseconds: 200),
+        )..addListener(() {
+          if (_animation != null) {
+            _transformationController.value = _animation!.value;
+          }
+        });
 
     _transformationController.addListener(() {
       final isZoomedNow =
@@ -70,10 +71,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage>
         ..setTranslationRaw(-position.dx * 2, -position.dy * 2, 0.0);
     }
 
-    _animation = Matrix4Tween(
-      begin: initialMatrix,
-      end: targetMatrix,
-    ).animate(
+    _animation = Matrix4Tween(begin: initialMatrix, end: targetMatrix).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
 
@@ -93,7 +91,9 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage>
               Text(
                 image.title?.isNotEmpty == true
                     ? image.title!
-                    : 'Untitled Image',
+                    : (image.files.isNotEmpty
+                          ? image.files.first.path
+                          : 'Untitled Image'),
                 style: context.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),

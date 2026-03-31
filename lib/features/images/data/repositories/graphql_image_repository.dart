@@ -37,10 +37,12 @@ class GraphQLImageRepository implements ImageRepository {
               ... on ImageFile {
                 width
                 height
+                path
               }
               ... on VideoFile {
                 width
                 height
+                path
               }
             }
             paths {
@@ -55,7 +57,9 @@ class GraphQLImageRepository implements ImageRepository {
 
     final result = await client.query(
       QueryOptions(
-        fetchPolicy: sort == 'random' ? FetchPolicy.noCache : FetchPolicy.cacheAndNetwork,
+        fetchPolicy: sort == 'random'
+            ? FetchPolicy.noCache
+            : FetchPolicy.cacheAndNetwork,
         document: gql(query),
         variables: {
           'filter': {
@@ -137,10 +141,12 @@ class GraphQLImageRepository implements ImageRepository {
             ... on ImageFile {
               width
               height
+              path
             }
             ... on VideoFile {
               width
               height
+              path
             }
           }
           paths {

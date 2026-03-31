@@ -121,5 +121,33 @@ void main() {
       expect(find.text('Date: 2023-01-01'), findsOneWidget);
       expect(find.text('Rating: 5.0 Stars'), findsOneWidget);
     });
+
+    testWidgets('falls back to file path in info bottom sheet if title is missing', (tester) async {
+      final image = entity.Image(
+        id: '1',
+        title: null,
+        files: [
+          const entity.ImageFile(width: 100, height: 100, path: '/path/to/image.jpg'),
+        ],
+        paths: const entity.ImagePaths(image: 'http://test.com/img1.jpg'),
+      );
+      mockRepository.withData([image]);
+
+      await pumpTestWidget(
+        tester,
+        child: const ImageFullscreenPage(imageId: '1'),
+        overrides: [imageRepositoryProvider.overrideWithValue(mockRepository)],
+      );
+
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      // Tap info button
+      await tester.tap(find.byIcon(Icons.info_outline));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('/path/to/image.jpg'), findsOneWidget);
+    });
   });
 }
