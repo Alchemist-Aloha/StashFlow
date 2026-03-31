@@ -9,6 +9,59 @@ part of 'gallery_list_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(GalleryScrollController)
+final galleryScrollControllerProvider = GalleryScrollControllerProvider._();
+
+final class GalleryScrollControllerProvider
+    extends $NotifierProvider<GalleryScrollController, ScrollController> {
+  GalleryScrollControllerProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'galleryScrollControllerProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$galleryScrollControllerHash();
+
+  @$internal
+  @override
+  GalleryScrollController create() => GalleryScrollController();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ScrollController value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ScrollController>(value),
+    );
+  }
+}
+
+String _$galleryScrollControllerHash() =>
+    r'2901a6523a5af7edcb053c9c1b9ad4daca29d29b';
+
+abstract class _$GalleryScrollController extends $Notifier<ScrollController> {
+  ScrollController build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<ScrollController, ScrollController>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<ScrollController, ScrollController>,
+              ScrollController,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(GallerySort)
 final gallerySortProvider = GallerySortProvider._();
 
@@ -125,6 +178,112 @@ abstract class _$GallerySearchQuery extends $Notifier<String> {
   }
 }
 
+@ProviderFor(GalleryFilterState)
+final galleryFilterStateProvider = GalleryFilterStateProvider._();
+
+final class GalleryFilterStateProvider
+    extends $NotifierProvider<GalleryFilterState, GalleryFilter> {
+  GalleryFilterStateProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'galleryFilterStateProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$galleryFilterStateHash();
+
+  @$internal
+  @override
+  GalleryFilterState create() => GalleryFilterState();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(GalleryFilter value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<GalleryFilter>(value),
+    );
+  }
+}
+
+String _$galleryFilterStateHash() =>
+    r'1c2310e63e4a63b3bfe8cc3d11563e93e2afe36d';
+
+abstract class _$GalleryFilterState extends $Notifier<GalleryFilter> {
+  GalleryFilter build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<GalleryFilter, GalleryFilter>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<GalleryFilter, GalleryFilter>,
+              GalleryFilter,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+@ProviderFor(GalleryOrganizedOnly)
+final galleryOrganizedOnlyProvider = GalleryOrganizedOnlyProvider._();
+
+final class GalleryOrganizedOnlyProvider
+    extends $NotifierProvider<GalleryOrganizedOnly, bool> {
+  GalleryOrganizedOnlyProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'galleryOrganizedOnlyProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$galleryOrganizedOnlyHash();
+
+  @$internal
+  @override
+  GalleryOrganizedOnly create() => GalleryOrganizedOnly();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$galleryOrganizedOnlyHash() =>
+    r'15acb183603aeac06e44bcb09ed5884547871e8b';
+
+abstract class _$GalleryOrganizedOnly extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(GalleryList)
 final galleryListProvider = GalleryListProvider._();
 
@@ -149,7 +308,7 @@ final class GalleryListProvider
   GalleryList create() => GalleryList();
 }
 
-String _$galleryListHash() => r'c0a5d473a30b7483f595f14f38c6fedf5447909f';
+String _$galleryListHash() => r'4e14733c2f7ff2d32adf386b62362ea5fd1c1381';
 
 abstract class _$GalleryList extends $AsyncNotifier<List<Gallery>> {
   FutureOr<List<Gallery>> build();

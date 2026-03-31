@@ -14,7 +14,9 @@ void main() {
   late SharedPreferences prefs;
 
   setUp(() async {
-    SharedPreferences.setMockInitialValues({'server_base_url': 'http://localhost:9999'});
+    SharedPreferences.setMockInitialValues({
+      'server_base_url': 'http://localhost:9999',
+    });
     prefs = await SharedPreferences.getInstance();
   });
 
@@ -39,7 +41,7 @@ void main() {
         height: 1080,
         frameRate: 30,
         bitRate: 5000,
-      )
+      ),
     ],
     paths: const ScenePaths(
       screenshot: null,
@@ -64,18 +66,14 @@ void main() {
       ],
       child: MaterialApp(
         theme: AppTheme.darkTheme,
-        home: Scaffold(
-          body: child,
-        ),
+        home: Scaffold(body: child),
       ),
     );
   }
 
   testWidgets('SceneCard renders list mode properly', (tester) async {
     await tester.pumpWidget(
-      buildTestWidget(
-        SceneCard(scene: defaultTestScene, isGrid: false),
-      ),
+      buildTestWidget(SceneCard(scene: defaultTestScene, isGrid: false)),
     );
 
     await tester.pumpAndSettle();
@@ -92,9 +90,7 @@ void main() {
 
   testWidgets('SceneCard renders grid mode properly', (tester) async {
     await tester.pumpWidget(
-      buildTestWidget(
-        SceneCard(scene: defaultTestScene, isGrid: true),
-      ),
+      buildTestWidget(SceneCard(scene: defaultTestScene, isGrid: true)),
     );
 
     await tester.pumpAndSettle();
@@ -122,11 +118,7 @@ void main() {
       playCount: 0,
       urls: [],
       files: [], // empty
-      paths: const ScenePaths(
-        screenshot: null,
-        preview: null,
-        stream: null,
-      ),
+      paths: const ScenePaths(screenshot: null, preview: null, stream: null),
       studioId: null,
       studioName: null,
       studioImagePath: null,
@@ -138,9 +130,7 @@ void main() {
     );
 
     await tester.pumpWidget(
-      buildTestWidget(
-        SceneCard(scene: sceneWithoutFiles, isGrid: false),
-      ),
+      buildTestWidget(SceneCard(scene: sceneWithoutFiles, isGrid: false)),
     );
 
     await tester.pumpAndSettle();
@@ -148,7 +138,9 @@ void main() {
     expect(find.text('--:--'), findsOneWidget);
   });
 
-  testWidgets('SceneCard handles missing studio gracefully in list mode', (tester) async {
+  testWidgets('SceneCard handles missing studio gracefully in list mode', (
+    tester,
+  ) async {
     final sceneWithoutStudio = Scene(
       id: 's3',
       title: 'Scene No Studio',
@@ -161,11 +153,7 @@ void main() {
       playCount: 0,
       urls: [],
       files: [], // empty
-      paths: const ScenePaths(
-        screenshot: null,
-        preview: null,
-        stream: null,
-      ),
+      paths: const ScenePaths(screenshot: null, preview: null, stream: null),
       studioId: null,
       studioName: null,
       studioImagePath: null,
@@ -177,9 +165,7 @@ void main() {
     );
 
     await tester.pumpWidget(
-      buildTestWidget(
-        SceneCard(scene: sceneWithoutStudio, isGrid: false),
-      ),
+      buildTestWidget(SceneCard(scene: sceneWithoutStudio, isGrid: false)),
     );
 
     await tester.pumpAndSettle();
@@ -187,7 +173,9 @@ void main() {
     expect(find.text('Unknown Studio • 2023'), findsOneWidget);
   });
 
-  testWidgets('SceneCard handles missing studio gracefully in grid mode', (tester) async {
+  testWidgets('SceneCard handles missing studio gracefully in grid mode', (
+    tester,
+  ) async {
     final sceneWithoutStudio = Scene(
       id: 's4',
       title: 'Scene No Studio',
@@ -200,11 +188,7 @@ void main() {
       playCount: 0,
       urls: [],
       files: [], // empty
-      paths: const ScenePaths(
-        screenshot: null,
-        preview: null,
-        stream: null,
-      ),
+      paths: const ScenePaths(screenshot: null, preview: null, stream: null),
       studioId: null,
       studioName: null,
       studioImagePath: null,
@@ -216,9 +200,7 @@ void main() {
     );
 
     await tester.pumpWidget(
-      buildTestWidget(
-        SceneCard(scene: sceneWithoutStudio, isGrid: true),
-      ),
+      buildTestWidget(SceneCard(scene: sceneWithoutStudio, isGrid: true)),
     );
 
     await tester.pumpAndSettle();

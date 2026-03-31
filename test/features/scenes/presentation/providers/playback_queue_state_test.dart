@@ -64,7 +64,10 @@ void main() {
         final oldSequence = [scene1];
         final newSequence = [scene1, scene2];
 
-        final state = PlaybackQueueState(sequence: oldSequence, currentIndex: 0);
+        final state = PlaybackQueueState(
+          sequence: oldSequence,
+          currentIndex: 0,
+        );
         final newState = state.copyWith(sequence: newSequence);
 
         expect(newState.sequence, equals(newSequence));
@@ -89,7 +92,10 @@ void main() {
         final oldSequence = [scene1];
         final newSequence = [scene1, scene2];
 
-        final state = PlaybackQueueState(sequence: oldSequence, currentIndex: 0);
+        final state = PlaybackQueueState(
+          sequence: oldSequence,
+          currentIndex: 0,
+        );
         final newState = state.copyWith(sequence: newSequence, currentIndex: 1);
 
         expect(newState.sequence, equals(newSequence));

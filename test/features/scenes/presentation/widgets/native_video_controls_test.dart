@@ -114,14 +114,20 @@ void main() {
   });
 
   testWidgets('NativeVideoControls instantiation test', (tester) async {
-    final mockController = VideoPlayerController.networkUrl(Uri.parse('http://example.com/video.mp4'));
+    final mockController = VideoPlayerController.networkUrl(
+      Uri.parse('http://example.com/video.mp4'),
+    );
     await mockController.initialize();
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          playerStateProvider.overrideWith(() => _MockPlayerStateNotifier(testScene)),
-          playbackQueueProvider.overrideWith(() => _MockPlaybackQueueNotifier()),
+          playerStateProvider.overrideWith(
+            () => _MockPlayerStateNotifier(testScene),
+          ),
+          playbackQueueProvider.overrideWith(
+            () => _MockPlaybackQueueNotifier(),
+          ),
         ],
         child: MaterialApp(
           home: Scaffold(

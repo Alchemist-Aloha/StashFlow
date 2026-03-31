@@ -1,6 +1,10 @@
 targets:
   $default:
     builders:
+      mockito|mock_builder:
+        enabled: true
+        generate_for:
+          - test/**
       riverpod_generator:
         enabled: true
       freezed:

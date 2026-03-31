@@ -13,7 +13,16 @@ import '../../studios/presentation/pages/studio_media_grid_page.dart';
 import '../../tags/presentation/pages/tags_page.dart';
 import '../../tags/presentation/pages/tag_details_page.dart';
 import '../../tags/presentation/pages/tag_media_grid_page.dart';
-import '../../setup/presentation/settings_page.dart';
+import '../../images/presentation/pages/images_page.dart';
+import '../../images/presentation/pages/image_fullscreen_page.dart';
+import '../../galleries/presentation/pages/galleries_page.dart';
+import '../../images/presentation/providers/image_list_provider.dart';
+import '../../setup/presentation/pages/settings/settings_hub_page.dart';
+import '../../setup/presentation/pages/settings/server_settings_page.dart';
+import '../../setup/presentation/pages/settings/playback_settings_page.dart';
+import '../../setup/presentation/pages/settings/appearance_settings_page.dart';
+import '../../setup/presentation/pages/settings/interface_settings_page.dart';
+import '../../setup/presentation/pages/settings/support_settings_page.dart';
 import '../../setup/presentation/debug_log_viewer_page.dart';
 import '../../scenes/presentation/widgets/scene_video_player.dart';
 import 'shell_page.dart';
@@ -168,12 +177,20 @@ GoRouter router(Ref ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/settings',
-                builder: (context, state) => const SettingsPage(),
+                path: '/galleries',
+                builder: (context, state) => const GalleriesPage(),
                 routes: [
                   GoRoute(
-                    path: 'logs',
-                    builder: (context, state) => const DebugLogViewerPage(),
+                    path: 'images',
+                    builder: (context, state) => const ImagesPage(),
+                    routes: [
+                      GoRoute(
+                        path: ':id',
+                        builder: (context, state) => ImageFullscreenPage(
+                          imageId: state.pathParameters['id']!,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -223,6 +240,41 @@ GoRouter router(Ref ref) {
                 TagMediaGridPage(tagId: state.pathParameters['id']!),
           ),
         ],
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsHubPage(),
+        routes: [
+          GoRoute(
+            path: 'server',
+            builder: (context, state) => const ServerSettingsPage(),
+          ),
+          GoRoute(
+            path: 'playback',
+            builder: (context, state) => const PlaybackSettingsPage(),
+          ),
+          GoRoute(
+            path: 'appearance',
+            builder: (context, state) => const AppearanceSettingsPage(),
+          ),
+          GoRoute(
+            path: 'interface',
+            builder: (context, state) => const InterfaceSettingsPage(),
+          ),
+          GoRoute(
+            path: 'support',
+            builder: (context, state) => const SupportSettingsPage(),
+          ),
+          GoRoute(
+            path: 'logs',
+            builder: (context, state) => const DebugLogViewerPage(),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/image/:id',
+        builder: (context, state) =>
+            ImageFullscreenPage(imageId: state.pathParameters['id']!),
       ),
     ],
   );

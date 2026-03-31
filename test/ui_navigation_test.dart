@@ -24,6 +24,13 @@ import 'package:stash_app_flutter/features/tags/domain/entities/tag.dart';
 import 'package:stash_app_flutter/features/tags/domain/repositories/tag_repository.dart';
 import 'package:stash_app_flutter/features/tags/presentation/providers/tag_list_provider.dart';
 
+import 'package:stash_app_flutter/features/images/domain/entities/image.dart' as entity;
+import 'package:stash_app_flutter/features/images/domain/repositories/image_repository.dart';
+import 'package:stash_app_flutter/features/images/presentation/providers/image_list_provider.dart';
+import 'package:stash_app_flutter/features/galleries/domain/repositories/gallery_repository.dart';
+import 'package:stash_app_flutter/features/galleries/domain/entities/gallery.dart';
+import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_list_provider.dart';
+
 import 'package:stash_app_flutter/main.dart';
 
 class MockSceneRepository implements SceneRepository {
@@ -40,7 +47,31 @@ class MockSceneRepository implements SceneRepository {
     String? studioId,
     String? tagId,
     SceneFilter? sceneFilter,
-  }) async => [];
+  }) async =>
+      [
+        Scene.fromJson({
+          'id': '1',
+          'title': 'Test Scene',
+          'date': '2023-01-01',
+          'rating100': 80,
+          'o_counter': 0,
+          'organized': true,
+          'interactive': false,
+          'resume_time': null,
+          'play_count': 0,
+          'files': [],
+          'paths': {'screenshot': null, 'preview': null, 'stream': null},
+          'urls': [],
+          'studio_id': null,
+          'studio_name': null,
+          'studio_image_path': null,
+          'performer_ids': [],
+          'performer_names': [],
+          'performer_image_paths': [],
+          'tag_ids': [],
+          'tag_names': [],
+        })
+      ];
 
   @override
   Future<Scene> getSceneById(String id, {bool refresh = false}) =>
@@ -95,7 +126,30 @@ class MockPerformerRepository implements PerformerRepository {
     bool descending = true,
     bool favoritesOnly = false,
     List<String>? genders,
-  }) async => [];
+  }) async =>
+      [
+        Performer.fromJson({
+          'id': '1',
+          'name': 'Test Performer',
+          'favorite': false,
+          'image_path': null,
+          'scene_count': 0,
+          'urls': [],
+          'birthdate': null,
+          'ethnicity': null,
+          'country': null,
+          'eye_color': null,
+          'hair_color': null,
+          'height_cm': null,
+          'measurements': null,
+          'fake_tits': null,
+          'career_length': null,
+          'tattoos': null,
+          'piercings': null,
+          'alias_list': [],
+          'favorite_count': 0,
+        })
+      ];
 
   @override
   Future<Performer> getPerformerById(String id, {bool refresh = false}) =>
@@ -114,7 +168,18 @@ class MockStudioRepository implements StudioRepository {
     String? sort,
     bool? descending,
     bool favoritesOnly = false,
-  }) async => [];
+  }) async =>
+      [
+        Studio.fromJson({
+          'id': '1',
+          'name': 'Test Studio',
+          'favorite': false,
+          'image_path': null,
+          'scene_count': 0,
+          'image_count': 0,
+          'gallery_count': 0,
+        })
+      ];
 
   @override
   Future<Studio> getStudioById(String id, {bool refresh = false}) =>
@@ -133,7 +198,17 @@ class MockTagRepository implements TagRepository {
     String? sort,
     bool? descending,
     bool favoritesOnly = false,
-  }) async => [];
+  }) async =>
+      [
+        Tag.fromJson({
+          'id': '1',
+          'name': 'Test Tag',
+          'favorite': false,
+          'scene_count': 0,
+          'image_count': 0,
+          'gallery_count': 0,
+        })
+      ];
 
   @override
   Future<Tag> getTagById(String id, {bool refresh = false}) =>
@@ -143,11 +218,55 @@ class MockTagRepository implements TagRepository {
   Future<void> setTagFavorite(String id, bool favorite) async {}
 }
 
+class MockImageRepository implements ImageRepository {
+  @override
+  Future<List<entity.Image>> findImages({
+    int? page,
+    int? perPage,
+    String? filter,
+    String? sort,
+    bool? descending,
+    String? galleryId,
+  }) async =>
+      [
+        entity.Image.fromJson({
+          'id': '1',
+          'title': 'Test Image',
+          'visual_files': [],
+          'paths': {'thumbnail': null, 'preview': null, 'image': 'img.jpg'},
+          'urls': [],
+        })
+      ];
+
+  @override
+  Future<entity.Image> getImageById(String id, {bool refresh = false}) =>
+      throw UnimplementedError();
+}
+
+class MockGalleryRepository implements GalleryRepository {
+  @override
+  Future<List<Gallery>> findGalleries({
+    int? page,
+    int? perPage,
+    String? filter,
+    String? sort,
+    bool? descending,
+  }) async =>
+      [const Gallery(id: '1', title: 'Test Gallery', imageCount: 1)];
+
+  @override
+  Future<Gallery> getGalleryById(String id, {bool refresh = false}) =>
+      throw UnimplementedError();
+}
+
 void main() {
   late SharedPreferences prefs;
 
   setUp(() async {
-    SharedPreferences.setMockInitialValues({});
+    SharedPreferences.setMockInitialValues({
+      'initial_tab': 0,
+      'server_base_url': 'http://localhost:9999',
+    });
     prefs = await SharedPreferences.getInstance();
   });
 
@@ -161,6 +280,8 @@ void main() {
         ),
         studioRepositoryProvider.overrideWithValue(MockStudioRepository()),
         tagRepositoryProvider.overrideWithValue(MockTagRepository()),
+        imageRepositoryProvider.overrideWithValue(MockImageRepository()),
+        galleryRepositoryProvider.overrideWithValue(MockGalleryRepository()),
       ],
       child: const MyApp(),
     );
@@ -177,34 +298,56 @@ void main() {
     await tester.pumpWidget(createTestWidget());
     await tester.pumpAndSettle();
 
+    final texts = tester.allWidgets.whereType<Text>().map((t) => t.data).toList();
+    print('Rendered texts: $texts');
+
     // Verify initial route is Scenes
-    expect(find.text('Scenes').first, findsWidgets);
+    expect(find.text('Scenes'), findsWidgets);
 
     // Tap Performers Tab
     await tester.tap(find.widgetWithText(NavigationDestination, 'Performers'));
     await tester.pumpAndSettle();
-    expect(find.text('Performers').first, findsWidgets);
+    expect(find.text('Performers'), findsWidgets);
 
     // Tap Studios Tab
     await tester.tap(find.widgetWithText(NavigationDestination, 'Studios'));
     await tester.pumpAndSettle();
-    expect(find.text('Studios').first, findsWidgets);
+    expect(find.text('Studios'), findsWidgets);
 
     // Tap Tags Tab
     await tester.tap(find.widgetWithText(NavigationDestination, 'Tags'));
     await tester.pumpAndSettle();
-    expect(find.text('Tags').first, findsWidgets);
+    expect(find.text('Tags'), findsWidgets);
 
-    // Tap Settings Tab
-    await tester.tap(find.widgetWithText(NavigationDestination, 'Settings'));
+    // Tap Media Tab (Galleries)
+    await tester.tap(find.widgetWithText(NavigationDestination, 'Media'));
     await tester.pumpAndSettle();
-    // Verification that we are on Settings page
-    expect(find.text('GraphQL server URL'), findsWidgets);
-    expect(find.text('API key'), findsWidgets);
+    expect(find.text('Galleries'), findsWidgets);
+
+    // Navigate to Images via top panel button
+    await tester.tap(find.byIcon(Icons.image));
+    await tester.pumpAndSettle();
+    expect(find.text('Images'), findsWidgets);
+
+    // Navigate back to Galleries
+    await tester.tap(find.byTooltip('Back'));
+    await tester.pumpAndSettle();
+    expect(find.text('Galleries'), findsWidgets);
+
+    // Tap Settings icon in AppBar (on Galleries page)
+    await tester.tap(find.byIcon(Icons.settings));
+    await tester.pumpAndSettle();
+    expect(find.text('Server'), findsAtLeast(1));
+    expect(find.text('Playback'), findsAtLeast(1));
+
+    // Navigate back to Galleries
+    await tester.tap(find.byTooltip('Back'));
+    await tester.pumpAndSettle();
+    expect(find.text('Galleries'), findsAtLeast(1));
 
     // Navigate back to Scenes
     await tester.tap(find.widgetWithText(NavigationDestination, 'Scenes'));
     await tester.pumpAndSettle();
-    expect(find.text('Scenes').first, findsWidgets);
+    expect(find.text('Scenes'), findsAtLeast(1));
   });
 }

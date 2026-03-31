@@ -7,6 +7,8 @@ import '../../scenes/presentation/providers/scene_list_provider.dart';
 import '../../performers/presentation/providers/performer_list_provider.dart';
 import '../../studios/presentation/providers/studio_list_provider.dart';
 import '../../tags/presentation/providers/tag_list_provider.dart';
+import '../../images/presentation/providers/image_list_provider.dart';
+import '../../galleries/presentation/providers/gallery_list_provider.dart';
 import '../../scenes/presentation/widgets/tiktok_scenes_view.dart';
 import 'widgets/mini_player.dart';
 
@@ -64,6 +66,9 @@ class ShellPage extends ConsumerWidget {
           case 3:
             ref.read(tagScrollControllerProvider.notifier).scrollToTop();
             break;
+          case 4:
+            ref.read(galleryScrollControllerProvider.notifier).scrollToTop();
+            break;
         }
       }
       navigationShell.goBranch(
@@ -77,7 +82,7 @@ class ShellPage extends ConsumerWidget {
       NavigationDestination(icon: Icon(Icons.people), label: 'Performers'),
       NavigationDestination(icon: Icon(Icons.business), label: 'Studios'),
       NavigationDestination(icon: Icon(Icons.local_offer), label: 'Tags'),
-      NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
+      NavigationDestination(icon: Icon(Icons.perm_media), label: 'Media'),
     ];
 
     final navigationRailDestinations = const [
@@ -98,8 +103,8 @@ class ShellPage extends ConsumerWidget {
         label: Text('Tags'),
       ),
       NavigationRailDestination(
-        icon: Icon(Icons.settings),
-        label: Text('Settings'),
+        icon: Icon(Icons.perm_media),
+        label: Text('Media'),
       ),
     ];
 

@@ -1,4 +1,5 @@
 import '../entities/gallery.dart';
+import '../entities/gallery_filter.dart';
 
 abstract class GalleryRepository {
   Future<List<Gallery>> findGalleries({
@@ -7,6 +8,7 @@ abstract class GalleryRepository {
     String? filter,
     String? sort,
     bool? descending,
+    GalleryFilter? galleryFilter,
   });
   Future<Gallery> getGalleryById(String id, {bool refresh = false});
 }

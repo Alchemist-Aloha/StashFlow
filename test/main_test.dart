@@ -7,7 +7,9 @@ import 'package:stash_app_flutter/main.dart';
 
 void main() {
   setUp(() {
-    SharedPreferences.setMockInitialValues({'server_base_url': 'http://localhost:9999'});
+    SharedPreferences.setMockInitialValues({
+      'server_base_url': 'http://localhost:9999',
+    });
   });
 
   testWidgets('MyApp builds correctly', (WidgetTester tester) async {

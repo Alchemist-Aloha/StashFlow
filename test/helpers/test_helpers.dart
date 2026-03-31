@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Image;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,6 +20,9 @@ import 'package:stash_app_flutter/features/studios/domain/repositories/studio_re
 
 import 'package:stash_app_flutter/features/tags/domain/entities/tag.dart';
 import 'package:stash_app_flutter/features/tags/domain/repositories/tag_repository.dart';
+
+import 'package:stash_app_flutter/features/images/domain/entities/image.dart';
+import 'package:stash_app_flutter/features/images/domain/repositories/image_repository.dart';
 
 import 'package:stash_app_flutter/core/presentation/widgets/error_state_view.dart';
 
@@ -220,6 +223,28 @@ class MockTagRepository extends MockRepositoryState<Tag>
   @override
   Future<void> setTagFavorite(String id, bool favorite) async {
     if (shouldThrow) throw Exception(errorMessage);
+  }
+}
+
+class MockImageRepository extends MockRepositoryState<Image>
+    implements ImageRepository {
+  @override
+  Future<List<Image>> findImages({
+    int? page,
+    int? perPage,
+    String? filter,
+    String? sort,
+    bool? descending,
+    String? galleryId,
+  }) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    return data;
+  }
+
+  @override
+  Future<Image> getImageById(String id, {bool refresh = false}) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    return data.firstWhere((i) => i.id == id);
   }
 }
 

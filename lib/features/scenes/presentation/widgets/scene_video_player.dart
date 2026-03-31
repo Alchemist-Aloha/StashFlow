@@ -68,20 +68,26 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
 
       // Perform a background "prewarm" to test connectivity.
       // We don't await this here to avoid blocking player initialization.
-      unawaited(_prewarmStream(widget.scene).then((prewarmResult) {
-        if (mounted) {
-          ref.read(playerStateProvider.notifier).setPrewarmResult(
-                attempted: prewarmResult.attempted,
-                succeeded: prewarmResult.succeeded,
-                latencyMs: prewarmResult.latencyMs,
-              );
-        }
-      }));
+      unawaited(
+        _prewarmStream(widget.scene).then((prewarmResult) {
+          if (mounted) {
+            ref
+                .read(playerStateProvider.notifier)
+                .setPrewarmResult(
+                  attempted: prewarmResult.attempted,
+                  succeeded: prewarmResult.succeeded,
+                  latencyMs: prewarmResult.latencyMs,
+                );
+          }
+        }),
+      );
 
       final choice = await resolver.resolvePreferredStream(widget.scene);
       if (choice != null && mounted) {
         final mediaHeaders = ref.read(mediaHeadersProvider);
-        await ref.read(playerStateProvider.notifier).playScene(
+        await ref
+            .read(playerStateProvider.notifier)
+            .playScene(
               widget.scene,
               choice.url,
               mimeType: choice.mimeType,

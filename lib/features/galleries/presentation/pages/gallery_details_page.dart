@@ -51,9 +51,7 @@ class GalleryDetailsPage extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        gallery.title.isEmpty
-                            ? 'Untitled gallery'
-                            : gallery.title,
+                        gallery.displayName,
                         style: context.textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: context.colors.onSurface,

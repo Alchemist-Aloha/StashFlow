@@ -31,7 +31,9 @@ void main() {
   late SharedPreferences prefs;
 
   setUp(() async {
-    SharedPreferences.setMockInitialValues({'server_base_url': 'http://localhost:9999'});
+    SharedPreferences.setMockInitialValues({
+      'server_base_url': 'http://localhost:9999',
+    });
     prefs = await SharedPreferences.getInstance();
   });
 
@@ -62,7 +64,9 @@ void main() {
     tagNames: [],
   );
 
-  testWidgets('SceneVideoPlayer renders initial placeholder with play button', (tester) async {
+  testWidgets('SceneVideoPlayer renders initial placeholder with play button', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -73,9 +77,7 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.darkTheme,
-          home: Scaffold(
-            body: SceneVideoPlayer(scene: testScene),
-          ),
+          home: Scaffold(body: SceneVideoPlayer(scene: testScene)),
         ),
       ),
     );
@@ -88,6 +90,9 @@ void main() {
     // The play button should be visible since this scene is not active.
     final iconFinder = find.byIcon(Icons.play_arrow);
     expect(iconFinder, findsOneWidget);
-    expect(find.ancestor(of: iconFinder, matching: find.byType(IconButton)), findsOneWidget);
+    expect(
+      find.ancestor(of: iconFinder, matching: find.byType(IconButton)),
+      findsOneWidget,
+    );
   });
 }

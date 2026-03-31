@@ -55,6 +55,7 @@ dependencies:
   flutter_cache_manager: ^3.4.1
   hive_flutter: ^1.1.0
   http: ^1.6.0
+  flutter_staggered_grid_view: ^0.7.0
 
 dev_dependencies:
   flutter_test:
@@ -75,7 +76,10 @@ dev_dependencies:
   riverpod_generator: ^4.0.3
   graphql_codegen: ^3.0.1
   flutter_launcher_icons: ^0.13.1
+  mockito: ^5.6.4
 
+  video_player_platform_interface: any
+  plugin_platform_interface: any
 flutter_launcher_icons:
   android: true
   ios: false

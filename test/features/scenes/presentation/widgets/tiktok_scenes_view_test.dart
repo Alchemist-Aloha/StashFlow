@@ -28,7 +28,9 @@ void main() {
       expect(isFullScreenAfterToggle, isTrue);
 
       container.read(fullScreenModeProvider.notifier).toggle();
-      final isFullScreenAfterSecondToggle = container.read(fullScreenModeProvider);
+      final isFullScreenAfterSecondToggle = container.read(
+        fullScreenModeProvider,
+      );
       expect(isFullScreenAfterSecondToggle, isFalse);
     });
 
