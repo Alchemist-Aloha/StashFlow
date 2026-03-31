@@ -1,5 +1,6 @@
 import 'package:graphql/client.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
+import '../../../../core/data/graphql/url_resolver.dart';
 import '../graphql/studios.graphql.dart';
 import '../../domain/entities/studio.dart';
 import '../../domain/repositories/studio_repository.dart';
@@ -7,6 +8,10 @@ import '../../domain/repositories/studio_repository.dart';
 class GraphQLStudioRepository implements StudioRepository {
   final GraphQLClient client;
   GraphQLStudioRepository(this.client);
+
+  Uri get _graphqlEndpoint => client.link is HttpLink
+      ? (client.link as HttpLink).uri
+      : Uri.parse('http://localhost:9999/graphql');
 
   @override
   Future<List<Studio>> findStudios({
@@ -69,7 +74,10 @@ class GraphQLStudioRepository implements StudioRepository {
             id: s.id,
             name: s.name,
             url: s.url,
-            imagePath: s.image_path,
+            imagePath: resolveGraphqlMediaUrl(
+              rawUrl: s.image_path,
+              graphqlEndpoint: _graphqlEndpoint,
+            ),
             details: s.details,
             rating100: s.rating100,
             sceneCount: s.scene_count,
@@ -148,7 +156,10 @@ class GraphQLStudioRepository implements StudioRepository {
       id: s.id,
       name: s.name,
       url: s.url,
-      imagePath: s.image_path,
+      imagePath: resolveGraphqlMediaUrl(
+        rawUrl: s.image_path,
+        graphqlEndpoint: _graphqlEndpoint,
+      ),
       details: s.details,
       rating100: s.rating100,
       sceneCount: s.scene_count,

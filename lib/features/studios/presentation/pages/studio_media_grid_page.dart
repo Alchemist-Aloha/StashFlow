@@ -27,6 +27,7 @@ class StudioMediaGridPage extends ConsumerWidget {
       // Currently, search is not implemented on the provider for this specific view.
       onSearchChanged: (_) {},
       provider: mediaAsync,
+      imageUrlBuilder: (item) => item.thumbnailUrl,
       onRefresh: () => ref.refresh(studioMediaGridProvider(studioId).future),
       onFetchNextPage: () =>
           ref.read(studioMediaGridProvider(studioId).notifier).fetchNextPage(),

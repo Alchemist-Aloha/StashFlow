@@ -28,6 +28,7 @@ class PerformerGalleriesGridPage extends ConsumerWidget {
       // Currently, search is not implemented on the provider for this specific view.
       onSearchChanged: (_) {},
       provider: galleriesAsync,
+      imageUrlBuilder: (item) => item.thumbnailUrl,
       onRefresh: () =>
           ref.refresh(performerGalleriesGridProvider(performerId).future),
       onFetchNextPage: () => ref

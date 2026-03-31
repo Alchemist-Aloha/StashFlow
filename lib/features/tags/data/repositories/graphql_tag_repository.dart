@@ -1,5 +1,6 @@
 import 'package:graphql/client.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
+import '../../../../core/data/graphql/url_resolver.dart';
 import '../graphql/tags.graphql.dart';
 import '../../domain/entities/tag.dart';
 import '../../domain/repositories/tag_repository.dart';
@@ -7,6 +8,10 @@ import '../../domain/repositories/tag_repository.dart';
 class GraphQLTagRepository implements TagRepository {
   final GraphQLClient client;
   GraphQLTagRepository(this.client);
+
+  Uri get _graphqlEndpoint => client.link is HttpLink
+      ? (client.link as HttpLink).uri
+      : Uri.parse('http://localhost:9999/graphql');
 
   @override
   Future<List<Tag>> findTags({
@@ -69,7 +74,10 @@ class GraphQLTagRepository implements TagRepository {
             id: t.id,
             name: t.name,
             description: t.description,
-            imagePath: t.image_path,
+            imagePath: resolveGraphqlMediaUrl(
+              rawUrl: t.image_path,
+              graphqlEndpoint: _graphqlEndpoint,
+            ),
             sceneCount: t.scene_count,
             imageCount: t.image_count,
             galleryCount: t.gallery_count,
@@ -113,9 +121,7 @@ class GraphQLTagRepository implements TagRepository {
                 ? Enum$SortDirectionEnum.DESC
                 : Enum$SortDirectionEnum.ASC,
           ),
-          tag_filter: favoritesOnly
-              ? Input$TagFilterType(favorite: true)
-              : null,
+          tag_filter: favoritesOnly ? Input$TagFilterType(favorite: true) : null,
         ),
       ),
     );
@@ -146,7 +152,10 @@ class GraphQLTagRepository implements TagRepository {
       id: t.id,
       name: t.name,
       description: t.description,
-      imagePath: t.image_path,
+      imagePath: resolveGraphqlMediaUrl(
+        rawUrl: t.image_path,
+        graphqlEndpoint: _graphqlEndpoint,
+      ),
       sceneCount: t.scene_count,
       imageCount: t.image_count,
       galleryCount: t.gallery_count,

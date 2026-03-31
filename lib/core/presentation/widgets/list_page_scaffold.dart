@@ -5,6 +5,9 @@ import '../theme/app_theme.dart';
 import '../../utils/responsive.dart';
 import 'error_state_view.dart';
 import '../../utils/pagination.dart';
+import 'stash_image.dart';
+import '../../data/graphql/media_headers_provider.dart';
+import 'grid_utils.dart';
 
 /// A standardized scaffold for all list and grid pages in StashFlow.
 ///
@@ -38,6 +41,9 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     this.tabletCrossAxisCount,
     this.onSortPressed,
     this.onFilterPressed,
+    this.imageUrlBuilder,
+    this.memCacheWidthBuilder,
+    this.prefetchDistance = StashImage.defaultPrefetchDistance,
   });
 
   /// The page title displayed in the AppBar.
@@ -103,6 +109,15 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
   /// Optional override for the number of columns on tablet.
   final int? tabletCrossAxisCount;
 
+  /// Optional callback to get the image URL for an item. If provided, prefetching is enabled.
+  final String? Function(T item)? imageUrlBuilder;
+
+  /// Optional callback to get the memCacheWidth for prefetching.
+  final int? Function(BuildContext context, bool isGrid)? memCacheWidthBuilder;
+
+  /// Distance (in items) to prefetch ahead and behind the visible range.
+  final int prefetchDistance;
+
   @override
   ConsumerState<ListPageScaffold<T>> createState() =>
       _ListPageScaffoldState<T>();
@@ -112,14 +127,29 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   bool _isSearching = false;
   final _searchController = TextEditingController();
 
+  // Prefetch state
+  bool _didPrefetchInitial = false;
+  double? _measuredItemExtent;
+  final GlobalKey _firstItemKey = GlobalKey();
+
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(ListPageScaffold<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.provider != widget.provider) {
+      // Reset prefetch flag when the data set potentially changes.
+      _didPrefetchInitial = false;
+    }
+  }
+
   SliverGridDelegate _getResponsiveGridDelegate(BuildContext context) {
-    final delegate = widget.gridDelegate!;
+    final delegate =
+        widget.gridDelegate ?? GridUtils.createDelegate(crossAxisCount: 1);
     if (delegate is! SliverGridDelegateWithFixedCrossAxisCount) {
       return delegate;
     }
@@ -153,86 +183,235 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
     );
   }
 
+  void _handleInitialPrefetch(List<T> items) {
+    if (_didPrefetchInitial ||
+        items.isEmpty ||
+        widget.imageUrlBuilder == null ||
+        !mounted) {
+      return;
+    }
+
+    _didPrefetchInitial = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      final count =
+          items.length < widget.prefetchDistance
+              ? items.length
+              : widget.prefetchDistance;
+      final headers = ref.read(mediaHeadersProvider);
+      final isGrid = widget.gridDelegate != null;
+
+      int? memCacheWidth;
+      if (widget.memCacheWidthBuilder != null) {
+        memCacheWidth = widget.memCacheWidthBuilder!(context, isGrid);
+      } else {
+        memCacheWidth = isGrid ? 400 : 640;
+      }
+
+      for (int i = 0; i < count; i++) {
+        final url = widget.imageUrlBuilder!(items[i]);
+        if (url != null) {
+          StashImage.prefetch(
+            context,
+            imageUrl: url,
+            headers: headers,
+            memCacheWidth: memCacheWidth,
+          );
+        }
+      }
+    });
+  }
+
+  void _handleScrollPrefetch(ScrollNotification scrollInfo, List<T> items) {
+    if (widget.imageUrlBuilder == null || items.isEmpty || !mounted) return;
+    if (scrollInfo.metrics.axis != Axis.vertical) return;
+
+    final offset = scrollInfo.metrics.pixels;
+    final isGrid = widget.gridDelegate != null;
+    final headers = ref.read(mediaHeadersProvider);
+    final prefetchDistance = widget.prefetchDistance;
+
+    int? memCacheWidth;
+    if (widget.memCacheWidthBuilder != null) {
+      memCacheWidth = widget.memCacheWidthBuilder!(context, isGrid);
+    } else {
+      memCacheWidth = isGrid ? 400 : 640;
+    }
+
+    if (isGrid) {
+      final delegate =
+          _getResponsiveGridDelegate(context)
+              as SliverGridDelegateWithFixedCrossAxisCount;
+      final crossAxisCount = delegate.crossAxisCount;
+      final padding =
+          widget.padding is EdgeInsets
+              ? (widget.padding as EdgeInsets).horizontal
+              : 0.0;
+      final availableWidth = MediaQuery.sizeOf(context).width - padding;
+      final itemWidth =
+          (availableWidth -
+              (delegate.crossAxisSpacing * (crossAxisCount - 1))) /
+          crossAxisCount;
+
+      final itemHeight =
+          delegate.mainAxisExtent ?? (itemWidth / delegate.childAspectRatio);
+      final stride = itemHeight + delegate.mainAxisSpacing;
+
+      final visibleRow = (offset / stride).floor().clamp(0, items.length - 1);
+      final visibleIndex = (visibleRow * crossAxisCount).clamp(
+        0,
+        items.length - 1,
+      );
+
+      for (var i = 1; i <= prefetchDistance; i++) {
+        final ahead = visibleIndex + i;
+        if (ahead < items.length) {
+          final url = widget.imageUrlBuilder!(items[ahead]);
+          if (url != null) {
+            StashImage.prefetch(
+              context,
+              imageUrl: url,
+              headers: headers,
+              memCacheWidth: memCacheWidth,
+            );
+          }
+        }
+        final behind = visibleIndex - i;
+        if (behind >= 0) {
+          final url = widget.imageUrlBuilder!(items[behind]);
+          if (url != null) {
+            StashImage.prefetch(
+              context,
+              imageUrl: url,
+              headers: headers,
+              memCacheWidth: memCacheWidth,
+            );
+          }
+        }
+      }
+    } else {
+      final stride = _measuredItemExtent ?? 300.0;
+      final visibleIndex = (offset / stride).floor().clamp(
+        0,
+        items.length - 1,
+      );
+
+      for (var i = 1; i <= prefetchDistance; i++) {
+        final ahead = visibleIndex + i;
+        if (ahead < items.length) {
+          final url = widget.imageUrlBuilder!(items[ahead]);
+          if (url != null) {
+            StashImage.prefetch(
+              context,
+              imageUrl: url,
+              headers: headers,
+              memCacheWidth: memCacheWidth,
+            );
+          }
+        }
+        final behind = visibleIndex - i;
+        if (behind >= 0) {
+          final url = widget.imageUrlBuilder!(items[behind]);
+          if (url != null) {
+            StashImage.prefetch(
+              context,
+              imageUrl: url,
+              headers: headers,
+              memCacheWidth: memCacheWidth,
+            );
+          }
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: widget.hideAppBar
-          ? null
-          : AppBar(
-              scrolledUnderElevation: 4.0,
-              title: _isSearching
-                  ? TextField(
-                      controller: _searchController,
-                      autofocus: true,
-                      decoration: InputDecoration(
-                        hintText: widget.searchHint,
-                        border: InputBorder.none,
-                        hintStyle: TextStyle(
-                          color: context.colors.onSurface.withValues(
-                            alpha: 0.5,
+      appBar:
+          widget.hideAppBar
+              ? null
+              : AppBar(
+                scrolledUnderElevation: 4.0,
+                title:
+                    _isSearching
+                        ? TextField(
+                          controller: _searchController,
+                          autofocus: true,
+                          decoration: InputDecoration(
+                            hintText: widget.searchHint,
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(
+                              color: context.colors.onSurface.withValues(
+                                alpha: 0.5,
+                              ),
+                            ),
+                          ),
+                          style: TextStyle(color: context.colors.onSurface),
+                          onChanged: widget.onSearchChanged,
+                        )
+                        : Text(
+                          widget.title,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: -0.5,
                           ),
                         ),
-                      ),
-                      style: TextStyle(color: context.colors.onSurface),
-                      onChanged: widget.onSearchChanged,
-                    )
-                  : Text(
-                      widget.title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-              actions: [
-                if (_isSearching)
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () {
-                      setState(() => _isSearching = false);
-                      _searchController.clear();
-                      widget.onSearchChanged('');
-                    },
-                  ),
-                if (!_isSearching) ...[
-                  if (widget.onSortPressed != null)
+                actions: [
+                  if (_isSearching)
                     IconButton(
-                      icon: const Icon(Icons.sort),
-                      onPressed: widget.onSortPressed,
-                      tooltip: 'Sort',
+                      icon: const Icon(Icons.close),
+                      onPressed: () {
+                        setState(() => _isSearching = false);
+                        _searchController.clear();
+                        widget.onSearchChanged('');
+                      },
                     ),
-                  if (widget.onFilterPressed != null)
+                  if (!_isSearching) ...[
+                    if (widget.onSortPressed != null)
+                      IconButton(
+                        icon: const Icon(Icons.sort),
+                        onPressed: widget.onSortPressed,
+                        tooltip: 'Sort',
+                      ),
+                    if (widget.onFilterPressed != null)
+                      IconButton(
+                        icon: const Icon(Icons.filter_list),
+                        onPressed: widget.onFilterPressed,
+                        tooltip: 'Filter',
+                      ),
                     IconButton(
-                      icon: const Icon(Icons.filter_list),
-                      onPressed: widget.onFilterPressed,
-                      tooltip: 'Filter',
+                      icon: const Icon(Icons.search),
+                      onPressed: () => setState(() => _isSearching = true),
+                      tooltip: 'Search',
                     ),
-                  IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: () => setState(() => _isSearching = true),
-                    tooltip: 'Search',
-                  ),
+                  ],
+                  if (!_isSearching)
+                    IconButton(
+                      icon: const Icon(Icons.settings),
+                      onPressed: () => context.push('/settings'),
+                      tooltip: 'Settings',
+                    ),
+                  ...widget.actions,
                 ],
-                if (!_isSearching)
-                  IconButton(
-                    icon: const Icon(Icons.settings),
-                    onPressed: () => context.push('/settings'),
-                    tooltip: 'Settings',
-                  ),
-                ...widget.actions,
-              ],
-            ),
+              ),
       body: Column(
         children: [
           if (widget.sortBar != null) widget.sortBar!,
           Expanded(
-            child:
-                widget.customBody ??
-                RefreshIndicator(
-                  onRefresh: widget.onRefresh ?? () async {},
-                  child: widget.provider.when(
-                    data: (items) {
-                      if (items.isEmpty) {
-                        return Center(
+            child: widget.provider.when(
+              data: (items) {
+                _handleInitialPrefetch(items);
+
+                if (items.isEmpty && widget.customBody == null) {
+                  return RefreshIndicator(
+                    onRefresh: widget.onRefresh ?? () async {},
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: SizedBox(
+                        height: MediaQuery.sizeOf(context).height * 0.7,
+                        child: Center(
                           child: Text(
                             widget.emptyMessage,
                             style: TextStyle(
@@ -241,44 +420,92 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                               ),
                             ),
                           ),
-                        );
-                      }
-
-                      return NotificationListener<ScrollNotification>(
-                        onNotification: (ScrollNotification scrollInfo) {
-                          if (shouldLoadNextPage(scrollInfo.metrics)) {
-                            widget.onFetchNextPage?.call();
-                          }
-                          return false;
-                        },
-                        child: widget.gridDelegate != null
-                            ? GridView.builder(
-                                controller: widget.scrollController,
-                                padding: widget.padding,
-                                gridDelegate: _getResponsiveGridDelegate(
-                                  context,
-                                ),
-                                itemCount: items.length,
-                                itemBuilder: (context, index) =>
-                                    widget.itemBuilder!(context, items[index]),
-                              )
-                            : ListView.builder(
-                                controller: widget.scrollController,
-                                padding: widget.padding,
-                                itemCount: items.length,
-                                itemBuilder: (context, index) =>
-                                    widget.itemBuilder!(context, items[index]),
-                              ),
-                      );
-                    },
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
-                    error: (err, stack) => ErrorStateView(
-                      message: 'Failed to load items.\n$err',
-                      onRetry: widget.onRefresh,
+                        ),
+                      ),
                     ),
+                  );
+                }
+
+                Widget body =
+                    widget.customBody ??
+                    (widget.gridDelegate != null
+                        ? GridView.builder(
+                          controller: widget.scrollController,
+                          padding: widget.padding,
+                          gridDelegate: _getResponsiveGridDelegate(context),
+                          itemCount: items.length,
+                          itemBuilder: (context, index) {
+                            if (index == 0 && widget.imageUrlBuilder != null) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                if (_measuredItemExtent == null &&
+                                    _firstItemKey.currentContext != null) {
+                                  final size =
+                                      _firstItemKey.currentContext!.size;
+                                  if (size != null) {
+                                    setState(() {
+                                      _measuredItemExtent = size.height;
+                                    });
+                                  }
+                                }
+                              });
+                            }
+                            return KeyedSubtree(
+                              key: index == 0 ? _firstItemKey : null,
+                              child: widget.itemBuilder!(context, items[index]),
+                            );
+                          },
+                        )
+                        : ListView.builder(
+                          controller: widget.scrollController,
+                          padding: widget.padding,
+                          itemCount: items.length,
+                          itemBuilder: (context, index) {
+                            if (index == 0 && widget.imageUrlBuilder != null) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                if (_measuredItemExtent == null &&
+                                    _firstItemKey.currentContext != null) {
+                                  final size =
+                                      _firstItemKey.currentContext!.size;
+                                  if (size != null) {
+                                    setState(() {
+                                      _measuredItemExtent = size.height;
+                                    });
+                                  }
+                                }
+                              });
+                            }
+                            return KeyedSubtree(
+                              key: index == 0 ? _firstItemKey : null,
+                              child: widget.itemBuilder!(context, items[index]),
+                            );
+                          },
+                        ));
+
+                if (widget.onRefresh != null) {
+                  body = RefreshIndicator(
+                    onRefresh: widget.onRefresh!,
+                    child: body,
+                  );
+                }
+
+                return NotificationListener<ScrollNotification>(
+                  onNotification: (ScrollNotification scrollInfo) {
+                    if (shouldLoadNextPage(scrollInfo.metrics)) {
+                      widget.onFetchNextPage?.call();
+                    }
+                    _handleScrollPrefetch(scrollInfo, items);
+                    return false;
+                  },
+                  child: body,
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error:
+                  (err, stack) => ErrorStateView(
+                    message: 'Failed to load items.\n$err',
+                    onRetry: widget.onRefresh,
                   ),
-                ),
+            ),
           ),
         ],
       ),

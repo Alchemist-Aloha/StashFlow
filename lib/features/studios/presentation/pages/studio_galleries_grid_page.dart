@@ -6,6 +6,7 @@ import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/grid_utils.dart';
 import '../../../../core/presentation/widgets/grid_card.dart';
 import '../providers/studio_galleries_provider.dart';
+import '../../../performers/presentation/providers/performer_galleries_provider.dart';
 import '../../../images/presentation/providers/image_list_provider.dart';
 
 /// A grid page showing all galleries for a specific studio.
@@ -18,11 +19,12 @@ class StudioGalleriesGridPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final galleriesAsync = ref.watch(studioGalleriesGridProvider(studioId));
 
-    return ListPageScaffold(
+    return ListPageScaffold<PerformerGalleryItem>(
       title: 'Studio Galleries',
       searchHint: 'Search galleries...',
       onSearchChanged: (_) {},
       provider: galleriesAsync,
+      imageUrlBuilder: (item) => item.thumbnailUrl,
       onRefresh: () =>
           ref.refresh(studioGalleriesGridProvider(studioId).future),
       onFetchNextPage: () => ref

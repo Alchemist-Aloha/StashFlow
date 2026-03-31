@@ -27,6 +27,7 @@ class TagMediaGridPage extends ConsumerWidget {
       // Currently, search is not implemented on the provider for this specific view.
       onSearchChanged: (_) {},
       provider: mediaAsync,
+      imageUrlBuilder: (item) => item.thumbnailUrl,
       onRefresh: () => ref.refresh(tagMediaGridProvider(tagId).future),
       onFetchNextPage: () =>
           ref.read(tagMediaGridProvider(tagId).notifier).fetchNextPage(),

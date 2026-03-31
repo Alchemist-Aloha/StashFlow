@@ -278,6 +278,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
 
     return ListPageScaffold<entity.Image>(
       title: 'Images',
+      imageUrlBuilder: (img) => img.paths.thumbnail,
       actions: [
         Stack(
           children: [
@@ -355,40 +356,24 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
             ),
           )
           : null,
-      customBody: imagesAsync.when(
-        data: (items) {
-          if (items.isEmpty) {
-            return const Center(child: Text('No images found'));
-          }
-          return RefreshIndicator(
-            onRefresh: () => ref.refresh(imageListProvider.future),
-            child: CustomScrollView(
-              controller: ref.watch(imageScrollControllerProvider),
-              slivers: [
-                SliverPadding(
-                  padding: const EdgeInsets.all(AppTheme.spacingSmall),
-                  sliver: SliverMasonryGrid.count(
-                    crossAxisCount: crossAxisCount,
-                    mainAxisSpacing: AppTheme.spacingSmall,
-                    crossAxisSpacing: AppTheme.spacingSmall,
-                    itemBuilder: (context, index) {
-                      // Trigger next page load when reaching near end
-                      if (index >= items.length - 5) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          ref.read(imageListProvider.notifier).fetchNextPage();
-                        });
-                      }
-                      return ImageCard(image: items[index]);
-                    },
-                    childCount: items.length,
-                  ),
-                ),
-              ],
+      customBody: CustomScrollView(
+        controller: ref.watch(imageScrollControllerProvider),
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.all(AppTheme.spacingSmall),
+            sliver: SliverMasonryGrid.count(
+              crossAxisCount: crossAxisCount,
+              mainAxisSpacing: AppTheme.spacingSmall,
+              crossAxisSpacing: AppTheme.spacingSmall,
+              itemBuilder: (context, index) {
+                final items = imagesAsync.value ?? [];
+                if (index >= items.length) return const SizedBox.shrink();
+                return ImageCard(image: items[index]);
+              },
+              childCount: imagesAsync.value?.length ?? 0,
             ),
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+          ),
+        ],
       ),
     );
   }
