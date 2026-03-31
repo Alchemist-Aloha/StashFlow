@@ -192,7 +192,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                       _searchController.clear();
                       widget.onSearchChanged('');
                     },
-                  )
+                  ),
                 if (!_isSearching) ...[
                   if (widget.onSortPressed != null)
                     IconButton(

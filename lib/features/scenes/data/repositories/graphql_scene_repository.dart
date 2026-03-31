@@ -1,9 +1,9 @@
 import 'package:graphql/client.dart';
-import '../../../../core/data/graphql/base_repository.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../graphql/scenes.graphql.dart';
-import '../utils/scene_mapper.dart';
+import '../../../performers/data/graphql/performers.graphql.dart';
+import '../../../tags/data/graphql/tags.graphql.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../../domain/repositories/scene_repository.dart';
@@ -11,7 +11,7 @@ import '../../domain/models/scraper.dart';
 import '../../domain/models/scraped_scene.dart';
 import '../utils/scrape_normalizer.dart';
 
-class GraphQLSceneRepository extends BaseRepository implements SceneRepository {
+class GraphQLSceneRepository implements SceneRepository {
   final GraphQLClient client;
   GraphQLSceneRepository(this.client);
 
@@ -67,10 +67,71 @@ class GraphQLSceneRepository extends BaseRepository implements SceneRepository {
       );
     }
 
-    BaseRepository.validateResult(result);
+    if (result.hasException) throw result.exception!;
 
     return result.parsedData!.findScenes.scenes
-        .map((s) => s.toDomain())
+        .map(
+          (s) => Scene(
+            id: s.id,
+            title: s.title ?? '',
+            details: null,
+            path: s.files.isNotEmpty ? s.files.first.path : null,
+            date: DateTime.tryParse(s.date ?? '') ?? DateTime.now(),
+            rating100: s.rating100,
+            oCounter: s.o_counter ?? 0,
+            organized: s.organized,
+            interactive: s.interactive,
+            resumeTime: s.resume_time,
+            playCount: s.play_count ?? 0,
+            files: s.files
+                .map(
+                  (f) => SceneFile(
+                    format: null,
+                    width: null,
+                    height: null,
+                    videoCodec: null,
+                    audioCodec: null,
+                    bitRate: null,
+                    duration: f.duration,
+                    frameRate: null,
+                  ),
+                )
+                .toList(),
+            paths: ScenePaths(
+              screenshot: resolveGraphqlMediaUrl(
+                rawUrl: s.paths.screenshot,
+                graphqlEndpoint: _graphqlEndpoint,
+              ),
+              preview: resolveGraphqlMediaUrl(
+                rawUrl: s.paths.preview,
+                graphqlEndpoint: _graphqlEndpoint,
+              ),
+              stream: resolveGraphqlMediaUrl(
+                rawUrl: s.paths.stream,
+                graphqlEndpoint: _graphqlEndpoint,
+              ),
+            ),
+            urls: s.urls,
+            studioId: s.studio?.id,
+            studioName: s.studio?.name,
+            studioImagePath: resolveGraphqlMediaUrl(
+              rawUrl: s.studio?.image_path,
+              graphqlEndpoint: _graphqlEndpoint,
+            ),
+            performerIds: s.performers.map((p) => p.id).toList(),
+            performerNames: s.performers.map((p) => p.name).toList(),
+            performerImagePaths: s.performers
+                .map(
+                  (p) => resolveGraphqlMediaUrl(
+                    rawUrl: p.image_path,
+                    graphqlEndpoint: _graphqlEndpoint,
+                  ),
+                )
+                .toList(),
+            tagIds: s.tags.map((t) => t.id).toList(),
+            tagNames: s.tags.map((t) => t.name).toList(),
+          ),
+        )
         .toList();
   }
 
@@ -87,48 +148,108 @@ class GraphQLSceneRepository extends BaseRepository implements SceneRepository {
     String? tagId,
     SceneFilter? sceneFilter,
   }) {
-    final sortDirection = descending
-        ? Enum$SortDirectionEnum.DESC
-        : Enum$SortDirectionEnum.ASC;
-
-    final filterInput = Input$FindFilterType(
-      q: filter,
-      page: page,
-      per_page: perPage,
-      sort: sort,
-      direction: sortDirection,
-    );
-
-    final sceneFilterInput = Input$SceneFilterType(
-      is_organized: organized,
-      performers: (performerId != null || performerFavorite != null)
-          ? Input$HierarchicalMultiCriterionInput(
-              value_list: performerId != null ? [performerId] : null,
-              modifier: Enum$CriterionModifier.INCLUDES,
-            )
-          : null,
-      studios: studioId != null
-          ? Input$HierarchicalMultiCriterionInput(
-              value_list: [studioId],
-              modifier: Enum$CriterionModifier.INCLUDES,
-            )
-          : null,
-      tags: tagId != null
-          ? Input$HierarchicalMultiCriterionInput(
-              value_list: [tagId],
-              modifier: Enum$CriterionModifier.INCLUDES,
-            )
-          : null,
-    );
-
     return client.query$FindScenes(
       Options$Query$FindScenes(
-        fetchPolicy: sort == 'random'
-            ? FetchPolicy.noCache
-            : FetchPolicy.cacheAndNetwork,
+        fetchPolicy: FetchPolicy.cacheAndNetwork,
         variables: Variables$Query$FindScenes(
-          filter: filterInput,
-          scene_filter: sceneFilterInput,
+          filter: Input$FindFilterType(
+            q: filter ?? sceneFilter?.searchQuery,
+            page: page,
+            per_page: perPage,
+            sort: sort,
+            direction: descending
+                ? Enum$SortDirectionEnum.DESC
+                : Enum$SortDirectionEnum.ASC,
+          ),
+          scene_filter: Input$SceneFilterType(
+            organized: organized,
+            performer_favorite: performerFavorite,
+            performers:
+                (performerId != null ||
+                    (sceneFilter?.performerIds?.isNotEmpty ?? false))
+                ? Input$MultiCriterionInput(
+                    value: performerId != null
+                        ? [performerId]
+                        : sceneFilter!.performerIds,
+                    modifier: Enum$CriterionModifier.INCLUDES,
+                  )
+                : null,
+            studios: (studioId != null || sceneFilter?.studioId != null)
+                ? Input$HierarchicalMultiCriterionInput(
+                    value: studioId != null
+                        ? [studioId]
+                        : [sceneFilter!.studioId!],
+                    modifier: Enum$CriterionModifier.INCLUDES,
+                  )
+                : null,
+            tags:
+                (tagId != null ||
+                    (sceneFilter?.includeTags?.isNotEmpty ?? false))
+                ? Input$HierarchicalMultiCriterionInput(
+                    value: tagId != null ? [tagId] : sceneFilter!.includeTags,
+                    modifier: Enum$CriterionModifier.INCLUDES,
+                  )
+                : null,
+            rating100: sceneFilter?.minRating != null
+                ? Input$IntCriterionInput(
+                    value: sceneFilter!.minRating!,
+                    modifier: Enum$CriterionModifier.GREATER_THAN,
+                  )
+                : null,
+            play_count: sceneFilter?.isWatched == true
+                ? Input$IntCriterionInput(
+                    value: 0,
+                    modifier: Enum$CriterionModifier.GREATER_THAN,
+                  )
+                : sceneFilter?.isWatched == false
+                ? Input$IntCriterionInput(
+                    value: 0,
+                    modifier: Enum$CriterionModifier.EQUALS,
+                  )
+                : null,
+            date:
+                (sceneFilter?.startDate != null || sceneFilter?.endDate != null)
+                ? Input$DateCriterionInput(
+                    value:
+                        sceneFilter?.startDate?.toIso8601String().split(
+                          'T',
+                        )[0] ??
+                        '',
+                    value2: sceneFilter?.endDate?.toIso8601String().split(
+                      'T',
+                    )[0],
+                    modifier: sceneFilter?.endDate != null
+                        ? Enum$CriterionModifier.BETWEEN
+                        : Enum$CriterionModifier.GREATER_THAN,
+                  )
+                : null,
+            resolution: (sceneFilter?.resolutions?.isNotEmpty ?? false)
+                ? Input$ResolutionCriterionInput(
+                    value: fromJson$Enum$ResolutionEnum(
+                      sceneFilter!.resolutions!.first,
+                    ),
+                    modifier: Enum$CriterionModifier.EQUALS,
+                  )
+                : null,
+            orientation: (sceneFilter?.orientations?.isNotEmpty ?? false)
+                ? Input$OrientationCriterionInput(
+                    value: sceneFilter!.orientations!
+                        .map((o) => fromJson$Enum$OrientationEnum(o))
+                        .toList(),
+                  )
+                : null,
+            duration:
+                (sceneFilter?.minDuration != null ||
+                    sceneFilter?.maxDuration != null)
+                ? Input$IntCriterionInput(
+                    value: sceneFilter?.minDuration ?? 0,
+                    value2: sceneFilter?.maxDuration,
+                    modifier: sceneFilter?.maxDuration != null
+                        ? Enum$CriterionModifier.BETWEEN
+                        : Enum$CriterionModifier.GREATER_THAN,
+                  )
+                : null,
+          ),
         ),
       ),
     );
@@ -151,99 +272,322 @@ class GraphQLSceneRepository extends BaseRepository implements SceneRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
-    final scene = result.parsedData!.findScene;
-    if (scene == null) throw StateError('Scene not found');
+    if (result.hasException) throw result.exception!;
+    final s = result.parsedData!.findScene;
+    if (s == null) throw StateError('Scene not found');
 
-    return scene.toDomain();
+    return Scene(
+      id: s.id,
+      title: s.title ?? '',
+      details: s.details,
+      path: s.files.isNotEmpty ? s.files.first.path : null,
+      date: DateTime.tryParse(s.date ?? '') ?? DateTime.now(),
+      rating100: s.rating100,
+      oCounter: s.o_counter ?? 0,
+      organized: s.organized,
+      interactive: s.interactive,
+      resumeTime: s.resume_time,
+      playCount: s.play_count ?? 0,
+      files: s.files
+          .map(
+            (f) => SceneFile(
+              format: f.format,
+              width: f.width,
+              height: f.height,
+              videoCodec: f.video_codec,
+              audioCodec: f.audio_codec,
+              bitRate: f.bit_rate,
+              duration: f.duration,
+              frameRate: f.frame_rate,
+            ),
+          )
+          .toList(),
+      paths: ScenePaths(
+        screenshot: resolveGraphqlMediaUrl(
+          rawUrl: s.paths.screenshot,
+          graphqlEndpoint: _graphqlEndpoint,
+        ),
+        preview: resolveGraphqlMediaUrl(
+          rawUrl: s.paths.preview,
+          graphqlEndpoint: _graphqlEndpoint,
+        ),
+        stream: resolveGraphqlMediaUrl(
+          rawUrl: s.paths.stream,
+          graphqlEndpoint: _graphqlEndpoint,
+        ),
+      ),
+      urls: s.urls,
+      studioId: s.studio?.id,
+      studioName: s.studio?.name,
+      studioImagePath: resolveGraphqlMediaUrl(
+        rawUrl: s.studio?.image_path,
+        graphqlEndpoint: _graphqlEndpoint,
+      ),
+      performerIds: s.performers.map((p) => p.id).toList(),
+      performerNames: s.performers.map((p) => p.name).toList(),
+      performerImagePaths: s.performers
+          .map(
+            (p) => resolveGraphqlMediaUrl(
+              rawUrl: p.image_path,
+              graphqlEndpoint: _graphqlEndpoint,
+            ),
+          )
+          .toList(),
+      tagIds: s.tags.map((t) => t.id).toList(),
+      tagNames: s.tags.map((t) => t.name).toList(),
+    );
   }
 
   @override
-  Future<void> updateScene(SceneUpdateInput input) async {
-    final result = await client.mutate$UpdateScene(
-      Options$Mutation$UpdateScene(
-        variables: Variables$Mutation$UpdateScene(
-          id: input.id,
-          input: Input$SceneUpdateInput(
-            title: input.title,
-            details: input.details,
-            date: input.date,
-            url: input.url,
-            studio_id: input.studioId,
-            performer_ids: input.performerIds,
-            tag_ids: input.tagIds,
+  Future<void> updateSceneRating(String id, int rating100) async {
+    final result = await client.mutate$UpdateSceneRating(
+      Options$Mutation$UpdateSceneRating(
+        variables: Variables$Mutation$UpdateSceneRating(
+          id: id,
+          rating: rating100,
+        ),
+      ),
+    );
+
+    if (result.hasException) throw result.exception!;
+  }
+
+  @override
+  Future<void> incrementSceneOCounter(String id) async {
+    final result = await client.mutate(
+      MutationOptions(
+        document: gql(r'''
+          mutation SceneAddO($id: ID!) {
+            sceneAddO(id: $id) {
+              count
+            }
+          }
+        '''),
+        variables: <String, dynamic>{'id': id},
+      ),
+    );
+
+    if (result.hasException) throw result.exception!;
+  }
+
+  @override
+  Future<void> incrementScenePlayCount(String id) async {
+    final result = await client.mutate(
+      MutationOptions(
+        document: gql(r'''
+          mutation SceneAddPlay($id: ID!) {
+            sceneAddPlay(id: $id) {
+              count
+            }
+          }
+        '''),
+        variables: <String, dynamic>{'id': id},
+      ),
+    );
+
+    if (result.hasException) throw result.exception!;
+  }
+
+  @override
+  Future<Map<String, List<Map<String, dynamic>>>> findPerformerCandidates(
+    List<String> queries,
+  ) async {
+    final results = <String, List<Map<String, dynamic>>>{};
+    for (final q in queries) {
+      if (q.trim().isEmpty) continue;
+      final result = await client.query$FindPerformers(
+        Options$Query$FindPerformers(
+          variables: Variables$Query$FindPerformers(
+            filter: Input$FindFilterType(q: q),
           ),
         ),
-      ),
-    );
-
-    BaseRepository.validateResult(result);
+      );
+      if (result.hasException) continue;
+      results[q] =
+          (result.data?['findPerformers']?['performers'] as List<dynamic>?)
+              ?.cast<Map<String, dynamic>>() ??
+          [];
+    }
+    return results;
   }
 
   @override
-  Future<List<Scraper>> listScrapers(Enum$ScraperTarget target) async {
-    final result = await client.query$ListScrapers(
-      Options$Query$ListScrapers(
-        variables: Variables$Query$ListScrapers(target: target),
-      ),
-    );
-
-    BaseRepository.validateResult(result);
-    return result.parsedData!.listScrapers
-        .map((s) => Scraper(id: s.id, name: s.name, target: target.name))
-        .toList();
-  }
-
-  @override
-  Future<List<ScrapedScene>> scrapeScene(String scraperId, String sceneId) async {
-    final result = await client.query$ScrapeScene(
-      Options$Query$ScrapeScene(
-        variables: Variables$Query$ScrapeScene(
-          scraper_id: scraperId,
-          scene_id: sceneId,
+  Future<Map<String, List<Map<String, dynamic>>>> findTagCandidates(
+    List<String> tags,
+  ) async {
+    final results = <String, List<Map<String, dynamic>>>{};
+    for (final t in tags) {
+      if (t.trim().isEmpty) continue;
+      final result = await client.query$FindTags(
+        Options$Query$FindTags(
+          variables: Variables$Query$FindTags(
+            filter: Input$FindFilterType(q: t),
+          ),
         ),
-      ),
+      );
+      if (result.hasException) continue;
+      results[t] =
+          (result.data?['findTags']?['tags'] as List<dynamic>?)
+              ?.cast<Map<String, dynamic>>() ??
+          [];
+    }
+    return results;
+  }
+
+  @override
+  Future<List<Scraper>> listScrapers({required List<String> types}) async {
+    final doc = gql(r'''
+      query ListScrapers($types: [ScrapeContentType!]!) {
+        listScrapers(types: $types) {
+          id
+          name
+        }
+      }
+    ''');
+
+    final result = await client.query(
+      QueryOptions(document: doc, variables: {'types': types}),
     );
 
-    BaseRepository.validateResult(result);
-    return result.parsedData!.scrapeScene
-        .map((s) => ScrapedScene.fromGraphQL(s))
+    if (result.hasException) throw result.exception!;
+
+    final raw = result.data?['listScrapers'] as List<dynamic>?;
+    if (raw == null) return [];
+
+    return raw
+        .map((e) => Scraper.fromJson((e as Map).cast<String, dynamic>()))
         .toList();
   }
 
   @override
-  Future<void> saveScrapedScene(String sceneId, ScrapedScene scraped) async {
-    // Reconcile entities
-    final performerIds = await _reconcilePerformers(scraped.performers);
-    final tagIds = await _reconcileTags(scraped.tags);
+  Future<List<ScrapedScene>> scrapeSingleScene({
+    required String scraperId,
+    required String sceneId,
+  }) async {
+    final doc = gql(r'''
+      query ScrapeSingleScene($source: ScraperSourceInput!, $input: ScrapeSingleSceneInput!) {
+        scrapeSingleScene(source: $source, input: $input) {
+          title
+          code
+          details
+          director
+          urls
+          date
+          image
+          remote_site_id
+          studio {
+            name
+            stored_id
+          }
+          tags {
+            name
+            stored_id
+          }
+          performers {
+            name
+            remote_site_id
+            urls
+            images
+            stored_id
+          }
+        }
+      }
+    ''');
 
-    final input = Input$SceneUpdateInput(
-      title: scraped.title,
-      details: scraped.details,
-      date: scraped.date,
-      url: scraped.url,
-      studio_id: scraped.studio?.storedId,
-      performer_ids: performerIds,
-      tag_ids: tagIds,
+    final variables = {
+      'source': {'scraper_id': scraperId},
+      'input': {'scene_id': sceneId},
+    };
+
+    final result = await client.query(
+      QueryOptions(document: doc, variables: variables),
     );
 
-    final result = await client.mutate$UpdateScene(
-      Options$Mutation$UpdateScene(
-        variables: Variables$Mutation$UpdateScene(id: sceneId, input: input),
-      ),
-    );
+    if (result.hasException) throw result.exception!;
 
-    BaseRepository.validateResult(result);
+    final raw = result.data?['scrapeSingleScene'] as List<dynamic>?;
+    if (raw == null) return [];
+
+    return raw
+        .map((e) => ScrapedScene.fromJson((e as Map).cast<String, dynamic>()))
+        .toList();
   }
 
-  // TODO: Move these to respective repositories when they have reconcile methods
-  Future<List<String>> _reconcilePerformers(List<ScrapedPerformer> performers) async {
+  @override
+  Future<void> saveScrapedScene({
+    required String sceneId,
+    required ScrapedScene scraped,
+    bool mergeValues = false,
+    List<String>? performerIds,
+    List<String>? tagIds,
+    String? studioId,
+  }) async {
+    // If caller supplied explicit performer/tag/studio ids (user-selected), use them.
+    // Otherwise reconcile automatically.
+    final resolvedPerformerIds =
+        performerIds ?? await _reconcilePerformers(scraped.performers);
+    final resolvedTagIds = tagIds ?? await _reconcileTags(scraped.tags);
+    final resolvedStudioId = studioId ?? scraped.studioId;
+
+    var normalized = buildSceneUpdateInputFromScraped(scraped);
+
+    // Inject resolved ids
+    if (resolvedPerformerIds.isNotEmpty) {
+      normalized['performer_ids'] = resolvedPerformerIds;
+    }
+    if (resolvedTagIds.isNotEmpty) normalized['tag_ids'] = resolvedTagIds;
+    if (resolvedStudioId != null) normalized['studio_id'] = resolvedStudioId;
+
+    validateSceneUpdateInput(normalized);
+
+    // Ensure the id is present in the mutation input
+    final input = {'id': sceneId, ...normalized};
+
+    if (mergeValues) {
+      final doc = gql(r'''
+        mutation SceneMerge($source: [ID!]!, $destination: ID!, $values: SceneUpdateInput) {
+          sceneMerge(input: {source: $source, destination: $destination, values: $values}) { id }
+        }
+      ''');
+
+      final result = await client.mutate(
+        MutationOptions(
+          document: doc,
+          variables: {
+            'source': [sceneId],
+            'destination': sceneId,
+            'values': normalized,
+          },
+        ),
+      );
+
+      if (result.hasException) throw result.exception!;
+    } else {
+      final doc = gql(r'''
+        mutation SceneUpdate($input: SceneUpdateInput!) {
+          sceneUpdate(input: $input) { id }
+        }
+      ''');
+
+      final result = await client.mutate(
+        MutationOptions(document: doc, variables: {'input': input}),
+      );
+      if (result.hasException) throw result.exception!;
+    }
+  }
+
+  Future<List<String>> _reconcilePerformers(
+    List<ScrapedPerformer> performers,
+  ) async {
     final ids = <String>[];
     if (performers.isEmpty) return ids;
 
     final findDoc = gql(r'''
-      query FindPerformers($filter: FindFilterType) {
-        findPerformers(filter: $filter) { count performers { id name urls image_path } }
+      query FindPerformers($filter: FindFilterType, $performer_filter: PerformerFilterType) {
+        findPerformers(filter: $filter, performer_filter: $performer_filter) {
+          count
+          performers { id name urls image_path }
+        }
       }
     ''');
 
@@ -257,25 +601,33 @@ class GraphQLSceneRepository extends BaseRepository implements SceneRepository {
         continue;
       }
 
+      // Try to find by name first
       final nameQuery = p.name ?? (p.urls.isNotEmpty ? p.urls.first : '');
       if (nameQuery.isEmpty) continue;
 
       final result = await client.query(
         QueryOptions(
           document: findDoc,
-          variables: {'filter': {'q': nameQuery}},
+          variables: {
+            'filter': {'q': nameQuery},
+          },
         ),
       );
-      BaseRepository.validateResult(result);
+      if (result.hasException) throw result.exception!;
 
       final raw = result.data?['findPerformers'] as Map<String, dynamic>?;
-      final found = (raw?['performers'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+      final found =
+          (raw?['performers'] as List<dynamic>?)
+              ?.cast<Map<String, dynamic>>() ??
+          [];
 
       String? chosenId;
       for (final f in found) {
         final name = f['name'] as String?;
         final urls = (f['urls'] as List<dynamic>?)?.cast<String>() ?? [];
-        if (name != null && p.name != null && name.toLowerCase() == p.name!.toLowerCase()) {
+        if (name != null &&
+            p.name != null &&
+            name.toLowerCase() == p.name!.toLowerCase()) {
           chosenId = f['id'] as String?;
           break;
         }
@@ -293,6 +645,7 @@ class GraphQLSceneRepository extends BaseRepository implements SceneRepository {
         continue;
       }
 
+      // Create performer when no candidate found
       final input = <String, dynamic>{'name': p.name ?? nameQuery};
       if (p.urls.isNotEmpty) input['urls'] = p.urls;
       if (p.images.isNotEmpty) input['image'] = p.images.first;
@@ -300,8 +653,9 @@ class GraphQLSceneRepository extends BaseRepository implements SceneRepository {
       final createResult = await client.mutate(
         MutationOptions(document: createDoc, variables: {'input': input}),
       );
-      BaseRepository.validateResult(createResult);
-      final created = (createResult.data?['performerCreate'] as Map<String, dynamic>?);
+      if (createResult.hasException) throw createResult.exception!;
+      final created =
+          (createResult.data?['performerCreate'] as Map<String, dynamic>?);
       if (created != null && created['id'] != null) {
         ids.add(created['id'] as String);
       }
@@ -336,12 +690,16 @@ class GraphQLSceneRepository extends BaseRepository implements SceneRepository {
       final result = await client.query(
         QueryOptions(
           document: findDoc,
-          variables: {'filter': {'q': q}},
+          variables: {
+            'filter': {'q': q},
+          },
         ),
       );
-      BaseRepository.validateResult(result);
+      if (result.hasException) throw result.exception!;
 
-      final raw = result.data?['findTags'] as Map<String, dynamic>?;      final found = (raw?['tags'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+      final raw = result.data?['findTags'] as Map<String, dynamic>?;
+      final found =
+          (raw?['tags'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
 
       String? chosenId;
       for (final f in found) {
@@ -360,11 +718,14 @@ class GraphQLSceneRepository extends BaseRepository implements SceneRepository {
       final createResult = await client.mutate(
         MutationOptions(
           document: createDoc,
-          variables: {'input': {'name': q}},
+          variables: {
+            'input': {'name': q},
+          },
         ),
       );
-      BaseRepository.validateResult(createResult);
-      final created = (createResult.data?['tagCreate'] as Map<String, dynamic>?);
+      if (createResult.hasException) throw createResult.exception!;
+      final created =
+          (createResult.data?['tagCreate'] as Map<String, dynamic>?);
       if (created != null && created['id'] != null) {
         ids.add(created['id'] as String);
       }
