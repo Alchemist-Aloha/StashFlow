@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/grid_utils.dart';
 import '../../../../core/presentation/widgets/grid_card.dart';
+import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../providers/tag_galleries_provider.dart';
 import '../../../performers/presentation/providers/performer_galleries_provider.dart';
 import '../../../images/presentation/providers/image_list_provider.dart';
@@ -18,6 +19,7 @@ class TagGalleriesGridPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final galleriesAsync = ref.watch(tagGalleriesGridProvider(tagId));
+    final isGridView = ref.watch(tagGalleriesGridLayoutProvider);
 
     return ListPageScaffold<PerformerGalleryItem>(
       title: 'Tag Galleries',
@@ -29,11 +31,12 @@ class TagGalleriesGridPage extends ConsumerWidget {
       onFetchNextPage: () => ref
           .read(tagGalleriesGridProvider(tagId).notifier)
           .fetchNextPage(),
-      gridDelegate: GridUtils.createDelegate(),
-      padding: GridUtils.defaultPadding,
+      gridDelegate: isGridView ? GridUtils.createDelegate() : null,
+      padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, item) => GridCard(
         title: item.title,
         imageUrl: item.thumbnailUrl,
+        isGrid: isGridView,
         onTap: () {
           ref
               .read(imageFilterStateProvider.notifier)

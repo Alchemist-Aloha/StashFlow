@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/grid_utils.dart';
 import '../../../../core/presentation/widgets/grid_card.dart';
+import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../providers/performer_media_provider.dart';
 
 /// A grid page showing all media (scenes) for a specific performer.
@@ -20,6 +21,7 @@ class PerformerMediaGridPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mediaAsync = ref.watch(performerMediaGridProvider(performerId));
+    final isGridView = ref.watch(performerMediaGridLayoutProvider);
 
     return ListPageScaffold<PerformerMediaItem>(
       title: 'All Performer Media',
@@ -31,11 +33,12 @@ class PerformerMediaGridPage extends ConsumerWidget {
       onRefresh: () => ref.refresh(performerMediaGridProvider(performerId).future),
       onFetchNextPage: () =>
           ref.read(performerMediaGridProvider(performerId).notifier).fetchNextPage(),
-      gridDelegate: GridUtils.createDelegate(),
-      padding: GridUtils.defaultPadding,
+      gridDelegate: isGridView ? GridUtils.createDelegate() : null,
+      padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, item) => GridCard(
         title: item.title,
         imageUrl: item.thumbnailUrl,
+        isGrid: isGridView,
         onTap: () => context.push('/scenes/scene/${item.sceneId}'),
       ),
     );

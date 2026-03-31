@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/grid_utils.dart';
 import '../../../../core/presentation/widgets/grid_card.dart';
+import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../providers/tag_media_provider.dart';
 
 /// A grid page showing all media (scenes) for a specific tag.
@@ -20,6 +21,7 @@ class TagMediaGridPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mediaAsync = ref.watch(tagMediaGridProvider(tagId));
+    final isGridView = ref.watch(tagMediaGridLayoutProvider);
 
     return ListPageScaffold<TagMediaItem>(
       title: 'Tag Media',
@@ -31,11 +33,12 @@ class TagMediaGridPage extends ConsumerWidget {
       onRefresh: () => ref.refresh(tagMediaGridProvider(tagId).future),
       onFetchNextPage: () =>
           ref.read(tagMediaGridProvider(tagId).notifier).fetchNextPage(),
-      gridDelegate: GridUtils.createDelegate(),
-      padding: GridUtils.defaultPadding,
+      gridDelegate: isGridView ? GridUtils.createDelegate() : null,
+      padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, item) => GridCard(
         title: item.title,
         imageUrl: item.thumbnailUrl,
+        isGrid: isGridView,
         onTap: () => context.push('/scenes/scene/${item.sceneId}'),
       ),
     );

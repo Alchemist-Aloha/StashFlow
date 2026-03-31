@@ -277,6 +277,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
   @override
   Widget build(BuildContext context) {
     final galleriesAsync = ref.watch(galleryListProvider);
+    final isGridView = ref.watch(galleryGridLayoutProvider);
     final filterActive = ref.watch(
       galleryFilterStateProvider.select((s) => s != GalleryFilter.empty()),
     );
@@ -347,10 +348,11 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
       onRefresh: () => ref.refresh(galleryListProvider.future),
       onFetchNextPage: () =>
           ref.read(galleryListProvider.notifier).fetchNextPage(),
-      gridDelegate: GridUtils.createDelegate(),
-      padding: GridUtils.defaultPadding,
+      gridDelegate: isGridView ? GridUtils.createDelegate() : null,
+      padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, gallery) => GalleryCard(
         gallery: gallery,
+        isGrid: isGridView,
         thumbnailUrl: _getThumbnailUrl(gallery),
         onTap: () {
           ref.read(imageFilterStateProvider.notifier).setGalleryId(gallery.id);

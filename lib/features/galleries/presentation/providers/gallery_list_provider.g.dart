@@ -284,6 +284,58 @@ abstract class _$GalleryOrganizedOnly extends $Notifier<bool> {
   }
 }
 
+@ProviderFor(GalleryGridLayout)
+final galleryGridLayoutProvider = GalleryGridLayoutProvider._();
+
+final class GalleryGridLayoutProvider
+    extends $NotifierProvider<GalleryGridLayout, bool> {
+  GalleryGridLayoutProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'galleryGridLayoutProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$galleryGridLayoutHash();
+
+  @$internal
+  @override
+  GalleryGridLayout create() => GalleryGridLayout();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$galleryGridLayoutHash() => r'0f83d026f100f24fa21470a33fd69dbbb0c365be';
+
+abstract class _$GalleryGridLayout extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(GalleryList)
 final galleryListProvider = GalleryListProvider._();
 

@@ -112,6 +112,24 @@ class GalleryOrganizedOnly extends _$GalleryOrganizedOnly {
 }
 
 @riverpod
+class GalleryGridLayout extends _$GalleryGridLayout {
+  static const _storageKey = 'gallery_grid_layout';
+
+  @override
+  bool build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getBool(_storageKey) ?? true;
+  }
+
+  Future<void> set(bool value) async {
+    if (state == value) return;
+    state = value;
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setBool(_storageKey, value);
+  }
+}
+
+@riverpod
 class GalleryList extends _$GalleryList {
   int _currentPage = 1;
   static const int _perPage = kDefaultPageSize;
