@@ -161,17 +161,12 @@ class GraphQLStudioRepository implements StudioRepository {
 
   @override
   Future<void> setStudioFavorite(String id, bool favorite) async {
-    final result = await client.mutate(
-      MutationOptions(
-        document: gql(r'''
-          mutation UpdateStudioFavorite($id: ID!, $favorite: Boolean!) {
-            studioUpdate(input: { id: $id, favorite: $favorite }) {
-              id
-              favorite
-            }
-          }
-        '''),
-        variables: <String, dynamic>{'id': id, 'favorite': favorite},
+    final result = await client.mutate$UpdateStudioFavorite(
+      Options$Mutation$UpdateStudioFavorite(
+        variables: Variables$Mutation$UpdateStudioFavorite(
+          id: id,
+          favorite: favorite,
+        ),
       ),
     );
 

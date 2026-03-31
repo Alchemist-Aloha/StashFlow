@@ -1,0 +1,29 @@
+fragment GalleryData on Gallery {
+  id
+  title
+  date
+  rating100
+  image_count
+  details
+  files {
+    path
+  }
+  paths {
+    cover
+  }
+}
+
+query FindGalleries($filter: FindFilterType, $gallery_filter: GalleryFilterType) {
+  findGalleries(filter: $filter, gallery_filter: $gallery_filter) {
+    count
+    galleries {
+      ...GalleryData
+    }
+  }
+}
+
+query FindGallery($id: ID!) {
+  findGallery(id: $id) {
+    ...GalleryData
+  }
+}

@@ -354,16 +354,9 @@ class GraphQLSceneRepository implements SceneRepository {
 
   @override
   Future<void> incrementSceneOCounter(String id) async {
-    final result = await client.mutate(
-      MutationOptions(
-        document: gql(r'''
-          mutation SceneAddO($id: ID!) {
-            sceneAddO(id: $id) {
-              count
-            }
-          }
-        '''),
-        variables: <String, dynamic>{'id': id},
+    final result = await client.mutate$SceneAddO(
+      Options$Mutation$SceneAddO(
+        variables: Variables$Mutation$SceneAddO(id: id),
       ),
     );
 
@@ -372,16 +365,9 @@ class GraphQLSceneRepository implements SceneRepository {
 
   @override
   Future<void> incrementScenePlayCount(String id) async {
-    final result = await client.mutate(
-      MutationOptions(
-        document: gql(r'''
-          mutation SceneAddPlay($id: ID!) {
-            sceneAddPlay(id: $id) {
-              count
-            }
-          }
-        '''),
-        variables: <String, dynamic>{'id': id},
+    final result = await client.mutate$SceneAddPlay(
+      Options$Mutation$SceneAddPlay(
+        variables: Variables$Mutation$SceneAddPlay(id: id),
       ),
     );
 
@@ -436,27 +422,20 @@ class GraphQLSceneRepository implements SceneRepository {
 
   @override
   Future<List<Scraper>> listScrapers({required List<String> types}) async {
-    final doc = gql(r'''
-      query ListScrapers($types: [ScrapeContentType!]!) {
-        listScrapers(types: $types) {
-          id
-          name
-        }
-      }
-    ''');
-
-    final result = await client.query(
-      QueryOptions(document: doc, variables: {'types': types}),
+    final result = await client.query$ListScrapers(
+      Options$Query$ListScrapers(
+        variables: Variables$Query$ListScrapers(
+          types: types.map((t) => fromJson$Enum$ScrapeContentType(t)).toList(),
+        ),
+      ),
     );
 
     if (result.hasException) throw result.exception!;
 
-    final raw = result.data?['listScrapers'] as List<dynamic>?;
-    if (raw == null) return [];
+    final List<Query$ListScrapers$listScrapers> raw =
+        result.parsedData?.listScrapers ?? [];
 
-    return raw
-        .map((e) => Scraper.fromJson((e as Map).cast<String, dynamic>()))
-        .toList();
+    return raw.map((e) => Scraper.fromJson(e.toJson())).toList();
   }
 
   @override
@@ -464,53 +443,21 @@ class GraphQLSceneRepository implements SceneRepository {
     required String scraperId,
     required String sceneId,
   }) async {
-    final doc = gql(r'''
-      query ScrapeSingleScene($source: ScraperSourceInput!, $input: ScrapeSingleSceneInput!) {
-        scrapeSingleScene(source: $source, input: $input) {
-          title
-          code
-          details
-          director
-          urls
-          date
-          image
-          remote_site_id
-          studio {
-            name
-            stored_id
-          }
-          tags {
-            name
-            stored_id
-          }
-          performers {
-            name
-            remote_site_id
-            urls
-            images
-            stored_id
-          }
-        }
-      }
-    ''');
-
-    final variables = {
-      'source': {'scraper_id': scraperId},
-      'input': {'scene_id': sceneId},
-    };
-
-    final result = await client.query(
-      QueryOptions(document: doc, variables: variables),
+    final result = await client.query$ScrapeSingleScene(
+      Options$Query$ScrapeSingleScene(
+        variables: Variables$Query$ScrapeSingleScene(
+          source: Input$ScraperSourceInput(scraper_id: scraperId),
+          input: Input$ScrapeSingleSceneInput(scene_id: sceneId),
+        ),
+      ),
     );
 
     if (result.hasException) throw result.exception!;
 
-    final raw = result.data?['scrapeSingleScene'] as List<dynamic>?;
-    if (raw == null) return [];
+    final List<Query$ScrapeSingleScene$scrapeSingleScene> raw =
+        result.parsedData?.scrapeSingleScene ?? [];
 
-    return raw
-        .map((e) => ScrapedScene.fromJson((e as Map).cast<String, dynamic>()))
-        .toList();
+    return raw.map((e) => ScrapedScene.fromJson(e.toJson())).toList();
   }
 
   @override
@@ -522,8 +469,6 @@ class GraphQLSceneRepository implements SceneRepository {
     List<String>? tagIds,
     String? studioId,
   }) async {
-    // If caller supplied explicit performer/tag/studio ids (user-selected), use them.
-    // Otherwise reconcile automatically.
     final resolvedPerformerIds =
         performerIds ?? await _reconcilePerformers(scraped.performers);
     final resolvedTagIds = tagIds ?? await _reconcileTags(scraped.tags);
@@ -531,7 +476,6 @@ class GraphQLSceneRepository implements SceneRepository {
 
     var normalized = buildSceneUpdateInputFromScraped(scraped);
 
-    // Inject resolved ids
     if (resolvedPerformerIds.isNotEmpty) {
       normalized['performer_ids'] = resolvedPerformerIds;
     }
@@ -540,37 +484,28 @@ class GraphQLSceneRepository implements SceneRepository {
 
     validateSceneUpdateInput(normalized);
 
-    // Ensure the id is present in the mutation input
-    final input = {'id': sceneId, ...normalized};
-
     if (mergeValues) {
-      final doc = gql(r'''
-        mutation SceneMerge($source: [ID!]!, $destination: ID!, $values: SceneUpdateInput) {
-          sceneMerge(input: {source: $source, destination: $destination, values: $values}) { id }
-        }
-      ''');
-
-      final result = await client.mutate(
-        MutationOptions(
-          document: doc,
-          variables: {
-            'source': [sceneId],
-            'destination': sceneId,
-            'values': normalized,
-          },
+      final result = await client.mutate$SceneMerge(
+        Options$Mutation$SceneMerge(
+          variables: Variables$Mutation$SceneMerge(
+            input: Input$SceneMergeInput(
+              source: [sceneId],
+              destination: sceneId,
+              values: Input$SceneUpdateInput.fromJson(normalized),
+            ),
+          ),
         ),
       );
 
       if (result.hasException) throw result.exception!;
     } else {
-      final doc = gql(r'''
-        mutation SceneUpdate($input: SceneUpdateInput!) {
-          sceneUpdate(input: $input) { id }
-        }
-      ''');
-
-      final result = await client.mutate(
-        MutationOptions(document: doc, variables: {'input': input}),
+      final inputMap = {'id': sceneId, ...normalized};
+      final result = await client.mutate$SceneUpdate(
+        Options$Mutation$SceneUpdate(
+          variables: Variables$Mutation$SceneUpdate(
+            input: Input$SceneUpdateInput.fromJson(inputMap),
+          ),
+        ),
       );
       if (result.hasException) throw result.exception!;
     }
@@ -582,58 +517,38 @@ class GraphQLSceneRepository implements SceneRepository {
     final ids = <String>[];
     if (performers.isEmpty) return ids;
 
-    final findDoc = gql(r'''
-      query FindPerformers($filter: FindFilterType, $performer_filter: PerformerFilterType) {
-        findPerformers(filter: $filter, performer_filter: $performer_filter) {
-          count
-          performers { id name urls image_path }
-        }
-      }
-    ''');
-
-    final createDoc = gql(r'''
-      mutation CreatePerformer($input: PerformerCreateInput!) { performerCreate(input: $input) { id } }
-    ''');
-
     for (final p in performers) {
       if (p.storedId != null && p.storedId!.isNotEmpty) {
         ids.add(p.storedId!);
         continue;
       }
 
-      // Try to find by name first
       final nameQuery = p.name ?? (p.urls.isNotEmpty ? p.urls.first : '');
       if (nameQuery.isEmpty) continue;
 
-      final result = await client.query(
-        QueryOptions(
-          document: findDoc,
-          variables: {
-            'filter': {'q': nameQuery},
-          },
+      final result = await client.query$FindPerformers(
+        Options$Query$FindPerformers(
+          variables: Variables$Query$FindPerformers(
+            filter: Input$FindFilterType(q: nameQuery),
+          ),
         ),
       );
       if (result.hasException) throw result.exception!;
 
-      final raw = result.data?['findPerformers'] as Map<String, dynamic>?;
-      final found =
-          (raw?['performers'] as List<dynamic>?)
-              ?.cast<Map<String, dynamic>>() ??
-          [];
+      final found = result.parsedData?.findPerformers.performers ?? [];
 
       String? chosenId;
       for (final f in found) {
-        final name = f['name'] as String?;
-        final urls = (f['urls'] as List<dynamic>?)?.cast<String>() ?? [];
-        if (name != null &&
-            p.name != null &&
+        final name = f.name;
+        final urls = f.urls;
+        if (p.name != null &&
             name.toLowerCase() == p.name!.toLowerCase()) {
-          chosenId = f['id'] as String?;
+          chosenId = f.id;
           break;
         }
         for (final pUrl in p.urls) {
-          if (urls.contains(pUrl)) {
-            chosenId = f['id'] as String?;
+          if (urls?.contains(pUrl) == true) {
+            chosenId = f.id;
             break;
           }
         }
@@ -645,19 +560,21 @@ class GraphQLSceneRepository implements SceneRepository {
         continue;
       }
 
-      // Create performer when no candidate found
-      final input = <String, dynamic>{'name': p.name ?? nameQuery};
-      if (p.urls.isNotEmpty) input['urls'] = p.urls;
-      if (p.images.isNotEmpty) input['image'] = p.images.first;
-
-      final createResult = await client.mutate(
-        MutationOptions(document: createDoc, variables: {'input': input}),
+      final createResult = await client.mutate$CreatePerformer(
+        Options$Mutation$CreatePerformer(
+          variables: Variables$Mutation$CreatePerformer(
+            input: Input$PerformerCreateInput(
+              name: p.name ?? nameQuery,
+              urls: p.urls.isNotEmpty ? p.urls : null,
+              image: p.images.isNotEmpty ? p.images.first : null,
+            ),
+          ),
+        ),
       );
       if (createResult.hasException) throw createResult.exception!;
-      final created =
-          (createResult.data?['performerCreate'] as Map<String, dynamic>?);
-      if (created != null && created['id'] != null) {
-        ids.add(created['id'] as String);
+      final createdId = createResult.parsedData?.performerCreate?.id;
+      if (createdId != null) {
+        ids.add(createdId);
       }
     }
 
@@ -668,16 +585,6 @@ class GraphQLSceneRepository implements SceneRepository {
     final ids = <String>[];
     if (tags.isEmpty) return ids;
 
-    final findDoc = gql(r'''
-      query FindTags($filter: FindFilterType, $tag_filter: TagFilterType) {
-        findTags(filter: $filter, tag_filter: $tag_filter) { count tags { id name } }
-      }
-    ''');
-
-    final createDoc = gql(r'''
-      mutation CreateTag($input: TagCreateInput!) { tagCreate(input: $input) { id } }
-    ''');
-
     for (final t in tags) {
       if (t.storedId != null && t.storedId!.isNotEmpty) {
         ids.add(t.storedId!);
@@ -687,25 +594,22 @@ class GraphQLSceneRepository implements SceneRepository {
       final q = t.name.trim();
       if (q.isEmpty) continue;
 
-      final result = await client.query(
-        QueryOptions(
-          document: findDoc,
-          variables: {
-            'filter': {'q': q},
-          },
+      final result = await client.query$FindTags(
+        Options$Query$FindTags(
+          variables: Variables$Query$FindTags(
+            filter: Input$FindFilterType(q: q),
+          ),
         ),
       );
       if (result.hasException) throw result.exception!;
 
-      final raw = result.data?['findTags'] as Map<String, dynamic>?;
-      final found =
-          (raw?['tags'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+      final found = result.parsedData?.findTags.tags ?? [];
 
       String? chosenId;
       for (final f in found) {
-        final name = f['name'] as String?;
-        if (name != null && name.toLowerCase() == q.toLowerCase()) {
-          chosenId = f['id'] as String?;
+        final name = f.name;
+        if (name.toLowerCase() == q.toLowerCase()) {
+          chosenId = f.id;
           break;
         }
       }
@@ -715,19 +619,17 @@ class GraphQLSceneRepository implements SceneRepository {
         continue;
       }
 
-      final createResult = await client.mutate(
-        MutationOptions(
-          document: createDoc,
-          variables: {
-            'input': {'name': q},
-          },
+      final createResult = await client.mutate$CreateTag(
+        Options$Mutation$CreateTag(
+          variables: Variables$Mutation$CreateTag(
+            input: Input$TagCreateInput(name: q),
+          ),
         ),
       );
       if (createResult.hasException) throw createResult.exception!;
-      final created =
-          (createResult.data?['tagCreate'] as Map<String, dynamic>?);
-      if (created != null && created['id'] != null) {
-        ids.add(created['id'] as String);
+      final createdId = createResult.parsedData?.tagCreate?.id;
+      if (createdId != null) {
+        ids.add(createdId);
       }
     }
 

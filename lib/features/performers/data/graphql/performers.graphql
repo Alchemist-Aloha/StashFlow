@@ -48,3 +48,16 @@ query FindPerformer($id: ID!) {
     ...PerformerData
   }
 }
+
+mutation UpdatePerformerFavorite($id: ID!, $favorite: Boolean!) {
+  performerUpdate(input: { id: $id, favorite: $favorite }) {
+    id
+    favorite
+  }
+}
+
+mutation CreatePerformer($input: PerformerCreateInput!) {
+  performerCreate(input: $input) {
+    id
+  }
+}

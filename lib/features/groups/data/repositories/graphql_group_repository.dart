@@ -1,6 +1,8 @@
 import 'package:graphql/client.dart';
+import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../domain/entities/group.dart';
 import '../../domain/repositories/group_repository.dart';
+import '../graphql/groups.graphql.dart';
 
 class GraphQLGroupRepository implements GroupRepository {
   final GraphQLClient client;
@@ -15,77 +17,50 @@ class GraphQLGroupRepository implements GroupRepository {
     String? sort,
     bool? descending,
   }) async {
-    const query = r'''
-      query FindGroups($filter: FindFilterType, $group_filter: GroupFilterType) {
-        findGroups(filter: $filter, group_filter: $group_filter) {
-          groups {
-            id
-            name
-            date
-            rating100
-            director
-            synopsis
-          }
-        }
-      }
-    ''';
-
-    final result = await client.query(
-      QueryOptions(
+    final result = await client.query$FindGroups(
+      Options$Query$FindGroups(
         fetchPolicy: FetchPolicy.cacheAndNetwork,
-        document: gql(query),
-        variables: {
-          'filter': {
-            'page': page,
-            'per_page': perPage,
-            'sort': sort,
-            'direction': descending == true ? 'DESC' : 'ASC',
-          },
-          'group_filter': filter != null
-              ? {
-                  'name': {'value': filter, 'modifier': 'EQUALS'},
-                }
+        variables: Variables$Query$FindGroups(
+          filter: Input$FindFilterType(
+            page: page,
+            per_page: perPage,
+            sort: sort,
+            direction: descending == true
+                ? Enum$SortDirectionEnum.DESC
+                : Enum$SortDirectionEnum.ASC,
+          ),
+          group_filter: filter != null
+              ? Input$GroupFilterType(
+                  name: Input$StringCriterionInput(
+                    value: filter,
+                    modifier: Enum$CriterionModifier.EQUALS,
+                  ),
+                )
               : null,
-        },
+        ),
       ),
     );
 
     if (result.hasException) throw result.exception!;
 
-    final groupsJson =
-        result.data?['findGroups']?['groups'] as List<dynamic>? ?? [];
-    return groupsJson
-        .map((g) => Group.fromJson(g as Map<String, dynamic>))
+    return result.parsedData!.findGroups.groups
+        .map((g) => Group.fromJson(g.toJson()))
         .toList();
   }
 
   @override
   Future<Group> getGroupById(String id, {bool refresh = false}) async {
-    const query = r'''
-      query FindGroup($id: ID!) {
-        findGroup(id: $id) {
-          id
-          name
-          date
-          rating100
-          director
-          synopsis
-        }
-      }
-    ''';
-
-    final result = await client.query(
-      QueryOptions(
+    final result = await client.query$FindGroup(
+      Options$Query$FindGroup(
         fetchPolicy: refresh ? FetchPolicy.networkOnly : FetchPolicy.cacheFirst,
-        document: gql(query),
-        variables: {'id': id},
+        variables: Variables$Query$FindGroup(id: id),
       ),
     );
 
     if (result.hasException) throw result.exception!;
-    final data = result.data?['findGroup'];
+    final data = result.parsedData!.findGroup;
     if (data == null) throw Exception('Group not found');
 
-    return Group.fromJson(data as Map<String, dynamic>);
+    return Group.fromJson(data.toJson());
   }
 }

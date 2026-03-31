@@ -7,16 +7,19 @@ import '../../scenes/presentation/pages/scene_details_page.dart';
 import '../../performers/presentation/pages/performers_page.dart';
 import '../../performers/presentation/pages/performer_details_page.dart';
 import '../../performers/presentation/pages/performer_media_grid_page.dart';
+import '../../performers/presentation/pages/performer_galleries_grid_page.dart';
 import '../../studios/presentation/pages/studios_page.dart';
 import '../../studios/presentation/pages/studio_details_page.dart';
 import '../../studios/presentation/pages/studio_media_grid_page.dart';
+import '../../studios/presentation/pages/studio_galleries_grid_page.dart';
 import '../../tags/presentation/pages/tags_page.dart';
 import '../../tags/presentation/pages/tag_details_page.dart';
 import '../../tags/presentation/pages/tag_media_grid_page.dart';
+import '../../tags/presentation/pages/tag_galleries_grid_page.dart';
 import '../../images/presentation/pages/images_page.dart';
 import '../../images/presentation/pages/image_fullscreen_page.dart';
 import '../../galleries/presentation/pages/galleries_page.dart';
-import '../../images/presentation/providers/image_list_provider.dart';
+import '../../galleries/presentation/pages/gallery_details_page.dart';
 import '../../setup/presentation/pages/settings/settings_hub_page.dart';
 import '../../setup/presentation/pages/settings/server_settings_page.dart';
 import '../../setup/presentation/pages/settings/playback_settings_page.dart';
@@ -121,6 +124,12 @@ GoRouter router(Ref ref) {
                           performerId: state.pathParameters['id']!,
                         ),
                       ),
+                      GoRoute(
+                        path: 'galleries',
+                        builder: (context, state) => PerformerGalleriesGridPage(
+                          performerId: state.pathParameters['id']!,
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -142,6 +151,12 @@ GoRouter router(Ref ref) {
                       GoRoute(
                         path: 'media',
                         builder: (context, state) => StudioMediaGridPage(
+                          studioId: state.pathParameters['id']!,
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'galleries',
+                        builder: (context, state) => StudioGalleriesGridPage(
                           studioId: state.pathParameters['id']!,
                         ),
                       ),
@@ -168,6 +183,12 @@ GoRouter router(Ref ref) {
                           tagId: state.pathParameters['id']!,
                         ),
                       ),
+                      GoRoute(
+                        path: 'galleries',
+                        builder: (context, state) => TagGalleriesGridPage(
+                          tagId: state.pathParameters['id']!,
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -180,6 +201,12 @@ GoRouter router(Ref ref) {
                 path: '/galleries',
                 builder: (context, state) => const GalleriesPage(),
                 routes: [
+                  GoRoute(
+                    path: 'gallery/:id',
+                    builder: (context, state) => GalleryDetailsPage(
+                      galleryId: state.pathParameters['id']!,
+                    ),
+                  ),
                   GoRoute(
                     path: 'images',
                     builder: (context, state) => const ImagesPage(),
@@ -215,6 +242,12 @@ GoRouter router(Ref ref) {
               performerId: state.pathParameters['id']!,
             ),
           ),
+          GoRoute(
+            path: 'galleries',
+            builder: (context, state) => PerformerGalleriesGridPage(
+              performerId: state.pathParameters['id']!,
+            ),
+          ),
         ],
       ),
       GoRoute(
@@ -226,6 +259,11 @@ GoRouter router(Ref ref) {
             path: 'media',
             builder: (context, state) =>
                 StudioMediaGridPage(studioId: state.pathParameters['id']!),
+          ),
+          GoRoute(
+            path: 'galleries',
+            builder: (context, state) =>
+                StudioGalleriesGridPage(studioId: state.pathParameters['id']!),
           ),
         ],
       ),
@@ -239,7 +277,17 @@ GoRouter router(Ref ref) {
             builder: (context, state) =>
                 TagMediaGridPage(tagId: state.pathParameters['id']!),
           ),
+          GoRoute(
+            path: 'galleries',
+            builder: (context, state) =>
+                TagGalleriesGridPage(tagId: state.pathParameters['id']!),
+          ),
         ],
+      ),
+      GoRoute(
+        path: '/gallery/:id',
+        builder: (context, state) =>
+            GalleryDetailsPage(galleryId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: '/settings',

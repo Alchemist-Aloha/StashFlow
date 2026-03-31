@@ -16,6 +16,7 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/responsive.dart';
 
 import '../widgets/scene_filter_panel.dart';
+import '../../../../core/presentation/widgets/grid_utils.dart';
 
 enum _SceneSortField {
   date,
@@ -540,17 +541,11 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
         ),
       ],
       gridDelegate: isGridView
-          ? SliverGridDelegateWithFixedCrossAxisCount(
+          ? GridUtils.createDelegate(
               crossAxisCount: _getGridColumnCount(context),
-              crossAxisSpacing: AppTheme.spacingSmall,
-              mainAxisSpacing: AppTheme.spacingMedium,
-              // Taller items to allow more space for Title and Studio metadata.
-              // A ratio of 1.15 (down from 1.33) provides significantly more
-              // vertical breathing room below the 16:9 image.
-              childAspectRatio: 1.15,
             )
           : null,
-      padding: EdgeInsets.all(isGridView ? AppTheme.spacingSmall : 0),
+      padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, scene) {
         final scenes = scenesAsync.value ?? [];
         final index = scenes.indexWhere((s) => s.id == scene.id);
@@ -596,6 +591,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       floatingActionButton: (randomNavigationEnabled && !isTiktokLayout)
           ? scenesAsync.maybeWhen(
               data: (scenes) => FloatingActionButton.small(
+                heroTag: 'scenes_random_fab',
                 onPressed: _openRandomScene,
                 tooltip: 'Random scene',
                 child: const Icon(Icons.casino_outlined),

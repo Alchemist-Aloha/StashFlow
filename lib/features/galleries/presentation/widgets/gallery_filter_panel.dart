@@ -105,7 +105,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                   spacing: AppTheme.spacingSmall,
                   runSpacing: AppTheme.spacingSmall,
                   children: [
-                    _buildImageCountChip(null, 50, '< 50'),
+                    _buildImageCountChip(0, 50, '< 50'),
                     _buildImageCountChip(50, 200, '50-200'),
                     _buildImageCountChip(200, null, '> 200'),
                   ],

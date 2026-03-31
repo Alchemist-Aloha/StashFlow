@@ -1,10 +1,13 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../setup/presentation/providers/navigation_customization_provider.dart';
+import '../../../galleries/presentation/providers/gallery_list_provider.dart';
 import '../providers/image_list_provider.dart';
 import '../widgets/image_card.dart';
 import '../../domain/entities/image.dart' as entity;
@@ -24,6 +27,9 @@ class ImagesPage extends ConsumerStatefulWidget {
 class _ImagesPageState extends ConsumerState<ImagesPage> {
   _ImageSortOption _sortOption = _ImageSortOption.path;
   bool _sortDescending = false;
+
+  /// Remembers the last random gallery ID to avoid consecutive duplicates.
+  String? _lastRandomGalleryId;
 
   @override
   void initState() {
@@ -69,6 +75,26 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
       _ImageSortOption.path => 'Filepath',
       _ImageSortOption.random => 'Random',
     };
+  }
+
+  /// Opens a random gallery's images.
+  void _openRandomGallery() {
+    final galleries = ref.read(galleryListProvider).value ?? [];
+    if (galleries.isEmpty) return;
+
+    // Choose a random gallery that wasn't the last one we picked.
+    final random = Random();
+    int index;
+    do {
+      index = random.nextInt(galleries.length);
+    } while (galleries.length > 1 && galleries[index].id == _lastRandomGalleryId);
+
+    final gallery = galleries[index];
+    _lastRandomGalleryId = gallery.id;
+
+    // Set the filter and refresh.
+    ref.read(imageFilterStateProvider.notifier).setGalleryId(gallery.id);
+    context.go('/galleries/images');
   }
 
   void _showSortPanel() {
@@ -248,6 +274,8 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
       crossAxisCount = 5;
     }
 
+    final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
+
     return ListPageScaffold<entity.Image>(
       title: 'Images',
       actions: [
@@ -301,6 +329,14 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
       onRefresh: () => ref.refresh(imageListProvider.future),
       onFetchNextPage: () =>
           ref.read(imageListProvider.notifier).fetchNextPage(),
+      floatingActionButton: randomNavigationEnabled
+          ? FloatingActionButton.small(
+              heroTag: 'images_random_fab',
+              onPressed: _openRandomGallery,
+              tooltip: 'Random gallery',
+              child: const Icon(Icons.casino_outlined),
+            )
+          : null,
       sortBar: filterState.galleryId != null
           ? Padding(
             padding: const EdgeInsets.symmetric(

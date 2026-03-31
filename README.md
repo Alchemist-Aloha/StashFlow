@@ -87,8 +87,4 @@ flutter build apk
 
 ## 📚 Internal Docs
 For architecture, known issues, and onboarding, see:
-- [Documentation Index](docs/GEMINI.md)
-- [Developer Guide](docs/DEVELOPER_GUIDE.md)
-- [Troubleshooting](docs/TROUBLESHOOTING.md)
-- [Roadmap](docs/ROADMAP.md)
 - [Hosted documentation (Live)](https://alchemist-aloha.github.io/StashFlow/) — Official hosted docs and API reference.

@@ -255,8 +255,12 @@ class MockGalleryRepository implements GalleryRepository {
     String? sort,
     bool? descending,
     GalleryFilter? galleryFilter,
-  }) async =>
-      [const Gallery(id: '1', title: 'Test Gallery', imageCount: 1)];
+    String? performerId,
+    String? studioId,
+    String? tagId,
+  }) async {
+    return [const Gallery(id: '1', title: 'Test Gallery', imageCount: 1)];
+  }
 
   @override
   Future<Gallery> getGalleryById(String id, {bool refresh = false}) =>
@@ -301,9 +305,6 @@ void main() {
 
     await tester.pumpWidget(createTestWidget());
     await tester.pumpAndSettle();
-
-    final texts = tester.allWidgets.whereType<Text>().map((t) => t.data).toList();
-    print('Rendered texts: $texts');
 
     // Verify initial route is Scenes
     expect(find.text('Scenes'), findsWidgets);

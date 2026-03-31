@@ -24,3 +24,16 @@ query FindTag($id: ID!) {
     ...TagData
   }
 }
+
+mutation UpdateTagFavorite($id: ID!, $favorite: Boolean!) {
+  tagUpdate(input: { id: $id, favorite: $favorite }) {
+    id
+    favorite
+  }
+}
+
+mutation CreateTag($input: TagCreateInput!) {
+  tagCreate(input: $input) {
+    id
+  }
+}

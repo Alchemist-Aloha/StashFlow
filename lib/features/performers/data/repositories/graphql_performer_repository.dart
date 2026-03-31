@@ -234,17 +234,12 @@ class GraphQLPerformerRepository implements PerformerRepository {
 
   @override
   Future<void> setPerformerFavorite(String id, bool favorite) async {
-    final result = await client.mutate(
-      MutationOptions(
-        document: gql(r'''
-          mutation UpdatePerformerFavorite($id: ID!, $favorite: Boolean!) {
-            performerUpdate(input: { id: $id, favorite: $favorite }) {
-              id
-              favorite
-            }
-          }
-        '''),
-        variables: <String, dynamic>{'id': id, 'favorite': favorite},
+    final result = await client.mutate$UpdatePerformerFavorite(
+      Options$Mutation$UpdatePerformerFavorite(
+        variables: Variables$Mutation$UpdatePerformerFavorite(
+          id: id,
+          favorite: favorite,
+        ),
       ),
     );
 

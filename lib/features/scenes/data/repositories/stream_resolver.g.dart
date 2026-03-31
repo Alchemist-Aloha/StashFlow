@@ -65,7 +65,7 @@ final class StreamResolverProvider
   }
 }
 
-String _$streamResolverHash() => r'1c68f9f3d2630ccd3c0f5c67add3fe0bd2eca3d8';
+String _$streamResolverHash() => r'306c008cf456c263abe35db8ba71fb7dc7900703';
 
 /// A utility that resolves the best available video stream for a given [Scene].
 ///

@@ -6,6 +6,7 @@ class Gallery {
   final int? imageCount;
   final String? details;
   final String? path;
+  final String? coverPath;
 
   const Gallery({
     required this.id,
@@ -15,6 +16,7 @@ class Gallery {
     this.imageCount,
     this.details,
     this.path,
+    this.coverPath,
   });
 
   /// The display title of the gallery.
@@ -47,6 +49,9 @@ class Gallery {
       path = files.first['path']?.toString();
     }
 
+    final paths = json['paths'] as Map<String, dynamic>?;
+    final coverPath = paths?['cover']?.toString();
+
     return Gallery(
       id: json['id']?.toString() ?? '',
       title: json['title']?.toString() ?? '',
@@ -55,6 +60,7 @@ class Gallery {
       imageCount: json['image_count'] as int?,
       details: json['details']?.toString(),
       path: path,
+      coverPath: coverPath,
     );
   }
 }

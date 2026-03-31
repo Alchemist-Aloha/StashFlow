@@ -285,7 +285,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
           final id = t.storedId;
           if (id != null && !_selectedTagIds.contains(id)) {
             _selectedTagIds.add(id);
-            _selectedTagNames.add(t.name ?? 'Unknown');
+            _selectedTagNames.add(t.name);
           }
         }
 
@@ -620,7 +620,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                   children: unmatchedScrapedTags
                       .map(
                         (t) => Chip(
-                          label: Text(t.name ?? 'Unknown'),
+                          label: Text(t.name),
                           backgroundColor: context.colors.error.withValues(
                             alpha: 0.1,
                           ),

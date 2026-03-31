@@ -7,7 +7,6 @@ import '../../scenes/presentation/providers/scene_list_provider.dart';
 import '../../performers/presentation/providers/performer_list_provider.dart';
 import '../../studios/presentation/providers/studio_list_provider.dart';
 import '../../tags/presentation/providers/tag_list_provider.dart';
-import '../../images/presentation/providers/image_list_provider.dart';
 import '../../galleries/presentation/providers/gallery_list_provider.dart';
 import '../../scenes/presentation/widgets/tiktok_scenes_view.dart';
 import 'widgets/mini_player.dart';

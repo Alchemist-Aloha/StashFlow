@@ -36,6 +36,8 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     this.useResponsiveGrid = true,
     this.mobileCrossAxisCount,
     this.tabletCrossAxisCount,
+    this.onSortPressed,
+    this.onFilterPressed,
   });
 
   /// The page title displayed in the AppBar.
@@ -46,6 +48,12 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
 
   /// Callback triggered when the search query changes.
   final ValueChanged<String> onSearchChanged;
+
+  /// Optional callback for the sort action in the AppBar.
+  final VoidCallback? onSortPressed;
+
+  /// Optional callback for the filter action in the AppBar.
+  final VoidCallback? onFilterPressed;
 
   /// The [AsyncValue] provider supplying the list of items [T].
   final AsyncValue<List<T>> provider;
@@ -184,16 +192,31 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                       _searchController.clear();
                       widget.onSearchChanged('');
                     },
-                  )
-                else
+                  ),
+                if (!_isSearching) ...[
+                  if (widget.onSortPressed != null)
+                    IconButton(
+                      icon: const Icon(Icons.sort),
+                      onPressed: widget.onSortPressed,
+                      tooltip: 'Sort',
+                    ),
+                  if (widget.onFilterPressed != null)
+                    IconButton(
+                      icon: const Icon(Icons.filter_list),
+                      onPressed: widget.onFilterPressed,
+                      tooltip: 'Filter',
+                    ),
                   IconButton(
                     icon: const Icon(Icons.search),
                     onPressed: () => setState(() => _isSearching = true),
+                    tooltip: 'Search',
                   ),
+                ],
                 if (!_isSearching)
                   IconButton(
                     icon: const Icon(Icons.settings),
                     onPressed: () => context.push('/settings'),
+                    tooltip: 'Settings',
                   ),
                 ...widget.actions,
               ],

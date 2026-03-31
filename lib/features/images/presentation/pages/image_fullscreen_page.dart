@@ -1,7 +1,8 @@
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/presentation/widgets/stash_image.dart';
+import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../providers/image_list_provider.dart';
 import '../../domain/entities/image.dart' as entity;
@@ -16,19 +17,26 @@ class ImageFullscreenPage extends ConsumerStatefulWidget {
 }
 
 class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
-  late PageController _pageController;
+  late ExtendedPageController _pageController;
   int _currentIndex = -1;
+  bool _showOverlays = true;
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
+    _pageController = ExtendedPageController();
   }
 
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  void _toggleOverlays() {
+    setState(() {
+      _showOverlays = !_showOverlays;
+    });
   }
 
   void _showInfo(BuildContext context, entity.Image image) {
@@ -44,7 +52,9 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
               Text(
                 image.title?.isNotEmpty == true
                     ? image.title!
-                    : 'Untitled Image',
+                    : (image.files.isNotEmpty
+                        ? image.files.first.path
+                        : 'Untitled Image'),
                 style: context.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -72,6 +82,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   @override
   Widget build(BuildContext context) {
     final imagesAsync = ref.watch(imageListProvider);
+    final headers = ref.watch(mediaHeadersProvider);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -80,36 +91,17 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
           if (_currentIndex == -1) {
             _currentIndex = items.indexWhere((i) => i.id == widget.imageId);
             if (_currentIndex == -1) _currentIndex = 0;
-            _pageController = PageController(initialPage: _currentIndex);
+            _pageController = ExtendedPageController(initialPage: _currentIndex);
           }
 
           return Stack(
             children: [
-              PageView.builder(
+              ExtendedImageGesturePageView.builder(
                 controller: _pageController,
                 scrollDirection: Axis.vertical,
                 itemCount: items.length,
                 onPageChanged: (index) {
                   setState(() => _currentIndex = index);
-                  // Pre-fetch adjacent images
-                  if (index + 1 < items.length) {
-                    final next = items[index + 1];
-                    precacheImage(
-                      NetworkImage(
-                        next.paths.image ?? next.paths.preview ?? '',
-                      ),
-                      context,
-                    );
-                  }
-                  if (index - 1 >= 0) {
-                    final prev = items[index - 1];
-                    precacheImage(
-                      NetworkImage(
-                        prev.paths.image ?? prev.paths.preview ?? '',
-                      ),
-                      context,
-                    );
-                  }
                   // Load more if near end
                   if (index >= items.length - 2) {
                     ref.read(imageListProvider.notifier).fetchNextPage();
@@ -117,60 +109,124 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                 },
                 itemBuilder: (context, index) {
                   final image = items[index];
-                  return InteractiveViewer(
-                    minScale: 1.0,
-                    maxScale: 4.0,
-                    child: Center(
-                      child: StashImage(
-                        imageUrl: image.paths.image ?? image.paths.preview,
-                        fit: BoxFit.contain,
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
-                    ),
+                  final imageUrl = image.paths.image ?? image.paths.preview;
+
+                  if (imageUrl == null || imageUrl.isEmpty) {
+                    return const Center(
+                      child: Icon(Icons.broken_image, color: Colors.white54, size: 64),
+                    );
+                  }
+
+                  return ExtendedImage.network(
+                    imageUrl,
+                    headers: headers,
+                    fit: BoxFit.contain,
+                    mode: ExtendedImageMode.gesture,
+                    cache: true,
+                    // Use the custom cache manager from StashImage if possible, 
+                    // though extended_image uses its own internal cache.
+                    // We can also leverage the pre-fetching logic.
+                    initGestureConfigHandler: (state) {
+                      return GestureConfig(
+                        minScale: 0.9,
+                        animationMinScale: 0.7,
+                        maxScale: 4.0,
+                        animationMaxScale: 4.5,
+                        speed: 1.0,
+                        initialScale: 1.0,
+                        inPageView: true,
+                        initialAlignment: InitialAlignment.center,
+                      );
+                    },
+                    onDoubleTap: (ExtendedImageGestureState state) {
+                      final pointerDownPosition = state.pointerDownPosition;
+                      final begin = state.gestureDetails!.totalScale;
+                      double end;
+
+                      // Double tap to zoom
+                      if (begin == 1.0) {
+                        end = 3.0;
+                      } else {
+                        end = 1.0;
+                      }
+
+                      state.handleDoubleTap(
+                        scale: end,
+                        doubleTapPosition: pointerDownPosition,
+                      );
+                    },
+                    loadStateChanged: (ExtendedImageState state) {
+                      switch (state.extendedImageLoadState) {
+                        case LoadState.loading:
+                          return const Center(child: CircularProgressIndicator());
+                        case LoadState.completed:
+                          return null; // default image
+                        case LoadState.failed:
+                          return GestureDetector(
+                            onTap: () => state.reLoadImage(),
+                            child: const Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.broken_image, color: Colors.white54, size: 64),
+                                  SizedBox(height: 16),
+                                  Text('Failed to load. Tap to retry.', style: TextStyle(color: Colors.white70)),
+                                ],
+                              ),
+                            ),
+                          );
+                      }
+                    },
                   );
                 },
               ),
-              // Overlay
-              Positioned(
-                top: MediaQuery.paddingOf(context).top + 8,
-                left: 16,
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: () => context.pop(),
-                  style: IconButton.styleFrom(backgroundColor: Colors.black26),
-                ),
+              // Interaction layer to toggle overlays
+              GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: _toggleOverlays,
               ),
-              Positioned(
-                top: MediaQuery.paddingOf(context).top + 8,
-                right: 16,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+              // Overlays
+              if (_showOverlays) ...[
+                Positioned(
+                  top: MediaQuery.paddingOf(context).top + 8,
+                  left: 16,
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: () => context.pop(),
+                    style: IconButton.styleFrom(backgroundColor: Colors.black26),
                   ),
-                  decoration: BoxDecoration(
-                    color: Colors.black26,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    '${_currentIndex + 1} / ${items.length}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                ),
+                Positioned(
+                  top: MediaQuery.paddingOf(context).top + 8,
+                  right: 16,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black26,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      '${_currentIndex + 1} / ${items.length}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Positioned(
-                bottom: MediaQuery.paddingOf(context).bottom + 16,
-                right: 16,
-                child: IconButton(
-                  icon: const Icon(Icons.info_outline, color: Colors.white),
-                  onPressed: () => _showInfo(context, items[_currentIndex]),
-                  style: IconButton.styleFrom(backgroundColor: Colors.black26),
+                Positioned(
+                  bottom: MediaQuery.paddingOf(context).bottom + 16,
+                  right: 16,
+                  child: IconButton(
+                    icon: const Icon(Icons.info_outline, color: Colors.white),
+                    onPressed: () => _showInfo(context, items[_currentIndex]),
+                    style: IconButton.styleFrom(backgroundColor: Colors.black26),
+                  ),
                 ),
-              ),
+              ],
             ],
           );
         },

@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:math';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../providers/gallery_list_provider.dart';
 import '../../../images/presentation/providers/image_list_provider.dart';
 import '../../domain/entities/gallery.dart';
 
+import '../widgets/gallery_card.dart';
+import '../../../../core/presentation/widgets/grid_utils.dart';
+
 import '../widgets/gallery_filter_panel.dart';
 import '../../domain/entities/gallery_filter.dart';
+import '../../../../core/data/graphql/url_resolver.dart';
+import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/data/graphql/graphql_client.dart';
+import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 enum _GallerySortOption { title, date, rating, imageCount, path, random }
 
@@ -22,6 +30,9 @@ class GalleriesPage extends ConsumerStatefulWidget {
 class _GalleriesPageState extends ConsumerState<GalleriesPage> {
   _GallerySortOption _sortOption = _GallerySortOption.path;
   bool _sortDescending = false;
+
+  /// Remembers the last random gallery ID to avoid consecutive duplicates.
+  String? _lastRandomGalleryId;
 
   @override
   void initState() {
@@ -60,6 +71,26 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
     ref
         .read(galleryListProvider.notifier)
         .setSort(sort: sortKey, descending: _sortDescending);
+  }
+
+  /// Opens a random gallery image view.
+  void _openRandomGallery() {
+    final galleries = ref.read(galleryListProvider).value ?? [];
+    if (galleries.isEmpty) return;
+
+    // Choose a random gallery that wasn't the last one we picked.
+    final random = Random();
+    int index;
+    do {
+      index = random.nextInt(galleries.length);
+    } while (galleries.length > 1 && galleries[index].id == _lastRandomGalleryId);
+
+    final gallery = galleries[index];
+    _lastRandomGalleryId = gallery.id;
+
+    // Set the filter and navigate.
+    ref.read(imageFilterStateProvider.notifier).setGalleryId(gallery.id);
+    context.push('/galleries/images');
   }
 
   String _sortOptionLabel(_GallerySortOption option) {
@@ -228,6 +259,21 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
     );
   }
 
+  String? _getThumbnailUrl(Gallery gallery) {
+    final prefs = ref.read(sharedPreferencesProvider);
+    final storedServerUrl = prefs.getString('server_base_url')?.trim() ?? '';
+    final normalizedServerUrl = normalizeGraphqlServerUrl(storedServerUrl);
+    final endpoint = Uri.parse(
+      normalizedServerUrl.isEmpty
+          ? 'http://localhost:9999/graphql'
+          : normalizedServerUrl,
+    );
+    return resolveGraphqlMediaUrl(
+      rawUrl: gallery.coverPath ?? '/gallery/${gallery.id}/thumbnail',
+      graphqlEndpoint: endpoint,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final galleriesAsync = ref.watch(galleryListProvider);
@@ -236,6 +282,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
     );
     final organizedOnly = ref.watch(galleryOrganizedOnlyProvider);
     final hasActiveFilters = filterActive || organizedOnly;
+    final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return ListPageScaffold<Gallery>(
       title: 'Galleries',
@@ -299,77 +346,27 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
       onRefresh: () => ref.refresh(galleryListProvider.future),
       onFetchNextPage: () =>
           ref.read(galleryListProvider.notifier).fetchNextPage(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: AppTheme.spacingMedium,
-        crossAxisSpacing: AppTheme.spacingMedium,
-        childAspectRatio: 1.0,
-      ),
-      mobileCrossAxisCount: 2,
-      tabletCrossAxisCount: 4,
-      itemBuilder: (context, gallery) => InkWell(
+      gridDelegate: GridUtils.createDelegate(),
+      padding: GridUtils.defaultPadding,
+      itemBuilder: (context, gallery) => GalleryCard(
+        gallery: gallery,
+        thumbnailUrl: _getThumbnailUrl(gallery),
         onTap: () {
           ref.read(imageFilterStateProvider.notifier).setGalleryId(gallery.id);
           context.go('/galleries/images');
         },
-        child: Card(
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Container(
-                  color: context.colors.cardBackground,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Icon(
-                        Icons.folder,
-                        size: 64,
-                        color: context.colors.primary.withValues(alpha: 0.7),
-                      ),
-                      if (gallery.imageCount != null && gallery.imageCount! > 0)
-                        Positioned(
-                          right: 8,
-                          top: 8,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: context.colors.primary,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              '${gallery.imageCount}',
-                              style: context.textTheme.labelSmall?.copyWith(
-                                color: context.colors.onPrimary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingSmall),
-                child: Text(
-                  gallery.displayName,
-                  style: context.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
+      floatingActionButton: randomNavigationEnabled
+          ? galleriesAsync.maybeWhen(
+              data: (galleries) => FloatingActionButton.small(
+                heroTag: 'galleries_random_fab',
+                onPressed: _openRandomGallery,
+                tooltip: 'Random gallery',
+                child: const Icon(Icons.casino_outlined),
+              ),
+              orElse: () => null,
+            )
+          : null,
     );
   }
 }
