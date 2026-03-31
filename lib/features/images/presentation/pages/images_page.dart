@@ -12,7 +12,7 @@ import '../../domain/entities/image.dart' as entity;
 import '../widgets/image_filter_panel.dart';
 import '../../domain/entities/image_filter.dart';
 
-enum _ImageSortOption { date, rating, title }
+enum _ImageSortOption { date, rating, title, random }
 
 class ImagesPage extends ConsumerStatefulWidget {
   const ImagesPage({super.key});
@@ -35,6 +35,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
           'date' => _ImageSortOption.date,
           'rating100' => _ImageSortOption.rating,
           'title' => _ImageSortOption.title,
+          'random' => _ImageSortOption.random,
           _ => _ImageSortOption.date,
         };
         _sortDescending = sortConfig.descending;
@@ -51,6 +52,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
       _ImageSortOption.date => 'date',
       _ImageSortOption.rating => 'rating100',
       _ImageSortOption.title => 'title',
+      _ImageSortOption.random => 'random',
     };
     ref
         .read(imageListProvider.notifier)
@@ -62,6 +64,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
       _ImageSortOption.date => 'Date',
       _ImageSortOption.rating => 'Rating',
       _ImageSortOption.title => 'Title',
+      _ImageSortOption.random => 'Random',
     };
   }
 

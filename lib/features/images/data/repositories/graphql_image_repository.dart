@@ -55,18 +55,17 @@ class GraphQLImageRepository implements ImageRepository {
 
     final result = await client.query(
       QueryOptions(
-        fetchPolicy: FetchPolicy.cacheAndNetwork,
+        fetchPolicy: sort == 'random' ? FetchPolicy.noCache : FetchPolicy.cacheAndNetwork,
         document: gql(query),
         variables: {
           'filter': {
+            'q': filter,
             'page': page,
             'per_page': perPage,
             'sort': sort,
             'direction': descending == true ? 'DESC' : 'ASC',
           },
           'image_filter': {
-            if (filter != null)
-              'title': {'value': filter, 'modifier': 'INCLUDES'},
             if (galleryId != null)
               'galleries': {
                 'value': [galleryId],
