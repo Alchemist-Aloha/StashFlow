@@ -31,6 +31,8 @@ import 'package:stash_app_flutter/features/galleries/domain/repositories/gallery
 import 'package:stash_app_flutter/features/galleries/domain/entities/gallery.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_list_provider.dart';
 
+import 'package:stash_app_flutter/features/images/domain/entities/image_filter.dart';
+import 'package:stash_app_flutter/features/galleries/domain/entities/gallery_filter.dart';
 import 'package:stash_app_flutter/main.dart';
 
 class MockSceneRepository implements SceneRepository {
@@ -227,6 +229,7 @@ class MockImageRepository implements ImageRepository {
     String? sort,
     bool? descending,
     String? galleryId,
+    ImageFilter? imageFilter,
   }) async =>
       [
         entity.Image.fromJson({
@@ -251,6 +254,7 @@ class MockGalleryRepository implements GalleryRepository {
     String? filter,
     String? sort,
     bool? descending,
+    GalleryFilter? galleryFilter,
   }) async =>
       [const Gallery(id: '1', title: 'Test Gallery', imageCount: 1)];
 
@@ -319,8 +323,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Tags'), findsWidgets);
 
-    // Tap Media Tab (Galleries)
-    await tester.tap(find.widgetWithText(NavigationDestination, 'Media'));
+    // Tap Galleries Tab
+    await tester.tap(find.widgetWithText(NavigationDestination, 'Galleries'));
     await tester.pumpAndSettle();
     expect(find.text('Galleries'), findsWidgets);
 

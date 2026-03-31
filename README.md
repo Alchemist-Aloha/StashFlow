@@ -23,7 +23,8 @@ A native Android mobile client for your **Stash** server. Designed for seamless 
 - 📱 **Adaptive UI:** Fully optimized for both phones and tablets. Features a side **Navigation Rail** and intelligent grid layouts that scale up to 5 columns on larger screens.
 - 🎬 **Seamless Playback:** Integrated video player with support for multiple streaming strategies, startup diagnostics, **Autoplay Next**, and continuous playback queue management.
 - 🎵 **System Integration:** Full support for `audio_service` (media notifications/lock screen controls), background audio playback, and **Picture-in-Picture (PiP)** mode.
-- 👤 **Rich Browsing:** Explore Scenes, Performers, Studios, Tags, Galleries, and Groups with native-feel pagination and fast global search.
+- 🖼️ **Media Libraries:** Browse high-resolution **Images** and manage your **Galleries** with a native feel, complete with smooth animations and layout scaling.
+- 👤 **Rich Browsing:** Explore Scenes, Images, Performers, Studios, Tags, Galleries, and Groups with native-feel pagination and fast global search.
 - 📱 **Flexible Layouts:** Choose between a classic **Grid/List** view or a modern **TikTok-style** vertical scroll layout for discovery.
 - 🎲 **Discovery Tools:** Floating "Random" actions and "Surprise Me" entries to find hidden gems in your library.
 - 🔍 **Advanced Filtering:** Powerful menu-based sorting (Date, Rating, Play Count, Random) and comprehensive multi-filter sheets.
