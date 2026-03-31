@@ -88,3 +88,77 @@ mutation UpdateSceneRating($id: ID!, $rating: Int!) {
     rating100
   }
 }
+
+mutation SceneAddO($id: ID!) {
+  sceneAddO(id: $id) {
+    count
+  }
+}
+
+mutation SceneAddPlay($id: ID!) {
+  sceneAddPlay(id: $id) {
+    count
+  }
+}
+
+query ListScrapers($types: [ScrapeContentType!]!) {
+  listScrapers(types: $types) {
+    id
+    name
+  }
+}
+
+query ScrapeSingleScene($source: ScraperSourceInput!, $input: ScrapeSingleSceneInput!) {
+  scrapeSingleScene(source: $source, input: $input) {
+    title
+    code
+    details
+    director
+    urls
+    date
+    image
+    remote_site_id
+    studio {
+      name
+      stored_id
+    }
+    tags {
+      name
+      stored_id
+    }
+    performers {
+      name
+      remote_site_id
+      urls
+      images
+      stored_id
+    }
+  }
+}
+
+mutation SceneMerge($input: SceneMergeInput!) {
+  sceneMerge(input: $input) {
+    id
+  }
+}
+
+mutation SceneUpdate($input: SceneUpdateInput!) {
+  sceneUpdate(input: $input) {
+    id
+  }
+}
+
+query SceneStreamsForPlayer($id: ID!) {
+  sceneStreams(id: $id) {
+    url
+    mime_type
+    label
+  }
+  findScene(id: $id) {
+    sceneStreams {
+      url
+      mime_type
+      label
+    }
+  }
+}

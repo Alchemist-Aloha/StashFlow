@@ -2,8 +2,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:graphql/client.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:stash_app_flutter/core/data/graphql/schema.graphql.dart';
 import 'package:stash_app_flutter/features/images/data/repositories/graphql_image_repository.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image.dart';
+import 'package:stash_app_flutter/features/images/data/graphql/images.graphql.dart';
 
 import 'graphql_image_repository_test.mocks.dart';
 
@@ -20,33 +22,53 @@ void main() {
 
   group('GraphQLImageRepository', () {
     test('findImages returns a list of images on success', () async {
-      final mockQueryResult = QueryResult(
-        source: QueryResultSource.network,
-        data: {
-          'findImages': {
-            'images': [
-              {
-                'id': '1',
-                'title': 'Test Image',
-                'rating100': 80,
-                'date': '2023-01-01',
-                'urls': ['http://test.com/img.jpg'],
-                'visual_files': [
-                  {'width': 100, 'height': 100},
-                ],
-                'paths': {
-                  'thumbnail': 'thumb.jpg',
-                  'preview': 'prev.jpg',
-                  'image': 'full.jpg',
-                },
+      final data = {
+        'findImages': {
+          'count': 1,
+          'images': [
+            {
+              'id': '1',
+              'title': 'Test Image',
+              'rating100': 80,
+              'date': '2023-01-01',
+              'urls': ['http://test.com/img.jpg'],
+              'visual_files': [
+                {'width': 100, 'height': 100, 'path': '/path/to/img.jpg', '__typename': 'ImageFile'},
+              ],
+              'paths': {
+                'thumbnail': 'thumb.jpg',
+                'preview': 'prev.jpg',
+                'image': 'full.jpg',
+                '__typename': 'ImagePathsType',
               },
-            ],
-          },
+              '__typename': 'Image',
+            },
+          ],
+          '__typename': 'ImageQueryResult',
         },
-        options: QueryOptions(document: gql('')),
+        '__typename': 'Query',
+      };
+
+      final options = Options$Query$FindImages(
+        variables: Variables$Query$FindImages(
+          filter: Input$FindFilterType(
+            page: 1,
+            per_page: 20,
+            sort: null,
+            direction: Enum$SortDirectionEnum.ASC,
+          ),
+          image_filter: Input$ImageFilterType(),
+        ),
       );
 
-      when(mockClient.query(any)).thenAnswer((_) async => mockQueryResult);
+      final mockQueryResult = QueryResult<Query$FindImages>(
+        source: QueryResultSource.network,
+        data: data,
+        options: options,
+      );
+
+      when(mockClient.query<Query$FindImages>(any))
+          .thenAnswer((_) async => mockQueryResult);
 
       final result = await repository.findImages(page: 1, perPage: 20);
 
@@ -58,29 +80,39 @@ void main() {
     });
 
     test('getImageById returns an image on success', () async {
-      final mockQueryResult = QueryResult(
-        source: QueryResultSource.network,
-        data: {
-          'findImage': {
-            'id': '1',
-            'title': 'Test Image',
-            'rating100': 80,
-            'date': '2023-01-01',
-            'urls': ['http://test.com/img.jpg'],
-            'visual_files': [
-              {'width': 100, 'height': 100},
-            ],
-            'paths': {
-              'thumbnail': 'thumb.jpg',
-              'preview': 'prev.jpg',
-              'image': 'full.jpg',
-            },
+      final data = {
+        'findImage': {
+          'id': '1',
+          'title': 'Test Image',
+          'rating100': 80,
+          'date': '2023-01-01',
+          'urls': ['http://test.com/img.jpg'],
+          'visual_files': [
+            {'width': 100, 'height': 100, 'path': '/path/to/img.jpg', '__typename': 'ImageFile'},
+          ],
+          'paths': {
+            'thumbnail': 'thumb.jpg',
+            'preview': 'prev.jpg',
+            'image': 'full.jpg',
+            '__typename': 'ImagePathsType',
           },
+          '__typename': 'Image',
         },
-        options: QueryOptions(document: gql('')),
+        '__typename': 'Query',
+      };
+
+      final options = Options$Query$FindImage(
+        variables: Variables$Query$FindImage(id: '1'),
       );
 
-      when(mockClient.query(any)).thenAnswer((_) async => mockQueryResult);
+      final mockQueryResult = QueryResult<Query$FindImage>(
+        source: QueryResultSource.network,
+        data: data,
+        options: options,
+      );
+
+      when(mockClient.query<Query$FindImage>(any))
+          .thenAnswer((_) async => mockQueryResult);
 
       final result = await repository.getImageById('1');
 
@@ -91,15 +123,23 @@ void main() {
     });
 
     test('findImages throws exception on GraphQL error', () async {
-      final mockQueryResult = QueryResult(
+      final options = Options$Query$FindImages(
+        variables: Variables$Query$FindImages(
+          filter: Input$FindFilterType(),
+          image_filter: Input$ImageFilterType(),
+        ),
+      );
+
+      final mockQueryResult = QueryResult<Query$FindImages>(
         source: QueryResultSource.network,
-        options: QueryOptions(document: gql('')),
+        options: options,
         exception: OperationException(
           graphqlErrors: [const GraphQLError(message: 'Error')],
         ),
       );
 
-      when(mockClient.query(any)).thenAnswer((_) async => mockQueryResult);
+      when(mockClient.query<Query$FindImages>(any))
+          .thenAnswer((_) async => mockQueryResult);
 
       expect(() => repository.findImages(), throwsA(isA<OperationException>()));
     });

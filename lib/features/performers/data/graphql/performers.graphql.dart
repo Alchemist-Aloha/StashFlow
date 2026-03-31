@@ -2241,3 +2241,1085 @@ extension ClientExtension$Query$FindPerformer on graphql.GraphQLClient {
     return result == null ? null : Query$FindPerformer.fromJson(result);
   }
 }
+
+class Variables$Mutation$UpdatePerformerFavorite {
+  factory Variables$Mutation$UpdatePerformerFavorite({
+    required String id,
+    required bool favorite,
+  }) => Variables$Mutation$UpdatePerformerFavorite._({
+    r'id': id,
+    r'favorite': favorite,
+  });
+
+  Variables$Mutation$UpdatePerformerFavorite._(this._$data);
+
+  factory Variables$Mutation$UpdatePerformerFavorite.fromJson(
+    Map<String, dynamic> data,
+  ) {
+    final result$data = <String, dynamic>{};
+    final l$id = data['id'];
+    result$data['id'] = (l$id as String);
+    final l$favorite = data['favorite'];
+    result$data['favorite'] = (l$favorite as bool);
+    return Variables$Mutation$UpdatePerformerFavorite._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get id => (_$data['id'] as String);
+
+  bool get favorite => (_$data['favorite'] as bool);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$id = id;
+    result$data['id'] = l$id;
+    final l$favorite = favorite;
+    result$data['favorite'] = l$favorite;
+    return result$data;
+  }
+
+  CopyWith$Variables$Mutation$UpdatePerformerFavorite<
+    Variables$Mutation$UpdatePerformerFavorite
+  >
+  get copyWith =>
+      CopyWith$Variables$Mutation$UpdatePerformerFavorite(this, (i) => i);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Mutation$UpdatePerformerFavorite ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$favorite = favorite;
+    final lOther$favorite = other.favorite;
+    if (l$favorite != lOther$favorite) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$favorite = favorite;
+    return Object.hashAll([l$id, l$favorite]);
+  }
+}
+
+abstract class CopyWith$Variables$Mutation$UpdatePerformerFavorite<TRes> {
+  factory CopyWith$Variables$Mutation$UpdatePerformerFavorite(
+    Variables$Mutation$UpdatePerformerFavorite instance,
+    TRes Function(Variables$Mutation$UpdatePerformerFavorite) then,
+  ) = _CopyWithImpl$Variables$Mutation$UpdatePerformerFavorite;
+
+  factory CopyWith$Variables$Mutation$UpdatePerformerFavorite.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Mutation$UpdatePerformerFavorite;
+
+  TRes call({String? id, bool? favorite});
+}
+
+class _CopyWithImpl$Variables$Mutation$UpdatePerformerFavorite<TRes>
+    implements CopyWith$Variables$Mutation$UpdatePerformerFavorite<TRes> {
+  _CopyWithImpl$Variables$Mutation$UpdatePerformerFavorite(
+    this._instance,
+    this._then,
+  );
+
+  final Variables$Mutation$UpdatePerformerFavorite _instance;
+
+  final TRes Function(Variables$Mutation$UpdatePerformerFavorite) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? id = _undefined, Object? favorite = _undefined}) => _then(
+    Variables$Mutation$UpdatePerformerFavorite._({
+      ..._instance._$data,
+      if (id != _undefined && id != null) 'id': (id as String),
+      if (favorite != _undefined && favorite != null)
+        'favorite': (favorite as bool),
+    }),
+  );
+}
+
+class _CopyWithStubImpl$Variables$Mutation$UpdatePerformerFavorite<TRes>
+    implements CopyWith$Variables$Mutation$UpdatePerformerFavorite<TRes> {
+  _CopyWithStubImpl$Variables$Mutation$UpdatePerformerFavorite(this._res);
+
+  TRes _res;
+
+  call({String? id, bool? favorite}) => _res;
+}
+
+class Mutation$UpdatePerformerFavorite {
+  Mutation$UpdatePerformerFavorite({
+    this.performerUpdate,
+    this.$__typename = 'Mutation',
+  });
+
+  factory Mutation$UpdatePerformerFavorite.fromJson(Map<String, dynamic> json) {
+    final l$performerUpdate = json['performerUpdate'];
+    final l$$__typename = json['__typename'];
+    return Mutation$UpdatePerformerFavorite(
+      performerUpdate: l$performerUpdate == null
+          ? null
+          : Mutation$UpdatePerformerFavorite$performerUpdate.fromJson(
+              (l$performerUpdate as Map<String, dynamic>),
+            ),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Mutation$UpdatePerformerFavorite$performerUpdate? performerUpdate;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$performerUpdate = performerUpdate;
+    _resultData['performerUpdate'] = l$performerUpdate?.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$performerUpdate = performerUpdate;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$performerUpdate, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$UpdatePerformerFavorite ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$performerUpdate = performerUpdate;
+    final lOther$performerUpdate = other.performerUpdate;
+    if (l$performerUpdate != lOther$performerUpdate) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$UpdatePerformerFavorite
+    on Mutation$UpdatePerformerFavorite {
+  CopyWith$Mutation$UpdatePerformerFavorite<Mutation$UpdatePerformerFavorite>
+  get copyWith => CopyWith$Mutation$UpdatePerformerFavorite(this, (i) => i);
+}
+
+abstract class CopyWith$Mutation$UpdatePerformerFavorite<TRes> {
+  factory CopyWith$Mutation$UpdatePerformerFavorite(
+    Mutation$UpdatePerformerFavorite instance,
+    TRes Function(Mutation$UpdatePerformerFavorite) then,
+  ) = _CopyWithImpl$Mutation$UpdatePerformerFavorite;
+
+  factory CopyWith$Mutation$UpdatePerformerFavorite.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$UpdatePerformerFavorite;
+
+  TRes call({
+    Mutation$UpdatePerformerFavorite$performerUpdate? performerUpdate,
+    String? $__typename,
+  });
+  CopyWith$Mutation$UpdatePerformerFavorite$performerUpdate<TRes>
+  get performerUpdate;
+}
+
+class _CopyWithImpl$Mutation$UpdatePerformerFavorite<TRes>
+    implements CopyWith$Mutation$UpdatePerformerFavorite<TRes> {
+  _CopyWithImpl$Mutation$UpdatePerformerFavorite(this._instance, this._then);
+
+  final Mutation$UpdatePerformerFavorite _instance;
+
+  final TRes Function(Mutation$UpdatePerformerFavorite) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? performerUpdate = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Mutation$UpdatePerformerFavorite(
+      performerUpdate: performerUpdate == _undefined
+          ? _instance.performerUpdate
+          : (performerUpdate
+                as Mutation$UpdatePerformerFavorite$performerUpdate?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+
+  CopyWith$Mutation$UpdatePerformerFavorite$performerUpdate<TRes>
+  get performerUpdate {
+    final local$performerUpdate = _instance.performerUpdate;
+    return local$performerUpdate == null
+        ? CopyWith$Mutation$UpdatePerformerFavorite$performerUpdate.stub(
+            _then(_instance),
+          )
+        : CopyWith$Mutation$UpdatePerformerFavorite$performerUpdate(
+            local$performerUpdate,
+            (e) => call(performerUpdate: e),
+          );
+  }
+}
+
+class _CopyWithStubImpl$Mutation$UpdatePerformerFavorite<TRes>
+    implements CopyWith$Mutation$UpdatePerformerFavorite<TRes> {
+  _CopyWithStubImpl$Mutation$UpdatePerformerFavorite(this._res);
+
+  TRes _res;
+
+  call({
+    Mutation$UpdatePerformerFavorite$performerUpdate? performerUpdate,
+    String? $__typename,
+  }) => _res;
+
+  CopyWith$Mutation$UpdatePerformerFavorite$performerUpdate<TRes>
+  get performerUpdate =>
+      CopyWith$Mutation$UpdatePerformerFavorite$performerUpdate.stub(_res);
+}
+
+const documentNodeMutationUpdatePerformerFavorite = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.mutation,
+      name: NameNode(value: 'UpdatePerformerFavorite'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'id')),
+          type: NamedTypeNode(name: NameNode(value: 'ID'), isNonNull: true),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'favorite')),
+          type: NamedTypeNode(
+            name: NameNode(value: 'Boolean'),
+            isNonNull: true,
+          ),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'performerUpdate'),
+            alias: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'input'),
+                value: ObjectValueNode(
+                  fields: [
+                    ObjectFieldNode(
+                      name: NameNode(value: 'id'),
+                      value: VariableNode(name: NameNode(value: 'id')),
+                    ),
+                    ObjectFieldNode(
+                      name: NameNode(value: 'favorite'),
+                      value: VariableNode(name: NameNode(value: 'favorite')),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            directives: [],
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: 'id'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'favorite'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ],
+      ),
+    ),
+  ],
+);
+Mutation$UpdatePerformerFavorite _parserFn$Mutation$UpdatePerformerFavorite(
+  Map<String, dynamic> data,
+) => Mutation$UpdatePerformerFavorite.fromJson(data);
+typedef OnMutationCompleted$Mutation$UpdatePerformerFavorite =
+    FutureOr<void> Function(
+      Map<String, dynamic>?,
+      Mutation$UpdatePerformerFavorite?,
+    );
+
+class Options$Mutation$UpdatePerformerFavorite
+    extends graphql.MutationOptions<Mutation$UpdatePerformerFavorite> {
+  Options$Mutation$UpdatePerformerFavorite({
+    String? operationName,
+    required Variables$Mutation$UpdatePerformerFavorite variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$UpdatePerformerFavorite? typedOptimisticResult,
+    graphql.Context? context,
+    OnMutationCompleted$Mutation$UpdatePerformerFavorite? onCompleted,
+    graphql.OnMutationUpdate<Mutation$UpdatePerformerFavorite>? update,
+    graphql.OnError? onError,
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Mutation$UpdatePerformerFavorite(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationUpdatePerformerFavorite,
+         parserFn: _parserFn$Mutation$UpdatePerformerFavorite,
+       );
+
+  final OnMutationCompleted$Mutation$UpdatePerformerFavorite?
+  onCompletedWithParsed;
+
+  @override
+  List<Object?> get properties => [
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
+}
+
+class WatchOptions$Mutation$UpdatePerformerFavorite
+    extends graphql.WatchQueryOptions<Mutation$UpdatePerformerFavorite> {
+  WatchOptions$Mutation$UpdatePerformerFavorite({
+    String? operationName,
+    required Variables$Mutation$UpdatePerformerFavorite variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$UpdatePerformerFavorite? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeMutationUpdatePerformerFavorite,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Mutation$UpdatePerformerFavorite,
+       );
+}
+
+extension ClientExtension$Mutation$UpdatePerformerFavorite
+    on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Mutation$UpdatePerformerFavorite>>
+  mutate$UpdatePerformerFavorite(
+    Options$Mutation$UpdatePerformerFavorite options,
+  ) async => await this.mutate(options);
+
+  graphql.ObservableQuery<Mutation$UpdatePerformerFavorite>
+  watchMutation$UpdatePerformerFavorite(
+    WatchOptions$Mutation$UpdatePerformerFavorite options,
+  ) => this.watchMutation(options);
+}
+
+class Mutation$UpdatePerformerFavorite$performerUpdate {
+  Mutation$UpdatePerformerFavorite$performerUpdate({
+    required this.id,
+    required this.favorite,
+    this.$__typename = 'Performer',
+  });
+
+  factory Mutation$UpdatePerformerFavorite$performerUpdate.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$id = json['id'];
+    final l$favorite = json['favorite'];
+    final l$$__typename = json['__typename'];
+    return Mutation$UpdatePerformerFavorite$performerUpdate(
+      id: (l$id as String),
+      favorite: (l$favorite as bool),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final bool favorite;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$favorite = favorite;
+    _resultData['favorite'] = l$favorite;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$favorite = favorite;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$id, l$favorite, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$UpdatePerformerFavorite$performerUpdate ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$favorite = favorite;
+    final lOther$favorite = other.favorite;
+    if (l$favorite != lOther$favorite) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$UpdatePerformerFavorite$performerUpdate
+    on Mutation$UpdatePerformerFavorite$performerUpdate {
+  CopyWith$Mutation$UpdatePerformerFavorite$performerUpdate<
+    Mutation$UpdatePerformerFavorite$performerUpdate
+  >
+  get copyWith =>
+      CopyWith$Mutation$UpdatePerformerFavorite$performerUpdate(this, (i) => i);
+}
+
+abstract class CopyWith$Mutation$UpdatePerformerFavorite$performerUpdate<TRes> {
+  factory CopyWith$Mutation$UpdatePerformerFavorite$performerUpdate(
+    Mutation$UpdatePerformerFavorite$performerUpdate instance,
+    TRes Function(Mutation$UpdatePerformerFavorite$performerUpdate) then,
+  ) = _CopyWithImpl$Mutation$UpdatePerformerFavorite$performerUpdate;
+
+  factory CopyWith$Mutation$UpdatePerformerFavorite$performerUpdate.stub(
+    TRes res,
+  ) = _CopyWithStubImpl$Mutation$UpdatePerformerFavorite$performerUpdate;
+
+  TRes call({String? id, bool? favorite, String? $__typename});
+}
+
+class _CopyWithImpl$Mutation$UpdatePerformerFavorite$performerUpdate<TRes>
+    implements CopyWith$Mutation$UpdatePerformerFavorite$performerUpdate<TRes> {
+  _CopyWithImpl$Mutation$UpdatePerformerFavorite$performerUpdate(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$UpdatePerformerFavorite$performerUpdate _instance;
+
+  final TRes Function(Mutation$UpdatePerformerFavorite$performerUpdate) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? favorite = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Mutation$UpdatePerformerFavorite$performerUpdate(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      favorite: favorite == _undefined || favorite == null
+          ? _instance.favorite
+          : (favorite as bool),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Mutation$UpdatePerformerFavorite$performerUpdate<TRes>
+    implements CopyWith$Mutation$UpdatePerformerFavorite$performerUpdate<TRes> {
+  _CopyWithStubImpl$Mutation$UpdatePerformerFavorite$performerUpdate(this._res);
+
+  TRes _res;
+
+  call({String? id, bool? favorite, String? $__typename}) => _res;
+}
+
+class Variables$Mutation$CreatePerformer {
+  factory Variables$Mutation$CreatePerformer({
+    required Input$PerformerCreateInput input,
+  }) => Variables$Mutation$CreatePerformer._({r'input': input});
+
+  Variables$Mutation$CreatePerformer._(this._$data);
+
+  factory Variables$Mutation$CreatePerformer.fromJson(
+    Map<String, dynamic> data,
+  ) {
+    final result$data = <String, dynamic>{};
+    final l$input = data['input'];
+    result$data['input'] = Input$PerformerCreateInput.fromJson(
+      (l$input as Map<String, dynamic>),
+    );
+    return Variables$Mutation$CreatePerformer._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  Input$PerformerCreateInput get input =>
+      (_$data['input'] as Input$PerformerCreateInput);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$input = input;
+    result$data['input'] = l$input.toJson();
+    return result$data;
+  }
+
+  CopyWith$Variables$Mutation$CreatePerformer<
+    Variables$Mutation$CreatePerformer
+  >
+  get copyWith => CopyWith$Variables$Mutation$CreatePerformer(this, (i) => i);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Mutation$CreatePerformer ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$input = input;
+    final lOther$input = other.input;
+    if (l$input != lOther$input) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$input = input;
+    return Object.hashAll([l$input]);
+  }
+}
+
+abstract class CopyWith$Variables$Mutation$CreatePerformer<TRes> {
+  factory CopyWith$Variables$Mutation$CreatePerformer(
+    Variables$Mutation$CreatePerformer instance,
+    TRes Function(Variables$Mutation$CreatePerformer) then,
+  ) = _CopyWithImpl$Variables$Mutation$CreatePerformer;
+
+  factory CopyWith$Variables$Mutation$CreatePerformer.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Mutation$CreatePerformer;
+
+  TRes call({Input$PerformerCreateInput? input});
+}
+
+class _CopyWithImpl$Variables$Mutation$CreatePerformer<TRes>
+    implements CopyWith$Variables$Mutation$CreatePerformer<TRes> {
+  _CopyWithImpl$Variables$Mutation$CreatePerformer(this._instance, this._then);
+
+  final Variables$Mutation$CreatePerformer _instance;
+
+  final TRes Function(Variables$Mutation$CreatePerformer) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? input = _undefined}) => _then(
+    Variables$Mutation$CreatePerformer._({
+      ..._instance._$data,
+      if (input != _undefined && input != null)
+        'input': (input as Input$PerformerCreateInput),
+    }),
+  );
+}
+
+class _CopyWithStubImpl$Variables$Mutation$CreatePerformer<TRes>
+    implements CopyWith$Variables$Mutation$CreatePerformer<TRes> {
+  _CopyWithStubImpl$Variables$Mutation$CreatePerformer(this._res);
+
+  TRes _res;
+
+  call({Input$PerformerCreateInput? input}) => _res;
+}
+
+class Mutation$CreatePerformer {
+  Mutation$CreatePerformer({
+    this.performerCreate,
+    this.$__typename = 'Mutation',
+  });
+
+  factory Mutation$CreatePerformer.fromJson(Map<String, dynamic> json) {
+    final l$performerCreate = json['performerCreate'];
+    final l$$__typename = json['__typename'];
+    return Mutation$CreatePerformer(
+      performerCreate: l$performerCreate == null
+          ? null
+          : Mutation$CreatePerformer$performerCreate.fromJson(
+              (l$performerCreate as Map<String, dynamic>),
+            ),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Mutation$CreatePerformer$performerCreate? performerCreate;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$performerCreate = performerCreate;
+    _resultData['performerCreate'] = l$performerCreate?.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$performerCreate = performerCreate;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$performerCreate, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$CreatePerformer ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$performerCreate = performerCreate;
+    final lOther$performerCreate = other.performerCreate;
+    if (l$performerCreate != lOther$performerCreate) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$CreatePerformer
+    on Mutation$CreatePerformer {
+  CopyWith$Mutation$CreatePerformer<Mutation$CreatePerformer> get copyWith =>
+      CopyWith$Mutation$CreatePerformer(this, (i) => i);
+}
+
+abstract class CopyWith$Mutation$CreatePerformer<TRes> {
+  factory CopyWith$Mutation$CreatePerformer(
+    Mutation$CreatePerformer instance,
+    TRes Function(Mutation$CreatePerformer) then,
+  ) = _CopyWithImpl$Mutation$CreatePerformer;
+
+  factory CopyWith$Mutation$CreatePerformer.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$CreatePerformer;
+
+  TRes call({
+    Mutation$CreatePerformer$performerCreate? performerCreate,
+    String? $__typename,
+  });
+  CopyWith$Mutation$CreatePerformer$performerCreate<TRes> get performerCreate;
+}
+
+class _CopyWithImpl$Mutation$CreatePerformer<TRes>
+    implements CopyWith$Mutation$CreatePerformer<TRes> {
+  _CopyWithImpl$Mutation$CreatePerformer(this._instance, this._then);
+
+  final Mutation$CreatePerformer _instance;
+
+  final TRes Function(Mutation$CreatePerformer) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? performerCreate = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Mutation$CreatePerformer(
+      performerCreate: performerCreate == _undefined
+          ? _instance.performerCreate
+          : (performerCreate as Mutation$CreatePerformer$performerCreate?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+
+  CopyWith$Mutation$CreatePerformer$performerCreate<TRes> get performerCreate {
+    final local$performerCreate = _instance.performerCreate;
+    return local$performerCreate == null
+        ? CopyWith$Mutation$CreatePerformer$performerCreate.stub(
+            _then(_instance),
+          )
+        : CopyWith$Mutation$CreatePerformer$performerCreate(
+            local$performerCreate,
+            (e) => call(performerCreate: e),
+          );
+  }
+}
+
+class _CopyWithStubImpl$Mutation$CreatePerformer<TRes>
+    implements CopyWith$Mutation$CreatePerformer<TRes> {
+  _CopyWithStubImpl$Mutation$CreatePerformer(this._res);
+
+  TRes _res;
+
+  call({
+    Mutation$CreatePerformer$performerCreate? performerCreate,
+    String? $__typename,
+  }) => _res;
+
+  CopyWith$Mutation$CreatePerformer$performerCreate<TRes> get performerCreate =>
+      CopyWith$Mutation$CreatePerformer$performerCreate.stub(_res);
+}
+
+const documentNodeMutationCreatePerformer = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.mutation,
+      name: NameNode(value: 'CreatePerformer'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'input')),
+          type: NamedTypeNode(
+            name: NameNode(value: 'PerformerCreateInput'),
+            isNonNull: true,
+          ),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'performerCreate'),
+            alias: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'input'),
+                value: VariableNode(name: NameNode(value: 'input')),
+              ),
+            ],
+            directives: [],
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: 'id'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ],
+      ),
+    ),
+  ],
+);
+Mutation$CreatePerformer _parserFn$Mutation$CreatePerformer(
+  Map<String, dynamic> data,
+) => Mutation$CreatePerformer.fromJson(data);
+typedef OnMutationCompleted$Mutation$CreatePerformer =
+    FutureOr<void> Function(Map<String, dynamic>?, Mutation$CreatePerformer?);
+
+class Options$Mutation$CreatePerformer
+    extends graphql.MutationOptions<Mutation$CreatePerformer> {
+  Options$Mutation$CreatePerformer({
+    String? operationName,
+    required Variables$Mutation$CreatePerformer variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$CreatePerformer? typedOptimisticResult,
+    graphql.Context? context,
+    OnMutationCompleted$Mutation$CreatePerformer? onCompleted,
+    graphql.OnMutationUpdate<Mutation$CreatePerformer>? update,
+    graphql.OnError? onError,
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null ? null : _parserFn$Mutation$CreatePerformer(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationCreatePerformer,
+         parserFn: _parserFn$Mutation$CreatePerformer,
+       );
+
+  final OnMutationCompleted$Mutation$CreatePerformer? onCompletedWithParsed;
+
+  @override
+  List<Object?> get properties => [
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
+}
+
+class WatchOptions$Mutation$CreatePerformer
+    extends graphql.WatchQueryOptions<Mutation$CreatePerformer> {
+  WatchOptions$Mutation$CreatePerformer({
+    String? operationName,
+    required Variables$Mutation$CreatePerformer variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$CreatePerformer? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeMutationCreatePerformer,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Mutation$CreatePerformer,
+       );
+}
+
+extension ClientExtension$Mutation$CreatePerformer on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Mutation$CreatePerformer>> mutate$CreatePerformer(
+    Options$Mutation$CreatePerformer options,
+  ) async => await this.mutate(options);
+
+  graphql.ObservableQuery<Mutation$CreatePerformer>
+  watchMutation$CreatePerformer(
+    WatchOptions$Mutation$CreatePerformer options,
+  ) => this.watchMutation(options);
+}
+
+class Mutation$CreatePerformer$performerCreate {
+  Mutation$CreatePerformer$performerCreate({
+    required this.id,
+    this.$__typename = 'Performer',
+  });
+
+  factory Mutation$CreatePerformer$performerCreate.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$id = json['id'];
+    final l$$__typename = json['__typename'];
+    return Mutation$CreatePerformer$performerCreate(
+      id: (l$id as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$id, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$CreatePerformer$performerCreate ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$CreatePerformer$performerCreate
+    on Mutation$CreatePerformer$performerCreate {
+  CopyWith$Mutation$CreatePerformer$performerCreate<
+    Mutation$CreatePerformer$performerCreate
+  >
+  get copyWith =>
+      CopyWith$Mutation$CreatePerformer$performerCreate(this, (i) => i);
+}
+
+abstract class CopyWith$Mutation$CreatePerformer$performerCreate<TRes> {
+  factory CopyWith$Mutation$CreatePerformer$performerCreate(
+    Mutation$CreatePerformer$performerCreate instance,
+    TRes Function(Mutation$CreatePerformer$performerCreate) then,
+  ) = _CopyWithImpl$Mutation$CreatePerformer$performerCreate;
+
+  factory CopyWith$Mutation$CreatePerformer$performerCreate.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$CreatePerformer$performerCreate;
+
+  TRes call({String? id, String? $__typename});
+}
+
+class _CopyWithImpl$Mutation$CreatePerformer$performerCreate<TRes>
+    implements CopyWith$Mutation$CreatePerformer$performerCreate<TRes> {
+  _CopyWithImpl$Mutation$CreatePerformer$performerCreate(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$CreatePerformer$performerCreate _instance;
+
+  final TRes Function(Mutation$CreatePerformer$performerCreate) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? id = _undefined, Object? $__typename = _undefined}) =>
+      _then(
+        Mutation$CreatePerformer$performerCreate(
+          id: id == _undefined || id == null ? _instance.id : (id as String),
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String),
+        ),
+      );
+}
+
+class _CopyWithStubImpl$Mutation$CreatePerformer$performerCreate<TRes>
+    implements CopyWith$Mutation$CreatePerformer$performerCreate<TRes> {
+  _CopyWithStubImpl$Mutation$CreatePerformer$performerCreate(this._res);
+
+  TRes _res;
+
+  call({String? id, String? $__typename}) => _res;
+}

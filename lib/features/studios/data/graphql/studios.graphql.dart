@@ -1498,3 +1498,576 @@ extension ClientExtension$Query$FindStudio on graphql.GraphQLClient {
     return result == null ? null : Query$FindStudio.fromJson(result);
   }
 }
+
+class Variables$Mutation$UpdateStudioFavorite {
+  factory Variables$Mutation$UpdateStudioFavorite({
+    required String id,
+    required bool favorite,
+  }) => Variables$Mutation$UpdateStudioFavorite._({
+    r'id': id,
+    r'favorite': favorite,
+  });
+
+  Variables$Mutation$UpdateStudioFavorite._(this._$data);
+
+  factory Variables$Mutation$UpdateStudioFavorite.fromJson(
+    Map<String, dynamic> data,
+  ) {
+    final result$data = <String, dynamic>{};
+    final l$id = data['id'];
+    result$data['id'] = (l$id as String);
+    final l$favorite = data['favorite'];
+    result$data['favorite'] = (l$favorite as bool);
+    return Variables$Mutation$UpdateStudioFavorite._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get id => (_$data['id'] as String);
+
+  bool get favorite => (_$data['favorite'] as bool);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$id = id;
+    result$data['id'] = l$id;
+    final l$favorite = favorite;
+    result$data['favorite'] = l$favorite;
+    return result$data;
+  }
+
+  CopyWith$Variables$Mutation$UpdateStudioFavorite<
+    Variables$Mutation$UpdateStudioFavorite
+  >
+  get copyWith =>
+      CopyWith$Variables$Mutation$UpdateStudioFavorite(this, (i) => i);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Mutation$UpdateStudioFavorite ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$favorite = favorite;
+    final lOther$favorite = other.favorite;
+    if (l$favorite != lOther$favorite) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$favorite = favorite;
+    return Object.hashAll([l$id, l$favorite]);
+  }
+}
+
+abstract class CopyWith$Variables$Mutation$UpdateStudioFavorite<TRes> {
+  factory CopyWith$Variables$Mutation$UpdateStudioFavorite(
+    Variables$Mutation$UpdateStudioFavorite instance,
+    TRes Function(Variables$Mutation$UpdateStudioFavorite) then,
+  ) = _CopyWithImpl$Variables$Mutation$UpdateStudioFavorite;
+
+  factory CopyWith$Variables$Mutation$UpdateStudioFavorite.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Mutation$UpdateStudioFavorite;
+
+  TRes call({String? id, bool? favorite});
+}
+
+class _CopyWithImpl$Variables$Mutation$UpdateStudioFavorite<TRes>
+    implements CopyWith$Variables$Mutation$UpdateStudioFavorite<TRes> {
+  _CopyWithImpl$Variables$Mutation$UpdateStudioFavorite(
+    this._instance,
+    this._then,
+  );
+
+  final Variables$Mutation$UpdateStudioFavorite _instance;
+
+  final TRes Function(Variables$Mutation$UpdateStudioFavorite) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? id = _undefined, Object? favorite = _undefined}) => _then(
+    Variables$Mutation$UpdateStudioFavorite._({
+      ..._instance._$data,
+      if (id != _undefined && id != null) 'id': (id as String),
+      if (favorite != _undefined && favorite != null)
+        'favorite': (favorite as bool),
+    }),
+  );
+}
+
+class _CopyWithStubImpl$Variables$Mutation$UpdateStudioFavorite<TRes>
+    implements CopyWith$Variables$Mutation$UpdateStudioFavorite<TRes> {
+  _CopyWithStubImpl$Variables$Mutation$UpdateStudioFavorite(this._res);
+
+  TRes _res;
+
+  call({String? id, bool? favorite}) => _res;
+}
+
+class Mutation$UpdateStudioFavorite {
+  Mutation$UpdateStudioFavorite({
+    this.studioUpdate,
+    this.$__typename = 'Mutation',
+  });
+
+  factory Mutation$UpdateStudioFavorite.fromJson(Map<String, dynamic> json) {
+    final l$studioUpdate = json['studioUpdate'];
+    final l$$__typename = json['__typename'];
+    return Mutation$UpdateStudioFavorite(
+      studioUpdate: l$studioUpdate == null
+          ? null
+          : Mutation$UpdateStudioFavorite$studioUpdate.fromJson(
+              (l$studioUpdate as Map<String, dynamic>),
+            ),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Mutation$UpdateStudioFavorite$studioUpdate? studioUpdate;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$studioUpdate = studioUpdate;
+    _resultData['studioUpdate'] = l$studioUpdate?.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$studioUpdate = studioUpdate;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$studioUpdate, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$UpdateStudioFavorite ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$studioUpdate = studioUpdate;
+    final lOther$studioUpdate = other.studioUpdate;
+    if (l$studioUpdate != lOther$studioUpdate) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$UpdateStudioFavorite
+    on Mutation$UpdateStudioFavorite {
+  CopyWith$Mutation$UpdateStudioFavorite<Mutation$UpdateStudioFavorite>
+  get copyWith => CopyWith$Mutation$UpdateStudioFavorite(this, (i) => i);
+}
+
+abstract class CopyWith$Mutation$UpdateStudioFavorite<TRes> {
+  factory CopyWith$Mutation$UpdateStudioFavorite(
+    Mutation$UpdateStudioFavorite instance,
+    TRes Function(Mutation$UpdateStudioFavorite) then,
+  ) = _CopyWithImpl$Mutation$UpdateStudioFavorite;
+
+  factory CopyWith$Mutation$UpdateStudioFavorite.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$UpdateStudioFavorite;
+
+  TRes call({
+    Mutation$UpdateStudioFavorite$studioUpdate? studioUpdate,
+    String? $__typename,
+  });
+  CopyWith$Mutation$UpdateStudioFavorite$studioUpdate<TRes> get studioUpdate;
+}
+
+class _CopyWithImpl$Mutation$UpdateStudioFavorite<TRes>
+    implements CopyWith$Mutation$UpdateStudioFavorite<TRes> {
+  _CopyWithImpl$Mutation$UpdateStudioFavorite(this._instance, this._then);
+
+  final Mutation$UpdateStudioFavorite _instance;
+
+  final TRes Function(Mutation$UpdateStudioFavorite) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? studioUpdate = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Mutation$UpdateStudioFavorite(
+      studioUpdate: studioUpdate == _undefined
+          ? _instance.studioUpdate
+          : (studioUpdate as Mutation$UpdateStudioFavorite$studioUpdate?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+
+  CopyWith$Mutation$UpdateStudioFavorite$studioUpdate<TRes> get studioUpdate {
+    final local$studioUpdate = _instance.studioUpdate;
+    return local$studioUpdate == null
+        ? CopyWith$Mutation$UpdateStudioFavorite$studioUpdate.stub(
+            _then(_instance),
+          )
+        : CopyWith$Mutation$UpdateStudioFavorite$studioUpdate(
+            local$studioUpdate,
+            (e) => call(studioUpdate: e),
+          );
+  }
+}
+
+class _CopyWithStubImpl$Mutation$UpdateStudioFavorite<TRes>
+    implements CopyWith$Mutation$UpdateStudioFavorite<TRes> {
+  _CopyWithStubImpl$Mutation$UpdateStudioFavorite(this._res);
+
+  TRes _res;
+
+  call({
+    Mutation$UpdateStudioFavorite$studioUpdate? studioUpdate,
+    String? $__typename,
+  }) => _res;
+
+  CopyWith$Mutation$UpdateStudioFavorite$studioUpdate<TRes> get studioUpdate =>
+      CopyWith$Mutation$UpdateStudioFavorite$studioUpdate.stub(_res);
+}
+
+const documentNodeMutationUpdateStudioFavorite = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.mutation,
+      name: NameNode(value: 'UpdateStudioFavorite'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'id')),
+          type: NamedTypeNode(name: NameNode(value: 'ID'), isNonNull: true),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'favorite')),
+          type: NamedTypeNode(
+            name: NameNode(value: 'Boolean'),
+            isNonNull: true,
+          ),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'studioUpdate'),
+            alias: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'input'),
+                value: ObjectValueNode(
+                  fields: [
+                    ObjectFieldNode(
+                      name: NameNode(value: 'id'),
+                      value: VariableNode(name: NameNode(value: 'id')),
+                    ),
+                    ObjectFieldNode(
+                      name: NameNode(value: 'favorite'),
+                      value: VariableNode(name: NameNode(value: 'favorite')),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            directives: [],
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: 'id'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'favorite'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ],
+      ),
+    ),
+  ],
+);
+Mutation$UpdateStudioFavorite _parserFn$Mutation$UpdateStudioFavorite(
+  Map<String, dynamic> data,
+) => Mutation$UpdateStudioFavorite.fromJson(data);
+typedef OnMutationCompleted$Mutation$UpdateStudioFavorite =
+    FutureOr<void> Function(
+      Map<String, dynamic>?,
+      Mutation$UpdateStudioFavorite?,
+    );
+
+class Options$Mutation$UpdateStudioFavorite
+    extends graphql.MutationOptions<Mutation$UpdateStudioFavorite> {
+  Options$Mutation$UpdateStudioFavorite({
+    String? operationName,
+    required Variables$Mutation$UpdateStudioFavorite variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$UpdateStudioFavorite? typedOptimisticResult,
+    graphql.Context? context,
+    OnMutationCompleted$Mutation$UpdateStudioFavorite? onCompleted,
+    graphql.OnMutationUpdate<Mutation$UpdateStudioFavorite>? update,
+    graphql.OnError? onError,
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Mutation$UpdateStudioFavorite(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationUpdateStudioFavorite,
+         parserFn: _parserFn$Mutation$UpdateStudioFavorite,
+       );
+
+  final OnMutationCompleted$Mutation$UpdateStudioFavorite?
+  onCompletedWithParsed;
+
+  @override
+  List<Object?> get properties => [
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
+}
+
+class WatchOptions$Mutation$UpdateStudioFavorite
+    extends graphql.WatchQueryOptions<Mutation$UpdateStudioFavorite> {
+  WatchOptions$Mutation$UpdateStudioFavorite({
+    String? operationName,
+    required Variables$Mutation$UpdateStudioFavorite variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$UpdateStudioFavorite? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeMutationUpdateStudioFavorite,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Mutation$UpdateStudioFavorite,
+       );
+}
+
+extension ClientExtension$Mutation$UpdateStudioFavorite
+    on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Mutation$UpdateStudioFavorite>>
+  mutate$UpdateStudioFavorite(
+    Options$Mutation$UpdateStudioFavorite options,
+  ) async => await this.mutate(options);
+
+  graphql.ObservableQuery<Mutation$UpdateStudioFavorite>
+  watchMutation$UpdateStudioFavorite(
+    WatchOptions$Mutation$UpdateStudioFavorite options,
+  ) => this.watchMutation(options);
+}
+
+class Mutation$UpdateStudioFavorite$studioUpdate {
+  Mutation$UpdateStudioFavorite$studioUpdate({
+    required this.id,
+    required this.favorite,
+    this.$__typename = 'Studio',
+  });
+
+  factory Mutation$UpdateStudioFavorite$studioUpdate.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$id = json['id'];
+    final l$favorite = json['favorite'];
+    final l$$__typename = json['__typename'];
+    return Mutation$UpdateStudioFavorite$studioUpdate(
+      id: (l$id as String),
+      favorite: (l$favorite as bool),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final bool favorite;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$favorite = favorite;
+    _resultData['favorite'] = l$favorite;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$favorite = favorite;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$id, l$favorite, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$UpdateStudioFavorite$studioUpdate ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$favorite = favorite;
+    final lOther$favorite = other.favorite;
+    if (l$favorite != lOther$favorite) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$UpdateStudioFavorite$studioUpdate
+    on Mutation$UpdateStudioFavorite$studioUpdate {
+  CopyWith$Mutation$UpdateStudioFavorite$studioUpdate<
+    Mutation$UpdateStudioFavorite$studioUpdate
+  >
+  get copyWith =>
+      CopyWith$Mutation$UpdateStudioFavorite$studioUpdate(this, (i) => i);
+}
+
+abstract class CopyWith$Mutation$UpdateStudioFavorite$studioUpdate<TRes> {
+  factory CopyWith$Mutation$UpdateStudioFavorite$studioUpdate(
+    Mutation$UpdateStudioFavorite$studioUpdate instance,
+    TRes Function(Mutation$UpdateStudioFavorite$studioUpdate) then,
+  ) = _CopyWithImpl$Mutation$UpdateStudioFavorite$studioUpdate;
+
+  factory CopyWith$Mutation$UpdateStudioFavorite$studioUpdate.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$UpdateStudioFavorite$studioUpdate;
+
+  TRes call({String? id, bool? favorite, String? $__typename});
+}
+
+class _CopyWithImpl$Mutation$UpdateStudioFavorite$studioUpdate<TRes>
+    implements CopyWith$Mutation$UpdateStudioFavorite$studioUpdate<TRes> {
+  _CopyWithImpl$Mutation$UpdateStudioFavorite$studioUpdate(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$UpdateStudioFavorite$studioUpdate _instance;
+
+  final TRes Function(Mutation$UpdateStudioFavorite$studioUpdate) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? favorite = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Mutation$UpdateStudioFavorite$studioUpdate(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      favorite: favorite == _undefined || favorite == null
+          ? _instance.favorite
+          : (favorite as bool),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Mutation$UpdateStudioFavorite$studioUpdate<TRes>
+    implements CopyWith$Mutation$UpdateStudioFavorite$studioUpdate<TRes> {
+  _CopyWithStubImpl$Mutation$UpdateStudioFavorite$studioUpdate(this._res);
+
+  TRes _res;
+
+  call({String? id, bool? favorite, String? $__typename}) => _res;
+}

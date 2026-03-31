@@ -157,17 +157,12 @@ class GraphQLTagRepository implements TagRepository {
 
   @override
   Future<void> setTagFavorite(String id, bool favorite) async {
-    final result = await client.mutate(
-      MutationOptions(
-        document: gql(r'''
-          mutation UpdateTagFavorite($id: ID!, $favorite: Boolean!) {
-            tagUpdate(input: { id: $id, favorite: $favorite }) {
-              id
-              favorite
-            }
-          }
-        '''),
-        variables: <String, dynamic>{'id': id, 'favorite': favorite},
+    final result = await client.mutate$UpdateTagFavorite(
+      Options$Mutation$UpdateTagFavorite(
+        variables: Variables$Mutation$UpdateTagFavorite(
+          id: id,
+          favorite: favorite,
+        ),
       ),
     );
 

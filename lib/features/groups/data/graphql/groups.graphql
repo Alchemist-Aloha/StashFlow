@@ -1,0 +1,23 @@
+fragment GroupData on Group {
+  id
+  name
+  date
+  rating100
+  director
+  synopsis
+}
+
+query FindGroups($filter: FindFilterType, $group_filter: GroupFilterType) {
+  findGroups(filter: $filter, group_filter: $group_filter) {
+    count
+    groups {
+      ...GroupData
+    }
+  }
+}
+
+query FindGroup($id: ID!) {
+  findGroup(id: $id) {
+    ...GroupData
+  }
+}

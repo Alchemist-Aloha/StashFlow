@@ -1,6 +1,8 @@
 import 'package:graphql/client.dart';
+import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../domain/entities/gallery.dart';
 import '../../domain/repositories/gallery_repository.dart';
+import '../graphql/galleries.graphql.dart';
 
 import '../../domain/entities/gallery_filter.dart';
 
@@ -19,113 +21,73 @@ class GraphQLGalleryRepository implements GalleryRepository {
     GalleryFilter? galleryFilter,
     String? performerId,
   }) async {
-    const query = r'''
-      query FindGalleries($filter: FindFilterType, $gallery_filter: GalleryFilterType) {
-        findGalleries(filter: $filter, gallery_filter: $gallery_filter) {
-          galleries {
-            id
-            title
-            date
-            rating100
-            image_count
-            details
-            files {
-              path
-            }
-            paths {
-              cover
-            }
-          }
-        }
-      }
-    ''';
-
-    final result = await client.query(
-      QueryOptions(
-        fetchPolicy: sort == 'random' ? FetchPolicy.noCache : FetchPolicy.cacheAndNetwork,
-        document: gql(query),
-        variables: {
-          'filter': {
-            'q': filter,
-            'page': page,
-            'per_page': perPage,
-            'sort': sort,
-            'direction': descending == true ? 'DESC' : 'ASC',
-          },
-          'gallery_filter': {
-            if (performerId != null)
-              'performers': {
-                'value': [performerId],
-                'modifier': 'INCLUDES',
-              },
-            if (galleryFilter?.minRating != null)
-              'rating100': {
-                'value': galleryFilter!.minRating,
-                'modifier': 'GREATER_THAN',
-              },
-            if (galleryFilter?.organized != null)
-              'organized': galleryFilter!.organized,
-            if (galleryFilter?.minImageCount != null ||
-                galleryFilter?.maxImageCount != null)
-              'image_count': {
-                if (galleryFilter?.minImageCount != null)
-                  'value': galleryFilter!.minImageCount,
-                if (galleryFilter?.maxImageCount != null)
-                  'value2': galleryFilter!.maxImageCount,
-                'modifier': galleryFilter?.minImageCount != null &&
-                        galleryFilter?.maxImageCount != null
-                    ? 'BETWEEN'
-                    : (galleryFilter?.minImageCount != null
-                        ? 'GREATER_THAN'
-                        : 'LESS_THAN'),
-              },
-          },
-        },
+    final result = await client.query$FindGalleries(
+      Options$Query$FindGalleries(
+        fetchPolicy: sort == 'random'
+            ? FetchPolicy.noCache
+            : FetchPolicy.cacheAndNetwork,
+        variables: Variables$Query$FindGalleries(
+          filter: Input$FindFilterType(
+            q: filter,
+            page: page,
+            per_page: perPage,
+            sort: sort,
+            direction: descending == true
+                ? Enum$SortDirectionEnum.DESC
+                : Enum$SortDirectionEnum.ASC,
+          ),
+          gallery_filter: Input$GalleryFilterType(
+            performers: performerId != null
+                ? Input$MultiCriterionInput(
+                    value: [performerId],
+                    modifier: Enum$CriterionModifier.INCLUDES,
+                  )
+                : null,
+            rating100: galleryFilter?.minRating != null
+                ? Input$IntCriterionInput(
+                    value: galleryFilter!.minRating!,
+                    modifier: Enum$CriterionModifier.GREATER_THAN,
+                  )
+                : null,
+            organized: galleryFilter?.organized,
+            image_count: (galleryFilter?.minImageCount != null ||
+                    galleryFilter?.maxImageCount != null)
+                ? Input$IntCriterionInput(
+                    value: galleryFilter?.minImageCount ?? 0,
+                    value2: galleryFilter?.maxImageCount,
+                    modifier: galleryFilter?.minImageCount != null &&
+                            galleryFilter?.maxImageCount != null
+                        ? Enum$CriterionModifier.BETWEEN
+                        : (galleryFilter?.minImageCount != null
+                            ? Enum$CriterionModifier.GREATER_THAN
+                            : Enum$CriterionModifier.LESS_THAN),
+                  )
+                : null,
+          ),
+        ),
       ),
     );
 
     if (result.hasException) throw result.exception!;
 
-    final galleriesJson =
-        result.data?['findGalleries']?['galleries'] as List<dynamic>? ?? [];
-    return galleriesJson
-        .map((g) => Gallery.fromJson(g as Map<String, dynamic>))
+    return result.parsedData!.findGalleries.galleries
+        .map((g) => Gallery.fromJson(g.toJson()))
         .toList();
   }
 
   @override
   Future<Gallery> getGalleryById(String id, {bool refresh = false}) async {
-    const query = r'''
-      query FindGallery($id: ID!) {
-        findGallery(id: $id) {
-          id
-          title
-          date
-          rating
-          image_count
-          details
-          files {
-            path
-          }
-          paths {
-            cover
-          }
-        }
-      }
-    ''';
-
-    final result = await client.query(
-      QueryOptions(
+    final result = await client.query$FindGallery(
+      Options$Query$FindGallery(
         fetchPolicy: refresh ? FetchPolicy.networkOnly : FetchPolicy.cacheFirst,
-        document: gql(query),
-        variables: {'id': id},
+        variables: Variables$Query$FindGallery(id: id),
       ),
     );
 
     if (result.hasException) throw result.exception!;
-    final data = result.data?['findGallery'];
+    final data = result.parsedData!.findGallery;
     if (data == null) throw Exception('Gallery not found');
 
-    return Gallery.fromJson(data as Map<String, dynamic>);
+    return Gallery.fromJson(data.toJson());
   }
 }
