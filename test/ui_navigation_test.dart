@@ -255,8 +255,10 @@ class MockGalleryRepository implements GalleryRepository {
     String? sort,
     bool? descending,
     GalleryFilter? galleryFilter,
-  }) async =>
-      [const Gallery(id: '1', title: 'Test Gallery', imageCount: 1)];
+    String? performerId,
+  }) async {
+    return [const Gallery(id: '1', title: 'Test Gallery', imageCount: 1)];
+  }
 
   @override
   Future<Gallery> getGalleryById(String id, {bool refresh = false}) =>

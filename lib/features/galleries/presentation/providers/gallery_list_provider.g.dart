@@ -96,7 +96,7 @@ final class GallerySortProvider
   }
 }
 
-String _$gallerySortHash() => r'598ebd7c2d1c06272a444b269461780ed7b67863';
+String _$gallerySortHash() => r'727955c597582080d2aedf474640b752f3ebf0d3';
 
 abstract class _$GallerySort
     extends $Notifier<({bool descending, String? sort})> {

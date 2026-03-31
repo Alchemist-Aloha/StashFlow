@@ -17,6 +17,7 @@ class GraphQLGalleryRepository implements GalleryRepository {
     String? sort,
     bool? descending,
     GalleryFilter? galleryFilter,
+    String? performerId,
   }) async {
     const query = r'''
       query FindGalleries($filter: FindFilterType, $gallery_filter: GalleryFilterType) {
@@ -49,6 +50,11 @@ class GraphQLGalleryRepository implements GalleryRepository {
             'direction': descending == true ? 'DESC' : 'ASC',
           },
           'gallery_filter': {
+            if (performerId != null)
+              'performers': {
+                'value': [performerId],
+                'modifier': 'INCLUDES',
+              },
             if (galleryFilter?.minRating != null)
               'rating100': {
                 'value': galleryFilter!.minRating,

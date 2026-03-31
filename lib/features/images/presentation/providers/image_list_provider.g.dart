@@ -96,7 +96,7 @@ final class ImageSortProvider
   }
 }
 
-String _$imageSortHash() => r'4f5369b8fba82e47b90642602e9e200b06659931';
+String _$imageSortHash() => r'8fd26a1e333853077e69105164e5da54289c7d47';
 
 abstract class _$ImageSort
     extends $Notifier<({bool descending, String? sort})> {

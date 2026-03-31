@@ -8,6 +8,7 @@ import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../providers/performer_media_provider.dart';
 import '../providers/performer_details_provider.dart';
+import '../providers/performer_galleries_provider.dart';
 
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/media_strip.dart';
@@ -61,6 +62,7 @@ class PerformerDetailsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final performerAsync = ref.watch(performerDetailsProvider(performerId));
     final mediaAsync = ref.watch(performerMediaProvider(performerId));
+    final galleriesAsync = ref.watch(performerGalleriesProvider(performerId));
     final mediaHeaders = ref.watch(mediaHeadersProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
@@ -83,9 +85,11 @@ class PerformerDetailsPage extends ConsumerWidget {
                   .getPerformerById(performerId, refresh: true);
               ref.invalidate(performerDetailsProvider(performerId));
               ref.invalidate(performerMediaProvider(performerId));
+              ref.invalidate(performerGalleriesProvider(performerId));
               await Future.wait([
                 ref.read(performerDetailsProvider(performerId).future),
                 ref.read(performerMediaProvider(performerId).future),
+                ref.read(performerGalleriesProvider(performerId).future),
               ]);
             },
             child: SingleChildScrollView(
@@ -339,6 +343,19 @@ class PerformerDetailsPage extends ConsumerWidget {
                         ),
                         mediaAsync.when(
                           data: (mediaItems) {
+                            if (mediaItems.isEmpty) {
+                              return Padding(
+                                padding: const EdgeInsets.only(
+                                  top: AppTheme.spacingSmall,
+                                ),
+                                child: Text(
+                                  'No media found',
+                                  style: context.textTheme.bodySmall?.copyWith(
+                                    color: context.colors.onSurfaceVariant,
+                                  ),
+                                ),
+                              );
+                            }
                             final shuffledItems = [...mediaItems]
                               ..shuffle(Random(performer.id.hashCode));
                             return MediaStrip(
@@ -363,6 +380,52 @@ class PerformerDetailsPage extends ConsumerWidget {
                           ),
                           error: (err, stack) => Text(
                             'Failed to load media: $err',
+                            style: TextStyle(
+                              color: context.colors.onSurface.withValues(
+                                alpha: 0.7,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: AppTheme.spacingMedium),
+                        const SectionHeader(title: 'Galleries'),
+                        galleriesAsync.when(
+                          data: (galleryItems) {
+                            if (galleryItems.isEmpty) {
+                              return Padding(
+                                padding: const EdgeInsets.only(
+                                  top: AppTheme.spacingSmall,
+                                ),
+                                child: Text(
+                                  'No galleries found',
+                                  style: context.textTheme.bodySmall?.copyWith(
+                                    color: context.colors.onSurfaceVariant,
+                                  ),
+                                ),
+                              );
+                            }
+                            return MediaStrip(
+                              items: galleryItems
+                                  .map(
+                                    (item) => MediaStripItem(
+                                      id: item.galleryId,
+                                      title: item.title,
+                                      thumbnailUrl: item.thumbnailUrl,
+                                      onTap: () => context.push(
+                                        '/galleries/gallery/${item.galleryId}',
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                              headers: mediaHeaders,
+                            );
+                          },
+                          loading: () => const SizedBox(
+                            height: 100,
+                            child: Center(child: CircularProgressIndicator()),
+                          ),
+                          error: (err, stack) => Text(
+                            'Failed to load galleries: $err',
                             style: TextStyle(
                               color: context.colors.onSurface.withValues(
                                 alpha: 0.7,
