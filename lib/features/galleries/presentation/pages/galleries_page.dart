@@ -239,6 +239,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
 
     return ListPageScaffold<Gallery>(
       title: 'Galleries',
+      scrollController: ref.watch(galleryScrollControllerProvider),
       actions: [
         Stack(
           children: [
