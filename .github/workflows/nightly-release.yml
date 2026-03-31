@@ -6,84 +6,70 @@ on:
       - dev
   schedule:
     - cron: '0 3 * * *' # daily at 03:00 UTC
-  workflow_dispatch: {}
+  workflow_dispatch:
 
 jobs:
-  build:
-    name: Build APK
+  build-and-release:
     runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Code
         uses: actions/checkout@v4
-
-      - name: Set up JDK 21
+        
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '21'
-
-      - name: Set up Flutter
+          
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-
-      - name: Accept Android licenses
-        run: |
-          yes | flutter doctor --android-licenses || true
-
+          
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Prepare release metadata
-        id: meta
+      - name: Decode Android keystore
         run: |
-          echo "RELEASE_TAG=nightly" >> $GITHUB_ENV
-          echo "RELEASE_NAME=Nightly build" >> $GITHUB_ENV
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/upload-keystore.jks
 
+      - name: Create key.properties
+        run: |
+          cat > android/key.properties <<EOF
+          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          storeFile=upload-keystore.jks
+          EOF
+
+      - name: Verify signing files
+        run: |
+          test -f android/upload-keystore.jks
+          test -f android/key.properties
+        
       - name: Build APK (split per ABI)
         run: flutter build apk --release --split-per-abi
 
-      - name: Upload build artifacts
+      - name: Upload split APK artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.RELEASE_TAG }}-apks
-          path: build/app/outputs/flutter-apk/*.apk
+          name: StashFlow-nightly-apk
+          path: build/app/outputs/flutter-apk/app-*-release.apk
 
-      - name: Create or get draft GitHub release
-        id: create_release
-        uses: actions/github-script@v6
+      - name: Create Nightly Release
+        uses: softprops/action-gh-release@v2
         with:
-          script: |
-            const tag = process.env.RELEASE_TAG;
-            const name = process.env.RELEASE_NAME;
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            try {
-              const existing = await github.rest.repos.getReleaseByTag({ owner, repo, tag });
-              core.setOutput('upload_url', existing.data.upload_url);
-              core.setOutput('release_id', existing.data.id.toString());
-            } catch (err) {
-              const created = await github.rest.repos.createRelease({ owner, repo, tag_name: tag, name, draft: true, prerelease: true });
-              core.setOutput('upload_url', created.data.upload_url);
-              core.setOutput('release_id', created.data.id.toString());
-            }
+          tag_name: nightly
+          name: Nightly Build
+          prerelease: true
+          make_latest: false
+          files: |
+            build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+            build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+            build/app/outputs/flutter-apk/app-x86_64-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload APKs to release
-        if: steps.create_release.outputs.upload_url != ''
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
-        run: |
-          set -e
-          for file in build/app/outputs/flutter-apk/*.apk; do
-            [ -f "$file" ] || continue
-            filename=$(basename "$file")
-            echo "Uploading $filename to release"
-            curl -s -X POST \
-              -H "Authorization: token $GITHUB_TOKEN" \
-              -H "Content-Type: application/vnd.android.package-archive" \
-              --data-binary @"$file" "$UPLOAD_URL?name=$filename"
-          done
