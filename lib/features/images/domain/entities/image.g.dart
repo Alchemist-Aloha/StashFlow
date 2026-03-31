@@ -33,10 +33,15 @@ Map<String, dynamic> _$ImageToJson(_Image instance) => <String, dynamic>{
 _ImageFile _$ImageFileFromJson(Map<String, dynamic> json) => _ImageFile(
   width: (json['width'] as num).toInt(),
   height: (json['height'] as num).toInt(),
+  path: json['path'] as String,
 );
 
 Map<String, dynamic> _$ImageFileToJson(_ImageFile instance) =>
-    <String, dynamic>{'width': instance.width, 'height': instance.height};
+    <String, dynamic>{
+      'width': instance.width,
+      'height': instance.height,
+      'path': instance.path,
+    };
 
 _ImagePaths _$ImagePathsFromJson(Map<String, dynamic> json) => _ImagePaths(
   thumbnail: json['thumbnail'] as String?,

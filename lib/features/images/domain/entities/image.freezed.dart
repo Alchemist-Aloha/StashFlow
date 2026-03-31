@@ -326,7 +326,7 @@ $ImagePathsCopyWith<$Res> get paths {
 /// @nodoc
 mixin _$ImageFile {
 
- int get width; int get height;
+ int get width; int get height; String get path;
 /// Create a copy of ImageFile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -339,16 +339,16 @@ $ImageFileCopyWith<ImageFile> get copyWith => _$ImageFileCopyWithImpl<ImageFile>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ImageFile&&(identical(other.width, width) || other.width == width)&&(identical(other.height, height) || other.height == height));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ImageFile&&(identical(other.width, width) || other.width == width)&&(identical(other.height, height) || other.height == height)&&(identical(other.path, path) || other.path == path));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,width,height);
+int get hashCode => Object.hash(runtimeType,width,height,path);
 
 @override
 String toString() {
-  return 'ImageFile(width: $width, height: $height)';
+  return 'ImageFile(width: $width, height: $height, path: $path)';
 }
 
 
@@ -359,7 +359,7 @@ abstract mixin class $ImageFileCopyWith<$Res>  {
   factory $ImageFileCopyWith(ImageFile value, $Res Function(ImageFile) _then) = _$ImageFileCopyWithImpl;
 @useResult
 $Res call({
- int width, int height
+ int width, int height, String path
 });
 
 
@@ -376,11 +376,12 @@ class _$ImageFileCopyWithImpl<$Res>
 
 /// Create a copy of ImageFile
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? width = null,Object? height = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? width = null,Object? height = null,Object? path = null,}) {
   return _then(_self.copyWith(
 width: null == width ? _self.width : width // ignore: cast_nullable_to_non_nullable
 as int,height: null == height ? _self.height : height // ignore: cast_nullable_to_non_nullable
-as int,
+as int,path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -465,10 +466,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int width,  int height)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int width,  int height,  String path)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ImageFile() when $default != null:
-return $default(_that.width,_that.height);case _:
+return $default(_that.width,_that.height,_that.path);case _:
   return orElse();
 
 }
@@ -486,10 +487,10 @@ return $default(_that.width,_that.height);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int width,  int height)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int width,  int height,  String path)  $default,) {final _that = this;
 switch (_that) {
 case _ImageFile():
-return $default(_that.width,_that.height);case _:
+return $default(_that.width,_that.height,_that.path);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -506,10 +507,10 @@ return $default(_that.width,_that.height);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int width,  int height)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int width,  int height,  String path)?  $default,) {final _that = this;
 switch (_that) {
 case _ImageFile() when $default != null:
-return $default(_that.width,_that.height);case _:
+return $default(_that.width,_that.height,_that.path);case _:
   return null;
 
 }
@@ -521,11 +522,12 @@ return $default(_that.width,_that.height);case _:
 @JsonSerializable()
 
 class _ImageFile implements ImageFile {
-  const _ImageFile({required this.width, required this.height});
+  const _ImageFile({required this.width, required this.height, required this.path});
   factory _ImageFile.fromJson(Map<String, dynamic> json) => _$ImageFileFromJson(json);
 
 @override final  int width;
 @override final  int height;
+@override final  String path;
 
 /// Create a copy of ImageFile
 /// with the given fields replaced by the non-null parameter values.
@@ -540,16 +542,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ImageFile&&(identical(other.width, width) || other.width == width)&&(identical(other.height, height) || other.height == height));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ImageFile&&(identical(other.width, width) || other.width == width)&&(identical(other.height, height) || other.height == height)&&(identical(other.path, path) || other.path == path));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,width,height);
+int get hashCode => Object.hash(runtimeType,width,height,path);
 
 @override
 String toString() {
-  return 'ImageFile(width: $width, height: $height)';
+  return 'ImageFile(width: $width, height: $height, path: $path)';
 }
 
 
@@ -560,7 +562,7 @@ abstract mixin class _$ImageFileCopyWith<$Res> implements $ImageFileCopyWith<$Re
   factory _$ImageFileCopyWith(_ImageFile value, $Res Function(_ImageFile) _then) = __$ImageFileCopyWithImpl;
 @override @useResult
 $Res call({
- int width, int height
+ int width, int height, String path
 });
 
 
@@ -577,11 +579,12 @@ class __$ImageFileCopyWithImpl<$Res>
 
 /// Create a copy of ImageFile
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? width = null,Object? height = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? width = null,Object? height = null,Object? path = null,}) {
   return _then(_ImageFile(
 width: null == width ? _self.width : width // ignore: cast_nullable_to_non_nullable
 as int,height: null == height ? _self.height : height // ignore: cast_nullable_to_non_nullable
-as int,
+as int,path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
