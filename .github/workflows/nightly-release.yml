@@ -38,9 +38,8 @@ jobs:
       - name: Prepare release metadata
         id: meta
         run: |
-          DATE=$(date -u +%Y%m%d)
-          echo "RELEASE_TAG=nightly-$DATE" >> $GITHUB_ENV
-          echo "RELEASE_NAME=Nightly build $DATE" >> $GITHUB_ENV
+          echo "RELEASE_TAG=nightly" >> $GITHUB_ENV
+          echo "RELEASE_NAME=Nightly build" >> $GITHUB_ENV
 
       - name: Build APK (split per ABI)
         run: flutter build apk --release --split-per-abi
@@ -51,14 +50,24 @@ jobs:
           name: ${{ env.RELEASE_TAG }}-apks
           path: build/app/outputs/flutter-apk/*.apk
 
-      - name: Create draft GitHub release
+      - name: Create or get draft GitHub release
         id: create_release
-        uses: actions/create-release@v1
+        uses: actions/github-script@v6
         with:
-          tag_name: ${{ env.RELEASE_TAG }}
-          release_name: ${{ env.RELEASE_NAME }}
-          draft: true
-          prerelease: true
+          script: |
+            const tag = process.env.RELEASE_TAG;
+            const name = process.env.RELEASE_NAME;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            try {
+              const existing = await github.rest.repos.getReleaseByTag({ owner, repo, tag });
+              core.setOutput('upload_url', existing.data.upload_url);
+              core.setOutput('release_id', existing.data.id.toString());
+            } catch (err) {
+              const created = await github.rest.repos.createRelease({ owner, repo, tag_name: tag, name, draft: true, prerelease: true });
+              core.setOutput('upload_url', created.data.upload_url);
+              core.setOutput('release_id', created.data.id.toString());
+            }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
