@@ -591,6 +591,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       floatingActionButton: (randomNavigationEnabled && !isTiktokLayout)
           ? scenesAsync.maybeWhen(
               data: (scenes) => FloatingActionButton.small(
+                heroTag: 'scenes_random_fab',
                 onPressed: _openRandomScene,
                 tooltip: 'Random scene',
                 child: const Icon(Icons.casino_outlined),
