@@ -9,6 +9,10 @@ import '../../domain/entities/gallery.dart';
 
 import '../widgets/gallery_filter_panel.dart';
 import '../../domain/entities/gallery_filter.dart';
+import '../../../../core/data/graphql/url_resolver.dart';
+import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/presentation/widgets/stash_image.dart';
+import '../../../../core/data/graphql/graphql_client.dart';
 
 enum _GallerySortOption { title, date, rating, imageCount, path, random }
 
@@ -228,6 +232,21 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
     );
   }
 
+  String? _getThumbnailUrl(Gallery gallery) {
+    final prefs = ref.read(sharedPreferencesProvider);
+    final storedServerUrl = prefs.getString('server_base_url')?.trim() ?? '';
+    final normalizedServerUrl = normalizeGraphqlServerUrl(storedServerUrl);
+    final endpoint = Uri.parse(
+      normalizedServerUrl.isEmpty
+          ? 'http://localhost:9999/graphql'
+          : normalizedServerUrl,
+    );
+    return resolveGraphqlMediaUrl(
+      rawUrl: '/gallery/${gallery.id}/thumbnail',
+      graphqlEndpoint: endpoint,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final galleriesAsync = ref.watch(galleryListProvider);
@@ -323,10 +342,10 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      Icon(
-                        Icons.folder,
-                        size: 64,
-                        color: context.colors.primary.withValues(alpha: 0.7),
+                      StashImage(
+                        imageUrl: _getThumbnailUrl(gallery),
+                        fit: BoxFit.cover,
+                        memCacheWidth: 400,
                       ),
                       if (gallery.imageCount != null && gallery.imageCount! > 0)
                         Positioned(
@@ -338,7 +357,9 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: context.colors.primary,
+                              color: context.colors.primary.withValues(
+                                alpha: 0.8,
+                              ),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(

@@ -9,6 +9,7 @@ import '../../../../core/presentation/widgets/stash_image.dart';
 import '../providers/performer_media_provider.dart';
 import '../providers/performer_details_provider.dart';
 import '../providers/performer_galleries_provider.dart';
+import 'package:stash_app_flutter/features/images/presentation/providers/image_list_provider.dart';
 
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/media_strip.dart';
@@ -387,47 +388,42 @@ class PerformerDetailsPage extends ConsumerWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(height: AppTheme.spacingMedium),
-                        SectionHeader(
-                          title: 'Galleries',
-                          onViewAll: () => context.push(
-                            '/performers/performer/${performer.id}/galleries',
-                          ),
-                        ),
                         galleriesAsync.when(
                           data: (galleryItems) {
                             if (galleryItems.isEmpty) {
-                              return Padding(
-                                padding: const EdgeInsets.only(
-                                  top: AppTheme.spacingSmall,
-                                ),
-                                child: Text(
-                                  'No galleries found',
-                                  style: context.textTheme.bodySmall?.copyWith(
-                                    color: context.colors.onSurfaceVariant,
+                              return const SizedBox.shrink();
+                            }
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: AppTheme.spacingMedium),
+                                SectionHeader(
+                                  title: 'Galleries',
+                                  onViewAll: () => context.push(
+                                    '/performers/performer/${performer.id}/galleries',
                                   ),
                                 ),
-                              );
-                            }
-                            return MediaStrip(
-                              items: galleryItems
-                                  .map(
-                                    (item) => MediaStripItem(
-                                      id: item.galleryId,
-                                      title: item.title,
-                                      thumbnailUrl: item.thumbnailUrl,
-                                      onTap: () {
-                                        ref
-                                            .read(
-                                              imageFilterStateProvider.notifier,
-                                            )
-                                            .setGalleryId(item.galleryId);
-                                        context.push('/galleries/images');
-                                      },
-                                    ),
-                                  )
-                                  .toList(),
-                              headers: mediaHeaders,
+                                MediaStrip(
+                                  items: galleryItems
+                                      .map(
+                                        (item) => MediaStripItem(
+                                          id: item.galleryId,
+                                          title: item.title,
+                                          thumbnailUrl: item.thumbnailUrl,
+                                          onTap: () {
+                                            ref
+                                                .read(
+                                                  imageFilterStateProvider.notifier,
+                                                )
+                                                .setGalleryId(item.galleryId);
+                                            context.push('/galleries/images');
+                                          },
+                                        ),
+                                      )
+                                      .toList(),
+                                  headers: mediaHeaders,
+                                ),
+                              ],
                             );
                           },
                           loading: () => const SizedBox(
