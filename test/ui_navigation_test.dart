@@ -304,9 +304,6 @@ void main() {
     await tester.pumpWidget(createTestWidget());
     await tester.pumpAndSettle();
 
-    final texts = tester.allWidgets.whereType<Text>().map((t) => t.data).toList();
-    print('Rendered texts: $texts');
-
     // Verify initial route is Scenes
     expect(find.text('Scenes'), findsWidgets);
 
