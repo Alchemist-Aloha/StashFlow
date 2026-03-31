@@ -82,7 +82,7 @@ class ShellPage extends ConsumerWidget {
       NavigationDestination(icon: Icon(Icons.people), label: 'Performers'),
       NavigationDestination(icon: Icon(Icons.business), label: 'Studios'),
       NavigationDestination(icon: Icon(Icons.local_offer), label: 'Tags'),
-      NavigationDestination(icon: Icon(Icons.perm_media), label: 'Media'),
+      NavigationDestination(icon: Icon(Icons.perm_media), label: 'Galleries'),
     ];
 
     final navigationRailDestinations = const [
@@ -104,7 +104,7 @@ class ShellPage extends ConsumerWidget {
       ),
       NavigationRailDestination(
         icon: Icon(Icons.perm_media),
-        label: Text('Media'),
+        label: Text('Galleries'),
       ),
     ];
 
