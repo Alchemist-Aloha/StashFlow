@@ -27,3 +27,10 @@ query FindGallery($id: ID!) {
     ...GalleryData
   }
 }
+
+mutation UpdateGalleryRating($id: ID!, $rating: Int!) {
+  galleryUpdate(input: { id: $id, rating100: $rating }) {
+    id
+    rating100
+  }
+}

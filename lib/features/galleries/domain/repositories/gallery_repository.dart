@@ -14,4 +14,5 @@ abstract class GalleryRepository {
     String? tagId,
   });
   Future<Gallery> getGalleryById(String id, {bool refresh = false});
+  Future<void> updateGalleryRating(String id, int rating100);
 }

@@ -2,7 +2,6 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../domain/entities/image.dart' as entity;
 import '../providers/image_list_provider.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
