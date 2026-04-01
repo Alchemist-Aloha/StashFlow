@@ -5,6 +5,7 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/rating_bottom_sheet.dart';
 import '../providers/gallery_list_provider.dart';
 import '../../domain/entities/gallery.dart';
+import '../providers/gallery_details_provider.dart';
 
 /// A card widget that displays a summary of a [Gallery].
 class GalleryCard extends ConsumerWidget {
@@ -51,7 +52,19 @@ class GalleryCard extends ConsumerWidget {
                 gallery.id,
                 rating,
               );
-          ref.invalidate(galleryListProvider);
+
+          // Fetch fresh data for the specific gallery to ensure UI is in sync
+          final updatedGallery = await ref
+              .read(galleryRepositoryProvider)
+              .getGalleryById(gallery.id, refresh: true);
+
+          // Update the list state with the new info to avoid full reshuffle
+          ref
+              .read(galleryListProvider.notifier)
+              .updateGalleryInList(updatedGallery);
+
+          // If anyone else is watching this specific gallery's details, update them
+          ref.invalidate(galleryDetailsProvider(gallery.id));
         } catch (e) {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(

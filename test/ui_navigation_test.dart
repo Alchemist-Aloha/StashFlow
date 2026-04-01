@@ -265,6 +265,10 @@ class MockGalleryRepository implements GalleryRepository {
   @override
   Future<Gallery> getGalleryById(String id, {bool refresh = false}) =>
       throw UnimplementedError();
+
+  @override
+  Future<void> updateGalleryRating(String id, int rating100) =>
+      throw UnimplementedError();
 }
 
 void main() {

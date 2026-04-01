@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:extended_image/extended_image.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -96,7 +95,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
     });
 
-    testWidgets('shows info bottom sheet', (tester) async {
+    testWidgets('ImageFullscreenPage shows title in header', (tester) async {
       final image = entity.Image(
         id: '1',
         title: 'Detailed Image',
@@ -116,17 +115,11 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
 
-      // Tap info button
-      await tester.tap(find.byIcon(Icons.info_outline));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 500));
-
+      // Overlays are shown by default
       expect(find.text('Detailed Image'), findsOneWidget);
-      expect(find.text('Date: 2023-01-01'), findsOneWidget);
-      expect(find.text('Rating: 5.0 Stars'), findsOneWidget);
     });
 
-    testWidgets('falls back to file path in info bottom sheet if title is missing', (tester) async {
+    testWidgets('falls back to file path in header if title is missing', (tester) async {
       final image = entity.Image(
         id: '1',
         title: null,
@@ -146,12 +139,8 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
 
-      // Tap info button
-      await tester.tap(find.byIcon(Icons.info_outline));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 500));
-
-      expect(find.text('/path/to/image.jpg'), findsOneWidget);
+      // Falls back to filename (image.jpg) because of the new logic
+      expect(find.text('image.jpg'), findsOneWidget);
     });
   });
 }

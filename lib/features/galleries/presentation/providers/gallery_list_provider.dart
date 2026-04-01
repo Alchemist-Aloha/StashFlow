@@ -203,6 +203,19 @@ class GalleryList extends _$GalleryList {
     }
   }
 
+  /// Updates a single gallery in the current list state.
+  void updateGalleryInList(Gallery updatedGallery) {
+    if (state.hasValue) {
+      final galleries = state.value!;
+      final index = galleries.indexWhere((g) => g.id == updatedGallery.id);
+      if (index != -1) {
+        final newList = List<Gallery>.from(galleries);
+        newList[index] = updatedGallery;
+        state = AsyncData(newList);
+      }
+    }
+  }
+
   bool get hasMore => _hasMore;
   bool get isLoadingMore => _isLoadingMore;
 }
