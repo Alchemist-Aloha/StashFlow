@@ -1,50 +1,77 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+
+import '../../widgets/settings_page_shell.dart';
 
 class SettingsHubPage extends ConsumerWidget {
   const SettingsHubPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
-      body: ListView(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return SettingsPageShell(
+      title: 'Settings',
+      child: ListView(
+        padding: const EdgeInsets.all(AppTheme.spacingMedium),
         children: [
-          ListTile(
-            leading: const Icon(Icons.dns),
-            title: const Text('Server'),
-            subtitle: const Text('Connection and API configuration'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.push('/settings/server'),
+          Text(
+            'Customize StashFlow',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
           ),
-          ListTile(
-            leading: const Icon(Icons.play_circle),
-            title: const Text('Playback'),
-            subtitle: const Text('Player behavior and interactions'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.push('/settings/playback'),
+          const SizedBox(height: 4),
+          Text(
+            'Tune playback, appearance, layout, and support tools from one place.',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
           ),
-          ListTile(
-            leading: const Icon(Icons.palette),
-            title: const Text('Appearance'),
-            subtitle: const Text('Theme and colors'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.push('/settings/appearance'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.dashboard),
-            title: const Text('Interface'),
-            subtitle: const Text('Navigation and layout defaults'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.push('/settings/interface'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.help_outline),
-            title: const Text('Support'),
-            subtitle: const Text('Diagnostics and about'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.push('/settings/support'),
+          const SizedBox(height: AppTheme.spacingLarge),
+          SettingsSectionCard(
+            title: 'Core settings',
+            subtitle: 'Most-used configuration pages',
+            child: Column(
+              children: [
+                SettingsActionCard(
+                  icon: Icons.dns_rounded,
+                  title: 'Server',
+                  subtitle: 'Connection and API configuration',
+                  onTap: () => context.push('/settings/server'),
+                ),
+                const SizedBox(height: AppTheme.spacingSmall),
+                SettingsActionCard(
+                  icon: Icons.play_circle_fill_rounded,
+                  title: 'Playback',
+                  subtitle: 'Player behavior and interactions',
+                  onTap: () => context.push('/settings/playback'),
+                ),
+                const SizedBox(height: AppTheme.spacingSmall),
+                SettingsActionCard(
+                  icon: Icons.palette_rounded,
+                  title: 'Appearance',
+                  subtitle: 'Theme and colors',
+                  onTap: () => context.push('/settings/appearance'),
+                ),
+                const SizedBox(height: AppTheme.spacingSmall),
+                SettingsActionCard(
+                  icon: Icons.dashboard_customize_rounded,
+                  title: 'Interface',
+                  subtitle: 'Navigation and layout defaults',
+                  onTap: () => context.push('/settings/interface'),
+                ),
+                const SizedBox(height: AppTheme.spacingSmall),
+                SettingsActionCard(
+                  icon: Icons.help_outline_rounded,
+                  title: 'Support',
+                  subtitle: 'Diagnostics and about',
+                  onTap: () => context.push('/settings/support'),
+                ),
+              ],
+            ),
           ),
         ],
       ),

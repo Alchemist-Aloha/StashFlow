@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
+import '../../widgets/settings_page_shell.dart';
 
 class PlaybackSettingsPage extends ConsumerStatefulWidget {
   const PlaybackSettingsPage({super.key});
@@ -69,77 +70,93 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Playback Settings')),
-      body: _loading
+    return SettingsPageShell(
+      title: 'Playback Settings',
+      child: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(AppTheme.spacingMedium),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SwitchListTile.adaptive(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('Prefer sceneStreams first'),
-                    subtitle: const Text(
-                      'When off, playback directly uses paths.stream',
+                  SettingsSectionCard(
+                    title: 'Playback behavior',
+                    subtitle: 'Default playback and background handling',
+                    child: Column(
+                      children: [
+                        SwitchListTile.adaptive(
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text('Prefer sceneStreams first'),
+                          subtitle: const Text(
+                            'When off, playback directly uses paths.stream',
+                          ),
+                          value: _preferSceneStreams,
+                          onChanged: (value) async {
+                            setState(() => _preferSceneStreams = value);
+                            await _saveToggleSettings();
+                          },
+                        ),
+                        const Divider(height: AppTheme.spacingLarge),
+                        SwitchListTile.adaptive(
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text('Autoplay Next Scene'),
+                          subtitle: const Text(
+                            'Automatically play the next scene when current playback ends',
+                          ),
+                          value: _autoplayNext,
+                          onChanged: (value) async {
+                            setState(() => _autoplayNext = value);
+                            await _saveToggleSettings();
+                          },
+                        ),
+                        const Divider(height: AppTheme.spacingLarge),
+                        SwitchListTile.adaptive(
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text('Background Playback'),
+                          subtitle: const Text(
+                            'Keep video audio playing when app is backgrounded',
+                          ),
+                          value: _enableBackgroundPlayback,
+                          onChanged: (value) async {
+                            setState(() => _enableBackgroundPlayback = value);
+                            await _saveToggleSettings();
+                          },
+                        ),
+                        const Divider(height: AppTheme.spacingLarge),
+                        SwitchListTile.adaptive(
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text('Native Picture-in-Picture'),
+                          subtitle: const Text(
+                            'Enable Android PiP button and auto-enter on background',
+                          ),
+                          value: _enableNativePip,
+                          onChanged: (value) async {
+                            setState(() => _enableNativePip = value);
+                            await _saveToggleSettings();
+                          },
+                        ),
+                        const Divider(height: AppTheme.spacingLarge),
+                        SwitchListTile.adaptive(
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text('Show Video Debug Info'),
+                          subtitle: const Text(
+                            'Display stream source and startup timing overlay on player',
+                          ),
+                          value: _showVideoDebugInfo,
+                          onChanged: (value) async {
+                            setState(() => _showVideoDebugInfo = value);
+                            await _saveToggleSettings();
+                          },
+                        ),
+                      ],
                     ),
-                    value: _preferSceneStreams,
-                    onChanged: (value) async {
-                      setState(() => _preferSceneStreams = value);
-                      await _saveToggleSettings();
-                    },
                   ),
-                  SwitchListTile.adaptive(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('Autoplay Next Scene'),
-                    subtitle: const Text(
-                      'Automatically play the next scene when current playback ends',
-                    ),
-                    value: _autoplayNext,
-                    onChanged: (value) async {
-                      setState(() => _autoplayNext = value);
-                      await _saveToggleSettings();
-                    },
+                  const SizedBox(height: AppTheme.spacingLarge),
+                  SettingsSectionCard(
+                    title: 'Seek interaction',
+                    subtitle: 'Choose how scrubbing works during playback',
+                    child: _buildSeekInteractionSelector(),
                   ),
-                  SwitchListTile.adaptive(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('Background Playback'),
-                    subtitle: const Text(
-                      'Keep video audio playing when app is backgrounded',
-                    ),
-                    value: _enableBackgroundPlayback,
-                    onChanged: (value) async {
-                      setState(() => _enableBackgroundPlayback = value);
-                      await _saveToggleSettings();
-                    },
-                  ),
-                  SwitchListTile.adaptive(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('Native Picture-in-Picture'),
-                    subtitle: const Text(
-                      'Enable Android PiP button and auto-enter on background',
-                    ),
-                    value: _enableNativePip,
-                    onChanged: (value) async {
-                      setState(() => _enableNativePip = value);
-                      await _saveToggleSettings();
-                    },
-                  ),
-                  SwitchListTile.adaptive(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('Show Video Debug Info'),
-                    subtitle: const Text(
-                      'Display stream source and startup timing overlay on player',
-                    ),
-                    value: _showVideoDebugInfo,
-                    onChanged: (value) async {
-                      setState(() => _showVideoDebugInfo = value);
-                      await _saveToggleSettings();
-                    },
-                  ),
-                  const SizedBox(height: AppTheme.spacingMedium),
-                  _buildSeekInteractionSelector(),
                 ],
               ),
             ),
@@ -150,10 +167,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isNarrow = constraints.maxWidth < 450;
-        final titleWidget = const Text(
-          'Seek Interaction',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        );
         final subtitleWidget = Text(
           _useDoubleTapSeek
               ? 'Double-tap left/right to seek 10s'
@@ -189,12 +202,10 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
 
         if (isNarrow) {
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            padding: const EdgeInsets.only(top: 4),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                titleWidget,
-                const SizedBox(height: 4),
                 subtitleWidget,
                 const SizedBox(height: 12),
                 SizedBox(width: double.infinity, child: trailingWidget),
@@ -205,7 +216,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
 
         return ListTile(
           contentPadding: EdgeInsets.zero,
-          title: titleWidget,
           subtitle: subtitleWidget,
           trailing: trailingWidget,
         );

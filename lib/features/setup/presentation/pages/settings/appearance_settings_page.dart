@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/presentation/theme/theme_mode_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/theme_color_provider.dart';
+import '../../widgets/settings_page_shell.dart';
 
 class AppearanceSettingsPage extends ConsumerStatefulWidget {
   const AppearanceSettingsPage({super.key});
@@ -86,67 +87,58 @@ class _AppearanceSettingsPageState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Appearance Settings')),
-      body: _loading
+    return SettingsPageShell(
+      title: 'Appearance Settings',
+      child: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(AppTheme.spacingMedium),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildSectionHeader('Theme Mode'),
-                  const SizedBox(height: AppTheme.spacingSmall),
-                  SizedBox(
-                    width: double.infinity,
-                    child: SegmentedButton<ThemeMode>(
-                      showSelectedIcon: false,
-                      style: ButtonStyle(visualDensity: VisualDensity.compact),
-                      segments: const [
-                        ButtonSegment<ThemeMode>(
-                          value: ThemeMode.system,
-                          icon: Icon(Icons.brightness_auto_outlined),
-                          label: Text('System'),
+                  SettingsSectionCard(
+                    title: 'Theme Mode',
+                    subtitle: 'Choose how the app follows brightness changes',
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: SegmentedButton<ThemeMode>(
+                        showSelectedIcon: false,
+                        style: const ButtonStyle(
+                          visualDensity: VisualDensity.compact,
                         ),
-                        ButtonSegment<ThemeMode>(
-                          value: ThemeMode.light,
-                          icon: Icon(Icons.light_mode_outlined),
-                          label: Text('Light'),
-                        ),
-                        ButtonSegment<ThemeMode>(
-                          value: ThemeMode.dark,
-                          icon: Icon(Icons.dark_mode_outlined),
-                          label: Text('Dark'),
-                        ),
-                      ],
-                      selected: {_themeMode},
-                      onSelectionChanged: (selection) {
-                        final selected = selection.first;
-                        _saveThemeMode(selected);
-                      },
+                        segments: const [
+                          ButtonSegment<ThemeMode>(
+                            value: ThemeMode.system,
+                            icon: Icon(Icons.brightness_auto_outlined),
+                            label: Text('System'),
+                          ),
+                          ButtonSegment<ThemeMode>(
+                            value: ThemeMode.light,
+                            icon: Icon(Icons.light_mode_outlined),
+                            label: Text('Light'),
+                          ),
+                          ButtonSegment<ThemeMode>(
+                            value: ThemeMode.dark,
+                            icon: Icon(Icons.dark_mode_outlined),
+                            label: Text('Dark'),
+                          ),
+                        ],
+                        selected: {_themeMode},
+                        onSelectionChanged: (selection) {
+                          _saveThemeMode(selection.first);
+                        },
+                      ),
                     ),
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
-                  _buildSectionHeader('Primary Color'),
-                  const SizedBox(height: AppTheme.spacingSmall),
-                  _buildColorSelector(),
+                  SettingsSectionCard(
+                    title: 'Primary Color',
+                    subtitle: 'Pick a seed color for the Material 3 palette',
+                    child: _buildColorSelector(),
+                  ),
                 ],
               ),
             ),
-    );
-  }
-
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppTheme.spacingSmall),
-      child: Text(
-        title.toUpperCase(),
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          color: Theme.of(context).colorScheme.primary,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 1.2,
-        ),
-      ),
     );
   }
 
@@ -156,14 +148,13 @@ class _AppearanceSettingsPageState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              ..._presetColors.map((color) => _buildColorSwatch(color)),
-              _buildColorSwatch(null), // Custom
-            ],
-          ),
+        Wrap(
+          spacing: AppTheme.spacingSmall,
+          runSpacing: AppTheme.spacingSmall,
+          children: [
+            ..._presetColors.map((color) => _buildColorSwatch(color)),
+            _buildColorSwatch(null),
+          ],
         ),
         if (isCustom) ...[
           const SizedBox(height: AppTheme.spacingMedium),

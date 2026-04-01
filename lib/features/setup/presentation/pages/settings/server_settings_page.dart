@@ -24,6 +24,7 @@ import 'package:stash_app_flutter/features/tags/presentation/providers/tag_list_
 import 'package:stash_app_flutter/features/tags/presentation/providers/tag_media_provider.dart';
 import 'package:stash_app_flutter/features/setup/data/graphql/version.graphql.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/connection_provider.dart';
+import '../../widgets/settings_page_shell.dart';
 
 class ServerSettingsPage extends ConsumerStatefulWidget {
   const ServerSettingsPage({super.key});
@@ -208,84 +209,94 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Server Settings')),
-      body: _loading
+    return SettingsPageShell(
+      title: 'Server Settings',
+      child: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(AppTheme.spacingMedium),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildConnectionStatusCard(),
+                  SettingsSectionCard(
+                    title: 'Connection Status',
+                    subtitle: 'Live connectivity against the configured server',
+                    child: _buildConnectionStatusBody(),
+                  ),
                   const SizedBox(height: AppTheme.spacingLarge),
-                  TextField(
-                    controller: _baseUrlController,
-                    focusNode: _baseUrlFocusNode,
-                    decoration: const InputDecoration(
-                      labelText: 'GraphQL server URL',
-                      border: OutlineInputBorder(),
-                      hintText: 'http://192.168.1.100:9999/graphql',
-                      helperText:
-                          'Example format: http(s)://host:port/graphql.',
-                    ),
-                    keyboardType: TextInputType.url,
-                    textInputAction: TextInputAction.done,
-                    onEditingComplete: () {
-                      FocusScope.of(context).unfocus();
-                      _saveServerSettings();
-                    },
-                  ),
-                  const SizedBox(height: AppTheme.spacingMedium),
-                  TextField(
-                    controller: _apiKeyController,
-                    focusNode: _apiKeyFocusNode,
-                    decoration: InputDecoration(
-                      labelText: 'API key',
-                      border: const OutlineInputBorder(),
-                      hintText: 'Paste ApiKey header value',
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscureApiKey
-                              ? Icons.visibility_off
-                              : Icons.visibility,
+                  SettingsSectionCard(
+                    title: 'Server Details',
+                    subtitle: 'URL and API key used by the GraphQL client',
+                    child: Column(
+                      children: [
+                        TextField(
+                          controller: _baseUrlController,
+                          focusNode: _baseUrlFocusNode,
+                          decoration: const InputDecoration(
+                            labelText: 'GraphQL server URL',
+                            hintText: 'http://192.168.1.100:9999/graphql',
+                            helperText:
+                                'Example format: http(s)://host:port/graphql.',
+                          ),
+                          keyboardType: TextInputType.url,
+                          textInputAction: TextInputAction.done,
+                          onEditingComplete: () {
+                            FocusScope.of(context).unfocus();
+                            _saveServerSettings();
+                          },
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _obscureApiKey = !_obscureApiKey;
-                          });
-                        },
-                      ),
+                        const SizedBox(height: AppTheme.spacingMedium),
+                        TextField(
+                          controller: _apiKeyController,
+                          focusNode: _apiKeyFocusNode,
+                          decoration: InputDecoration(
+                            labelText: 'API key',
+                            hintText: 'Paste ApiKey header value',
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscureApiKey
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscureApiKey = !_obscureApiKey;
+                                });
+                              },
+                            ),
+                          ),
+                          autocorrect: false,
+                          enableSuggestions: false,
+                          obscureText: _obscureApiKey,
+                          textInputAction: TextInputAction.done,
+                          onEditingComplete: () {
+                            FocusScope.of(context).unfocus();
+                            _saveServerSettings();
+                          },
+                        ),
+                        const SizedBox(height: AppTheme.spacingMedium),
+                        Wrap(
+                          spacing: AppTheme.spacingSmall,
+                          runSpacing: AppTheme.spacingSmall,
+                          children: [
+                            FilledButton.icon(
+                              onPressed: _saveServerSettings,
+                              icon: const Icon(Icons.sync_rounded),
+                              label: const Text('Test Connection'),
+                            ),
+                            OutlinedButton.icon(
+                              onPressed: () async {
+                                _baseUrlController.text = '';
+                                _apiKeyController.text = '';
+                                await _saveServerSettings();
+                              },
+                              icon: const Icon(Icons.clear_all_rounded),
+                              label: const Text('Clear Settings'),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                    autocorrect: false,
-                    enableSuggestions: false,
-                    obscureText: _obscureApiKey,
-                    textInputAction: TextInputAction.done,
-                    onEditingComplete: () {
-                      FocusScope.of(context).unfocus();
-                      _saveServerSettings();
-                    },
-                  ),
-                  const SizedBox(height: AppTheme.spacingMedium),
-                  Wrap(
-                    spacing: AppTheme.spacingSmall,
-                    runSpacing: AppTheme.spacingSmall,
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: () => _saveServerSettings(),
-                        icon: const Icon(Icons.sync),
-                        label: const Text('Test Connection'),
-                      ),
-                      TextButton.icon(
-                        onPressed: () async {
-                          _baseUrlController.text = '';
-                          _apiKeyController.text = '';
-                          await _saveServerSettings();
-                        },
-                        icon: const Icon(Icons.clear_all),
-                        label: const Text('Clear Settings'),
-                      ),
-                    ],
                   ),
                 ],
               ),
@@ -293,73 +304,52 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
     );
   }
 
-  Widget _buildConnectionStatusCard() {
+  Widget _buildConnectionStatusBody() {
     final statusInfo = ref.watch(connectionStatusProvider);
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
-        ),
+    return statusInfo.when(
+      data: (version) => Row(
+        children: [
+          Icon(
+            Icons.check_circle_rounded,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Connected (Stash $version)',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacingMedium),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Connection Status',
-              style: Theme.of(
-                context,
-              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: AppTheme.spacingSmall),
-            statusInfo.when(
-              data: (version) => Row(
-                children: [
-                  const Icon(Icons.check_circle, color: Colors.green, size: 20),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Connected (Stash $version)',
-                      style: const TextStyle(
-                        color: Colors.green,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              loading: () => const Row(
-                children: [
-                  SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                  SizedBox(width: 8),
-                  Expanded(child: Text('Checking connection...')),
-                ],
-              ),
-              error: (error, stack) => Row(
-                children: [
-                  const Icon(Icons.error, color: Colors.red, size: 20),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Failed: $error',
-                      style: const TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
+      loading: () => const Row(
+        children: [
+          SizedBox(
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+          SizedBox(width: 12),
+          Expanded(child: Text('Checking connection...')),
+        ],
+      ),
+      error: (error, stack) => Row(
+        children: [
+          Icon(Icons.error_rounded, color: Theme.of(context).colorScheme.error),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Failed: $error',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.error,
+                fontWeight: FontWeight.w600,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
