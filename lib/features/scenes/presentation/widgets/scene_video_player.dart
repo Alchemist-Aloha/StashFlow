@@ -195,6 +195,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
 
     // If this player isn't active, show a placeholder with a play button.
     if (playerState.activeScene?.id != widget.scene.id) {
+      final colorScheme = Theme.of(context).colorScheme;
       return AspectRatio(
         aspectRatio: aspectRatio,
         child: Container(
@@ -202,12 +203,18 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
           child: Center(
             child: _isStarting
                 ? const CircularProgressIndicator()
-                : IconButton(
-                    icon: const Icon(
-                      Icons.play_arrow,
-                      size: 64,
-                      color: Colors.white,
+                : FilledButton.tonalIcon(
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 14,
+                      ),
+                      backgroundColor: colorScheme.surfaceContainerHigh
+                          .withValues(alpha: 0.92),
+                      foregroundColor: colorScheme.onSurface,
                     ),
+                    icon: const Icon(Icons.play_arrow_rounded, size: 24),
+                    label: const Text('Play'),
                     onPressed: () => _startPlaybackIfNeeded(force: true),
                   ),
           ),
