@@ -5,12 +5,15 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
+import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_list_provider.dart';
 import '../../domain/entities/image.dart' as entity;
 import '../providers/image_list_provider.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/utils/responsive.dart';
 
 enum _SlideshowDirection { forward, backward }
+enum _RatingTarget { image, gallery }
 
 class ImageFullscreenPage extends ConsumerStatefulWidget {
   final String imageId;
@@ -23,6 +26,8 @@ class ImageFullscreenPage extends ConsumerStatefulWidget {
 }
 
 class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
+  static const _ratingTargetGalleryKey = 'image_rating_target_gallery';
+
   late ExtendedPageController _pageController;
   Timer? _slideshowTimer;
   int _currentIndex = 0;
@@ -35,6 +40,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   _SlideshowDirection _slideshowDirection = _SlideshowDirection.forward;
   Offset? _pointerDownPosition;
   DateTime? _pointerDownTime;
+  bool _ignoreNextOverlayToggle = false;
 
   @override
   void initState() {
@@ -59,6 +65,11 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   }
 
   void _onPointerUp(PointerUpEvent event) {
+    if (_ignoreNextOverlayToggle) {
+      _ignoreNextOverlayToggle = false;
+      return;
+    }
+
     final downPos = _pointerDownPosition;
     final downTime = _pointerDownTime;
     _pointerDownPosition = null;
@@ -74,6 +85,12 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     if (elapsed <= const Duration(milliseconds: 220) && movedDistance < 10) {
       _toggleOverlays();
     }
+  }
+
+  void _onOverlayPointerDown(PointerDownEvent event) {
+    _ignoreNextOverlayToggle = true;
+    _pointerDownPosition = null;
+    _pointerDownTime = null;
   }
 
   void _handlePageChanged(
@@ -249,6 +266,163 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     _startSlideshow(itemCount);
   }
 
+  Future<void> _showRatingDialog(entity.Image image) async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    final galleryId = ref.read(imageFilterStateProvider).galleryId;
+    final canRateGallery = galleryId != null;
+
+    var target =
+        (prefs.getBool(_ratingTargetGalleryKey) ?? false) && canRateGallery
+        ? _RatingTarget.gallery
+        : _RatingTarget.image;
+    var rating = image.rating100 ?? 0;
+
+    if (target == _RatingTarget.gallery && galleryId != null) {
+      try {
+        final gallery = await ref
+            .read(galleryRepositoryProvider)
+            .getGalleryById(galleryId, refresh: true);
+        rating = gallery.rating100 ?? 0;
+      } catch (_) {
+        rating = 0;
+      }
+    }
+
+    if (!mounted) return;
+
+    final result = await showDialog<(_RatingTarget, int)>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Rate'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SegmentedButton<_RatingTarget>(
+                    showSelectedIcon: false,
+                    segments: [
+                      const ButtonSegment<_RatingTarget>(
+                        value: _RatingTarget.image,
+                        icon: Icon(Icons.image_outlined),
+                        label: Text('Image'),
+                      ),
+                      ButtonSegment<_RatingTarget>(
+                        value: _RatingTarget.gallery,
+                        icon: const Icon(Icons.photo_library_outlined),
+                        label: const Text('Gallery'),
+                        enabled: canRateGallery,
+                      ),
+                    ],
+                    selected: <_RatingTarget>{target},
+                    onSelectionChanged: (selection) async {
+                      final nextTarget = selection.first;
+                      var nextRating = image.rating100 ?? 0;
+
+                      if (nextTarget == _RatingTarget.gallery &&
+                          galleryId != null) {
+                        try {
+                          final gallery = await ref
+                              .read(galleryRepositoryProvider)
+                              .getGalleryById(galleryId, refresh: true);
+                          nextRating = gallery.rating100 ?? 0;
+                        } catch (_) {
+                          nextRating = 0;
+                        }
+                      }
+
+                      if (!dialogContext.mounted) return;
+                      setDialogState(() {
+                        target = nextTarget;
+                        rating = nextRating;
+                      });
+                    },
+                  ),
+                  if (!canRateGallery) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      'Gallery rating is only available when browsing a gallery.',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                  const SizedBox(height: 16),
+                  Text('Rating: ${(rating / 20).toStringAsFixed(1)} / 5'),
+                  Slider(
+                    value: rating.toDouble(),
+                    min: 0,
+                    max: 100,
+                    divisions: 20,
+                    label: (rating / 20).toStringAsFixed(1),
+                    onChanged: (value) {
+                      setDialogState(() => rating = value.round());
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop((target, rating));
+                  },
+                  child: const Text('Apply'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (result == null || !mounted) return;
+
+    final selectedTarget = result.$1;
+    final selectedRating = result.$2;
+    await prefs.setBool(
+      _ratingTargetGalleryKey,
+      selectedTarget == _RatingTarget.gallery,
+    );
+
+    try {
+      if (selectedTarget == _RatingTarget.image) {
+        await ref
+            .read(imageRepositoryProvider)
+            .updateImageRating(image.id, selectedRating);
+        ref
+            .read(imageListProvider.notifier)
+            .updateImageInList(image.copyWith(rating100: selectedRating));
+      } else {
+        if (galleryId == null) {
+          throw Exception('No gallery context available.');
+        }
+        await ref
+            .read(galleryRepositoryProvider)
+            .updateGalleryRating(galleryId, selectedRating);
+      }
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            selectedTarget == _RatingTarget.image
+                ? 'Image rating updated.'
+                : 'Gallery rating updated.',
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update rating: $e')),
+      );
+    }
+  }
+
   void _prefetchAdjacent(
     List<entity.Image> items,
     int index,
@@ -294,6 +468,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
 
   Widget _buildOverlayHeader(
     BuildContext context,
+    entity.Image? currentImage,
     String displayTitle,
     int itemCount,
     double maxOverlayWidth,
@@ -305,74 +480,86 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
       top: 8,
       left: 0,
       right: 0,
-      child: SafeArea(
-        bottom: false,
-        child: Center(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: maxOverlayWidth),
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surface.withValues(alpha: 0.78),
-                      border: Border.all(
-                        color: colorScheme.outlineVariant.withValues(
-                          alpha: 0.35,
-                        ),
+      child: Listener(
+        behavior: HitTestBehavior.translucent,
+        onPointerDown: _onOverlayPointerDown,
+        child: SafeArea(
+          bottom: false,
+          child: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: maxOverlayWidth),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
                       ),
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Row(
-                      children: [
-                        IconButton.filledTonal(
-                          icon: const Icon(Icons.arrow_back_rounded),
-                          onPressed: () => context.pop(),
-                          tooltip: 'Back',
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                displayTitle,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(fontWeight: FontWeight.w600),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                '${_currentIndex + 1} / $itemCount',
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                            ],
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface.withValues(alpha: 0.78),
+                        border: Border.all(
+                          color: colorScheme.outlineVariant.withValues(
+                            alpha: 0.35,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        IconButton.filled(
-                          icon: Icon(
-                            _isSlideshowPlaying
-                                ? Icons.stop_rounded
-                                : Icons.slideshow_rounded,
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Row(
+                        children: [
+                          IconButton.filledTonal(
+                            icon: const Icon(Icons.arrow_back_rounded),
+                            onPressed: () => context.pop(),
+                            tooltip: 'Back',
                           ),
-                          onPressed: () => _toggleSlideshow(itemCount),
-                          tooltip: _isSlideshowPlaying
-                              ? 'Stop slideshow'
-                              : 'Start slideshow',
-                        ),
-                      ],
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  displayTitle,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(fontWeight: FontWeight.w600),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '${_currentIndex + 1} / $itemCount',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton.filledTonal(
+                            icon: const Icon(Icons.star_rate_rounded),
+                            onPressed: currentImage == null
+                                ? null
+                                : () => _showRatingDialog(currentImage),
+                            tooltip: 'Rate',
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton.filled(
+                            icon: Icon(
+                              _isSlideshowPlaying
+                                  ? Icons.stop_rounded
+                                  : Icons.slideshow_rounded,
+                            ),
+                            onPressed: () => _toggleSlideshow(itemCount),
+                            tooltip: _isSlideshowPlaying
+                                ? 'Stop slideshow'
+                                : 'Start slideshow',
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -397,48 +584,54 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
       left: 0,
       right: 0,
       bottom: 8,
-      child: SafeArea(
-        top: false,
-        child: Center(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: maxOverlayWidth),
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerHighest.withValues(
-                        alpha: 0.72,
+      child: Listener(
+        behavior: HitTestBehavior.translucent,
+        onPointerDown: _onOverlayPointerDown,
+        child: SafeArea(
+          top: false,
+          child: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: maxOverlayWidth),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
                       ),
-                      border: Border.all(
-                        color: colorScheme.outlineVariant.withValues(
-                          alpha: 0.3,
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerHighest.withValues(
+                          alpha: 0.72,
                         ),
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: LinearProgressIndicator(
-                            value: progress,
-                            minHeight: 6,
-                            borderRadius: BorderRadius.circular(999),
+                        border: Border.all(
+                          color: colorScheme.outlineVariant.withValues(
+                            alpha: 0.3,
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        Text(
-                          _isSlideshowPlaying ? 'Playing' : 'Tap to toggle UI',
-                          style: Theme.of(context).textTheme.labelMedium,
-                        ),
-                      ],
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: LinearProgressIndicator(
+                              value: progress,
+                              minHeight: 6,
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            _isSlideshowPlaying
+                                ? 'Playing'
+                                : 'Tap to toggle UI',
+                            style: Theme.of(context).textTheme.labelMedium,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -585,6 +778,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                     if (_showOverlays) ...[
                       _buildOverlayHeader(
                         context,
+                        currentImage,
                         displayTitle,
                         items.length,
                         maxOverlayWidth,

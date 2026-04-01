@@ -248,6 +248,11 @@ class MockImageRepository extends MockRepositoryState<Image>
     if (shouldThrow) throw Exception(errorMessage);
     return data.firstWhere((i) => i.id == id);
   }
+
+  @override
+  Future<void> updateImageRating(String id, int rating100) async {
+    if (shouldThrow) throw Exception(errorMessage);
+  }
 }
 
 /// Helper to pump a widget with all necessary providers and theme

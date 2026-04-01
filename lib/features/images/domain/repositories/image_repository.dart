@@ -12,4 +12,5 @@ abstract class ImageRepository {
     ImageFilter? imageFilter,
   });
   Future<Image> getImageById(String id, {bool refresh = false});
+  Future<void> updateImageRating(String id, int rating100);
 }

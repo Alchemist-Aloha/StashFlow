@@ -244,6 +244,9 @@ class MockImageRepository implements ImageRepository {
   @override
   Future<entity.Image> getImageById(String id, {bool refresh = false}) =>
       throw UnimplementedError();
+
+  @override
+  Future<void> updateImageRating(String id, int rating100) async {}
 }
 
 class MockGalleryRepository implements GalleryRepository {

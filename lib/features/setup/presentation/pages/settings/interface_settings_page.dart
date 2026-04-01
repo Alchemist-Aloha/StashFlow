@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/navigation_customization_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/scrape_customization_provider.dart';
@@ -17,11 +18,15 @@ class InterfaceSettingsPage extends ConsumerStatefulWidget {
 }
 
 class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
+  static const _imageFullscreenVerticalSwipeKey =
+      'image_fullscreen_vertical_swipe';
+
   bool _showRandomNavigation = true;
   bool _showScrapeButton = false;
   bool _sceneGridLayout = false;
   bool _sceneTiktokLayout = false;
   bool _galleryGridLayout = true;
+  bool _imageFullscreenVerticalSwipe = true;
 
   // New settings
   bool _performerMediaGridLayout = true;
@@ -40,11 +45,15 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   }
 
   Future<void> _load() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+
     _showRandomNavigation = ref.read(randomNavigationEnabledProvider);
     _showScrapeButton = ref.read(scrapeEnabledProvider);
     _sceneGridLayout = ref.read(sceneGridLayoutProvider);
     _sceneTiktokLayout = ref.read(sceneTiktokLayoutProvider);
     _galleryGridLayout = ref.read(galleryGridLayoutProvider);
+    _imageFullscreenVerticalSwipe =
+        prefs.getBool(_imageFullscreenVerticalSwipeKey) ?? true;
 
     _performerMediaGridLayout = ref.read(performerMediaGridLayoutProvider);
     _performerGalleriesGridLayout =
@@ -58,6 +67,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   }
 
   Future<void> _saveSettings() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+
     ref
         .read(randomNavigationEnabledProvider.notifier)
         .set(_showRandomNavigation);
@@ -82,6 +93,11 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     ref
         .read(tagGalleriesGridLayoutProvider.notifier)
         .set(_tagGalleriesGridLayout);
+
+    await prefs.setBool(
+      _imageFullscreenVerticalSwipeKey,
+      _imageFullscreenVerticalSwipe,
+    );
   }
 
   @override
@@ -217,6 +233,38 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                       onSelected: (value) async {
                         setState(() {
                           _galleryGridLayout = value == 'grid';
+                        });
+                        await _saveSettings();
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: AppTheme.spacingLarge),
+                  SettingsSectionCard(
+                    title: 'Image Viewer',
+                    subtitle: 'Configure fullscreen image browsing behavior',
+                    child: _buildLayoutRow(
+                      context,
+                      label: 'Fullscreen Swipe Direction',
+                      description:
+                          'Choose how images advance in fullscreen mode',
+                      value: _imageFullscreenVerticalSwipe
+                          ? 'vertical'
+                          : 'horizontal',
+                      options: const [
+                        ButtonSegment<String>(
+                          value: 'vertical',
+                          label: Text('Vertical'),
+                          icon: Icon(Icons.swap_vert_rounded),
+                        ),
+                        ButtonSegment<String>(
+                          value: 'horizontal',
+                          label: Text('Horizontal'),
+                          icon: Icon(Icons.swap_horiz_rounded),
+                        ),
+                      ],
+                      onSelected: (value) async {
+                        setState(() {
+                          _imageFullscreenVerticalSwipe = value == 'vertical';
                         });
                         await _saveSettings();
                       },

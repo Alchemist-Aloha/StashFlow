@@ -182,6 +182,18 @@ class ImageList extends _$ImageList {
     }
   }
 
+  void updateImageInList(entity.Image updatedImage) {
+    if (state.hasValue) {
+      final images = state.value!;
+      final index = images.indexWhere((image) => image.id == updatedImage.id);
+      if (index != -1) {
+        final newList = List<entity.Image>.from(images);
+        newList[index] = updatedImage;
+        state = AsyncData(newList);
+      }
+    }
+  }
+
   bool get hasMore => _hasMore;
   bool get isLoadingMore => _isLoadingMore;
 }

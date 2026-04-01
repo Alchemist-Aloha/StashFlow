@@ -134,4 +134,23 @@ class GraphQLImageRepository implements ImageRepository {
 
     return Image.fromJson(map);
   }
+
+  @override
+  Future<void> updateImageRating(String id, int rating100) async {
+    final result = await client.mutate(
+      MutationOptions(
+        document: gql(r'''
+          mutation UpdateImageRating($id: ID!, $rating: Int!) {
+            imageUpdate(input: { id: $id, rating100: $rating }) {
+              id
+              rating100
+            }
+          }
+        '''),
+        variables: {'id': id, 'rating': rating100},
+      ),
+    );
+
+    if (result.hasException) throw result.exception!;
+  }
 }
