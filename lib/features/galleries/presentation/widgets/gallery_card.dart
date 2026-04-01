@@ -63,14 +63,12 @@ class GalleryCard extends StatelessWidget {
                       right: 8,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
+                          horizontal: 4,
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.black.withAlpha(150),
-                          borderRadius: BorderRadius.circular(
-                            AppTheme.radiusSmall,
-                          ),
+                          color: Colors.black.withAlpha(200),
+                          borderRadius: BorderRadius.circular(2),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -78,7 +76,7 @@ class GalleryCard extends StatelessWidget {
                             const Icon(
                               Icons.photo_library,
                               color: Colors.white,
-                              size: 14,
+                              size: 12,
                             ),
                             const SizedBox(width: 4),
                             Text(
@@ -86,7 +84,6 @@ class GalleryCard extends StatelessWidget {
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 12,
-                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ],
@@ -98,25 +95,55 @@ class GalleryCard extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(AppTheme.spacingSmall),
-            child: Column(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  gallery.title,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        gallery.displayName,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: context.colors.onSurface,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if ((gallery.details != null &&
+                              gallery.details!.isNotEmpty) ||
+                          gallery.date != null) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          [
+                            if (gallery.details != null &&
+                                gallery.details!.isNotEmpty)
+                              gallery.details,
+                            if (gallery.date != null)
+                              gallery.date!.split('-').first,
+                          ].join(' • '),
+                          style: TextStyle(
+                            color: context.colors.onSurface.withValues(
+                              alpha: 0.75,
+                            ),
+                            fontSize: 12,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ],
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
-                if (gallery.details != null && gallery.details!.isNotEmpty)
-                  Text(
-                    gallery.details!,
-                    style: Theme.of(context).textTheme.bodySmall,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: () {},
+                  icon: const Icon(Icons.more_vert, size: 20),
+                ),
               ],
             ),
           ),
@@ -155,17 +182,14 @@ class GalleryCard extends StatelessWidget {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.black.withAlpha(150),
-                          borderRadius: BorderRadius.circular(
-                            AppTheme.radiusSmall,
-                          ),
+                          color: Colors.black.withAlpha(200),
+                          borderRadius: BorderRadius.circular(2),
                         ),
                         child: Text(
                           '${gallery.imageCount}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
-                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
@@ -174,14 +198,45 @@ class GalleryCard extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            gallery.title,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+          Padding(
+            padding: const EdgeInsets.only(top: 4.0, left: 4.0, right: 4.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        gallery.displayName,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
+                          color: context.colors.onSurface,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (gallery.details != null &&
+                          gallery.details!.isNotEmpty)
+                        Text(
+                          gallery.details!,
+                          style: TextStyle(
+                            color: context.colors.onSurface.withValues(
+                              alpha: 0.75,
+                            ),
+                            fontSize: 9,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.more_vert, size: 14),
+              ],
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
