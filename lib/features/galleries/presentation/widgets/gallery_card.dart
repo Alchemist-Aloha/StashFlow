@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/rating_bottom_sheet.dart';
+import '../providers/gallery_list_provider.dart';
 import '../../domain/entities/gallery.dart';
 
 /// A card widget that displays a summary of a [Gallery].
-class GalleryCard extends StatelessWidget {
+class GalleryCard extends ConsumerWidget {
   const GalleryCard({
     required this.gallery,
     this.isGrid = true,
@@ -30,14 +33,37 @@ class GalleryCard extends StatelessWidget {
   final int? memCacheWidth;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (isGrid) {
-      return _buildGridCard(context);
+      return _buildGridCard(context, ref);
     }
-    return _buildListCard(context);
+    return _buildListCard(context, ref);
   }
 
-  Widget _buildListCard(BuildContext context) {
+  Future<void> _showRating(BuildContext context, WidgetRef ref) async {
+    await RatingBottomSheet.show(
+      context,
+      initialRating: gallery.rating100 ?? 0,
+      title: 'Rate ${gallery.displayName}',
+      onRatingSelected: (rating) async {
+        try {
+          await ref.read(galleryRepositoryProvider).updateGalleryRating(
+                gallery.id,
+                rating,
+              );
+          ref.invalidate(galleryListProvider);
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Failed to update rating: $e')),
+            );
+          }
+        }
+      },
+    );
+  }
+
+  Widget _buildListCard(BuildContext context, WidgetRef ref) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
@@ -57,6 +83,40 @@ class GalleryCard extends StatelessWidget {
                     fit: BoxFit.cover,
                     memCacheWidth: memCacheWidth,
                   ),
+                  if (gallery.rating100 != null && gallery.rating100! > 0)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withAlpha(200),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              (gallery.rating100! / 20).toStringAsFixed(1),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   if (gallery.imageCount != null && gallery.imageCount! > 0)
                     Positioned(
                       bottom: 8,
@@ -141,7 +201,7 @@ class GalleryCard extends StatelessWidget {
                 IconButton(
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
-                  onPressed: () {},
+                  onPressed: () => _showRating(context, ref),
                   icon: const Icon(Icons.more_vert, size: 20),
                 ),
               ],
@@ -152,7 +212,7 @@ class GalleryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildGridCard(BuildContext context) {
+  Widget _buildGridCard(BuildContext context, WidgetRef ref) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
@@ -172,6 +232,40 @@ class GalleryCard extends StatelessWidget {
                     fit: BoxFit.cover,
                     memCacheWidth: memCacheWidth,
                   ),
+                  if (gallery.rating100 != null && gallery.rating100! > 0)
+                    Positioned(
+                      top: 4,
+                      right: 4,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 1,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withAlpha(200),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                              size: 10,
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              (gallery.rating100! / 20).toStringAsFixed(1),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   if (gallery.imageCount != null && gallery.imageCount! > 0)
                     Positioned(
                       bottom: 4,
@@ -234,7 +328,10 @@ class GalleryCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Icon(Icons.more_vert, size: 14),
+                InkWell(
+                  onTap: () => _showRating(context, ref),
+                  child: const Icon(Icons.more_vert, size: 14),
+                ),
               ],
             ),
           ),

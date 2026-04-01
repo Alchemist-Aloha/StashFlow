@@ -99,9 +99,24 @@ class GraphQLGalleryRepository implements GalleryRepository {
     );
 
     if (result.hasException) throw result.exception!;
-    final data = result.parsedData!.findGallery;
+    final data = result.parsedData?.findGallery;
     if (data == null) throw Exception('Gallery not found');
 
     return Gallery.fromJson(data.toJson());
   }
+
+  @override
+  Future<void> updateGalleryRating(String id, int rating100) async {
+    final result = await client.mutate$UpdateGalleryRating(
+      Options$Mutation$UpdateGalleryRating(
+        variables: Variables$Mutation$UpdateGalleryRating(
+          id: id,
+          rating: rating100,
+        ),
+      ),
+    );
+
+    if (result.hasException) throw result.exception!;
+  }
 }
+

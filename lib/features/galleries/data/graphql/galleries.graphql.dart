@@ -1732,3 +1732,569 @@ extension ClientExtension$Query$FindGallery on graphql.GraphQLClient {
     return result == null ? null : Query$FindGallery.fromJson(result);
   }
 }
+
+class Variables$Mutation$UpdateGalleryRating {
+  factory Variables$Mutation$UpdateGalleryRating({
+    required String id,
+    required int rating,
+  }) =>
+      Variables$Mutation$UpdateGalleryRating._({r'id': id, r'rating': rating});
+
+  Variables$Mutation$UpdateGalleryRating._(this._$data);
+
+  factory Variables$Mutation$UpdateGalleryRating.fromJson(
+    Map<String, dynamic> data,
+  ) {
+    final result$data = <String, dynamic>{};
+    final l$id = data['id'];
+    result$data['id'] = (l$id as String);
+    final l$rating = data['rating'];
+    result$data['rating'] = (l$rating as int);
+    return Variables$Mutation$UpdateGalleryRating._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get id => (_$data['id'] as String);
+
+  int get rating => (_$data['rating'] as int);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$id = id;
+    result$data['id'] = l$id;
+    final l$rating = rating;
+    result$data['rating'] = l$rating;
+    return result$data;
+  }
+
+  CopyWith$Variables$Mutation$UpdateGalleryRating<
+    Variables$Mutation$UpdateGalleryRating
+  >
+  get copyWith =>
+      CopyWith$Variables$Mutation$UpdateGalleryRating(this, (i) => i);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Mutation$UpdateGalleryRating ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$rating = rating;
+    final lOther$rating = other.rating;
+    if (l$rating != lOther$rating) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$rating = rating;
+    return Object.hashAll([l$id, l$rating]);
+  }
+}
+
+abstract class CopyWith$Variables$Mutation$UpdateGalleryRating<TRes> {
+  factory CopyWith$Variables$Mutation$UpdateGalleryRating(
+    Variables$Mutation$UpdateGalleryRating instance,
+    TRes Function(Variables$Mutation$UpdateGalleryRating) then,
+  ) = _CopyWithImpl$Variables$Mutation$UpdateGalleryRating;
+
+  factory CopyWith$Variables$Mutation$UpdateGalleryRating.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Mutation$UpdateGalleryRating;
+
+  TRes call({String? id, int? rating});
+}
+
+class _CopyWithImpl$Variables$Mutation$UpdateGalleryRating<TRes>
+    implements CopyWith$Variables$Mutation$UpdateGalleryRating<TRes> {
+  _CopyWithImpl$Variables$Mutation$UpdateGalleryRating(
+    this._instance,
+    this._then,
+  );
+
+  final Variables$Mutation$UpdateGalleryRating _instance;
+
+  final TRes Function(Variables$Mutation$UpdateGalleryRating) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? id = _undefined, Object? rating = _undefined}) => _then(
+    Variables$Mutation$UpdateGalleryRating._({
+      ..._instance._$data,
+      if (id != _undefined && id != null) 'id': (id as String),
+      if (rating != _undefined && rating != null) 'rating': (rating as int),
+    }),
+  );
+}
+
+class _CopyWithStubImpl$Variables$Mutation$UpdateGalleryRating<TRes>
+    implements CopyWith$Variables$Mutation$UpdateGalleryRating<TRes> {
+  _CopyWithStubImpl$Variables$Mutation$UpdateGalleryRating(this._res);
+
+  TRes _res;
+
+  call({String? id, int? rating}) => _res;
+}
+
+class Mutation$UpdateGalleryRating {
+  Mutation$UpdateGalleryRating({
+    this.galleryUpdate,
+    this.$__typename = 'Mutation',
+  });
+
+  factory Mutation$UpdateGalleryRating.fromJson(Map<String, dynamic> json) {
+    final l$galleryUpdate = json['galleryUpdate'];
+    final l$$__typename = json['__typename'];
+    return Mutation$UpdateGalleryRating(
+      galleryUpdate: l$galleryUpdate == null
+          ? null
+          : Mutation$UpdateGalleryRating$galleryUpdate.fromJson(
+              (l$galleryUpdate as Map<String, dynamic>),
+            ),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Mutation$UpdateGalleryRating$galleryUpdate? galleryUpdate;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$galleryUpdate = galleryUpdate;
+    _resultData['galleryUpdate'] = l$galleryUpdate?.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$galleryUpdate = galleryUpdate;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$galleryUpdate, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$UpdateGalleryRating ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$galleryUpdate = galleryUpdate;
+    final lOther$galleryUpdate = other.galleryUpdate;
+    if (l$galleryUpdate != lOther$galleryUpdate) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$UpdateGalleryRating
+    on Mutation$UpdateGalleryRating {
+  CopyWith$Mutation$UpdateGalleryRating<Mutation$UpdateGalleryRating>
+  get copyWith => CopyWith$Mutation$UpdateGalleryRating(this, (i) => i);
+}
+
+abstract class CopyWith$Mutation$UpdateGalleryRating<TRes> {
+  factory CopyWith$Mutation$UpdateGalleryRating(
+    Mutation$UpdateGalleryRating instance,
+    TRes Function(Mutation$UpdateGalleryRating) then,
+  ) = _CopyWithImpl$Mutation$UpdateGalleryRating;
+
+  factory CopyWith$Mutation$UpdateGalleryRating.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$UpdateGalleryRating;
+
+  TRes call({
+    Mutation$UpdateGalleryRating$galleryUpdate? galleryUpdate,
+    String? $__typename,
+  });
+  CopyWith$Mutation$UpdateGalleryRating$galleryUpdate<TRes> get galleryUpdate;
+}
+
+class _CopyWithImpl$Mutation$UpdateGalleryRating<TRes>
+    implements CopyWith$Mutation$UpdateGalleryRating<TRes> {
+  _CopyWithImpl$Mutation$UpdateGalleryRating(this._instance, this._then);
+
+  final Mutation$UpdateGalleryRating _instance;
+
+  final TRes Function(Mutation$UpdateGalleryRating) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? galleryUpdate = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Mutation$UpdateGalleryRating(
+      galleryUpdate: galleryUpdate == _undefined
+          ? _instance.galleryUpdate
+          : (galleryUpdate as Mutation$UpdateGalleryRating$galleryUpdate?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+
+  CopyWith$Mutation$UpdateGalleryRating$galleryUpdate<TRes> get galleryUpdate {
+    final local$galleryUpdate = _instance.galleryUpdate;
+    return local$galleryUpdate == null
+        ? CopyWith$Mutation$UpdateGalleryRating$galleryUpdate.stub(
+            _then(_instance),
+          )
+        : CopyWith$Mutation$UpdateGalleryRating$galleryUpdate(
+            local$galleryUpdate,
+            (e) => call(galleryUpdate: e),
+          );
+  }
+}
+
+class _CopyWithStubImpl$Mutation$UpdateGalleryRating<TRes>
+    implements CopyWith$Mutation$UpdateGalleryRating<TRes> {
+  _CopyWithStubImpl$Mutation$UpdateGalleryRating(this._res);
+
+  TRes _res;
+
+  call({
+    Mutation$UpdateGalleryRating$galleryUpdate? galleryUpdate,
+    String? $__typename,
+  }) => _res;
+
+  CopyWith$Mutation$UpdateGalleryRating$galleryUpdate<TRes> get galleryUpdate =>
+      CopyWith$Mutation$UpdateGalleryRating$galleryUpdate.stub(_res);
+}
+
+const documentNodeMutationUpdateGalleryRating = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.mutation,
+      name: NameNode(value: 'UpdateGalleryRating'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'id')),
+          type: NamedTypeNode(name: NameNode(value: 'ID'), isNonNull: true),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'rating')),
+          type: NamedTypeNode(name: NameNode(value: 'Int'), isNonNull: true),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'galleryUpdate'),
+            alias: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'input'),
+                value: ObjectValueNode(
+                  fields: [
+                    ObjectFieldNode(
+                      name: NameNode(value: 'id'),
+                      value: VariableNode(name: NameNode(value: 'id')),
+                    ),
+                    ObjectFieldNode(
+                      name: NameNode(value: 'rating100'),
+                      value: VariableNode(name: NameNode(value: 'rating')),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            directives: [],
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: 'id'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'rating100'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ],
+      ),
+    ),
+  ],
+);
+Mutation$UpdateGalleryRating _parserFn$Mutation$UpdateGalleryRating(
+  Map<String, dynamic> data,
+) => Mutation$UpdateGalleryRating.fromJson(data);
+typedef OnMutationCompleted$Mutation$UpdateGalleryRating =
+    FutureOr<void> Function(
+      Map<String, dynamic>?,
+      Mutation$UpdateGalleryRating?,
+    );
+
+class Options$Mutation$UpdateGalleryRating
+    extends graphql.MutationOptions<Mutation$UpdateGalleryRating> {
+  Options$Mutation$UpdateGalleryRating({
+    String? operationName,
+    required Variables$Mutation$UpdateGalleryRating variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$UpdateGalleryRating? typedOptimisticResult,
+    graphql.Context? context,
+    OnMutationCompleted$Mutation$UpdateGalleryRating? onCompleted,
+    graphql.OnMutationUpdate<Mutation$UpdateGalleryRating>? update,
+    graphql.OnError? onError,
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Mutation$UpdateGalleryRating(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationUpdateGalleryRating,
+         parserFn: _parserFn$Mutation$UpdateGalleryRating,
+       );
+
+  final OnMutationCompleted$Mutation$UpdateGalleryRating? onCompletedWithParsed;
+
+  @override
+  List<Object?> get properties => [
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
+}
+
+class WatchOptions$Mutation$UpdateGalleryRating
+    extends graphql.WatchQueryOptions<Mutation$UpdateGalleryRating> {
+  WatchOptions$Mutation$UpdateGalleryRating({
+    String? operationName,
+    required Variables$Mutation$UpdateGalleryRating variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$UpdateGalleryRating? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeMutationUpdateGalleryRating,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Mutation$UpdateGalleryRating,
+       );
+}
+
+extension ClientExtension$Mutation$UpdateGalleryRating
+    on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Mutation$UpdateGalleryRating>>
+  mutate$UpdateGalleryRating(
+    Options$Mutation$UpdateGalleryRating options,
+  ) async => await this.mutate(options);
+
+  graphql.ObservableQuery<Mutation$UpdateGalleryRating>
+  watchMutation$UpdateGalleryRating(
+    WatchOptions$Mutation$UpdateGalleryRating options,
+  ) => this.watchMutation(options);
+}
+
+class Mutation$UpdateGalleryRating$galleryUpdate {
+  Mutation$UpdateGalleryRating$galleryUpdate({
+    required this.id,
+    this.rating100,
+    this.$__typename = 'Gallery',
+  });
+
+  factory Mutation$UpdateGalleryRating$galleryUpdate.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$id = json['id'];
+    final l$rating100 = json['rating100'];
+    final l$$__typename = json['__typename'];
+    return Mutation$UpdateGalleryRating$galleryUpdate(
+      id: (l$id as String),
+      rating100: (l$rating100 as int?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final int? rating100;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$rating100 = rating100;
+    _resultData['rating100'] = l$rating100;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$rating100 = rating100;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$id, l$rating100, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$UpdateGalleryRating$galleryUpdate ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$rating100 = rating100;
+    final lOther$rating100 = other.rating100;
+    if (l$rating100 != lOther$rating100) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$UpdateGalleryRating$galleryUpdate
+    on Mutation$UpdateGalleryRating$galleryUpdate {
+  CopyWith$Mutation$UpdateGalleryRating$galleryUpdate<
+    Mutation$UpdateGalleryRating$galleryUpdate
+  >
+  get copyWith =>
+      CopyWith$Mutation$UpdateGalleryRating$galleryUpdate(this, (i) => i);
+}
+
+abstract class CopyWith$Mutation$UpdateGalleryRating$galleryUpdate<TRes> {
+  factory CopyWith$Mutation$UpdateGalleryRating$galleryUpdate(
+    Mutation$UpdateGalleryRating$galleryUpdate instance,
+    TRes Function(Mutation$UpdateGalleryRating$galleryUpdate) then,
+  ) = _CopyWithImpl$Mutation$UpdateGalleryRating$galleryUpdate;
+
+  factory CopyWith$Mutation$UpdateGalleryRating$galleryUpdate.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$UpdateGalleryRating$galleryUpdate;
+
+  TRes call({String? id, int? rating100, String? $__typename});
+}
+
+class _CopyWithImpl$Mutation$UpdateGalleryRating$galleryUpdate<TRes>
+    implements CopyWith$Mutation$UpdateGalleryRating$galleryUpdate<TRes> {
+  _CopyWithImpl$Mutation$UpdateGalleryRating$galleryUpdate(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$UpdateGalleryRating$galleryUpdate _instance;
+
+  final TRes Function(Mutation$UpdateGalleryRating$galleryUpdate) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? rating100 = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Mutation$UpdateGalleryRating$galleryUpdate(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      rating100: rating100 == _undefined
+          ? _instance.rating100
+          : (rating100 as int?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Mutation$UpdateGalleryRating$galleryUpdate<TRes>
+    implements CopyWith$Mutation$UpdateGalleryRating$galleryUpdate<TRes> {
+  _CopyWithStubImpl$Mutation$UpdateGalleryRating$galleryUpdate(this._res);
+
+  TRes _res;
+
+  call({String? id, int? rating100, String? $__typename}) => _res;
+}
