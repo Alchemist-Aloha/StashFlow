@@ -20,22 +20,40 @@ A native Android mobile client for your **Stash** server. Designed for seamless 
 </p>
 ## ✨ Key Features
 
-- 📱 **Adaptive UI:** Fully optimized for both phones and tablets. Features a side **Navigation Rail** and intelligent grid layouts that scale up to 5 columns on larger screens.
-- 🎬 **Seamless Playback:** Integrated video player with support for multiple streaming strategies, startup diagnostics, **Autoplay Next**, and continuous playback queue management.
-- 🎵 **System Integration:** Full support for `audio_service` (media notifications/lock screen controls), background audio playback, and **Picture-in-Picture (PiP)** mode.
-- 🖼️ **Media Libraries:** Browse high-resolution **Images** and manage your **Galleries** with a native feel, complete with smooth animations and layout scaling.
-- 👤 **Rich Browsing:** Explore Scenes, Images, Performers, Studios, Tags, Galleries, and Groups with native-feel pagination and fast global search.
-- 📱 **Flexible Layouts:** Choose between a classic **Grid/List** view or a modern **TikTok-style** vertical scroll layout for discovery.
-- 🎲 **Discovery Tools:** Floating "Random" actions and "Surprise Me" entries to find hidden gems in your library.
-- 🔍 **Advanced Filtering:** Powerful menu-based sorting (Date, Rating, Play Count, Random) and comprehensive multi-filter sheets.
-- 🛠️ **Metadata Editor:** Full-screen editor to update Scene **Title**, **Details**, **Date**, and **URLs**.
-- 🏷️ **Entity Association:** Easily manage and assign **Studios**, **Performers**, and **Tags** from within the edit page using searchable pickers.
-- 📡 **Smart Scraping:** Integrated metadata scraping with support for selecting from multiple results and **automatic merging** of matched library entities.
-- ⚡ **Performance Optimized:** Advanced **Image Deduplication**, prefetching logic, and automatic recovery from corrupt cache files ensure a smooth, low-latency experience.
-- 🛠️ **Native Customization:** Configure your server connection, UI preferences, and streaming quality in one place.
+### 🧭 Interface & Navigation
 
-> [!IMPORTANT]
-> **TikTok Layout (WIP):** The vertical scroll (TikTok-style) layout is currently in active development. You may encounter stability issues with scene ratings or entering/exiting fullscreen playback directly from this view. Refinements are ongoing.
+- 📱 **Adaptive UI:** Optimized for phones and tablets, including a side **Navigation Rail** and intelligent grids that scale up to 5 columns.
+- 📱 **Flexible Layouts:** Switch between **Grid/List** and **TikTok-style** vertical discovery layouts.
+- 🎲 **Discovery Tools:** Use floating "Random" actions and "Surprise Me" entries to quickly explore your library.
+
+### 🎬 Video Playback Experience
+
+- 🎬 **Seamless Playback:** Native-feel player with multiple stream strategies, startup diagnostics, **Autoplay Next**, and queue continuity.
+- 🎵 **System Integration:** Supports `audio_service` controls (notifications/lock screen), background audio, and **Picture-in-Picture (PiP)**.
+
+### 🖼️ Images & Galleries
+
+- 🖼️ **Media Libraries:** Browse high-resolution **Images** and **Galleries** with smooth animations and responsive layouts.
+- 🖼️ **Enhanced Fullscreen Image Viewer:** Choose vertical/horizontal swipe direction, use previous/next quick-nav buttons, and avoid accidental UI hide when tapping overlay controls.
+- ▶️ **Configurable Slideshow:** Start/stop slideshow, tune interval/transition/direction/loop, and save preferred defaults.
+- ⭐ **Inline Rating Actions:** Rate either the current **Image** or its parent **Gallery** directly in fullscreen, with remembered rating target selection.
+
+### 🔎 Browsing, Search & Filters
+
+- 👤 **Rich Browsing:** Explore Scenes, Images, Performers, Studios, Tags, Galleries, and Groups with fast pagination and global search.
+- 🔍 **Advanced Filtering:** Use menu sorting (Date, Rating, Play Count, Random) and comprehensive multi-filter sheets.
+
+### 🛠️ Editing & Metadata
+
+- 🛠️ **Metadata Editor:** Update Scene **Title**, **Details**, **Date**, and **URLs** in a fullscreen editor.
+- 🏷️ **Entity Association:** Assign **Studios**, **Performers**, and **Tags** from searchable pickers.
+- 📡 **Smart Scraping:** Pull metadata from multiple scrape matches with **automatic merge** support for existing entities.
+
+### ⚡ Reliability & Configuration
+
+- ⚡ **Performance Optimized:** Includes **Image Deduplication**, prefetching, and automatic recovery from corrupt cache files for low-latency usage.
+- 🛠️ **Native Customization:** Configure server connection, UI preferences, and streaming-related behaviors in one place.
+
 
 ## 🚀 Getting Started
 
@@ -47,10 +65,11 @@ A native Android mobile client for your **Stash** server. Designed for seamless 
 Tailor your experience in the app settings:
 - `server_base_url` & `server_api_key`: Connection details.
 - `prefer_scene_streams`: Toggle between direct file paths and scene-specific stream resolution.
-- `scene_layout_mode`: Switch between **Grid** and **TikTok** view.
+- `scene_layout_mode`: Switch between **List**, **Grid** and **TikTok** view.
 - `autoplay_next`: Enable continuous playback in details and TikTok views.
 - `video_background_playback`: Continue audio when app is minimized.
 - `video_native_pip`: Enable auto-PiP on Android.
+- `image_fullscreen_vertical_swipe`: Fullscreen image swipe direction (vertical, horizontal).
 
 ---
 
