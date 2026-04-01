@@ -182,6 +182,10 @@ class ImageList extends _$ImageList {
     }
   }
 
+  /// Replaces a single image entry in the current in-memory list state.
+  ///
+  /// Useful for optimistic or post-mutation UI refreshes (for example after
+  /// rating updates) without invalidating and refetching the entire page.
   void updateImageInList(entity.Image updatedImage) {
     if (state.hasValue) {
       final images = state.value!;

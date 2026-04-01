@@ -136,6 +136,11 @@ class GraphQLImageRepository implements ImageRepository {
   }
 
   @override
+  /// Sends a direct `imageUpdate` GraphQL mutation for `rating100`.
+  ///
+  /// This method intentionally uses a lightweight inline mutation because only
+  /// the rating field needs to be updated from the fullscreen viewer flow.
+  /// Callers should update local list/detail state separately after success.
   Future<void> updateImageRating(String id, int rating100) async {
     final result = await client.mutate(
       MutationOptions(

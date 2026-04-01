@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_list_provider.dart';
+import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_details_provider.dart';
 import '../../domain/entities/image.dart' as entity;
 import '../providers/image_list_provider.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
@@ -27,6 +28,8 @@ class ImageFullscreenPage extends ConsumerStatefulWidget {
 
 class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   static const _ratingTargetGalleryKey = 'image_rating_target_gallery';
+  static const _imageFullscreenVerticalSwipeKey =
+      'image_fullscreen_vertical_swipe';
 
   late ExtendedPageController _pageController;
   Timer? _slideshowTimer;
@@ -88,6 +91,8 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   }
 
   void _onOverlayPointerDown(PointerDownEvent event) {
+    // Mark the next pointer-up as consumed so overlay control taps do not
+    // toggle UI chrome visibility.
     _ignoreNextOverlayToggle = true;
     _pointerDownPosition = null;
     _pointerDownTime = null;
@@ -149,6 +154,27 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     _slideshowTimer = Timer.periodic(_slideshowInterval, (_) {
       _advanceSlideshow(itemCount);
     });
+  }
+
+  Future<void> _goToPreviousImage() async {
+    // Keep manual navigation behavior aligned with slideshow transition.
+    if (!_pageController.hasClients || _currentIndex <= 0) return;
+    await _pageController.animateToPage(
+      _currentIndex - 1,
+      duration: _slideshowTransition,
+      curve: Curves.easeInOutCubic,
+    );
+  }
+
+  Future<void> _goToNextImage(int itemCount) async {
+    // Keep manual navigation behavior aligned with slideshow transition.
+    if (!_pageController.hasClients || itemCount <= 0) return;
+    if (_currentIndex >= itemCount - 1) return;
+    await _pageController.animateToPage(
+      _currentIndex + 1,
+      duration: _slideshowTransition,
+      curve: Curves.easeInOutCubic,
+    );
   }
 
   Future<void> _toggleSlideshow(int itemCount) async {
@@ -267,6 +293,8 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   }
 
   Future<void> _showRatingDialog(entity.Image image) async {
+    // Rating dialog supports both image-level and gallery-level rating updates.
+    // The last chosen target is persisted so repeated rating workflows are fast.
     final prefs = ref.read(sharedPreferencesProvider);
     final galleryId = ref.read(imageFilterStateProvider).galleryId;
     final canRateGallery = galleryId != null;
@@ -470,11 +498,15 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     BuildContext context,
     entity.Image? currentImage,
     String displayTitle,
-    int itemCount,
+    int loadedItemCount,
+    int totalItemCount,
     double maxOverlayWidth,
     double horizontalPadding,
   ) {
     final colorScheme = Theme.of(context).colorScheme;
+    final rating100 = currentImage?.rating100;
+    final hasRating = rating100 != null && rating100 > 0;
+    final ratingLabel = hasRating ? (rating100 / 20).toStringAsFixed(1) : '';
 
     return Positioned(
       top: 8,
@@ -532,13 +564,49 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  '${_currentIndex + 1} / $itemCount',
+                                  '${_currentIndex + 1} / $totalItemCount',
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ],
                             ),
                           ),
                           const SizedBox(width: 8),
+                          if (hasRating)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colorScheme.surfaceContainerHighest
+                                    .withValues(alpha: 0.88),
+                                borderRadius: BorderRadius.circular(999),
+                                border: Border.all(
+                                  color: colorScheme.outlineVariant.withValues(
+                                    alpha: 0.55,
+                                  ),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.star_rounded,
+                                    size: 14,
+                                    color: colorScheme.tertiary,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    ratingLabel,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelMedium
+                                        ?.copyWith(fontWeight: FontWeight.w700),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          if (hasRating) const SizedBox(width: 8),
                           IconButton.filledTonal(
                             icon: const Icon(Icons.star_rate_rounded),
                             onPressed: currentImage == null
@@ -553,7 +621,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                   ? Icons.stop_rounded
                                   : Icons.slideshow_rounded,
                             ),
-                            onPressed: () => _toggleSlideshow(itemCount),
+                              onPressed: () => _toggleSlideshow(loadedItemCount),
                             tooltip: _isSlideshowPlaying
                                 ? 'Stop slideshow'
                                 : 'Start slideshow',
@@ -573,12 +641,17 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
 
   Widget _buildOverlayFooter(
     BuildContext context,
-    int itemCount,
+    int loadedItemCount,
+    int totalItemCount,
     double maxOverlayWidth,
     double horizontalPadding,
   ) {
     final colorScheme = Theme.of(context).colorScheme;
-    final progress = itemCount > 1 ? _currentIndex / (itemCount - 1) : 0.0;
+    final progress = totalItemCount > 1
+        ? _currentIndex / (totalItemCount - 1)
+        : 0.0;
+    final canGoPrevious = _currentIndex > 0;
+    final canGoNext = _currentIndex < loadedItemCount - 1;
 
     return Positioned(
       left: 0,
@@ -616,6 +689,12 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                       ),
                       child: Row(
                         children: [
+                          IconButton.filledTonal(
+                            icon: const Icon(Icons.chevron_left_rounded),
+                            tooltip: 'Previous image',
+                            onPressed: canGoPrevious ? _goToPreviousImage : null,
+                          ),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: LinearProgressIndicator(
                               value: progress,
@@ -623,12 +702,13 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                               borderRadius: BorderRadius.circular(999),
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          Text(
-                            _isSlideshowPlaying
-                                ? 'Playing'
-                                : 'Tap to toggle UI',
-                            style: Theme.of(context).textTheme.labelMedium,
+                          const SizedBox(width: 10),
+                          IconButton.filledTonal(
+                            icon: const Icon(Icons.chevron_right_rounded),
+                            tooltip: 'Next image',
+                            onPressed: canGoNext
+                              ? () => _goToNextImage(loadedItemCount)
+                                : null,
                           ),
                         ],
                       ),
@@ -647,6 +727,15 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
   Widget build(BuildContext context) {
     final imagesAsync = ref.watch(imageListProvider);
     final headers = ref.watch(mediaHeadersProvider);
+    final galleryId = ref.watch(
+      imageFilterStateProvider.select((value) => value.galleryId),
+    );
+    final galleryDetailsAsync = galleryId == null
+        ? null
+        : ref.watch(galleryDetailsProvider(galleryId));
+    final prefs = ref.watch(sharedPreferencesProvider);
+    final useVerticalSwipe =
+        prefs.getBool(_imageFullscreenVerticalSwipeKey) ?? true;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -669,13 +758,18 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
 
           final currentImage = items.isNotEmpty ? items[_currentIndex] : null;
           final displayTitle = _getDisplayTitle(currentImage);
+          final totalItemCount = galleryDetailsAsync?.maybeWhen(
+                data: (gallery) => gallery.imageCount ?? items.length,
+                orElse: () => items.length,
+              ) ??
+              items.length;
 
           return LayoutBuilder(
             builder: (context, constraints) {
               final isWideLayout =
                   constraints.maxWidth >= Responsive.tabletBreakpoint;
               final scrollDirection =
-                  isWideLayout ? Axis.horizontal : Axis.vertical;
+                useVerticalSwipe ? Axis.vertical : Axis.horizontal;
               final maxOverlayWidth = isWideLayout ? 720.0 : constraints.maxWidth;
               final horizontalPadding = isWideLayout ? 24.0 : 8.0;
 
@@ -781,12 +875,14 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                         currentImage,
                         displayTitle,
                         items.length,
+                        totalItemCount,
                         maxOverlayWidth,
                         horizontalPadding,
                       ),
                       _buildOverlayFooter(
                         context,
                         items.length,
+                        totalItemCount,
                         maxOverlayWidth,
                         horizontalPadding,
                       ),
