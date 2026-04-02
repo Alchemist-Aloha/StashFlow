@@ -9,6 +9,7 @@ import '../../../../core/utils/pip_mode.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../domain/entities/scene.dart';
+import '../../domain/entities/scene_title_utils.dart';
 import '../providers/video_player_provider.dart';
 import '../providers/playback_queue_provider.dart';
 
@@ -465,7 +466,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
               // Debug Info (Follows controls visibility or always visible if you prefer)
               if (playerState.showVideoDebugInfo)
                 Positioned(
-                  top: 8,
+                  top: isFullScreen ? 60 : 8,
                   left: 8,
                   child: IgnorePointer(
                     child: AnimatedOpacity(
@@ -502,18 +503,43 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                 Positioned(
                   top: 8,
                   left: 8,
+                  right: 8,
                   child: SafeArea(
                     child: AnimatedOpacity(
                       opacity: _controlsVisible ? 1 : 0,
                       duration: const Duration(milliseconds: 180),
-                      child: IconButton(
-                        tooltip: 'Exit Fullscreen',
-                        style: _controlButtonStyle(colorScheme),
-                        icon: const Icon(Icons.arrow_back_rounded),
-                        onPressed: () {
-                          widget.onFullScreenToggle?.call();
-                          _showControlsTemporarily();
-                        },
+                      child: Row(
+                        children: [
+                          IconButton(
+                            tooltip: 'Exit Fullscreen',
+                            style: _controlButtonStyle(colorScheme),
+                            icon: const Icon(Icons.arrow_back_rounded),
+                            onPressed: () {
+                              widget.onFullScreenToggle?.call();
+                              _showControlsTemporarily();
+                            },
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              widget.scene.displayTitle,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                shadows: [
+                                  Shadow(
+                                    blurRadius: 4,
+                                    color: Colors.black54,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
