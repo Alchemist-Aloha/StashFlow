@@ -26,3 +26,21 @@ String resolveGraphqlMediaUrl({
 
   return origin.resolve(value).toString();
 }
+
+/// Appends an API key to the given [url] as a query parameter.
+///
+/// This is used to allow external system components (like the Android notification shade)
+/// to access media assets that normally require authentication.
+String appendApiKey(String url, String apiKey) {
+  final trimmedApiKey = apiKey.trim();
+  if (trimmedApiKey.isEmpty) return url;
+
+  final uri = Uri.tryParse(url);
+  if (uri == null) return url;
+
+  // Stash uses 'apikey' as the query parameter for authentication.
+  final newParams = Map<String, dynamic>.from(uri.queryParameters);
+  newParams['apikey'] = trimmedApiKey;
+
+  return uri.replace(queryParameters: newParams).toString();
+}

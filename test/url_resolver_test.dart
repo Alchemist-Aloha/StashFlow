@@ -38,4 +38,32 @@ void main() {
     expect(resolveGraphqlMediaUrl(rawUrl: '', graphqlEndpoint: endpoint), '');
     expect(resolveGraphqlMediaUrl(rawUrl: null, graphqlEndpoint: endpoint), '');
   });
+
+  group('appendApiKey', () {
+    test('appends apikey to url without existing parameters', () {
+      final url = 'http://example.com/image';
+      final result = appendApiKey(url, 'mykey');
+      expect(result, 'http://example.com/image?apikey=mykey');
+    });
+
+    test('appends apikey to url with existing parameters', () {
+      final url = 'http://example.com/image?foo=bar';
+      final result = appendApiKey(url, 'mykey');
+      // order might depend on implementation, but Uri.replace usually appends
+      expect(result, contains('apikey=mykey'));
+      expect(result, contains('foo=bar'));
+    });
+
+    test('returns original url if api key is empty', () {
+      final url = 'http://example.com/image';
+      expect(appendApiKey(url, ''), url);
+      expect(appendApiKey(url, '  '), url);
+    });
+
+    test('handles invalid urls gracefully', () {
+      final url = 'not-a-url';
+      final result = appendApiKey(url, 'key');
+      expect(result, 'not-a-url?apikey=key');
+    });
+  });
 }

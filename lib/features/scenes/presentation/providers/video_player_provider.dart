@@ -9,7 +9,9 @@ import 'playback_queue_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../../../core/utils/pip_mode.dart';
 import '../../../../main.dart'; // To access mediaHandler
+import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
+import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
 
@@ -392,7 +394,10 @@ class PlayerState extends _$PlayerState {
         id: scene.id,
         title: scene.title,
         studio: scene.studioName,
-        thumbnailUri: scene.paths.screenshot,
+        thumbnailUri: appendApiKey(
+          scene.paths.screenshot ?? '',
+          ref.read(serverApiKeyProvider),
+        ),
         duration: videoController.value.duration,
       );
 
@@ -471,7 +476,10 @@ class PlayerState extends _$PlayerState {
       id: scene.id,
       title: scene.title,
       studio: scene.studioName,
-      thumbnailUri: scene.paths.screenshot,
+      thumbnailUri: appendApiKey(
+        scene.paths.screenshot ?? '',
+        ref.read(serverApiKeyProvider),
+      ),
       duration: controller.value.duration,
     );
 
