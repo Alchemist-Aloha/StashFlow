@@ -157,7 +157,7 @@ final class ServerApiKeyProvider
   }
 }
 
-String _$serverApiKeyHash() => r'a7caa4f8a9dc8726451b81345aadcf92f96a60fa';
+String _$serverApiKeyHash() => r'b62fa2ae4117b0cb38b1394859da901242380e5e';
 
 /// A centralized [GraphQLClient] provider for all feature repositories.
 ///

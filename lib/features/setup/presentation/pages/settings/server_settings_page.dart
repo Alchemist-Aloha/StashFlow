@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:graphql/client.dart';
 import 'package:stash_app_flutter/core/data/graphql/graphql_client.dart';
 import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart';
+import 'package:stash_app_flutter/core/data/preferences/secure_storage_provider.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_details_provider.dart';
@@ -58,8 +59,9 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
 
   Future<void> _load() async {
     final prefs = ref.read(sharedPreferencesProvider);
+    final secureStorage = ref.read(secureStorageProvider);
     final url = prefs.getString('server_base_url') ?? '';
-    final apiKey = prefs.getString('server_api_key') ?? '';
+    final apiKey = await secureStorage.read(key: 'server_api_key') ?? '';
 
     _baseUrlController.text = url;
     _apiKeyController.text = apiKey;
@@ -137,12 +139,18 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
     }
 
     final prefs = ref.read(sharedPreferencesProvider);
+    final secureStorage = ref.read(secureStorageProvider);
     final previousUrl = prefs.getString('server_base_url')?.trim() ?? '';
-    final previousApiKey = prefs.getString('server_api_key')?.trim() ?? '';
+    final previousApiKey = await secureStorage.read(key: 'server_api_key') ?? '';
     final newApiKey = _apiKeyController.text.trim();
 
     await prefs.setString('server_base_url', normalizedUrl);
-    await prefs.setString('server_api_key', newApiKey);
+    if (newApiKey.isEmpty) {
+      await secureStorage.delete(key: 'server_api_key');
+    } else {
+      await secureStorage.write(key: 'server_api_key', value: newApiKey);
+    }
+    ref.read(serverApiKeyInternalProvider.notifier).state = newApiKey;
 
     ref.read(sharedPreferencesTriggerProvider.notifier).trigger();
 

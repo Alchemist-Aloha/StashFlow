@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'features/navigation/presentation/router.dart';
+import 'core/data/graphql/graphql_client.dart';
+import 'core/data/preferences/secure_storage_provider.dart';
 import 'core/data/preferences/shared_preferences_provider.dart';
 import 'core/utils/app_log_store.dart';
 import 'core/utils/pip_mode.dart';
@@ -58,6 +61,21 @@ Future<void> main() async {
 
   final sharedPreferences = await SharedPreferences.getInstance();
 
+  const secureStorage = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
+
+  // Migrate API key from SharedPreferences to Secure Storage if needed.
+  if (sharedPreferences.containsKey('server_api_key')) {
+    final oldApiKey = sharedPreferences.getString('server_api_key');
+    if (oldApiKey != null && oldApiKey.isNotEmpty) {
+      await secureStorage.write(key: 'server_api_key', value: oldApiKey);
+    }
+    await sharedPreferences.remove('server_api_key');
+  }
+
+  final initialApiKey = await secureStorage.read(key: 'server_api_key') ?? '';
+
   final oldDebugPrint = debugPrint;
   debugPrint = (String? message, {int? wrapWidth}) {
     if (message != null) {
@@ -83,6 +101,8 @@ Future<void> main() async {
     ProviderScope(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+        secureStorageProvider.overrideWithValue(secureStorage),
+        serverApiKeyInternalProvider.overrideWith((ref) => initialApiKey),
       ],
       child: const MyApp(),
     ),

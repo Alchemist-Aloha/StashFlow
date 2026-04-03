@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import '../preferences/shared_preferences_provider.dart';
 
@@ -51,12 +52,14 @@ String serverUrl(Ref ref) {
   return normalizeGraphqlServerUrl(storedServerUrl);
 }
 
+/// StateProvider for the internal Stash server API Key value.
+final serverApiKeyInternalProvider = StateProvider<String>((ref) => '');
+
 /// Provider for the Stash server API Key.
 @riverpod
 String serverApiKey(Ref ref) {
   ref.watch(sharedPreferencesTriggerProvider);
-  final prefs = ref.watch(sharedPreferencesProvider);
-  return prefs.getString('server_api_key')?.trim() ?? '';
+  return ref.watch(serverApiKeyInternalProvider);
 }
 
 /// A centralized [GraphQLClient] provider for all feature repositories.
