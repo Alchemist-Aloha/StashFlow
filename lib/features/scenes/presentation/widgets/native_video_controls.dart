@@ -474,6 +474,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                 Row(
                                   children: [
                                     IconButton(
+                                      tooltip: value.isPlaying ? 'Pause' : 'Play',
                                       style: _controlButtonStyle(colorScheme),
                                       iconSize: 22,
                                       icon: Icon(
@@ -493,6 +494,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                     if (nextScene != null && !isFullScreen) ...[
                                       const SizedBox(width: 8),
                                       IconButton(
+                                        tooltip: 'Skip Next',
                                         style: _controlButtonStyle(colorScheme),
                                         iconSize: 22,
                                         icon: const Icon(Icons.skip_next_rounded),

@@ -70,6 +70,7 @@ class MiniPlayer extends ConsumerWidget {
                 ),
               ),
               IconButton(
+                tooltip: isPlaying ? 'Pause' : 'Play',
                 onPressed: () =>
                     ref.read(playerStateProvider.notifier).togglePlayPause(),
                 icon: Icon(
@@ -78,6 +79,7 @@ class MiniPlayer extends ConsumerWidget {
                 ),
               ),
               IconButton(
+                tooltip: 'Close Player',
                 onPressed: () => ref.read(playerStateProvider.notifier).stop(),
                 icon: Icon(Icons.close, color: context.colors.onSurface),
               ),
