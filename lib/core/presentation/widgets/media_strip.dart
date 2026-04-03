@@ -107,15 +107,11 @@ class MediaStrip extends StatelessWidget {
               const SizedBox(width: AppTheme.spacingSmall),
           itemBuilder: (context, index) {
             final item = items[index];
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (context.mounted) {
-                StashImage.prefetch(
-                  context,
-                  imageUrl: item.thumbnailUrl,
-                  headers: headers,
-                );
-              }
-            });
+
+            // Remove the redundant addPostFrameCallback that was triggering
+            // a full-size un-optimized prefetch dynamically as items built.
+            // The initial and scroll-based prefetching accurately handle warming
+            // the cache with memCacheWidth constraints.
 
             return RepaintBoundary(
               child: InkWell(
