@@ -8,9 +8,12 @@ import '../../scenes/presentation/providers/scene_list_provider.dart';
 import '../../performers/presentation/providers/performer_list_provider.dart';
 import '../../studios/presentation/providers/studio_list_provider.dart';
 import '../../tags/presentation/providers/tag_list_provider.dart';
+import 'dart:math';
+import 'package:shake_gesture/shake_gesture.dart';
 import '../../galleries/presentation/providers/gallery_list_provider.dart';
 import '../../scenes/presentation/widgets/tiktok_scenes_view.dart';
 import '../../setup/presentation/providers/navigation_tabs_provider.dart';
+import '../../setup/presentation/providers/gesture_settings_provider.dart';
 import 'widgets/mini_player.dart';
 
 class ShellPage extends ConsumerStatefulWidget {
@@ -81,6 +84,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
     final isFullScreen = playerState.isFullScreen || isTiktokFullScreen;
     final isTiktokLayout = ref.watch(sceneTiktokLayoutProvider);
     final isMobile = Responsive.isMobile(context);
+    final shakeEnabled = ref.watch(shakeToRandomEnabledProvider);
 
     final allTabs = ref.watch(navigationTabsProvider);
     final visibleTabs = allTabs.where((t) => t.visible).toList();
@@ -135,6 +139,52 @@ class _ShellPageState extends ConsumerState<ShellPage> {
       );
     }
 
+    Future<void> handleShake() async {
+      if (!shakeEnabled || !mounted) return;
+
+      final currentTab = allTabs[navigationShell.currentIndex];
+      switch (currentTab.type) {
+        case NavigationTabType.scenes:
+          final scenes = ref.read(sceneListProvider).value ?? [];
+          if (scenes.isNotEmpty) {
+            final index = Random().nextInt(scenes.length);
+            ref.read(playbackQueueProvider.notifier).setIndex(index);
+            context.push('/scenes/scene/${scenes[index].id}');
+          }
+          break;
+        case NavigationTabType.performers:
+          final random = await ref
+              .read(performerListProvider.notifier)
+              .getRandomPerformer();
+          if (mounted && random != null) {
+            context.push('/performers/performer/${random.id}');
+          }
+          break;
+        case NavigationTabType.studios:
+          final random = await ref
+              .read(studioListProvider.notifier)
+              .getRandomStudio();
+          if (mounted && random != null) {
+            context.push('/studios/studio/${random.id}');
+          }
+          break;
+        case NavigationTabType.tags:
+          final random = await ref.read(tagListProvider.notifier).getRandomTag();
+          if (mounted && random != null) {
+            context.push('/tags/tag/${random.id}');
+          }
+          break;
+        case NavigationTabType.galleries:
+          final random = await ref
+              .read(galleryListProvider.notifier)
+              .getRandomGallery();
+          if (mounted && random != null) {
+            context.push('/galleries/gallery/${random.id}');
+          }
+          break;
+      }
+    }
+
     final navigationDestinations =
         visibleTabs
             .map(
@@ -183,23 +233,26 @@ class _ShellPageState extends ConsumerState<ShellPage> {
 
     return PopScope(
       canPop: !context.canPop(),
-      child: Scaffold(
-        body: bodyContent,
-        bottomNavigationBar: (isFullScreen || !isMobile)
-            ? null
-            : SafeArea(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: NavigationBar(
-                        selectedIndex: currentUiIndex,
-                        destinations: navigationDestinations,
-                        onDestinationSelected: onDestinationSelected,
+      child: ShakeGesture(
+        onShake: handleShake,
+        child: Scaffold(
+          body: bodyContent,
+          bottomNavigationBar: (isFullScreen || !isMobile)
+              ? null
+              : SafeArea(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: NavigationBar(
+                          selectedIndex: currentUiIndex,
+                          destinations: navigationDestinations,
+                          onDestinationSelected: onDestinationSelected,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }

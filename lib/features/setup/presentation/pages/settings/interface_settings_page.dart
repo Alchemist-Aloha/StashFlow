@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/navigation_customization_provider.dart';
+import 'package:stash_app_flutter/features/setup/presentation/providers/gesture_settings_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/scrape_customization_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_list_provider.dart';
@@ -129,6 +130,20 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           onChanged: (value) async {
                             setState(() => _showRandomNavigation = value);
                             await _saveSettings();
+                          },
+                        ),
+                        const Divider(height: AppTheme.spacingLarge),
+                        SwitchListTile.adaptive(
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text('Shake to Discover'),
+                          subtitle: const Text(
+                            'Shake your device to jump to a random item in the current tab',
+                          ),
+                          value: ref.watch(shakeToRandomEnabledProvider),
+                          onChanged: (value) {
+                            ref
+                                .read(shakeToRandomEnabledProvider.notifier)
+                                .setShakeToRandom(value);
                           },
                         ),
                         const Divider(height: AppTheme.spacingLarge),
