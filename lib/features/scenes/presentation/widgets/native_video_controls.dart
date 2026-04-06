@@ -320,9 +320,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       disabledForegroundColor: colorScheme.onSurfaceVariant.withValues(
         alpha: 0.55,
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      padding: const EdgeInsets.all(10),
-      minimumSize: const Size(44, 44),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      padding: const EdgeInsets.all(8),
+      minimumSize: const Size(38, 38),
     );
   }
 
@@ -354,11 +354,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
           duration: const Duration(milliseconds: 170),
           curve: Curves.easeOutCubic,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: ShapeDecoration(
               color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.92),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(18),
                 side: BorderSide(
                   color: colorScheme.outlineVariant.withValues(alpha: 0.65),
                 ),
@@ -374,13 +374,13 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(icon, size: 20, color: colorScheme.primary),
-                const SizedBox(width: 8),
+                Icon(icon, size: 18, color: colorScheme.primary),
+                const SizedBox(width: 6),
                 Text(
                   label,
                   style: TextStyle(
                     color: colorScheme.onSurface,
-                    fontSize: 15,
+                    fontSize: 13,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.2,
                   ),
@@ -519,13 +519,13 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                               _showControlsTemporarily();
                             },
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               widget.scene.displayTitle,
                               style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 shadows: [
                                   Shadow(
@@ -564,12 +564,12 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                         behavior: HitTestBehavior.opaque,
                         child: RepaintBoundary(
                           child: Container(
-                            margin: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                            padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
+                            margin: const EdgeInsets.fromLTRB(6, 0, 6, 6),
+                            padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
                             decoration: BoxDecoration(
                               color: colorScheme.surface.withValues(alpha: 0.62),
                               borderRadius: BorderRadius.circular(
-                                AppTheme.radiusLarge,
+                                AppTheme.radiusMedium,
                               ),
                               border: Border.all(
                                 color: colorScheme.outlineVariant.withValues(
@@ -581,9 +581,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Container(
-                                  width: 34,
-                                  height: 4,
-                                  margin: const EdgeInsets.only(bottom: 8),
+                                  width: 28,
+                                  height: 3,
+                                  margin: const EdgeInsets.only(bottom: 6),
                                   decoration: BoxDecoration(
                                     color: colorScheme.onSurfaceVariant
                                         .withValues(alpha: 0.55),
@@ -592,12 +592,12 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                 ),
                                 SliderTheme(
                                   data: SliderTheme.of(context).copyWith(
-                                    trackHeight: 4,
+                                    trackHeight: 3,
                                     thumbShape: const RoundSliderThumbShape(
-                                      enabledThumbRadius: 7,
+                                      enabledThumbRadius: 6,
                                     ),
                                     overlayShape: const RoundSliderOverlayShape(
-                                      overlayRadius: 14,
+                                      overlayRadius: 12,
                                     ),
                                     activeTrackColor: colorScheme.primary,
                                     inactiveTrackColor: colorScheme
@@ -647,7 +647,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                     IconButton(
                                       tooltip: value.isPlaying ? 'Pause' : 'Play',
                                       style: _controlButtonStyle(colorScheme),
-                                      iconSize: 22,
+                                      iconSize: 20,
                                       icon: Icon(
                                         value.isPlaying
                                             ? Icons.pause_rounded
@@ -667,7 +667,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                       IconButton(
                                         tooltip: 'Skip Next',
                                         style: _controlButtonStyle(colorScheme),
-                                        iconSize: 22,
+                                        iconSize: 20,
                                         icon: const Icon(Icons.skip_next_rounded),
                                         onPressed: () {
                                           ref
@@ -677,13 +677,13 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                         },
                                       ),
                                     ],
-                                    const SizedBox(width: 10),
+                                    const SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
                                         '${_format(Duration(milliseconds: sliderValue.round()))} / ${_format(duration)}',
                                         style: TextStyle(
                                           color: colorScheme.onSurface,
-                                          fontSize: 12,
+                                          fontSize: 11,
                                           fontWeight: FontWeight.w600,
                                         ),
                                         maxLines: 1,
@@ -736,19 +736,19 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 6,
+                                          horizontal: 8,
+                                          vertical: 4,
                                         ),
                                         decoration: BoxDecoration(
                                           color: colorScheme.surfaceContainerHigh
                                               .withValues(alpha: 0.6),
-                                          borderRadius: BorderRadius.circular(14),
+                                          borderRadius: BorderRadius.circular(10),
                                         ),
                                         child: Text(
                                           _formatSpeed(playbackSpeed),
                                           style: TextStyle(
                                             color: colorScheme.onSurface,
-                                            fontSize: 12,
+                                            fontSize: 11,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
