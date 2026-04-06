@@ -320,9 +320,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       disabledForegroundColor: colorScheme.onSurfaceVariant.withValues(
         alpha: 0.55,
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      padding: const EdgeInsets.all(10),
-      minimumSize: const Size(44, 44),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      padding: const EdgeInsets.all(8),
+      minimumSize: const Size(38, 38),
     );
   }
 
