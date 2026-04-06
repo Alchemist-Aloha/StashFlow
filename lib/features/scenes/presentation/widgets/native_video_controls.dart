@@ -647,7 +647,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                     IconButton(
                                       tooltip: value.isPlaying ? 'Pause' : 'Play',
                                       style: _controlButtonStyle(colorScheme),
-                                      iconSize: 22,
+                                      iconSize: 20,
                                       icon: Icon(
                                         value.isPlaying
                                             ? Icons.pause_rounded
@@ -667,7 +667,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                       IconButton(
                                         tooltip: 'Skip Next',
                                         style: _controlButtonStyle(colorScheme),
-                                        iconSize: 22,
+                                        iconSize: 20,
                                         icon: const Icon(Icons.skip_next_rounded),
                                         onPressed: () {
                                           ref
@@ -677,13 +677,13 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                         },
                                       ),
                                     ],
-                                    const SizedBox(width: 10),
+                                    const SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
                                         '${_format(Duration(milliseconds: sliderValue.round()))} / ${_format(duration)}',
                                         style: TextStyle(
                                           color: colorScheme.onSurface,
-                                          fontSize: 12,
+                                          fontSize: 11,
                                           fontWeight: FontWeight.w600,
                                         ),
                                         maxLines: 1,
@@ -736,19 +736,19 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 6,
+                                          horizontal: 8,
+                                          vertical: 4,
                                         ),
                                         decoration: BoxDecoration(
                                           color: colorScheme.surfaceContainerHigh
                                               .withValues(alpha: 0.6),
-                                          borderRadius: BorderRadius.circular(14),
+                                          borderRadius: BorderRadius.circular(10),
                                         ),
                                         child: Text(
                                           _formatSpeed(playbackSpeed),
                                           style: TextStyle(
                                             color: colorScheme.onSurface,
-                                            fontSize: 12,
+                                            fontSize: 11,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
