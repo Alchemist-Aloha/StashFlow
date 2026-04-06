@@ -354,11 +354,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
           duration: const Duration(milliseconds: 170),
           curve: Curves.easeOutCubic,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: ShapeDecoration(
               color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.92),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(18),
                 side: BorderSide(
                   color: colorScheme.outlineVariant.withValues(alpha: 0.65),
                 ),
@@ -374,13 +374,13 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(icon, size: 20, color: colorScheme.primary),
-                const SizedBox(width: 8),
+                Icon(icon, size: 18, color: colorScheme.primary),
+                const SizedBox(width: 6),
                 Text(
                   label,
                   style: TextStyle(
                     color: colorScheme.onSurface,
-                    fontSize: 15,
+                    fontSize: 13,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.2,
                   ),
