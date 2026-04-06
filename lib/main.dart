@@ -16,6 +16,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'core/presentation/theme/app_theme.dart';
 import 'core/presentation/theme/theme_mode_provider.dart';
 import 'core/presentation/theme/theme_color_provider.dart';
+import 'core/presentation/theme/true_black_provider.dart';
 
 const bool isTestMode = bool.fromEnvironment(
   'FLUTTER_TEST',
@@ -115,13 +116,18 @@ class MyApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final themeMode = ref.watch(appThemeModeProvider);
     final seedColor = ref.watch(appThemeColorProvider);
+    final useTrueBlack = ref.watch(trueBlackEnabledProvider);
 
     return MaterialApp.router(
       routerConfig: router,
       title: 'StashFlow',
       themeMode: themeMode,
       theme: AppTheme.buildTheme(Brightness.light, seedColor),
-      darkTheme: AppTheme.buildTheme(Brightness.dark, seedColor),
+      darkTheme: AppTheme.buildTheme(
+        Brightness.dark,
+        seedColor,
+        useTrueBlack: useTrueBlack,
+      ),
     );
   }
 }

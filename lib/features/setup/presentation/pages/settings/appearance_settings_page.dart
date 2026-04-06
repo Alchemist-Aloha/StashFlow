@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/presentation/theme/theme_mode_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/theme_color_provider.dart';
+import 'package:stash_app_flutter/core/presentation/theme/true_black_provider.dart';
 import '../../widgets/settings_page_shell.dart';
 
 class AppearanceSettingsPage extends ConsumerStatefulWidget {
@@ -135,6 +136,28 @@ class _AppearanceSettingsPageState
                     title: 'Primary Color',
                     subtitle: 'Pick a seed color for the Material 3 palette',
                     child: _buildColorSelector(),
+                  ),
+                  const SizedBox(height: AppTheme.spacingLarge),
+                  SettingsSectionCard(
+                    title: 'Advanced Theming',
+                    subtitle: 'Optimizations for specific screen types',
+                    child: Column(
+                      children: [
+                        SwitchListTile.adaptive(
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text('True Black (AMOLED)'),
+                          subtitle: const Text(
+                            'Use pure black backgrounds in dark mode to save battery on OLED screens',
+                          ),
+                          value: ref.watch(trueBlackEnabledProvider),
+                          onChanged: (value) {
+                            ref
+                                .read(trueBlackEnabledProvider.notifier)
+                                .set(value);
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
