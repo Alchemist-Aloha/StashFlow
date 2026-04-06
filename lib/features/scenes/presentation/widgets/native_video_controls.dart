@@ -519,13 +519,13 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                               _showControlsTemporarily();
                             },
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               widget.scene.displayTitle,
                               style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 shadows: [
                                   Shadow(
