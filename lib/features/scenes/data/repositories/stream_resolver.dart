@@ -95,22 +95,26 @@ class StreamResolver extends _$StreamResolver {
     final List<Query$SceneStreamsForPlayer$sceneStreams> rootStreams =
         result.parsedData?.sceneStreams ?? [];
     final List<Query$SceneStreamsForPlayer$findScene$sceneStreams>
-        nestedStreams = result.parsedData?.findScene?.sceneStreams ?? [];
+    nestedStreams = result.parsedData?.findScene?.sceneStreams ?? [];
 
     final List<StreamChoice> choices = [];
     for (final s in rootStreams) {
-      choices.add(StreamChoice(
-        url: s.url,
-        mimeType: s.mime_type ?? 'video/mp4',
-        label: s.label,
-      ));
+      choices.add(
+        StreamChoice(
+          url: s.url,
+          mimeType: s.mime_type ?? 'video/mp4',
+          label: s.label,
+        ),
+      );
     }
     for (final s in nestedStreams) {
-      choices.add(StreamChoice(
-        url: s.url,
-        mimeType: s.mime_type ?? 'video/mp4',
-        label: s.label,
-      ));
+      choices.add(
+        StreamChoice(
+          url: s.url,
+          mimeType: s.mime_type ?? 'video/mp4',
+          label: s.label,
+        ),
+      );
     }
 
     if (choices.isEmpty) {

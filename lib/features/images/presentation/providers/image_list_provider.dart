@@ -76,8 +76,10 @@ class ImageFilterState extends _$ImageFilterState {
     return (galleryId: null, filter: const ImageFilter());
   }
 
-  void setGalleryId(String? id) => state = (galleryId: id, filter: state.filter);
-  void updateFilter(ImageFilter filter) => state = (galleryId: state.galleryId, filter: filter);
+  void setGalleryId(String? id) =>
+      state = (galleryId: id, filter: state.filter);
+  void updateFilter(ImageFilter filter) =>
+      state = (galleryId: state.galleryId, filter: filter);
   void clear() => state = (galleryId: null, filter: const ImageFilter());
   void clearGalleryId() => state = (galleryId: null, filter: state.filter);
 

@@ -141,7 +141,8 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
     final prefs = ref.read(sharedPreferencesProvider);
     final secureStorage = ref.read(secureStorageProvider);
     final previousUrl = prefs.getString('server_base_url')?.trim() ?? '';
-    final previousApiKey = await secureStorage.read(key: 'server_api_key') ?? '';
+    final previousApiKey =
+        await secureStorage.read(key: 'server_api_key') ?? '';
     final newApiKey = _apiKeyController.text.trim();
 
     await prefs.setString('server_base_url', normalizedUrl);

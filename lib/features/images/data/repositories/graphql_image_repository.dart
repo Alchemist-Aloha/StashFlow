@@ -58,7 +58,8 @@ class GraphQLImageRepository implements ImageRepository {
             resolution: (imageFilter?.resolutions?.isNotEmpty ?? false)
                 ? Input$ResolutionCriterionInput(
                     value: fromJson$Enum$ResolutionEnum(
-                        imageFilter!.resolutions!.first),
+                      imageFilter!.resolutions!.first,
+                    ),
                     modifier: Enum$CriterionModifier.EQUALS,
                   )
                 : null,

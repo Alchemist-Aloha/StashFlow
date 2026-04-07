@@ -48,10 +48,9 @@ class GalleryCard extends ConsumerWidget {
       title: 'Rate ${gallery.displayName}',
       onRatingSelected: (rating) async {
         try {
-          await ref.read(galleryRepositoryProvider).updateGalleryRating(
-                gallery.id,
-                rating,
-              );
+          await ref
+              .read(galleryRepositoryProvider)
+              .updateGalleryRating(gallery.id, rating);
 
           // Fetch fresh data for the specific gallery to ensure UI is in sync
           final updatedGallery = await ref

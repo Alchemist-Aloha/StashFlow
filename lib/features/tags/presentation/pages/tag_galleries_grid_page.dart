@@ -28,9 +28,8 @@ class TagGalleriesGridPage extends ConsumerWidget {
       provider: galleriesAsync,
       imageUrlBuilder: (item) => item.thumbnailUrl,
       onRefresh: () => ref.refresh(tagGalleriesGridProvider(tagId).future),
-      onFetchNextPage: () => ref
-          .read(tagGalleriesGridProvider(tagId).notifier)
-          .fetchNextPage(),
+      onFetchNextPage: () =>
+          ref.read(tagGalleriesGridProvider(tagId).notifier).fetchNextPage(),
       gridDelegate: isGridView ? GridUtils.createDelegate() : null,
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, item, memCacheWidth, memCacheHeight) => GridCard(

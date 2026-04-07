@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/presentation/theme/app_theme.dart';
-import '../../providers/navigation_tabs_provider.dart';
-import '../../widgets/settings_page_shell.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/features/setup/presentation/providers/navigation_tabs_provider.dart';
+import 'package:stash_app_flutter/features/setup/presentation/widgets/settings_page_shell.dart';
 
 class NavigationCustomizationPage extends ConsumerWidget {
   const NavigationCustomizationPage({super.key});

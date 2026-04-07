@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/navigation_customization_provider.dart';
@@ -57,8 +58,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
         prefs.getBool(_imageFullscreenVerticalSwipeKey) ?? true;
 
     _performerMediaGridLayout = ref.read(performerMediaGridLayoutProvider);
-    _performerGalleriesGridLayout =
-        ref.read(performerGalleriesGridLayoutProvider);
+    _performerGalleriesGridLayout = ref.read(
+      performerGalleriesGridLayoutProvider,
+    );
     _studioMediaGridLayout = ref.read(studioMediaGridLayoutProvider);
     _studioGalleriesGridLayout = ref.read(studioGalleriesGridLayoutProvider);
     _tagMediaGridLayout = ref.read(tagMediaGridLayoutProvider);
@@ -318,7 +320,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           subtitle: 'Layout for Performer Galleries page',
                           currentValue: _performerGalleriesGridLayout,
                           onChanged: (isGrid) {
-                            setState(() => _performerGalleriesGridLayout = isGrid);
+                            setState(
+                              () => _performerGalleriesGridLayout = isGrid,
+                            );
                             _saveSettings();
                           },
                         ),

@@ -22,4 +22,6 @@ class GestureSettingsNotifier extends Notifier<bool> {
 
 /// Provider for the "Shake to Random" gesture setting.
 final shakeToRandomEnabledProvider =
-    NotifierProvider<GestureSettingsNotifier, bool>(GestureSettingsNotifier.new);
+    NotifierProvider<GestureSettingsNotifier, bool>(
+      GestureSettingsNotifier.new,
+    );

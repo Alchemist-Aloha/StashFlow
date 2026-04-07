@@ -64,17 +64,19 @@ class GraphQLGalleryRepository implements GalleryRepository {
                   )
                 : null,
             organized: galleryFilter?.organized,
-            image_count: (galleryFilter?.minImageCount != null ||
+            image_count:
+                (galleryFilter?.minImageCount != null ||
                     galleryFilter?.maxImageCount != null)
                 ? Input$IntCriterionInput(
                     value: galleryFilter?.minImageCount ?? 0,
                     value2: galleryFilter?.maxImageCount,
-                    modifier: galleryFilter?.minImageCount != null &&
+                    modifier:
+                        galleryFilter?.minImageCount != null &&
                             galleryFilter?.maxImageCount != null
                         ? Enum$CriterionModifier.BETWEEN
                         : (galleryFilter?.minImageCount != null
-                            ? Enum$CriterionModifier.GREATER_THAN
-                            : Enum$CriterionModifier.LESS_THAN),
+                              ? Enum$CriterionModifier.GREATER_THAN
+                              : Enum$CriterionModifier.LESS_THAN),
                   )
                 : null,
           ),
@@ -119,4 +121,3 @@ class GraphQLGalleryRepository implements GalleryRepository {
     if (result.hasException) throw result.exception!;
   }
 }
-

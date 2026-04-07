@@ -5,7 +5,9 @@ import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
 void main() {
   test('BaseRepository.validateResult throws on exception', () {
     final result = QueryResult.unexecuted.copyWith(
-      exception: OperationException(graphqlErrors: [const GraphQLError(message: 'Error')]),
+      exception: OperationException(
+        graphqlErrors: [const GraphQLError(message: 'Error')],
+      ),
     );
 
     expect(() => BaseRepository.validateResult(result), throwsException);

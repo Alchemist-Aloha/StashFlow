@@ -121,7 +121,9 @@ class GraphQLTagRepository implements TagRepository {
                 ? Enum$SortDirectionEnum.DESC
                 : Enum$SortDirectionEnum.ASC,
           ),
-          tag_filter: favoritesOnly ? Input$TagFilterType(favorite: true) : null,
+          tag_filter: favoritesOnly
+              ? Input$TagFilterType(favorite: true)
+              : null,
         ),
       ),
     );

@@ -19,9 +19,9 @@ class SettingsHubPage extends ConsumerWidget {
         children: [
           Text(
             'Customize StashFlow',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 4),
           Text(

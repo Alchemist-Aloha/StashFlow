@@ -413,7 +413,8 @@ class PerformerDetailsPage extends ConsumerWidget {
                                           onTap: () {
                                             ref
                                                 .read(
-                                                  imageFilterStateProvider.notifier,
+                                                  imageFilterStateProvider
+                                                      .notifier,
                                                 )
                                                 .setGalleryId(item.galleryId);
                                             context.push('/galleries/images');

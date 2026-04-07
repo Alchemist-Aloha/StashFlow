@@ -87,7 +87,8 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
     int index;
     do {
       index = random.nextInt(galleries.length);
-    } while (galleries.length > 1 && galleries[index].id == _lastRandomGalleryId);
+    } while (galleries.length > 1 &&
+        galleries[index].id == _lastRandomGalleryId);
 
     final gallery = galleries[index];
     _lastRandomGalleryId = gallery.id;
@@ -260,9 +261,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
 
     final filterState = ref.watch(imageFilterStateProvider);
     final filterActive = ref.watch(
-      imageFilterStateProvider.select(
-        (s) => s.filter != const ImageFilter(),
-      ),
+      imageFilterStateProvider.select((s) => s.filter != const ImageFilter()),
     );
     final organizedOnly = ref.watch(imageOrganizedOnlyProvider);
     final hasActiveFilters = filterActive || organizedOnly;
@@ -340,21 +339,23 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
           : null,
       sortBar: filterState.galleryId != null
           ? Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacingMedium,
-              vertical: AppTheme.spacingSmall,
-            ),
-            child: Row(
-              children: [
-                InputChip(
-                  label: const Text('Filtered by Gallery'),
-                  onDeleted: () {
-                    ref.read(imageFilterStateProvider.notifier).clearGalleryId();
-                  },
-                ),
-              ],
-            ),
-          )
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppTheme.spacingMedium,
+                vertical: AppTheme.spacingSmall,
+              ),
+              child: Row(
+                children: [
+                  InputChip(
+                    label: const Text('Filtered by Gallery'),
+                    onDeleted: () {
+                      ref
+                          .read(imageFilterStateProvider.notifier)
+                          .clearGalleryId();
+                    },
+                  ),
+                ],
+              ),
+            )
           : null,
       customBody: CustomScrollView(
         controller: ref.watch(imageScrollControllerProvider),
@@ -370,8 +371,8 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                 if (index >= items.length) return const SizedBox.shrink();
 
                 final screenWidth = MediaQuery.sizeOf(context).width;
-                final memCacheWidth =
-                    (screenWidth / crossAxisCount * 1.5).toInt();
+                final memCacheWidth = (screenWidth / crossAxisCount * 1.5)
+                    .toInt();
 
                 return RepaintBoundary(
                   child: ImageCard(

@@ -75,7 +75,10 @@ class NavigationTabsNotifier extends Notifier<List<NavigationTab>> {
   Future<void> updateTabs(List<NavigationTab> tabs) async {
     state = tabs;
     final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setString(_key, jsonEncode(tabs.map((t) => t.toJson()).toList()));
+    await prefs.setString(
+      _key,
+      jsonEncode(tabs.map((t) => t.toJson()).toList()),
+    );
   }
 
   /// Toggles the visibility of a specific tab.

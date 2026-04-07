@@ -5,7 +5,7 @@ import '../theme/app_theme.dart';
 class RatingBottomSheet extends StatelessWidget {
   /// The current rating (0-100).
   final int initialRating;
-  
+
   /// The title of the bottom sheet.
   final String title;
 

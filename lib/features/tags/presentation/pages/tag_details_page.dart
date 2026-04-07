@@ -119,9 +119,8 @@ class TagDetailsPage extends ConsumerWidget {
                         const Divider(height: 32, color: Colors.grey),
                         SectionHeader(
                           title: 'Media',
-                          onViewAll: () => context.push(
-                            '/tags/tag/${tag.id}/media',
-                          ),
+                          onViewAll: () =>
+                              context.push('/tags/tag/${tag.id}/media'),
                         ),
                         mediaAsync.when(
                           data: (mediaItems) {
@@ -194,7 +193,8 @@ class TagDetailsPage extends ConsumerWidget {
                                           onTap: () {
                                             ref
                                                 .read(
-                                                  imageFilterStateProvider.notifier,
+                                                  imageFilterStateProvider
+                                                      .notifier,
                                                 )
                                                 .setGalleryId(item.galleryId);
                                             context.push('/galleries/images');

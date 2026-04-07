@@ -178,9 +178,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     var target = current + Duration(seconds: seconds);
     if (target < Duration.zero) target = Duration.zero;
     if (target > duration) target = duration;
-    unawaited(
-      _seekToKeepingPlayback(target, keepPlayingAfterSeek: wasPlaying),
-    );
+    unawaited(_seekToKeepingPlayback(target, keepPlayingAfterSeek: wasPlaying));
     _showSeekFeedback(seconds, transient: true);
   }
 
@@ -263,7 +261,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     _dragSeekTarget = Duration(milliseconds: targetMs.round());
 
     final signedDeltaSeconds =
-        ((_dragSeekTarget!.inMilliseconds - startPosition.inMilliseconds) / 1000)
+        ((_dragSeekTarget!.inMilliseconds - startPosition.inMilliseconds) /
+                1000)
             .round();
     _showSeekFeedback(signedDeltaSeconds);
   }
@@ -276,7 +275,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
           keepPlayingAfterSeek: _dragSeekShouldResumePlayback,
         ),
       );
-    } else if (_dragSeekShouldResumePlayback && !widget.controller.value.isPlaying) {
+    } else if (_dragSeekShouldResumePlayback &&
+        !widget.controller.value.isPlaying) {
       unawaited(widget.controller.play());
     }
 
@@ -356,7 +356,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: ShapeDecoration(
-              color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.92),
+              color: colorScheme.surfaceContainerHighest.withValues(
+                alpha: 0.92,
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(18),
                 side: BorderSide(
@@ -567,7 +569,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                             margin: const EdgeInsets.fromLTRB(6, 0, 6, 6),
                             padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
                             decoration: BoxDecoration(
-                              color: colorScheme.surface.withValues(alpha: 0.62),
+                              color: colorScheme.surface.withValues(
+                                alpha: 0.62,
+                              ),
                               borderRadius: BorderRadius.circular(
                                 AppTheme.radiusMedium,
                               ),
@@ -645,7 +649,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                 Row(
                                   children: [
                                     IconButton(
-                                      tooltip: value.isPlaying ? 'Pause' : 'Play',
+                                      tooltip: value.isPlaying
+                                          ? 'Pause'
+                                          : 'Play',
                                       style: _controlButtonStyle(colorScheme),
                                       iconSize: 20,
                                       icon: Icon(
@@ -668,10 +674,14 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                         tooltip: 'Skip Next',
                                         style: _controlButtonStyle(colorScheme),
                                         iconSize: 20,
-                                        icon: const Icon(Icons.skip_next_rounded),
+                                        icon: const Icon(
+                                          Icons.skip_next_rounded,
+                                        ),
                                         onPressed: () {
                                           ref
-                                              .read(playerStateProvider.notifier)
+                                              .read(
+                                                playerStateProvider.notifier,
+                                              )
                                               .playNext();
                                           _showControlsTemporarily();
                                         },
@@ -697,9 +707,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                       color: colorScheme.surfaceContainerHigh,
                                       surfaceTintColor: colorScheme.surfaceTint,
                                       onSelected: (speed) async {
-                                        await widget.controller.setPlaybackSpeed(
-                                          speed,
-                                        );
+                                        await widget.controller
+                                            .setPlaybackSpeed(speed);
                                         _showControlsTemporarily();
                                       },
                                       itemBuilder: (context) {
@@ -712,7 +721,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                                     Icon(
                                                       speed == playbackSpeed
                                                           ? Icons.check_circle
-                                                          : Icons.circle_outlined,
+                                                          : Icons
+                                                                .circle_outlined,
                                                       size: 16,
                                                       color:
                                                           speed == playbackSpeed
@@ -740,9 +750,12 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                           vertical: 4,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: colorScheme.surfaceContainerHigh
+                                          color: colorScheme
+                                              .surfaceContainerHigh
                                               .withValues(alpha: 0.6),
-                                          borderRadius: BorderRadius.circular(10),
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
                                         ),
                                         child: Text(
                                           _formatSpeed(playbackSpeed),
@@ -771,8 +784,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                             );
                                           }
                                           await PipMode.enterIfAvailable(
-                                            aspectRatio:
-                                                widget.controller.value.aspectRatio,
+                                            aspectRatio: widget
+                                                .controller
+                                                .value
+                                                .aspectRatio,
                                           );
                                           _showControlsTemporarily();
                                         },

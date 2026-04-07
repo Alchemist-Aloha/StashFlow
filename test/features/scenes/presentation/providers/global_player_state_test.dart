@@ -110,10 +110,7 @@ void main() {
       });
 
       test('updates specified values', () {
-        final state = GlobalPlayerState(
-          isPlaying: false,
-          isFullScreen: false,
-        );
+        final state = GlobalPlayerState(isPlaying: false, isFullScreen: false);
 
         final newState = state.copyWith(
           isPlaying: true,
@@ -158,7 +155,6 @@ void main() {
         expect(newState.isPlaying, isTrue);
         expect(newState.autoplayNext, isTrue);
       });
-
     });
   });
 }

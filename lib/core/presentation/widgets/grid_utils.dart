@@ -4,7 +4,9 @@ import '../theme/app_theme.dart';
 /// Utilities for maintaining a consistent grid layout across the application.
 class GridUtils {
   /// The standard padding for grid containers.
-  static const EdgeInsets defaultPadding = EdgeInsets.all(AppTheme.spacingSmall);
+  static const EdgeInsets defaultPadding = EdgeInsets.all(
+    AppTheme.spacingSmall,
+  );
 
   /// The standard aspect ratio for grid items that include title and subtitle.
   static const double defaultChildAspectRatio = 1.15;

@@ -12,10 +12,7 @@ FutureOr<List<PerformerGalleryItem>> tagGalleries(Ref ref, String tagId) async {
   ref.keepAlive();
   final repository = ref.read(galleryRepositoryProvider);
 
-  final galleries = await repository.findGalleries(
-    perPage: 24,
-    tagId: tagId,
-  );
+  final galleries = await repository.findGalleries(perPage: 24, tagId: tagId);
 
   final prefs = ref.read(sharedPreferencesProvider);
   final storedServerUrl = prefs.getString('server_base_url')?.trim() ?? '';
@@ -101,7 +98,10 @@ class TagGalleriesGrid extends _$TagGalleriesGrid {
         _hasMore = false;
       } else {
         _currentPage = nextPage;
-        state = AsyncData([...(state.value ?? <PerformerGalleryItem>[]), ...nextItems]);
+        state = AsyncData([
+          ...(state.value ?? <PerformerGalleryItem>[]),
+          ...nextItems,
+        ]);
       }
     } finally {
       _isLoadingMore = false;

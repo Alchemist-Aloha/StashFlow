@@ -5,6 +5,7 @@ import '../../../core/utils/responsive.dart';
 import '../../../core/data/graphql/graphql_client.dart';
 import '../../scenes/presentation/providers/video_player_provider.dart';
 import '../../scenes/presentation/providers/scene_list_provider.dart';
+import '../../scenes/presentation/providers/playback_queue_provider.dart';
 import '../../performers/presentation/providers/performer_list_provider.dart';
 import '../../studios/presentation/providers/studio_list_provider.dart';
 import '../../tags/presentation/providers/tag_list_provider.dart';
@@ -156,7 +157,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
           final random = await ref
               .read(performerListProvider.notifier)
               .getRandomPerformer();
-          if (mounted && random != null) {
+          if (mounted && context.mounted && random != null) {
             context.push('/performers/performer/${random.id}');
           }
           break;
@@ -164,13 +165,15 @@ class _ShellPageState extends ConsumerState<ShellPage> {
           final random = await ref
               .read(studioListProvider.notifier)
               .getRandomStudio();
-          if (mounted && random != null) {
+          if (mounted && context.mounted && random != null) {
             context.push('/studios/studio/${random.id}');
           }
           break;
         case NavigationTabType.tags:
-          final random = await ref.read(tagListProvider.notifier).getRandomTag();
-          if (mounted && random != null) {
+          final random = await ref
+              .read(tagListProvider.notifier)
+              .getRandomTag();
+          if (mounted && context.mounted && random != null) {
             context.push('/tags/tag/${random.id}');
           }
           break;
@@ -178,40 +181,34 @@ class _ShellPageState extends ConsumerState<ShellPage> {
           final random = await ref
               .read(galleryListProvider.notifier)
               .getRandomGallery();
-          if (mounted && random != null) {
+          if (mounted && context.mounted && random != null) {
             context.push('/galleries/gallery/${random.id}');
           }
           break;
       }
     }
 
-    final navigationDestinations =
-        visibleTabs
-            .map(
-              (t) => NavigationDestination(
-                icon: Icon(t.type.icon),
-                label: t.type.label,
-              ),
-            )
-            .toList();
+    final navigationDestinations = visibleTabs
+        .map(
+          (t) => NavigationDestination(
+            icon: Icon(t.type.icon),
+            label: t.type.label,
+          ),
+        )
+        .toList();
 
-    final navigationRailDestinations =
-        visibleTabs
-            .map(
-              (t) => NavigationRailDestination(
-                icon: Icon(t.type.icon),
-                label: Text(t.type.label),
-              ),
-            )
-            .toList();
+    final navigationRailDestinations = visibleTabs
+        .map(
+          (t) => NavigationRailDestination(
+            icon: Icon(t.type.icon),
+            label: Text(t.type.label),
+          ),
+        )
+        .toList();
 
     Widget bodyContent = Column(
       children: [
-        Expanded(
-          child: RepaintBoundary(
-            child: navigationShell,
-          ),
-        ),
+        Expanded(child: RepaintBoundary(child: navigationShell)),
         if (!hideMiniPlayer) const MiniPlayer(),
       ],
     );

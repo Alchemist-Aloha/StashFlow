@@ -20,7 +20,7 @@ class SettingsPageShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final serverUrl = ref.watch(serverUrlProvider);
     final canGoToLibrary = serverUrl.isNotEmpty;
-    
+
     // Use maybeOf to avoid throwing in tests that don't provide a GoRouter
     final router = GoRouter.maybeOf(context);
     final canPop = router?.canPop() ?? false;
@@ -35,10 +35,7 @@ class SettingsPageShell extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        leading: leading,
-      ),
+      appBar: AppBar(title: Text(title), leading: leading),
       body: SafeArea(
         child: Align(
           alignment: Alignment.topCenter,
@@ -151,7 +148,8 @@ class SettingsActionCard extends StatelessWidget {
             color: colorScheme.onSurfaceVariant,
           ),
         ),
-        trailing: trailing ??
+        trailing:
+            trailing ??
             Icon(
               Icons.arrow_forward_ios_rounded,
               size: 16,

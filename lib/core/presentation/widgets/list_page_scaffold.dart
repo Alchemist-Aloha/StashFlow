@@ -72,7 +72,8 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     T item,
     int? memCacheWidth,
     int? memCacheHeight,
-  )? itemBuilder;
+  )?
+  itemBuilder;
 
   /// Optional custom body to replace the default list/grid view.
   final Widget? customBody;
@@ -207,10 +208,9 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
 
-      final count =
-          items.length < widget.prefetchDistance
-              ? items.length
-              : widget.prefetchDistance;
+      final count = items.length < widget.prefetchDistance
+          ? items.length
+          : widget.prefetchDistance;
       final headers = ref.read(mediaHeadersProvider);
       final isGrid = widget.gridDelegate != null;
 
@@ -275,10 +275,9 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
           _getResponsiveGridDelegate(context)
               as SliverGridDelegateWithFixedCrossAxisCount;
       final crossAxisCount = delegate.crossAxisCount;
-      final padding =
-          widget.padding is EdgeInsets
-              ? (widget.padding as EdgeInsets).horizontal
-              : 0.0;
+      final padding = widget.padding is EdgeInsets
+          ? (widget.padding as EdgeInsets).horizontal
+          : 0.0;
       final availableWidth = MediaQuery.sizeOf(context).width - padding;
       final itemWidth =
           (availableWidth -
@@ -326,10 +325,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
       }
     } else {
       final stride = widget.itemExtent ?? _measuredItemExtent ?? 300.0;
-      final visibleIndex = (offset / stride).floor().clamp(
-        0,
-        items.length - 1,
-      );
+      final visibleIndex = (offset / stride).floor().clamp(0, items.length - 1);
 
       if (visibleIndex == _lastVisibleIndexPrefetched) return;
       _lastVisibleIndexPrefetched = visibleIndex;
@@ -366,73 +362,71 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:
-          widget.hideAppBar
-              ? null
-              : AppBar(
-                scrolledUnderElevation: 4.0,
-                title:
-                    _isSearching
-                        ? TextField(
-                          controller: _searchController,
-                          autofocus: true,
-                          decoration: InputDecoration(
-                            hintText: widget.searchHint,
-                            border: InputBorder.none,
-                            hintStyle: TextStyle(
-                              color: context.colors.onSurface.withValues(
-                                alpha: 0.5,
-                              ),
-                            ),
-                          ),
-                          style: TextStyle(color: context.colors.onSurface),
-                          onChanged: widget.onSearchChanged,
-                        )
-                        : Text(
-                          widget.title,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: -0.5,
+      appBar: widget.hideAppBar
+          ? null
+          : AppBar(
+              scrolledUnderElevation: 4.0,
+              title: _isSearching
+                  ? TextField(
+                      controller: _searchController,
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        hintText: widget.searchHint,
+                        border: InputBorder.none,
+                        hintStyle: TextStyle(
+                          color: context.colors.onSurface.withValues(
+                            alpha: 0.5,
                           ),
                         ),
-                actions: [
-                  if (_isSearching)
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () {
-                        setState(() => _isSearching = false);
-                        _searchController.clear();
-                        widget.onSearchChanged('');
-                      },
-                    ),
-                  if (!_isSearching) ...[
-                    if (widget.onSortPressed != null)
-                      IconButton(
-                        icon: const Icon(Icons.sort),
-                        onPressed: widget.onSortPressed,
-                        tooltip: 'Sort',
                       ),
-                    if (widget.onFilterPressed != null)
-                      IconButton(
-                        icon: const Icon(Icons.filter_list),
-                        onPressed: widget.onFilterPressed,
-                        tooltip: 'Filter',
+                      style: TextStyle(color: context.colors.onSurface),
+                      onChanged: widget.onSearchChanged,
+                    )
+                  : Text(
+                      widget.title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -0.5,
                       ),
-                    IconButton(
-                      icon: const Icon(Icons.search),
-                      onPressed: () => setState(() => _isSearching = true),
-                      tooltip: 'Search',
                     ),
-                  ],
-                  if (!_isSearching)
+              actions: [
+                if (_isSearching)
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () {
+                      setState(() => _isSearching = false);
+                      _searchController.clear();
+                      widget.onSearchChanged('');
+                    },
+                  ),
+                if (!_isSearching) ...[
+                  if (widget.onSortPressed != null)
                     IconButton(
-                      icon: const Icon(Icons.settings),
-                      onPressed: () => context.push('/settings'),
-                      tooltip: 'Settings',
+                      icon: const Icon(Icons.sort),
+                      onPressed: widget.onSortPressed,
+                      tooltip: 'Sort',
                     ),
-                  ...widget.actions,
+                  if (widget.onFilterPressed != null)
+                    IconButton(
+                      icon: const Icon(Icons.filter_list),
+                      onPressed: widget.onFilterPressed,
+                      tooltip: 'Filter',
+                    ),
+                  IconButton(
+                    icon: const Icon(Icons.search),
+                    onPressed: () => setState(() => _isSearching = true),
+                    tooltip: 'Search',
+                  ),
                 ],
-              ),
+                if (!_isSearching)
+                  IconButton(
+                    icon: const Icon(Icons.settings),
+                    onPressed: () => context.push('/settings'),
+                    tooltip: 'Settings',
+                  ),
+                ...widget.actions,
+              ],
+            ),
       body: Column(
         children: [
           if (widget.sortBar != null) widget.sortBar!,
@@ -480,8 +474,9 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                       memCacheWidth =
                           (screenWidth / delegate.crossAxisCount * 1.5).toInt();
                     } else {
-                      memCacheWidth =
-                          screenWidth > 600 ? 600 : screenWidth.toInt();
+                      memCacheWidth = screenWidth > 600
+                          ? 600
+                          : screenWidth.toInt();
                     }
                   }
                 }
@@ -490,76 +485,82 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                     widget.customBody ??
                     (widget.gridDelegate != null
                         ? GridView.builder(
-                          controller: widget.scrollController,
-                          padding: widget.padding,
-                          gridDelegate: _getResponsiveGridDelegate(context),
-                          itemCount: items.length,
-                          itemBuilder: (context, index) {
-                            if (index == 0 && widget.imageUrlBuilder != null && _measuredItemExtent == null) {
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                if (_measuredItemExtent == null &&
-                                    _firstItemKey.currentContext != null) {
-                                  final size =
-                                      _firstItemKey.currentContext!.size;
-                                  if (size != null) {
-                                    setState(() {
-                                      _measuredItemExtent = size.height;
-                                    });
+                            controller: widget.scrollController,
+                            padding: widget.padding,
+                            gridDelegate: _getResponsiveGridDelegate(context),
+                            itemCount: items.length,
+                            itemBuilder: (context, index) {
+                              if (index == 0 &&
+                                  widget.imageUrlBuilder != null &&
+                                  _measuredItemExtent == null) {
+                                WidgetsBinding.instance.addPostFrameCallback((
+                                  _,
+                                ) {
+                                  if (_measuredItemExtent == null &&
+                                      _firstItemKey.currentContext != null) {
+                                    final size =
+                                        _firstItemKey.currentContext!.size;
+                                    if (size != null) {
+                                      setState(() {
+                                        _measuredItemExtent = size.height;
+                                      });
+                                    }
                                   }
-                                }
-                              });
-                            }
+                                });
+                              }
 
-                            return RepaintBoundary(
-                              child: KeyedSubtree(
-                                key: index == 0 ? _firstItemKey : null,
-                                child: widget.itemBuilder!(
-                                  context,
-                                  items[index],
-                                  memCacheWidth,
-                                  null,
+                              return RepaintBoundary(
+                                child: KeyedSubtree(
+                                  key: index == 0 ? _firstItemKey : null,
+                                  child: widget.itemBuilder!(
+                                    context,
+                                    items[index],
+                                    memCacheWidth,
+                                    null,
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
-                        )
+                              );
+                            },
+                          )
                         : ListView.builder(
-                          controller: widget.scrollController,
-                          padding: widget.padding,
-                          itemCount: items.length,
-                          itemExtent: widget.itemExtent,
-                          itemBuilder: (context, index) {
-                            if (index == 0 &&
-                                widget.imageUrlBuilder != null &&
-                                widget.itemExtent == null &&
-                                _measuredItemExtent == null) {
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                if (_measuredItemExtent == null &&
-                                    _firstItemKey.currentContext != null) {
-                                  final size =
-                                      _firstItemKey.currentContext!.size;
-                                  if (size != null) {
-                                    setState(() {
-                                      _measuredItemExtent = size.height;
-                                    });
+                            controller: widget.scrollController,
+                            padding: widget.padding,
+                            itemCount: items.length,
+                            itemExtent: widget.itemExtent,
+                            itemBuilder: (context, index) {
+                              if (index == 0 &&
+                                  widget.imageUrlBuilder != null &&
+                                  widget.itemExtent == null &&
+                                  _measuredItemExtent == null) {
+                                WidgetsBinding.instance.addPostFrameCallback((
+                                  _,
+                                ) {
+                                  if (_measuredItemExtent == null &&
+                                      _firstItemKey.currentContext != null) {
+                                    final size =
+                                        _firstItemKey.currentContext!.size;
+                                    if (size != null) {
+                                      setState(() {
+                                        _measuredItemExtent = size.height;
+                                      });
+                                    }
                                   }
-                                }
-                              });
-                            }
+                                });
+                              }
 
-                            return RepaintBoundary(
-                              child: KeyedSubtree(
-                                key: index == 0 ? _firstItemKey : null,
-                                child: widget.itemBuilder!(
-                                  context,
-                                  items[index],
-                                  memCacheWidth,
-                                  null,
+                              return RepaintBoundary(
+                                child: KeyedSubtree(
+                                  key: index == 0 ? _firstItemKey : null,
+                                  child: widget.itemBuilder!(
+                                    context,
+                                    items[index],
+                                    memCacheWidth,
+                                    null,
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
-                        ));
+                              );
+                            },
+                          ));
 
                 if (widget.onRefresh != null) {
                   body = RefreshIndicator(
@@ -580,11 +581,10 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error:
-                  (err, stack) => ErrorStateView(
-                    message: 'Failed to load items.\n$err',
-                    onRetry: widget.onRefresh,
-                  ),
+              error: (err, stack) => ErrorStateView(
+                message: 'Failed to load items.\n$err',
+                onRetry: widget.onRefresh,
+              ),
             ),
           ),
         ],

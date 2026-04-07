@@ -33,7 +33,12 @@ void main() {
               'date': '2023-01-01',
               'urls': ['http://test.com/img.jpg'],
               'visual_files': [
-                {'width': 100, 'height': 100, 'path': '/path/to/img.jpg', '__typename': 'ImageFile'},
+                {
+                  'width': 100,
+                  'height': 100,
+                  'path': '/path/to/img.jpg',
+                  '__typename': 'ImageFile',
+                },
               ],
               'paths': {
                 'thumbnail': 'thumb.jpg',
@@ -67,8 +72,9 @@ void main() {
         options: options,
       );
 
-      when(mockClient.query<Query$FindImages>(any))
-          .thenAnswer((_) async => mockQueryResult);
+      when(
+        mockClient.query<Query$FindImages>(any),
+      ).thenAnswer((_) async => mockQueryResult);
 
       final result = await repository.findImages(page: 1, perPage: 20);
 
@@ -88,7 +94,12 @@ void main() {
           'date': '2023-01-01',
           'urls': ['http://test.com/img.jpg'],
           'visual_files': [
-            {'width': 100, 'height': 100, 'path': '/path/to/img.jpg', '__typename': 'ImageFile'},
+            {
+              'width': 100,
+              'height': 100,
+              'path': '/path/to/img.jpg',
+              '__typename': 'ImageFile',
+            },
           ],
           'paths': {
             'thumbnail': 'thumb.jpg',
@@ -111,8 +122,9 @@ void main() {
         options: options,
       );
 
-      when(mockClient.query<Query$FindImage>(any))
-          .thenAnswer((_) async => mockQueryResult);
+      when(
+        mockClient.query<Query$FindImage>(any),
+      ).thenAnswer((_) async => mockQueryResult);
 
       final result = await repository.getImageById('1');
 
@@ -138,8 +150,9 @@ void main() {
         ),
       );
 
-      when(mockClient.query<Query$FindImages>(any))
-          .thenAnswer((_) async => mockQueryResult);
+      when(
+        mockClient.query<Query$FindImages>(any),
+      ).thenAnswer((_) async => mockQueryResult);
 
       expect(() => repository.findImages(), throwsA(isA<OperationException>()));
     });

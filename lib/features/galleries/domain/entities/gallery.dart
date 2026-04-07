@@ -30,7 +30,10 @@ class Gallery {
     if (path != null && path!.isNotEmpty) {
       final normalized = path!.replaceAll('\\', '/');
       final segments = normalized.split('/');
-      final filename = segments.lastWhere((s) => s.isNotEmpty, orElse: () => '');
+      final filename = segments.lastWhere(
+        (s) => s.isNotEmpty,
+        orElse: () => '',
+      );
       if (filename.isNotEmpty) {
         final dotIndex = filename.lastIndexOf('.');
         final stem = dotIndex > 0 ? filename.substring(0, dotIndex) : filename;

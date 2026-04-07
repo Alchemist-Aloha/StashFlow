@@ -12,7 +12,9 @@ void main() {
   }
 
   group('ErrorStateView', () {
-    testWidgets('renders the error message correctly', (WidgetTester tester) async {
+    testWidgets('renders the error message correctly', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestApp(const ErrorStateView(message: 'Something went wrong')),
       );
@@ -21,16 +23,21 @@ void main() {
       expect(find.byIcon(Icons.error_outline), findsOneWidget);
     });
 
-    testWidgets('renders the default \'Retry\' button when onRetry is provided', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        buildTestApp(ErrorStateView(message: 'Error', onRetry: () {})),
-      );
+    testWidgets(
+      'renders the default \'Retry\' button when onRetry is provided',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          buildTestApp(ErrorStateView(message: 'Error', onRetry: () {})),
+        );
 
-      expect(find.byType(FilledButton), findsOneWidget);
-      expect(find.text('Retry'), findsOneWidget);
-    });
+        expect(find.byType(FilledButton), findsOneWidget);
+        expect(find.text('Retry'), findsOneWidget);
+      },
+    );
 
-    testWidgets('does not render a retry button when onRetry is null', (WidgetTester tester) async {
+    testWidgets('does not render a retry button when onRetry is null', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         buildTestApp(const ErrorStateView(message: 'Error')),
       );
@@ -39,13 +46,17 @@ void main() {
       expect(find.text('Retry'), findsNothing);
     });
 
-    testWidgets('uses custom retryLabel when provided alongside onRetry', (WidgetTester tester) async {
+    testWidgets('uses custom retryLabel when provided alongside onRetry', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
-        buildTestApp(ErrorStateView(
-          message: 'Error',
-          onRetry: () {},
-          retryLabel: 'Try Again',
-        )),
+        buildTestApp(
+          ErrorStateView(
+            message: 'Error',
+            onRetry: () {},
+            retryLabel: 'Try Again',
+          ),
+        ),
       );
 
       expect(find.byType(FilledButton), findsOneWidget);
@@ -53,16 +64,20 @@ void main() {
       expect(find.text('Retry'), findsNothing);
     });
 
-    testWidgets('triggers onRetry callback when the retry button is tapped', (WidgetTester tester) async {
+    testWidgets('triggers onRetry callback when the retry button is tapped', (
+      WidgetTester tester,
+    ) async {
       bool callbackFired = false;
 
       await tester.pumpWidget(
-        buildTestApp(ErrorStateView(
-          message: 'Error',
-          onRetry: () {
-            callbackFired = true;
-          },
-        )),
+        buildTestApp(
+          ErrorStateView(
+            message: 'Error',
+            onRetry: () {
+              callbackFired = true;
+            },
+          ),
+        ),
       );
 
       final buttonFinder = find.byType(FilledButton);

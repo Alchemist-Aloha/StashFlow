@@ -32,5 +32,6 @@ class TrueBlackNotifier extends Notifier<bool> {
 }
 
 /// Provider for the True Black theme setting.
-final trueBlackEnabledProvider =
-    NotifierProvider<TrueBlackNotifier, bool>(TrueBlackNotifier.new);
+final trueBlackEnabledProvider = NotifierProvider<TrueBlackNotifier, bool>(
+  TrueBlackNotifier.new,
+);

@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -218,4 +219,58 @@ class GalleryList extends _$GalleryList {
 
   bool get hasMore => _hasMore;
   bool get isLoadingMore => _isLoadingMore;
+
+  Future<Gallery?> getRandomGallery({
+    bool useCurrentFilter = false,
+    String? performerId,
+    String? studioId,
+    String? tagId,
+    String? excludeGalleryId,
+  }) async {
+    final repository = ref.read(galleryRepositoryProvider);
+    final query = useCurrentFilter ? ref.read(gallerySearchQueryProvider) : '';
+    final filter = useCurrentFilter
+        ? ref.read(galleryFilterStateProvider)
+        : GalleryFilter.empty();
+    final organizedOnly = useCurrentFilter
+        ? ref.read(galleryOrganizedOnlyProvider)
+        : false;
+
+    // Ask backend for random ordering; if needed, retry to avoid returning same id.
+    final attempts = excludeGalleryId == null ? 1 : 3;
+    for (var i = 0; i < attempts; i++) {
+      final randomPage = await repository.findGalleries(
+        page: 1,
+        perPage: 1,
+        filter: query.isEmpty ? null : query,
+        sort: 'random',
+        descending: true,
+        galleryFilter: filter.copyWith(
+          organized: organizedOnly ? true : filter.organized,
+        ),
+        performerId: performerId,
+        studioId: studioId,
+        tagId: tagId,
+      );
+      if (randomPage.isEmpty) continue;
+      final candidate = randomPage.first;
+      if (excludeGalleryId == null || candidate.id != excludeGalleryId) {
+        return candidate;
+      }
+    }
+
+    final loadedGalleries = state.asData?.value;
+    if (loadedGalleries != null && loadedGalleries.isNotEmpty) {
+      final candidates = excludeGalleryId == null
+          ? loadedGalleries
+          : loadedGalleries
+                .where((gallery) => gallery.id != excludeGalleryId)
+                .toList();
+      if (candidates.isEmpty) return null;
+      final random = Random();
+      return candidates[random.nextInt(candidates.length)];
+    }
+
+    return null;
+  }
 }
