@@ -76,6 +76,7 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
                 hintText: 'Search...',
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: IconButton(
+                  tooltip: 'Clear search',
                   icon: const Icon(Icons.clear),
                   onPressed: () {
                     _searchController.clear();

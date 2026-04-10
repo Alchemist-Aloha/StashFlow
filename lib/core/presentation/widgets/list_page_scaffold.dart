@@ -398,6 +398,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                 actions: [
                   if (_isSearching)
                     IconButton(
+                      tooltip: 'Close search',
                       icon: const Icon(Icons.close),
                       onPressed: () {
                         setState(() => _isSearching = false);

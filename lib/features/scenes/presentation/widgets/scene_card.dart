@@ -173,6 +173,7 @@ class SceneCard extends ConsumerWidget {
                   ),
                 ),
                 IconButton(
+                  tooltip: 'More options',
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                   onPressed: () => _showMenu(context, ref),
@@ -273,6 +274,7 @@ class SceneCard extends ConsumerWidget {
                   ),
                 ),
                 IconButton(
+                  tooltip: 'More options',
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                   onPressed: () => _showMenu(context, ref),
