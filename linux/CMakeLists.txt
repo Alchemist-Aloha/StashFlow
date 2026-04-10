@@ -53,6 +53,16 @@ add_subdirectory(${FLUTTER_MANAGED_DIR})
 # System-level dependencies.
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK REQUIRED IMPORTED_TARGET gtk+-3.0)
+get_target_property(GTK_INCLUDES PkgConfig::GTK INTERFACE_INCLUDE_DIRECTORIES)
+set(GTK_INCLUDES_NEW "")
+foreach(include_dir ${GTK_INCLUDES})
+  if(EXISTS ${include_dir})
+    list(APPEND GTK_INCLUDES_NEW ${include_dir})
+  else()
+    message(STATUS "Filtering out non-existent GTK include directory: ${include_dir}")
+  endif()
+endforeach()
+set_target_properties(PkgConfig::GTK PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${GTK_INCLUDES_NEW}")
 
 # Application build; see runner/CMakeLists.txt.
 add_subdirectory("runner")
@@ -79,9 +89,7 @@ include(flutter/generated_plugins.cmake)
 # By default, "installing" just makes a relocatable bundle in the build
 # directory.
 set(BUILD_BUNDLE_DIR "${PROJECT_BINARY_DIR}/bundle")
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  set(CMAKE_INSTALL_PREFIX "${BUILD_BUNDLE_DIR}" CACHE PATH "..." FORCE)
-endif()
+set(CMAKE_INSTALL_PREFIX "${BUILD_BUNDLE_DIR}" CACHE PATH "..." FORCE)
 
 # Start with a clean build bundle directory every time.
 install(CODE "
