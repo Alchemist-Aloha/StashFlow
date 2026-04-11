@@ -64,7 +64,3 @@ android {
 flutter {
     source = "../.."
 }
-
-configurations.all {
-    exclude(group = "com.mediadevkit.fvp")
-}

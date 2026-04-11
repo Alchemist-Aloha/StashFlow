@@ -35,7 +35,9 @@ Future<void> main() async {
       (defaultTargetPlatform == TargetPlatform.windows ||
           defaultTargetPlatform == TargetPlatform.linux ||
           defaultTargetPlatform == TargetPlatform.macOS)) {
-    fvp.registerWith();
+    fvp.registerWith(options: {
+      'platforms': ['windows', 'linux', 'macos'],
+    });
   }
 
   // Increase Flutter's in-memory image cache so more decoded thumbnails stay
