@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
@@ -98,7 +99,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (!widget.enableNativePip || !Platform.isAndroid) return;
+    if (!widget.enableNativePip || kIsWeb || !Platform.isAndroid) return;
     if (state != AppLifecycleState.paused) return;
 
     final controller = widget.controller;
@@ -769,10 +770,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                     ),
                                     const SizedBox(width: 6),
                                     if (widget.enableNativePip &&
+                                        !kIsWeb &&
                                         Platform.isAndroid)
                                       IconButton(
-                                        tooltip: 'Picture-in-Picture',
-                                        style: _controlButtonStyle(colorScheme),
+                                        tooltip: 'Picture-in-Picture',                                        style: _controlButtonStyle(colorScheme),
                                         icon: const Icon(
                                           Icons.picture_in_picture_alt_outlined,
                                         ),
