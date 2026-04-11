@@ -92,14 +92,14 @@ jobs:
         if: matrix.target == 'windows'
         run: |
           cd build/windows/x64/runner/Release
-          7z a ../../../../StashFlow-windows.zip *
+          7z a ../../../../../StashFlow-windows.zip *
         shell: bash
 
       - name: Package Linux
         if: matrix.target == 'linux'
         run: |
           cd build/linux/x64/release/bundle
-          zip -r ../../../../StashFlow-linux.zip .
+          zip -r ../../../../../StashFlow-linux.zip .
         shell: bash
 
       - name: Package Web
@@ -123,7 +123,7 @@ jobs:
         if: matrix.target == 'macos'
         run: |
           cd build/macos/Build/Products/Release
-          zip -r ../../../../StashFlow-macos.zip *.app
+          zip -r ../../../../../StashFlow-macos.zip *.app
         shell: bash
 
       - name: Upload Artifact
