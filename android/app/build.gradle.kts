@@ -17,7 +17,7 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace = "com.github.alchemistaloha.stash_app_flutter"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "28.2.13676358"
+    ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -63,4 +63,8 @@ android {
 
 flutter {
     source = "../.."
+}
+
+configurations.all {
+    exclude(group = "com.mediadevkit.fvp")
 }
