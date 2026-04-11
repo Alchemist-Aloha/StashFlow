@@ -52,6 +52,15 @@ static void my_application_activate(GApplication* application) {
     gtk_window_set_title(window, "StashFlow");
   }
 
+  // Load the app icon.
+  g_autoptr(GError) error = nullptr;
+  g_autoptr(GdkPixbuf) icon = gdk_pixbuf_new_from_file("data/app_icon.png", &error);
+  if (icon != nullptr) {
+    gtk_window_set_icon(window, icon);
+  } else {
+    g_warning("Failed to load icon: %s", error->message);
+  }
+
   gtk_window_set_default_size(window, 1280, 720);
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();

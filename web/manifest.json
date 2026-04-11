@@ -1,11 +1,11 @@
 {
-    "name": "stash_app_flutter",
-    "short_name": "stash_app_flutter",
+    "name": "StashFlow",
+    "short_name": "StashFlow",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "A modern multi-platform client for your Stash server.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

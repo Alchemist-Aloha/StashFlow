@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.github.alchemistaloha" "\0"
-            VALUE "FileDescription", "stash_app_flutter" "\0"
+            VALUE "FileDescription", "StashFlow" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "stash_app_flutter" "\0"
+            VALUE "InternalName", "StashFlow" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.github.alchemistaloha. All rights reserved." "\0"
-            VALUE "OriginalFilename", "stash_app_flutter.exe" "\0"
-            VALUE "ProductName", "stash_app_flutter" "\0"
+            VALUE "OriginalFilename", "StashFlow.exe" "\0"
+            VALUE "ProductName", "StashFlow" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
