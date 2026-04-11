@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import '../../data/graphql/media_headers_provider.dart';
+import '../../data/graphql/url_resolver.dart';
+import '../../data/graphql/graphql_client.dart';
 
 // Lightweight in-file shimmer placeholder — avoids an extra package dependency.
 class _Shimmer extends StatefulWidget {
@@ -256,11 +258,14 @@ class StashImage extends ConsumerWidget {
     }
 
     final headers = ref.watch(mediaHeadersProvider);
+    final apiKey = ref.watch(serverApiKeyProvider);
 
     if (kIsWeb) {
+      // Append apikey to URL to bypass CORS header issues on web
+      final webUrl = appendApiKey(imageUrl!, apiKey);
       return Image.network(
-        imageUrl!,
-        headers: headers,
+        webUrl,
+        // No headers needed when apikey is in query params
         width: width,
         height: height,
         fit: fit,

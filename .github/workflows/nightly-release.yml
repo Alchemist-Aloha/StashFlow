@@ -82,7 +82,7 @@ jobs:
           elif [ "${{ matrix.target }}" = "linux" ]; then
             flutter build linux --release
           elif [ "${{ matrix.target }}" = "web" ]; then
-            flutter build web --release --base-href /StashFlow/
+            flutter build web --release --web-renderer html --base-href /StashFlow/
           elif [ "${{ matrix.target }}" = "macos" ]; then
             flutter build macos --release
           fi
