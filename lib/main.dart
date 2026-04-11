@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fvp/fvp.dart' as fvp;
 import 'features/navigation/presentation/router.dart';
 import 'core/data/graphql/graphql_client.dart';
 import 'core/data/preferences/secure_storage_provider.dart';
@@ -29,6 +30,14 @@ StashMediaHandler _buildMediaHandler() => StashMediaHandler();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  if (!kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.windows ||
+          defaultTargetPlatform == TargetPlatform.linux ||
+          defaultTargetPlatform == TargetPlatform.macOS)) {
+    fvp.registerWith();
+  }
+
   // Increase Flutter's in-memory image cache so more decoded thumbnails stay
   // resident during aggressive prefetching and fast scrolling.
   // Tune these values based on available memory and observed behavior.
