@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
@@ -742,167 +743,183 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: imagesAsync.when(
-        data: (items) {
-          if (!_initialPageSet) {
-            _currentIndex = items.indexWhere((i) => i.id == widget.imageId);
-            if (_currentIndex == -1) _currentIndex = 0;
-            _pageController.dispose();
-            _pageController = ExtendedPageController(
-              initialPage: _currentIndex,
-            );
-            _initialPageSet = true;
-
-            // Prefetch initial adjacent images
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              _prefetchAdjacent(items, _currentIndex, headers);
+      body: CallbackShortcuts(
+        bindings: {
+          const SingleActivator(LogicalKeyboardKey.arrowLeft):
+              _goToPreviousImage,
+          const SingleActivator(LogicalKeyboardKey.arrowRight): () {
+            ref.read(imageListProvider).whenData((items) {
+              _goToNextImage(items.length);
             });
-          }
+          },
+        },
+        child: Focus(
+          autofocus: true,
+          child: imagesAsync.when(
+            data: (items) {
+              if (!_initialPageSet) {
+                _currentIndex = items.indexWhere((i) => i.id == widget.imageId);
+                if (_currentIndex == -1) _currentIndex = 0;
+                _pageController.dispose();
+                _pageController = ExtendedPageController(
+                  initialPage: _currentIndex,
+                );
+                _initialPageSet = true;
 
-          final currentImage = items.isNotEmpty ? items[_currentIndex] : null;
-          final displayTitle = _getDisplayTitle(currentImage);
-          final totalItemCount =
-              galleryDetailsAsync?.maybeWhen(
-                data: (gallery) => gallery.imageCount ?? items.length,
-                orElse: () => items.length,
-              ) ??
-              items.length;
+                // Prefetch initial adjacent images
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _prefetchAdjacent(items, _currentIndex, headers);
+                });
+              }
 
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              final isWideLayout =
-                  constraints.maxWidth >= Responsive.tabletBreakpoint;
-              final scrollDirection = useVerticalSwipe
-                  ? Axis.vertical
-                  : Axis.horizontal;
-              final maxOverlayWidth = isWideLayout
-                  ? 720.0
-                  : constraints.maxWidth;
-              final horizontalPadding = isWideLayout ? 24.0 : 8.0;
+              final currentImage =
+                  items.isNotEmpty ? items[_currentIndex] : null;
+              final displayTitle = _getDisplayTitle(currentImage);
+              final totalItemCount =
+                  galleryDetailsAsync?.maybeWhen(
+                    data: (gallery) => gallery.imageCount ?? items.length,
+                    orElse: () => items.length,
+                  ) ??
+                  items.length;
 
-              return Listener(
-                behavior: HitTestBehavior.translucent,
-                onPointerDown: _onPointerDown,
-                onPointerUp: _onPointerUp,
-                child: Stack(
-                  children: [
-                    ExtendedImageGesturePageView.builder(
-                      controller: _pageController,
-                      scrollDirection: scrollDirection,
-                      itemCount: items.length,
-                      physics: const BouncingScrollPhysics(),
-                      onPageChanged: (index) {
-                        _handlePageChanged(index, items, headers);
-                      },
-                      itemBuilder: (context, index) {
-                        final image = items[index];
-                        final imageUrl =
-                            image.paths.image ?? image.paths.preview;
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  final isWideLayout =
+                      constraints.maxWidth >= Responsive.tabletBreakpoint;
+                  final scrollDirection = useVerticalSwipe
+                      ? Axis.vertical
+                      : Axis.horizontal;
+                  final maxOverlayWidth = isWideLayout
+                      ? 720.0
+                      : constraints.maxWidth;
+                  final horizontalPadding = isWideLayout ? 24.0 : 8.0;
 
-                        if (imageUrl == null || imageUrl.isEmpty) {
-                          return const Center(
-                            child: Icon(
-                              Icons.broken_image,
-                              color: Colors.white54,
-                              size: 64,
-                            ),
-                          );
-                        }
+                  return Listener(
+                    behavior: HitTestBehavior.translucent,
+                    onPointerDown: _onPointerDown,
+                    onPointerUp: _onPointerUp,
+                    child: Stack(
+                      children: [
+                        ExtendedImageGesturePageView.builder(
+                          controller: _pageController,
+                          scrollDirection: scrollDirection,
+                          itemCount: items.length,
+                          physics: const BouncingScrollPhysics(),
+                          onPageChanged: (index) {
+                            _handlePageChanged(index, items, headers);
+                          },
+                          itemBuilder: (context, index) {
+                            final image = items[index];
+                            final imageUrl =
+                                image.paths.image ?? image.paths.preview;
 
-                        return RepaintBoundary(
-                          child: ExtendedImage.network(
-                            imageUrl,
-                            headers: headers,
-                            fit: BoxFit.contain,
-                            mode: ExtendedImageMode.gesture,
-                            cache: true,
-                            initGestureConfigHandler: (state) {
-                              return GestureConfig(
-                                minScale: 0.9,
-                                animationMinScale: 0.7,
-                                maxScale: 5.0,
-                                animationMaxScale: 6.0,
-                                speed: 1.0,
-                                inertialSpeed: 100.0,
-                                initialScale: 1.0,
-                                inPageView: true,
-                                initialAlignment: InitialAlignment.center,
+                            if (imageUrl == null || imageUrl.isEmpty) {
+                              return const Center(
+                                child: Icon(
+                                  Icons.broken_image,
+                                  color: Colors.white54,
+                                  size: 64,
+                                ),
                               );
-                            },
-                            onDoubleTap: (ExtendedImageGestureState state) {
-                              final pointerDownPosition =
-                                  state.pointerDownPosition;
-                              final begin = state.gestureDetails!.totalScale;
-                              final end = begin == 1.0 ? 3.0 : 1.0;
+                            }
 
-                              state.handleDoubleTap(
-                                scale: end,
-                                doubleTapPosition: pointerDownPosition,
-                              );
-                            },
-                            loadStateChanged: (ExtendedImageState state) {
-                              switch (state.extendedImageLoadState) {
-                                case LoadState.loading:
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
+                            return RepaintBoundary(
+                              child: ExtendedImage.network(
+                                imageUrl,
+                                headers: headers,
+                                fit: BoxFit.contain,
+                                mode: ExtendedImageMode.gesture,
+                                cache: true,
+                                initGestureConfigHandler: (state) {
+                                  return GestureConfig(
+                                    minScale: 0.9,
+                                    animationMinScale: 0.7,
+                                    maxScale: 5.0,
+                                    animationMaxScale: 6.0,
+                                    speed: 1.0,
+                                    inertialSpeed: 100.0,
+                                    initialScale: 1.0,
+                                    inPageView: true,
+                                    initialAlignment: InitialAlignment.center,
                                   );
-                                case LoadState.completed:
-                                  return state.completedWidget;
-                                case LoadState.failed:
-                                  return GestureDetector(
-                                    onTap: () => state.reLoadImage(),
-                                    child: const Center(
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            Icons.broken_image,
-                                            color: Colors.white54,
-                                            size: 64,
-                                          ),
-                                          SizedBox(height: 16),
-                                          Text(
-                                            'Failed to load. Tap to retry.',
-                                            style: TextStyle(
-                                              color: Colors.white70,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                },
+                                onDoubleTap: (ExtendedImageGestureState state) {
+                                  final pointerDownPosition =
+                                      state.pointerDownPosition;
+                                  final begin =
+                                      state.gestureDetails!.totalScale;
+                                  final end = begin == 1.0 ? 3.0 : 1.0;
+
+                                  state.handleDoubleTap(
+                                    scale: end,
+                                    doubleTapPosition: pointerDownPosition,
                                   );
-                              }
-                            },
+                                },
+                                loadStateChanged: (ExtendedImageState state) {
+                                  switch (state.extendedImageLoadState) {
+                                    case LoadState.loading:
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    case LoadState.completed:
+                                      return state.completedWidget;
+                                    case LoadState.failed:
+                                      return GestureDetector(
+                                        onTap: () => state.reLoadImage(),
+                                        child: const Center(
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.broken_image,
+                                                color: Colors.white54,
+                                                size: 64,
+                                              ),
+                                              SizedBox(height: 16),
+                                              Text(
+                                                'Failed to load. Tap to retry.',
+                                                style: TextStyle(
+                                                  color: Colors.white70,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                  }
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                        if (_showOverlays) ...[
+                          _buildOverlayHeader(
+                            context,
+                            currentImage,
+                            displayTitle,
+                            items.length,
+                            totalItemCount,
+                            maxOverlayWidth,
+                            horizontalPadding,
                           ),
-                        );
-                      },
+                          _buildOverlayFooter(
+                            context,
+                            items.length,
+                            totalItemCount,
+                            maxOverlayWidth,
+                            horizontalPadding,
+                          ),
+                        ],
+                      ],
                     ),
-                    if (_showOverlays) ...[
-                      _buildOverlayHeader(
-                        context,
-                        currentImage,
-                        displayTitle,
-                        items.length,
-                        totalItemCount,
-                        maxOverlayWidth,
-                        horizontalPadding,
-                      ),
-                      _buildOverlayFooter(
-                        context,
-                        items.length,
-                        totalItemCount,
-                        maxOverlayWidth,
-                        horizontalPadding,
-                      ),
-                    ],
-                  ],
-                ),
+                  );
+                },
               );
             },
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, s) => Center(child: Text('Error: $e')),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, s) => Center(child: Text('Error: $e')),
+          ),
+        ),
       ),
     );
   }
