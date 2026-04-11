@@ -47,206 +47,206 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Filter Scenes',
-                      style: context.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Filter Scenes',
+                        style: context.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _tempFilter = SceneFilter.empty();
-                          _tempOrganizedOnly = false;
-                        });
-                      },
-                      child: const Text('Reset'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppTheme.spacingMedium),
-                Text('Minimum Rating', style: context.textTheme.labelLarge),
-                const SizedBox(height: AppTheme.spacingSmall),
-                Wrap(
-                  spacing: 4,
-                  runSpacing: 4,
-                  children: [
-                    ChoiceChip(
-                      label: const Text('Any'),
-                      selected: _tempFilter.minRating == null,
-                      onSelected: (_) {
-                        setState(
-                          () => _tempFilter = _tempFilter.copyWith(
-                            minRating: null,
-                          ),
-                        );
-                      },
-                    ),
-                    for (var stars = 1; stars <= 5; stars++)
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _tempFilter = SceneFilter.empty();
+                            _tempOrganizedOnly = false;
+                          });
+                        },
+                        child: const Text('Reset'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppTheme.spacingMedium),
+                  Text('Minimum Rating', style: context.textTheme.labelLarge),
+                  const SizedBox(height: AppTheme.spacingSmall),
+                  Wrap(
+                    spacing: 4,
+                    runSpacing: 4,
+                    children: [
                       ChoiceChip(
-                        label: Text('$stars'),
-                        selected: _tempFilter.minRating == stars * 20,
+                        label: const Text('Any'),
+                        selected: _tempFilter.minRating == null,
                         onSelected: (_) {
                           setState(
                             () => _tempFilter = _tempFilter.copyWith(
-                              minRating: stars * 20,
+                              minRating: null,
                             ),
                           );
                         },
                       ),
-                  ],
-                ),
-                const SizedBox(height: AppTheme.spacingSmall),
-                Text('Watched Status', style: context.textTheme.labelLarge),
-                Row(
-                  children: [
-                    FilterChip(
-                      label: const Text('Watched'),
-                      selected: _tempFilter.isWatched == true,
-                      onSelected: (selected) {
-                        setState(
-                          () => _tempFilter = _tempFilter.copyWith(
-                            isWatched: selected ? true : null,
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(width: AppTheme.spacingSmall),
-                    FilterChip(
-                      label: const Text('Unwatched'),
-                      selected: _tempFilter.isWatched == false,
-                      onSelected: (selected) {
-                        setState(
-                          () => _tempFilter = _tempFilter.copyWith(
-                            isWatched: selected ? false : null,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppTheme.spacingSmall),
-                Text('Resolution', style: context.textTheme.labelLarge),
-                const SizedBox(height: AppTheme.spacingSmall),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _buildResolutionChip('FOUR_K', '4K'),
-                      const SizedBox(width: AppTheme.spacingSmall),
-                      _buildResolutionChip('FULL_HD', '1080p'),
-                      const SizedBox(width: AppTheme.spacingSmall),
-                      _buildResolutionChip('STANDARD_HD', '720p'),
-                      const SizedBox(width: AppTheme.spacingSmall),
-                      _buildResolutionChip('STANDARD', '480p'),
+                      for (var stars = 1; stars <= 5; stars++)
+                        ChoiceChip(
+                          label: Text('$stars'),
+                          selected: _tempFilter.minRating == stars * 20,
+                          onSelected: (_) {
+                            setState(
+                              () => _tempFilter = _tempFilter.copyWith(
+                                minRating: stars * 20,
+                              ),
+                            );
+                          },
+                        ),
                     ],
                   ),
-                ),
-                const SizedBox(height: AppTheme.spacingSmall),
-                Text('Orientation', style: context.textTheme.labelLarge),
-                const SizedBox(height: AppTheme.spacingSmall),
-                Wrap(
-                  spacing: AppTheme.spacingSmall,
-                  runSpacing: AppTheme.spacingSmall,
-                  children: [
-                    _buildOrientationChip('LANDSCAPE', 'Landscape'),
-                    _buildOrientationChip('PORTRAIT', 'Portrait'),
-                    _buildOrientationChip('SQUARE', 'Square'),
-                  ],
-                ),
-                const SizedBox(height: AppTheme.spacingSmall),
-                Text('Duration', style: context.textTheme.labelLarge),
-                const SizedBox(height: AppTheme.spacingSmall),
-                Wrap(
-                  spacing: AppTheme.spacingSmall,
-                  runSpacing: AppTheme.spacingSmall,
-                  children: [
-                    _buildDurationChip(null, 300, '< 5m'),
-                    _buildDurationChip(300, 1200, '5-20m'),
-                    _buildDurationChip(1200, null, '> 20m'),
-                  ],
-                ),
-                const SizedBox(height: AppTheme.spacingSmall),
-                Text('Organization', style: context.textTheme.labelLarge),
-                const SizedBox(height: AppTheme.spacingSmall),
-                FilterChip(
-                  label: const Text('Organized only'),
-                  selected: _tempOrganizedOnly,
-                  onSelected: (selected) {
-                    setState(() => _tempOrganizedOnly = selected);
-                  },
-                ),
-                const SizedBox(height: AppTheme.spacingLarge),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      ref
-                          .read(sceneFilterStateProvider.notifier)
-                          .update(_tempFilter);
-                      ref
-                          .read(sceneOrganizedOnlyProvider.notifier)
-                          .set(_tempOrganizedOnly);
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: context.colors.primary,
-                      foregroundColor: context.colors.onPrimary,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppTheme.spacingMedium,
-                      ),
-                    ),
-                    child: const Text('Apply Filters'),
-                  ),
-                ),
-                const SizedBox(height: AppTheme.spacingSmall),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () async {
-                      ref
-                          .read(sceneFilterStateProvider.notifier)
-                          .update(_tempFilter);
-                      ref
-                          .read(sceneOrganizedOnlyProvider.notifier)
-                          .set(_tempOrganizedOnly);
-                      await ref
-                          .read(sceneFilterStateProvider.notifier)
-                          .saveAsDefault();
-                      await ref
-                          .read(sceneOrganizedOnlyProvider.notifier)
-                          .saveAsDefault();
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Filter preferences saved as default',
+                  const SizedBox(height: AppTheme.spacingSmall),
+                  Text('Watched Status', style: context.textTheme.labelLarge),
+                  Row(
+                    children: [
+                      FilterChip(
+                        label: const Text('Watched'),
+                        selected: _tempFilter.isWatched == true,
+                        onSelected: (selected) {
+                          setState(
+                            () => _tempFilter = _tempFilter.copyWith(
+                              isWatched: selected ? true : null,
                             ),
-                          ),
-                        );
-                      }
-                    },
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppTheme.spacingMedium,
+                          );
+                        },
                       ),
-                    ),
-                    child: const Text('Save as Default'),
+                      const SizedBox(width: AppTheme.spacingSmall),
+                      FilterChip(
+                        label: const Text('Unwatched'),
+                        selected: _tempFilter.isWatched == false,
+                        onSelected: (selected) {
+                          setState(
+                            () => _tempFilter = _tempFilter.copyWith(
+                              isWatched: selected ? false : null,
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: AppTheme.spacingMedium),
-              ],
+                  const SizedBox(height: AppTheme.spacingSmall),
+                  Text('Resolution', style: context.textTheme.labelLarge),
+                  const SizedBox(height: AppTheme.spacingSmall),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _buildResolutionChip('FOUR_K', '4K'),
+                        const SizedBox(width: AppTheme.spacingSmall),
+                        _buildResolutionChip('FULL_HD', '1080p'),
+                        const SizedBox(width: AppTheme.spacingSmall),
+                        _buildResolutionChip('STANDARD_HD', '720p'),
+                        const SizedBox(width: AppTheme.spacingSmall),
+                        _buildResolutionChip('STANDARD', '480p'),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: AppTheme.spacingSmall),
+                  Text('Orientation', style: context.textTheme.labelLarge),
+                  const SizedBox(height: AppTheme.spacingSmall),
+                  Wrap(
+                    spacing: AppTheme.spacingSmall,
+                    runSpacing: AppTheme.spacingSmall,
+                    children: [
+                      _buildOrientationChip('LANDSCAPE', 'Landscape'),
+                      _buildOrientationChip('PORTRAIT', 'Portrait'),
+                      _buildOrientationChip('SQUARE', 'Square'),
+                    ],
+                  ),
+                  const SizedBox(height: AppTheme.spacingSmall),
+                  Text('Duration', style: context.textTheme.labelLarge),
+                  const SizedBox(height: AppTheme.spacingSmall),
+                  Wrap(
+                    spacing: AppTheme.spacingSmall,
+                    runSpacing: AppTheme.spacingSmall,
+                    children: [
+                      _buildDurationChip(null, 300, '< 5m'),
+                      _buildDurationChip(300, 1200, '5-20m'),
+                      _buildDurationChip(1200, null, '> 20m'),
+                    ],
+                  ),
+                  const SizedBox(height: AppTheme.spacingSmall),
+                  Text('Organization', style: context.textTheme.labelLarge),
+                  const SizedBox(height: AppTheme.spacingSmall),
+                  FilterChip(
+                    label: const Text('Organized only'),
+                    selected: _tempOrganizedOnly,
+                    onSelected: (selected) {
+                      setState(() => _tempOrganizedOnly = selected);
+                    },
+                  ),
+                  const SizedBox(height: AppTheme.spacingLarge),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        ref
+                            .read(sceneFilterStateProvider.notifier)
+                            .update(_tempFilter);
+                        ref
+                            .read(sceneOrganizedOnlyProvider.notifier)
+                            .set(_tempOrganizedOnly);
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: context.colors.primary,
+                        foregroundColor: context.colors.onPrimary,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppTheme.spacingMedium,
+                        ),
+                      ),
+                      child: const Text('Apply Filters'),
+                    ),
+                  ),
+                  const SizedBox(height: AppTheme.spacingSmall),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () async {
+                        ref
+                            .read(sceneFilterStateProvider.notifier)
+                            .update(_tempFilter);
+                        ref
+                            .read(sceneOrganizedOnlyProvider.notifier)
+                            .set(_tempOrganizedOnly);
+                        await ref
+                            .read(sceneFilterStateProvider.notifier)
+                            .saveAsDefault();
+                        await ref
+                            .read(sceneOrganizedOnlyProvider.notifier)
+                            .saveAsDefault();
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Filter preferences saved as default',
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppTheme.spacingMedium,
+                        ),
+                      ),
+                      child: const Text('Save as Default'),
+                    ),
+                  ),
+                  const SizedBox(height: AppTheme.spacingMedium),
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildResolutionChip(String value, String label) {
     final isSelected = _tempFilter.resolutions?.contains(value) ?? false;

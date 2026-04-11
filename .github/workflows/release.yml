@@ -1,4 +1,4 @@
-name: Release APK
+name: Release Build
 
 on:
   push:
@@ -9,17 +9,40 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-release:
-    runs-on: ubuntu-latest
-    
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
     permissions:
       contents: write
-
+      pages: write
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [android, windows, linux, web, macos]
+        include:
+          - target: android
+            os: ubuntu-latest
+            artifact_name: apk
+          - target: windows
+            os: windows-latest
+            artifact_name: windows
+          - target: linux
+            os: ubuntu-latest
+            artifact_name: linux
+          - target: web
+            os: ubuntu-latest
+            artifact_name: web
+          - target: macos
+            os: macos-latest
+            artifact_name: macos
+    
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         
       - name: Setup Java
+        if: matrix.target == 'android'
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
@@ -33,12 +56,10 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Decode Android keystore
+      - name: Android build setup
+        if: matrix.target == 'android'
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/upload-keystore.jks
-
-      - name: Create key.properties
-        run: |
           cat > android/key.properties <<EOF
           storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
@@ -46,28 +67,89 @@ jobs:
           storeFile=upload-keystore.jks
           EOF
 
-      - name: Verify signing files
+      - name: Linux build setup
+        if: matrix.target == 'linux'
         run: |
-          test -f android/upload-keystore.jks
-          test -f android/key.properties
-        
-      - name: Build APK (split per ABI)
-        run: flutter build apk --release --split-per-abi
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev libsecret-1-dev
 
-      - name: Upload split APK artifacts
+      - name: Build
+        run: |
+          if [ "${{ matrix.target }}" = "android" ]; then
+            flutter build apk --release --split-per-abi
+          elif [ "${{ matrix.target }}" = "windows" ]; then
+            flutter build windows --release
+          elif [ "${{ matrix.target }}" = "linux" ]; then
+            flutter build linux --release
+          elif [ "${{ matrix.target }}" = "web" ]; then
+            flutter build web --release --base-href /StashFlow/
+          elif [ "${{ matrix.target }}" = "macos" ]; then
+            flutter build macos --release
+          fi
+        shell: bash
+
+      - name: Package Windows
+        if: matrix.target == 'windows'
+        run: |
+          cd build/windows/x64/runner/Release
+          7z a ../../../../StashFlow-windows.zip *
+        shell: bash
+
+      - name: Package Linux
+        if: matrix.target == 'linux'
+        run: |
+          cd build/linux/x64/release/bundle
+          zip -r ../../../../StashFlow-linux.zip .
+        shell: bash
+
+      - name: Package Web
+        if: matrix.target == 'web'
+        run: |
+          cd build/web
+          zip -r ../../StashFlow-web.zip .
+        shell: bash
+
+      - name: Deploy to GitHub Pages
+        if: matrix.target == 'web'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: "Deploy to GitHub Pages: ${{ github.sha }}"
+
+      - name: Package macOS
+        if: matrix.target == 'macos'
+        run: |
+          cd build/macos/Build/Products/Release
+          zip -r ../../../../StashFlow-macos.zip *.app
+        shell: bash
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: StashFlow-apk
-          path: build/app/outputs/flutter-apk/app-*-release.apk
+          name: StashFlow-${{ matrix.artifact_name }}
+          path: |
+            build/app/outputs/flutter-apk/app-*-release.apk
+            StashFlow-*.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
 
       - name: Create Release
-        if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
-            build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
-            build/app/outputs/flutter-apk/app-x86_64-release.apk
+          files: artifacts/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      

@@ -1,10 +1,12 @@
-import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import '../../data/graphql/media_headers_provider.dart';
+import '../../data/graphql/url_resolver.dart';
+import '../../data/graphql/graphql_client.dart';
 
 // Lightweight in-file shimmer placeholder — avoids an extra package dependency.
 class _Shimmer extends StatefulWidget {
@@ -121,7 +123,7 @@ class _ShimmerState extends State<_Shimmer>
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     );
-    if (!Platform.environment.containsKey('FLUTTER_TEST')) {
+    if (!kIsWeb) {
       _controller.repeat();
     }
   }
@@ -256,6 +258,24 @@ class StashImage extends ConsumerWidget {
     }
 
     final headers = ref.watch(mediaHeadersProvider);
+    final apiKey = ref.watch(serverApiKeyProvider);
+
+    if (kIsWeb) {
+      // Append apikey to URL to bypass CORS header issues on web
+      final webUrl = appendApiKey(imageUrl!, apiKey);
+      return Image.network(
+        webUrl,
+        // No headers needed when apikey is in query params
+        width: width,
+        height: height,
+        fit: fit,
+        errorBuilder: (context, error, stackTrace) => _buildError(context),
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return _buildPlaceholder(context);
+        },
+      );
+    }
 
     // Ensure we only schedule the costly cache-check once per imageUrl during lifetime
     if (!_cacheCheckedUrls.contains(imageUrl)) {
@@ -309,6 +329,26 @@ class StashImage extends ConsumerWidget {
       fit: fit,
       memCacheWidth: memCacheWidth,
       memCacheHeight: memCacheHeight,
+    );
+  }
+
+  Widget _buildPlaceholder(BuildContext context) {
+    return Container(
+      color: Colors.grey[900],
+      child: const Center(
+        child: SizedBox(
+          width: 48,
+          height: 48,
+          child: _Shimmer(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 

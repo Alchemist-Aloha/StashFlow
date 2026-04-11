@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -662,10 +663,15 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               leading: hasImage
                   ? CircleAvatar(
                       backgroundColor: context.colors.surfaceVariant,
-                      foregroundImage: CachedNetworkImageProvider(
-                        performerImagePath,
-                        headers: mediaHeaders,
-                      ),
+                      foregroundImage: kIsWeb
+                          ? NetworkImage(
+                              performerImagePath,
+                              headers: mediaHeaders,
+                            )
+                          : CachedNetworkImageProvider(
+                              performerImagePath,
+                              headers: mediaHeaders,
+                            ),
                       child: const Icon(Icons.person),
                     )
                   : const CircleAvatar(child: Icon(Icons.person)),

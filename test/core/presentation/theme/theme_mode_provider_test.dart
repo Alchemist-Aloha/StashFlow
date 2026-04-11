@@ -8,19 +8,20 @@ import 'package:stash_app_flutter/core/presentation/theme/theme_mode_provider.da
 
 void main() {
   group('AppThemeModeNotifier', () {
-    test('Should default to ThemeMode.system when no preference is saved', () async {
-      SharedPreferences.setMockInitialValues({});
-      final prefs = await SharedPreferences.getInstance();
+    test(
+      'Should default to ThemeMode.system when no preference is saved',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
 
-      final container = ProviderContainer(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-        ],
-      );
+        final container = ProviderContainer(
+          overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+        );
 
-      final themeMode = container.read(appThemeModeProvider);
-      expect(themeMode, ThemeMode.system);
-    });
+        final themeMode = container.read(appThemeModeProvider);
+        expect(themeMode, ThemeMode.system);
+      },
+    );
 
     test('Should restore to ThemeMode.dark when "dark" is saved', () async {
       SharedPreferences.setMockInitialValues({
@@ -29,9 +30,7 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
 
       final container = ProviderContainer(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-        ],
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
       );
 
       final themeMode = container.read(appThemeModeProvider);
@@ -45,82 +44,89 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
 
       final container = ProviderContainer(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-        ],
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
       );
 
       final themeMode = container.read(appThemeModeProvider);
       expect(themeMode, ThemeMode.light);
     });
 
-    test('Calling setThemeMode(ThemeMode.dark) updates state and saves "dark"', () async {
-      SharedPreferences.setMockInitialValues({});
-      final prefs = await SharedPreferences.getInstance();
+    test(
+      'Calling setThemeMode(ThemeMode.dark) updates state and saves "dark"',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
 
-      final container = ProviderContainer(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-        ],
-      );
+        final container = ProviderContainer(
+          overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+        );
 
-      // Read initial state
-      expect(container.read(appThemeModeProvider), ThemeMode.system);
+        // Read initial state
+        expect(container.read(appThemeModeProvider), ThemeMode.system);
 
-      // Update state
-      await container.read(appThemeModeProvider.notifier).setThemeMode(ThemeMode.dark);
+        // Update state
+        await container
+            .read(appThemeModeProvider.notifier)
+            .setThemeMode(ThemeMode.dark);
 
-      // Verify state
-      expect(container.read(appThemeModeProvider), ThemeMode.dark);
+        // Verify state
+        expect(container.read(appThemeModeProvider), ThemeMode.dark);
 
-      // Verify preferences
-      expect(prefs.getString(appThemeModePreferenceKey), 'dark');
-    });
+        // Verify preferences
+        expect(prefs.getString(appThemeModePreferenceKey), 'dark');
+      },
+    );
 
-    test('Calling setThemeMode(ThemeMode.light) updates state and saves "light"', () async {
-      SharedPreferences.setMockInitialValues({});
-      final prefs = await SharedPreferences.getInstance();
+    test(
+      'Calling setThemeMode(ThemeMode.light) updates state and saves "light"',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
 
-      final container = ProviderContainer(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-        ],
-      );
+        final container = ProviderContainer(
+          overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+        );
 
-      // Update state
-      await container.read(appThemeModeProvider.notifier).setThemeMode(ThemeMode.light);
+        // Update state
+        await container
+            .read(appThemeModeProvider.notifier)
+            .setThemeMode(ThemeMode.light);
 
-      // Verify state
-      expect(container.read(appThemeModeProvider), ThemeMode.light);
+        // Verify state
+        expect(container.read(appThemeModeProvider), ThemeMode.light);
 
-      // Verify preferences
-      expect(prefs.getString(appThemeModePreferenceKey), 'light');
-    });
+        // Verify preferences
+        expect(prefs.getString(appThemeModePreferenceKey), 'light');
+      },
+    );
 
-    test('Calling setThemeMode(ThemeMode.system) updates state and saves "system"', () async {
-      SharedPreferences.setMockInitialValues({
-        appThemeModePreferenceKey: 'dark', // Start with dark
-      });
-      final prefs = await SharedPreferences.getInstance();
+    test(
+      'Calling setThemeMode(ThemeMode.system) updates state and saves "system"',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          appThemeModePreferenceKey: 'dark', // Start with dark
+        });
+        final prefs = await SharedPreferences.getInstance();
 
-      final container = ProviderContainer(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-        ],
-      );
+        final container = ProviderContainer(
+          overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+        );
 
-      // Read initial state
-      expect(container.read(appThemeModeProvider), ThemeMode.dark);
+        // Read initial state
+        expect(container.read(appThemeModeProvider), ThemeMode.dark);
 
-      // Update state
-      await container.read(appThemeModeProvider.notifier).setThemeMode(ThemeMode.system);
+        // Update state
+        await container
+            .read(appThemeModeProvider.notifier)
+            .setThemeMode(ThemeMode.system);
 
-      // Verify state
-      expect(container.read(appThemeModeProvider), ThemeMode.system);
+        // Verify state
+        expect(container.read(appThemeModeProvider), ThemeMode.system);
 
-      // Verify preferences
-      expect(prefs.getString(appThemeModePreferenceKey), 'system');
-    });
+        // Verify preferences
+        expect(prefs.getString(appThemeModePreferenceKey), 'system');
+      },
+    );
 
     test('Calling setThemeMode with the same mode returns early', () async {
       SharedPreferences.setMockInitialValues({
@@ -129,9 +135,7 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
 
       final container = ProviderContainer(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-        ],
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
       );
 
       // The current state is initialized as ThemeMode.dark because we set 'dark' in preferences.
@@ -144,7 +148,9 @@ void main() {
       expect(prefs.getString(appThemeModePreferenceKey), null);
 
       // Update state to the same mode
-      await container.read(appThemeModeProvider.notifier).setThemeMode(ThemeMode.dark);
+      await container
+          .read(appThemeModeProvider.notifier)
+          .setThemeMode(ThemeMode.dark);
 
       // Verify state is still dark
       expect(container.read(appThemeModeProvider), ThemeMode.dark);

@@ -541,8 +541,7 @@ class GraphQLSceneRepository implements SceneRepository {
       for (final f in found) {
         final name = f.name;
         final urls = f.urls;
-        if (p.name != null &&
-            name.toLowerCase() == p.name!.toLowerCase()) {
+        if (p.name != null && name.toLowerCase() == p.name!.toLowerCase()) {
           chosenId = f.id;
           break;
         }

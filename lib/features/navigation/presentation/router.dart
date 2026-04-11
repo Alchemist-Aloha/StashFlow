@@ -25,6 +25,7 @@ import '../../setup/presentation/pages/settings/server_settings_page.dart';
 import '../../setup/presentation/pages/settings/playback_settings_page.dart';
 import '../../setup/presentation/pages/settings/appearance_settings_page.dart';
 import '../../setup/presentation/pages/settings/interface_settings_page.dart';
+import '../../setup/presentation/pages/settings/navigation_customization_page.dart';
 import '../../setup/presentation/pages/settings/support_settings_page.dart';
 import '../../setup/presentation/debug_log_viewer_page.dart';
 import '../../scenes/presentation/widgets/scene_video_player.dart';
@@ -295,6 +296,13 @@ GoRouter router(Ref ref) {
           GoRoute(
             path: 'interface',
             builder: (context, state) => const InterfaceSettingsPage(),
+            routes: [
+              GoRoute(
+                path: 'navigation',
+                builder: (context, state) =>
+                    const NavigationCustomizationPage(),
+              ),
+            ],
           ),
           GoRoute(
             path: 'support',

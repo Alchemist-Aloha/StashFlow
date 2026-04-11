@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -120,6 +121,10 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   /// Attempts to "warm up" the stream by making a lightweight HEAD or GET
   /// request to ensure the URL is valid and the server is responsive.
   Future<_PrewarmResult> _prewarmStream(Scene scene) async {
+    if (kIsWeb) {
+      return const _PrewarmResult(attempted: false, succeeded: false);
+    }
+
     final stopwatch = Stopwatch()..start();
     final client = HttpClient();
     client.connectionTimeout = const Duration(seconds: 5);

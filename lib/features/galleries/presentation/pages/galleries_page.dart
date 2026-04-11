@@ -83,7 +83,8 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
     int index;
     do {
       index = random.nextInt(galleries.length);
-    } while (galleries.length > 1 && galleries[index].id == _lastRandomGalleryId);
+    } while (galleries.length > 1 &&
+        galleries[index].id == _lastRandomGalleryId);
 
     final gallery = galleries[index];
     _lastRandomGalleryId = gallery.id;
@@ -357,9 +358,9 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
             thumbnailUrl: _getThumbnailUrl(gallery),
             memCacheWidth: memCacheWidth,
             onTap: () {
-              ref.read(imageFilterStateProvider.notifier).setGalleryId(
-                gallery.id,
-              );
+              ref
+                  .read(imageFilterStateProvider.notifier)
+                  .setGalleryId(gallery.id);
               context.go('/galleries/images');
             },
           ),

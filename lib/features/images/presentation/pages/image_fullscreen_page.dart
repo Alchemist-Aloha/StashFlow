@@ -14,6 +14,7 @@ import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/utils/responsive.dart';
 
 enum _SlideshowDirection { forward, backward }
+
 enum _RatingTarget { image, gallery }
 
 class ImageFullscreenPage extends ConsumerStatefulWidget {
@@ -445,9 +446,9 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update rating: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to update rating: $e')));
     }
   }
 
@@ -459,7 +460,8 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     // Prefetch next 2 and previous 1
     for (var i = 1; i <= 2; i++) {
       if (index + i < items.length) {
-        final url = items[index + i].paths.image ?? items[index + i].paths.preview;
+        final url =
+            items[index + i].paths.image ?? items[index + i].paths.preview;
         if (url != null) {
           precacheImage(
             ExtendedNetworkImageProvider(url, headers: headers, cache: true),
@@ -469,7 +471,8 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
       }
     }
     if (index - 1 >= 0) {
-      final url = items[index - 1].paths.image ?? items[index - 1].paths.preview;
+      final url =
+          items[index - 1].paths.image ?? items[index - 1].paths.preview;
       if (url != null) {
         precacheImage(
           ExtendedNetworkImageProvider(url, headers: headers, cache: true),
@@ -555,9 +558,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                               children: [
                                 Text(
                                   displayTitle,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
+                                  style: Theme.of(context).textTheme.titleMedium
                                       ?.copyWith(fontWeight: FontWeight.w600),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -621,7 +622,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                   ? Icons.stop_rounded
                                   : Icons.slideshow_rounded,
                             ),
-                              onPressed: () => _toggleSlideshow(loadedItemCount),
+                            onPressed: () => _toggleSlideshow(loadedItemCount),
                             tooltip: _isSlideshowPlaying
                                 ? 'Stop slideshow'
                                 : 'Start slideshow',
@@ -692,7 +693,9 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                           IconButton.filledTonal(
                             icon: const Icon(Icons.chevron_left_rounded),
                             tooltip: 'Previous image',
-                            onPressed: canGoPrevious ? _goToPreviousImage : null,
+                            onPressed: canGoPrevious
+                                ? _goToPreviousImage
+                                : null,
                           ),
                           const SizedBox(width: 10),
                           Expanded(
@@ -707,7 +710,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                             icon: const Icon(Icons.chevron_right_rounded),
                             tooltip: 'Next image',
                             onPressed: canGoNext
-                              ? () => _goToNextImage(loadedItemCount)
+                                ? () => _goToNextImage(loadedItemCount)
                                 : null,
                           ),
                         ],
@@ -758,7 +761,8 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
 
           final currentImage = items.isNotEmpty ? items[_currentIndex] : null;
           final displayTitle = _getDisplayTitle(currentImage);
-          final totalItemCount = galleryDetailsAsync?.maybeWhen(
+          final totalItemCount =
+              galleryDetailsAsync?.maybeWhen(
                 data: (gallery) => gallery.imageCount ?? items.length,
                 orElse: () => items.length,
               ) ??
@@ -768,9 +772,12 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
             builder: (context, constraints) {
               final isWideLayout =
                   constraints.maxWidth >= Responsive.tabletBreakpoint;
-              final scrollDirection =
-                useVerticalSwipe ? Axis.vertical : Axis.horizontal;
-              final maxOverlayWidth = isWideLayout ? 720.0 : constraints.maxWidth;
+              final scrollDirection = useVerticalSwipe
+                  ? Axis.vertical
+                  : Axis.horizontal;
+              final maxOverlayWidth = isWideLayout
+                  ? 720.0
+                  : constraints.maxWidth;
               final horizontalPadding = isWideLayout ? 24.0 : 8.0;
 
               return Listener(
@@ -789,7 +796,8 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                       },
                       itemBuilder: (context, index) {
                         final image = items[index];
-                        final imageUrl = image.paths.image ?? image.paths.preview;
+                        final imageUrl =
+                            image.paths.image ?? image.paths.preview;
 
                         if (imageUrl == null || imageUrl.isEmpty) {
                           return const Center(

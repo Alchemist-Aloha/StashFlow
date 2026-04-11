@@ -31,7 +31,7 @@ class PipMode {
   /// [aspectRatio] should match the current video's dimensions to ensure
   /// the system window is sized correctly. Android enforces limits (0.418 to 2.39).
   static Future<bool> enterIfAvailable({double? aspectRatio}) async {
-    if (!Platform.isAndroid) return false;
+    if (kIsWeb || !Platform.isAndroid) return false;
     try {
       final Map<String, dynamic> args = {};
       if (aspectRatio != null) {

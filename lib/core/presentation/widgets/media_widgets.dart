@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../theme/app_theme.dart';
+import 'stash_image.dart';
 
 /// A standardized card for displaying media items (Scenes, Performers, etc.).
 ///
@@ -35,21 +35,10 @@ class MediaCard extends StatelessWidget {
           children: [
             AspectRatio(
               aspectRatio: aspectRatio,
-              child: imageUrl != null
-                  ? CachedNetworkImage(
-                      imageUrl: imageUrl!,
-                      httpHeaders: imageHeaders,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        color: context.colors.surfaceVariant,
-                        child: const Center(child: CircularProgressIndicator()),
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        color: context.colors.surfaceVariant,
-                        child: const Icon(Icons.broken_image),
-                      ),
-                    )
-                  : Container(color: context.colors.surfaceVariant),
+              child: StashImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.cover,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(AppTheme.spacingSmall),

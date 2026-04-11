@@ -21,7 +21,9 @@ class PerformerGalleriesGridPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final galleriesAsync = ref.watch(performerGalleriesGridProvider(performerId));
+    final galleriesAsync = ref.watch(
+      performerGalleriesGridProvider(performerId),
+    );
     final isGridView = ref.watch(performerGalleriesGridLayoutProvider);
 
     return ListPageScaffold<PerformerGalleryItem>(

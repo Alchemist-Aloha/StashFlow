@@ -119,12 +119,18 @@ void main() {
       expect(find.text('Detailed Image'), findsOneWidget);
     });
 
-    testWidgets('falls back to file path in header if title is missing', (tester) async {
+    testWidgets('falls back to file path in header if title is missing', (
+      tester,
+    ) async {
       final image = entity.Image(
         id: '1',
         title: null,
         files: [
-          const entity.ImageFile(width: 100, height: 100, path: '/path/to/image.jpg'),
+          const entity.ImageFile(
+            width: 100,
+            height: 100,
+            path: '/path/to/image.jpg',
+          ),
         ],
         paths: const entity.ImagePaths(image: 'http://test.com/img1.jpg'),
       );

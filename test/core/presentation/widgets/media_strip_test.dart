@@ -38,13 +38,17 @@ void main() {
   });
 
   group('MediaStrip tests', () {
-    testWidgets('renders empty state when items list is empty', (WidgetTester tester) async {
+    testWidgets('renders empty state when items list is empty', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(buildTestWidget(const MediaStrip(items: [])));
 
       expect(find.text('No media available.'), findsOneWidget);
     });
 
-    testWidgets('renders items and handles tap correctly', (WidgetTester tester) async {
+    testWidgets('renders items and handles tap correctly', (
+      WidgetTester tester,
+    ) async {
       bool tapped = false;
       final item = MediaStripItem(
         id: '1',
@@ -56,11 +60,7 @@ void main() {
         },
       );
 
-      await tester.pumpWidget(
-        buildTestWidget(
-          MediaStrip(items: [item]),
-        ),
-      );
+      await tester.pumpWidget(buildTestWidget(MediaStrip(items: [item])));
 
       expect(find.text('Test Video'), findsOneWidget);
 
@@ -69,7 +69,9 @@ void main() {
       expect(tapped, isTrue);
     });
 
-    testWidgets('handles scrolling without errors', (WidgetTester tester) async {
+    testWidgets('handles scrolling without errors', (
+      WidgetTester tester,
+    ) async {
       final items = List.generate(
         10,
         (index) => MediaStripItem(
@@ -80,11 +82,7 @@ void main() {
         ),
       );
 
-      await tester.pumpWidget(
-        buildTestWidget(
-          MediaStrip(items: items),
-        ),
-      );
+      await tester.pumpWidget(buildTestWidget(MediaStrip(items: items)));
 
       final listFinder = find.byType(Scrollable);
 

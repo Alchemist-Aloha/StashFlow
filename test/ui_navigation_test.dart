@@ -24,7 +24,8 @@ import 'package:stash_app_flutter/features/tags/domain/entities/tag.dart';
 import 'package:stash_app_flutter/features/tags/domain/repositories/tag_repository.dart';
 import 'package:stash_app_flutter/features/tags/presentation/providers/tag_list_provider.dart';
 
-import 'package:stash_app_flutter/features/images/domain/entities/image.dart' as entity;
+import 'package:stash_app_flutter/features/images/domain/entities/image.dart'
+    as entity;
 import 'package:stash_app_flutter/features/images/domain/repositories/image_repository.dart';
 import 'package:stash_app_flutter/features/images/presentation/providers/image_list_provider.dart';
 import 'package:stash_app_flutter/features/galleries/domain/repositories/gallery_repository.dart';
@@ -49,31 +50,30 @@ class MockSceneRepository implements SceneRepository {
     String? studioId,
     String? tagId,
     SceneFilter? sceneFilter,
-  }) async =>
-      [
-        Scene.fromJson({
-          'id': '1',
-          'title': 'Test Scene',
-          'date': '2023-01-01',
-          'rating100': 80,
-          'o_counter': 0,
-          'organized': true,
-          'interactive': false,
-          'resume_time': null,
-          'play_count': 0,
-          'files': [],
-          'paths': {'screenshot': null, 'preview': null, 'stream': null},
-          'urls': [],
-          'studio_id': null,
-          'studio_name': null,
-          'studio_image_path': null,
-          'performer_ids': [],
-          'performer_names': [],
-          'performer_image_paths': [],
-          'tag_ids': [],
-          'tag_names': [],
-        })
-      ];
+  }) async => [
+    Scene.fromJson({
+      'id': '1',
+      'title': 'Test Scene',
+      'date': '2023-01-01',
+      'rating100': 80,
+      'o_counter': 0,
+      'organized': true,
+      'interactive': false,
+      'resume_time': null,
+      'play_count': 0,
+      'files': [],
+      'paths': {'screenshot': null, 'preview': null, 'stream': null},
+      'urls': [],
+      'studio_id': null,
+      'studio_name': null,
+      'studio_image_path': null,
+      'performer_ids': [],
+      'performer_names': [],
+      'performer_image_paths': [],
+      'tag_ids': [],
+      'tag_names': [],
+    }),
+  ];
 
   @override
   Future<Scene> getSceneById(String id, {bool refresh = false}) =>
@@ -128,30 +128,29 @@ class MockPerformerRepository implements PerformerRepository {
     bool descending = true,
     bool favoritesOnly = false,
     List<String>? genders,
-  }) async =>
-      [
-        Performer.fromJson({
-          'id': '1',
-          'name': 'Test Performer',
-          'favorite': false,
-          'image_path': null,
-          'scene_count': 0,
-          'urls': [],
-          'birthdate': null,
-          'ethnicity': null,
-          'country': null,
-          'eye_color': null,
-          'hair_color': null,
-          'height_cm': null,
-          'measurements': null,
-          'fake_tits': null,
-          'career_length': null,
-          'tattoos': null,
-          'piercings': null,
-          'alias_list': [],
-          'favorite_count': 0,
-        })
-      ];
+  }) async => [
+    Performer.fromJson({
+      'id': '1',
+      'name': 'Test Performer',
+      'favorite': false,
+      'image_path': null,
+      'scene_count': 0,
+      'urls': [],
+      'birthdate': null,
+      'ethnicity': null,
+      'country': null,
+      'eye_color': null,
+      'hair_color': null,
+      'height_cm': null,
+      'measurements': null,
+      'fake_tits': null,
+      'career_length': null,
+      'tattoos': null,
+      'piercings': null,
+      'alias_list': [],
+      'favorite_count': 0,
+    }),
+  ];
 
   @override
   Future<Performer> getPerformerById(String id, {bool refresh = false}) =>
@@ -170,18 +169,17 @@ class MockStudioRepository implements StudioRepository {
     String? sort,
     bool? descending,
     bool favoritesOnly = false,
-  }) async =>
-      [
-        Studio.fromJson({
-          'id': '1',
-          'name': 'Test Studio',
-          'favorite': false,
-          'image_path': null,
-          'scene_count': 0,
-          'image_count': 0,
-          'gallery_count': 0,
-        })
-      ];
+  }) async => [
+    Studio.fromJson({
+      'id': '1',
+      'name': 'Test Studio',
+      'favorite': false,
+      'image_path': null,
+      'scene_count': 0,
+      'image_count': 0,
+      'gallery_count': 0,
+    }),
+  ];
 
   @override
   Future<Studio> getStudioById(String id, {bool refresh = false}) =>
@@ -200,17 +198,16 @@ class MockTagRepository implements TagRepository {
     String? sort,
     bool? descending,
     bool favoritesOnly = false,
-  }) async =>
-      [
-        Tag.fromJson({
-          'id': '1',
-          'name': 'Test Tag',
-          'favorite': false,
-          'scene_count': 0,
-          'image_count': 0,
-          'gallery_count': 0,
-        })
-      ];
+  }) async => [
+    Tag.fromJson({
+      'id': '1',
+      'name': 'Test Tag',
+      'favorite': false,
+      'scene_count': 0,
+      'image_count': 0,
+      'gallery_count': 0,
+    }),
+  ];
 
   @override
   Future<Tag> getTagById(String id, {bool refresh = false}) =>
@@ -230,16 +227,15 @@ class MockImageRepository implements ImageRepository {
     bool? descending,
     String? galleryId,
     ImageFilter? imageFilter,
-  }) async =>
-      [
-        entity.Image.fromJson({
-          'id': '1',
-          'title': 'Test Image',
-          'visual_files': [],
-          'paths': {'thumbnail': null, 'preview': null, 'image': 'img.jpg'},
-          'urls': [],
-        })
-      ];
+  }) async => [
+    entity.Image.fromJson({
+      'id': '1',
+      'title': 'Test Image',
+      'visual_files': [],
+      'paths': {'thumbnail': null, 'preview': null, 'image': 'img.jpg'},
+      'urls': [],
+    }),
+  ];
 
   @override
   Future<entity.Image> getImageById(String id, {bool refresh = false}) =>

@@ -124,12 +124,31 @@ class AppTheme {
   ///
   /// Configures Material 3, custom component themes (AppBars, Cards, Buttons),
   /// and attaches the [AppColors] extension.
-  static ThemeData buildTheme(Brightness brightness, Color seedColor) {
+  static ThemeData buildTheme(
+    Brightness brightness,
+    Color seedColor, {
+    bool useTrueBlack = false,
+  }) {
     final isDark = brightness == Brightness.dark;
-    final colorScheme = ColorScheme.fromSeed(
+    var colorScheme = ColorScheme.fromSeed(
       seedColor: seedColor,
       brightness: brightness,
     );
+
+    if (isDark && useTrueBlack) {
+      colorScheme = colorScheme.copyWith(
+        surface: Colors.black,
+        onSurface: Colors.white,
+        surfaceContainer: Colors.black,
+        surfaceContainerLow: Colors.black,
+        surfaceContainerLowest: Colors.black,
+        surfaceContainerHigh: const Color(0xFF121212), // Subtle lift
+        surfaceContainerHighest: const Color(0xFF1A1A1A), // Card/Input lift
+        onSurfaceVariant: Colors.grey.shade400,
+        outline: Colors.grey.shade800,
+        outlineVariant: Colors.grey.shade900,
+      );
+    }
 
     return ThemeData(
       useMaterial3: true,

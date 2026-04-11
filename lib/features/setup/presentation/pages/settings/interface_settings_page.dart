@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/navigation_customization_provider.dart';
+import 'package:stash_app_flutter/features/setup/presentation/providers/gesture_settings_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/scrape_customization_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_list_provider.dart';
@@ -56,8 +58,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
         prefs.getBool(_imageFullscreenVerticalSwipeKey) ?? true;
 
     _performerMediaGridLayout = ref.read(performerMediaGridLayoutProvider);
-    _performerGalleriesGridLayout =
-        ref.read(performerGalleriesGridLayoutProvider);
+    _performerGalleriesGridLayout = ref.read(
+      performerGalleriesGridLayoutProvider,
+    );
     _studioMediaGridLayout = ref.read(studioMediaGridLayoutProvider);
     _studioGalleriesGridLayout = ref.read(studioGalleriesGridLayoutProvider);
     _tagMediaGridLayout = ref.read(tagMediaGridLayoutProvider);
@@ -134,6 +137,20 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         const Divider(height: AppTheme.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
+                          title: const Text('Shake to Discover'),
+                          subtitle: const Text(
+                            'Shake your device to jump to a random item in the current tab',
+                          ),
+                          value: ref.watch(shakeToRandomEnabledProvider),
+                          onChanged: (value) {
+                            ref
+                                .read(shakeToRandomEnabledProvider.notifier)
+                                .setShakeToRandom(value);
+                          },
+                        ),
+                        const Divider(height: AppTheme.spacingLarge),
+                        SwitchListTile.adaptive(
+                          contentPadding: EdgeInsets.zero,
                           title: Row(
                             children: [
                               const Expanded(child: Text('Show Edit Button')),
@@ -165,6 +182,18 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           onChanged: (value) async {
                             setState(() => _showScrapeButton = value);
                             await _saveSettings();
+                          },
+                        ),
+                        const Divider(height: AppTheme.spacingLarge),
+                        ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text('Customize Tabs'),
+                          subtitle: const Text(
+                            'Reorder or hide navigation menu items',
+                          ),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () {
+                            context.push('/settings/interface/navigation');
                           },
                         ),
                       ],
@@ -291,7 +320,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           subtitle: 'Layout for Performer Galleries page',
                           currentValue: _performerGalleriesGridLayout,
                           onChanged: (isGrid) {
-                            setState(() => _performerGalleriesGridLayout = isGrid);
+                            setState(
+                              () => _performerGalleriesGridLayout = isGrid,
+                            );
                             _saveSettings();
                           },
                         ),

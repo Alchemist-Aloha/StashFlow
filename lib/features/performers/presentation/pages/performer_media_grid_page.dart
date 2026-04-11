@@ -30,9 +30,11 @@ class PerformerMediaGridPage extends ConsumerWidget {
       onSearchChanged: (_) {},
       provider: mediaAsync,
       imageUrlBuilder: (item) => item.thumbnailUrl,
-      onRefresh: () => ref.refresh(performerMediaGridProvider(performerId).future),
-      onFetchNextPage: () =>
-          ref.read(performerMediaGridProvider(performerId).notifier).fetchNextPage(),
+      onRefresh: () =>
+          ref.refresh(performerMediaGridProvider(performerId).future),
+      onFetchNextPage: () => ref
+          .read(performerMediaGridProvider(performerId).notifier)
+          .fetchNextPage(),
       gridDelegate: isGridView ? GridUtils.createDelegate() : null,
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, item, memCacheWidth, memCacheHeight) => GridCard(
