@@ -90,6 +90,9 @@ class GlobalPlayerState {
   /// User preference: subtitle vertical position (0.0 to 1.0 from bottom).
   final double subtitlePositionBottomRatio;
 
+  /// User preference: subtitle text alignment ('left', 'center', 'right').
+  final String subtitleTextAlignment;
+
   GlobalPlayerState({
     this.activeScene,
     this.videoPlayerController,
@@ -113,6 +116,7 @@ class GlobalPlayerState {
     this.defaultSubtitleLanguage = 'none',
     this.subtitleFontSize = 18.0,
     this.subtitlePositionBottomRatio = 0.15,
+    this.subtitleTextAlignment = 'center',
   });
 
   /// Creates a copy of the state with updated fields.
@@ -140,6 +144,7 @@ class GlobalPlayerState {
     String? defaultSubtitleLanguage,
     double? subtitleFontSize,
     double? subtitlePositionBottomRatio,
+    String? subtitleTextAlignment,
     bool clearActive = false,
     bool clearSubtitle = false,
   }) {
@@ -185,6 +190,8 @@ class GlobalPlayerState {
       subtitleFontSize: subtitleFontSize ?? this.subtitleFontSize,
       subtitlePositionBottomRatio:
           subtitlePositionBottomRatio ?? this.subtitlePositionBottomRatio,
+        subtitleTextAlignment:
+          subtitleTextAlignment ?? this.subtitleTextAlignment,
     );
   }
 }
@@ -207,6 +214,7 @@ class PlayerState extends _$PlayerState {
   static const _subtitleFontSizeKey = 'subtitle_font_size';
   static const _subtitlePositionBottomRatioKey =
       'subtitle_position_bottom_ratio';
+  static const _subtitleTextAlignmentKey = 'subtitle_text_alignment';
 
   /// Internal reference used during disposal to ensure we clean up the right controller.
   VideoPlayerController? _videoControllerRef;
@@ -262,6 +270,8 @@ class PlayerState extends _$PlayerState {
       subtitleFontSize: prefs.getDouble(_subtitleFontSizeKey) ?? 18.0,
       subtitlePositionBottomRatio:
           prefs.getDouble(_subtitlePositionBottomRatioKey) ?? 0.15,
+        subtitleTextAlignment:
+          prefs.getString(_subtitleTextAlignmentKey) ?? 'center',
     );
   }
 
@@ -315,6 +325,12 @@ class PlayerState extends _$PlayerState {
     state = state.copyWith(subtitlePositionBottomRatio: value);
     final prefs = ref.read(sharedPreferencesProvider);
     prefs.setDouble(_subtitlePositionBottomRatioKey, value);
+  }
+
+  void setSubtitleTextAlignment(String value) {
+    state = state.copyWith(subtitleTextAlignment: value);
+    final prefs = ref.read(sharedPreferencesProvider);
+    prefs.setString(_subtitleTextAlignmentKey, value);
   }
 
   Future<void> setSubtitle(String? languageCode, {String? captionType}) async {
@@ -716,6 +732,10 @@ class PlayerState extends _$PlayerState {
       useDoubleTapSeek: state.useDoubleTapSeek,
       enableBackgroundPlayback: state.enableBackgroundPlayback,
       enableNativePip: state.enableNativePip,
+      defaultSubtitleLanguage: state.defaultSubtitleLanguage,
+      subtitleFontSize: state.subtitleFontSize,
+      subtitlePositionBottomRatio: state.subtitlePositionBottomRatio,
+      subtitleTextAlignment: state.subtitleTextAlignment,
     );
   }
 

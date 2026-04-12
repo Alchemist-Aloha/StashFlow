@@ -24,6 +24,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   static const _subtitleFontSizeKey = 'subtitle_font_size';
   static const _subtitlePositionBottomRatioKey =
       'subtitle_position_bottom_ratio';
+  static const _subtitleTextAlignmentKey = 'subtitle_text_alignment';
 
   bool _preferSceneStreams = true;
   bool _autoplayNext = false;
@@ -34,6 +35,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   String _defaultSubtitleLanguage = 'none';
   double _subtitleFontSize = 18.0;
   double _subtitlePositionBottomRatio = 0.15;
+  String _subtitleTextAlignment = 'center';
   bool _loading = true;
 
   @override
@@ -56,6 +58,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     _subtitleFontSize = prefs.getDouble(_subtitleFontSizeKey) ?? 18.0;
     _subtitlePositionBottomRatio =
         prefs.getDouble(_subtitlePositionBottomRatioKey) ?? 0.15;
+    _subtitleTextAlignment =
+      prefs.getString(_subtitleTextAlignmentKey) ?? 'center';
 
     setState(() => _loading = false);
   }
@@ -80,6 +84,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
       _subtitlePositionBottomRatioKey,
       _subtitlePositionBottomRatio,
     );
+    await prefs.setString(_subtitleTextAlignmentKey, _subtitleTextAlignment);
 
     final playerStateNotifier = ref.read(playerStateProvider.notifier);
     playerStateNotifier.setAutoplayNext(_autoplayNext);
@@ -92,6 +97,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     playerStateNotifier.setSubtitlePositionBottomRatio(
       _subtitlePositionBottomRatio,
     );
+    playerStateNotifier.setSubtitleTextAlignment(_subtitleTextAlignment);
   }
 
   @override
@@ -188,6 +194,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                         _buildSubtitleSizeSlider(),
                         const Divider(height: AppTheme.spacingLarge),
                         _buildSubtitlePositionSlider(),
+                        const Divider(height: AppTheme.spacingLarge),
+                        _buildSubtitleAlignmentSelector(),
                       ],
                     ),
                   ),
@@ -298,6 +306,37 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
           },
         ),
       ],
+    );
+  }
+
+  Widget _buildSubtitleAlignmentSelector() {
+    final alignments = [
+      ('left', 'Left'),
+      ('center', 'Center'),
+      ('right', 'Right'),
+    ];
+
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: const Text('Subtitle Text Alignment'),
+      subtitle: const Text('Alignment for multiline subtitles'),
+      trailing: DropdownButton<String>(
+        value: _subtitleTextAlignment,
+        onChanged: (value) async {
+          if (value != null) {
+            setState(() => _subtitleTextAlignment = value);
+            await _saveToggleSettings();
+          }
+        },
+        items: alignments
+            .map(
+              (a) => DropdownMenuItem(
+                value: a.$1,
+                child: Text(a.$2),
+              ),
+            )
+            .toList(),
+      ),
     );
   }
 

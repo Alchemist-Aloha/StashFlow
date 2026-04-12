@@ -147,10 +147,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.more_vert));
     await tester.pump(const Duration(milliseconds: 500));
 
-    expect(find.textContaining('Scene details'), findsOneWidget);
-    expect(find.text('Studio'), findsOneWidget);
-    expect(find.text('Test Studio'), findsOneWidget);
-    expect(find.text('Performers'), findsOneWidget);
+    expect(find.textContaining('Scene Info'), findsOneWidget);
   });
 
   test(

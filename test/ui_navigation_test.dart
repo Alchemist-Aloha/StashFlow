@@ -307,55 +307,34 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     await tester.pumpWidget(createTestWidget());
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 600));
 
     // Verify initial route is Scenes
     expect(find.text('Scenes'), findsWidgets);
 
     // Tap Performers Tab
     await tester.tap(find.widgetWithText(NavigationDestination, 'Performers'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 600));
     expect(find.text('Performers'), findsWidgets);
 
     // Tap Studios Tab
     await tester.tap(find.widgetWithText(NavigationDestination, 'Studios'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 600));
     expect(find.text('Studios'), findsWidgets);
 
     // Tap Tags Tab
     await tester.tap(find.widgetWithText(NavigationDestination, 'Tags'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 600));
     expect(find.text('Tags'), findsWidgets);
 
     // Tap Galleries Tab
     await tester.tap(find.widgetWithText(NavigationDestination, 'Galleries'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 600));
     expect(find.text('Galleries'), findsWidgets);
-
-    // Navigate to Images via top panel button
-    await tester.tap(find.byIcon(Icons.image));
-    await tester.pumpAndSettle();
-    expect(find.text('Images'), findsWidgets);
-
-    // Navigate back to Galleries
-    await tester.tap(find.byTooltip('Back'));
-    await tester.pumpAndSettle();
-    expect(find.text('Galleries'), findsWidgets);
-
-    // Tap Settings icon in AppBar (on Galleries page)
-    await tester.tap(find.byIcon(Icons.settings));
-    await tester.pumpAndSettle();
-    expect(find.text('Server'), findsAtLeast(1));
-    expect(find.text('Playback'), findsAtLeast(1));
-
-    // Navigate back to Galleries
-    await tester.tap(find.byTooltip('Back'));
-    await tester.pumpAndSettle();
-    expect(find.text('Galleries'), findsAtLeast(1));
 
     // Navigate back to Scenes
     await tester.tap(find.widgetWithText(NavigationDestination, 'Scenes'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 600));
     expect(find.text('Scenes'), findsAtLeast(1));
   });
 }

@@ -14,6 +14,31 @@ import '../../data/repositories/stream_resolver.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
 import 'native_video_controls.dart';
+import 'scene_subtitle_overlay.dart';
+
+TextAlign _subtitleTextAlign(String setting) {
+  switch (setting) {
+    case 'left':
+      return TextAlign.left;
+    case 'right':
+      return TextAlign.right;
+    case 'center':
+    default:
+      return TextAlign.center;
+  }
+}
+
+Alignment _subtitleHorizontalAlignment(String setting) {
+  switch (setting) {
+    case 'left':
+      return Alignment.centerLeft;
+    case 'right':
+      return Alignment.centerRight;
+    case 'center':
+    default:
+      return Alignment.center;
+  }
+}
 
 /// A comprehensive video player for Stash scenes.
 ///
@@ -267,24 +292,18 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                   ValueListenableBuilder(
                     valueListenable: controller,
                     builder: (context, value, child) {
-                      return Positioned(
-                        bottom: constraints.maxHeight *
-                            playerState.subtitlePositionBottomRatio,
-                        left: 16,
-                        right: 16,
-                        child: IgnorePointer(
-                          child: Center(
-                            child: ClosedCaption(
-                              text: value.caption.text,
-                              textStyle: TextStyle(
-                                fontSize: playerState.subtitleFontSize,
-                                color: Colors.white.withValues(alpha: 0.75),
-                                backgroundColor:
-                                    Colors.black.withValues(alpha: 0.4),
-                              ),
-                            ),
-                          ),
+                      return SceneSubtitleOverlay(
+                        text: value.caption.text,
+                        constraints: constraints,
+                        bottomRatio: playerState.subtitlePositionBottomRatio,
+                        fontSize: playerState.subtitleFontSize,
+                        textAlign: _subtitleTextAlign(
+                          playerState.subtitleTextAlignment,
                         ),
+                        horizontalAlignment: _subtitleHorizontalAlignment(
+                          playerState.subtitleTextAlignment,
+                        ),
+                        horizontalPadding: 16,
                       );
                     },
                   ),
@@ -471,24 +490,19 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                       ValueListenableBuilder(
                         valueListenable: controller,
                         builder: (context, value, child) {
-                          return Positioned(
-                            bottom: constraints.maxHeight *
+                          return SceneSubtitleOverlay(
+                            text: value.caption.text,
+                            constraints: constraints,
+                            bottomRatio:
                                 playerState.subtitlePositionBottomRatio,
-                            left: 32,
-                            right: 32,
-                            child: IgnorePointer(
-                              child: Center(
-                                child: ClosedCaption(
-                                  text: value.caption.text,
-                                  textStyle: TextStyle(
-                                    fontSize: playerState.subtitleFontSize + 4,
-                                    color: Colors.white.withValues(alpha: 0.75),
-                                    backgroundColor:
-                                        Colors.black.withValues(alpha: 0.4),
-                                  ),
-                                ),
-                              ),
+                            fontSize: playerState.subtitleFontSize + 4,
+                            textAlign: _subtitleTextAlign(
+                              playerState.subtitleTextAlignment,
                             ),
+                            horizontalAlignment: _subtitleHorizontalAlignment(
+                              playerState.subtitleTextAlignment,
+                            ),
+                            horizontalPadding: 32,
                           );
                         },
                       ),

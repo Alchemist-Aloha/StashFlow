@@ -50,6 +50,7 @@ void main() {
       expect(state.useDoubleTapSeek, isTrue);
       expect(state.enableBackgroundPlayback, isFalse);
       expect(state.enableNativePip, isFalse);
+      expect(state.subtitleTextAlignment, equals('center'));
     });
 
     test('initializes with provided values', () {
@@ -116,11 +117,13 @@ void main() {
           isPlaying: true,
           isFullScreen: true,
           streamMimeType: 'video/webm',
+          subtitleTextAlignment: 'left',
         );
 
         expect(newState.isPlaying, isTrue);
         expect(newState.isFullScreen, isTrue);
         expect(newState.streamMimeType, equals('video/webm'));
+        expect(newState.subtitleTextAlignment, equals('left'));
       });
 
       test('clears active values when clearActive is true', () {
