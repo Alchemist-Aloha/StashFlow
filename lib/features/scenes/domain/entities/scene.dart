@@ -19,6 +19,7 @@ abstract class Scene with _$Scene {
     @JsonKey(name: 'play_count') required int playCount,
     required List<SceneFile> files,
     required ScenePaths paths,
+    @Default([]) List<VideoCaption> captions,
     @JsonKey(name: 'urls') required List<String> urls,
     @JsonKey(name: 'studio_id') required String? studioId,
     @JsonKey(name: 'studio_name') required String? studioName,
@@ -32,6 +33,17 @@ abstract class Scene with _$Scene {
   }) = _Scene;
 
   factory Scene.fromJson(Map<String, dynamic> json) => _$SceneFromJson(json);
+}
+
+@freezed
+abstract class VideoCaption with _$VideoCaption {
+  const factory VideoCaption({
+    @JsonKey(name: 'language_code') required String languageCode,
+    @JsonKey(name: 'caption_type') required String captionType,
+  }) = _VideoCaption;
+
+  factory VideoCaption.fromJson(Map<String, dynamic> json) =>
+      _$VideoCaptionFromJson(json);
 }
 
 @freezed
@@ -57,6 +69,8 @@ abstract class ScenePaths with _$ScenePaths {
     required String? screenshot,
     required String? preview,
     required String? stream,
+    @Default(null) String? caption,
+    @Default(null) String? vtt,
   }) = _ScenePaths;
 
   factory ScenePaths.fromJson(Map<String, dynamic> json) =>

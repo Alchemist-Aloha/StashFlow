@@ -22,6 +22,11 @@ _Scene _$SceneFromJson(Map<String, dynamic> json) => _Scene(
       .map((e) => SceneFile.fromJson(e as Map<String, dynamic>))
       .toList(),
   paths: ScenePaths.fromJson(json['paths'] as Map<String, dynamic>),
+  captions:
+      (json['captions'] as List<dynamic>?)
+          ?.map((e) => VideoCaption.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
   urls: (json['urls'] as List<dynamic>).map((e) => e as String).toList(),
   studioId: json['studio_id'] as String?,
   studioName: json['studio_name'] as String?,
@@ -55,6 +60,7 @@ Map<String, dynamic> _$SceneToJson(_Scene instance) => <String, dynamic>{
   'play_count': instance.playCount,
   'files': instance.files,
   'paths': instance.paths,
+  'captions': instance.captions,
   'urls': instance.urls,
   'studio_id': instance.studioId,
   'studio_name': instance.studioName,
@@ -65,6 +71,18 @@ Map<String, dynamic> _$SceneToJson(_Scene instance) => <String, dynamic>{
   'tag_ids': instance.tagIds,
   'tag_names': instance.tagNames,
 };
+
+_VideoCaption _$VideoCaptionFromJson(Map<String, dynamic> json) =>
+    _VideoCaption(
+      languageCode: json['language_code'] as String,
+      captionType: json['caption_type'] as String,
+    );
+
+Map<String, dynamic> _$VideoCaptionToJson(_VideoCaption instance) =>
+    <String, dynamic>{
+      'language_code': instance.languageCode,
+      'caption_type': instance.captionType,
+    };
 
 _SceneFile _$SceneFileFromJson(Map<String, dynamic> json) => _SceneFile(
   format: json['format'] as String?,
@@ -93,6 +111,8 @@ _ScenePaths _$ScenePathsFromJson(Map<String, dynamic> json) => _ScenePaths(
   screenshot: json['screenshot'] as String?,
   preview: json['preview'] as String?,
   stream: json['stream'] as String?,
+  caption: json['caption'] as String? ?? null,
+  vtt: json['vtt'] as String? ?? null,
 );
 
 Map<String, dynamic> _$ScenePathsToJson(_ScenePaths instance) =>
@@ -100,4 +120,6 @@ Map<String, dynamic> _$ScenePathsToJson(_ScenePaths instance) =>
       'screenshot': instance.screenshot,
       'preview': instance.preview,
       'stream': instance.stream,
+      'caption': instance.caption,
+      'vtt': instance.vtt,
     };

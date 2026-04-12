@@ -110,7 +110,24 @@ class GraphQLSceneRepository implements SceneRepository {
                 rawUrl: s.paths.stream,
                 graphqlEndpoint: _graphqlEndpoint,
               ),
+              caption: resolveGraphqlMediaUrl(
+                rawUrl: s.paths.caption,
+                graphqlEndpoint: _graphqlEndpoint,
+              ),
+              vtt: resolveGraphqlMediaUrl(
+                rawUrl: s.paths.vtt,
+                graphqlEndpoint: _graphqlEndpoint,
+              ),
             ),
+            captions: s.captions
+                    ?.map(
+                      (c) => VideoCaption(
+                        languageCode: c.language_code,
+                        captionType: c.caption_type,
+                      ),
+                    )
+                    .toList() ??
+                [],
             urls: s.urls,
             studioId: s.studio?.id,
             studioName: s.studio?.name,
@@ -315,7 +332,24 @@ class GraphQLSceneRepository implements SceneRepository {
           rawUrl: s.paths.stream,
           graphqlEndpoint: _graphqlEndpoint,
         ),
+        caption: resolveGraphqlMediaUrl(
+          rawUrl: s.paths.caption,
+          graphqlEndpoint: _graphqlEndpoint,
+        ),
+        vtt: resolveGraphqlMediaUrl(
+          rawUrl: s.paths.vtt,
+          graphqlEndpoint: _graphqlEndpoint,
+        ),
       ),
+      captions: s.captions
+              ?.map(
+                (c) => VideoCaption(
+                  languageCode: c.language_code,
+                  captionType: c.caption_type,
+                ),
+              )
+              .toList() ??
+          [],
       urls: s.urls,
       studioId: s.studio?.id,
       studioName: s.studio?.name,

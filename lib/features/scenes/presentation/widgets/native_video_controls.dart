@@ -165,6 +165,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
   }
 
   void _showControlsTemporarily() {
+    if (!mounted) return;
     if (!_controlsVisible) {
       setState(() => _controlsVisible = true);
     }
@@ -701,6 +702,172 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
+                                    const SizedBox(width: 8),
+                                    if (widget.scene.captions.isNotEmpty ||
+                                        widget.scene.paths.caption != null)
+                                      PopupMenuButton<String?>(
+                                        tooltip: 'Select subtitle',
+                                        icon: Icon(
+                                          Icons.subtitles_rounded,
+                                          size: 20,
+                                          color: playerState
+                                                      .selectedSubtitleLanguage !=
+                                                  null
+                                              ? colorScheme.primary
+                                              : colorScheme.onSurface,
+                                        ),
+                                        style: _controlButtonStyle(colorScheme),
+                                        initialValue:
+                                            playerState.selectedSubtitleLanguage,
+                                        color: colorScheme.surfaceContainerHigh,
+                                        surfaceTintColor:
+                                            colorScheme.surfaceTint,
+                                        onSelected: (value) async {
+                                          if (value == null) {
+                                            await ref
+                                                .read(
+                                                  playerStateProvider.notifier,
+                                                )
+                                                .setSubtitle(null);
+                                          } else {
+                                            final parts = value.split(':');
+                                            final lang = parts[0];
+                                            final type =
+                                                parts.length > 1 ? parts[1] : '';
+                                            await ref
+                                                .read(
+                                                  playerStateProvider.notifier,
+                                                )
+                                                .setSubtitle(
+                                                  lang,
+                                                  captionType: type,
+                                                );
+                                          }
+                                          if (mounted) {
+                                            _showControlsTemporarily();
+                                          }
+                                        },
+                                        itemBuilder: (context) {
+                                          final items =
+                                              <PopupMenuEntry<String?>>[
+                                            PopupMenuItem<String?>(
+                                              value: null,
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    playerState.selectedSubtitleLanguage ==
+                                                            null
+                                                        ? Icons.check_circle
+                                                        : Icons.circle_outlined,
+                                                    size: 16,
+                                                    color: playerState
+                                                                .selectedSubtitleLanguage ==
+                                                            null
+                                                        ? colorScheme.primary
+                                                        : colorScheme
+                                                            .onSurfaceVariant,
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Text(
+                                                    'None',
+                                                    style: TextStyle(
+                                                      color:
+                                                          colorScheme.onSurface,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ];
+
+                                          if (widget.scene.captions.isEmpty &&
+                                              widget.scene.paths.caption !=
+                                                  null) {
+                                            // Fallback to "Default" if we have a path but no explicit caption metadata
+                                            final isSelected = playerState
+                                                        .selectedSubtitleLanguage ==
+                                                    '' &&
+                                                (playerState
+                                                        .selectedSubtitleType ==
+                                                    null ||
+                                                playerState
+                                                        .selectedSubtitleType ==
+                                                    '');
+                                            items.add(
+                                              PopupMenuItem<String?>(
+                                                value: ':',
+                                                child: Row(
+                                                  children: [
+                                                    Icon(
+                                                      isSelected
+                                                          ? Icons.check_circle
+                                                          : Icons.circle_outlined,
+                                                      size: 16,
+                                                      color: isSelected
+                                                          ? colorScheme.primary
+                                                          : colorScheme
+                                                              .onSurfaceVariant,
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                      'Default',
+                                                      style: TextStyle(
+                                                        color: colorScheme
+                                                            .onSurface,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          }
+
+                                          for (final c
+                                              in widget.scene.captions) {
+                                            final isSelected = playerState
+                                                        .selectedSubtitleLanguage ==
+                                                    c.languageCode &&
+                                                playerState
+                                                        .selectedSubtitleType ==
+                                                    c.captionType;
+                                            final label =
+                                                c.languageCode == '00' ||
+                                                        c.languageCode.isEmpty
+                                                    ? 'Unknown (${c.captionType})'
+                                                    : '${c.languageCode.toUpperCase()} (${c.captionType})';
+
+                                            items.add(
+                                              PopupMenuItem<String?>(
+                                                value:
+                                                    '${c.languageCode}:${c.captionType}',
+                                                child: Row(
+                                                  children: [
+                                                    Icon(
+                                                      isSelected
+                                                          ? Icons.check_circle
+                                                          : Icons.circle_outlined,
+                                                      size: 16,
+                                                      color: isSelected
+                                                          ? colorScheme.primary
+                                                          : colorScheme
+                                                              .onSurfaceVariant,
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                      label,
+                                                      style: TextStyle(
+                                                        color: colorScheme
+                                                            .onSurface,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                          return items;
+                                        },
+                                      ),
                                     const SizedBox(width: 8),
                                     PopupMenuButton<double>(
                                       tooltip: 'Playback speed',

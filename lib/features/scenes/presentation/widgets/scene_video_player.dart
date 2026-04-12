@@ -43,6 +43,12 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     });
   }
 
+  @override
+  void dispose() {
+    // Note: We don't dispose the controller here as it is managed by the provider.
+    super.dispose();
+  }
+
   /// Automatically start playback if this scene is designated as active,
   /// or if requested by the user.
   Future<void> _startPlaybackIfNeeded({bool force = false}) async {
@@ -193,9 +199,10 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   @override
   Widget build(BuildContext context) {
     final playerState = ref.watch(playerStateProvider);
+    final controller = playerState.videoPlayerController;
 
     final aspectRatio = _effectiveAspectRatio(
-      playerState.videoPlayerController,
+      controller,
     );
 
     // If this player isn't active, show a placeholder with a play button.
@@ -227,8 +234,6 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       );
     }
 
-    final controller = playerState.videoPlayerController;
-
     // Show loading indicator while the global controller initializes.
     if (controller == null || !controller.value.isInitialized) {
       return AspectRatio(
@@ -255,6 +260,29 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                 ),
               ),
             ),
+            if (playerState.selectedSubtitleLanguage != null)
+              ValueListenableBuilder(
+                valueListenable: controller,
+                builder: (context, value, child) {
+                  return Positioned(
+                    bottom: 48,
+                    left: 16,
+                    right: 16,
+                    child: IgnorePointer(
+                      child: Center(
+                        child: ClosedCaption(
+                          text: value.caption.text,
+                          textStyle: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white.withValues(alpha: 0.75),
+                            backgroundColor: Colors.black.withValues(alpha: 0.4),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
             Positioned.fill(
               child: Material(
                 color: Colors.transparent,
@@ -429,6 +457,30 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                     ),
                   ),
                 ),
+                if (playerState.selectedSubtitleLanguage != null)
+                  ValueListenableBuilder(
+                    valueListenable: controller,
+                    builder: (context, value, child) {
+                      return Positioned(
+                        bottom: 60,
+                        left: 32,
+                        right: 32,
+                        child: IgnorePointer(
+                          child: Center(
+                            child: ClosedCaption(
+                              text: value.caption.text,
+                              textStyle: TextStyle(
+                                fontSize: 22,
+                                color: Colors.white.withValues(alpha: 0.75),
+                                backgroundColor:
+                                    Colors.black.withValues(alpha: 0.4),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 NativeVideoControls(
                   controller: controller,
                   useDoubleTapSeek: playerState.useDoubleTapSeek,

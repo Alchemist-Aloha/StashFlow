@@ -59,7 +59,7 @@ dependencies:
   extended_image: ^10.0.1
   flutter_secure_storage: ^10.0.0
   shake_gesture: ^2.1.0
-  connectivity_plus: 7.0.0
+  connectivity_plus: 7.0.0  # locked for macos build issues
   fvp: ^0.35.2
 
 dev_dependencies:
