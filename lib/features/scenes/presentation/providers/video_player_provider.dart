@@ -81,6 +81,15 @@ class GlobalPlayerState {
   /// Currently selected subtitle type (e.g., 'vtt', 'srt').
   final String? selectedSubtitleType;
 
+  /// User preference: default subtitle language code. 'none' if disabled.
+  final String defaultSubtitleLanguage;
+
+  /// User preference: subtitle font size.
+  final double subtitleFontSize;
+
+  /// User preference: subtitle vertical position (0.0 to 1.0 from bottom).
+  final double subtitlePositionBottomRatio;
+
   GlobalPlayerState({
     this.activeScene,
     this.videoPlayerController,
@@ -101,6 +110,9 @@ class GlobalPlayerState {
     this.enableNativePip = false,
     this.selectedSubtitleLanguage,
     this.selectedSubtitleType,
+    this.defaultSubtitleLanguage = 'none',
+    this.subtitleFontSize = 18.0,
+    this.subtitlePositionBottomRatio = 0.15,
   });
 
   /// Creates a copy of the state with updated fields.
@@ -125,6 +137,9 @@ class GlobalPlayerState {
     bool? enableNativePip,
     String? selectedSubtitleLanguage,
     String? selectedSubtitleType,
+    String? defaultSubtitleLanguage,
+    double? subtitleFontSize,
+    double? subtitlePositionBottomRatio,
     bool clearActive = false,
     bool clearSubtitle = false,
   }) {
@@ -165,6 +180,11 @@ class GlobalPlayerState {
       selectedSubtitleType: clearSubtitle
           ? null
           : (selectedSubtitleType ?? this.selectedSubtitleType),
+      defaultSubtitleLanguage:
+          defaultSubtitleLanguage ?? this.defaultSubtitleLanguage,
+      subtitleFontSize: subtitleFontSize ?? this.subtitleFontSize,
+      subtitlePositionBottomRatio:
+          subtitlePositionBottomRatio ?? this.subtitlePositionBottomRatio,
     );
   }
 }
@@ -183,6 +203,10 @@ class PlayerState extends _$PlayerState {
   static const _useDoubleTapSeekKey = 'video_use_double_tap_seek';
   static const _enableBackgroundPlaybackKey = 'video_background_playback';
   static const _enableNativePipKey = 'video_native_pip';
+  static const _defaultSubtitleLanguageKey = 'default_subtitle_language';
+  static const _subtitleFontSizeKey = 'subtitle_font_size';
+  static const _subtitlePositionBottomRatioKey =
+      'subtitle_position_bottom_ratio';
 
   /// Internal reference used during disposal to ensure we clean up the right controller.
   VideoPlayerController? _videoControllerRef;
@@ -233,6 +257,11 @@ class PlayerState extends _$PlayerState {
           prefs.getBool(_enableBackgroundPlaybackKey) ?? false,
       enableNativePip: prefs.getBool(_enableNativePipKey) ?? false,
       isInPipMode: PipMode.isInPipMode.value,
+      defaultSubtitleLanguage:
+          prefs.getString(_defaultSubtitleLanguageKey) ?? 'none',
+      subtitleFontSize: prefs.getDouble(_subtitleFontSizeKey) ?? 18.0,
+      subtitlePositionBottomRatio:
+          prefs.getDouble(_subtitlePositionBottomRatioKey) ?? 0.15,
     );
   }
 
@@ -268,6 +297,24 @@ class PlayerState extends _$PlayerState {
     state = state.copyWith(enableNativePip: value);
     final prefs = ref.read(sharedPreferencesProvider);
     prefs.setBool(_enableNativePipKey, value);
+  }
+
+  void setDefaultSubtitleLanguage(String value) {
+    state = state.copyWith(defaultSubtitleLanguage: value);
+    final prefs = ref.read(sharedPreferencesProvider);
+    prefs.setString(_defaultSubtitleLanguageKey, value);
+  }
+
+  void setSubtitleFontSize(double value) {
+    state = state.copyWith(subtitleFontSize: value);
+    final prefs = ref.read(sharedPreferencesProvider);
+    prefs.setDouble(_subtitleFontSizeKey, value);
+  }
+
+  void setSubtitlePositionBottomRatio(double value) {
+    state = state.copyWith(subtitlePositionBottomRatio: value);
+    final prefs = ref.read(sharedPreferencesProvider);
+    prefs.setDouble(_subtitlePositionBottomRatioKey, value);
   }
 
   Future<void> setSubtitle(String? languageCode, {String? captionType}) async {
@@ -385,6 +432,36 @@ class PlayerState extends _$PlayerState {
       source: 'player_provider',
     );
 
+    // Automatic caption loading logic
+    String? autoLang;
+    String? autoType;
+
+    if (!force && state.selectedSubtitleLanguage == null) {
+      final defaultLang = state.defaultSubtitleLanguage;
+      if (defaultLang != 'none') {
+        // 1. Try matching default language
+        final matches = scene.captions.where(
+          (c) => c.languageCode.toLowerCase() == defaultLang.toLowerCase(),
+        );
+        if (matches.isNotEmpty) {
+          autoLang = matches.first.languageCode;
+          autoType = matches.first.captionType;
+        } else if (scene.captions.isNotEmpty) {
+          // 2. Use first available if default not found
+          autoLang = scene.captions.first.languageCode;
+          autoType = scene.captions.first.captionType;
+        } else if (scene.paths.caption != null) {
+          // 3. Generic fallback
+          autoLang = '';
+          autoType = '';
+        }
+      }
+    }
+
+    final effectiveSubtitleLanguage =
+        autoLang ?? state.selectedSubtitleLanguage;
+    final effectiveSubtitleType = autoType ?? state.selectedSubtitleType;
+
     if (!force &&
         state.activeScene?.id == scene.id &&
         state.videoPlayerController != null) {
@@ -405,6 +482,8 @@ class PlayerState extends _$PlayerState {
         prewarmAttempted: prewarmAttempted,
         prewarmSucceeded: prewarmSucceeded,
         prewarmLatencyMs: prewarmLatencyMs,
+        selectedSubtitleLanguage: effectiveSubtitleLanguage,
+        selectedSubtitleType: effectiveSubtitleType,
       );
       return;
     }
@@ -422,10 +501,9 @@ class PlayerState extends _$PlayerState {
     final stopwatch = Stopwatch()..start();
 
     Future<ClosedCaptionFile>? closedCaptionFile;
-    if (state.selectedSubtitleLanguage != null &&
-        scene.paths.caption != null) {
-      final lang = state.selectedSubtitleLanguage!;
-      final type = state.selectedSubtitleType;
+    if (effectiveSubtitleLanguage != null && scene.paths.caption != null) {
+      final lang = effectiveSubtitleLanguage;
+      final type = effectiveSubtitleType;
       final baseCaptionUrl = scene.paths.caption!;
       final uri = Uri.parse(baseCaptionUrl);
       final queryParams = Map<String, dynamic>.from(uri.queryParameters);
@@ -442,8 +520,11 @@ class PlayerState extends _$PlayerState {
         source: 'player_provider',
       );
 
-      closedCaptionFile = _loadSubtitles(captionUrl, fallbackVttUrl: scene.paths.vtt);
-    } else if (state.selectedSubtitleLanguage != null) {
+      closedCaptionFile = _loadSubtitles(
+        captionUrl,
+        fallbackVttUrl: scene.paths.vtt,
+      );
+    } else if (effectiveSubtitleLanguage != null) {
       AppLogStore.instance.add(
         'provider playScene: language selected but scene.paths.caption is null',
         source: 'player_provider',
@@ -472,6 +553,8 @@ class PlayerState extends _$PlayerState {
       prewarmAttempted: prewarmAttempted,
       prewarmSucceeded: prewarmSucceeded,
       prewarmLatencyMs: prewarmLatencyMs,
+      selectedSubtitleLanguage: effectiveSubtitleLanguage,
+      selectedSubtitleType: effectiveSubtitleType,
     );
 
     try {

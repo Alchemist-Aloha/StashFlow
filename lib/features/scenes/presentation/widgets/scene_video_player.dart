@@ -247,55 +247,61 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       aspectRatio: aspectRatio,
       child: Hero(
         tag: 'scene_player_${widget.scene.id}',
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Container(
-                color: Colors.black,
-                child: Center(
-                  child: AspectRatio(
-                    aspectRatio: controller.value.aspectRatio,
-                    child: VideoPlayer(controller),
-                  ),
-                ),
-              ),
-            ),
-            if (playerState.selectedSubtitleLanguage != null)
-              ValueListenableBuilder(
-                valueListenable: controller,
-                builder: (context, value, child) {
-                  return Positioned(
-                    bottom: 48,
-                    left: 16,
-                    right: 16,
-                    child: IgnorePointer(
-                      child: Center(
-                        child: ClosedCaption(
-                          text: value.caption.text,
-                          textStyle: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white.withValues(alpha: 0.75),
-                            backgroundColor: Colors.black.withValues(alpha: 0.4),
-                          ),
-                        ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Stack(
+              children: [
+                Positioned.fill(
+                  child: Container(
+                    color: Colors.black,
+                    child: Center(
+                      child: AspectRatio(
+                        aspectRatio: controller.value.aspectRatio,
+                        child: VideoPlayer(controller),
                       ),
                     ),
-                  );
-                },
-              ),
-            Positioned.fill(
-              child: Material(
-                color: Colors.transparent,
-                child: NativeVideoControls(
-                  controller: controller,
-                  useDoubleTapSeek: playerState.useDoubleTapSeek,
-                  enableNativePip: playerState.enableNativePip,
-                  onFullScreenToggle: _toggleFullScreen,
-                  scene: widget.scene,
+                  ),
                 ),
-              ),
-            ),
-          ],
+                if (playerState.selectedSubtitleLanguage != null)
+                  ValueListenableBuilder(
+                    valueListenable: controller,
+                    builder: (context, value, child) {
+                      return Positioned(
+                        bottom: constraints.maxHeight *
+                            playerState.subtitlePositionBottomRatio,
+                        left: 16,
+                        right: 16,
+                        child: IgnorePointer(
+                          child: Center(
+                            child: ClosedCaption(
+                              text: value.caption.text,
+                              textStyle: TextStyle(
+                                fontSize: playerState.subtitleFontSize,
+                                color: Colors.white.withValues(alpha: 0.75),
+                                backgroundColor:
+                                    Colors.black.withValues(alpha: 0.4),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                Positioned.fill(
+                  child: Material(
+                    color: Colors.transparent,
+                    child: NativeVideoControls(
+                      controller: controller,
+                      useDoubleTapSeek: playerState.useDoubleTapSeek,
+                      enableNativePip: playerState.enableNativePip,
+                      onFullScreenToggle: _toggleFullScreen,
+                      scene: widget.scene,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -447,59 +453,64 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
         child: Hero(
           tag: 'scene_player_${widget.sceneId}',
           child: SizedBox.expand(
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: Center(
-                    child: AspectRatio(
-                      aspectRatio: controller.value.aspectRatio,
-                      child: VideoPlayer(controller),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Center(
+                        child: AspectRatio(
+                          aspectRatio: controller.value.aspectRatio,
+                          child: VideoPlayer(controller),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                if (playerState.selectedSubtitleLanguage != null)
-                  ValueListenableBuilder(
-                    valueListenable: controller,
-                    builder: (context, value, child) {
-                      return Positioned(
-                        bottom: 60,
-                        left: 32,
-                        right: 32,
-                        child: IgnorePointer(
-                          child: Center(
-                            child: ClosedCaption(
-                              text: value.caption.text,
-                              textStyle: TextStyle(
-                                fontSize: 22,
-                                color: Colors.white.withValues(alpha: 0.75),
-                                backgroundColor:
-                                    Colors.black.withValues(alpha: 0.4),
+                    if (playerState.selectedSubtitleLanguage != null)
+                      ValueListenableBuilder(
+                        valueListenable: controller,
+                        builder: (context, value, child) {
+                          return Positioned(
+                            bottom: constraints.maxHeight *
+                                playerState.subtitlePositionBottomRatio,
+                            left: 32,
+                            right: 32,
+                            child: IgnorePointer(
+                              child: Center(
+                                child: ClosedCaption(
+                                  text: value.caption.text,
+                                  textStyle: TextStyle(
+                                    fontSize: playerState.subtitleFontSize + 4,
+                                    color: Colors.white.withValues(alpha: 0.75),
+                                    backgroundColor:
+                                        Colors.black.withValues(alpha: 0.4),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                NativeVideoControls(
-                  controller: controller,
-                  useDoubleTapSeek: playerState.useDoubleTapSeek,
-                  enableNativePip: playerState.enableNativePip,
-                  onFullScreenToggle: () {
-                    // If we are in FullscreenPlayerPage, the toggle button always exits.
-                    if (!_isPopping) {
-                      _isPopping = true;
-                      // Update state immediately before popping.
-                      // _exitFullScreen will also be called via deactivate() for extra safety.
-                      ref
-                          .read(playerStateProvider.notifier)
-                          .setFullScreen(false);
-                      router?.pop();
-                    }
-                  },
-                  scene: scene,
-                ),
-              ],
+                          );
+                        },
+                      ),
+                    NativeVideoControls(
+                      controller: controller,
+                      useDoubleTapSeek: playerState.useDoubleTapSeek,
+                      enableNativePip: playerState.enableNativePip,
+                      onFullScreenToggle: () {
+                        // If we are in FullscreenPlayerPage, the toggle button always exits.
+                        if (!_isPopping) {
+                          _isPopping = true;
+                          // Update state immediately before popping.
+                          // _exitFullScreen will also be called via deactivate() for extra safety.
+                          ref
+                              .read(playerStateProvider.notifier)
+                              .setFullScreen(false);
+                          router?.pop();
+                        }
+                      },
+                      scene: scene,
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ),

@@ -20,6 +20,10 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   static const _useDoubleTapSeekKey = 'video_use_double_tap_seek';
   static const _enableBackgroundPlaybackKey = 'video_background_playback';
   static const _enableNativePipKey = 'video_native_pip';
+  static const _defaultSubtitleLanguageKey = 'default_subtitle_language';
+  static const _subtitleFontSizeKey = 'subtitle_font_size';
+  static const _subtitlePositionBottomRatioKey =
+      'subtitle_position_bottom_ratio';
 
   bool _preferSceneStreams = true;
   bool _autoplayNext = false;
@@ -27,6 +31,9 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   bool _useDoubleTapSeek = true;
   bool _enableBackgroundPlayback = false;
   bool _enableNativePip = false;
+  String _defaultSubtitleLanguage = 'none';
+  double _subtitleFontSize = 18.0;
+  double _subtitlePositionBottomRatio = 0.15;
   bool _loading = true;
 
   @override
@@ -44,6 +51,11 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     _enableBackgroundPlayback =
         prefs.getBool(_enableBackgroundPlaybackKey) ?? false;
     _enableNativePip = prefs.getBool(_enableNativePipKey) ?? false;
+    _defaultSubtitleLanguage =
+        prefs.getString(_defaultSubtitleLanguageKey) ?? 'none';
+    _subtitleFontSize = prefs.getDouble(_subtitleFontSizeKey) ?? 18.0;
+    _subtitlePositionBottomRatio =
+        prefs.getDouble(_subtitlePositionBottomRatioKey) ?? 0.15;
 
     setState(() => _loading = false);
   }
@@ -59,6 +71,15 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
       _enableBackgroundPlayback,
     );
     await prefs.setBool(_enableNativePipKey, _enableNativePip);
+    await prefs.setString(
+      _defaultSubtitleLanguageKey,
+      _defaultSubtitleLanguage,
+    );
+    await prefs.setDouble(_subtitleFontSizeKey, _subtitleFontSize);
+    await prefs.setDouble(
+      _subtitlePositionBottomRatioKey,
+      _subtitlePositionBottomRatio,
+    );
 
     final playerStateNotifier = ref.read(playerStateProvider.notifier);
     playerStateNotifier.setAutoplayNext(_autoplayNext);
@@ -66,6 +87,11 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     playerStateNotifier.setUseDoubleTapSeek(_useDoubleTapSeek);
     playerStateNotifier.setEnableBackgroundPlayback(_enableBackgroundPlayback);
     playerStateNotifier.setEnableNativePip(_enableNativePip);
+    playerStateNotifier.setDefaultSubtitleLanguage(_defaultSubtitleLanguage);
+    playerStateNotifier.setSubtitleFontSize(_subtitleFontSize);
+    playerStateNotifier.setSubtitlePositionBottomRatio(
+      _subtitlePositionBottomRatio,
+    );
   }
 
   @override
@@ -153,6 +179,20 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
+                    title: 'Subtitle settings',
+                    subtitle: 'Automatic loading and appearance',
+                    child: Column(
+                      children: [
+                        _buildDefaultSubtitleSelector(),
+                        const Divider(height: AppTheme.spacingLarge),
+                        _buildSubtitleSizeSlider(),
+                        const Divider(height: AppTheme.spacingLarge),
+                        _buildSubtitlePositionSlider(),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: AppTheme.spacingLarge),
+                  SettingsSectionCard(
                     title: 'Seek interaction',
                     subtitle: 'Choose how scrubbing works during playback',
                     child: _buildSeekInteractionSelector(),
@@ -160,6 +200,103 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildDefaultSubtitleSelector() {
+    final languages = [
+      ('none', 'None (Disabled)'),
+      ('en', 'English'),
+      ('zh', 'Chinese'),
+      ('de', 'German'),
+      ('fr', 'French'),
+      ('es', 'Spanish'),
+      ('it', 'Italian'),
+      ('ja', 'Japanese'),
+      ('ko', 'Korean'),
+    ];
+
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: const Text('Default Subtitle Language'),
+      subtitle: const Text('Auto-load if available'),
+      trailing: DropdownButton<String>(
+        value: _defaultSubtitleLanguage,
+        onChanged: (value) async {
+          if (value != null) {
+            setState(() => _defaultSubtitleLanguage = value);
+            await _saveToggleSettings();
+          }
+        },
+        items: languages
+            .map(
+              (l) => DropdownMenuItem(
+                value: l.$1,
+                child: Text(l.$2),
+              ),
+            )
+            .toList(),
+      ),
+    );
+  }
+
+  Widget _buildSubtitleSizeSlider() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('Subtitle Font Size'),
+            Text(
+              '${_subtitleFontSize.round()} px',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        Slider(
+          min: 12,
+          max: 32,
+          divisions: 20,
+          value: _subtitleFontSize,
+          onChanged: (value) {
+            setState(() => _subtitleFontSize = value);
+          },
+          onChangeEnd: (value) async {
+            await _saveToggleSettings();
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSubtitlePositionSlider() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('Subtitle Vertical Position'),
+            Text(
+              '${(_subtitlePositionBottomRatio * 100).round()}% from bottom',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        Slider(
+          min: 0.05,
+          max: 0.40,
+          divisions: 35,
+          value: _subtitlePositionBottomRatio,
+          onChanged: (value) {
+            setState(() => _subtitlePositionBottomRatio = value);
+          },
+          onChangeEnd: (value) async {
+            await _saveToggleSettings();
+          },
+        ),
+      ],
     );
   }
 
