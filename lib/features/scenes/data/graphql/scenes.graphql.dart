@@ -16,6 +16,7 @@ class Fragment$SlimSceneData {
     this.play_count,
     required this.files,
     required this.paths,
+    this.captions,
     required this.urls,
     this.studio,
     required this.performers,
@@ -35,6 +36,7 @@ class Fragment$SlimSceneData {
     final l$play_count = json['play_count'];
     final l$files = json['files'];
     final l$paths = json['paths'];
+    final l$captions = json['captions'];
     final l$urls = json['urls'];
     final l$studio = json['studio'];
     final l$performers = json['performers'];
@@ -60,6 +62,13 @@ class Fragment$SlimSceneData {
       paths: Fragment$SlimSceneData$paths.fromJson(
         (l$paths as Map<String, dynamic>),
       ),
+      captions: (l$captions as List<dynamic>?)
+          ?.map(
+            (e) => Fragment$SlimSceneData$captions.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
       urls: (l$urls as List<dynamic>).map((e) => (e as String)).toList(),
       studio: l$studio == null
           ? null
@@ -106,6 +115,8 @@ class Fragment$SlimSceneData {
 
   final Fragment$SlimSceneData$paths paths;
 
+  final List<Fragment$SlimSceneData$captions>? captions;
+
   final List<String> urls;
 
   final Fragment$SlimSceneData$studio? studio;
@@ -140,6 +151,8 @@ class Fragment$SlimSceneData {
     _resultData['files'] = l$files.map((e) => e.toJson()).toList();
     final l$paths = paths;
     _resultData['paths'] = l$paths.toJson();
+    final l$captions = captions;
+    _resultData['captions'] = l$captions?.map((e) => e.toJson()).toList();
     final l$urls = urls;
     _resultData['urls'] = l$urls.map((e) => e).toList();
     final l$studio = studio;
@@ -166,6 +179,7 @@ class Fragment$SlimSceneData {
     final l$play_count = play_count;
     final l$files = files;
     final l$paths = paths;
+    final l$captions = captions;
     final l$urls = urls;
     final l$studio = studio;
     final l$performers = performers;
@@ -183,6 +197,7 @@ class Fragment$SlimSceneData {
       l$play_count,
       Object.hashAll(l$files.map((v) => v)),
       l$paths,
+      l$captions == null ? null : Object.hashAll(l$captions.map((v) => v)),
       Object.hashAll(l$urls.map((v) => v)),
       l$studio,
       Object.hashAll(l$performers.map((v) => v)),
@@ -261,6 +276,22 @@ class Fragment$SlimSceneData {
     if (l$paths != lOther$paths) {
       return false;
     }
+    final l$captions = captions;
+    final lOther$captions = other.captions;
+    if (l$captions != null && lOther$captions != null) {
+      if (l$captions.length != lOther$captions.length) {
+        return false;
+      }
+      for (int i = 0; i < l$captions.length; i++) {
+        final l$captions$entry = l$captions[i];
+        final lOther$captions$entry = lOther$captions[i];
+        if (l$captions$entry != lOther$captions$entry) {
+          return false;
+        }
+      }
+    } else if (l$captions != lOther$captions) {
+      return false;
+    }
     final l$urls = urls;
     final lOther$urls = other.urls;
     if (l$urls.length != lOther$urls.length) {
@@ -337,6 +368,7 @@ abstract class CopyWith$Fragment$SlimSceneData<TRes> {
     int? play_count,
     List<Fragment$SlimSceneData$files>? files,
     Fragment$SlimSceneData$paths? paths,
+    List<Fragment$SlimSceneData$captions>? captions,
     List<String>? urls,
     Fragment$SlimSceneData$studio? studio,
     List<Fragment$SlimSceneData$performers>? performers,
@@ -352,6 +384,16 @@ abstract class CopyWith$Fragment$SlimSceneData<TRes> {
     _fn,
   );
   CopyWith$Fragment$SlimSceneData$paths<TRes> get paths;
+  TRes captions(
+    Iterable<Fragment$SlimSceneData$captions>? Function(
+      Iterable<
+        CopyWith$Fragment$SlimSceneData$captions<
+          Fragment$SlimSceneData$captions
+        >
+      >?,
+    )
+    _fn,
+  );
   CopyWith$Fragment$SlimSceneData$studio<TRes> get studio;
   TRes performers(
     Iterable<Fragment$SlimSceneData$performers> Function(
@@ -395,6 +437,7 @@ class _CopyWithImpl$Fragment$SlimSceneData<TRes>
     Object? play_count = _undefined,
     Object? files = _undefined,
     Object? paths = _undefined,
+    Object? captions = _undefined,
     Object? urls = _undefined,
     Object? studio = _undefined,
     Object? performers = _undefined,
@@ -429,6 +472,9 @@ class _CopyWithImpl$Fragment$SlimSceneData<TRes>
       paths: paths == _undefined || paths == null
           ? _instance.paths
           : (paths as Fragment$SlimSceneData$paths),
+      captions: captions == _undefined
+          ? _instance.captions
+          : (captions as List<Fragment$SlimSceneData$captions>?),
       urls: urls == _undefined || urls == null
           ? _instance.urls
           : (urls as List<String>),
@@ -469,6 +515,23 @@ class _CopyWithImpl$Fragment$SlimSceneData<TRes>
       (e) => call(paths: e),
     );
   }
+
+  TRes captions(
+    Iterable<Fragment$SlimSceneData$captions>? Function(
+      Iterable<
+        CopyWith$Fragment$SlimSceneData$captions<
+          Fragment$SlimSceneData$captions
+        >
+      >?,
+    )
+    _fn,
+  ) => call(
+    captions: _fn(
+      _instance.captions?.map(
+        (e) => CopyWith$Fragment$SlimSceneData$captions(e, (i) => i),
+      ),
+    )?.toList(),
+  );
 
   CopyWith$Fragment$SlimSceneData$studio<TRes> get studio {
     final local$studio = _instance.studio;
@@ -531,6 +594,7 @@ class _CopyWithStubImpl$Fragment$SlimSceneData<TRes>
     int? play_count,
     List<Fragment$SlimSceneData$files>? files,
     Fragment$SlimSceneData$paths? paths,
+    List<Fragment$SlimSceneData$captions>? captions,
     List<String>? urls,
     Fragment$SlimSceneData$studio? studio,
     List<Fragment$SlimSceneData$performers>? performers,
@@ -542,6 +606,8 @@ class _CopyWithStubImpl$Fragment$SlimSceneData<TRes>
 
   CopyWith$Fragment$SlimSceneData$paths<TRes> get paths =>
       CopyWith$Fragment$SlimSceneData$paths.stub(_res);
+
+  captions(_fn) => _res;
 
   CopyWith$Fragment$SlimSceneData$studio<TRes> get studio =>
       CopyWith$Fragment$SlimSceneData$studio.stub(_res);
@@ -676,6 +742,51 @@ const fragmentDefinitionSlimSceneData = FragmentDefinitionNode(
             ),
             FieldNode(
               name: NameNode(value: 'stream'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'caption'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'vtt'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: '__typename'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+          ],
+        ),
+      ),
+      FieldNode(
+        name: NameNode(value: 'captions'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: SelectionSetNode(
+          selections: [
+            FieldNode(
+              name: NameNode(value: 'language_code'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'caption_type'),
               alias: null,
               arguments: [],
               directives: [],
@@ -986,6 +1097,8 @@ class Fragment$SlimSceneData$paths {
     this.screenshot,
     this.preview,
     this.stream,
+    this.caption,
+    this.vtt,
     this.$__typename = 'ScenePathsType',
   });
 
@@ -993,11 +1106,15 @@ class Fragment$SlimSceneData$paths {
     final l$screenshot = json['screenshot'];
     final l$preview = json['preview'];
     final l$stream = json['stream'];
+    final l$caption = json['caption'];
+    final l$vtt = json['vtt'];
     final l$$__typename = json['__typename'];
     return Fragment$SlimSceneData$paths(
       screenshot: (l$screenshot as String?),
       preview: (l$preview as String?),
       stream: (l$stream as String?),
+      caption: (l$caption as String?),
+      vtt: (l$vtt as String?),
       $__typename: (l$$__typename as String),
     );
   }
@@ -1007,6 +1124,10 @@ class Fragment$SlimSceneData$paths {
   final String? preview;
 
   final String? stream;
+
+  final String? caption;
+
+  final String? vtt;
 
   final String $__typename;
 
@@ -1018,6 +1139,10 @@ class Fragment$SlimSceneData$paths {
     _resultData['preview'] = l$preview;
     final l$stream = stream;
     _resultData['stream'] = l$stream;
+    final l$caption = caption;
+    _resultData['caption'] = l$caption;
+    final l$vtt = vtt;
+    _resultData['vtt'] = l$vtt;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -1028,8 +1153,17 @@ class Fragment$SlimSceneData$paths {
     final l$screenshot = screenshot;
     final l$preview = preview;
     final l$stream = stream;
+    final l$caption = caption;
+    final l$vtt = vtt;
     final l$$__typename = $__typename;
-    return Object.hashAll([l$screenshot, l$preview, l$stream, l$$__typename]);
+    return Object.hashAll([
+      l$screenshot,
+      l$preview,
+      l$stream,
+      l$caption,
+      l$vtt,
+      l$$__typename,
+    ]);
   }
 
   @override
@@ -1054,6 +1188,16 @@ class Fragment$SlimSceneData$paths {
     final l$stream = stream;
     final lOther$stream = other.stream;
     if (l$stream != lOther$stream) {
+      return false;
+    }
+    final l$caption = caption;
+    final lOther$caption = other.caption;
+    if (l$caption != lOther$caption) {
+      return false;
+    }
+    final l$vtt = vtt;
+    final lOther$vtt = other.vtt;
+    if (l$vtt != lOther$vtt) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -1084,6 +1228,8 @@ abstract class CopyWith$Fragment$SlimSceneData$paths<TRes> {
     String? screenshot,
     String? preview,
     String? stream,
+    String? caption,
+    String? vtt,
     String? $__typename,
   });
 }
@@ -1102,6 +1248,8 @@ class _CopyWithImpl$Fragment$SlimSceneData$paths<TRes>
     Object? screenshot = _undefined,
     Object? preview = _undefined,
     Object? stream = _undefined,
+    Object? caption = _undefined,
+    Object? vtt = _undefined,
     Object? $__typename = _undefined,
   }) => _then(
     Fragment$SlimSceneData$paths(
@@ -1110,6 +1258,8 @@ class _CopyWithImpl$Fragment$SlimSceneData$paths<TRes>
           : (screenshot as String?),
       preview: preview == _undefined ? _instance.preview : (preview as String?),
       stream: stream == _undefined ? _instance.stream : (stream as String?),
+      caption: caption == _undefined ? _instance.caption : (caption as String?),
+      vtt: vtt == _undefined ? _instance.vtt : (vtt as String?),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
@@ -1127,8 +1277,138 @@ class _CopyWithStubImpl$Fragment$SlimSceneData$paths<TRes>
     String? screenshot,
     String? preview,
     String? stream,
+    String? caption,
+    String? vtt,
     String? $__typename,
   }) => _res;
+}
+
+class Fragment$SlimSceneData$captions {
+  Fragment$SlimSceneData$captions({
+    required this.language_code,
+    required this.caption_type,
+    this.$__typename = 'VideoCaption',
+  });
+
+  factory Fragment$SlimSceneData$captions.fromJson(Map<String, dynamic> json) {
+    final l$language_code = json['language_code'];
+    final l$caption_type = json['caption_type'];
+    final l$$__typename = json['__typename'];
+    return Fragment$SlimSceneData$captions(
+      language_code: (l$language_code as String),
+      caption_type: (l$caption_type as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String language_code;
+
+  final String caption_type;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$language_code = language_code;
+    _resultData['language_code'] = l$language_code;
+    final l$caption_type = caption_type;
+    _resultData['caption_type'] = l$caption_type;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$language_code = language_code;
+    final l$caption_type = caption_type;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$language_code, l$caption_type, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$SlimSceneData$captions ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$language_code = language_code;
+    final lOther$language_code = other.language_code;
+    if (l$language_code != lOther$language_code) {
+      return false;
+    }
+    final l$caption_type = caption_type;
+    final lOther$caption_type = other.caption_type;
+    if (l$caption_type != lOther$caption_type) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$SlimSceneData$captions
+    on Fragment$SlimSceneData$captions {
+  CopyWith$Fragment$SlimSceneData$captions<Fragment$SlimSceneData$captions>
+  get copyWith => CopyWith$Fragment$SlimSceneData$captions(this, (i) => i);
+}
+
+abstract class CopyWith$Fragment$SlimSceneData$captions<TRes> {
+  factory CopyWith$Fragment$SlimSceneData$captions(
+    Fragment$SlimSceneData$captions instance,
+    TRes Function(Fragment$SlimSceneData$captions) then,
+  ) = _CopyWithImpl$Fragment$SlimSceneData$captions;
+
+  factory CopyWith$Fragment$SlimSceneData$captions.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$SlimSceneData$captions;
+
+  TRes call({String? language_code, String? caption_type, String? $__typename});
+}
+
+class _CopyWithImpl$Fragment$SlimSceneData$captions<TRes>
+    implements CopyWith$Fragment$SlimSceneData$captions<TRes> {
+  _CopyWithImpl$Fragment$SlimSceneData$captions(this._instance, this._then);
+
+  final Fragment$SlimSceneData$captions _instance;
+
+  final TRes Function(Fragment$SlimSceneData$captions) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? language_code = _undefined,
+    Object? caption_type = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Fragment$SlimSceneData$captions(
+      language_code: language_code == _undefined || language_code == null
+          ? _instance.language_code
+          : (language_code as String),
+      caption_type: caption_type == _undefined || caption_type == null
+          ? _instance.caption_type
+          : (caption_type as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Fragment$SlimSceneData$captions<TRes>
+    implements CopyWith$Fragment$SlimSceneData$captions<TRes> {
+  _CopyWithStubImpl$Fragment$SlimSceneData$captions(this._res);
+
+  TRes _res;
+
+  call({String? language_code, String? caption_type, String? $__typename}) =>
+      _res;
 }
 
 class Fragment$SlimSceneData$studio {
@@ -1567,6 +1847,7 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     this.play_count,
     required this.files,
     required this.paths,
+    this.captions,
     required this.urls,
     this.studio,
     required this.performers,
@@ -1588,6 +1869,7 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     final l$play_count = json['play_count'];
     final l$files = json['files'];
     final l$paths = json['paths'];
+    final l$captions = json['captions'];
     final l$urls = json['urls'];
     final l$studio = json['studio'];
     final l$performers = json['performers'];
@@ -1614,6 +1896,13 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
       paths: Fragment$SceneData$paths.fromJson(
         (l$paths as Map<String, dynamic>),
       ),
+      captions: (l$captions as List<dynamic>?)
+          ?.map(
+            (e) => Fragment$SceneData$captions.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
       urls: (l$urls as List<dynamic>).map((e) => (e as String)).toList(),
       studio: l$studio == null
           ? null
@@ -1661,6 +1950,8 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
 
   final Fragment$SceneData$paths paths;
 
+  final List<Fragment$SceneData$captions>? captions;
+
   final List<String> urls;
 
   final Fragment$SceneData$studio? studio;
@@ -1699,6 +1990,8 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     _resultData['files'] = l$files.map((e) => e.toJson()).toList();
     final l$paths = paths;
     _resultData['paths'] = l$paths.toJson();
+    final l$captions = captions;
+    _resultData['captions'] = l$captions?.map((e) => e.toJson()).toList();
     final l$urls = urls;
     _resultData['urls'] = l$urls.map((e) => e).toList();
     final l$studio = studio;
@@ -1729,6 +2022,7 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     final l$play_count = play_count;
     final l$files = files;
     final l$paths = paths;
+    final l$captions = captions;
     final l$urls = urls;
     final l$studio = studio;
     final l$performers = performers;
@@ -1748,6 +2042,7 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
       l$play_count,
       Object.hashAll(l$files.map((v) => v)),
       l$paths,
+      l$captions == null ? null : Object.hashAll(l$captions.map((v) => v)),
       Object.hashAll(l$urls.map((v) => v)),
       l$studio,
       Object.hashAll(l$performers.map((v) => v)),
@@ -1826,6 +2121,22 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     final l$paths = paths;
     final lOther$paths = other.paths;
     if (l$paths != lOther$paths) {
+      return false;
+    }
+    final l$captions = captions;
+    final lOther$captions = other.captions;
+    if (l$captions != null && lOther$captions != null) {
+      if (l$captions.length != lOther$captions.length) {
+        return false;
+      }
+      for (int i = 0; i < l$captions.length; i++) {
+        final l$captions$entry = l$captions[i];
+        final lOther$captions$entry = lOther$captions[i];
+        if (l$captions$entry != lOther$captions$entry) {
+          return false;
+        }
+      }
+    } else if (l$captions != lOther$captions) {
       return false;
     }
     final l$urls = urls;
@@ -1914,6 +2225,7 @@ abstract class CopyWith$Fragment$SceneData<TRes> {
     int? play_count,
     List<Fragment$SceneData$files>? files,
     Fragment$SceneData$paths? paths,
+    List<Fragment$SceneData$captions>? captions,
     List<String>? urls,
     Fragment$SceneData$studio? studio,
     List<Fragment$SceneData$performers>? performers,
@@ -1929,6 +2241,14 @@ abstract class CopyWith$Fragment$SceneData<TRes> {
     _fn,
   );
   CopyWith$Fragment$SceneData$paths<TRes> get paths;
+  TRes captions(
+    Iterable<Fragment$SceneData$captions>? Function(
+      Iterable<
+        CopyWith$Fragment$SceneData$captions<Fragment$SceneData$captions>
+      >?,
+    )
+    _fn,
+  );
   CopyWith$Fragment$SceneData$studio<TRes> get studio;
   TRes performers(
     Iterable<Fragment$SceneData$performers> Function(
@@ -1968,6 +2288,7 @@ class _CopyWithImpl$Fragment$SceneData<TRes>
     Object? play_count = _undefined,
     Object? files = _undefined,
     Object? paths = _undefined,
+    Object? captions = _undefined,
     Object? urls = _undefined,
     Object? studio = _undefined,
     Object? performers = _undefined,
@@ -2004,6 +2325,9 @@ class _CopyWithImpl$Fragment$SceneData<TRes>
       paths: paths == _undefined || paths == null
           ? _instance.paths
           : (paths as Fragment$SceneData$paths),
+      captions: captions == _undefined
+          ? _instance.captions
+          : (captions as List<Fragment$SceneData$captions>?),
       urls: urls == _undefined || urls == null
           ? _instance.urls
           : (urls as List<String>),
@@ -2046,6 +2370,21 @@ class _CopyWithImpl$Fragment$SceneData<TRes>
       (e) => call(paths: e),
     );
   }
+
+  TRes captions(
+    Iterable<Fragment$SceneData$captions>? Function(
+      Iterable<
+        CopyWith$Fragment$SceneData$captions<Fragment$SceneData$captions>
+      >?,
+    )
+    _fn,
+  ) => call(
+    captions: _fn(
+      _instance.captions?.map(
+        (e) => CopyWith$Fragment$SceneData$captions(e, (i) => i),
+      ),
+    )?.toList(),
+  );
 
   CopyWith$Fragment$SceneData$studio<TRes> get studio {
     final local$studio = _instance.studio;
@@ -2102,6 +2441,7 @@ class _CopyWithStubImpl$Fragment$SceneData<TRes>
     int? play_count,
     List<Fragment$SceneData$files>? files,
     Fragment$SceneData$paths? paths,
+    List<Fragment$SceneData$captions>? captions,
     List<String>? urls,
     Fragment$SceneData$studio? studio,
     List<Fragment$SceneData$performers>? performers,
@@ -2115,6 +2455,8 @@ class _CopyWithStubImpl$Fragment$SceneData<TRes>
 
   CopyWith$Fragment$SceneData$paths<TRes> get paths =>
       CopyWith$Fragment$SceneData$paths.stub(_res);
+
+  captions(_fn) => _res;
 
   CopyWith$Fragment$SceneData$studio<TRes> get studio =>
       CopyWith$Fragment$SceneData$studio.stub(_res);
@@ -2628,6 +2970,8 @@ class Fragment$SceneData$paths implements Fragment$SlimSceneData$paths {
     this.screenshot,
     this.preview,
     this.stream,
+    this.caption,
+    this.vtt,
     this.$__typename = 'ScenePathsType',
   });
 
@@ -2635,11 +2979,15 @@ class Fragment$SceneData$paths implements Fragment$SlimSceneData$paths {
     final l$screenshot = json['screenshot'];
     final l$preview = json['preview'];
     final l$stream = json['stream'];
+    final l$caption = json['caption'];
+    final l$vtt = json['vtt'];
     final l$$__typename = json['__typename'];
     return Fragment$SceneData$paths(
       screenshot: (l$screenshot as String?),
       preview: (l$preview as String?),
       stream: (l$stream as String?),
+      caption: (l$caption as String?),
+      vtt: (l$vtt as String?),
       $__typename: (l$$__typename as String),
     );
   }
@@ -2649,6 +2997,10 @@ class Fragment$SceneData$paths implements Fragment$SlimSceneData$paths {
   final String? preview;
 
   final String? stream;
+
+  final String? caption;
+
+  final String? vtt;
 
   final String $__typename;
 
@@ -2660,6 +3012,10 @@ class Fragment$SceneData$paths implements Fragment$SlimSceneData$paths {
     _resultData['preview'] = l$preview;
     final l$stream = stream;
     _resultData['stream'] = l$stream;
+    final l$caption = caption;
+    _resultData['caption'] = l$caption;
+    final l$vtt = vtt;
+    _resultData['vtt'] = l$vtt;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -2670,8 +3026,17 @@ class Fragment$SceneData$paths implements Fragment$SlimSceneData$paths {
     final l$screenshot = screenshot;
     final l$preview = preview;
     final l$stream = stream;
+    final l$caption = caption;
+    final l$vtt = vtt;
     final l$$__typename = $__typename;
-    return Object.hashAll([l$screenshot, l$preview, l$stream, l$$__typename]);
+    return Object.hashAll([
+      l$screenshot,
+      l$preview,
+      l$stream,
+      l$caption,
+      l$vtt,
+      l$$__typename,
+    ]);
   }
 
   @override
@@ -2696,6 +3061,16 @@ class Fragment$SceneData$paths implements Fragment$SlimSceneData$paths {
     final l$stream = stream;
     final lOther$stream = other.stream;
     if (l$stream != lOther$stream) {
+      return false;
+    }
+    final l$caption = caption;
+    final lOther$caption = other.caption;
+    if (l$caption != lOther$caption) {
+      return false;
+    }
+    final l$vtt = vtt;
+    final lOther$vtt = other.vtt;
+    if (l$vtt != lOther$vtt) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -2726,6 +3101,8 @@ abstract class CopyWith$Fragment$SceneData$paths<TRes> {
     String? screenshot,
     String? preview,
     String? stream,
+    String? caption,
+    String? vtt,
     String? $__typename,
   });
 }
@@ -2744,6 +3121,8 @@ class _CopyWithImpl$Fragment$SceneData$paths<TRes>
     Object? screenshot = _undefined,
     Object? preview = _undefined,
     Object? stream = _undefined,
+    Object? caption = _undefined,
+    Object? vtt = _undefined,
     Object? $__typename = _undefined,
   }) => _then(
     Fragment$SceneData$paths(
@@ -2752,6 +3131,8 @@ class _CopyWithImpl$Fragment$SceneData$paths<TRes>
           : (screenshot as String?),
       preview: preview == _undefined ? _instance.preview : (preview as String?),
       stream: stream == _undefined ? _instance.stream : (stream as String?),
+      caption: caption == _undefined ? _instance.caption : (caption as String?),
+      vtt: vtt == _undefined ? _instance.vtt : (vtt as String?),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
@@ -2769,8 +3150,138 @@ class _CopyWithStubImpl$Fragment$SceneData$paths<TRes>
     String? screenshot,
     String? preview,
     String? stream,
+    String? caption,
+    String? vtt,
     String? $__typename,
   }) => _res;
+}
+
+class Fragment$SceneData$captions implements Fragment$SlimSceneData$captions {
+  Fragment$SceneData$captions({
+    required this.language_code,
+    required this.caption_type,
+    this.$__typename = 'VideoCaption',
+  });
+
+  factory Fragment$SceneData$captions.fromJson(Map<String, dynamic> json) {
+    final l$language_code = json['language_code'];
+    final l$caption_type = json['caption_type'];
+    final l$$__typename = json['__typename'];
+    return Fragment$SceneData$captions(
+      language_code: (l$language_code as String),
+      caption_type: (l$caption_type as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String language_code;
+
+  final String caption_type;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$language_code = language_code;
+    _resultData['language_code'] = l$language_code;
+    final l$caption_type = caption_type;
+    _resultData['caption_type'] = l$caption_type;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$language_code = language_code;
+    final l$caption_type = caption_type;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$language_code, l$caption_type, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$SceneData$captions ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$language_code = language_code;
+    final lOther$language_code = other.language_code;
+    if (l$language_code != lOther$language_code) {
+      return false;
+    }
+    final l$caption_type = caption_type;
+    final lOther$caption_type = other.caption_type;
+    if (l$caption_type != lOther$caption_type) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$SceneData$captions
+    on Fragment$SceneData$captions {
+  CopyWith$Fragment$SceneData$captions<Fragment$SceneData$captions>
+  get copyWith => CopyWith$Fragment$SceneData$captions(this, (i) => i);
+}
+
+abstract class CopyWith$Fragment$SceneData$captions<TRes> {
+  factory CopyWith$Fragment$SceneData$captions(
+    Fragment$SceneData$captions instance,
+    TRes Function(Fragment$SceneData$captions) then,
+  ) = _CopyWithImpl$Fragment$SceneData$captions;
+
+  factory CopyWith$Fragment$SceneData$captions.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$SceneData$captions;
+
+  TRes call({String? language_code, String? caption_type, String? $__typename});
+}
+
+class _CopyWithImpl$Fragment$SceneData$captions<TRes>
+    implements CopyWith$Fragment$SceneData$captions<TRes> {
+  _CopyWithImpl$Fragment$SceneData$captions(this._instance, this._then);
+
+  final Fragment$SceneData$captions _instance;
+
+  final TRes Function(Fragment$SceneData$captions) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? language_code = _undefined,
+    Object? caption_type = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Fragment$SceneData$captions(
+      language_code: language_code == _undefined || language_code == null
+          ? _instance.language_code
+          : (language_code as String),
+      caption_type: caption_type == _undefined || caption_type == null
+          ? _instance.caption_type
+          : (caption_type as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Fragment$SceneData$captions<TRes>
+    implements CopyWith$Fragment$SceneData$captions<TRes> {
+  _CopyWithStubImpl$Fragment$SceneData$captions(this._res);
+
+  TRes _res;
+
+  call({String? language_code, String? caption_type, String? $__typename}) =>
+      _res;
 }
 
 class Fragment$SceneData$studio implements Fragment$SlimSceneData$studio {

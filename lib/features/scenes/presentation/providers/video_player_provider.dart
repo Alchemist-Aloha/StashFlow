@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:http/http.dart' as http;
 import '../../domain/entities/scene.dart';
 import 'playback_queue_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
@@ -73,6 +75,21 @@ class GlobalPlayerState {
   /// User preference: whether to trigger native Android PiP on minimize.
   final bool enableNativePip;
 
+  /// Currently selected subtitle language code. null if disabled.
+  final String? selectedSubtitleLanguage;
+
+  /// Currently selected subtitle type (e.g., 'vtt', 'srt').
+  final String? selectedSubtitleType;
+
+  /// User preference: default subtitle language code. 'none' if disabled.
+  final String defaultSubtitleLanguage;
+
+  /// User preference: subtitle font size.
+  final double subtitleFontSize;
+
+  /// User preference: subtitle vertical position (0.0 to 1.0 from bottom).
+  final double subtitlePositionBottomRatio;
+
   GlobalPlayerState({
     this.activeScene,
     this.videoPlayerController,
@@ -91,6 +108,11 @@ class GlobalPlayerState {
     this.useDoubleTapSeek = true,
     this.enableBackgroundPlayback = false,
     this.enableNativePip = false,
+    this.selectedSubtitleLanguage,
+    this.selectedSubtitleType,
+    this.defaultSubtitleLanguage = 'none',
+    this.subtitleFontSize = 18.0,
+    this.subtitlePositionBottomRatio = 0.15,
   });
 
   /// Creates a copy of the state with updated fields.
@@ -113,7 +135,13 @@ class GlobalPlayerState {
     bool? useDoubleTapSeek,
     bool? enableBackgroundPlayback,
     bool? enableNativePip,
+    String? selectedSubtitleLanguage,
+    String? selectedSubtitleType,
+    String? defaultSubtitleLanguage,
+    double? subtitleFontSize,
+    double? subtitlePositionBottomRatio,
     bool clearActive = false,
+    bool clearSubtitle = false,
   }) {
     return GlobalPlayerState(
       activeScene: clearActive ? null : (activeScene ?? this.activeScene),
@@ -146,6 +174,17 @@ class GlobalPlayerState {
       enableBackgroundPlayback:
           enableBackgroundPlayback ?? this.enableBackgroundPlayback,
       enableNativePip: enableNativePip ?? this.enableNativePip,
+      selectedSubtitleLanguage: clearSubtitle
+          ? null
+          : (selectedSubtitleLanguage ?? this.selectedSubtitleLanguage),
+      selectedSubtitleType: clearSubtitle
+          ? null
+          : (selectedSubtitleType ?? this.selectedSubtitleType),
+      defaultSubtitleLanguage:
+          defaultSubtitleLanguage ?? this.defaultSubtitleLanguage,
+      subtitleFontSize: subtitleFontSize ?? this.subtitleFontSize,
+      subtitlePositionBottomRatio:
+          subtitlePositionBottomRatio ?? this.subtitlePositionBottomRatio,
     );
   }
 }
@@ -164,6 +203,10 @@ class PlayerState extends _$PlayerState {
   static const _useDoubleTapSeekKey = 'video_use_double_tap_seek';
   static const _enableBackgroundPlaybackKey = 'video_background_playback';
   static const _enableNativePipKey = 'video_native_pip';
+  static const _defaultSubtitleLanguageKey = 'default_subtitle_language';
+  static const _subtitleFontSizeKey = 'subtitle_font_size';
+  static const _subtitlePositionBottomRatioKey =
+      'subtitle_position_bottom_ratio';
 
   /// Internal reference used during disposal to ensure we clean up the right controller.
   VideoPlayerController? _videoControllerRef;
@@ -214,6 +257,11 @@ class PlayerState extends _$PlayerState {
           prefs.getBool(_enableBackgroundPlaybackKey) ?? false,
       enableNativePip: prefs.getBool(_enableNativePipKey) ?? false,
       isInPipMode: PipMode.isInPipMode.value,
+      defaultSubtitleLanguage:
+          prefs.getString(_defaultSubtitleLanguageKey) ?? 'none',
+      subtitleFontSize: prefs.getDouble(_subtitleFontSizeKey) ?? 18.0,
+      subtitlePositionBottomRatio:
+          prefs.getDouble(_subtitlePositionBottomRatioKey) ?? 0.15,
     );
   }
 
@@ -249,6 +297,79 @@ class PlayerState extends _$PlayerState {
     state = state.copyWith(enableNativePip: value);
     final prefs = ref.read(sharedPreferencesProvider);
     prefs.setBool(_enableNativePipKey, value);
+  }
+
+  void setDefaultSubtitleLanguage(String value) {
+    state = state.copyWith(defaultSubtitleLanguage: value);
+    final prefs = ref.read(sharedPreferencesProvider);
+    prefs.setString(_defaultSubtitleLanguageKey, value);
+  }
+
+  void setSubtitleFontSize(double value) {
+    state = state.copyWith(subtitleFontSize: value);
+    final prefs = ref.read(sharedPreferencesProvider);
+    prefs.setDouble(_subtitleFontSizeKey, value);
+  }
+
+  void setSubtitlePositionBottomRatio(double value) {
+    state = state.copyWith(subtitlePositionBottomRatio: value);
+    final prefs = ref.read(sharedPreferencesProvider);
+    prefs.setDouble(_subtitlePositionBottomRatioKey, value);
+  }
+
+  Future<void> setSubtitle(String? languageCode, {String? captionType}) async {
+    if (!ref.mounted) return;
+    final scene = state.activeScene;
+    if (scene == null) return;
+
+    if (state.selectedSubtitleLanguage == languageCode &&
+        state.selectedSubtitleType == captionType) {
+      return;
+    }
+
+    AppLogStore.instance.add(
+      'PlayerState setSubtitle: $languageCode (type=$captionType)',
+      source: 'player_provider',
+    );
+
+    // If we're disabling subtitles, we might still need to reload to clear them
+    // unless we use a dummy empty caption file.
+    if (languageCode == null) {
+      state = state.copyWith(clearSubtitle: true);
+    } else {
+      state = state.copyWith(
+        selectedSubtitleLanguage: languageCode,
+        selectedSubtitleType: captionType,
+      );
+    }
+
+    // Reload the current scene to apply subtitle change
+    final controller = state.videoPlayerController;
+    if (controller != null) {
+      final currentPosition = controller.value.position;
+      final isPlaying = controller.value.isPlaying;
+      final streamUrl = controller.dataSource;
+
+      // We re-run playScene which will handle creating a new controller with the correct subtitle.
+      // We pass the current state fields to preserve them.
+      await playScene(
+        scene,
+        streamUrl,
+        mimeType: state.streamMimeType,
+        streamLabel: state.streamLabel,
+        streamSource: state.streamSource,
+        httpHeaders: ref.read(mediaHeadersProvider),
+        prewarmAttempted: state.prewarmAttempted,
+        prewarmSucceeded: state.prewarmSucceeded,
+        prewarmLatencyMs: state.prewarmLatencyMs,
+        initialPosition: currentPosition,
+        force: true,
+      );
+      
+      if (!isPlaying) {
+        state.videoPlayerController?.pause();
+      }
+    }
   }
 
   void setPrewarmResult({
@@ -302,15 +423,47 @@ class PlayerState extends _$PlayerState {
     bool? prewarmSucceeded,
     int? prewarmLatencyMs,
     Duration? initialPosition,
+    bool force = false,
   }) async {
     final allowBackgroundPlayback = state.enableBackgroundPlayback;
 
     AppLogStore.instance.add(
-      'provider playScene begin scene=${scene.id} source=${streamSource ?? '-'} mime=${mimeType ?? '-'} initialPos=${initialPosition?.inMilliseconds}ms',
+      'provider playScene begin scene=${scene.id} source=${streamSource ?? '-'} mime=${mimeType ?? '-'} initialPos=${initialPosition?.inMilliseconds}ms force=$force',
       source: 'player_provider',
     );
 
-    if (state.activeScene?.id == scene.id &&
+    // Automatic caption loading logic
+    String? autoLang;
+    String? autoType;
+
+    if (!force && state.selectedSubtitleLanguage == null) {
+      final defaultLang = state.defaultSubtitleLanguage;
+      if (defaultLang != 'none') {
+        // 1. Try matching default language
+        final matches = scene.captions.where(
+          (c) => c.languageCode.toLowerCase() == defaultLang.toLowerCase(),
+        );
+        if (matches.isNotEmpty) {
+          autoLang = matches.first.languageCode;
+          autoType = matches.first.captionType;
+        } else if (scene.captions.isNotEmpty) {
+          // 2. Use first available if default not found
+          autoLang = scene.captions.first.languageCode;
+          autoType = scene.captions.first.captionType;
+        } else if (scene.paths.caption != null) {
+          // 3. Generic fallback
+          autoLang = '';
+          autoType = '';
+        }
+      }
+    }
+
+    final effectiveSubtitleLanguage =
+        autoLang ?? state.selectedSubtitleLanguage;
+    final effectiveSubtitleType = autoType ?? state.selectedSubtitleType;
+
+    if (!force &&
+        state.activeScene?.id == scene.id &&
         state.videoPlayerController != null) {
       _videoControllerRef ??= state.videoPlayerController;
       if (initialPosition != null) {
@@ -329,6 +482,8 @@ class PlayerState extends _$PlayerState {
         prewarmAttempted: prewarmAttempted,
         prewarmSucceeded: prewarmSucceeded,
         prewarmLatencyMs: prewarmLatencyMs,
+        selectedSubtitleLanguage: effectiveSubtitleLanguage,
+        selectedSubtitleType: effectiveSubtitleType,
       );
       return;
     }
@@ -344,12 +499,45 @@ class PlayerState extends _$PlayerState {
     if (!ref.mounted) return;
 
     final stopwatch = Stopwatch()..start();
+
+    Future<ClosedCaptionFile>? closedCaptionFile;
+    if (effectiveSubtitleLanguage != null && scene.paths.caption != null) {
+      final lang = effectiveSubtitleLanguage;
+      final type = effectiveSubtitleType;
+      final baseCaptionUrl = scene.paths.caption!;
+      final uri = Uri.parse(baseCaptionUrl);
+      final queryParams = Map<String, dynamic>.from(uri.queryParameters);
+      if (lang.isNotEmpty) {
+        queryParams['lang'] = lang;
+      }
+      if (type != null && type.isNotEmpty) {
+        queryParams['type'] = type;
+      }
+      final captionUrl = uri.replace(queryParameters: queryParams).toString();
+
+      AppLogStore.instance.add(
+        'provider playScene: loading subtitles lang=$lang type=$type base=$baseCaptionUrl final=$captionUrl',
+        source: 'player_provider',
+      );
+
+      closedCaptionFile = _loadSubtitles(
+        captionUrl,
+        fallbackVttUrl: scene.paths.vtt,
+      );
+    } else if (effectiveSubtitleLanguage != null) {
+      AppLogStore.instance.add(
+        'provider playScene: language selected but scene.paths.caption is null',
+        source: 'player_provider',
+      );
+    }
+
     final videoController = VideoPlayerController.networkUrl(
       Uri.parse(streamUrl),
       httpHeaders: httpHeaders ?? const <String, String>{},
       videoPlayerOptions: VideoPlayerOptions(
         allowBackgroundPlayback: allowBackgroundPlayback,
       ),
+      closedCaptionFile: closedCaptionFile,
     );
     _videoControllerRef = videoController;
     _firstFrameLoggedSceneId = null;
@@ -365,6 +553,8 @@ class PlayerState extends _$PlayerState {
       prewarmAttempted: prewarmAttempted,
       prewarmSucceeded: prewarmSucceeded,
       prewarmLatencyMs: prewarmLatencyMs,
+      selectedSubtitleLanguage: effectiveSubtitleLanguage,
+      selectedSubtitleType: effectiveSubtitleType,
     );
 
     try {
@@ -626,6 +816,130 @@ class PlayerState extends _$PlayerState {
     }
     if (state.autoplayNext) {
       playNext();
+    }
+  }
+
+  Future<ClosedCaptionFile> _loadSubtitles(String url, {String? fallbackVttUrl}) async {
+    final apiKey = ref.read(serverApiKeyProvider);
+    final headers = ref.read(mediaHeadersProvider);
+    final authenticatedUrl = appendApiKey(url, apiKey);
+
+    AppLogStore.instance.add(
+      'PlayerState _loadSubtitles: downloading $authenticatedUrl',
+      source: 'player_provider',
+    );
+
+    try {
+      final requestHeaders = {
+        ...headers,
+        'Accept': 'text/vtt, */*',
+      };
+
+      var response = await http.get(Uri.parse(authenticatedUrl), headers: requestHeaders);
+      
+      AppLogStore.instance.add(
+        'PlayerState _loadSubtitles: status=${response.statusCode} len=${response.bodyBytes.length} type=${response.headers['content-type']}',
+        source: 'player_provider',
+      );
+
+      // Fallback 1: If lang=00 returned empty, try without lang parameter
+      if (response.statusCode == 200 && response.bodyBytes.isEmpty && authenticatedUrl.contains('lang=00')) {
+        final uri = Uri.parse(authenticatedUrl);
+        final params = Map<String, String>.from(uri.queryParameters);
+        params.remove('lang');
+        final fallbackUrl = uri.replace(queryParameters: params).toString();
+        
+        AppLogStore.instance.add(
+          'PlayerState _loadSubtitles: empty response for lang=00, trying fallback: $fallbackUrl',
+          source: 'player_provider',
+        );
+        response = await http.get(Uri.parse(fallbackUrl), headers: requestHeaders);
+        
+        AppLogStore.instance.add(
+          'PlayerState _loadSubtitles fallback: status=${response.statusCode} len=${response.bodyBytes.length}',
+          source: 'player_provider',
+        );
+      }
+
+      // Fallback 2: If still empty and we have a vtt path, try that
+      if (response.statusCode == 200 && response.bodyBytes.isEmpty && fallbackVttUrl != null && fallbackVttUrl != url) {
+        final authFallbackVtt = appendApiKey(fallbackVttUrl, apiKey);
+        AppLogStore.instance.add(
+          'PlayerState _loadSubtitles: empty response, trying vtt fallback: $authFallbackVtt',
+          source: 'player_provider',
+        );
+        response = await http.get(Uri.parse(authFallbackVtt), headers: requestHeaders);
+        AppLogStore.instance.add(
+          'PlayerState _loadSubtitles vtt fallback: status=${response.statusCode} len=${response.bodyBytes.length}',
+          source: 'player_provider',
+        );
+      }
+
+      if (response.statusCode == 200) {
+        final bytes = response.bodyBytes;
+        if (bytes.isEmpty) {
+          AppLogStore.instance.add(
+            'PlayerState _loadSubtitles: received empty body bytes',
+            source: 'player_provider',
+          );
+          return WebVTTCaptionFile('');
+        }
+
+        // Use utf8.decode with allowMalformed: true to be resilient
+        final content = utf8.decode(bytes, allowMalformed: true);
+        
+        if (content.trim().isEmpty) {
+          AppLogStore.instance.add(
+            'PlayerState _loadSubtitles: received only whitespace',
+            source: 'player_provider',
+          );
+          return WebVTTCaptionFile('');
+        }
+
+        final preview = content.length > 100 
+            ? content.substring(0, 100).replaceAll('\n', ' ') 
+            : content.replaceAll('\n', ' ');
+        
+        AppLogStore.instance.add(
+          'PlayerState _loadSubtitles: success, length=${content.length}, preview="$preview"',
+          source: 'player_provider',
+        );
+
+        final isVtt = content.contains('WEBVTT');
+        // SRT often starts with 1 and a newline, or has --> but not WEBVTT
+        final isSrt = !isVtt && content.contains('-->');
+        
+        ClosedCaptionFile captionFile;
+        if (isSrt) {
+          AppLogStore.instance.add(
+            'PlayerState _loadSubtitles: detected SRT format',
+            source: 'player_provider',
+          );
+          captionFile = SubRipCaptionFile(content);
+        } else {
+          AppLogStore.instance.add(
+            'PlayerState _loadSubtitles: detected VTT format',
+            source: 'player_provider',
+          );
+          captionFile = WebVTTCaptionFile(content);
+        }
+        
+        AppLogStore.instance.add(
+          'PlayerState _loadSubtitles: parsed ${captionFile.captions.length} captions',
+          source: 'player_provider',
+        );
+        
+        return captionFile;
+      } else {
+        throw Exception('Failed to load subtitles: ${response.statusCode}');
+      }
+    } catch (e) {
+      AppLogStore.instance.add(
+        'PlayerState _loadSubtitles error: $e',
+        source: 'player_provider',
+      );
+      // Return empty file on error to avoid breaking playback
+      return WebVTTCaptionFile('');
     }
   }
 

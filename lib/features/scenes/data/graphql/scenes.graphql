@@ -16,6 +16,12 @@ fragment SlimSceneData on Scene {
     screenshot
     preview
     stream
+    caption
+    vtt
+  }
+  captions {
+    language_code
+    caption_type
   }
   urls
   studio {

@@ -4,7 +4,7 @@
 A modern, multi-platform client for your **Stash** server. Designed for seamless browsing, effortless discovery, and high-quality playback across **Android**, **Desktop** (Windows, macOS, Linux), and the [**Web**](https://alchemist-aloha.github.io/StashFlow/).
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.8.1-green.svg)](pubspec.yaml)
+[![Version](https://img.shields.io/badge/version-1.8.2-green.svg)](pubspec.yaml)
 
 ## 📸 Screenshots
 
@@ -31,9 +31,11 @@ A modern, multi-platform client for your **Stash** server. Designed for seamless
 - 📱 **Flexible Layouts:** Switch between **Grid/List** and **TikTok-style** vertical discovery layouts.
 - 🎲 **Discovery Tools:** Use floating "Random" actions and "Surprise Me" entries to quickly explore your library.
 
-### 🎬 Video Playback Experience
+### 🎬 Video Player & Subtitles
 
 - 🎬 **Seamless Playback:** Native-feel player with multiple stream strategies, startup diagnostics, **Autoplay Next**, and queue continuity.
+- 💬 **Subtitle Support:** Load external **VTT/SRT** subtitles automatically. Customize **font size** and **vertical position** to suit your device.
+- 🌐 **Multi-Language:** Set a **default subtitle language** (English, Chinese, German, etc.) to auto-load whenever available.
 - 🎵 **System Integration:** Supports `audio_service` controls (notifications/lock screen), background audio, and **Picture-in-Picture (PiP)**.
 
 ### 🖼️ Images & Galleries
@@ -82,6 +84,8 @@ Tailor your experience in the app settings:
 - `autoplay_next`: Enable continuous playback in details and TikTok views.
 - `video_background_playback`: Continue audio when app is minimized.
 - `video_native_pip`: Enable auto-PiP on Android.
+- `default_subtitle_language`: Configure preferred subtitle language for auto-loading.
+- `subtitle_font_size` & `subtitle_position_bottom_ratio`: Tune subtitle appearance for any screen.
 - `image_fullscreen_vertical_swipe`: Fullscreen image swipe direction (vertical, horizontal).
 
 ---
