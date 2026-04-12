@@ -116,15 +116,14 @@ void main() {
     },
   );
 
-  testWidgets(
-    'hides subtitle button when only vtt path is present',
-    (tester) async {
-      final scene = _buildScene(captions: const [], vttPath: '/api/vtt');
-      await _pumpControls(tester, scene: scene);
+  testWidgets('hides subtitle button when only vtt path is present', (
+    tester,
+  ) async {
+    final scene = _buildScene(captions: const [], vttPath: '/api/vtt');
+    await _pumpControls(tester, scene: scene);
 
-      expect(find.byIcon(Icons.subtitles_rounded), findsNothing);
-    },
-  );
+    expect(find.byIcon(Icons.subtitles_rounded), findsNothing);
+  });
 
   testWidgets(
     'hides subtitle button when only caption endpoint exists but no vtt/metadata',
