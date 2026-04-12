@@ -190,7 +190,7 @@ class GlobalPlayerState {
       subtitleFontSize: subtitleFontSize ?? this.subtitleFontSize,
       subtitlePositionBottomRatio:
           subtitlePositionBottomRatio ?? this.subtitlePositionBottomRatio,
-        subtitleTextAlignment:
+      subtitleTextAlignment:
           subtitleTextAlignment ?? this.subtitleTextAlignment,
     );
   }
@@ -270,7 +270,7 @@ class PlayerState extends _$PlayerState {
       subtitleFontSize: prefs.getDouble(_subtitleFontSizeKey) ?? 18.0,
       subtitlePositionBottomRatio:
           prefs.getDouble(_subtitlePositionBottomRatioKey) ?? 0.15,
-        subtitleTextAlignment:
+      subtitleTextAlignment:
           prefs.getString(_subtitleTextAlignmentKey) ?? 'center',
     );
   }

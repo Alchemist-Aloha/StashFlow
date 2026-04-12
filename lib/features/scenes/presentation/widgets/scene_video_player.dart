@@ -226,9 +226,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     final playerState = ref.watch(playerStateProvider);
     final controller = playerState.videoPlayerController;
 
-    final aspectRatio = _effectiveAspectRatio(
-      controller,
-    );
+    final aspectRatio = _effectiveAspectRatio(controller);
 
     // If this player isn't active, show a placeholder with a play button.
     if (playerState.activeScene?.id != widget.scene.id) {
@@ -486,7 +484,7 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                       ),
                     ),
                     if (playerState.selectedSubtitleLanguage != null &&
-                    playerState.selectedSubtitleLanguage != 'none')
+                        playerState.selectedSubtitleLanguage != 'none')
                       ValueListenableBuilder(
                         valueListenable: controller,
                         builder: (context, value, child) {

@@ -47,10 +47,7 @@ class SceneSubtitleOverlay extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 6,
-                  vertical: 3,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                 child: Text(
                   text,
                   textAlign: textAlign,

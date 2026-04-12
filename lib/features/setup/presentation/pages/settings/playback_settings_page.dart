@@ -59,7 +59,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     _subtitlePositionBottomRatio =
         prefs.getDouble(_subtitlePositionBottomRatioKey) ?? 0.15;
     _subtitleTextAlignment =
-      prefs.getString(_subtitleTextAlignmentKey) ?? 'center';
+        prefs.getString(_subtitleTextAlignmentKey) ?? 'center';
 
     setState(() => _loading = false);
   }
@@ -238,12 +238,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
           }
         },
         items: languages
-            .map(
-              (l) => DropdownMenuItem(
-                value: l.$1,
-                child: Text(l.$2),
-              ),
-            )
+            .map((l) => DropdownMenuItem(value: l.$1, child: Text(l.$2)))
             .toList(),
       ),
     );
@@ -329,12 +324,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
           }
         },
         items: alignments
-            .map(
-              (a) => DropdownMenuItem(
-                value: a.$1,
-                child: Text(a.$2),
-              ),
-            )
+            .map((a) => DropdownMenuItem(value: a.$1, child: Text(a.$2)))
             .toList(),
       ),
     );
