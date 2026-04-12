@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../core/data/graphql/graphql_client.dart';
 import '../../scenes/presentation/providers/video_player_provider.dart';
@@ -15,6 +16,8 @@ import '../../galleries/presentation/providers/gallery_list_provider.dart';
 import '../../scenes/presentation/widgets/tiktok_scenes_view.dart';
 import '../../setup/presentation/providers/navigation_tabs_provider.dart';
 import '../../setup/presentation/providers/gesture_settings_provider.dart';
+import '../../setup/presentation/providers/update_provider.dart';
+import '../../setup/domain/entities/update_info.dart';
 import 'widgets/mini_player.dart';
 
 class ShellPage extends ConsumerStatefulWidget {
@@ -34,6 +37,53 @@ class _ShellPageState extends ConsumerState<ShellPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkServerConfiguration();
     });
+  }
+
+  void _showUpdateDialog(UpdateInfo updateInfo) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('Update Available'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'A new version of StashFlow (${updateInfo.latestVersion}) is available.',
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Would you like to visit the release page to download it?',
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              ref.read(startupUpdateCheckProvider.notifier).markChecked();
+              Navigator.pop(context);
+            },
+            child: const Text('Later'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              final url = Uri.parse(updateInfo.releaseUrl);
+              try {
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                }
+              } catch (_) {}
+              if (context.mounted) {
+                ref.read(startupUpdateCheckProvider.notifier).markChecked();
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('Update Now'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _checkServerConfiguration() {
@@ -76,6 +126,14 @@ class _ShellPageState extends ConsumerState<ShellPage> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(startupUpdateCheckProvider, (previous, next) {
+      next.whenData((updateInfo) {
+        if (updateInfo != null && updateInfo.isUpdateAvailable && mounted) {
+          _showUpdateDialog(updateInfo);
+        }
+      });
+    });
+
     final navigationShell = widget.navigationShell;
     final currentPath = GoRouterState.of(context).uri.path;
     final playerState = ref.watch(playerStateProvider);
