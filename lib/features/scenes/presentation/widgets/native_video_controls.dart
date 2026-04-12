@@ -740,7 +740,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                         ),
                                         const SizedBox(width: 8),
                                         if (widget.scene.captions.isNotEmpty ||
-                                            widget.scene.paths.caption != null)
+                                            (widget.scene.paths.vtt?.trim().isNotEmpty ?? false))
                                           PopupMenuButton<String?>(
                                             tooltip: 'Select subtitle',
                                             icon: Icon(
@@ -832,12 +832,14 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                                   ),
                                                 ),
                                               ];
-                                              if (widget
-                                                      .scene
-                                                      .captions
-                                                      .isEmpty &&
-                                                  widget.scene.paths.caption !=
-                                                      null) {
+                                                if (widget
+                                                    .scene
+                                                    .captions
+                                                    .isEmpty &&
+                                                  (widget.scene.paths.vtt
+                                                      ?.trim()
+                                                      .isNotEmpty ??
+                                                    false)) {
                                                 // Fallback to "Default" if we have a path but no explicit caption metadata
                                                 final isSelected =
                                                     (playerState.selectedSubtitleLanguage ==

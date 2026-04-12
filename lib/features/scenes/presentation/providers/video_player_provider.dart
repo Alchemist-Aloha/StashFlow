@@ -436,6 +436,10 @@ class PlayerState extends _$PlayerState {
     );
 
     // Automatic caption loading logic
+    final hasCaptionPath = scene.paths.caption?.trim().isNotEmpty ?? false;
+    final hasVttPath = scene.paths.vtt?.trim().isNotEmpty ?? false;
+    final hasSubtitleSource = hasCaptionPath || hasVttPath;
+    final hasUnnamedSubtitleSource = hasVttPath;
     String? autoLang;
     String? autoType;
 
@@ -447,7 +451,7 @@ class PlayerState extends _$PlayerState {
         if (scene.captions.length == 1) {
           autoLang = scene.captions.first.languageCode;
           autoType = scene.captions.first.captionType;
-        } else if (scene.captions.isEmpty && scene.paths.caption != null) {
+        } else if (scene.captions.isEmpty && hasUnnamedSubtitleSource) {
           // If no metadata but a path exists, it's effectively "the only one"
           autoLang = '';
           autoType = '';
@@ -460,7 +464,7 @@ class PlayerState extends _$PlayerState {
         if (matches.isNotEmpty) {
           autoLang = matches.first.languageCode;
           autoType = matches.first.captionType;
-        } else if (scene.captions.isEmpty && scene.paths.caption != null) {
+        } else if (scene.captions.isEmpty && hasUnnamedSubtitleSource) {
           // 2. Generic fallback if we have a path but no explicit caption metadata.
           // We assume the user wants it if they have a non-'none' default language.
           autoLang = '';
@@ -487,32 +491,38 @@ class PlayerState extends _$PlayerState {
     Future<ClosedCaptionFile>? closedCaptionFile;
     if (effectiveSubtitleLanguage != null &&
         effectiveSubtitleLanguage != 'none' &&
-        scene.paths.caption != null) {
+        hasSubtitleSource) {
       final lang = effectiveSubtitleLanguage;
       final type = effectiveSubtitleType;
-      final baseCaptionUrl = scene.paths.caption!;
-      final uri = Uri.parse(baseCaptionUrl);
-      final queryParams = Map<String, dynamic>.from(uri.queryParameters);
-      if (lang.isNotEmpty) {
-        queryParams['lang'] = lang;
+      late final String captionUrl;
+      if (hasCaptionPath) {
+        final baseCaptionUrl = scene.paths.caption!.trim();
+        final uri = Uri.parse(baseCaptionUrl);
+        final queryParams = Map<String, dynamic>.from(uri.queryParameters);
+        if (lang.isNotEmpty) {
+          queryParams['lang'] = lang;
+        }
+        if (type != null && type.isNotEmpty) {
+          queryParams['type'] = type;
+        }
+        captionUrl = uri.replace(queryParameters: queryParams).toString();
+      } else {
+        // For unnamed subtitle sources, use vtt path directly.
+        captionUrl = scene.paths.vtt!.trim();
       }
-      if (type != null && type.isNotEmpty) {
-        queryParams['type'] = type;
-      }
-      final captionUrl = uri.replace(queryParameters: queryParams).toString();
 
       AppLogStore.instance.add(
-        'provider playScene: loading subtitles lang=$lang type=$type base=$baseCaptionUrl final=$captionUrl',
+        'provider playScene: loading subtitles lang=$lang type=$type final=$captionUrl',
         source: 'player_provider',
       );
 
       closedCaptionFile = _loadSubtitles(
         captionUrl,
-        fallbackVttUrl: scene.paths.vtt,
+        fallbackVttUrl: hasVttPath ? scene.paths.vtt!.trim() : null,
       );
     } else if (effectiveSubtitleLanguage != null) {
       AppLogStore.instance.add(
-        'provider playScene: language selected but scene.paths.caption is null',
+        'provider playScene: language selected but no subtitle source path is available',
         source: 'player_provider',
       );
     }
