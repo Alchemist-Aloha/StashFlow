@@ -30947,6 +30947,14 @@ copy of the Program in return for a fee.
 
                      END OF TERMS AND CONDITIONS
 
+---
+
+ADDITIONAL PERMISSION UNDER GPL-3.0 SECTION 7: LINKING EXCEPTION
+
+As a special exception, the copyright holders of StashFlow give you permission to link this program with the mdk-sdk library (including its binary distributions and the fvp plugin) and distribute the resulting combined work. This exception allows the distribution of the combined work even if mdk-sdk is not licensed under the GPL, provided that the rest of the StashFlow source code is distributed under the terms of the GNU General Public License version 3.
+
+---
+
             How to Apply These Terms to Your New Programs
 
   If you develop a new program, and you want it to be of the greatest
