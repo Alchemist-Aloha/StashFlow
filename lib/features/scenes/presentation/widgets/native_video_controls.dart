@@ -608,40 +608,44 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                           }
                         }
                       },
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: _toggleControls,
-                        onDoubleTapDown: widget.useDoubleTapSeek
-                            ? (details) {
-                                if (details.localPosition.dx <
-                                    constraints.maxWidth / 2) {
-                                  _seekRelativeSeconds(-_gestureSeekSeconds);
-                                } else {
-                                  _seekRelativeSeconds(_gestureSeekSeconds);
+                      child: MouseRegion(
+                        onHover: (_) => _showControlsTemporarily(),
+                        onEnter: (_) => _showControlsTemporarily(),
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: _toggleControls,
+                          onDoubleTapDown: widget.useDoubleTapSeek
+                              ? (details) {
+                                  if (details.localPosition.dx <
+                                      constraints.maxWidth / 2) {
+                                    _seekRelativeSeconds(-_gestureSeekSeconds);
+                                  } else {
+                                    _seekRelativeSeconds(_gestureSeekSeconds);
+                                  }
                                 }
-                              }
-                            : null,
-                        onDoubleTap: () {
-                          if (ref.read(desktopCapabilitiesProvider)) {
-                            widget.onFullScreenToggle?.call();
-                          }
-                        },
-                        onHorizontalDragStart: !widget.useDoubleTapSeek
-                            ? (_) => _beginDragSeek()
-                            : null,
-                        onHorizontalDragUpdate: !widget.useDoubleTapSeek
-                            ? (details) => _updateDragSeek(
-                                  details,
-                                  constraints.maxWidth,
-                                )
-                            : null,
-                        onHorizontalDragEnd: !widget.useDoubleTapSeek
-                            ? (_) => _endDragSeek()
-                            : null,
-                        onHorizontalDragCancel: !widget.useDoubleTapSeek
-                            ? _endDragSeek
-                            : null,
-                        child: const ColoredBox(color: Colors.transparent),
+                              : null,
+                          onDoubleTap: () {
+                            if (ref.read(desktopCapabilitiesProvider)) {
+                              widget.onFullScreenToggle?.call();
+                            }
+                          },
+                          onHorizontalDragStart: !widget.useDoubleTapSeek
+                              ? (_) => _beginDragSeek()
+                              : null,
+                          onHorizontalDragUpdate: !widget.useDoubleTapSeek
+                              ? (details) => _updateDragSeek(
+                                    details,
+                                    constraints.maxWidth,
+                                  )
+                              : null,
+                          onHorizontalDragEnd: !widget.useDoubleTapSeek
+                              ? (_) => _endDragSeek()
+                              : null,
+                          onHorizontalDragCancel: !widget.useDoubleTapSeek
+                              ? _endDragSeek
+                              : null,
+                          child: const ColoredBox(color: Colors.transparent),
+                        ),
                       ),
                     ),
                   ),
