@@ -60,6 +60,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
   bool _dragSeekShouldResumePlayback = false;
   int? _seekFeedbackSeconds;
   Timer? _seekFeedbackTimer;
+  bool _volumeOverlayVisible = false;
+  Timer? _volumeOverlayTimer;
 
   @override
   void initState() {
@@ -74,6 +76,12 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     if (_wasPlaying) {
       _scheduleAutoHide();
     }
+
+    ref.listenManual(desktopSettingsProvider, (previous, next) {
+      if (previous?.volume != next.volume || previous?.isMuted != next.isMuted) {
+        _showVolumeOverlay();
+      }
+    });
   }
 
   @override
@@ -474,6 +482,56 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     );
   }
 
+  void _showVolumeOverlay() {
+    if (!mounted) return;
+    _volumeOverlayTimer?.cancel();
+    setState(() => _volumeOverlayVisible = true);
+    _volumeOverlayTimer = Timer(const Duration(milliseconds: 1000), () {
+      if (!mounted) return;
+      setState(() => _volumeOverlayVisible = false);
+    });
+  }
+
+  Widget _buildVolumeOverlay(ColorScheme colorScheme) {
+    final desktopSettings = ref.watch(desktopSettingsProvider);
+    final volume = desktopSettings.volume;
+    final isMuted = desktopSettings.isMuted;
+
+    IconData iconData = Icons.volume_up_rounded;
+    if (isMuted || volume == 0) {
+      iconData = Icons.volume_off_rounded;
+    } else if (volume < 0.5) {
+      iconData = Icons.volume_down_rounded;
+    }
+
+    return IgnorePointer(
+      child: AnimatedOpacity(
+        opacity: _volumeOverlayVisible ? 1 : 0,
+        duration: const Duration(milliseconds: 200),
+        child: Center(
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.black.withAlpha(150),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(iconData, color: Colors.white, size: 48),
+                const SizedBox(height: 8),
+                Text(
+                  isMuted ? 'Muted' : '${(volume * 100).round()}%',
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -592,6 +650,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                     child: Center(
                       child: _buildSeekFeedbackOverlay(colorScheme),
                     ),
+                  ),
+
+                  Positioned.fill(
+                    child: _buildVolumeOverlay(colorScheme),
                   ),
 
                   // Layer 1: UI Overlays
