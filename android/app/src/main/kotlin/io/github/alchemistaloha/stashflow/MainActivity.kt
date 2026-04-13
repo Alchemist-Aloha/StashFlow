@@ -1,4 +1,4 @@
-package com.github.alchemistaloha.stash_app_flutter
+package io.github.alchemistaloha.stashflow
 
 import android.app.PictureInPictureParams
 import android.content.res.Configuration
