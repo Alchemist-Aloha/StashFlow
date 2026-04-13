@@ -922,7 +922,7 @@ class PlayerState extends _$PlayerState {
         }
 
         // Use utf8.decode with allowMalformed: true to be resilient
-        final content = utf8.decode(bytes, allowMalformed: true);
+        var content = utf8.decode(bytes, allowMalformed: true);
 
         if (content.trim().isEmpty) {
           AppLogStore.instance.add(
@@ -931,6 +931,9 @@ class PlayerState extends _$PlayerState {
           );
           return WebVTTCaptionFile('');
         }
+
+        // Filter out thumbnail/storyboard lines (e.g. sprite.jpg#xywh=...)
+        content = _filterSubtitleContent(content);
 
         final preview = content.length > 100
             ? content.substring(0, 100).replaceAll('\n', ' ')
@@ -977,6 +980,23 @@ class PlayerState extends _$PlayerState {
       // Return empty file on error to avoid breaking playback
       return WebVTTCaptionFile('');
     }
+  }
+
+  /// Filters out common storyboard/thumbnail lines (like sprite.jpg#xywh=...)
+  /// from VTT/SRT content to prevent them from being rendered as text captions.
+  String _filterSubtitleContent(String content) {
+    if (!content.contains('#xywh')) return content;
+
+    final lines = content.split('\n');
+    final filteredLines = lines.where((line) {
+      final trimmed = line.trim();
+      // Filter out lines containing the storyboard fragment identifier.
+      // These are typically of the form: "thumbnail.jpg#xywh=0,0,160,90"
+      if (trimmed.contains('#xywh')) return false;
+      return true;
+    });
+
+    return filteredLines.join('\n');
   }
 
   Future<void> playNext() async {
