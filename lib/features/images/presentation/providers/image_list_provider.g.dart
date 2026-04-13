@@ -62,18 +62,74 @@ abstract class _$ImageScrollController extends $Notifier<ScrollController> {
   }
 }
 
+@ProviderFor(ImageRandomSeed)
+final imageRandomSeedProvider = ImageRandomSeedProvider._();
+
+final class ImageRandomSeedProvider
+    extends $NotifierProvider<ImageRandomSeed, int> {
+  ImageRandomSeedProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'imageRandomSeedProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$imageRandomSeedHash();
+
+  @$internal
+  @override
+  ImageRandomSeed create() => ImageRandomSeed();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(int value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int>(value),
+    );
+  }
+}
+
+String _$imageRandomSeedHash() => r'8ae23d5f454fbf18a02f773f56216861f8f31f31';
+
+abstract class _$ImageRandomSeed extends $Notifier<int> {
+  int build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<int, int>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<int, int>,
+              int,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(ImageSort)
 final imageSortProvider = ImageSortProvider._();
 
 final class ImageSortProvider
-    extends $NotifierProvider<ImageSort, ({bool descending, String? sort})> {
+    extends
+        $NotifierProvider<
+          ImageSort,
+          ({bool descending, int? randomSeed, String? sort})
+        > {
   ImageSortProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'imageSortProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -86,38 +142,41 @@ final class ImageSortProvider
   ImageSort create() => ImageSort();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(({bool descending, String? sort}) value) {
+  Override overrideWithValue(
+    ({bool descending, int? randomSeed, String? sort}) value,
+  ) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<({bool descending, String? sort})>(
-        value,
-      ),
+      providerOverride:
+          $SyncValueProvider<
+            ({bool descending, int? randomSeed, String? sort})
+          >(value),
     );
   }
 }
 
-String _$imageSortHash() => r'8fd26a1e333853077e69105164e5da54289c7d47';
+String _$imageSortHash() => r'028eee08294912dee24ed198c7a31bd00d3e2272';
 
 abstract class _$ImageSort
-    extends $Notifier<({bool descending, String? sort})> {
-  ({bool descending, String? sort}) build();
+    extends $Notifier<({bool descending, int? randomSeed, String? sort})> {
+  ({bool descending, int? randomSeed, String? sort}) build();
   @$mustCallSuper
   @override
   void runBuild() {
     final ref =
         this.ref
             as $Ref<
-              ({bool descending, String? sort}),
-              ({bool descending, String? sort})
+              ({bool descending, int? randomSeed, String? sort}),
+              ({bool descending, int? randomSeed, String? sort})
             >;
     final element =
         ref.element
             as $ClassProviderElement<
               AnyNotifier<
-                ({bool descending, String? sort}),
-                ({bool descending, String? sort})
+                ({bool descending, int? randomSeed, String? sort}),
+                ({bool descending, int? randomSeed, String? sort})
               >,
-              ({bool descending, String? sort}),
+              ({bool descending, int? randomSeed, String? sort}),
               Object?,
               Object?
             >;
@@ -136,7 +195,7 @@ final class ImageSearchQueryProvider
         argument: null,
         retry: null,
         name: r'imageSearchQueryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -157,7 +216,7 @@ final class ImageSearchQueryProvider
   }
 }
 
-String _$imageSearchQueryHash() => r'786cb26c7a2fc901c999ddcff04a5f111de7f822';
+String _$imageSearchQueryHash() => r'2dc118e39a153bd0e9d9a84589e9c0ef700b5b31';
 
 abstract class _$ImageSearchQuery extends $Notifier<String> {
   String build();
@@ -192,7 +251,7 @@ final class ImageFilterStateProvider
         argument: null,
         retry: null,
         name: r'imageFilterStateProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -214,7 +273,7 @@ final class ImageFilterStateProvider
   }
 }
 
-String _$imageFilterStateHash() => r'c43d353209193b53fe600e3a1f62bac785573fba';
+String _$imageFilterStateHash() => r'c4b4c942f003641e2c437a6eddf32cc684f4c0fe';
 
 abstract class _$ImageFilterState
     extends $Notifier<({ImageFilter filter, String? galleryId})> {
@@ -254,7 +313,7 @@ final class ImageOrganizedOnlyProvider
         argument: null,
         retry: null,
         name: r'imageOrganizedOnlyProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -276,7 +335,7 @@ final class ImageOrganizedOnlyProvider
 }
 
 String _$imageOrganizedOnlyHash() =>
-    r'ed1087d6b5fa2d7a8fd089810851ef4643cd438e';
+    r'f8038830dfd07140e06125d291403a7695e111ba';
 
 abstract class _$ImageOrganizedOnly extends $Notifier<bool> {
   bool build();
@@ -307,7 +366,7 @@ final class ImageListProvider
         argument: null,
         retry: null,
         name: r'imageListProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -320,7 +379,7 @@ final class ImageListProvider
   ImageList create() => ImageList();
 }
 
-String _$imageListHash() => r'4ebeeda70e94686f5cb633ffaeb3f08c5043bf38';
+String _$imageListHash() => r'ffad236d50fec5efca24d6a8c70f1493f75b319a';
 
 abstract class _$ImageList extends $AsyncNotifier<List<entity.Image>> {
   FutureOr<List<entity.Image>> build();

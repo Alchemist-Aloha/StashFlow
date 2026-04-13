@@ -62,18 +62,74 @@ abstract class _$GalleryScrollController extends $Notifier<ScrollController> {
   }
 }
 
+@ProviderFor(GalleryRandomSeed)
+final galleryRandomSeedProvider = GalleryRandomSeedProvider._();
+
+final class GalleryRandomSeedProvider
+    extends $NotifierProvider<GalleryRandomSeed, int> {
+  GalleryRandomSeedProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'galleryRandomSeedProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$galleryRandomSeedHash();
+
+  @$internal
+  @override
+  GalleryRandomSeed create() => GalleryRandomSeed();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(int value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int>(value),
+    );
+  }
+}
+
+String _$galleryRandomSeedHash() => r'6f83715bd5d7d3b2fb434b614f9e9902ff5a2628';
+
+abstract class _$GalleryRandomSeed extends $Notifier<int> {
+  int build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<int, int>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<int, int>,
+              int,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(GallerySort)
 final gallerySortProvider = GallerySortProvider._();
 
 final class GallerySortProvider
-    extends $NotifierProvider<GallerySort, ({bool descending, String? sort})> {
+    extends
+        $NotifierProvider<
+          GallerySort,
+          ({bool descending, int? randomSeed, String? sort})
+        > {
   GallerySortProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'gallerySortProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -86,38 +142,41 @@ final class GallerySortProvider
   GallerySort create() => GallerySort();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(({bool descending, String? sort}) value) {
+  Override overrideWithValue(
+    ({bool descending, int? randomSeed, String? sort}) value,
+  ) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<({bool descending, String? sort})>(
-        value,
-      ),
+      providerOverride:
+          $SyncValueProvider<
+            ({bool descending, int? randomSeed, String? sort})
+          >(value),
     );
   }
 }
 
-String _$gallerySortHash() => r'727955c597582080d2aedf474640b752f3ebf0d3';
+String _$gallerySortHash() => r'47ecb1c676cb4140dad64aa907b1da980629705d';
 
 abstract class _$GallerySort
-    extends $Notifier<({bool descending, String? sort})> {
-  ({bool descending, String? sort}) build();
+    extends $Notifier<({bool descending, int? randomSeed, String? sort})> {
+  ({bool descending, int? randomSeed, String? sort}) build();
   @$mustCallSuper
   @override
   void runBuild() {
     final ref =
         this.ref
             as $Ref<
-              ({bool descending, String? sort}),
-              ({bool descending, String? sort})
+              ({bool descending, int? randomSeed, String? sort}),
+              ({bool descending, int? randomSeed, String? sort})
             >;
     final element =
         ref.element
             as $ClassProviderElement<
               AnyNotifier<
-                ({bool descending, String? sort}),
-                ({bool descending, String? sort})
+                ({bool descending, int? randomSeed, String? sort}),
+                ({bool descending, int? randomSeed, String? sort})
               >,
-              ({bool descending, String? sort}),
+              ({bool descending, int? randomSeed, String? sort}),
               Object?,
               Object?
             >;
@@ -136,7 +195,7 @@ final class GallerySearchQueryProvider
         argument: null,
         retry: null,
         name: r'gallerySearchQueryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -158,7 +217,7 @@ final class GallerySearchQueryProvider
 }
 
 String _$gallerySearchQueryHash() =>
-    r'6ef9b99ec7ca0a2c05cb5b144446f3f24e9251ec';
+    r'6048ffea8b874b487d71cf8eafb1b14fb2a8b15f';
 
 abstract class _$GallerySearchQuery extends $Notifier<String> {
   String build();
@@ -189,7 +248,7 @@ final class GalleryFilterStateProvider
         argument: null,
         retry: null,
         name: r'galleryFilterStateProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -211,7 +270,7 @@ final class GalleryFilterStateProvider
 }
 
 String _$galleryFilterStateHash() =>
-    r'1c2310e63e4a63b3bfe8cc3d11563e93e2afe36d';
+    r'3ad0ede5cbbdfece3df669f9ffb1c70deddfc067';
 
 abstract class _$GalleryFilterState extends $Notifier<GalleryFilter> {
   GalleryFilter build();
@@ -347,7 +406,7 @@ final class GalleryListProvider
         argument: null,
         retry: null,
         name: r'galleryListProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -360,7 +419,7 @@ final class GalleryListProvider
   GalleryList create() => GalleryList();
 }
 
-String _$galleryListHash() => r'38285de3475808e72e6b2b1c53a5e7b3aad19014';
+String _$galleryListHash() => r'6d846429cc6e36603d5298ac59deba3c91134b78';
 
 abstract class _$GalleryList extends $AsyncNotifier<List<Gallery>> {
   FutureOr<List<Gallery>> build();

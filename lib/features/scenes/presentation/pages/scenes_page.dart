@@ -349,7 +349,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       customBody: isTiktokLayout ? const TiktokScenesView() : null,
       scrollController: scrollController,
       hideAppBar: isTiktokLayout && isFullScreen,
-      onRefresh: () => ref.refresh(sceneListProvider.future),
+      onRefresh: () => ref.read(sceneListProvider.notifier).refresh(),
       onFetchNextPage: () =>
           ref.read(sceneListProvider.notifier).fetchNextPage(),
       actions: [

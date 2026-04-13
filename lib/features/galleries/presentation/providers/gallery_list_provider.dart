@@ -38,21 +38,35 @@ class GalleryScrollController extends _$GalleryScrollController {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
+class GalleryRandomSeed extends _$GalleryRandomSeed {
+  @override
+  int build() => Random().nextInt(10000000);
+
+  void next() => state = Random().nextInt(10000000);
+}
+
+@Riverpod(keepAlive: true)
 class GallerySort extends _$GallerySort {
   static const _sortKey = 'gallery_sort_field';
   static const _descKey = 'gallery_sort_descending';
 
   @override
-  ({String? sort, bool descending}) build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
+  ({String? sort, bool descending, int? randomSeed}) build() {
+    final prefs = ref.read(sharedPreferencesProvider);
     final sort = prefs.getString(_sortKey) ?? 'path';
     final descending = prefs.getBool(_descKey) ?? false;
-    return (sort: sort, descending: descending);
+
+    int? seed;
+    if (sort == 'random') {
+      seed = ref.watch(galleryRandomSeedProvider);
+    }
+
+    return (sort: sort, descending: descending, randomSeed: seed);
   }
 
   void setSort({String? sort, bool descending = true}) {
-    state = (sort: sort, descending: descending);
+    state = (sort: sort, descending: descending, randomSeed: state.randomSeed);
   }
 
   Future<void> saveAsDefault() async {
@@ -62,7 +76,7 @@ class GallerySort extends _$GallerySort {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class GallerySearchQuery extends _$GallerySearchQuery {
   @override
   String build() => '';
@@ -70,7 +84,7 @@ class GallerySearchQuery extends _$GallerySearchQuery {
   void update(String query) => state = query;
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class GalleryFilterState extends _$GalleryFilterState {
   static const _filterKey = 'gallery_filter_state';
 
@@ -130,7 +144,7 @@ class GalleryGridLayout extends _$GalleryGridLayout {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class GalleryList extends _$GalleryList {
   int _currentPage = 1;
   static const int _perPage = kDefaultPageSize;
@@ -148,16 +162,31 @@ class GalleryList extends _$GalleryList {
     final organizedOnly = ref.watch(galleryOrganizedOnlyProvider);
     final repository = ref.watch(galleryRepositoryProvider);
 
+    String? effectiveSort = sortConfig.sort;
+    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
+      effectiveSort = 'random_${sortConfig.randomSeed}';
+    }
+
     return repository.findGalleries(
       page: _currentPage,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
-      sort: sortConfig.sort,
+      sort: effectiveSort,
       descending: sortConfig.descending,
       galleryFilter: filter.copyWith(
         organized: organizedOnly ? true : filter.organized,
       ),
     );
+  }
+
+  /// Manually refreshes the gallery list and generates a new random seed.
+  Future<void> refresh() async {
+    ref.read(galleryRandomSeedProvider.notifier).next();
+    _currentPage = 1;
+    _hasMore = true;
+    _isLoadingMore = false;
+    ref.invalidateSelf();
+    await future;
   }
 
   void setSort({required String sort, required bool descending}) {
@@ -180,13 +209,18 @@ class GalleryList extends _$GalleryList {
     final filter = ref.read(galleryFilterStateProvider);
     final organizedOnly = ref.read(galleryOrganizedOnlyProvider);
 
+    String? effectiveSort = sortConfig.sort;
+    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
+      effectiveSort = 'random_${sortConfig.randomSeed}';
+    }
+
     try {
       final nextPage = _currentPage + 1;
       final nextGalleries = await repository.findGalleries(
         page: nextPage,
         perPage: _perPage,
         filter: query.isEmpty ? null : query,
-        sort: sortConfig.sort,
+        sort: effectiveSort,
         descending: sortConfig.descending,
         galleryFilter: filter.copyWith(
           organized: organizedOnly ? true : filter.organized,

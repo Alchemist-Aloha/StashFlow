@@ -346,7 +346,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
       searchHint: 'Search galleries...',
       onSearchChanged: _onSearchChanged,
       provider: galleriesAsync,
-      onRefresh: () => ref.refresh(galleryListProvider.future),
+      onRefresh: () => ref.read(galleryListProvider.notifier).refresh(),
       onFetchNextPage: () =>
           ref.read(galleryListProvider.notifier).fetchNextPage(),
       gridDelegate: isGridView ? GridUtils.createDelegate() : null,

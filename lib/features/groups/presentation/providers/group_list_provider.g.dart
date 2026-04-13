@@ -9,18 +9,74 @@ part of 'group_list_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(GroupRandomSeed)
+final groupRandomSeedProvider = GroupRandomSeedProvider._();
+
+final class GroupRandomSeedProvider
+    extends $NotifierProvider<GroupRandomSeed, int> {
+  GroupRandomSeedProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'groupRandomSeedProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$groupRandomSeedHash();
+
+  @$internal
+  @override
+  GroupRandomSeed create() => GroupRandomSeed();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(int value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int>(value),
+    );
+  }
+}
+
+String _$groupRandomSeedHash() => r'f378782397f67125a7002eab6c49cd8d3f3b6d6c';
+
+abstract class _$GroupRandomSeed extends $Notifier<int> {
+  int build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<int, int>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<int, int>,
+              int,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(GroupSort)
 final groupSortProvider = GroupSortProvider._();
 
 final class GroupSortProvider
-    extends $NotifierProvider<GroupSort, ({bool descending, String? sort})> {
+    extends
+        $NotifierProvider<
+          GroupSort,
+          ({bool descending, int? randomSeed, String? sort})
+        > {
   GroupSortProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'groupSortProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -33,38 +89,41 @@ final class GroupSortProvider
   GroupSort create() => GroupSort();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(({bool descending, String? sort}) value) {
+  Override overrideWithValue(
+    ({bool descending, int? randomSeed, String? sort}) value,
+  ) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<({bool descending, String? sort})>(
-        value,
-      ),
+      providerOverride:
+          $SyncValueProvider<
+            ({bool descending, int? randomSeed, String? sort})
+          >(value),
     );
   }
 }
 
-String _$groupSortHash() => r'5e60ba0e14550443627e7e21c695ac7a3c2776c5';
+String _$groupSortHash() => r'287cbbf886abbf3a3cf938d4bff46314ff4cc4a2';
 
 abstract class _$GroupSort
-    extends $Notifier<({bool descending, String? sort})> {
-  ({bool descending, String? sort}) build();
+    extends $Notifier<({bool descending, int? randomSeed, String? sort})> {
+  ({bool descending, int? randomSeed, String? sort}) build();
   @$mustCallSuper
   @override
   void runBuild() {
     final ref =
         this.ref
             as $Ref<
-              ({bool descending, String? sort}),
-              ({bool descending, String? sort})
+              ({bool descending, int? randomSeed, String? sort}),
+              ({bool descending, int? randomSeed, String? sort})
             >;
     final element =
         ref.element
             as $ClassProviderElement<
               AnyNotifier<
-                ({bool descending, String? sort}),
-                ({bool descending, String? sort})
+                ({bool descending, int? randomSeed, String? sort}),
+                ({bool descending, int? randomSeed, String? sort})
               >,
-              ({bool descending, String? sort}),
+              ({bool descending, int? randomSeed, String? sort}),
               Object?,
               Object?
             >;
@@ -148,7 +207,7 @@ final class GroupListProvider
   GroupList create() => GroupList();
 }
 
-String _$groupListHash() => r'5ffc0fd0c289e43a35435fda88febae35e1df2d0';
+String _$groupListHash() => r'ef4e7446d0f8af298fbb63807ab0c1bd4b13e5cf';
 
 abstract class _$GroupList extends $AsyncNotifier<List<Group>> {
   FutureOr<List<Group>> build();

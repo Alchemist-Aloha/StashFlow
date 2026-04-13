@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/group.dart';
@@ -14,21 +15,35 @@ final groupRepositoryProvider = Provider<GroupRepository>((ref) {
   return GraphQLGroupRepository(client);
 });
 
-@riverpod
+@Riverpod(keepAlive: true)
+class GroupRandomSeed extends _$GroupRandomSeed {
+  @override
+  int build() => Random().nextInt(10000000);
+
+  void next() => state = Random().nextInt(10000000);
+}
+
+@Riverpod(keepAlive: true)
 class GroupSort extends _$GroupSort {
   static const _sortKey = 'group_sort_field';
   static const _descKey = 'group_sort_descending';
 
   @override
-  ({String? sort, bool descending}) build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
+  ({String? sort, bool descending, int? randomSeed}) build() {
+    final prefs = ref.read(sharedPreferencesProvider);
     final sort = prefs.getString(_sortKey) ?? 'name';
     final descending = prefs.getBool(_descKey) ?? false;
-    return (sort: sort, descending: descending);
+
+    int? seed;
+    if (sort == 'random') {
+      seed = ref.watch(groupRandomSeedProvider);
+    }
+
+    return (sort: sort, descending: descending, randomSeed: seed);
   }
 
   void setSort({String? sort, bool descending = true}) {
-    state = (sort: sort, descending: descending);
+    state = (sort: sort, descending: descending, randomSeed: state.randomSeed);
   }
 
   Future<void> saveAsDefault() async {
@@ -61,13 +76,29 @@ class GroupList extends _$GroupList {
     final query = ref.watch(groupSearchQueryProvider);
     final sortConfig = ref.watch(groupSortProvider);
     final repository = ref.watch(groupRepositoryProvider);
+
+    String? effectiveSort = sortConfig.sort;
+    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
+      effectiveSort = 'random_${sortConfig.randomSeed}';
+    }
+
     return repository.findGroups(
       page: _currentPage,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
-      sort: sortConfig.sort,
+      sort: effectiveSort,
       descending: sortConfig.descending,
     );
+  }
+
+  /// Manually refreshes the group list and generates a new random seed.
+  Future<void> refresh() async {
+    ref.read(groupRandomSeedProvider.notifier).next();
+    _currentPage = 1;
+    _hasMore = true;
+    _isLoadingMore = false;
+    ref.invalidateSelf();
+    await future;
   }
 
   void setSort({required String sort, required bool descending}) {
@@ -88,13 +119,18 @@ class GroupList extends _$GroupList {
     final query = ref.read(groupSearchQueryProvider);
     final sortConfig = ref.read(groupSortProvider);
 
+    String? effectiveSort = sortConfig.sort;
+    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
+      effectiveSort = 'random_${sortConfig.randomSeed}';
+    }
+
     try {
       final nextPage = _currentPage + 1;
       final nextGroups = await repository.findGroups(
         page: nextPage,
         perPage: _perPage,
         filter: query.isEmpty ? null : query,
-        sort: sortConfig.sort,
+        sort: effectiveSort,
         descending: sortConfig.descending,
       );
 

@@ -21,18 +21,6 @@ final sceneRepositoryProvider = Provider<SceneRepository>((ref) {
   return GraphQLSceneRepository(client);
 });
 
-final sceneOrganizedOnlyProvider = NotifierProvider<SceneOrganizedOnly, bool>(
-  SceneOrganizedOnly.new,
-);
-
-final sceneGridLayoutProvider = NotifierProvider<SceneGridLayout, bool>(
-  SceneGridLayout.new,
-);
-
-final sceneTiktokLayoutProvider = NotifierProvider<SceneTiktokLayout, bool>(
-  SceneTiktokLayout.new,
-);
-
 final sceneScrollControllerProvider =
     NotifierProvider<SceneScrollController, ScrollController>(
       SceneScrollController.new,
@@ -57,74 +45,35 @@ class SceneScrollController extends Notifier<ScrollController> {
   }
 }
 
-class SceneTiktokLayout extends Notifier<bool> {
-  static const _storageKey = 'scene_tiktok_layout';
-
+@Riverpod(keepAlive: true)
+class SceneRandomSeed extends _$SceneRandomSeed {
   @override
-  bool build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(_storageKey) ?? false;
-  }
+  int build() => Random().nextInt(10000000);
 
-  Future<void> set(bool value) async {
-    if (state == value) return;
-    state = value;
-    final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_storageKey, value);
-    ref.invalidate(sceneListProvider);
-  }
+  void next() => state = Random().nextInt(10000000);
 }
 
-class SceneGridLayout extends Notifier<bool> {
-  static const _storageKey = 'scene_grid_layout';
-
-  @override
-  bool build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(_storageKey) ?? false;
-  }
-
-  Future<void> set(bool value) async {
-    if (state == value) return;
-    state = value;
-    final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_storageKey, value);
-    ref.invalidate(sceneListProvider);
-  }
-}
-
-class SceneOrganizedOnly extends Notifier<bool> {
-  static const _storageKey = 'scene_organized_only';
-
-  @override
-  bool build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(_storageKey) ?? false;
-  }
-
-  void set(bool value) => state = value;
-
-  Future<void> saveAsDefault() async {
-    final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_storageKey, state);
-  }
-}
-
-@riverpod
+@Riverpod(keepAlive: true)
 class SceneSort extends _$SceneSort {
   static const _sortKey = 'scene_sort_field';
   static const _descKey = 'scene_sort_descending';
 
   @override
-  ({String? sort, bool descending}) build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
+  ({String? sort, bool descending, int? randomSeed}) build() {
+    final prefs = ref.read(sharedPreferencesProvider);
     final sort = prefs.getString(_sortKey) ?? 'date';
     final descending = prefs.getBool(_descKey) ?? true;
-    return (sort: sort, descending: descending);
+
+    int? seed;
+    if (sort == 'random') {
+      seed = ref.watch(sceneRandomSeedProvider);
+    }
+
+    return (sort: sort, descending: descending, randomSeed: seed);
   }
 
   void setSort({String? sort, bool descending = true}) {
-    state = (sort: sort, descending: descending);
+    state = (sort: sort, descending: descending, randomSeed: state.randomSeed);
   }
 
   Future<void> saveAsDefault() async {
@@ -134,7 +83,7 @@ class SceneSort extends _$SceneSort {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class SceneSearchQuery extends _$SceneSearchQuery {
   @override
   String build() => '';
@@ -142,7 +91,7 @@ class SceneSearchQuery extends _$SceneSearchQuery {
   void update(String query) => state = query;
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class SceneFilterState extends _$SceneFilterState {
   static const _storageKey = 'scene_filter_state';
 
@@ -169,6 +118,62 @@ class SceneFilterState extends _$SceneFilterState {
   }
 }
 
+@Riverpod(keepAlive: true)
+class SceneOrganizedOnly extends _$SceneOrganizedOnly {
+  static const _organizedKey = 'scene_organized_only';
+
+  @override
+  bool build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getBool(_organizedKey) ?? false;
+  }
+
+  void set(bool value) => state = value;
+
+  Future<void> saveAsDefault() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setBool(_organizedKey, state);
+  }
+}
+
+@Riverpod(keepAlive: true)
+class SceneTiktokLayout extends _$SceneTiktokLayout {
+  static const _storageKey = 'scene_tiktok_layout';
+
+  @override
+  bool build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getBool(_storageKey) ?? false;
+  }
+
+  Future<void> set(bool value) async {
+    if (state == value) return;
+    state = value;
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setBool(_storageKey, value);
+    ref.invalidate(sceneListProvider);
+  }
+}
+
+@Riverpod(keepAlive: true)
+class SceneGridLayout extends _$SceneGridLayout {
+  static const _storageKey = 'scene_grid_layout';
+
+  @override
+  bool build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getBool(_storageKey) ?? false;
+  }
+
+  Future<void> set(bool value) async {
+    if (state == value) return;
+    state = value;
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setBool(_storageKey, value);
+    ref.invalidate(sceneListProvider);
+  }
+}
+
 /// A notifier that manages the primary list of scenes with support for
 /// filtering, sorting, and infinite pagination.
 ///
@@ -177,7 +182,7 @@ class SceneFilterState extends _$SceneFilterState {
 /// - Managing the current page state and loading more scenes as the user scrolls.
 /// - Providing search and filtering capabilities.
 /// - Synchronizing the initial playback sequence with the [playbackQueueProvider].
-@riverpod
+@Riverpod(keepAlive: true)
 class SceneList extends _$SceneList {
   int _currentPage = 1;
   static const int _perPage = kDefaultPageSize;
@@ -186,9 +191,6 @@ class SceneList extends _$SceneList {
 
   @override
   FutureOr<List<Scene>> build() async {
-    // Keep the list alive so navigation doesn't reset pagination
-    ref.keepAlive();
-
     _currentPage = 1;
     _hasMore = true;
     _isLoadingMore = false;
@@ -199,11 +201,16 @@ class SceneList extends _$SceneList {
     final organizedOnly = ref.watch(sceneOrganizedOnlyProvider);
     final repository = ref.read(sceneRepositoryProvider);
 
+    String? effectiveSort = sortConfig.sort;
+    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
+      effectiveSort = 'random_${sortConfig.randomSeed}';
+    }
+
     final scenes = await repository.findScenes(
       page: _currentPage,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
-      sort: sortConfig.sort,
+      sort: effectiveSort,
       descending: sortConfig.descending,
       organized: organizedOnly ? true : null,
       sceneFilter: filter,
@@ -221,6 +228,16 @@ class SceneList extends _$SceneList {
     });
 
     return scenes;
+  }
+
+  /// Manually refreshes the scene list and generates a new random seed.
+  Future<void> refresh() async {
+    ref.read(sceneRandomSeedProvider.notifier).next();
+    _currentPage = 1;
+    _hasMore = true;
+    _isLoadingMore = false;
+    ref.invalidateSelf();
+    await future;
   }
 
   void setSort({String? sort, bool descending = true}) {
@@ -243,13 +260,18 @@ class SceneList extends _$SceneList {
     final filter = ref.read(sceneFilterStateProvider);
     final organizedOnly = ref.read(sceneOrganizedOnlyProvider);
 
+    String? effectiveSort = sortConfig.sort;
+    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
+      effectiveSort = 'random_${sortConfig.randomSeed}';
+    }
+
     try {
       final nextPage = _currentPage + 1;
       final nextScenes = await repository.findScenes(
         page: nextPage,
         perPage: _perPage,
         filter: query.isEmpty ? null : query,
-        sort: sortConfig.sort,
+        sort: effectiveSort,
         descending: sortConfig.descending,
         organized: organizedOnly ? true : null,
         sceneFilter: filter,

@@ -434,7 +434,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
       provider: performersAsync,
       scrollController: scrollController,
       imageUrlBuilder: (performer) => performer.imagePath,
-      onRefresh: () => ref.refresh(performerListProvider.future),
+      onRefresh: () => ref.read(performerListProvider.notifier).refresh(),
       onFetchNextPage: () =>
           ref.read(performerListProvider.notifier).fetchNextPage(),
       actions: [

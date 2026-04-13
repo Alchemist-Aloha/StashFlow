@@ -70,6 +70,21 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   String? _scheduledPlayCountSceneId;
   final Set<String> _countedPlayScenes = <String>{};
 
+  bool _isRandomSortActive() {
+    return ref.read(sceneSortProvider).sort == 'random';
+  }
+
+  void _invalidateSceneListUnlessRandom() {
+    if (_isRandomSortActive()) {
+      AppLogStore.instance.add(
+        'SceneDetailsPage [${widget.sceneId}] preserving random list order (skip scene list invalidation)',
+        source: 'SceneDetailsPage',
+      );
+      return;
+    }
+    ref.invalidate(sceneListProvider);
+  }
+
   Future<void> _openRandomScene(BuildContext context) async {
     final randomScene = await ref
         .read(sceneListProvider.notifier)
@@ -117,7 +132,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         _countedPlayScenes.add(sceneId);
         _scheduledPlayCountSceneId = null;
         ref.invalidate(sceneDetailsProvider(sceneId));
-        ref.invalidate(sceneListProvider);
+        _invalidateSceneListUnlessRandom();
         AppLogStore.instance.add(
           'SceneDetailsPage auto play-count increment scene=$sceneId after 5s',
           source: 'SceneDetailsPage',
@@ -407,7 +422,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                         .read(sceneRepositoryProvider)
                         .updateSceneRating(scene.id, newRating);
                     ref.invalidate(sceneDetailsProvider(scene.id));
-                    ref.invalidate(sceneListProvider);
+                    _invalidateSceneListUnlessRandom();
                   } catch (e) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -438,7 +453,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                       .read(sceneRepositoryProvider)
                       .incrementSceneOCounter(scene.id);
                   ref.invalidate(sceneDetailsProvider(scene.id));
-                  ref.invalidate(sceneListProvider);
+                  _invalidateSceneListUnlessRandom();
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('O count incremented')),

@@ -1,3 +1,4 @@
+import "dart:math";
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -36,21 +37,35 @@ class ImageScrollController extends _$ImageScrollController {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
+class ImageRandomSeed extends _$ImageRandomSeed {
+  @override
+  int build() => Random().nextInt(10000000);
+
+  void next() => state = Random().nextInt(10000000);
+}
+
+@Riverpod(keepAlive: true)
 class ImageSort extends _$ImageSort {
   static const _sortKey = 'image_sort_field';
   static const _descKey = 'image_sort_descending';
 
   @override
-  ({String? sort, bool descending}) build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
+  ({String? sort, bool descending, int? randomSeed}) build() {
+    final prefs = ref.read(sharedPreferencesProvider);
     final sort = prefs.getString(_sortKey) ?? 'path';
     final descending = prefs.getBool(_descKey) ?? false;
-    return (sort: sort, descending: descending);
+
+    int? seed;
+    if (sort == 'random') {
+      seed = ref.watch(imageRandomSeedProvider);
+    }
+
+    return (sort: sort, descending: descending, randomSeed: seed);
   }
 
   void setSort({String? sort, bool descending = true}) {
-    state = (sort: sort, descending: descending);
+    state = (sort: sort, descending: descending, randomSeed: state.randomSeed);
   }
 
   Future<void> saveAsDefault() async {
@@ -60,7 +75,7 @@ class ImageSort extends _$ImageSort {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class ImageSearchQuery extends _$ImageSearchQuery {
   @override
   String build() => '';
@@ -68,11 +83,10 @@ class ImageSearchQuery extends _$ImageSearchQuery {
   void update(String query) => state = query;
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class ImageFilterState extends _$ImageFilterState {
   @override
   ({String? galleryId, ImageFilter filter}) build() {
-    ref.keepAlive();
     return (galleryId: null, filter: const ImageFilter());
   }
 
@@ -88,7 +102,7 @@ class ImageFilterState extends _$ImageFilterState {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class ImageOrganizedOnly extends _$ImageOrganizedOnly {
   static const _organizedKey = 'image_organized_only';
 
@@ -106,7 +120,7 @@ class ImageOrganizedOnly extends _$ImageOrganizedOnly {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class ImageList extends _$ImageList {
   int _currentPage = 1;
   static const int _perPage = kDefaultPageSize;
@@ -115,7 +129,6 @@ class ImageList extends _$ImageList {
 
   @override
   FutureOr<List<entity.Image>> build() async {
-    ref.keepAlive();
     _currentPage = 1;
     _hasMore = true;
     _isLoadingMore = false;
@@ -126,17 +139,32 @@ class ImageList extends _$ImageList {
     final organizedOnly = ref.watch(imageOrganizedOnlyProvider);
     final repository = ref.read(imageRepositoryProvider);
 
+    String? effectiveSort = sortConfig.sort;
+    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
+      effectiveSort = 'random_${sortConfig.randomSeed}';
+    }
+
     return repository.findImages(
       page: _currentPage,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
-      sort: sortConfig.sort,
+      sort: effectiveSort,
       descending: sortConfig.descending,
       galleryId: filterState.galleryId,
       imageFilter: filterState.filter.copyWith(
         organized: organizedOnly ? true : filterState.filter.organized,
       ),
     );
+  }
+
+  /// Manually refreshes the image list and generates a new random seed.
+  Future<void> refresh() async {
+    ref.read(imageRandomSeedProvider.notifier).next();
+    _currentPage = 1;
+    _hasMore = true;
+    _isLoadingMore = false;
+    ref.invalidateSelf();
+    await future;
   }
 
   void setSort({String? sort, bool descending = true}) {
@@ -159,13 +187,18 @@ class ImageList extends _$ImageList {
     final filterState = ref.read(imageFilterStateProvider);
     final organizedOnly = ref.read(imageOrganizedOnlyProvider);
 
+    String? effectiveSort = sortConfig.sort;
+    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
+      effectiveSort = 'random_${sortConfig.randomSeed}';
+    }
+
     try {
       final nextPage = _currentPage + 1;
       final nextImages = await repository.findImages(
         page: nextPage,
         perPage: _perPage,
         filter: query.isEmpty ? null : query,
-        sort: sortConfig.sort,
+        sort: effectiveSort,
         descending: sortConfig.descending,
         galleryId: filterState.galleryId,
         imageFilter: filterState.filter.copyWith(

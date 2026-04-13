@@ -40,21 +40,35 @@ class StudioScrollController extends Notifier<ScrollController> {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
+class StudioRandomSeed extends _$StudioRandomSeed {
+  @override
+  int build() => Random().nextInt(10000000);
+
+  void next() => state = Random().nextInt(10000000);
+}
+
+@Riverpod(keepAlive: true)
 class StudioSort extends _$StudioSort {
   static const _sortKey = 'studio_sort_field';
   static const _descKey = 'studio_sort_descending';
 
   @override
-  ({String? sort, bool descending}) build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
+  ({String? sort, bool descending, int? randomSeed}) build() {
+    final prefs = ref.read(sharedPreferencesProvider);
     final sort = prefs.getString(_sortKey) ?? 'name';
     final descending = prefs.getBool(_descKey) ?? false;
-    return (sort: sort, descending: descending);
+
+    int? seed;
+    if (sort == 'random') {
+      seed = ref.watch(studioRandomSeedProvider);
+    }
+
+    return (sort: sort, descending: descending, randomSeed: seed);
   }
 
   void setSort({String? sort, bool descending = true}) {
-    state = (sort: sort, descending: descending);
+    state = (sort: sort, descending: descending, randomSeed: state.randomSeed);
   }
 
   Future<void> saveAsDefault() async {
@@ -64,7 +78,7 @@ class StudioSort extends _$StudioSort {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class StudioSearchQuery extends _$StudioSearchQuery {
   @override
   String build() => '';
@@ -72,12 +86,8 @@ class StudioSearchQuery extends _$StudioSearchQuery {
   void update(String query) => state = query;
 }
 
-final studioFavoritesOnlyProvider =
-    NotifierProvider<StudioFavoritesOnlyNotifier, bool>(
-      StudioFavoritesOnlyNotifier.new,
-    );
-
-class StudioFavoritesOnlyNotifier extends Notifier<bool> {
+@Riverpod(keepAlive: true)
+class StudioFavoritesOnly extends _$StudioFavoritesOnly {
   static const _storageKey = 'studio_favorites_only';
 
   @override
@@ -92,7 +102,7 @@ class StudioFavoritesOnlyNotifier extends Notifier<bool> {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class StudioList extends _$StudioList {
   int _currentPage = 1;
   static const int _perPage = kDefaultPageSize;
@@ -101,7 +111,6 @@ class StudioList extends _$StudioList {
 
   @override
   FutureOr<List<Studio>> build() async {
-    ref.keepAlive();
     _currentPage = 1;
     _hasMore = true;
     _isLoadingMore = false;
@@ -109,14 +118,30 @@ class StudioList extends _$StudioList {
     final sortConfig = ref.watch(studioSortProvider);
     final favoritesOnly = ref.watch(studioFavoritesOnlyProvider);
     final repository = ref.read(studioRepositoryProvider);
+
+    String? effectiveSort = sortConfig.sort;
+    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
+      effectiveSort = 'random_${sortConfig.randomSeed}';
+    }
+
     return repository.findStudios(
       page: _currentPage,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
-      sort: sortConfig.sort,
+      sort: effectiveSort,
       descending: sortConfig.descending,
       favoritesOnly: favoritesOnly,
     );
+  }
+
+  /// Manually refreshes the studio list and generates a new random seed.
+  Future<void> refresh() async {
+    ref.read(studioRandomSeedProvider.notifier).next();
+    _currentPage = 1;
+    _hasMore = true;
+    _isLoadingMore = false;
+    ref.invalidateSelf();
+    await future;
   }
 
   void setSort({required String sort, required bool descending}) {
@@ -146,13 +171,18 @@ class StudioList extends _$StudioList {
     final sortConfig = ref.read(studioSortProvider);
     final favoritesOnly = ref.read(studioFavoritesOnlyProvider);
 
+    String? effectiveSort = sortConfig.sort;
+    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
+      effectiveSort = 'random_${sortConfig.randomSeed}';
+    }
+
     try {
       final nextPage = _currentPage + 1;
       final nextStudios = await repository.findStudios(
         page: nextPage,
         perPage: _perPage,
         filter: query.isEmpty ? null : query,
-        sort: sortConfig.sort,
+        sort: effectiveSort,
         descending: sortConfig.descending,
         favoritesOnly: favoritesOnly,
       );

@@ -12,9 +12,6 @@ Uri _withGraphqlPathIfMissing(Uri uri) {
   return uri;
 }
 
-/// Normalizes a user-provided server URL to a valid GraphQL endpoint.
-///
-/// Ensures the URL has a scheme (defaults to https) and includes the `/graphql` path.
 String normalizeGraphqlServerUrl(String url) {
   final trimmed = url.trim();
   if (trimmed.isEmpty) return '';
@@ -32,71 +29,66 @@ String normalizeGraphqlServerUrl(String url) {
   return '';
 }
 
-/// A trigger to notify listeners when [SharedPreferences] settings are manually updated.
 @riverpod
 class SharedPreferencesTrigger extends _$SharedPreferencesTrigger {
   @override
   int build() => 0;
-
-  /// Increments the revision counter to trigger dependency rebuilds.
   void trigger() => state++;
 }
 
-/// Provider for the normalized Stash server URL.
 @riverpod
-String serverUrl(Ref ref) {
-  ref.watch(sharedPreferencesTriggerProvider);
-  final prefs = ref.watch(sharedPreferencesProvider);
-  final storedServerUrl = prefs.getString('server_base_url')?.trim() ?? '';
-  return normalizeGraphqlServerUrl(storedServerUrl);
+class ServerUrl extends _$ServerUrl {
+  @override
+  String build() {
+    ref.watch(sharedPreferencesTriggerProvider);
+    final prefs = ref.watch(sharedPreferencesProvider);
+    final storedServerUrl = prefs.getString('server_base_url')?.trim() ?? '';
+    return normalizeGraphqlServerUrl(storedServerUrl);
+  }
 }
 
-/// Provider for the initial Stash server API Key value.
 @riverpod
-String initialServerApiKey(Ref ref) => '';
+class InitialServerApiKey extends _$InitialServerApiKey {
+  @override
+  String build() => '';
+}
 
-/// StateNotifier for the internal Stash server API Key value.
 @riverpod
 class ServerApiKeyInternal extends _$ServerApiKeyInternal {
   @override
   String build() => ref.watch(initialServerApiKeyProvider);
-
   void update(String value) => state = value;
 }
 
-/// Provider for the Stash server API Key.
 @riverpod
-String serverApiKey(Ref ref) {
-  ref.watch(sharedPreferencesTriggerProvider);
-  return ref.watch(serverApiKeyInternalProvider);
+class ServerApiKey extends _$ServerApiKey {
+  @override
+  String build() {
+    ref.watch(sharedPreferencesTriggerProvider);
+    return ref.watch(serverApiKeyInternalProvider);
+  }
 }
 
-/// A centralized [GraphQLClient] provider for all feature repositories.
-///
-/// This client is automatically re-initialized whenever [serverUrl]
-/// or [serverApiKey] changes. It handles the [HttpLink] setup with the
-/// correct `ApiKey` header required by Stash.
 @riverpod
-GraphQLClient graphqlClient(Ref ref) {
-  final url = ref.watch(serverUrlProvider);
-  if (url.isEmpty) {
-    throw Exception('Server URL not configured');
+class GraphqlClient extends _$GraphqlClient {
+  @override
+  GraphQLClient build() {
+    final url = ref.watch(serverUrlProvider);
+    if (url.isEmpty) {
+      throw Exception('Server URL not configured');
+    }
+
+    final apiKey = ref.watch(serverApiKeyProvider);
+    final HttpLink httpLink = HttpLink(url, defaultHeaders: {'ApiKey': apiKey});
+
+    const bool isTestMode = bool.fromEnvironment(
+      'FLUTTER_TEST',
+      defaultValue: false,
+    );
+
+    return GraphQLClient(
+      link: httpLink,
+      cache: isTestMode ? GraphQLCache() : GraphQLCache(store: HiveStore()),
+    );
   }
-
-  final apiKey = ref.watch(serverApiKeyProvider);
-
-  final HttpLink httpLink = HttpLink(url, defaultHeaders: {'ApiKey': apiKey});
-
-  // Use an in-memory cache during widget tests to avoid requiring Hive
-  // initialization (which `initHiveForFlutter()` normally performs in
-  // `main()`). Tests run with the `FLUTTER_TEST` environment flag.
-  const bool isTestMode = bool.fromEnvironment(
-    'FLUTTER_TEST',
-    defaultValue: false,
-  );
-
-  return GraphQLClient(
-    link: httpLink,
-    cache: isTestMode ? GraphQLCache() : GraphQLCache(store: HiveStore()),
-  );
 }

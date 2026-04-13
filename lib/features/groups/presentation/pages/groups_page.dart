@@ -84,7 +84,7 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
       searchHint: 'Search groups...',
       onSearchChanged: _onSearchChanged,
       provider: groupsAsync,
-      onRefresh: () => ref.refresh(groupListProvider.future),
+      onRefresh: () => ref.read(groupListProvider.notifier).refresh(),
       onFetchNextPage: () =>
           ref.read(groupListProvider.notifier).fetchNextPage(),
       sortBar: _buildSortBar(),

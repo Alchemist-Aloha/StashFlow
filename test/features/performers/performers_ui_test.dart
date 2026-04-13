@@ -11,8 +11,8 @@ import '../../helpers/test_helpers.dart';
 
 class MockPerformerSort extends PerformerSort {
   @override
-  ({String? sort, bool descending}) build() =>
-      (sort: 'name', descending: false);
+  ({String? sort, bool descending, int? randomSeed}) build() =>
+      (sort: 'name', descending: false, randomSeed: null);
 }
 
 class MockPerformerSearchQuery extends PerformerSearchQuery {
@@ -79,7 +79,7 @@ void main() {
         performerRepositoryProvider.overrideWithValue(mockRepo),
         performerSortProvider.overrideWith(MockPerformerSort.new),
         performerSearchQueryProvider.overrideWith(MockPerformerSearchQuery.new),
-        performerFilterProvider.overrideWith(PerformerFilterNotifier.new),
+        performerFilterProvider.overrideWith(PerformerFilter.new),
       ],
       child: const PerformersPage(),
     );
@@ -105,7 +105,7 @@ void main() {
         performerRepositoryProvider.overrideWithValue(mockRepo),
         performerSortProvider.overrideWith(MockPerformerSort.new),
         performerSearchQueryProvider.overrideWith(MockPerformerSearchQuery.new),
-        performerFilterProvider.overrideWith(PerformerFilterNotifier.new),
+        performerFilterProvider.overrideWith(PerformerFilter.new),
       ],
       child: const PerformersPage(),
     );
@@ -154,7 +154,7 @@ void main() {
         performerRepositoryProvider.overrideWithValue(mockRepo),
         performerSortProvider.overrideWith(MockPerformerSort.new),
         performerSearchQueryProvider.overrideWith(MockPerformerSearchQuery.new),
-        performerFilterProvider.overrideWith(PerformerFilterNotifier.new),
+        performerFilterProvider.overrideWith(PerformerFilter.new),
       ],
       child: const PerformersPage(),
     );

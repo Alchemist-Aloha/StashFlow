@@ -40,21 +40,35 @@ class TagScrollController extends Notifier<ScrollController> {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
+class TagRandomSeed extends _$TagRandomSeed {
+  @override
+  int build() => Random().nextInt(10000000);
+
+  void next() => state = Random().nextInt(10000000);
+}
+
+@Riverpod(keepAlive: true)
 class TagSort extends _$TagSort {
   static const _sortKey = 'tag_sort_field';
   static const _descKey = 'tag_sort_descending';
 
   @override
-  ({String? sort, bool descending}) build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
+  ({String? sort, bool descending, int? randomSeed}) build() {
+    final prefs = ref.read(sharedPreferencesProvider);
     final sort = prefs.getString(_sortKey) ?? 'name';
     final descending = prefs.getBool(_descKey) ?? false;
-    return (sort: sort, descending: descending);
+
+    int? seed;
+    if (sort == 'random') {
+      seed = ref.watch(tagRandomSeedProvider);
+    }
+
+    return (sort: sort, descending: descending, randomSeed: seed);
   }
 
   void setSort({String? sort, bool descending = true}) {
-    state = (sort: sort, descending: descending);
+    state = (sort: sort, descending: descending, randomSeed: state.randomSeed);
   }
 
   Future<void> saveAsDefault() async {
@@ -64,7 +78,7 @@ class TagSort extends _$TagSort {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class TagSearchQuery extends _$TagSearchQuery {
   @override
   String build() => '';
@@ -72,12 +86,8 @@ class TagSearchQuery extends _$TagSearchQuery {
   void update(String query) => state = query;
 }
 
-final tagFavoritesOnlyProvider =
-    NotifierProvider<TagFavoritesOnlyNotifier, bool>(
-      TagFavoritesOnlyNotifier.new,
-    );
-
-class TagFavoritesOnlyNotifier extends Notifier<bool> {
+@Riverpod(keepAlive: true)
+class TagFavoritesOnly extends _$TagFavoritesOnly {
   static const _storageKey = 'tag_favorites_only';
 
   @override
@@ -92,7 +102,7 @@ class TagFavoritesOnlyNotifier extends Notifier<bool> {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class TagList extends _$TagList {
   int _currentPage = 1;
   static const int _perPage = kDefaultPageSize;
@@ -101,7 +111,6 @@ class TagList extends _$TagList {
 
   @override
   FutureOr<List<Tag>> build() async {
-    ref.keepAlive();
     _currentPage = 1;
     _hasMore = true;
     _isLoadingMore = false;
@@ -109,14 +118,30 @@ class TagList extends _$TagList {
     final sortConfig = ref.watch(tagSortProvider);
     final favoritesOnly = ref.watch(tagFavoritesOnlyProvider);
     final repository = ref.read(tagRepositoryProvider);
+
+    String? effectiveSort = sortConfig.sort;
+    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
+      effectiveSort = 'random_${sortConfig.randomSeed}';
+    }
+
     return repository.findTags(
       page: _currentPage,
       perPage: _perPage,
       filter: query.isEmpty ? null : query,
-      sort: sortConfig.sort,
+      sort: effectiveSort,
       descending: sortConfig.descending,
       favoritesOnly: favoritesOnly,
     );
+  }
+
+  /// Manually refreshes the tag list and generates a new random seed.
+  Future<void> refresh() async {
+    ref.read(tagRandomSeedProvider.notifier).next();
+    _currentPage = 1;
+    _hasMore = true;
+    _isLoadingMore = false;
+    ref.invalidateSelf();
+    await future;
   }
 
   void setSort({required String sort, required bool descending}) {
@@ -146,13 +171,18 @@ class TagList extends _$TagList {
     final sortConfig = ref.read(tagSortProvider);
     final favoritesOnly = ref.read(tagFavoritesOnlyProvider);
 
+    String? effectiveSort = sortConfig.sort;
+    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
+      effectiveSort = 'random_${sortConfig.randomSeed}';
+    }
+
     try {
       final nextPage = _currentPage + 1;
       final nextTags = await repository.findTags(
         page: nextPage,
         perPage: _perPage,
         filter: query.isEmpty ? null : query,
-        sort: sortConfig.sort,
+        sort: effectiveSort,
         descending: sortConfig.descending,
         favoritesOnly: favoritesOnly,
       );

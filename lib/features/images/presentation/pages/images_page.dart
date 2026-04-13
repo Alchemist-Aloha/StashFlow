@@ -326,7 +326,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
       searchHint: 'Search images...',
       onSearchChanged: _onSearchChanged,
       provider: imagesAsync,
-      onRefresh: () => ref.refresh(imageListProvider.future),
+      onRefresh: () => ref.read(imageListProvider.notifier).refresh(),
       onFetchNextPage: () =>
           ref.read(imageListProvider.notifier).fetchNextPage(),
       floatingActionButton: randomNavigationEnabled

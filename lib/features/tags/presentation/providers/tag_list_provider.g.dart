@@ -9,18 +9,74 @@ part of 'tag_list_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(TagRandomSeed)
+final tagRandomSeedProvider = TagRandomSeedProvider._();
+
+final class TagRandomSeedProvider
+    extends $NotifierProvider<TagRandomSeed, int> {
+  TagRandomSeedProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'tagRandomSeedProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$tagRandomSeedHash();
+
+  @$internal
+  @override
+  TagRandomSeed create() => TagRandomSeed();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(int value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int>(value),
+    );
+  }
+}
+
+String _$tagRandomSeedHash() => r'487567ef05ed58a6faacaa7767ae32cb96ff3984';
+
+abstract class _$TagRandomSeed extends $Notifier<int> {
+  int build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<int, int>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<int, int>,
+              int,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(TagSort)
 final tagSortProvider = TagSortProvider._();
 
 final class TagSortProvider
-    extends $NotifierProvider<TagSort, ({bool descending, String? sort})> {
+    extends
+        $NotifierProvider<
+          TagSort,
+          ({bool descending, int? randomSeed, String? sort})
+        > {
   TagSortProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'tagSortProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -33,37 +89,41 @@ final class TagSortProvider
   TagSort create() => TagSort();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(({bool descending, String? sort}) value) {
+  Override overrideWithValue(
+    ({bool descending, int? randomSeed, String? sort}) value,
+  ) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<({bool descending, String? sort})>(
-        value,
-      ),
+      providerOverride:
+          $SyncValueProvider<
+            ({bool descending, int? randomSeed, String? sort})
+          >(value),
     );
   }
 }
 
-String _$tagSortHash() => r'b6d1772514417e240f6e8650c5f20cf58e737504';
+String _$tagSortHash() => r'ec64cad7378744fd52cf36fd2af4550c28665ea4';
 
-abstract class _$TagSort extends $Notifier<({bool descending, String? sort})> {
-  ({bool descending, String? sort}) build();
+abstract class _$TagSort
+    extends $Notifier<({bool descending, int? randomSeed, String? sort})> {
+  ({bool descending, int? randomSeed, String? sort}) build();
   @$mustCallSuper
   @override
   void runBuild() {
     final ref =
         this.ref
             as $Ref<
-              ({bool descending, String? sort}),
-              ({bool descending, String? sort})
+              ({bool descending, int? randomSeed, String? sort}),
+              ({bool descending, int? randomSeed, String? sort})
             >;
     final element =
         ref.element
             as $ClassProviderElement<
               AnyNotifier<
-                ({bool descending, String? sort}),
-                ({bool descending, String? sort})
+                ({bool descending, int? randomSeed, String? sort}),
+                ({bool descending, int? randomSeed, String? sort})
               >,
-              ({bool descending, String? sort}),
+              ({bool descending, int? randomSeed, String? sort}),
               Object?,
               Object?
             >;
@@ -82,7 +142,7 @@ final class TagSearchQueryProvider
         argument: null,
         retry: null,
         name: r'tagSearchQueryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -103,7 +163,7 @@ final class TagSearchQueryProvider
   }
 }
 
-String _$tagSearchQueryHash() => r'343813c355a2cc424c3607f22281ea2f320ec3f0';
+String _$tagSearchQueryHash() => r'5bb6b5a7a53dd4af83d487a481bc44facbb8470c';
 
 abstract class _$TagSearchQuery extends $Notifier<String> {
   String build();
@@ -123,6 +183,58 @@ abstract class _$TagSearchQuery extends $Notifier<String> {
   }
 }
 
+@ProviderFor(TagFavoritesOnly)
+final tagFavoritesOnlyProvider = TagFavoritesOnlyProvider._();
+
+final class TagFavoritesOnlyProvider
+    extends $NotifierProvider<TagFavoritesOnly, bool> {
+  TagFavoritesOnlyProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'tagFavoritesOnlyProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$tagFavoritesOnlyHash();
+
+  @$internal
+  @override
+  TagFavoritesOnly create() => TagFavoritesOnly();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$tagFavoritesOnlyHash() => r'6c27563b09aa460dcb737a355d3c1ffe065f1505';
+
+abstract class _$TagFavoritesOnly extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(TagList)
 final tagListProvider = TagListProvider._();
 
@@ -133,7 +245,7 @@ final class TagListProvider extends $AsyncNotifierProvider<TagList, List<Tag>> {
         argument: null,
         retry: null,
         name: r'tagListProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -146,7 +258,7 @@ final class TagListProvider extends $AsyncNotifierProvider<TagList, List<Tag>> {
   TagList create() => TagList();
 }
 
-String _$tagListHash() => r'6de3e30447e117e72a558fff1daa1127f5be7b70';
+String _$tagListHash() => r'04fdcc24e6057fcff7d4056295fc6caa862a7804';
 
 abstract class _$TagList extends $AsyncNotifier<List<Tag>> {
   FutureOr<List<Tag>> build();

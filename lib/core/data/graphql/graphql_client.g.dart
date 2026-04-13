@@ -8,15 +8,12 @@ part of 'graphql_client.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// A trigger to notify listeners when [SharedPreferences] settings are manually updated.
 
 @ProviderFor(SharedPreferencesTrigger)
 final sharedPreferencesTriggerProvider = SharedPreferencesTriggerProvider._();
 
-/// A trigger to notify listeners when [SharedPreferences] settings are manually updated.
 final class SharedPreferencesTriggerProvider
     extends $NotifierProvider<SharedPreferencesTrigger, int> {
-  /// A trigger to notify listeners when [SharedPreferences] settings are manually updated.
   SharedPreferencesTriggerProvider._()
     : super(
         from: null,
@@ -47,8 +44,6 @@ final class SharedPreferencesTriggerProvider
 String _$sharedPreferencesTriggerHash() =>
     r'c70cbe660d5fac8026347daace3a579c5c5092b2';
 
-/// A trigger to notify listeners when [SharedPreferences] settings are manually updated.
-
 abstract class _$SharedPreferencesTrigger extends $Notifier<int> {
   int build();
   @$mustCallSuper
@@ -67,17 +62,10 @@ abstract class _$SharedPreferencesTrigger extends $Notifier<int> {
   }
 }
 
-/// Provider for the normalized Stash server URL.
-
-@ProviderFor(serverUrl)
+@ProviderFor(ServerUrl)
 final serverUrlProvider = ServerUrlProvider._();
 
-/// Provider for the normalized Stash server URL.
-
-final class ServerUrlProvider
-    extends $FunctionalProvider<String, String, String>
-    with $Provider<String> {
-  /// Provider for the normalized Stash server URL.
+final class ServerUrlProvider extends $NotifierProvider<ServerUrl, String> {
   ServerUrlProvider._()
     : super(
         from: null,
@@ -94,13 +82,7 @@ final class ServerUrlProvider
 
   @$internal
   @override
-  $ProviderElement<String> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  String create(Ref ref) {
-    return serverUrl(ref);
-  }
+  ServerUrl create() => ServerUrl();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(String value) {
@@ -111,19 +93,31 @@ final class ServerUrlProvider
   }
 }
 
-String _$serverUrlHash() => r'a5b703d1d7a5ed8a0c2bdf6683545bd3fa9b607a';
+String _$serverUrlHash() => r'3c4289e08ecf29192fbbbc7b9e4f5df19e449bcf';
 
-/// Provider for the initial Stash server API Key value.
+abstract class _$ServerUrl extends $Notifier<String> {
+  String build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<String, String>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<String, String>,
+              String,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
 
-@ProviderFor(initialServerApiKey)
+@ProviderFor(InitialServerApiKey)
 final initialServerApiKeyProvider = InitialServerApiKeyProvider._();
 
-/// Provider for the initial Stash server API Key value.
-
 final class InitialServerApiKeyProvider
-    extends $FunctionalProvider<String, String, String>
-    with $Provider<String> {
-  /// Provider for the initial Stash server API Key value.
+    extends $NotifierProvider<InitialServerApiKey, String> {
   InitialServerApiKeyProvider._()
     : super(
         from: null,
@@ -140,13 +134,7 @@ final class InitialServerApiKeyProvider
 
   @$internal
   @override
-  $ProviderElement<String> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  String create(Ref ref) {
-    return initialServerApiKey(ref);
-  }
+  InitialServerApiKey create() => InitialServerApiKey();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(String value) {
@@ -158,17 +146,31 @@ final class InitialServerApiKeyProvider
 }
 
 String _$initialServerApiKeyHash() =>
-    r'090052ea2e4c162f38073aac73ef9003167844eb';
+    r'26547cea13697d3ecbf70a7f53a17803f77b816d';
 
-/// StateNotifier for the internal Stash server API Key value.
+abstract class _$InitialServerApiKey extends $Notifier<String> {
+  String build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<String, String>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<String, String>,
+              String,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
 
 @ProviderFor(ServerApiKeyInternal)
 final serverApiKeyInternalProvider = ServerApiKeyInternalProvider._();
 
-/// StateNotifier for the internal Stash server API Key value.
 final class ServerApiKeyInternalProvider
     extends $NotifierProvider<ServerApiKeyInternal, String> {
-  /// StateNotifier for the internal Stash server API Key value.
   ServerApiKeyInternalProvider._()
     : super(
         from: null,
@@ -199,8 +201,6 @@ final class ServerApiKeyInternalProvider
 String _$serverApiKeyInternalHash() =>
     r'6220cdfb4a630c965ab73c867377538e39c4a2ac';
 
-/// StateNotifier for the internal Stash server API Key value.
-
 abstract class _$ServerApiKeyInternal extends $Notifier<String> {
   String build();
   @$mustCallSuper
@@ -219,17 +219,11 @@ abstract class _$ServerApiKeyInternal extends $Notifier<String> {
   }
 }
 
-/// Provider for the Stash server API Key.
-
-@ProviderFor(serverApiKey)
+@ProviderFor(ServerApiKey)
 final serverApiKeyProvider = ServerApiKeyProvider._();
 
-/// Provider for the Stash server API Key.
-
 final class ServerApiKeyProvider
-    extends $FunctionalProvider<String, String, String>
-    with $Provider<String> {
-  /// Provider for the Stash server API Key.
+    extends $NotifierProvider<ServerApiKey, String> {
   ServerApiKeyProvider._()
     : super(
         from: null,
@@ -246,13 +240,7 @@ final class ServerApiKeyProvider
 
   @$internal
   @override
-  $ProviderElement<String> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  String create(Ref ref) {
-    return serverApiKey(ref);
-  }
+  ServerApiKey create() => ServerApiKey();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(String value) {
@@ -263,31 +251,31 @@ final class ServerApiKeyProvider
   }
 }
 
-String _$serverApiKeyHash() => r'b62fa2ae4117b0cb38b1394859da901242380e5e';
+String _$serverApiKeyHash() => r'0165980cb4dc9a8ee8d9b78c318b424ba41d249d';
 
-/// A centralized [GraphQLClient] provider for all feature repositories.
-///
-/// This client is automatically re-initialized whenever [serverUrl]
-/// or [serverApiKey] changes. It handles the [HttpLink] setup with the
-/// correct `ApiKey` header required by Stash.
+abstract class _$ServerApiKey extends $Notifier<String> {
+  String build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<String, String>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<String, String>,
+              String,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
 
-@ProviderFor(graphqlClient)
+@ProviderFor(GraphqlClient)
 final graphqlClientProvider = GraphqlClientProvider._();
 
-/// A centralized [GraphQLClient] provider for all feature repositories.
-///
-/// This client is automatically re-initialized whenever [serverUrl]
-/// or [serverApiKey] changes. It handles the [HttpLink] setup with the
-/// correct `ApiKey` header required by Stash.
-
 final class GraphqlClientProvider
-    extends $FunctionalProvider<GraphQLClient, GraphQLClient, GraphQLClient>
-    with $Provider<GraphQLClient> {
-  /// A centralized [GraphQLClient] provider for all feature repositories.
-  ///
-  /// This client is automatically re-initialized whenever [serverUrl]
-  /// or [serverApiKey] changes. It handles the [HttpLink] setup with the
-  /// correct `ApiKey` header required by Stash.
+    extends $NotifierProvider<GraphqlClient, GraphQLClient> {
   GraphqlClientProvider._()
     : super(
         from: null,
@@ -304,13 +292,7 @@ final class GraphqlClientProvider
 
   @$internal
   @override
-  $ProviderElement<GraphQLClient> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  GraphQLClient create(Ref ref) {
-    return graphqlClient(ref);
-  }
+  GraphqlClient create() => GraphqlClient();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(GraphQLClient value) {
@@ -321,4 +303,22 @@ final class GraphqlClientProvider
   }
 }
 
-String _$graphqlClientHash() => r'4cb3599e6e01ec54c2df271358c0e1d1bb2a62a3';
+String _$graphqlClientHash() => r'f865747a45ccadf64b29e0c98358b65f26afbf56';
+
+abstract class _$GraphqlClient extends $Notifier<GraphQLClient> {
+  GraphQLClient build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<GraphQLClient, GraphQLClient>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<GraphQLClient, GraphQLClient>,
+              GraphQLClient,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
