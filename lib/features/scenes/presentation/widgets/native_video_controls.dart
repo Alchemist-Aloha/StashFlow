@@ -62,6 +62,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
   Timer? _seekFeedbackTimer;
   bool _volumeOverlayVisible = false;
   Timer? _volumeOverlayTimer;
+  ProviderSubscription<DesktopSettings>? _desktopSettingsSubscription;
 
   @override
   void initState() {
@@ -77,11 +78,17 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       _scheduleAutoHide();
     }
 
-    ref.listenManual<DesktopSettings>(desktopSettingsProvider, (previous, next) {
-      if (previous?.volume != next.volume || previous?.isMuted != next.isMuted) {
-        _showVolumeOverlay();
-      }
-    });
+    if (ref.read(desktopCapabilitiesProvider)) {
+      _desktopSettingsSubscription = ref.listenManual<DesktopSettings>(
+        desktopSettingsProvider,
+        (previous, next) {
+          if (previous?.volume != next.volume ||
+              previous?.isMuted != next.isMuted) {
+            _showVolumeOverlay();
+          }
+        },
+      );
+    }
   }
 
   @override
@@ -106,6 +113,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     WidgetsBinding.instance.removeObserver(this);
     _cancelAutoHide();
     _seekFeedbackTimer?.cancel();
+    _volumeOverlayTimer?.cancel();
+    _desktopSettingsSubscription?.close();
     widget.controller.removeListener(_onVideoTick);
     super.dispose();
   }
@@ -558,6 +567,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
         : value.position.inMilliseconds.toDouble();
     final sliderValue = currentMs.clamp(0, durationMs.toDouble()).toDouble();
 
+    final isDesktop = ref.watch(desktopCapabilitiesProvider);
+
     return PopScope(
       canPop: !_isScrubbing,
       child: CallbackShortcuts(
@@ -624,11 +635,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                   }
                                 }
                               : null,
-                          onDoubleTap: () {
-                            if (ref.read(desktopCapabilitiesProvider)) {
-                              widget.onFullScreenToggle?.call();
-                            }
-                          },
+                          onDoubleTap: isDesktop
+                              ? () {
+                                  widget.onFullScreenToggle?.call();
+                                }
+                              : null,
                           onHorizontalDragStart: !widget.useDoubleTapSeek
                               ? (_) => _beginDragSeek()
                               : null,
