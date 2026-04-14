@@ -17,6 +17,8 @@ import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
 import '../providers/video_player_provider.dart';
 import '../providers/playback_queue_provider.dart';
+import 'scrubbing_preview.dart';
+import '../../../../core/data/graphql/media_headers_provider.dart';
 
 class NativeVideoControls extends ConsumerStatefulWidget {
   const NativeVideoControls({
@@ -289,6 +291,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                 1000)
             .round();
     _showSeekFeedback(signedDeltaSeconds);
+    setState(() {});
   }
 
   void _endDragSeek() {
@@ -663,13 +666,72 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
 
                   Positioned.fill(
                     child: Center(
-                      child: _buildSeekFeedbackOverlay(colorScheme),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_dragSeekTarget != null &&
+                              (widget.scene.paths.vtt?.isNotEmpty ?? false)) ...[
+                            ScrubbingPreview(
+                              vttUrl: widget.scene.paths.vtt!,
+                              timeInSeconds:
+                                  _dragSeekTarget!.inMilliseconds / 1000,
+                              headers: ref.read(mediaHeadersProvider),
+                            ),
+                            const SizedBox(height: 16),
+                          ],
+                          _buildSeekFeedbackOverlay(colorScheme),
+                        ],
+                      ),
                     ),
                   ),
 
                   Positioned.fill(
                     child: _buildVolumeOverlay(colorScheme),
                   ),
+
+                  // Layer: Scrubbing Preview (Floating above the slider)
+                  if (_isScrubbing && (widget.scene.paths.vtt?.isNotEmpty ?? false))
+                    Positioned(
+                      bottom: 84, // Positioned above the slider
+                      left: 0,
+                      right: 0,
+                      height: 100, // Enough height for 160x90 preview
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final double ratio = _scrubMs / durationMs;
+                          const double previewWidth = 160;
+                          
+                          // Track is inset slightly from edges
+                          final double trackWidth = constraints.maxWidth - 32;
+                          final double thumbX = 16 + (ratio * trackWidth);
+                          
+                          double leftOffset = thumbX - (previewWidth / 2);
+                          
+                          // Edge protection
+                          if (leftOffset < 8) {
+                            leftOffset = 8;
+                          } else if (leftOffset + previewWidth > constraints.maxWidth - 8) {
+                            leftOffset = constraints.maxWidth - previewWidth - 8;
+                          }
+
+                          return Stack(
+                            children: [
+                              Positioned(
+                                left: leftOffset,
+                                top: 0,
+                                child: ScrubbingPreview(
+                                  vttUrl: widget.scene.paths.vtt!,
+                                  timeInSeconds: _scrubMs / 1000,
+                                  headers: ref.read(mediaHeadersProvider),
+                                  width: 160,
+                                  height: 90,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
 
                   // Layer 1: UI Overlays
                   // Debug Info (Follows controls visibility or always visible if you prefer)

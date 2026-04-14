@@ -5,6 +5,10 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
 import '../pages/scene_info_page.dart';
+import 'scrubbing_preview.dart';
+import '../../../../core/data/graphql/media_headers_provider.dart';
+import '../../../../core/data/graphql/url_resolver.dart';
+import '../../../../core/data/graphql/graphql_client.dart';
 
 /// A card widget that displays a summary of a [Scene].
 ///
@@ -15,7 +19,7 @@ import '../pages/scene_info_page.dart';
 /// * Dynamic aspect ratio in List mode to prevent image distortion.
 /// * Consistent "BoxFit.cover" and "double.infinity" dimensions to ensure images
 ///   perfectly fill their allocated AspectRatio containers.
-class SceneCard extends ConsumerWidget {
+class SceneCard extends ConsumerStatefulWidget {
   const SceneCard({
     required this.scene,
     this.isGrid = false,
@@ -40,6 +44,14 @@ class SceneCard extends ConsumerWidget {
   /// Optional memory cache height for image optimization.
   final int? memCacheHeight;
 
+  @override
+  ConsumerState<SceneCard> createState() => _SceneCardState();
+}
+
+class _SceneCardState extends ConsumerState<SceneCard> {
+  bool _isScrubbing = false;
+  double _scrubTime = 0;
+
   /// Displays a custom scene info sheet for navigation actions.
   void _showMenu(BuildContext context, WidgetRef ref) {
     showModalBottomSheet(
@@ -49,7 +61,7 @@ class SceneCard extends ConsumerWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => SceneInfoPage(scene: scene),
+      builder: (context) => SceneInfoPage(scene: widget.scene),
     );
   }
 
@@ -66,23 +78,117 @@ class SceneCard extends ConsumerWidget {
     return '$m:${s.toString().padLeft(2, '0')}';
   }
 
+  Widget _buildThumbnail(
+    BuildContext context,
+    double? duration,
+    double aspectRatio,
+  ) {
+    final headers = ref.watch(mediaHeadersProvider);
+    final totalDuration =
+        widget.scene.files.isNotEmpty ? (widget.scene.files.first.duration ?? 0.0) : 0.0;
+
+    final rawVttUrl = widget.scene.paths.vtt ?? '';
+    final apiKey = ref.read(serverApiKeyProvider);
+    final vttUrl = appendApiKey(rawVttUrl, apiKey);
+
+    return GestureDetector(
+      onHorizontalDragStart: (_) {
+        if (vttUrl.isNotEmpty) {
+          setState(() {
+            _isScrubbing = true;
+          });
+        }
+      },
+      onHorizontalDragUpdate: (details) {
+        if (_isScrubbing) {
+          final box = context.findRenderObject() as RenderBox;
+          final localPos = box.globalToLocal(details.globalPosition);
+          final relativePos = (localPos.dx / box.size.width).clamp(0.0, 1.0);
+          setState(() {
+            _scrubTime = relativePos * totalDuration;
+          });
+        }
+      },
+      onHorizontalDragEnd: (_) {
+        setState(() {
+          _isScrubbing = false;
+        });
+      },
+      onHorizontalDragCancel: () {
+        setState(() {
+          _isScrubbing = false;
+        });
+      },
+      child: Stack(
+        children: [
+          StashImage(
+            imageUrl: widget.scene.paths.screenshot,
+            memCacheWidth: widget.memCacheWidth,
+            memCacheHeight: widget.memCacheHeight,
+            // Use double.infinity for both dimensions with BoxFit.cover
+            // to ensure the image fills the AspectRatio container completely.
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+          ),
+          if (_isScrubbing && vttUrl.isNotEmpty)
+            Positioned.fill(
+              child: ScrubbingPreview(
+                vttUrl: vttUrl,
+                timeInSeconds: _scrubTime,
+                headers: headers,
+                width: double.infinity,
+                height: double.infinity,
+              ),
+            ),
+          Positioned(
+            bottom: widget.isGrid ? 4 : 8,
+            right: widget.isGrid ? 4 : 8,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 4,
+                vertical: 2,
+              ),
+              color: Colors.black.withAlpha(200),
+              child: Text(
+                _isScrubbing
+                    ? _formatDuration(_scrubTime)
+                    : _formatDuration(duration),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: widget.isGrid ? 10 : 12,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final duration = scene.files.isNotEmpty ? scene.files.first.duration : null;
+  Widget build(BuildContext context) {
+    final duration =
+        widget.scene.files.isNotEmpty ? widget.scene.files.first.duration : null;
 
     // Use primary file's aspect ratio if available, default to 16/9.
     // This ensures the image container in List view adapts to the media,
     // preventing black bars or forced cropping of portrait/square content.
     final double? fileAspectRatio =
-        (scene.files.isNotEmpty &&
-            scene.files.first.width != null &&
-            scene.files.first.height != null)
-        ? scene.files.first.width!.toDouble() /
-              scene.files.first.height!.toDouble()
-        : null;
+        (widget.scene.files.isNotEmpty &&
+                widget.scene.files.first.width != null &&
+                widget.scene.files.first.height != null)
+            ? widget.scene.files.first.width!.toDouble() /
+                widget.scene.files.first.height!.toDouble()
+            : null;
 
-    if (isGrid) {
-      return _buildGridCard(context, ref, duration, fileAspectRatio ?? 16 / 9);
+    if (widget.isGrid) {
+      return _buildGridCard(
+        context,
+        ref,
+        duration,
+        fileAspectRatio ?? 16 / 9,
+      );
     }
     return _buildListCard(context, ref, duration, fileAspectRatio ?? 16 / 9);
   }
@@ -97,7 +203,7 @@ class SceneCard extends ConsumerWidget {
     double aspectRatio,
   ) {
     return InkWell(
-      onTap: onTap,
+      onTap: widget.onTap,
       onLongPress: () => _showMenu(context, ref),
       borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
       child: Column(
@@ -109,38 +215,7 @@ class SceneCard extends ConsumerWidget {
             aspectRatio: aspectRatio.clamp(0.5, 2.5),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-              child: Stack(
-                children: [
-                  StashImage(
-                    imageUrl: scene.paths.screenshot,
-                    memCacheWidth: memCacheWidth,
-                    memCacheHeight: memCacheHeight,
-                    // Use double.infinity for both dimensions with BoxFit.cover
-                    // to ensure the image fills the AspectRatio container completely.
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                  Positioned(
-                    bottom: 8,
-                    right: 8,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 4,
-                        vertical: 2,
-                      ),
-                      color: Colors.black.withAlpha(200),
-                      child: Text(
-                        _formatDuration(duration),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              child: _buildThumbnail(context, duration, aspectRatio),
             ),
           ),
           Padding(
@@ -153,7 +228,7 @@ class SceneCard extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        scene.displayTitle,
+                        widget.scene.displayTitle,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
@@ -164,7 +239,7 @@ class SceneCard extends ConsumerWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${scene.studioName ?? "Unknown Studio"} • ${scene.date.year}',
+                        '${widget.scene.studioName ?? "Unknown Studio"} • ${widget.scene.date.year}',
                         style: TextStyle(
                           color: context.colors.onSurface.withValues(
                             alpha: 0.75,
@@ -200,7 +275,7 @@ class SceneCard extends ConsumerWidget {
     double aspectRatio,
   ) {
     return InkWell(
-      onTap: onTap,
+      onTap: widget.onTap,
       onLongPress: () => _showMenu(context, ref),
       borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
       child: Column(
@@ -210,36 +285,7 @@ class SceneCard extends ConsumerWidget {
             aspectRatio: 16 / 9, // Keep grid items consistent
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-              child: Stack(
-                children: [
-                  StashImage(
-                    imageUrl: scene.paths.screenshot,
-                    memCacheWidth: memCacheWidth,
-                    memCacheHeight: memCacheHeight,
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                  Positioned(
-                    bottom: 4,
-                    right: 4,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 4,
-                        vertical: 2,
-                      ),
-                      color: Colors.black.withAlpha(200),
-                      child: Text(
-                        _formatDuration(duration),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              child: _buildThumbnail(context, duration, 16 / 9),
             ),
           ),
           Padding(
@@ -251,7 +297,7 @@ class SceneCard extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        scene.displayTitle,
+                        widget.scene.displayTitle,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
@@ -262,7 +308,7 @@ class SceneCard extends ConsumerWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        scene.studioName ?? 'Unknown Studio',
+                        widget.scene.studioName ?? 'Unknown Studio',
                         style: TextStyle(
                           color: context.colors.onSurface.withValues(
                             alpha: 0.75,
