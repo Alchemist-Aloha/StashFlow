@@ -606,25 +606,25 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                 children: [
                   // Layer 0: Background Gesture Area (Handles toggle and seek)
                   Positioned.fill(
-                    child: Listener(
-                      onPointerSignal: (pointerSignal) {
-                        if (pointerSignal is PointerScrollEvent) {
-                          final currentVol =
-                              ref.read(desktopSettingsProvider).volume;
-                          if (pointerSignal.scrollDelta.dy < 0) {
-                            ref
-                                .read(playerStateProvider.notifier)
-                                .setVolume(currentVol + 0.05);
-                          } else {
-                            ref
-                                .read(playerStateProvider.notifier)
-                                .setVolume(currentVol - 0.05);
+                    child: MouseRegion(
+                      onHover: (_) => _showControlsTemporarily(),
+                      onEnter: (_) => _showControlsTemporarily(),
+                      child: Listener(
+                        onPointerSignal: (pointerSignal) {
+                          if (pointerSignal is PointerScrollEvent) {
+                            final currentVol =
+                                ref.read(desktopSettingsProvider).volume;
+                            if (pointerSignal.scrollDelta.dy < 0) {
+                              ref
+                                  .read(playerStateProvider.notifier)
+                                  .setVolume(currentVol + 0.05);
+                            } else {
+                              ref
+                                  .read(playerStateProvider.notifier)
+                                  .setVolume(currentVol - 0.05);
+                            }
                           }
-                        }
-                      },
-                      child: MouseRegion(
-                        onHover: (_) => _showControlsTemporarily(),
-                        onEnter: (_) => _showControlsTemporarily(),
+                        },
                         child: GestureDetector(
                           behavior: HitTestBehavior.opaque,
                           onTap: _toggleControls,
