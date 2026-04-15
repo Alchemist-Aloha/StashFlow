@@ -418,7 +418,7 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
         // On Web, toggling fullscreen and the Hero transition can trigger a pause
         if (wasPlaying && kIsWeb) {
           Future.delayed(const Duration(milliseconds: 350), () {
-            if (mounted && controller != null && !controller.value.isPlaying) {
+            if (controller != null && !controller.value.isPlaying) {
               unawaited(controller.play());
             }
           });
@@ -485,7 +485,9 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
         // On Web, toggling fullscreen and the Hero transition can trigger a pause
         if (wasPlaying && kIsWeb) {
           Future.delayed(const Duration(milliseconds: 350), () {
-            if (mounted && controller != null && !controller.value.isPlaying) {
+            // Do not check `mounted` here because FullscreenPlayerPage might be unmounted
+            // when returning to the inline player page.
+            if (controller != null && !controller.value.isPlaying) {
               unawaited(controller.play());
             }
           });
