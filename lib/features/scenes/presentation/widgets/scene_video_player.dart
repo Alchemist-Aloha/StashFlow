@@ -393,9 +393,9 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
           await windowManager.setFullScreen(true);
         }
 
-        // On Windows and Web, toggling fullscreen can sometimes trigger a pause in the native player
+        // On Windows, toggling fullscreen can sometimes trigger a pause in the native player
         // due to window state changes or focus loss during the transition.
-        if (wasPlaying && (kIsWeb || defaultTargetPlatform == TargetPlatform.windows)) {
+        if (wasPlaying && defaultTargetPlatform == TargetPlatform.windows) {
           if (controller != null && !controller.value.isPlaying) {
             unawaited(controller.play());
           }
@@ -405,6 +405,13 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
           DeviceOrientation.landscapeLeft,
           DeviceOrientation.landscapeRight,
         ]);
+
+        // On Web, toggling fullscreen can sometimes trigger a pause
+        if (wasPlaying && kIsWeb) {
+          if (controller != null && !controller.value.isPlaying) {
+            unawaited(controller.play());
+          }
+        }
       }
     } catch (e) {
       AppLogStore.instance.add(
