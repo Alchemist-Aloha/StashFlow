@@ -355,6 +355,14 @@ class FullscreenPlayerPage extends ConsumerStatefulWidget {
 class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
   bool _isPopping = false;
   bool _wasMaximizedBeforeFullscreen = false;
+  bool _wasPlayingBeforeExit = false;
+  VideoPlayerController? _currentListenedController;
+
+  void _onControllerUpdate() {
+    if (!_isPopping && _currentListenedController != null) {
+      _wasPlayingBeforeExit = _currentListenedController!.value.isPlaying;
+    }
+  }
 
   @override
   void initState() {
@@ -373,6 +381,7 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
 
   @override
   void dispose() {
+    _currentListenedController?.removeListener(_onControllerUpdate);
     super.dispose();
   }
 
@@ -438,7 +447,7 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
 
   void _exitFullScreen() {
     final controller = ref.read(playerStateProvider).videoPlayerController;
-    final wasPlaying = controller?.value.isPlaying ?? false;
+    final wasPlaying = _wasPlayingBeforeExit;
 
     // Reset state early so parent pages (like ShellPage) rebuild correctly.
     // We use a post-frame callback to avoid "Tried to modify a provider while
@@ -546,6 +555,16 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
     // We must have an active scene that matches the one we're trying to show.
     final scene = playerState.activeScene;
     final controller = playerState.videoPlayerController;
+
+    if (controller != _currentListenedController) {
+      _currentListenedController?.removeListener(_onControllerUpdate);
+      _currentListenedController = controller;
+      _currentListenedController?.addListener(_onControllerUpdate);
+      // Immediately hydrate the initial value.
+      if (controller != null && !_isPopping) {
+        _wasPlayingBeforeExit = controller.value.isPlaying;
+      }
+    }
 
     if (scene == null || scene.id != sceneId || controller == null) {
       return Scaffold(
