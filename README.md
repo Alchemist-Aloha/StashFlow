@@ -148,6 +148,5 @@ flutter build linux --release
 
 ## 📚 Internal Docs
 
-For architecture, known issues, and onboarding, see:
-
-- [Hosted documentation (Live)](https://alchemist-aloha.github.io/StashFlow/) — Official hosted docs and API reference.
+For more info, see:
+- [Project wiki page](https://github.com/Alchemist-Aloha/StashFlow/wiki)
