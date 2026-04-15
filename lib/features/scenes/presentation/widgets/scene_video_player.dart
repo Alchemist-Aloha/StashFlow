@@ -41,6 +41,35 @@ Alignment _subtitleHorizontalAlignment(String setting) {
   }
 }
 
+Future<void> _ensureWebPlaybackContinues(
+  VideoPlayerController? controller, {
+  required bool shouldBePlaying,
+}) async {
+  if (!kIsWeb || !shouldBePlaying || controller == null) {
+    return;
+  }
+
+  const retryDelays = <Duration>[
+    Duration.zero,
+    Duration(milliseconds: 80),
+    Duration(milliseconds: 220),
+    Duration(milliseconds: 500),
+  ];
+
+  for (final delay in retryDelays) {
+    if (delay > Duration.zero) {
+      await Future<void>.delayed(delay);
+    }
+    try {
+      if (!controller.value.isPlaying) {
+        await controller.play();
+      }
+    } catch (_) {
+      // Ignore transient controller errors during route/fullscreen transitions.
+    }
+  }
+}
+
 /// A comprehensive video player for Stash scenes.
 ///
 /// This widget handles both inline and immersive fullscreen playback.
@@ -208,6 +237,8 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     if (!mounted) return;
 
     final playerState = ref.read(playerStateProvider);
+    final controller = playerState.videoPlayerController;
+    final wasPlaying = controller?.value.isPlaying ?? false;
     final router = GoRouter.maybeOf(context);
 
     // We check both state and path for maximum robustness.
@@ -220,6 +251,13 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     } else {
       context.push('/scenes/scene/${widget.scene.id}/fullscreen');
     }
+
+    unawaited(
+      _ensureWebPlaybackContinues(
+        controller,
+        shouldBePlaying: wasPlaying,
+      ),
+    );
   }
 
   @override
@@ -419,6 +457,12 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
         source: 'FullscreenPlayerPage',
       );
     } finally {
+      unawaited(
+        _ensureWebPlaybackContinues(
+          controller,
+          shouldBePlaying: wasPlaying,
+        ),
+      );
       if (mounted) {
         ref.read(playerStateProvider.notifier).setFullScreen(true);
       }
@@ -479,6 +523,13 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
         }
       }());
     }
+
+    unawaited(
+      _ensureWebPlaybackContinues(
+        controller,
+        shouldBePlaying: wasPlaying,
+      ),
+    );
   }
 
   /// Toggles between inline and immersive fullscreen mode.
