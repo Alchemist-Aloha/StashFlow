@@ -14,6 +14,7 @@ import '../providers/video_player_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
+import '../../../../core/utils/web_helpers.dart';
 import 'native_video_controls.dart';
 import 'scene_subtitle_overlay.dart';
 
@@ -215,6 +216,14 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     final currentPath = router?.routeInformationProvider.value.uri.path ?? '';
     final isInFullscreenPath = currentPath.endsWith('/fullscreen');
 
+    if (kIsWeb) {
+      if (playerState.isFullScreen || isInFullscreenPath) {
+        unawaited(exitWebFullScreen());
+      } else {
+        unawaited(enterWebFullScreen());
+      }
+    }
+
     if (playerState.isFullScreen || isInFullscreenPath) {
       router?.pop();
     } else {
@@ -406,11 +415,13 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
           DeviceOrientation.landscapeRight,
         ]);
 
-        // On Web, toggling fullscreen can sometimes trigger a pause
+        // On Web, toggling fullscreen and the Hero transition can trigger a pause
         if (wasPlaying && kIsWeb) {
-          if (controller != null && !controller.value.isPlaying) {
-            unawaited(controller.play());
-          }
+          Future.delayed(const Duration(milliseconds: 350), () {
+            if (mounted && controller != null && !controller.value.isPlaying) {
+              unawaited(controller.play());
+            }
+          });
         }
       }
     } catch (e) {
@@ -471,11 +482,13 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
           DeviceOrientation.landscapeRight,
         ]);
 
-        // On Web, toggling fullscreen can sometimes trigger a pause
+        // On Web, toggling fullscreen and the Hero transition can trigger a pause
         if (wasPlaying && kIsWeb) {
-          if (controller != null && !controller.value.isPlaying) {
-            await controller.play();
-          }
+          Future.delayed(const Duration(milliseconds: 350), () {
+            if (mounted && controller != null && !controller.value.isPlaying) {
+              unawaited(controller.play());
+            }
+          });
         }
       }());
     }
@@ -484,6 +497,10 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
   /// Toggles between inline and immersive fullscreen mode.
   Future<void> _toggleFullScreen() async {
     if (!mounted || _isPopping) return;
+
+    if (kIsWeb) {
+      unawaited(exitWebFullScreen());
+    }
 
     final router = GoRouter.maybeOf(context);
 
