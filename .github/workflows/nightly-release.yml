@@ -153,13 +153,29 @@ jobs:
           path: artifacts
           merge-multiple: true
 
-      - name: Create Nightly Release
+      - name: Checkout repository for tag update
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Update/Push rolling `nightly` tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -f nightly ${{ github.sha }}
+          git push --force origin refs/tags/nightly
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update Rolling Nightly Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: nightly-${{ steps.slug.outputs.sha_short }}
+          tag_name: nightly
           name: Nightly Build (${{ steps.slug.outputs.sha_short }})
+          body: "Latest development build from the dev branch. Commit: ${{ github.sha }}"
           prerelease: true
-          make_latest: false
+          make_latest: true
           files: artifacts/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
