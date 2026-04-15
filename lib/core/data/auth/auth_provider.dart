@@ -19,7 +19,7 @@ class AuthState {
   });
 
   const AuthState.initial()
-    : mode = AuthMode.apiKey,
+    : mode = AuthMode.password,
       username = '',
       password = '',
       loginStatus = AuthLoginStatus.loggedOut,
@@ -84,7 +84,7 @@ class AuthProvider extends Notifier<AuthState> {
     final modeRaw = prefs.getString(_authModePrefKey);
     final mode = modeRaw == AuthMode.password.name
         ? AuthMode.password
-        : AuthMode.apiKey;
+        : AuthMode.password;
 
     final username = await secureStorage.read(key: _usernameKey) ?? '';
     final password = await secureStorage.read(key: _passwordKey) ?? '';

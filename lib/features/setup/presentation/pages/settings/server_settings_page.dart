@@ -49,9 +49,10 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
   final _passwordFocusNode = FocusNode();
 
   bool _loading = true;
+  bool _isSaving = false;
   bool _obscureApiKey = true;
   bool _obscurePassword = true;
-  AuthMode _selectedAuthMode = AuthMode.apiKey;
+  AuthMode _selectedAuthMode = AuthMode.password;
 
   @override
   void initState() {
@@ -81,7 +82,7 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
     final apiKey = await secureStorage.read(key: 'server_api_key') ?? '';
     final username = await secureStorage.read(key: 'server_username') ?? '';
     final password = await secureStorage.read(key: 'server_password') ?? '';
-    final modeRaw = prefs.getString('auth_mode') ?? AuthMode.apiKey.name;
+    final modeRaw = prefs.getString('auth_mode') ?? AuthMode.password.name;
 
     _baseUrlController.text = url;
     _apiKeyController.text = apiKey;
@@ -90,7 +91,7 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
 
     _selectedAuthMode = modeRaw == AuthMode.password.name
         ? AuthMode.password
-        : AuthMode.apiKey;
+        : AuthMode.password;
 
     setState(() => _loading = false);
   }
@@ -178,73 +179,84 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
   }
 
   Future<void> _saveServerSettings({bool attemptPasswordLogin = false}) async {
-    final rawUrl = _baseUrlController.text.trim();
-    String normalizedUrl = normalizeGraphqlServerUrl(rawUrl);
-
-    if (_isHostOnlyInput(rawUrl)) {
-      final resolved = await _resolveHostOnlyEndpoint(rawUrl);
-      if (resolved == null) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Could not resolve server URL. Check host, port, and credentials.',
-            ),
-          ),
-        );
-        return;
-      }
-      normalizedUrl = resolved;
-    }
-
-    if (_baseUrlController.text.trim().isNotEmpty && normalizedUrl.isEmpty) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Invalid server URL')));
+    if (_isSaving) {
       return;
     }
+    setState(() => _isSaving = true);
 
-    final prefs = ref.read(sharedPreferencesProvider);
-    final secureStorage = ref.read(secureStorageProvider);
-    final previousUrl = prefs.getString('server_base_url')?.trim() ?? '';
-    final previousApiKey =
-        await secureStorage.read(key: 'server_api_key') ?? '';
-    final newApiKey = _apiKeyController.text.trim();
+    try {
+      final rawUrl = _baseUrlController.text.trim();
+      String normalizedUrl = normalizeGraphqlServerUrl(rawUrl);
 
-    await prefs.setString('server_base_url', normalizedUrl);
-    if (newApiKey.isEmpty) {
-      await secureStorage.delete(key: 'server_api_key');
-    } else {
-      await secureStorage.write(key: 'server_api_key', value: newApiKey);
-    }
-    ref.read(serverApiKeyInternalProvider.notifier).update(newApiKey);
+      if (_isHostOnlyInput(rawUrl)) {
+        final resolved = await _resolveHostOnlyEndpoint(rawUrl);
+        if (resolved == null) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Could not resolve server URL. Check host, port, and credentials.',
+              ),
+            ),
+          );
+          return;
+        }
+        normalizedUrl = resolved;
+      }
 
-    final authNotifier = ref.read(authProvider.notifier);
-    await authNotifier.setMode(_selectedAuthMode);
-    await authNotifier.updateUsername(_usernameController.text);
-    await authNotifier.updatePassword(_passwordController.text);
-
-    if (_selectedAuthMode == AuthMode.password && attemptPasswordLogin) {
-      final loggedIn = await authNotifier.login();
-      if (!loggedIn && mounted) {
-        final error = ref.read(authProvider).errorMessage ?? 'Login failed';
+      if (_baseUrlController.text.trim().isNotEmpty && normalizedUrl.isEmpty) {
+        if (!mounted) return;
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(error)));
+        ).showSnackBar(const SnackBar(content: Text('Invalid server URL')));
+        return;
       }
-    }
 
-    ref.read(sharedPreferencesTriggerProvider.notifier).trigger();
+      final prefs = ref.read(sharedPreferencesProvider);
+      final secureStorage = ref.read(secureStorageProvider);
+      final previousUrl = prefs.getString('server_base_url')?.trim() ?? '';
+      final previousApiKey =
+          await secureStorage.read(key: 'server_api_key') ?? '';
+      final newApiKey = _apiKeyController.text.trim();
 
-    _baseUrlController.text = normalizedUrl;
+      await prefs.setString('server_base_url', normalizedUrl);
+      if (newApiKey.isEmpty) {
+        await secureStorage.delete(key: 'server_api_key');
+      } else {
+        await secureStorage.write(key: 'server_api_key', value: newApiKey);
+      }
+      ref.read(serverApiKeyInternalProvider.notifier).update(newApiKey);
 
-    final endpointChanged =
-        previousUrl != normalizedUrl || previousApiKey != newApiKey;
-    if (endpointChanged) {
-      await _flushRuntimeCachesAfterServerChange();
-    } else {
-      ref.invalidate(connectionStatusProvider);
+      final authNotifier = ref.read(authProvider.notifier);
+      await authNotifier.setMode(_selectedAuthMode);
+      await authNotifier.updateUsername(_usernameController.text);
+      await authNotifier.updatePassword(_passwordController.text);
+
+      if (_selectedAuthMode == AuthMode.password && attemptPasswordLogin) {
+        final loggedIn = await authNotifier.login();
+        if (!loggedIn && mounted) {
+          final error = ref.read(authProvider).errorMessage ?? 'Login failed';
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(error)));
+        }
+      }
+
+      ref.read(sharedPreferencesTriggerProvider.notifier).trigger();
+
+      _baseUrlController.text = normalizedUrl;
+
+      final endpointChanged =
+          previousUrl != normalizedUrl || previousApiKey != newApiKey;
+      if (endpointChanged) {
+        await _flushRuntimeCachesAfterServerChange();
+      } else {
+        ref.invalidate(connectionStatusProvider);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 
@@ -378,6 +390,13 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                             await _saveServerSettings();
                           },
                         ),
+                        const SizedBox(height: AppTheme.spacingSmall),
+                        Text(
+                          _selectedAuthMode == AuthMode.password
+                              ? 'Recommended: use your Stash username/password session.'
+                              : 'Use API key for static-token authentication.',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
                         const SizedBox(height: AppTheme.spacingMedium),
                         if (_selectedAuthMode == AuthMode.apiKey)
                           TextField(
@@ -459,47 +478,60 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                           runSpacing: AppTheme.spacingSmall,
                           children: [
                             FilledButton.icon(
-                              onPressed: () async {
-                                await _saveServerSettings(
-                                  attemptPasswordLogin:
-                                      _selectedAuthMode == AuthMode.password,
-                                );
-                              },
+                              onPressed: _isSaving
+                                  ? null
+                                  : () async {
+                                      await _saveServerSettings(
+                                        attemptPasswordLogin:
+                                            _selectedAuthMode ==
+                                            AuthMode.password,
+                                      );
+                                    },
                               icon: const Icon(Icons.sync_rounded),
                               label: Text(
                                 _selectedAuthMode == AuthMode.password
-                                    ? 'Login + Test Connection'
+                                    ? 'Login & Test'
                                     : 'Test Connection',
                               ),
                             ),
                             if (_selectedAuthMode == AuthMode.password)
                               OutlinedButton.icon(
-                                onPressed: () async {
-                                  await ref
-                                      .read(authProvider.notifier)
-                                      .logout();
-                                  if (!mounted) return;
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        'Logged out and cookies cleared.',
-                                      ),
-                                    ),
-                                  );
-                                  ref.invalidate(connectionStatusProvider);
-                                },
+                                onPressed: _isSaving
+                                    ? null
+                                    : () async {
+                                        await ref
+                                            .read(authProvider.notifier)
+                                            .logout();
+                                        if (!mounted) return;
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'Logged out and cookies cleared.',
+                                            ),
+                                          ),
+                                        );
+                                        ref.invalidate(
+                                          connectionStatusProvider,
+                                        );
+                                      },
                                 icon: const Icon(Icons.logout_rounded),
                                 label: const Text('Logout'),
                               ),
                             OutlinedButton.icon(
-                              onPressed: () async {
-                                _baseUrlController.text = '';
-                                _apiKeyController.text = '';
-                                _usernameController.text = '';
-                                _passwordController.text = '';
-                                await ref.read(authProvider.notifier).logout();
-                                await _saveServerSettings();
-                              },
+                              onPressed: _isSaving
+                                  ? null
+                                  : () async {
+                                      _baseUrlController.text = '';
+                                      _apiKeyController.text = '';
+                                      _usernameController.text = '';
+                                      _passwordController.text = '';
+                                      await ref
+                                          .read(authProvider.notifier)
+                                          .logout();
+                                      await _saveServerSettings();
+                                    },
                               icon: const Icon(Icons.clear_all_rounded),
                               label: const Text('Clear Settings'),
                             ),
