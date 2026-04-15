@@ -597,12 +597,13 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
         color: Colors.black,
         child: Hero(
           tag: 'scene_player_${widget.sceneId}',
-          child: SizedBox.expand(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return Stack(
-                  children: [
-                    Positioned.fill(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Stack(
+                children: [
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.black,
                       child: Center(
                         child: AspectRatio(
                           aspectRatio: controller.value.aspectRatio,
@@ -610,38 +611,43 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                         ),
                       ),
                     ),
-                    if (playerState.selectedSubtitleLanguage != null &&
-                        playerState.selectedSubtitleLanguage != 'none')
-                      ValueListenableBuilder(
-                        valueListenable: controller,
-                        builder: (context, value, child) {
-                          return SceneSubtitleOverlay(
-                            text: value.caption.text,
-                            constraints: constraints,
-                            bottomRatio:
-                                playerState.subtitlePositionBottomRatio,
-                            fontSize: playerState.subtitleFontSize + 4,
-                            textAlign: _subtitleTextAlign(
-                              playerState.subtitleTextAlignment,
-                            ),
-                            horizontalAlignment: _subtitleHorizontalAlignment(
-                              playerState.subtitleTextAlignment,
-                            ),
-                            horizontalPadding: 32,
-                          );
-                        },
-                      ),
-                    NativeVideoControls(
-                      controller: controller,
-                      useDoubleTapSeek: playerState.useDoubleTapSeek,
-                      enableNativePip: playerState.enableNativePip,
-                      onFullScreenToggle: _toggleFullScreen,
-                      scene: scene,
+                  ),
+                  if (playerState.selectedSubtitleLanguage != null &&
+                      playerState.selectedSubtitleLanguage != 'none')
+                    ValueListenableBuilder(
+                      valueListenable: controller,
+                      builder: (context, value, child) {
+                        return SceneSubtitleOverlay(
+                          text: value.caption.text,
+                          constraints: constraints,
+                          bottomRatio:
+                              playerState.subtitlePositionBottomRatio,
+                          fontSize: playerState.subtitleFontSize + 4,
+                          textAlign: _subtitleTextAlign(
+                            playerState.subtitleTextAlignment,
+                          ),
+                          horizontalAlignment: _subtitleHorizontalAlignment(
+                            playerState.subtitleTextAlignment,
+                          ),
+                          horizontalPadding: 32,
+                        );
+                      },
                     ),
-                  ],
-                );
-              },
-            ),
+                  Positioned.fill(
+                    child: Material(
+                      color: Colors.transparent,
+                      child: NativeVideoControls(
+                        controller: controller,
+                        useDoubleTapSeek: playerState.useDoubleTapSeek,
+                        enableNativePip: playerState.enableNativePip,
+                        onFullScreenToggle: _toggleFullScreen,
+                        scene: scene,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),

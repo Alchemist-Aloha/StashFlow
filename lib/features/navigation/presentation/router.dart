@@ -69,8 +69,18 @@ GoRouter router(Ref ref) {
                 routes: [
                   GoRoute(
                     path: 'scene/:id',
-                    builder: (context, state) =>
-                        SceneDetailsPage(sceneId: state.pathParameters['id']!),
+                    pageBuilder: (context, state) => CustomTransitionPage(
+                      key: state.pageKey,
+                      child: SceneDetailsPage(
+                        sceneId: state.pathParameters['id']!,
+                      ),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) =>
+                              FadeTransition(
+                                opacity: animation,
+                                child: child,
+                              ),
+                    ),
                     routes: [
                       GoRoute(
                         path: 'fullscreen',

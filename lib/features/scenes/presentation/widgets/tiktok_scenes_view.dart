@@ -523,230 +523,261 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
             child: (controller != null && controller.value.isInitialized)
                 ? Hero(
                     tag: 'scene_player_${widget.scene.id}',
-                    child: Center(
-                      child: AspectRatio(
-                        aspectRatio: controller.value.aspectRatio,
-                        child: VideoPlayer(controller),
-                      ),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        return Stack(
+                          children: [
+                            Positioned.fill(
+                              child: Container(
+                                color: Colors.black,
+                                child: Center(
+                                  child: AspectRatio(
+                                    aspectRatio: controller.value.aspectRatio,
+                                    child: VideoPlayer(controller),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   )
                 : const Center(child: CircularProgressIndicator()),
           ),
 
-          if (controller != null && controller.value.isInitialized) ...[
-            // TikTok touch area
-            Positioned.fill(
-              child: GestureDetector(
-                onTap: () {
-                  if (controller.value.isPlaying) {
-                    controller.pause();
-                  } else {
-                    controller.play();
-                  }
-                },
-                onLongPressStart: (_) {
-                  _originalSpeed = controller.value.playbackSpeed;
-                  _currentSpeed = 5.0;
-                  controller.setPlaybackSpeed(_currentSpeed);
-                  setState(() => _isSpeedingUp = true);
-                },
-                onLongPressMoveUpdate: (details) {
-                  final dy = details.localOffsetFromOrigin.dy;
-                  if (dy < 0) {
-                    // Increase speed up to 20x
-                    final extraSpeed = (-dy / 10).clamp(0, 15);
-                    final newSpeed = 5.0 + extraSpeed;
-                    if (newSpeed != _currentSpeed) {
-                      setState(() => _currentSpeed = newSpeed);
-                      controller.setPlaybackSpeed(_currentSpeed);
-                    }
-                  }
-                },
-                onLongPressEnd: (_) {
-                  controller.setPlaybackSpeed(_originalSpeed);
-                  setState(() => _isSpeedingUp = false);
-                },
-              ),
-            ),
-
-            if (_isSpeedingUp)
-              Positioned(
-                top: 50,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.black54,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '${_currentSpeed.toStringAsFixed(1)}x Speed',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        const Icon(
-                          Icons.fast_forward,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-
-            // Gradient overlay
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: 300,
-              child: IgnorePointer(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      colors: [
-                        Colors.black.withValues(alpha: 0.8),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-            // Metadata overlay
-            Positioned(
-              bottom: 20,
-              left: 16,
-              right: 80, // Space for right buttons
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          if (controller != null && controller.value.isInitialized)
+            TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.0, end: 1.0),
+              duration: const Duration(milliseconds: 400),
+              builder: (context, value, child) {
+                return Opacity(
+                  opacity: value,
+                  child: child,
+                );
+              },
+              child: Stack(
+                fit: StackFit.expand,
                 children: [
-                  Text(
-                    widget.scene.title.isNotEmpty
-                        ? widget.scene.title
-                        : 'Scene ${widget.scene.id}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  if (widget.scene.studioName != null &&
-                      widget.scene.studioName!.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    GestureDetector(
+                  // TikTok touch area
+                  Positioned.fill(
+                    child: GestureDetector(
                       onTap: () {
-                        if (widget.scene.studioId != null) {
-                          context.push(
-                            '/studios/studio/${widget.scene.studioId}',
-                          );
+                        if (controller.value.isPlaying) {
+                          controller.pause();
+                        } else {
+                          controller.play();
                         }
                       },
-                      child: Text(
-                        widget.scene.studioName!,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          decoration: TextDecoration.underline,
+                      onLongPressStart: (_) {
+                        _originalSpeed = controller.value.playbackSpeed;
+                        _currentSpeed = 5.0;
+                        controller.setPlaybackSpeed(_currentSpeed);
+                        setState(() => _isSpeedingUp = true);
+                      },
+                      onLongPressMoveUpdate: (details) {
+                        final dy = details.localOffsetFromOrigin.dy;
+                        if (dy < 0) {
+                          // Increase speed up to 20x
+                          final extraSpeed = (-dy / 10).clamp(0, 15);
+                          final newSpeed = 5.0 + extraSpeed;
+                          if (newSpeed != _currentSpeed) {
+                            setState(() => _currentSpeed = newSpeed);
+                            controller.setPlaybackSpeed(_currentSpeed);
+                          }
+                        }
+                      },
+                      onLongPressEnd: (_) {
+                        controller.setPlaybackSpeed(_originalSpeed);
+                        setState(() => _isSpeedingUp = false);
+                      },
+                    ),
+                  ),
+
+                  if (_isSpeedingUp)
+                    Positioned(
+                      top: 50,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black54,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '${_currentSpeed.toStringAsFixed(1)}x Speed',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(
+                                Icons.fast_forward,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ],
-                  const SizedBox(height: 8),
-                  Text(
-                    widget.scene.date.toString().split(' ')[0],
-                    style: const TextStyle(color: Colors.white70, fontSize: 14),
-                  ),
-                ],
-              ),
-            ),
 
-            // Minimum Progress Bar
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: SizedBox(
-                height: 2,
-                child: VideoProgressIndicator(
-                  controller,
-                  allowScrubbing: true,
-                  padding: EdgeInsets.zero,
-                  colors: VideoProgressColors(
-                    playedColor: Colors.white.withValues(alpha: 0.8),
-                    bufferedColor: Colors.white.withValues(alpha: 0.2),
-                    backgroundColor: Colors.transparent,
-                  ),
-                ),
-              ),
-            ),
-
-            // Right side buttons
-            Positioned(
-              bottom: 20,
-              right: 8,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Column(
-                    children: [
-                      _OverlayButton(
-                        icon: (widget.scene.rating100 ?? 0) > 0
-                            ? Icons.star
-                            : Icons.star_border,
-                        onTap: _showRatingPicker,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        (widget.scene.rating100 ?? 0) > 0
-                            ? (widget.scene.rating100! / 20).toStringAsFixed(1)
-                            : '-',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
+                  // Gradient overlay
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: 300,
+                    child: IgnorePointer(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                            colors: [
+                              Colors.black.withValues(alpha: 0.8),
+                              Colors.transparent,
+                            ],
+                          ),
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  _OverlayButton(
-                    icon: Icons.fullscreen,
-                    tooltip: 'Toggle Fullscreen',
-                    onTap: _toggleFullScreen,
+
+                  // Metadata overlay
+                  Positioned(
+                    bottom: 20,
+                    left: 16,
+                    right: 80, // Space for right buttons
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.scene.title.isNotEmpty
+                              ? widget.scene.title
+                              : 'Scene ${widget.scene.id}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (widget.scene.studioName != null &&
+                            widget.scene.studioName!.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          GestureDetector(
+                            onTap: () {
+                              if (widget.scene.studioId != null) {
+                                context.push(
+                                  '/studios/studio/${widget.scene.studioId}',
+                                );
+                              }
+                            },
+                            child: Text(
+                              widget.scene.studioName!,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 8),
+                        Text(
+                          widget.scene.date.toString().split(' ')[0],
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  _OverlayButton(
-                    icon: Icons.info_outline,
-                    tooltip: 'Scene Details',
-                    onTap: () async {
-                      await _handoffToGlobalPlayer();
-                      if (context.mounted) {
-                        context.push('/scenes/scene/${widget.scene.id}');
-                      }
-                    },
+
+                  // Minimum Progress Bar
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: SizedBox(
+                      height: 2,
+                      child: VideoProgressIndicator(
+                        controller,
+                        allowScrubbing: true,
+                        padding: EdgeInsets.zero,
+                        colors: VideoProgressColors(
+                          playedColor: Colors.white.withValues(alpha: 0.8),
+                          bufferedColor: Colors.white.withValues(alpha: 0.2),
+                          backgroundColor: Colors.transparent,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Right side buttons
+                  Positioned(
+                    bottom: 20,
+                    right: 8,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Column(
+                          children: [
+                            _OverlayButton(
+                              icon: (widget.scene.rating100 ?? 0) > 0
+                                  ? Icons.star
+                                  : Icons.star_border,
+                              onTap: _showRatingPicker,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              (widget.scene.rating100 ?? 0) > 0
+                                  ? (widget.scene.rating100! / 20)
+                                      .toStringAsFixed(1)
+                                  : '-',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        _OverlayButton(
+                          icon: Icons.fullscreen,
+                          tooltip: 'Toggle Fullscreen',
+                          onTap: _toggleFullScreen,
+                        ),
+                        const SizedBox(height: 16),
+                        _OverlayButton(
+                          icon: Icons.info_outline,
+                          tooltip: 'Scene Details',
+                          onTap: () async {
+                            await _handoffToGlobalPlayer();
+                            if (context.mounted) {
+                              context.push('/scenes/scene/${widget.scene.id}');
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-          ],
         ],
       ),
     );

@@ -91,77 +91,83 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     final apiKey = ref.read(serverApiKeyProvider);
     final vttUrl = appendApiKey(rawVttUrl, apiKey);
 
-    return GestureDetector(
-      onHorizontalDragStart: (_) {
-        if (vttUrl.isNotEmpty) {
+    return Hero(
+      tag: 'scene_player_${widget.scene.id}',
+      child: GestureDetector(
+        onHorizontalDragStart: (_) {
+          if (vttUrl.isNotEmpty) {
+            setState(() {
+              _isScrubbing = true;
+            });
+          }
+        },
+        onHorizontalDragUpdate: (details) {
+          if (_isScrubbing) {
+            final box = context.findRenderObject() as RenderBox;
+            final localPos = box.globalToLocal(details.globalPosition);
+            final relativePos = (localPos.dx / box.size.width).clamp(0.0, 1.0);
+            setState(() {
+              _scrubTime = relativePos * totalDuration;
+            });
+          }
+        },
+        onHorizontalDragEnd: (_) {
           setState(() {
-            _isScrubbing = true;
+            _isScrubbing = false;
           });
-        }
-      },
-      onHorizontalDragUpdate: (details) {
-        if (_isScrubbing) {
-          final box = context.findRenderObject() as RenderBox;
-          final localPos = box.globalToLocal(details.globalPosition);
-          final relativePos = (localPos.dx / box.size.width).clamp(0.0, 1.0);
+        },
+        onHorizontalDragCancel: () {
           setState(() {
-            _scrubTime = relativePos * totalDuration;
+            _isScrubbing = false;
           });
-        }
-      },
-      onHorizontalDragEnd: (_) {
-        setState(() {
-          _isScrubbing = false;
-        });
-      },
-      onHorizontalDragCancel: () {
-        setState(() {
-          _isScrubbing = false;
-        });
-      },
-      child: Stack(
-        children: [
-          StashImage(
-            imageUrl: widget.scene.paths.screenshot,
-            memCacheWidth: widget.memCacheWidth,
-            memCacheHeight: widget.memCacheHeight,
-            // Use double.infinity for both dimensions with BoxFit.cover
-            // to ensure the image fills the AspectRatio container completely.
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.cover,
-          ),
-          if (_isScrubbing && vttUrl.isNotEmpty)
-            Positioned.fill(
-              child: ScrubbingPreview(
-                vttUrl: vttUrl,
-                timeInSeconds: _scrubTime,
-                headers: headers,
+        },
+        child: Material(
+          color: Colors.transparent,
+          child: Stack(
+            children: [
+              StashImage(
+                imageUrl: widget.scene.paths.screenshot,
+                memCacheWidth: widget.memCacheWidth,
+                memCacheHeight: widget.memCacheHeight,
+                // Use double.infinity for both dimensions with BoxFit.cover
+                // to ensure the image fills the AspectRatio container completely.
                 width: double.infinity,
                 height: double.infinity,
+                fit: BoxFit.cover,
               ),
-            ),
-          Positioned(
-            bottom: widget.isGrid ? 4 : 8,
-            right: widget.isGrid ? 4 : 8,
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 4,
-                vertical: 2,
-              ),
-              color: Colors.black.withAlpha(200),
-              child: Text(
-                _isScrubbing
-                    ? _formatDuration(_scrubTime)
-                    : _formatDuration(duration),
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: widget.isGrid ? 10 : 12,
+              if (_isScrubbing && vttUrl.isNotEmpty)
+                Positioned.fill(
+                  child: ScrubbingPreview(
+                    vttUrl: vttUrl,
+                    timeInSeconds: _scrubTime,
+                    headers: headers,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
+                ),
+              Positioned(
+                bottom: widget.isGrid ? 4 : 8,
+                right: widget.isGrid ? 4 : 8,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 2,
+                  ),
+                  color: Colors.black.withAlpha(200),
+                  child: Text(
+                    _isScrubbing
+                        ? _formatDuration(_scrubTime)
+                        : _formatDuration(duration),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: widget.isGrid ? 10 : 12,
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
