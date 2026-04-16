@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:graphql/client.dart';
@@ -89,9 +90,9 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
     _usernameController.text = username;
     _passwordController.text = password;
 
-    _selectedAuthMode = modeRaw == AuthMode.password.name
+    _selectedAuthMode = modeRaw == AuthMode.password.name && !kIsWeb
         ? AuthMode.password
-        : AuthMode.password;
+        : AuthMode.apiKey;
 
     setState(() => _loading = false);
   }
@@ -371,17 +372,18 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                         ),
                         const SizedBox(height: AppTheme.spacingSmall),
                         SegmentedButton<AuthMode>(
-                          segments: const [
-                            ButtonSegment<AuthMode>(
+                          segments: [
+                            const ButtonSegment<AuthMode>(
                               value: AuthMode.apiKey,
                               label: Text('API Key'),
                               icon: Icon(Icons.vpn_key_rounded),
                             ),
-                            ButtonSegment<AuthMode>(
-                              value: AuthMode.password,
-                              label: Text('Username + Password'),
-                              icon: Icon(Icons.password_rounded),
-                            ),
+                            if (!kIsWeb)
+                              const ButtonSegment<AuthMode>(
+                                value: AuthMode.password,
+                                label: Text('Username + Password'),
+                                icon: Icon(Icons.password_rounded),
+                              ),
                           ],
                           selected: <AuthMode>{_selectedAuthMode},
                           onSelectionChanged: (selection) async {

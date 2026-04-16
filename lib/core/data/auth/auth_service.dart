@@ -23,6 +23,9 @@ class AuthService {
         followRedirects: true,
         validateStatus: (status) =>
             status != null && status >= 200 && status < 500,
+        extra: kIsWeb
+            ? <String, dynamic>{'withCredentials': true}
+            : const <String, dynamic>{},
       ),
     );
 
@@ -76,6 +79,7 @@ class AuthService {
         options: Options(
           contentType: Headers.formUrlEncodedContentType,
           headers: const <String, String>{'accept': '*/*'},
+          extra: kIsWeb ? <String, dynamic>{'withCredentials': true} : null,
         ),
       );
     } on DioException catch (_) {
