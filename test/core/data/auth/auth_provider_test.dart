@@ -141,9 +141,7 @@ void main() {
       final endpoint = 'http://${server.address.host}:${server.port}/graphql';
       await prefs.setString('server_base_url', endpoint);
 
-      final cookieJar = PersistCookieJar(
-        storage: FileStorage(p.join(tempDir.path, 'cookies')),
-      );
+      final cookieJar = CookieJar();
       final dio = Dio()
         ..interceptors.add(CookieManager(cookieJar))
         ..options.validateStatus = (status) =>

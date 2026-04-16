@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import 'auth_service.dart';
@@ -23,11 +24,17 @@ class DioFileService extends FileService {
 
     _initFuture = () async {
       final cookieJar = await AuthService.createPersistCookieJar();
-      _dio = Dio()
-        ..interceptors.add(CookieManager(cookieJar))
-        ..options.followRedirects = true
-        ..options.validateStatus = (status) =>
-            status != null && status >= 200 && status < 500;
+      _dio = Dio(
+        BaseOptions(
+          followRedirects: true,
+          validateStatus: (status) =>
+              status != null && status >= 200 && status < 500,
+        ),
+      );
+
+      if (!kIsWeb) {
+        _dio!.interceptors.add(CookieManager(cookieJar));
+      }
     }();
 
     return _initFuture;

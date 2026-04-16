@@ -19,9 +19,7 @@ void main() {
       server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
       tempDir = await Directory.systemTemp.createTemp('stashflow-auth-test-');
 
-      final cookieJar = PersistCookieJar(
-        storage: FileStorage(p.join(tempDir.path, 'cookies')),
-      );
+      final cookieJar = CookieJar();
 
       final dio = Dio()
         ..interceptors.add(CookieManager(cookieJar))

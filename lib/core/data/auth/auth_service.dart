@@ -10,10 +10,10 @@ import 'package:path_provider/path_provider.dart';
 class AuthService {
   AuthService({required Dio dio, required this.cookieJar}) : _dio = dio;
 
-  static Future<PersistCookieJar>? _sharedCookieJarFuture;
+  static Future<CookieJar>? _sharedCookieJarFuture;
 
   final Dio _dio;
-  final PersistCookieJar cookieJar;
+  final CookieJar cookieJar;
 
   static Future<AuthService> create() async {
     final cookieJar = await createPersistCookieJar();
@@ -27,15 +27,19 @@ class AuthService {
             ? <String, dynamic>{'withCredentials': true}
             : const <String, dynamic>{},
       ),
-    )..interceptors.add(CookieManager(cookieJar));
+    );
+
+    if (!kIsWeb) {
+      dio.interceptors.add(CookieManager(cookieJar));
+    }
 
     return AuthService(dio: dio, cookieJar: cookieJar);
   }
 
-  static Future<PersistCookieJar> createPersistCookieJar() async {
+  static Future<CookieJar> createPersistCookieJar() async {
     if (kIsWeb) {
       // Web cannot persist filesystem cookies; keep the same API with in-memory storage.
-      return PersistCookieJar(ignoreExpires: false);
+      return CookieJar(ignoreExpires: false);
     }
 
     _sharedCookieJarFuture ??= () async {
@@ -82,9 +86,13 @@ class AuthService {
         // On the web, the browser securely handles the session cookie.
         // We inject a dummy cookie so `cookieJar` isn't empty,
         // which preserves the app's logged-in state logic.
-        await cookieJar.saveFromResponse(loginUri, [
-          Cookie('web_session', 'active'),
-        ]);
+        final dummyCookie = Cookie('web_session', 'active')
+          ..domain = loginUri.host
+          ..path = '/';
+        await cookieJar.saveFromResponse(
+          loginUri,
+          [dummyCookie],
+        );
       }
       return true;
     }
