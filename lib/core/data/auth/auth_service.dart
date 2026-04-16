@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
@@ -74,7 +76,19 @@ class AuthService {
       ),
     );
 
-    return response.statusCode == 200;
+    if (response.statusCode == 200) {
+      if (kIsWeb) {
+        // On the web, the browser securely handles the session cookie.
+        // We inject a dummy cookie so `cookieJar` isn't empty,
+        // which preserves the app's logged-in state logic.
+        await cookieJar.saveFromResponse(
+          loginUri,
+          [Cookie('web_session', 'active')],
+        );
+      }
+      return true;
+    }
+    return false;
   }
 
   Future<void> logout({required Uri graphqlEndpoint}) async {
