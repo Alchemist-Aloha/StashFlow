@@ -43,7 +43,16 @@ class NativeVideoControls extends ConsumerStatefulWidget {
 
 class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     with WidgetsBindingObserver {
-  static const _playbackSpeeds = <double>[0.75, 1.0, 1.25, 1.5, 2.0];
+  static const _playbackSpeeds = <double>[
+    0.25,
+    0.5,
+    0.75,
+    1.0,
+    1.25,
+    1.5,
+    2.0,
+    3.0,
+  ];
   static const _controlsAutoHideDelay = Duration(milliseconds: 1000);
   static const _gestureSeekSeconds = 10;
   static const _dragSeekSensitivity = 0.30;
@@ -55,6 +64,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
   bool _wasPlaying = false;
   bool _wasPlayingBeforeScrub = false;
   bool _showVolumeSlider = false;
+  bool _showSpeedSlider = false;
   Timer? _hideControlsTimer;
   Duration? _dragSeekStartPosition;
   Duration? _dragSeekTarget;
@@ -340,10 +350,14 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
   }
 
   String _formatSpeed(double speed) {
-    final whole = speed.roundToDouble() == speed;
-    return whole
-        ? '${speed.toStringAsFixed(0)}x'
-        : '${speed.toStringAsFixed(2)}x';
+    if (speed == speed.toInt()) {
+      return '${speed.toInt()}x';
+    }
+    String s = speed.toStringAsFixed(2);
+    if (s.endsWith('0')) {
+      s = s.substring(0, s.length - 1);
+    }
+    return '${s}x';
   }
 
   ButtonStyle _controlButtonStyle(ColorScheme colorScheme) {
@@ -508,7 +522,139 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     });
   }
 
-  Widget _buildVolumeOverlay(ColorScheme colorScheme) {
+    Widget _buildSpeedSliderPanel(
+      ColorScheme colorScheme,
+      double playbackSpeed,
+    ) {
+      if (!_showSpeedSlider) return const SizedBox.shrink();
+
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
+        child: Row(
+          children: [
+            IconButton(
+              tooltip: 'Reset to 1x',
+              style: _controlButtonStyle(colorScheme),
+              iconSize: 20,
+              icon: const Icon(Icons.refresh_rounded),
+              onPressed: () {
+                widget.controller.setPlaybackSpeed(1.0);
+                _showControlsTemporarily();
+              },
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: SliderTheme(
+                data: SliderTheme.of(context).copyWith(
+                  trackHeight: 2,
+                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+                  overlayShape: const RoundSliderOverlayShape(overlayRadius: 12),
+                  activeTrackColor: colorScheme.primary,
+                  inactiveTrackColor: colorScheme.onSurfaceVariant.withValues(
+                    alpha: 0.25,
+                  ),
+                  thumbColor: colorScheme.primary,
+                ),
+                child: Slider(
+                  value: playbackSpeed.clamp(0.25, 3.0),
+                  min: 0.25,
+                  max: 3.0,
+                  divisions: 11,
+                  onChanged: (v) {
+                    widget.controller.setPlaybackSpeed(v);
+                    _showControlsTemporarily();
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            IconButton(
+              tooltip: 'Close speed slider',
+              style: _controlButtonStyle(colorScheme),
+              iconSize: 20,
+              icon: const Icon(Icons.close_rounded),
+              onPressed: () {
+                setState(() => _showSpeedSlider = false);
+                _showControlsTemporarily();
+              },
+            ),
+          ],
+        ),
+      );
+    }
+
+    Widget _buildPlaybackSpeedButton(
+      ColorScheme colorScheme,
+      double playbackSpeed,
+    ) {
+      return PopupMenuButton<double>(
+        tooltip: 'Playback speed',
+        initialValue: playbackSpeed,
+        color: colorScheme.surfaceContainerHigh,
+        surfaceTintColor: colorScheme.surfaceTint,
+        onSelected: (speed) async {
+          await widget.controller.setPlaybackSpeed(speed);
+          _showControlsTemporarily();
+        },
+        itemBuilder: (context) {
+          return _playbackSpeeds
+              .map(
+                (speed) => PopupMenuItem<double>(
+                  value: speed,
+                  child: Row(
+                    children: [
+                      Icon(
+                        speed == playbackSpeed
+                            ? Icons.check_circle
+                            : Icons.circle_outlined,
+                        size: 16,
+                        color:
+                            speed == playbackSpeed
+                                ? colorScheme.primary
+                                : colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _formatSpeed(speed),
+                        style: TextStyle(color: colorScheme.onSurface),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+              .toList();
+        },
+        child: GestureDetector(
+          onTap: () {
+            setState(() => _showSpeedSlider = !_showSpeedSlider);
+            _showControlsTemporarily();
+          },
+          child: Container(
+            constraints: const BoxConstraints(minWidth: 38, minHeight: 38),
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.62),
+              borderRadius: BorderRadius.circular(10),
+              border: _showSpeedSlider
+                  ? Border.all(color: colorScheme.primary, width: 1.5)
+                  : null,
+            ),
+            child: Text(
+              _formatSpeed(playbackSpeed),
+              style: TextStyle(
+                color: _showSpeedSlider
+                    ? colorScheme.primary
+                    : colorScheme.onSurface,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    Widget _buildVolumeOverlay(ColorScheme colorScheme) {
     final desktopSettings = ref.watch(desktopSettingsProvider);
     final volume = desktopSettings.volume;
     final isMuted = desktopSettings.isMuted;
@@ -878,6 +1024,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                         ),
                                       ),
                                     ),
+                                    _buildSpeedSliderPanel(
+                                      colorScheme,
+                                      playbackSpeed,
+                                    ),
                                     SliderTheme(
                                       data: SliderTheme.of(context).copyWith(
                                         trackHeight: 3,
@@ -1156,79 +1306,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                             },
                                           ),
                                         const SizedBox(width: 8),
-                                        PopupMenuButton<double>(
-                                          tooltip: 'Playback speed',
-                                          initialValue: playbackSpeed,
-                                          color:
-                                              colorScheme.surfaceContainerHigh,
-                                          surfaceTintColor:
-                                              colorScheme.surfaceTint,
-                                          onSelected: (speed) async {
-                                            await widget.controller
-                                                .setPlaybackSpeed(speed);
-                                            _showControlsTemporarily();
-                                          },
-                                          itemBuilder: (context) {
-                                            return _playbackSpeeds
-                                                .map(
-                                                  (
-                                                    speed,
-                                                  ) => PopupMenuItem<double>(
-                                                    value: speed,
-                                                    child: Row(
-                                                      children: [
-                                                        Icon(
-                                                          speed == playbackSpeed
-                                                              ? Icons
-                                                                    .check_circle
-                                                              : Icons
-                                                                    .circle_outlined,
-                                                          size: 16,
-                                                          color:
-                                                              speed ==
-                                                                  playbackSpeed
-                                                              ? colorScheme
-                                                                    .primary
-                                                              : colorScheme
-                                                                    .onSurfaceVariant,
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 8,
-                                                        ),
-                                                        Text(
-                                                          _formatSpeed(speed),
-                                                          style: TextStyle(
-                                                            color: colorScheme
-                                                                .onSurface,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                )
-                                                .toList();
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 4,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: colorScheme
-                                                  .surfaceContainerHigh
-                                                  .withValues(alpha: 0.6),
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                            child: Text(
-                                              _formatSpeed(playbackSpeed),
-                                              style: TextStyle(
-                                                color: colorScheme.onSurface,
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ),
+                                        _buildPlaybackSpeedButton(
+                                          colorScheme,
+                                          playbackSpeed,
                                         ),
                                         if (ref.watch(
                                           desktopCapabilitiesProvider,

@@ -248,18 +248,14 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
           child: Center(
             child: _isStarting
                 ? const CircularProgressIndicator()
-                : FilledButton.tonalIcon(
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 14,
-                      ),
+                : IconButton.filledTonal(
+                    style: IconButton.styleFrom(
                       backgroundColor: colorScheme.surfaceContainerHigh
                           .withValues(alpha: 0.92),
                       foregroundColor: colorScheme.onSurface,
+                      padding: const EdgeInsets.all(16),
                     ),
-                    icon: const Icon(Icons.play_arrow_rounded, size: 24),
-                    label: const Text('Play'),
+                    icon: const Icon(Icons.play_arrow_rounded, size: 32),
                     onPressed: () => _startPlaybackIfNeeded(force: true),
                   ),
           ),
