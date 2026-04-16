@@ -70,6 +70,13 @@ class SettingsHubPage extends ConsumerWidget {
                   subtitle: 'Diagnostics and about',
                   onTap: () => context.push('/settings/support'),
                 ),
+                const SizedBox(height: AppTheme.spacingSmall),
+                SettingsActionCard(
+                  icon: Icons.developer_mode_rounded,
+                  title: 'Develop',
+                  subtitle: 'Advanced tools and overrides',
+                  onTap: () => context.push('/settings/develop'),
+                ),
               ],
             ),
           ),

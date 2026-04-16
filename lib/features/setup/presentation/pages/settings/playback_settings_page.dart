@@ -16,7 +16,6 @@ class PlaybackSettingsPage extends ConsumerStatefulWidget {
 class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   static const _preferSceneStreamsKey = 'prefer_scene_streams';
   static const _autoplayNextKey = 'autoplay_next';
-  static const _showVideoDebugInfoKey = 'show_video_debug_info';
   static const _useDoubleTapSeekKey = 'video_use_double_tap_seek';
   static const _enableBackgroundPlaybackKey = 'video_background_playback';
   static const _enableNativePipKey = 'video_native_pip';
@@ -28,7 +27,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
 
   bool _preferSceneStreams = true;
   bool _autoplayNext = false;
-  bool _showVideoDebugInfo = false;
   bool _useDoubleTapSeek = true;
   bool _enableBackgroundPlayback = false;
   bool _enableNativePip = false;
@@ -48,7 +46,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     final prefs = ref.read(sharedPreferencesProvider);
     _preferSceneStreams = prefs.getBool(_preferSceneStreamsKey) ?? true;
     _autoplayNext = prefs.getBool(_autoplayNextKey) ?? false;
-    _showVideoDebugInfo = prefs.getBool(_showVideoDebugInfoKey) ?? false;
     _useDoubleTapSeek = prefs.getBool(_useDoubleTapSeekKey) ?? true;
     _enableBackgroundPlayback =
         prefs.getBool(_enableBackgroundPlaybackKey) ?? false;
@@ -68,7 +65,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setBool(_preferSceneStreamsKey, _preferSceneStreams);
     await prefs.setBool(_autoplayNextKey, _autoplayNext);
-    await prefs.setBool(_showVideoDebugInfoKey, _showVideoDebugInfo);
     await prefs.setBool(_useDoubleTapSeekKey, _useDoubleTapSeek);
     await prefs.setBool(
       _enableBackgroundPlaybackKey,
@@ -88,7 +84,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
 
     final playerStateNotifier = ref.read(playerStateProvider.notifier);
     playerStateNotifier.setAutoplayNext(_autoplayNext);
-    playerStateNotifier.setShowVideoDebugInfo(_showVideoDebugInfo);
     playerStateNotifier.setUseDoubleTapSeek(_useDoubleTapSeek);
     playerStateNotifier.setEnableBackgroundPlayback(_enableBackgroundPlayback);
     playerStateNotifier.setEnableNativePip(_enableNativePip);
@@ -164,19 +159,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                           value: _enableNativePip,
                           onChanged: (value) async {
                             setState(() => _enableNativePip = value);
-                            await _saveToggleSettings();
-                          },
-                        ),
-                        const Divider(height: AppTheme.spacingLarge),
-                        SwitchListTile.adaptive(
-                          contentPadding: EdgeInsets.zero,
-                          title: const Text('Show Video Debug Info'),
-                          subtitle: const Text(
-                            'Display stream source and startup timing overlay on player',
-                          ),
-                          value: _showVideoDebugInfo,
-                          onChanged: (value) async {
-                            setState(() => _showVideoDebugInfo = value);
                             await _saveToggleSettings();
                           },
                         ),

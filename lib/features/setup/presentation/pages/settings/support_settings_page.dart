@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import '../../widgets/settings_page_shell.dart';
@@ -75,17 +74,6 @@ class SupportSettingsPage extends ConsumerWidget {
                 error: (_, _) => const SizedBox.shrink(),
               ),
 
-          SettingsSectionCard(
-            title: 'Diagnostics',
-            subtitle: 'Tools for troubleshooting the app',
-            child: SettingsActionCard(
-              icon: Icons.bug_report_outlined,
-              title: 'Debug Log Viewer',
-              subtitle: 'Open a live view of in-app logs',
-              onTap: () => context.push('/settings/logs'),
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacingLarge),
           SettingsSectionCard(
             title: 'About',
             subtitle: 'Project and source information',

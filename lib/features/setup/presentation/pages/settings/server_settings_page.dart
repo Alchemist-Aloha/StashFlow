@@ -53,6 +53,7 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
   bool _isSaving = false;
   bool _obscureApiKey = true;
   bool _obscurePassword = true;
+  bool _allowWebPasswordLogin = false;
   AuthMode _selectedAuthMode = AuthMode.password;
 
   @override
@@ -85,12 +86,15 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
     final password = await secureStorage.read(key: 'server_password') ?? '';
     final modeRaw = prefs.getString('auth_mode') ?? AuthMode.password.name;
 
+    _allowWebPasswordLogin = prefs.getBool('allow_web_password_login') ?? false;
+
     _baseUrlController.text = url;
     _apiKeyController.text = apiKey;
     _usernameController.text = username;
     _passwordController.text = password;
 
-    _selectedAuthMode = modeRaw == AuthMode.password.name && !kIsWeb
+    final canUsePassword = !kIsWeb || _allowWebPasswordLogin;
+    _selectedAuthMode = modeRaw == AuthMode.password.name && canUsePassword
         ? AuthMode.password
         : AuthMode.apiKey;
 
@@ -378,7 +382,7 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                               label: Text('API Key'),
                               icon: Icon(Icons.vpn_key_rounded),
                             ),
-                            if (!kIsWeb)
+                            if (!kIsWeb || _allowWebPasswordLogin)
                               const ButtonSegment<AuthMode>(
                                 value: AuthMode.password,
                                 label: Text('Username + Password'),
