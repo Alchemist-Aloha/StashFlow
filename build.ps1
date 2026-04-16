@@ -117,11 +117,11 @@ function Build-Platform([string]$platform, [string]$command) {
 }
 
 $platforms = @{
-    "Android (APK)" = "flutter build apk --release --split-per-abi"
-    "Web" = "flutter build web --release"
-    "Linux" = "flutter build linux --release"
-    "Windows" = "flutter build windows --release"
-    "macOS" = "flutter build macos --release"
+    "Android (APK)" = "flutter build apk --split-per-abi"
+    "Web" = "flutter build web"
+    "Linux" = "flutter build linux"
+    "Windows" = "flutter build windows"
+    "macOS" = "flutter build macos"
 }
 
 $results = @()
