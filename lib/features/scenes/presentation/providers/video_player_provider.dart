@@ -94,6 +94,9 @@ class GlobalPlayerState {
   /// User preference: subtitle text alignment ('left', 'center', 'right').
   final String subtitleTextAlignment;
 
+  /// User preference: whether to allow gravity-controlled orientation rotation in fullscreen.
+  final bool videoGravityOrientation;
+
   GlobalPlayerState({
     this.activeScene,
     this.videoPlayerController,
@@ -112,6 +115,7 @@ class GlobalPlayerState {
     this.useDoubleTapSeek = true,
     this.enableBackgroundPlayback = false,
     this.enableNativePip = false,
+    this.videoGravityOrientation = true,
     this.selectedSubtitleLanguage,
     this.selectedSubtitleType,
     this.defaultSubtitleLanguage = 'none',
@@ -140,6 +144,7 @@ class GlobalPlayerState {
     bool? useDoubleTapSeek,
     bool? enableBackgroundPlayback,
     bool? enableNativePip,
+    bool? videoGravityOrientation,
     String? selectedSubtitleLanguage,
     String? selectedSubtitleType,
     String? defaultSubtitleLanguage,
@@ -180,6 +185,8 @@ class GlobalPlayerState {
       enableBackgroundPlayback:
           enableBackgroundPlayback ?? this.enableBackgroundPlayback,
       enableNativePip: enableNativePip ?? this.enableNativePip,
+      videoGravityOrientation:
+          videoGravityOrientation ?? this.videoGravityOrientation,
       selectedSubtitleLanguage: clearSubtitle
           ? null
           : (selectedSubtitleLanguage ?? this.selectedSubtitleLanguage),
@@ -211,6 +218,7 @@ class PlayerState extends _$PlayerState {
   static const _useDoubleTapSeekKey = 'video_use_double_tap_seek';
   static const _enableBackgroundPlaybackKey = 'video_background_playback';
   static const _enableNativePipKey = 'video_native_pip';
+  static const _videoGravityOrientationKey = 'video_gravity_orientation';
   static const _defaultSubtitleLanguageKey = 'default_subtitle_language';
   static const _subtitleFontSizeKey = 'subtitle_font_size';
   static const _subtitlePositionBottomRatioKey =
@@ -265,6 +273,8 @@ class PlayerState extends _$PlayerState {
       enableBackgroundPlayback:
           prefs.getBool(_enableBackgroundPlaybackKey) ?? false,
       enableNativePip: prefs.getBool(_enableNativePipKey) ?? false,
+      videoGravityOrientation:
+          prefs.getBool(_videoGravityOrientationKey) ?? true,
       isInPipMode: PipMode.isInPipMode.value,
       defaultSubtitleLanguage:
           prefs.getString(_defaultSubtitleLanguageKey) ?? 'none',
@@ -308,6 +318,12 @@ class PlayerState extends _$PlayerState {
     state = state.copyWith(enableNativePip: value);
     final prefs = ref.read(sharedPreferencesProvider);
     prefs.setBool(_enableNativePipKey, value);
+  }
+
+  void setVideoGravityOrientation(bool value) {
+    state = state.copyWith(videoGravityOrientation: value);
+    final prefs = ref.read(sharedPreferencesProvider);
+    prefs.setBool(_videoGravityOrientationKey, value);
   }
 
   void setDefaultSubtitleLanguage(String value) {
@@ -588,6 +604,7 @@ class PlayerState extends _$PlayerState {
       useDoubleTapSeek: state.useDoubleTapSeek,
       enableBackgroundPlayback: state.enableBackgroundPlayback,
       enableNativePip: state.enableNativePip,
+      videoGravityOrientation: state.videoGravityOrientation,
       selectedSubtitleLanguage: effectiveSubtitleLanguage,
       selectedSubtitleType: effectiveSubtitleType,
       defaultSubtitleLanguage: state.defaultSubtitleLanguage,
@@ -781,6 +798,7 @@ class PlayerState extends _$PlayerState {
       useDoubleTapSeek: state.useDoubleTapSeek,
       enableBackgroundPlayback: state.enableBackgroundPlayback,
       enableNativePip: state.enableNativePip,
+      videoGravityOrientation: state.videoGravityOrientation,
       defaultSubtitleLanguage: state.defaultSubtitleLanguage,
       subtitleFontSize: state.subtitleFontSize,
       subtitlePositionBottomRatio: state.subtitlePositionBottomRatio,
