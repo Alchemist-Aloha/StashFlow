@@ -465,6 +465,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get galleries_organized_only => 'Organisé uniquement';
 
   @override
+  String get scenes_filter_title => 'Filtrer les scènes';
+
+  @override
+  String get scenes_watched => 'Vu';
+
+  @override
+  String get scenes_unwatched => 'Non vu';
+
+  @override
   String get performers_title => 'Acteurs';
 
   @override
@@ -922,6 +931,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settings_server_logout_confirm => 'Déconnecté et cookies effacés.';
 
   @override
+  String get settings_server_auth_status_logging_in =>
+      'État d\'authentification : connexion en cours...';
+
+  @override
+  String get settings_server_auth_status_logged_in =>
+      'État d\'authentification : connecté';
+
+  @override
+  String get settings_server_auth_status_logged_out =>
+      'État d\'authentification : déconnecté';
+
+  @override
   String get settings_playback_title => 'Paramètres de lecture';
 
   @override
@@ -1101,6 +1122,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Ouvrir une vue en direct des journaux de l\'application.';
 
   @override
+  String get settings_develop_logs_copied =>
+      'Journaux copiés dans le presse-papiers';
+
+  @override
+  String get settings_develop_no_logs =>
+      'Pas encore de journaux. Interagissez avec l\'application pour capturer des journaux.';
+
+  @override
   String get settings_develop_web_overrides => 'Surcharges Web';
 
   @override
@@ -1125,8 +1154,48 @@ class AppLocalizationsFr extends AppLocalizations {
   String get common_orientation => 'Orientation';
 
   @override
+  String get common_landscape => 'Paysage';
+
+  @override
+  String get common_portrait => 'Portrait';
+
+  @override
+  String get common_square => 'Carré';
+
+  @override
   String get performers_filter_saved =>
       'Préférences de filtre enregistrées comme défaut';
+
+  @override
+  String get images_title => 'Images';
+
+  @override
+  String get images_sort_title => 'Trier les images';
+
+  @override
+  String get images_sort_saved =>
+      'Préférences de tri enregistrées comme défaut';
+
+  @override
+  String get image_rating_updated => 'Évaluation de l\'image mise à jour.';
+
+  @override
+  String get gallery_rating_updated => 'Évaluation de la galerie mise à jour.';
+
+  @override
+  String get common_image => 'Image';
+
+  @override
+  String get common_gallery => 'Galerie';
+
+  @override
+  String get images_gallery_rating_unavailable =>
+      'La note de la galerie n\'est disponible que lors de la navigation dans une galerie.';
+
+  @override
+  String images_rating(String rating) {
+    return 'Note : $rating / 5';
+  }
 
   @override
   String get images_filtered_by_gallery => 'Filtré par galerie';
@@ -1162,4 +1231,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get common_start => 'Démarrer';
+
+  @override
+  String get common_done => 'Terminé';
 }

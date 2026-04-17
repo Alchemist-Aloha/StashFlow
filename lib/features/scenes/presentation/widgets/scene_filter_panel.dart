@@ -52,7 +52,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Filter Scenes',
+                        context.l10n.scenes_filter_title,
                         style: context.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -69,14 +69,14 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                     ],
                   ),
                   const SizedBox(height: AppTheme.spacingMedium),
-                  Text('Minimum Rating', style: context.textTheme.labelLarge),
+                  Text(context.l10n.galleries_min_rating, style: context.textTheme.labelLarge),
                   const SizedBox(height: AppTheme.spacingSmall),
                   Wrap(
                     spacing: 4,
                     runSpacing: 4,
                     children: [
                       ChoiceChip(
-                        label: const Text('Any'),
+                        label: Text(context.l10n.common_any),
                         selected: _tempFilter.minRating == null,
                         onSelected: (_) {
                           setState(
@@ -101,11 +101,11 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                     ],
                   ),
                   const SizedBox(height: AppTheme.spacingSmall),
-                  Text('Watched Status', style: context.textTheme.labelLarge),
+                  Text(context.l10n.settings_playback_subtitles, style: context.textTheme.labelLarge),
                   Row(
                     children: [
                       FilterChip(
-                        label: const Text('Watched'),
+                        label: Text(context.l10n.scenes_watched),
                         selected: _tempFilter.isWatched == true,
                         onSelected: (selected) {
                           setState(
@@ -117,7 +117,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                       ),
                       const SizedBox(width: AppTheme.spacingSmall),
                       FilterChip(
-                        label: const Text('Unwatched'),
+                        label: Text(context.l10n.scenes_unwatched),
                         selected: _tempFilter.isWatched == false,
                         onSelected: (selected) {
                           setState(
@@ -130,7 +130,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                     ],
                   ),
                   const SizedBox(height: AppTheme.spacingSmall),
-                  Text('Resolution', style: context.textTheme.labelLarge),
+                  Text(context.l10n.common_resolution, style: context.textTheme.labelLarge),
                   const SizedBox(height: AppTheme.spacingSmall),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -147,19 +147,19 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                     ),
                   ),
                   const SizedBox(height: AppTheme.spacingSmall),
-                  Text('Orientation', style: context.textTheme.labelLarge),
+                  Text(context.l10n.common_orientation, style: context.textTheme.labelLarge),
                   const SizedBox(height: AppTheme.spacingSmall),
                   Wrap(
                     spacing: AppTheme.spacingSmall,
                     runSpacing: AppTheme.spacingSmall,
                     children: [
-                      _buildOrientationChip('LANDSCAPE', 'Landscape'),
-                      _buildOrientationChip('PORTRAIT', 'Portrait'),
-                      _buildOrientationChip('SQUARE', 'Square'),
+                      _buildOrientationChip('LANDSCAPE', context.l10n.common_landscape),
+                      _buildOrientationChip('PORTRAIT', context.l10n.common_portrait),
+                      _buildOrientationChip('SQUARE', context.l10n.common_square),
                     ],
                   ),
                   const SizedBox(height: AppTheme.spacingSmall),
-                  Text('Duration', style: context.textTheme.labelLarge),
+                  Text(context.l10n.common_date, style: context.textTheme.labelLarge),
                   const SizedBox(height: AppTheme.spacingSmall),
                   Wrap(
                     spacing: AppTheme.spacingSmall,
@@ -171,10 +171,10 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                     ],
                   ),
                   const SizedBox(height: AppTheme.spacingSmall),
-                  Text('Organization', style: context.textTheme.labelLarge),
+                  Text(context.l10n.galleries_organization, style: context.textTheme.labelLarge),
                   const SizedBox(height: AppTheme.spacingSmall),
                   FilterChip(
-                    label: const Text('Organized only'),
+                    label: Text(context.l10n.galleries_organized_only),
                     selected: _tempOrganizedOnly,
                     onSelected: (selected) {
                       setState(() => _tempOrganizedOnly = selected);
@@ -200,7 +200,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                           vertical: AppTheme.spacingMedium,
                         ),
                       ),
-                      child: const Text('Apply Filters'),
+                      child: Text(context.l10n.common_apply_filters),
                     ),
                   ),
                   const SizedBox(height: AppTheme.spacingSmall),
@@ -223,10 +223,8 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                         if (context.mounted) {
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Filter preferences saved as default',
-                              ),
+                            SnackBar(
+                              content: Text(context.l10n.galleries_filter_saved),
                             ),
                           );
                         }
@@ -236,7 +234,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                           vertical: AppTheme.spacingMedium,
                         ),
                       ),
-                      child: const Text('Save as Default'),
+                      child: Text(context.l10n.common_save_default),
                     ),
                   ),
                   const SizedBox(height: AppTheme.spacingMedium),

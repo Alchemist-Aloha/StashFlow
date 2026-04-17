@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/navigation_customization_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/gesture_settings_provider.dart';
@@ -132,7 +133,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     final textTheme = Theme.of(context).textTheme;
 
     return SettingsPageShell(
-      title: 'Interface Settings',
+      title: context.l10n.settings_interface_title,
       child: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -178,16 +179,14 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
-                    title: 'Navigation',
-                    subtitle: 'Visibility of global navigation shortcuts',
+                    title: context.l10n.settings_interface_navigation,
+                    subtitle: context.l10n.settings_interface_navigation_subtitle,
                     child: Column(
                       children: [
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text('Show Random Navigation Buttons'),
-                          subtitle: const Text(
-                            'Enable or disable the floating casino buttons across list and details pages',
-                          ),
+                          title: Text(context.l10n.settings_interface_show_random),
+                          subtitle: Text(context.l10n.settings_interface_show_random_subtitle),
                           value: _showRandomNavigation,
                           onChanged: (value) async {
                             setState(() => _showRandomNavigation = value);
@@ -197,10 +196,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         const Divider(height: AppTheme.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text('Shake to Discover'),
-                          subtitle: const Text(
-                            'Shake your device to jump to a random item in the current tab',
-                          ),
+                          title: Text(context.l10n.settings_interface_shake_random),
+                          subtitle: Text(context.l10n.settings_interface_shake_random_subtitle),
                           value: ref.watch(shakeToRandomEnabledProvider),
                           onChanged: (value) {
                             ref
@@ -213,7 +210,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           contentPadding: EdgeInsets.zero,
                           title: Row(
                             children: [
-                              const Expanded(child: Text('Show Edit Button')),
+                              Expanded(child: Text(context.l10n.settings_interface_show_edit)),
                               const SizedBox(width: 8),
                               Container(
                                 padding: const EdgeInsets.symmetric(
@@ -235,9 +232,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                               ),
                             ],
                           ),
-                          subtitle: const Text(
-                            'Enable or disable the edit button on the scene details page',
-                          ),
+                          subtitle: Text(context.l10n.settings_interface_show_edit_subtitle),
                           value: _showScrapeButton,
                           onChanged: (value) async {
                             setState(() => _showScrapeButton = value);
@@ -247,10 +242,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         const Divider(height: AppTheme.spacingLarge),
                         ListTile(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text('Customize Tabs'),
-                          subtitle: const Text(
-                            'Reorder or hide navigation menu items',
-                          ),
+                          title: Text(context.l10n.settings_interface_customize_tabs),
+                          subtitle: Text(context.l10n.settings_interface_customize_tabs_subtitle),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: () {
                             context.push('/settings/interface/navigation');
@@ -267,26 +260,26 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                       children: [
                         _buildLayoutRow(
                           context,
-                          label: 'Default Layout',
+                          label: context.l10n.settings_interface_layout_default,
                           description:
-                              'Choose the default layout for the Scenes page',
+                              context.l10n.settings_interface_layout_default_desc,
                           value: _sceneTiktokLayout
                               ? 'tiktok'
                               : (_sceneGridLayout ? 'grid' : 'list'),
-                          options: const [
+                          options: [
                             ButtonSegment<String>(
                               value: 'list',
-                              label: Text('List'),
+                              label: Text(context.l10n.settings_interface_layout_list),
                               icon: Icon(Icons.view_list),
                             ),
                             ButtonSegment<String>(
                               value: 'grid',
-                              label: Text('Grid'),
+                              label: Text(context.l10n.settings_interface_layout_grid),
                               icon: Icon(Icons.grid_view),
                             ),
                             ButtonSegment<String>(
                               value: 'tiktok',
-                              label: Text('Infinite Scroll'),
+                              label: Text(context.l10n.settings_interface_layout_tiktok),
                               icon: Icon(Icons.swipe_up),
                             ),
                           ],
@@ -324,15 +317,15 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           description:
                               'Choose the default layout for the Galleries page',
                           value: _galleryGridLayout ? 'grid' : 'list',
-                          options: const [
+                          options: [
                             ButtonSegment<String>(
                               value: 'list',
-                              label: Text('List'),
+                              label: Text(context.l10n.settings_interface_layout_list),
                               icon: Icon(Icons.view_list),
                             ),
                             ButtonSegment<String>(
                               value: 'grid',
-                              label: Text('Grid'),
+                              label: Text(context.l10n.settings_interface_layout_grid),
                               icon: Icon(Icons.grid_view),
                             ),
                           ],
@@ -371,15 +364,15 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           value: _imageFullscreenVerticalSwipe
                               ? 'vertical'
                               : 'horizontal',
-                          options: const [
+                          options: [
                             ButtonSegment<String>(
                               value: 'vertical',
-                              label: Text('Vertical'),
+                              label: Text(context.l10n.settings_interface_swipe_vertical),
                               icon: Icon(Icons.swap_vert_rounded),
                             ),
                             ButtonSegment<String>(
                               value: 'horizontal',
-                              label: Text('Horizontal'),
+                              label: Text(context.l10n.settings_interface_swipe_horizontal),
                               icon: Icon(Icons.swap_horiz_rounded),
                             ),
                           ],

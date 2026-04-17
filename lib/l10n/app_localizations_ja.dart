@@ -458,6 +458,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get galleries_organized_only => '整理済みのみ';
 
   @override
+  String get scenes_filter_title => 'シーンをフィルター';
+
+  @override
+  String get scenes_watched => '視聴済み';
+
+  @override
+  String get scenes_unwatched => '未視聴';
+
+  @override
   String get performers_title => 'パフォーマー';
 
   @override
@@ -887,6 +896,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_server_logout_confirm => 'ログアウトし、クッキーをクリアしました。';
 
   @override
+  String get settings_server_auth_status_logging_in => '認証状態: ログイン中...';
+
+  @override
+  String get settings_server_auth_status_logged_in => '認証状態: ログイン済み';
+
+  @override
+  String get settings_server_auth_status_logged_out => '認証状態: ログアウト';
+
+  @override
   String get settings_playback_title => '再生設定';
 
   @override
@@ -1042,6 +1060,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_develop_log_viewer_subtitle => 'アプリ内ログをリアルタイムで表示します。';
 
   @override
+  String get settings_develop_logs_copied => 'ログをクリップボードにコピーしました';
+
+  @override
+  String get settings_develop_no_logs => 'まだログはありません。アプリを操作してログを取得してください。';
+
+  @override
   String get settings_develop_web_overrides => 'Webオーバーライド';
 
   @override
@@ -1064,7 +1088,46 @@ class AppLocalizationsJa extends AppLocalizations {
   String get common_orientation => '方向';
 
   @override
+  String get common_landscape => '横向き';
+
+  @override
+  String get common_portrait => '縦向き';
+
+  @override
+  String get common_square => '正方形';
+
+  @override
   String get performers_filter_saved => 'フィルタ設定をデフォルトとして保存しました';
+
+  @override
+  String get images_title => '画像';
+
+  @override
+  String get images_sort_title => '画像を並べ替え';
+
+  @override
+  String get images_sort_saved => '並べ替えの設定を既定として保存しました';
+
+  @override
+  String get image_rating_updated => '画像の評価が更新されました。';
+
+  @override
+  String get gallery_rating_updated => 'ギャラリーの評価が更新されました。';
+
+  @override
+  String get common_image => '画像';
+
+  @override
+  String get common_gallery => 'ギャラリー';
+
+  @override
+  String get images_gallery_rating_unavailable =>
+      'ギャラリーの評価は、ギャラリーを閲覧しているときにのみ利用できます。';
+
+  @override
+  String images_rating(String rating) {
+    return '評価：$rating / 5';
+  }
 
   @override
   String get images_filtered_by_gallery => 'ギャラリーでフィルタ済み';
@@ -1099,4 +1162,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get common_start => '開始';
+
+  @override
+  String get common_done => '完了';
 }

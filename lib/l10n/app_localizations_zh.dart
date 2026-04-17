@@ -456,6 +456,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get galleries_organized_only => '仅已整理';
 
   @override
+  String get scenes_filter_title => '筛选场景';
+
+  @override
+  String get scenes_watched => '已看';
+
+  @override
+  String get scenes_unwatched => '未看';
+
+  @override
   String get performers_title => '演职人员';
 
   @override
@@ -873,6 +882,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_server_logout_confirm => '已退出登录并清除 Cookie。';
 
   @override
+  String get settings_server_auth_status_logging_in => '身份验证状态：正在登录...';
+
+  @override
+  String get settings_server_auth_status_logged_in => '身份验证状态：已登录';
+
+  @override
+  String get settings_server_auth_status_logged_out => '身份验证状态：已登出';
+
+  @override
   String get settings_playback_title => '播放设置';
 
   @override
@@ -1022,6 +1040,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_develop_log_viewer_subtitle => '打开应用内日志的实时视图。';
 
   @override
+  String get settings_develop_logs_copied => '日志已复制到剪贴板';
+
+  @override
+  String get settings_develop_no_logs => '尚无日志。与应用交互以捕获日志。';
+
+  @override
   String get settings_develop_web_overrides => 'Web 覆盖';
 
   @override
@@ -1044,7 +1068,45 @@ class AppLocalizationsZh extends AppLocalizations {
   String get common_orientation => '方向';
 
   @override
+  String get common_landscape => '横向';
+
+  @override
+  String get common_portrait => '纵向';
+
+  @override
+  String get common_square => '正方形';
+
+  @override
   String get performers_filter_saved => '过滤首选项已保存为默认值';
+
+  @override
+  String get images_title => '图片';
+
+  @override
+  String get images_sort_title => '排序图片';
+
+  @override
+  String get images_sort_saved => '排序首选项已保存为默认值';
+
+  @override
+  String get image_rating_updated => '图片评分已更新。';
+
+  @override
+  String get gallery_rating_updated => '图库评分已更新。';
+
+  @override
+  String get common_image => '图片';
+
+  @override
+  String get common_gallery => '图库';
+
+  @override
+  String get images_gallery_rating_unavailable => '图库评分仅在浏览图库时可用。';
+
+  @override
+  String images_rating(String rating) {
+    return '评分：$rating / 5';
+  }
 
   @override
   String get images_filtered_by_gallery => '按图库过滤';
@@ -1079,6 +1141,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get common_start => '开始';
+
+  @override
+  String get common_done => '完成';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -1524,6 +1589,15 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get galleries_organized_only => '仅已整理';
 
   @override
+  String get scenes_filter_title => '筛选场景';
+
+  @override
+  String get scenes_watched => '已看';
+
+  @override
+  String get scenes_unwatched => '未看';
+
+  @override
   String get performers_title => '演职人员';
 
   @override
@@ -1941,6 +2015,15 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_server_logout_confirm => '已退出登录并清除 Cookie。';
 
   @override
+  String get settings_server_auth_status_logging_in => '身份验证状态：正在登录...';
+
+  @override
+  String get settings_server_auth_status_logged_in => '身份验证状态：已登录';
+
+  @override
+  String get settings_server_auth_status_logged_out => '身份验证状态：已登出';
+
+  @override
   String get settings_playback_title => '播放设置';
 
   @override
@@ -2090,6 +2173,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_develop_log_viewer_subtitle => '打开应用内日志的实时视图。';
 
   @override
+  String get settings_develop_logs_copied => '日志已复制到剪贴板';
+
+  @override
+  String get settings_develop_no_logs => '尚无日志。与应用交互以捕获日志。';
+
+  @override
   String get settings_develop_web_overrides => 'Web 覆盖';
 
   @override
@@ -2112,7 +2201,45 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get common_orientation => '方向';
 
   @override
+  String get common_landscape => '横向';
+
+  @override
+  String get common_portrait => '纵向';
+
+  @override
+  String get common_square => '正方形';
+
+  @override
   String get performers_filter_saved => '筛选首选项已保存为默认值';
+
+  @override
+  String get images_title => '图片';
+
+  @override
+  String get images_sort_title => '对图片排序';
+
+  @override
+  String get images_sort_saved => '排序首选项已保存为默认值';
+
+  @override
+  String get image_rating_updated => '图片评分已更新。';
+
+  @override
+  String get gallery_rating_updated => '图库评分已更新。';
+
+  @override
+  String get common_image => '图片';
+
+  @override
+  String get common_gallery => '图库';
+
+  @override
+  String get images_gallery_rating_unavailable => '图库评分仅在浏览图库时可用。';
+
+  @override
+  String images_rating(String rating) {
+    return '评分：$rating / 5';
+  }
 
   @override
   String get images_filtered_by_gallery => '按画廊筛选';
@@ -2147,6 +2274,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get common_start => '开始';
+
+  @override
+  String get common_done => '完成';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -2594,6 +2724,15 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get galleries_organized_only => '僅已整理';
 
   @override
+  String get scenes_filter_title => '篩選場景';
+
+  @override
+  String get scenes_watched => '已看';
+
+  @override
+  String get scenes_unwatched => '未看';
+
+  @override
   String get performers_title => '演職人員';
 
   @override
@@ -3012,6 +3151,15 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_server_logout_confirm => '已登出且 Cookie 已清除。';
 
   @override
+  String get settings_server_auth_status_logging_in => '驗證狀態：正在登入...';
+
+  @override
+  String get settings_server_auth_status_logged_in => '驗證狀態：已登入';
+
+  @override
+  String get settings_server_auth_status_logged_out => '驗證狀態：已登出';
+
+  @override
   String get settings_playback_title => '播放設定';
 
   @override
@@ -3162,6 +3310,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_develop_log_viewer_subtitle => '開啟應用程式內記錄的即時檢視。';
 
   @override
+  String get settings_develop_logs_copied => '日誌已複製到剪貼簿';
+
+  @override
+  String get settings_develop_no_logs => '尚無日誌。與應用互動以捕捉日誌。';
+
+  @override
   String get settings_develop_web_overrides => '網頁覆寫';
 
   @override
@@ -3184,7 +3338,45 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get common_orientation => '方向';
 
   @override
+  String get common_landscape => '橫向';
+
+  @override
+  String get common_portrait => '縱向';
+
+  @override
+  String get common_square => '正方形';
+
+  @override
   String get performers_filter_saved => '篩選偏好已儲存為預設值';
+
+  @override
+  String get images_title => '圖片';
+
+  @override
+  String get images_sort_title => '排序圖片';
+
+  @override
+  String get images_sort_saved => '排序首選項已儲存為預設值';
+
+  @override
+  String get image_rating_updated => '圖片評分已更新。';
+
+  @override
+  String get gallery_rating_updated => '圖庫評分已更新。';
+
+  @override
+  String get common_image => '圖片';
+
+  @override
+  String get common_gallery => '圖庫';
+
+  @override
+  String get images_gallery_rating_unavailable => '圖庫評分僅在瀏覽圖庫時可用。';
+
+  @override
+  String images_rating(String rating) {
+    return '評分：$rating / 5';
+  }
 
   @override
   String get images_filtered_by_gallery => '按圖庫篩選';
@@ -3219,4 +3411,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get common_start => '開始';
+
+  @override
+  String get common_done => '完成';
 }

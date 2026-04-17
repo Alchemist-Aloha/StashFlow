@@ -456,6 +456,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get galleries_organized_only => '정리된 항목만';
 
   @override
+  String get scenes_filter_title => '장면 필터';
+
+  @override
+  String get scenes_watched => '본 항목';
+
+  @override
+  String get scenes_unwatched => '안 본 항목';
+
+  @override
   String get performers_title => '출연자';
 
   @override
@@ -886,6 +895,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_server_logout_confirm => '로그아웃되었으며 쿠키가 삭제되었습니다.';
 
   @override
+  String get settings_server_auth_status_logging_in => '인증 상태: 로그인 중...';
+
+  @override
+  String get settings_server_auth_status_logged_in => '인증 상태: 로그인됨';
+
+  @override
+  String get settings_server_auth_status_logged_out => '인증 상태: 로그아웃됨';
+
+  @override
   String get settings_playback_title => '재생 설정';
 
   @override
@@ -1041,6 +1059,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_develop_log_viewer_subtitle => '앱 내 로그의 실시간 보기를 엽니다.';
 
   @override
+  String get settings_develop_logs_copied => '로그가 클립보드에 복사되었습니다';
+
+  @override
+  String get settings_develop_no_logs => '아직 로그가 없습니다. 앱과 상호작용하여 로그를 캡처하세요.';
+
+  @override
   String get settings_develop_web_overrides => '웹 재정의';
 
   @override
@@ -1063,7 +1087,46 @@ class AppLocalizationsKo extends AppLocalizations {
   String get common_orientation => '방향';
 
   @override
+  String get common_landscape => '가로';
+
+  @override
+  String get common_portrait => '세로';
+
+  @override
+  String get common_square => '정사각형';
+
+  @override
   String get performers_filter_saved => '필터 설정을 기본값으로 저장했습니다';
+
+  @override
+  String get images_title => '이미지';
+
+  @override
+  String get images_sort_title => '이미지 정렬';
+
+  @override
+  String get images_sort_saved => '정렬 환경설정이 기본값으로 저장되었습니다';
+
+  @override
+  String get image_rating_updated => '이미지 평점이 업데이트되었습니다.';
+
+  @override
+  String get gallery_rating_updated => '갤러리 평점이 업데이트되었습니다.';
+
+  @override
+  String get common_image => '이미지';
+
+  @override
+  String get common_gallery => '갤러리';
+
+  @override
+  String get images_gallery_rating_unavailable =>
+      '갤러리 평점은 갤러리를 탐색할 때만 사용할 수 있습니다.';
+
+  @override
+  String images_rating(String rating) {
+    return '평점: $rating / 5';
+  }
 
   @override
   String get images_filtered_by_gallery => '갤러리로 필터링됨';
@@ -1098,4 +1161,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get common_start => '시작';
+
+  @override
+  String get common_done => '완료';
 }

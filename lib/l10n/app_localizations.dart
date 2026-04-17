@@ -936,6 +936,24 @@ abstract class AppLocalizations {
   /// **'Organized only'**
   String get galleries_organized_only;
 
+  /// No description provided for @scenes_filter_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Scenes'**
+  String get scenes_filter_title;
+
+  /// No description provided for @scenes_watched.
+  ///
+  /// In en, this message translates to:
+  /// **'Watched'**
+  String get scenes_watched;
+
+  /// No description provided for @scenes_unwatched.
+  ///
+  /// In en, this message translates to:
+  /// **'Unwatched'**
+  String get scenes_unwatched;
+
   /// No description provided for @performers_title.
   ///
   /// In en, this message translates to:
@@ -1758,6 +1776,24 @@ abstract class AppLocalizations {
   /// **'Logged out and cookies cleared.'**
   String get settings_server_logout_confirm;
 
+  /// No description provided for @settings_server_auth_status_logging_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication status: logging in...'**
+  String get settings_server_auth_status_logging_in;
+
+  /// No description provided for @settings_server_auth_status_logged_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication status: logged in'**
+  String get settings_server_auth_status_logged_in;
+
+  /// No description provided for @settings_server_auth_status_logged_out.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication status: logged out'**
+  String get settings_server_auth_status_logged_out;
+
   /// No description provided for @settings_playback_title.
   ///
   /// In en, this message translates to:
@@ -2046,6 +2082,18 @@ abstract class AppLocalizations {
   /// **'Open a live view of in-app logs.'**
   String get settings_develop_log_viewer_subtitle;
 
+  /// No description provided for @settings_develop_logs_copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Logs copied to clipboard'**
+  String get settings_develop_logs_copied;
+
+  /// No description provided for @settings_develop_no_logs.
+  ///
+  /// In en, this message translates to:
+  /// **'No logs yet. Interact with the app to capture logs.'**
+  String get settings_develop_no_logs;
+
   /// No description provided for @settings_develop_web_overrides.
   ///
   /// In en, this message translates to:
@@ -2088,11 +2136,83 @@ abstract class AppLocalizations {
   /// **'Orientation'**
   String get common_orientation;
 
+  /// No description provided for @common_landscape.
+  ///
+  /// In en, this message translates to:
+  /// **'Landscape'**
+  String get common_landscape;
+
+  /// No description provided for @common_portrait.
+  ///
+  /// In en, this message translates to:
+  /// **'Portrait'**
+  String get common_portrait;
+
+  /// No description provided for @common_square.
+  ///
+  /// In en, this message translates to:
+  /// **'Square'**
+  String get common_square;
+
   /// No description provided for @performers_filter_saved.
   ///
   /// In en, this message translates to:
   /// **'Filter preferences saved as default'**
   String get performers_filter_saved;
+
+  /// No description provided for @images_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Images'**
+  String get images_title;
+
+  /// No description provided for @images_sort_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort Images'**
+  String get images_sort_title;
+
+  /// No description provided for @images_sort_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort preferences saved as default'**
+  String get images_sort_saved;
+
+  /// No description provided for @image_rating_updated.
+  ///
+  /// In en, this message translates to:
+  /// **'Image rating updated.'**
+  String get image_rating_updated;
+
+  /// No description provided for @gallery_rating_updated.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery rating updated.'**
+  String get gallery_rating_updated;
+
+  /// No description provided for @common_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Image'**
+  String get common_image;
+
+  /// No description provided for @common_gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get common_gallery;
+
+  /// No description provided for @images_gallery_rating_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery rating is only available when browsing a gallery.'**
+  String get images_gallery_rating_unavailable;
+
+  /// No description provided for @images_rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating: {rating} / 5'**
+  String images_rating(String rating);
 
   /// No description provided for @images_filtered_by_gallery.
   ///
@@ -2153,6 +2273,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Start'**
   String get common_start;
+
+  /// No description provided for @common_done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get common_done;
 }
 
 class _AppLocalizationsDelegate

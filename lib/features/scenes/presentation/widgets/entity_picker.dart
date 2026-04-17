@@ -92,9 +92,9 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
               child: listAsync.when(
                 data: (items) {
                   if (items.isEmpty) {
-                    return const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text('No entities found'),
+                    return Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(context.l10n.common_no_items),
                     );
                   }
                   return ListView.builder(
@@ -164,14 +164,14 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(context.l10n.common_cancel),
         ),
         if (widget.multiSelect)
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop(_selectedEntities);
             },
-            child: const Text('Done'),
+            child: Text(context.l10n.common_done),
           ),
       ],
     );

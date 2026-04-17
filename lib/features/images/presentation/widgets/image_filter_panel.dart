@@ -103,7 +103,7 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
                   ],
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),
-                Text('Resolution', style: context.textTheme.labelLarge),
+                Text(context.l10n.common_resolution, style: context.textTheme.labelLarge),
                 const SizedBox(height: AppTheme.spacingSmall),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -120,15 +120,15 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),
-                Text('Orientation', style: context.textTheme.labelLarge),
+                Text(context.l10n.common_orientation, style: context.textTheme.labelLarge),
                 const SizedBox(height: AppTheme.spacingSmall),
                 Wrap(
                   spacing: AppTheme.spacingSmall,
                   runSpacing: AppTheme.spacingSmall,
                   children: [
-                    _buildOrientationChip('LANDSCAPE', 'Landscape'),
-                    _buildOrientationChip('PORTRAIT', 'Portrait'),
-                    _buildOrientationChip('SQUARE', 'Square'),
+                    _buildOrientationChip('LANDSCAPE', context.l10n.common_landscape),
+                    _buildOrientationChip('PORTRAIT', context.l10n.common_portrait),
+                    _buildOrientationChip('SQUARE', context.l10n.common_square),
                   ],
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),

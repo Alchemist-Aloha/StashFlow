@@ -216,7 +216,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     if (itemCount <= 1) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Need at least 2 images for slideshow.')),
+        SnackBar(content: Text(context.l10n.images_slideshow_need_two)),
       );
       return;
     }
@@ -232,13 +232,15 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: const Text('Start Slideshow'),
+              title: Text(context.l10n.images_slideshow_start_title),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Interval: ${intervalSeconds.toStringAsFixed(1)}s'),
+                    Text(
+                      context.l10n.images_slideshow_interval(intervalSeconds),
+                    ),
                     Slider(
                       value: intervalSeconds,
                       min: 1,
@@ -250,7 +252,11 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                       },
                     ),
                     const SizedBox(height: 8),
-                    Text('Transition: ${transitionMs.round()}ms'),
+                    Text(
+                      context.l10n.images_slideshow_transition_ms(
+                        transitionMs.round(),
+                      ),
+                    ),
                     Slider(
                       value: transitionMs,
                       min: 120,
@@ -263,15 +269,15 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                     ),
                     const SizedBox(height: 8),
                     SegmentedButton<_SlideshowDirection>(
-                      segments: const [
+                      segments: [
                         ButtonSegment<_SlideshowDirection>(
                           value: _SlideshowDirection.forward,
-                          label: Text('Forward'),
+                          label: Text(context.l10n.common_forward),
                           icon: Icon(Icons.arrow_downward_rounded),
                         ),
                         ButtonSegment<_SlideshowDirection>(
                           value: _SlideshowDirection.backward,
-                          label: Text('Backward'),
+                          label: Text(context.l10n.common_backward),
                           icon: Icon(Icons.arrow_upward_rounded),
                         ),
                       ],
@@ -283,7 +289,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                     const SizedBox(height: 8),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('Loop slideshow'),
+                      title: Text(context.l10n.images_slideshow_loop_title),
                       value: loop,
                       onChanged: (v) {
                         setDialogState(() => loop = v);
@@ -295,12 +301,12 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(dialogContext).pop(false),
-                  child: const Text('Cancel'),
+                  child: Text(context.l10n.common_cancel),
                 ),
                 FilledButton.icon(
                   onPressed: () => Navigator.of(dialogContext).pop(true),
                   icon: const Icon(Icons.play_arrow_rounded),
-                  label: const Text('Start'),
+                  label: Text(context.l10n.common_start),
                 ),
               ],
             );
@@ -354,7 +360,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: const Text('Rate'),
+              title: Text(context.l10n.common_rate),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -362,15 +368,15 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                   SegmentedButton<_RatingTarget>(
                     showSelectedIcon: false,
                     segments: [
-                      const ButtonSegment<_RatingTarget>(
+                      ButtonSegment<_RatingTarget>(
                         value: _RatingTarget.image,
                         icon: Icon(Icons.image_outlined),
-                        label: Text('Image'),
+                        label: Text(context.l10n.common_image),
                       ),
                       ButtonSegment<_RatingTarget>(
                         value: _RatingTarget.gallery,
                         icon: const Icon(Icons.photo_library_outlined),
-                        label: const Text('Gallery'),
+                        label: Text(context.l10n.common_gallery),
                         enabled: canRateGallery,
                       ),
                     ],
@@ -401,12 +407,16 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                   if (!canRateGallery) ...[
                     const SizedBox(height: 8),
                     Text(
-                      'Gallery rating is only available when browsing a gallery.',
+                      context.l10n.images_gallery_rating_unavailable,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
                   const SizedBox(height: 16),
-                  Text('Rating: ${(rating / 20).toStringAsFixed(1)} / 5'),
+                  Text(
+                    context.l10n.images_rating(
+                      (rating / 20).toStringAsFixed(1),
+                    ),
+                  ),
                   Slider(
                     value: rating.toDouble(),
                     min: 0,
@@ -422,13 +432,13 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(dialogContext).pop(),
-                  child: const Text('Cancel'),
+                  child: Text(context.l10n.common_cancel),
                 ),
                 FilledButton(
                   onPressed: () {
                     Navigator.of(dialogContext).pop((target, rating));
                   },
-                  child: const Text('Apply'),
+                  child: Text(context.l10n.common_apply),
                 ),
               ],
             );
@@ -468,16 +478,20 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
         SnackBar(
           content: Text(
             selectedTarget == _RatingTarget.image
-                ? 'Image rating updated.'
-                : 'Gallery rating updated.',
+                ? context.l10n.image_rating_updated
+                : context.l10n.gallery_rating_updated,
           ),
         ),
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to update rating: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            context.l10n.details_failed_update_rating(e.toString()),
+          ),
+        ),
+      );
     }
   }
 
@@ -642,7 +656,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                             onPressed: currentImage == null
                                 ? null
                                 : () => _showRatingDialog(currentImage),
-                            tooltip: 'Rate',
+                            tooltip: context.l10n.common_rate,
                           ),
                           const SizedBox(width: 8),
                           IconButton.filled(
@@ -653,8 +667,8 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                             ),
                             onPressed: () => _toggleSlideshow(loadedItemCount),
                             tooltip: _isSlideshowPlaying
-                                ? 'Stop slideshow'
-                                : 'Start slideshow',
+                                ? context.l10n.common_pause
+                                : context.l10n.images_slideshow_start_title,
                           ),
                         ],
                       ),

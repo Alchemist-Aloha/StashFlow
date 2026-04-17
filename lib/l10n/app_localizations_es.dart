@@ -467,6 +467,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get galleries_organized_only => 'Solo organizados';
 
   @override
+  String get scenes_filter_title => 'Filtrar escenas';
+
+  @override
+  String get scenes_watched => 'Vistas';
+
+  @override
+  String get scenes_unwatched => 'Sin ver';
+
+  @override
   String get performers_title => 'Actores';
 
   @override
@@ -930,6 +939,18 @@ class AppLocalizationsEs extends AppLocalizations {
       'Sesión cerrada y cookies borradas.';
 
   @override
+  String get settings_server_auth_status_logging_in =>
+      'Estado de autenticación: iniciando sesión...';
+
+  @override
+  String get settings_server_auth_status_logged_in =>
+      'Estado de autenticación: sesión iniciada';
+
+  @override
+  String get settings_server_auth_status_logged_out =>
+      'Estado de autenticación: sesión cerrada';
+
+  @override
   String get settings_playback_title => 'Ajustes de reproducción';
 
   @override
@@ -1108,6 +1129,14 @@ class AppLocalizationsEs extends AppLocalizations {
       'Abre una vista en vivo de los registros de la aplicación.';
 
   @override
+  String get settings_develop_logs_copied =>
+      'Registros copiados al portapapeles';
+
+  @override
+  String get settings_develop_no_logs =>
+      'No hay registros todavía. Interactúa con la app para capturar registros.';
+
+  @override
   String get settings_develop_web_overrides => 'Anulaciones web';
 
   @override
@@ -1132,8 +1161,49 @@ class AppLocalizationsEs extends AppLocalizations {
   String get common_orientation => 'Orientación';
 
   @override
+  String get common_landscape => 'Horizontal';
+
+  @override
+  String get common_portrait => 'Vertical';
+
+  @override
+  String get common_square => 'Cuadrado';
+
+  @override
   String get performers_filter_saved =>
       'Preferencias de filtro guardadas como predeterminadas';
+
+  @override
+  String get images_title => 'Imágenes';
+
+  @override
+  String get images_sort_title => 'Ordenar imágenes';
+
+  @override
+  String get images_sort_saved =>
+      'Preferencias de orden guardadas como predeterminadas';
+
+  @override
+  String get image_rating_updated => 'Clasificación de la imagen actualizada.';
+
+  @override
+  String get gallery_rating_updated =>
+      'Clasificación de la galería actualizada.';
+
+  @override
+  String get common_image => 'Imagen';
+
+  @override
+  String get common_gallery => 'Galería';
+
+  @override
+  String get images_gallery_rating_unavailable =>
+      'La clasificación de la galería solo está disponible cuando se navega en una galería.';
+
+  @override
+  String images_rating(String rating) {
+    return 'Clasificación: $rating / 5';
+  }
 
   @override
   String get images_filtered_by_gallery => 'Filtrado por galería';
@@ -1169,4 +1239,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get common_start => 'Iniciar';
+
+  @override
+  String get common_done => 'Hecho';
 }

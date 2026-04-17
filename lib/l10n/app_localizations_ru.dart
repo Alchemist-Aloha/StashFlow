@@ -463,6 +463,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get galleries_organized_only => 'Только организованные';
 
   @override
+  String get scenes_filter_title => 'Фильтровать сцены';
+
+  @override
+  String get scenes_watched => 'Просмотрено';
+
+  @override
+  String get scenes_unwatched => 'Не просмотрено';
+
+  @override
   String get performers_title => 'Исполнители';
 
   @override
@@ -913,6 +922,18 @@ class AppLocalizationsRu extends AppLocalizations {
       'Выход выполнен, файлы cookie очищены.';
 
   @override
+  String get settings_server_auth_status_logging_in =>
+      'Статус аутентификации: выполняется вход...';
+
+  @override
+  String get settings_server_auth_status_logged_in =>
+      'Статус аутентификации: вход выполнен';
+
+  @override
+  String get settings_server_auth_status_logged_out =>
+      'Статус аутентификации: выход выполнен';
+
+  @override
   String get settings_playback_title => 'Настройки воспроизведения';
 
   @override
@@ -1088,6 +1109,13 @@ class AppLocalizationsRu extends AppLocalizations {
       'Открыть просмотр журналов приложения в реальном времени.';
 
   @override
+  String get settings_develop_logs_copied => 'Логи скопированы в буфер обмена';
+
+  @override
+  String get settings_develop_no_logs =>
+      'Журналы отсутствуют. Взаимодействуйте с приложением, чтобы собрать логи.';
+
+  @override
   String get settings_develop_web_overrides => 'Переопределения для Web';
 
   @override
@@ -1111,8 +1139,48 @@ class AppLocalizationsRu extends AppLocalizations {
   String get common_orientation => 'Ориентация';
 
   @override
+  String get common_landscape => 'Альбомная';
+
+  @override
+  String get common_portrait => 'Портретная';
+
+  @override
+  String get common_square => 'Квадрат';
+
+  @override
   String get performers_filter_saved =>
       'Параметры фильтра сохранены как по умолчанию';
+
+  @override
+  String get images_title => 'Изображения';
+
+  @override
+  String get images_sort_title => 'Сортировать изображения';
+
+  @override
+  String get images_sort_saved =>
+      'Параметры сортировки сохранены как по умолчанию';
+
+  @override
+  String get image_rating_updated => 'Рейтинг изображения обновлен.';
+
+  @override
+  String get gallery_rating_updated => 'Рейтинг галереи обновлен.';
+
+  @override
+  String get common_image => 'Изображение';
+
+  @override
+  String get common_gallery => 'Галерея';
+
+  @override
+  String get images_gallery_rating_unavailable =>
+      'Рейтинг галереи доступен только при просмотре галереи.';
+
+  @override
+  String images_rating(String rating) {
+    return 'Рейтинг: $rating / 5';
+  }
 
   @override
   String get images_filtered_by_gallery => 'Отфильтровано по галерее';
@@ -1148,4 +1216,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get common_start => 'Начать';
+
+  @override
+  String get common_done => 'Готово';
 }

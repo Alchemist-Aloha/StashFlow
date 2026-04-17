@@ -517,7 +517,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             ),
             icon: const Icon(Icons.edit_outlined),
-            label: const Text('Edit'),
+            label: Text(context.l10n.common_edit),
           ),
       ],
     );
@@ -671,7 +671,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         Row(
           children: [
             Text(
-              'Performers',
+              context.l10n.performers_title,
               style: context.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: context.colors.onSurface,
@@ -683,7 +683,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 onPressed: () {
                   setState(() => _performersExpanded = !_performersExpanded);
                 },
-                child: Text(_performersExpanded ? 'Show less' : 'Show more'),
+                child: Text(_performersExpanded
+                    ? context.l10n.details_show_less
+                    : context.l10n.details_show_more),
               ),
           ],
         ),
@@ -766,7 +768,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SectionHeader(
-              title: 'More From Studio',
+              title: context.l10n.details_more_from_studio,
               onViewAll: canOpenStudio
                   ? () =>
                         context.push('/studios/studio/${scene.studioId}/media')

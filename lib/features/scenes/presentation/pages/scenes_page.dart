@@ -214,20 +214,20 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                           .toList(),
                     ),
                     const SizedBox(height: AppTheme.spacingMedium),
-                    Text('Direction', style: context.textTheme.labelLarge),
+                    Text(context.l10n.common_direction, style: context.textTheme.labelLarge),
                     const SizedBox(height: AppTheme.spacingSmall),
                     SizedBox(
                       width: double.infinity,
                       child: SegmentedButton<bool>(
-                        segments: const [
+                        segments: [
                           ButtonSegment(
                             value: true,
-                            label: Text('Descending'),
+                            label: Text(context.l10n.common_descending),
                             icon: Icon(Icons.arrow_downward),
                           ),
                           ButtonSegment(
                             value: false,
-                            label: Text('Ascending'),
+                            label: Text(context.l10n.common_ascending),
                             icon: Icon(Icons.arrow_upward),
                           ),
                         ],
@@ -255,7 +255,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                             vertical: AppTheme.spacingMedium,
                           ),
                         ),
-                        child: const Text('Apply Sort'),
+                        child: Text(context.l10n.common_apply_sort),
                       ),
                     ),
                     const SizedBox(height: AppTheme.spacingSmall),

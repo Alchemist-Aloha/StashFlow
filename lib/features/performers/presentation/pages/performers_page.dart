@@ -406,10 +406,8 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                       if (context.mounted) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Filter preferences saved as default',
-                            ),
+                          SnackBar(
+                            content: Text(context.l10n.performers_filter_saved),
                           ),
                         );
                       }
@@ -419,7 +417,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                         vertical: AppTheme.spacingMedium,
                       ),
                     ),
-                    child: const Text('Save as Default'),
+                    child: Text(context.l10n.common_save_default),
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),

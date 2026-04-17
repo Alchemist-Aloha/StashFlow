@@ -198,11 +198,10 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
         final resolved = await _resolveHostOnlyEndpoint(rawUrl);
         if (resolved == null) {
           if (!mounted) return;
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Could not resolve server URL. Check host, port, and credentials.',
-              ),
+            SnackBar(
+              content: Text(l10n.settings_server_resolve_error),
             ),
           );
           return;
@@ -212,9 +211,10 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
 
       if (_baseUrlController.text.trim().isNotEmpty && normalizedUrl.isEmpty) {
         if (!mounted) return;
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Invalid server URL')));
+        ).showSnackBar(SnackBar(content: Text(l10n.settings_server_invalid_url)));
         return;
       }
 
@@ -351,8 +351,8 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
-                    title: 'Server Details',
-                    subtitle: 'Configure endpoint and authentication method',
+                    title: l10n.settings_server_details,
+                    subtitle: l10n.settings_server_details_subtitle,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -362,8 +362,7 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                           decoration: InputDecoration(
                             labelText: l10n.settings_server_url,
                             hintText: 'http://192.168.1.100:9999/graphql',
-                            helperText:
-                                'Example format: http(s)://host:port/graphql.',
+                            helperText: l10n.settings_server_url_helper,
                           ),
                           keyboardType: TextInputType.url,
                           textInputAction: TextInputAction.done,
@@ -374,7 +373,7 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                         ),
                         const SizedBox(height: AppTheme.spacingMedium),
                         Text(
-                          'Authentication Method',
+                          l10n.settings_server_auth_method,
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
                         const SizedBox(height: AppTheme.spacingSmall),
@@ -413,7 +412,7 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                             focusNode: _apiKeyFocusNode,
                             decoration: InputDecoration(
                               labelText: l10n.settings_server_auth_apikey,
-                              hintText: 'Paste ApiKey header value',
+                              hintText: l10n.settings_server_auth_apikey_desc,
                               suffixIcon: IconButton(
                                 tooltip: _obscureApiKey
                                     ? l10n.common_show
@@ -443,8 +442,8 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                           TextField(
                             controller: _usernameController,
                             focusNode: _usernameFocusNode,
-                            decoration: const InputDecoration(
-                              labelText: 'Username',
+                            decoration: InputDecoration(
+                              labelText: l10n.settings_server_username,
                             ),
                             autocorrect: false,
                             enableSuggestions: false,
@@ -562,15 +561,16 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
   }
 
   String _buildAuthStatusLabel(AuthState authState) {
+    final l10n = AppLocalizations.of(context)!;
     switch (authState.loginStatus) {
       case AuthLoginStatus.loggingIn:
-        return 'Authentication status: logging in...';
+        return l10n.settings_server_auth_status_logging_in;
       case AuthLoginStatus.loggedIn:
-        return 'Authentication status: logged in';
+        return l10n.settings_server_auth_status_logged_in;
       case AuthLoginStatus.error:
-        return 'Authentication status: ${authState.errorMessage ?? 'error'}';
+        return l10n.settings_server_failed(authState.errorMessage ?? 'error');
       case AuthLoginStatus.loggedOut:
-        return 'Authentication status: logged out';
+        return l10n.settings_server_auth_status_logged_out;
     }
   }
 

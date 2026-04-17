@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../../core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
@@ -99,7 +100,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return SettingsPageShell(
-      title: 'Playback Settings',
+      title: context.l10n.settings_playback_title,
       child: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -108,15 +109,19 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SettingsSectionCard(
-                    title: 'Playback behavior',
-                    subtitle: 'Default playback and background handling',
+                    title: context.l10n.settings_playback_behavior,
+                    subtitle: context.l10n.settings_playback_behavior_subtitle,
                     child: Column(
                       children: [
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text('Prefer sceneStreams first'),
-                          subtitle: const Text(
-                            'When off, playback directly uses paths.stream',
+                          title: Text(
+                            context.l10n.settings_playback_prefer_streams,
+                          ),
+                          subtitle: Text(
+                            context
+                                .l10n
+                                .settings_playback_prefer_streams_subtitle,
                           ),
                           value: _preferSceneStreams,
                           onChanged: (value) async {
@@ -127,9 +132,9 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                         const Divider(height: AppTheme.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text('Autoplay Next Scene'),
-                          subtitle: const Text(
-                            'Automatically play the next scene when current playback ends',
+                          title: Text(context.l10n.settings_playback_autoplay),
+                          subtitle: Text(
+                            context.l10n.settings_playback_autoplay_subtitle,
                           ),
                           value: _autoplayNext,
                           onChanged: (value) async {
@@ -140,9 +145,11 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                         const Divider(height: AppTheme.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text('Background Playback'),
-                          subtitle: const Text(
-                            'Keep video audio playing when app is backgrounded',
+                          title: Text(
+                            context.l10n.settings_playback_background,
+                          ),
+                          subtitle: Text(
+                            context.l10n.settings_playback_background_subtitle,
                           ),
                           value: _enableBackgroundPlayback,
                           onChanged: (value) async {
@@ -153,9 +160,9 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                         const Divider(height: AppTheme.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text('Native Picture-in-Picture'),
-                          subtitle: const Text(
-                            'Enable Android PiP button and auto-enter on background',
+                          title: Text(context.l10n.settings_playback_pip),
+                          subtitle: Text(
+                            context.l10n.settings_playback_pip_subtitle,
                           ),
                           value: _enableNativePip,
                           onChanged: (value) async {
@@ -168,8 +175,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
-                    title: 'Subtitle settings',
-                    subtitle: 'Automatic loading and appearance',
+                    title: context.l10n.settings_playback_subtitles,
+                    subtitle: context.l10n.settings_playback_subtitles_subtitle,
                     child: Column(
                       children: [
                         _buildDefaultSubtitleSelector(),
@@ -210,8 +217,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
 
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      title: const Text('Default Subtitle Language'),
-      subtitle: const Text('Auto-load if available'),
+      title: Text(context.l10n.settings_playback_subtitle_lang),
+      subtitle: Text(context.l10n.settings_playback_subtitle_lang_subtitle),
       trailing: DropdownButton<String>(
         value: _defaultSubtitleLanguage,
         onChanged: (value) async {
@@ -234,7 +241,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Subtitle Font Size'),
+            Text(context.l10n.settings_playback_subtitle_size),
             Text(
               '${_subtitleFontSize.round()} px',
               style: const TextStyle(fontWeight: FontWeight.bold),
@@ -264,7 +271,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Subtitle Vertical Position'),
+            Text(context.l10n.settings_playback_subtitle_pos),
             Text(
               '${(_subtitlePositionBottomRatio * 100).round()}% from bottom',
               style: const TextStyle(fontWeight: FontWeight.bold),
@@ -296,8 +303,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
 
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      title: const Text('Subtitle Text Alignment'),
-      subtitle: const Text('Alignment for multiline subtitles'),
+      title: Text(context.l10n.settings_playback_subtitle_align),
+      subtitle: Text(context.l10n.settings_playback_subtitle_align_subtitle),
       trailing: DropdownButton<String>(
         value: _subtitleTextAlignment,
         onChanged: (value) async {
@@ -319,8 +326,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
         final isNarrow = constraints.maxWidth < 450;
         final subtitleWidget = Text(
           _useDoubleTapSeek
-              ? 'Double-tap left/right to seek 10s'
-              : 'Drag the timeline to seek',
+              ? context.l10n.settings_playback_seek_double_tap
+              : context.l10n.settings_playback_seek_drag,
           style: TextStyle(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
@@ -331,16 +338,16 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
             visualDensity: VisualDensity.compact,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
-          segments: const [
+                        segments: [
             ButtonSegment<bool>(
               value: false,
-              icon: Icon(Icons.drag_indicator),
-              label: Text('Drag'),
+              icon: const Icon(Icons.drag_indicator),
+              label: Text(context.l10n.settings_playback_seek_drag_label),
             ),
             ButtonSegment<bool>(
               value: true,
-              icon: Icon(Icons.touch_app_outlined),
-              label: Text('Double-tap'),
+              icon: const Icon(Icons.touch_app_outlined),
+              label: Text(context.l10n.settings_playback_seek_double_tap_label),
             ),
           ],
           selected: {_useDoubleTapSeek},

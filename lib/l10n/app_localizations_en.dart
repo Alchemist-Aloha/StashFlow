@@ -460,6 +460,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get galleries_organized_only => 'Organized only';
 
   @override
+  String get scenes_filter_title => 'Filter Scenes';
+
+  @override
+  String get scenes_watched => 'Watched';
+
+  @override
+  String get scenes_unwatched => 'Unwatched';
+
+  @override
   String get performers_title => 'Performers';
 
   @override
@@ -909,6 +918,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'Logged out and cookies cleared.';
 
   @override
+  String get settings_server_auth_status_logging_in =>
+      'Authentication status: logging in...';
+
+  @override
+  String get settings_server_auth_status_logged_in =>
+      'Authentication status: logged in';
+
+  @override
+  String get settings_server_auth_status_logged_out =>
+      'Authentication status: logged out';
+
+  @override
   String get settings_playback_title => 'Playback Settings';
 
   @override
@@ -1075,6 +1096,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Open a live view of in-app logs.';
 
   @override
+  String get settings_develop_logs_copied => 'Logs copied to clipboard';
+
+  @override
+  String get settings_develop_no_logs =>
+      'No logs yet. Interact with the app to capture logs.';
+
+  @override
   String get settings_develop_web_overrides => 'Web Overrides';
 
   @override
@@ -1098,7 +1126,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String get common_orientation => 'Orientation';
 
   @override
+  String get common_landscape => 'Landscape';
+
+  @override
+  String get common_portrait => 'Portrait';
+
+  @override
+  String get common_square => 'Square';
+
+  @override
   String get performers_filter_saved => 'Filter preferences saved as default';
+
+  @override
+  String get images_title => 'Images';
+
+  @override
+  String get images_sort_title => 'Sort Images';
+
+  @override
+  String get images_sort_saved => 'Sort preferences saved as default';
+
+  @override
+  String get image_rating_updated => 'Image rating updated.';
+
+  @override
+  String get gallery_rating_updated => 'Gallery rating updated.';
+
+  @override
+  String get common_image => 'Image';
+
+  @override
+  String get common_gallery => 'Gallery';
+
+  @override
+  String get images_gallery_rating_unavailable =>
+      'Gallery rating is only available when browsing a gallery.';
+
+  @override
+  String images_rating(String rating) {
+    return 'Rating: $rating / 5';
+  }
 
   @override
   String get images_filtered_by_gallery => 'Filtered by Gallery';
@@ -1134,4 +1201,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get common_start => 'Start';
+
+  @override
+  String get common_done => 'Done';
 }
