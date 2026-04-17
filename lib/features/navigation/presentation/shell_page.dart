@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/utils/responsive.dart';
+import '../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/gestures.dart';
 import '../../../core/presentation/providers/desktop_capabilities_provider.dart';
 import '../../../core/presentation/providers/keybinds_provider.dart';
@@ -126,6 +127,21 @@ class _ShellPageState extends ConsumerState<ShellPage> {
       return segments.length >= 2 ? segments[1] : null;
     }
     return null;
+  }
+
+  String _getTabLabel(NavigationTabType type) {
+    switch (type) {
+      case NavigationTabType.scenes:
+        return context.l10n.nav_scenes;
+      case NavigationTabType.performers:
+        return context.l10n.nav_performers;
+      case NavigationTabType.studios:
+        return context.l10n.nav_studios;
+      case NavigationTabType.tags:
+        return context.l10n.nav_tags;
+      case NavigationTabType.galleries:
+        return context.l10n.nav_galleries;
+    }
   }
 
   @override
@@ -273,7 +289,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         .map(
           (t) => NavigationDestination(
             icon: Icon(t.type.icon),
-            label: t.type.label,
+            label: _getTabLabel(t.type),
           ),
         )
         .toList();
@@ -282,7 +298,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         .map(
           (t) => NavigationRailDestination(
             icon: Icon(t.type.icon),
-            label: Text(t.type.label),
+            label: Text(_getTabLabel(t.type)),
           ),
         )
         .toList();

@@ -1,6 +1,11 @@
 {
   "@@locale": "en",
   "appTitle": "StashFlow",
+  "nav_scenes": "Scenes",
+  "nav_performers": "Performers",
+  "nav_studios": "Studios",
+  "nav_tags": "Tags",
+  "nav_galleries": "Galleries",
   "@appTitle": {
     "description": "The name of the application"
   },
