@@ -275,6 +275,11 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
 
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
+    // Hoist invariant layout calculations out of the itemBuilder loop
+    // to prevent O(N) redundant calculations during scroll events.
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final memCacheWidth = (screenWidth / crossAxisCount * 1.5).toInt();
+
     return ListPageScaffold<entity.Image>(
       title: 'Images',
       imageUrlBuilder: (img) => img.paths.thumbnail,
