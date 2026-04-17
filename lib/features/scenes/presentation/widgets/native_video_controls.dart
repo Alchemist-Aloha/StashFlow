@@ -8,6 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/gestures.dart';
 import 'package:go_router/go_router.dart';
+import 'video_controls/video_progress_bar.dart';
+import 'video_controls/video_playback_controls.dart';
 import '../../../../core/presentation/providers/desktop_capabilities_provider.dart';
 import '../../../../core/presentation/providers/desktop_settings_provider.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
@@ -44,16 +46,6 @@ class NativeVideoControls extends ConsumerStatefulWidget {
 
 class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     with WidgetsBindingObserver {
-  static const _playbackSpeeds = <double>[
-    0.25,
-    0.5,
-    0.75,
-    1.0,
-    1.25,
-    1.5,
-    2.0,
-    3.0,
-  ];
   static const _controlsAutoHideDelay = Duration(milliseconds: 1000);
   static const _gestureSeekSeconds = 10;
   static const _dragSeekSensitivity = 0.30;
@@ -372,17 +364,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
-  String _formatSpeed(double speed) {
-    if (speed == speed.toInt()) {
-      return '${speed.toInt()}x';
-    }
-    String s = speed.toStringAsFixed(2);
-    if (s.endsWith('0')) {
-      s = s.substring(0, s.length - 1);
-    }
-    return '${s}x';
-  }
-
   ButtonStyle _controlButtonStyle(ColorScheme colorScheme) {
     return IconButton.styleFrom(
       backgroundColor: colorScheme.surfaceContainerHigh.withValues(alpha: 0.62),
@@ -606,77 +587,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       );
     }
 
-    Widget _buildPlaybackSpeedButton(
-      ColorScheme colorScheme,
-      double playbackSpeed,
-    ) {
-      return PopupMenuButton<double>(
-        tooltip: 'Playback speed',
-        initialValue: playbackSpeed,
-        color: colorScheme.surfaceContainerHigh,
-        surfaceTintColor: colorScheme.surfaceTint,
-        onSelected: (speed) async {
-          await widget.controller.setPlaybackSpeed(speed);
-          _showControlsTemporarily();
-        },
-        itemBuilder: (context) {
-          return _playbackSpeeds
-              .map(
-                (speed) => PopupMenuItem<double>(
-                  value: speed,
-                  child: Row(
-                    children: [
-                      Icon(
-                        speed == playbackSpeed
-                            ? Icons.check_circle
-                            : Icons.circle_outlined,
-                        size: 16,
-                        color:
-                            speed == playbackSpeed
-                                ? colorScheme.primary
-                                : colorScheme.onSurfaceVariant,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        _formatSpeed(speed),
-                        style: TextStyle(color: colorScheme.onSurface),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-              .toList();
-        },
-        child: GestureDetector(
-          onTap: () {
-            setState(() => _showSpeedSlider = !_showSpeedSlider);
-            _showControlsTemporarily();
-          },
-          child: Container(
-            constraints: const BoxConstraints(minWidth: 38, minHeight: 38),
-            alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.62),
-              borderRadius: BorderRadius.circular(10),
-              border: _showSpeedSlider
-                  ? Border.all(color: colorScheme.primary, width: 1.5)
-                  : null,
-            ),
-            child: Text(
-              _formatSpeed(playbackSpeed),
-              style: TextStyle(
-                color: _showSpeedSlider
-                    ? colorScheme.primary
-                    : colorScheme.onSurface,
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ),
-      );
-    }
     Widget _buildVolumeOverlay(ColorScheme colorScheme) {
     final desktopSettings = ref.watch(desktopSettingsProvider);
     final volume = desktopSettings.volume;
@@ -856,8 +766,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                           if (pointerSignal is PointerScrollEvent) {
                             if (pointerSignal.scrollDelta.dy != 0) {
                               // Vertical scroll -> Volume
-                              final currentVol =
-                                  ref.read(desktopSettingsProvider).volume;
+                              final currentVol = ref
+                                  .read(desktopSettingsProvider)
+                                  .volume;
                               if (pointerSignal.scrollDelta.dy < 0) {
                                 ref
                                     .read(playerStateProvider.notifier)
@@ -1113,366 +1024,118 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Container(
-                                      width: 28,
-                                      height: 3,
-                                      margin: const EdgeInsets.only(bottom: 6),
-                                      decoration: BoxDecoration(
-                                        color: colorScheme.onSurfaceVariant
-                                            .withValues(alpha: 0.55),
-                                        borderRadius: BorderRadius.circular(
-                                          999,
-                                        ),
-                                      ),
-                                    ),
                                     _buildSpeedSliderPanel(
                                       colorScheme,
                                       playbackSpeed,
                                     ),
-                                    SliderTheme(
-                                      data: SliderTheme.of(context).copyWith(
-                                        trackHeight: 3,
-                                        thumbShape: const RoundSliderThumbShape(
-                                          enabledThumbRadius: 6,
-                                        ),
-                                        overlayShape:
-                                            const RoundSliderOverlayShape(
-                                              overlayRadius: 12,
-                                            ),
-                                        activeTrackColor: colorScheme.primary,
-                                        inactiveTrackColor: colorScheme
-                                            .onSurfaceVariant
-                                            .withValues(alpha: 0.25),
-                                        thumbColor: colorScheme.primary,
-                                      ),
-                                      child: Slider(
-                                        min: 0,
-                                        max: durationMs.toDouble(),
-                                        value: sliderValue,
-                                        onChangeStart: (v) {
-                                          _wasPlayingBeforeScrub =
-                                              value.isPlaying;
-                                          _cancelAutoHide();
-                                          setState(() {
-                                            _isScrubbing = true;
-                                            _scrubMs = v;
-                                            _controlsVisible = true;
-                                          });
-                                        },
-                                        onChanged: (v) {
-                                          setState(() => _scrubMs = v);
-                                        },
-                                        onChangeEnd: (v) {
-                                          final target = Duration(
-                                            milliseconds: v.round(),
+                                    VideoProgressBar(
+                                      durationMs: durationMs,
+                                      sliderValue: sliderValue,
+                                      onChangeStart: (v) {
+                                        _wasPlayingBeforeScrub =
+                                            value.isPlaying;
+                                        _cancelAutoHide();
+                                        setState(() {
+                                          _isScrubbing = true;
+                                          _scrubMs = v;
+                                          _controlsVisible = true;
+                                        });
+                                      },
+                                      onChanged: (v) {
+                                        setState(() => _scrubMs = v);
+                                      },
+                                      onChangeEnd: (v) {
+                                        final target = Duration(
+                                          milliseconds: v.round(),
+                                        );
+                                        unawaited(() async {
+                                          await _seekToKeepingPlayback(
+                                            target,
+                                            keepPlayingAfterSeek:
+                                                _wasPlayingBeforeScrub,
                                           );
-                                          unawaited(() async {
-                                            await _seekToKeepingPlayback(
-                                              target,
-                                              keepPlayingAfterSeek:
-                                                  _wasPlayingBeforeScrub,
-                                            );
-                                          }());
-                                          setState(() {
-                                            _isScrubbing = false;
-                                            _scrubMs = 0;
-                                          });
-                                          _wasPlayingBeforeScrub = false;
-                                          _scheduleAutoHide();
-                                        },
-                                      ),
+                                        }());
+                                        setState(() {
+                                          _isScrubbing = false;
+                                          _scrubMs = 0;
+                                        });
+                                        _wasPlayingBeforeScrub = false;
+                                        _scheduleAutoHide();
+                                      },
                                     ),
                                     const SizedBox(height: 2),
-                                    Row(
-                                      children: [
-                                        IconButton(
-                                          tooltip: value.isPlaying
-                                              ? 'Pause'
-                                              : 'Play',
-                                          style: _controlButtonStyle(
-                                            colorScheme,
-                                          ),
-                                          iconSize: 20,
-                                          icon: Icon(
-                                            value.isPlaying
-                                                ? Icons.pause_rounded
-                                                : Icons.play_arrow_rounded,
-                                          ),
-                                          onPressed: () {
-                                            if (value.isPlaying) {
-                                              widget.controller.pause();
-                                            } else {
-                                              widget.controller.play();
-                                            }
-                                            _showControlsTemporarily();
-                                          },
-                                        ),
-                                        if (nextScene != null &&
-                                            !isFullScreen) ...[
-                                          const SizedBox(width: 8),
-                                          IconButton(
-                                            tooltip: 'Skip Next',
-                                            style: _controlButtonStyle(
-                                              colorScheme,
-                                            ),
-                                            iconSize: 20,
-                                            icon: const Icon(
-                                              Icons.skip_next_rounded,
-                                            ),
-                                            onPressed: () {
-                                              ref
-                                                  .read(
-                                                    playerStateProvider
-                                                        .notifier,
-                                                  )
-                                                  .playNext();
-                                              _showControlsTemporarily();
-                                            },
-                                          ),
-                                        ],
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Text(
-                                            '${_format(Duration(milliseconds: sliderValue.round()))} / ${_format(duration)}',
-                                            style: TextStyle(
-                                              color: colorScheme.onSurface,
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        if (widget.scene.captions.isNotEmpty)
-                                          PopupMenuButton<String?>(
-                                            tooltip: 'Select subtitle',
-                                            icon: Icon(
-                                              Icons.subtitles_rounded,
-                                              size: 20,
-                                              color:
-                                                  playerState.selectedSubtitleLanguage !=
-                                                          null &&
-                                                      playerState
-                                                              .selectedSubtitleLanguage !=
-                                                          'none'
-                                                  ? colorScheme.primary
-                                                  : colorScheme.onSurface,
-                                            ),
-                                            style: _controlButtonStyle(
-                                              colorScheme,
-                                            ),
-                                            initialValue: playerState
-                                                .selectedSubtitleLanguage,
-                                            color: colorScheme
-                                                .surfaceContainerHigh,
-                                            surfaceTintColor:
-                                                colorScheme.surfaceTint,
-                                            onSelected: (value) async {
-                                              if (value == null ||
-                                                  value == 'none') {
-                                                await ref
-                                                    .read(
-                                                      playerStateProvider
-                                                          .notifier,
-                                                    )
-                                                    .setSubtitle('none');
-                                              } else {
-                                                final parts = value.split(':');
-                                                final lang = parts[0];
-                                                final type = parts.length > 1
-                                                    ? parts[1]
-                                                    : '';
-                                                await ref
-                                                    .read(
-                                                      playerStateProvider
-                                                          .notifier,
-                                                    )
-                                                    .setSubtitle(
-                                                      lang,
-                                                      captionType: type,
-                                                    );
-                                              }
-                                              if (mounted) {
-                                                _showControlsTemporarily();
-                                              }
-                                            },
-                                            itemBuilder: (context) {
-                                              final items = <PopupMenuEntry<String?>>[
-                                                PopupMenuItem<String?>(
-                                                  value: 'none',
-                                                  child: Row(
-                                                    children: [
-                                                      Icon(
-                                                        (playerState.selectedSubtitleLanguage ==
-                                                                    null ||
-                                                                playerState
-                                                                        .selectedSubtitleLanguage ==
-                                                                    'none')
-                                                            ? Icons.check_circle
-                                                            : Icons
-                                                                  .circle_outlined,
-                                                        size: 16,
-                                                        color:
-                                                            (playerState.selectedSubtitleLanguage ==
-                                                                    null ||
-                                                                playerState
-                                                                        .selectedSubtitleLanguage ==
-                                                                    'none')
-                                                            ? colorScheme
-                                                                  .primary
-                                                            : colorScheme
-                                                                  .onSurfaceVariant,
-                                                      ),
-                                                      const SizedBox(width: 8),
-                                                      Text(
-                                                        'None',
-                                                        style: TextStyle(
-                                                          color: colorScheme
-                                                              .onSurface,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ];
-                                              for (final c
-                                                  in widget.scene.captions) {
-                                                final selectedLang =
-                                                    playerState
-                                                        .selectedSubtitleLanguage ??
-                                                    '';
-                                                final selectedType =
-                                                    playerState
-                                                        .selectedSubtitleType ??
-                                                    '';
-                                                final captionLang =
-                                                    c.languageCode;
-                                                final captionType =
-                                                    c.captionType;
-                                                final isUnknownLangSelection =
-                                                    (selectedLang.isEmpty ||
-                                                        selectedLang == '00') &&
-                                                    (captionLang.isEmpty ||
-                                                        captionLang == '00');
-                                                final isSelected =
-                                                    (selectedLang ==
-                                                            captionLang ||
-                                                        isUnknownLangSelection) &&
-                                                    (selectedType ==
-                                                            captionType ||
-                                                        (selectedType.isEmpty &&
-                                                            isUnknownLangSelection));
-                                                final label =
-                                                    c.languageCode == '00' ||
-                                                        c.languageCode.isEmpty
-                                                    ? 'Unknown (${c.captionType})'
-                                                    : '${c.languageCode.toUpperCase()} (${c.captionType})';
-
-                                                items.add(
-                                                  PopupMenuItem<String?>(
-                                                    value:
-                                                        '${c.languageCode}:${c.captionType}',
-                                                    child: Row(
-                                                      children: [
-                                                        Icon(
-                                                          isSelected
-                                                              ? Icons
-                                                                    .check_circle
-                                                              : Icons
-                                                                    .circle_outlined,
-                                                          size: 16,
-                                                          color: isSelected
-                                                              ? colorScheme
-                                                                    .primary
-                                                              : colorScheme
-                                                                    .onSurfaceVariant,
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 8,
-                                                        ),
-                                                        Text(
-                                                          label,
-                                                          style: TextStyle(
-                                                            color: colorScheme
-                                                                .onSurface,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                );
-                                              }
-                                              return items;
-                                            },
-                                          ),
-                                        const SizedBox(width: 8),
-                                        _buildPlaybackSpeedButton(
-                                          colorScheme,
-                                          playbackSpeed,
-                                        ),
-                                        if (ref.watch(
-                                          desktopCapabilitiesProvider,
-                                        )) ...[
-                                          const SizedBox(width: 8),
-                                          _buildDesktopVolumeControl(
-                                            context,
-                                            colorScheme,
-                                          ),
-                                        ],
-                                        const SizedBox(width: 6),
-                                        if (widget.enableNativePip &&
-                                            !kIsWeb &&
-                                            Platform.isAndroid)
-                                          IconButton(
-                                            tooltip: 'Picture-in-Picture',
-                                            style: _controlButtonStyle(
-                                              colorScheme,
-                                            ),
-                                            icon: const Icon(
-                                              Icons
-                                                  .picture_in_picture_alt_outlined,
-                                            ),
-                                            onPressed: () async {
-                                              if (!isFullScreen) {
-                                                widget.onFullScreenToggle
-                                                    ?.call();
-                                                await Future.delayed(
-                                                  const Duration(
-                                                    milliseconds: 150,
-                                                  ),
-                                                );
-                                              }
-                                              await PipMode.enterIfAvailable(
-                                                aspectRatio: widget
-                                                    .controller
-                                                    .value
-                                                    .aspectRatio,
+                                    VideoPlaybackControls(
+                                      controller: widget.controller,
+                                      scene: widget.scene,
+                                      isPlaying: value.isPlaying,
+                                      playbackSpeed: playbackSpeed,
+                                      nextScene: nextScene,
+                                      isFullScreen: isFullScreen,
+                                      onPlayPause: () {
+                                        if (value.isPlaying) {
+                                          widget.controller.pause();
+                                        } else {
+                                          widget.controller.play();
+                                        }
+                                      },
+                                      onSkipNext: () {
+                                        ref
+                                            .read(playerStateProvider.notifier)
+                                            .playNext();
+                                      },
+                                      onSubtitleSelected: (val) async {
+                                        if (val == null || val == 'none') {
+                                          await ref
+                                              .read(
+                                                playerStateProvider.notifier,
+                                              )
+                                              .setSubtitle('none');
+                                        } else {
+                                          final parts = val.split(':');
+                                          final lang = parts[0];
+                                          final type = parts.length > 1
+                                              ? parts[1]
+                                              : '';
+                                          await ref
+                                              .read(
+                                                playerStateProvider.notifier,
+                                              )
+                                              .setSubtitle(
+                                                lang,
+                                                captionType: type,
                                               );
-                                              _showControlsTemporarily();
-                                            },
-                                          ),
-                                        GestureDetector(
-                                          onTap:
-                                              () {}, // Consume tap to prevent propagation
-                                          child: IconButton(
-                                            tooltip: 'Toggle Fullscreen',
-                                            style: _controlButtonStyle(
+                                        }
+                                      },
+                                      onSpeedSelected: (speed) async {
+                                        await widget.controller
+                                            .setPlaybackSpeed(speed);
+                                      },
+                                      onFullScreenToggle:
+                                          widget.onFullScreenToggle,
+                                      enableNativePip: widget.enableNativePip,
+                                      onInteract: _showControlsTemporarily,
+                                      desktopVolumeControl:
+                                          ref.watch(desktopCapabilitiesProvider)
+                                          ? _buildDesktopVolumeControl(
+                                              context,
                                               colorScheme,
-                                            ),
-                                            icon: Icon(
-                                              isFullScreen
-                                                  ? Icons
-                                                        .fullscreen_exit_rounded
-                                                  : Icons.fullscreen_rounded,
-                                            ),
-                                            onPressed: () {
-                                              widget.onFullScreenToggle?.call();
-                                              _showControlsTemporarily();
-                                            },
-                                          ),
+                                            )
+                                          : null,
+                                      selectedSubtitleLanguage:
+                                          playerState.selectedSubtitleLanguage,
+                                      selectedSubtitleType:
+                                          playerState.selectedSubtitleType,
+                                      formattedCurrentTime: _format(
+                                        Duration(
+                                          milliseconds: sliderValue.round(),
                                         ),
-                                      ],
+                                      ),
+                                      formattedDuration: _format(duration),
+                                      onSpeedTap: () {
+                                        setState(() => _showSpeedSlider = !_showSpeedSlider);
+                                        _showControlsTemporarily();
+                                      },
+                                      isSpeedSliderVisible: _showSpeedSlider,
                                     ),
                                   ],
                                 ),
