@@ -12,6 +12,7 @@ import '../../domain/entities/scene.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/video_player_provider.dart';
 import '../providers/playback_queue_provider.dart';
+import '../../../setup/presentation/providers/main_page_orientation_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
@@ -88,13 +89,20 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
     _controllers.clear();
     WakelockPlus.disable();
 
+    final allowMainPageGravityOrientation = ref.read(
+      mainPageGravityOrientationProvider,
+    );
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
+    SystemChrome.setPreferredOrientations(
+      allowMainPageGravityOrientation
+          ? [
+              DeviceOrientation.portraitUp,
+              DeviceOrientation.portraitDown,
+              DeviceOrientation.landscapeLeft,
+              DeviceOrientation.landscapeRight,
+            ]
+          : [DeviceOrientation.portraitUp],
+    );
     super.dispose();
   }
 

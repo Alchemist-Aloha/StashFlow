@@ -765,6 +765,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Встряхните устройство, чтобы перейти к случайному элементу в текущей вкладке';
 
   @override
+  String get settings_interface_main_pages_gravity_orientation =>
+      'Ориентация, управляемая гравитацией (основные страницы)';
+
+  @override
+  String get settings_interface_main_pages_gravity_orientation_subtitle =>
+      'Разрешить основным страницам поворачиваться с помощью датчика устройства. Полноэкранное воспроизведение видео использует собственные настройки ориентации.';
+
+  @override
   String get settings_interface_show_edit => 'Показывать кнопку редактирования';
 
   @override

@@ -743,6 +743,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_interface_shake_random_subtitle => '摇晃设备以跳转到当前选项卡中的随机项目';
 
   @override
+  String get settings_interface_main_pages_gravity_orientation =>
+      '重力控制的方向（主页面）';
+
+  @override
+  String get settings_interface_main_pages_gravity_orientation_subtitle =>
+      '允许主页面使用设备传感器旋转。全屏视频播放将使用其自己的方向设置。';
+
+  @override
   String get settings_interface_show_edit => '显示编辑按钮';
 
   @override
@@ -2049,6 +2057,14 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_interface_shake_random_subtitle => '摇晃设备以跳转到当前选项卡中的随机项目';
+
+  @override
+  String get settings_interface_main_pages_gravity_orientation =>
+      '重力控制的方向（主页面）';
+
+  @override
+  String get settings_interface_main_pages_gravity_orientation_subtitle =>
+      '允许主页面使用设备传感器旋转。全屏视频播放将使用其自己的方向设置。';
 
   @override
   String get settings_interface_show_edit => '显示编辑按钮';
@@ -3359,6 +3375,14 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_interface_shake_random_subtitle => '搖晃您的裝置以跳轉到目前分頁中的隨機項目';
+
+  @override
+  String get settings_interface_main_pages_gravity_orientation =>
+      '重力控制的方向（主頁面）';
+
+  @override
+  String get settings_interface_main_pages_gravity_orientation_subtitle =>
+      '允許主頁面使用裝置感測器旋轉。全螢幕影片播放將使用其自己的方向設定。';
 
   @override
   String get settings_interface_show_edit => '顯示編輯按鈕';

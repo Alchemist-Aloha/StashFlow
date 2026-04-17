@@ -748,6 +748,14 @@ class AppLocalizationsJa extends AppLocalizations {
       'デバイスを振って、現在のタブのランダムなアイテムにジャンプします';
 
   @override
+  String get settings_interface_main_pages_gravity_orientation =>
+      '重力制御の画面向き（メインページ）';
+
+  @override
+  String get settings_interface_main_pages_gravity_orientation_subtitle =>
+      'デバイスセンサーを使ってメインページの向きを回転できるようにします。全画面動画再生は専用の画面向き設定に従います。';
+
+  @override
   String get settings_interface_show_edit => '編集ボタンを表示';
 
   @override

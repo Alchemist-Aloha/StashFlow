@@ -1506,6 +1506,18 @@ abstract class AppLocalizations {
   /// **'Shake your device to jump to a random item in the current tab'**
   String get settings_interface_shake_random_subtitle;
 
+  /// No description provided for @settings_interface_main_pages_gravity_orientation.
+  ///
+  /// In en, this message translates to:
+  /// **'Gravity-controlled orientation (main pages)'**
+  String get settings_interface_main_pages_gravity_orientation;
+
+  /// No description provided for @settings_interface_main_pages_gravity_orientation_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow main pages to rotate using the device sensor. Fullscreen video playback follows its own orientation settings.'**
+  String get settings_interface_main_pages_gravity_orientation_subtitle;
+
   /// No description provided for @settings_interface_show_edit.
   ///
   /// In en, this message translates to:

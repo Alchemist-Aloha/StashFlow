@@ -242,6 +242,8 @@
   "settings_interface_show_random_subtitle": "Aktivieren oder deaktivieren Sie die schwebenden Casino-Schaltflächen auf Listen- und Detailseiten",
   "settings_interface_shake_random": "Schütteln zum Entdecken",
   "settings_interface_shake_random_subtitle": "Schütteln Sie Ihr Gerät, um zu einem zufälligen Element im aktuellen Tab zu springen",
+  "settings_interface_main_pages_gravity_orientation": "Schwerkraftgesteuerte Ausrichtung (Hauptseiten)",
+  "settings_interface_main_pages_gravity_orientation_subtitle": "Erlaube Hauptseiten, sich mithilfe des Gerätesensors zu drehen. Die Vollbild-Videowiedergabe verwendet eigene Ausrichtungseinstellungen.",
   "settings_interface_show_edit": "Bearbeiten-Schaltfläche anzeigen",
   "settings_interface_show_edit_subtitle": "Aktivieren oder deaktivieren Sie die Bearbeiten-Schaltfläche auf der Szenendetailseite",
   "settings_interface_customize_tabs": "Tabs anpassen",

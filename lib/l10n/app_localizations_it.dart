@@ -777,6 +777,14 @@ class AppLocalizationsIt extends AppLocalizations {
       'Agita il dispositivo per passare a un elemento casuale nella scheda corrente';
 
   @override
+  String get settings_interface_main_pages_gravity_orientation =>
+      'Orientamento controllato dalla gravità (pagine principali)';
+
+  @override
+  String get settings_interface_main_pages_gravity_orientation_subtitle =>
+      'Consenti alle pagine principali di ruotare usando il sensore del dispositivo. La riproduzione video a schermo intero usa le proprie impostazioni di orientamento.';
+
+  @override
   String get settings_interface_show_edit => 'Mostra Pulsante Modifica';
 
   @override

@@ -772,6 +772,14 @@ class AppLocalizationsDe extends AppLocalizations {
       'Schütteln Sie Ihr Gerät, um zu einem zufälligen Element im aktuellen Tab zu springen';
 
   @override
+  String get settings_interface_main_pages_gravity_orientation =>
+      'Schwerkraftgesteuerte Ausrichtung (Hauptseiten)';
+
+  @override
+  String get settings_interface_main_pages_gravity_orientation_subtitle =>
+      'Erlaube Hauptseiten, sich mithilfe des Gerätesensors zu drehen. Die Vollbild-Videowiedergabe verwendet eigene Ausrichtungseinstellungen.';
+
+  @override
   String get settings_interface_show_edit => 'Bearbeiten-Schaltfläche anzeigen';
 
   @override

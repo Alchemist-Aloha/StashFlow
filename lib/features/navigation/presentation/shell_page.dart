@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +22,7 @@ import '../../galleries/presentation/providers/gallery_list_provider.dart';
 import '../../scenes/presentation/widgets/tiktok_scenes_view.dart';
 import '../../setup/presentation/providers/navigation_tabs_provider.dart';
 import '../../setup/presentation/providers/gesture_settings_provider.dart';
+import '../../setup/presentation/providers/main_page_orientation_provider.dart';
 import '../../setup/presentation/providers/update_provider.dart';
 import '../../setup/domain/entities/update_info.dart';
 import 'widgets/mini_player.dart';
@@ -35,6 +39,55 @@ class _ShellPageState extends ConsumerState<ShellPage> {
   bool _dialogShown = false;
   DateTime? _lastHorizontalSwipeTime;
   static const _horizontalSwipeThreshold = Duration(milliseconds: 500);
+  bool? _lastAppliedMainPageGravityOrientation;
+  bool _wasVideoFullscreen = false;
+
+  bool get _isDesktopPlatform =>
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.windows ||
+          defaultTargetPlatform == TargetPlatform.linux ||
+          defaultTargetPlatform == TargetPlatform.macOS);
+
+  List<DeviceOrientation> _mainPageOrientations(bool allowGravity) {
+    if (allowGravity) {
+      return [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ];
+    }
+    return [DeviceOrientation.portraitUp];
+  }
+
+  void _syncMainPageOrientations({
+    required bool allowGravity,
+    required bool isVideoFullScreen,
+  }) {
+    if (_isDesktopPlatform || kIsWeb) return;
+
+    if (isVideoFullScreen) {
+      _wasVideoFullscreen = true;
+      return;
+    }
+
+    final shouldApply =
+        _wasVideoFullscreen ||
+        _lastAppliedMainPageGravityOrientation != allowGravity;
+    if (!shouldApply) return;
+
+    _wasVideoFullscreen = false;
+    _lastAppliedMainPageGravityOrientation = allowGravity;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      unawaited(
+        SystemChrome.setPreferredOrientations(
+          _mainPageOrientations(allowGravity),
+        ),
+      );
+    });
+  }
 
   @override
   void initState() {
@@ -160,6 +213,18 @@ class _ShellPageState extends ConsumerState<ShellPage> {
     final activeSceneId = playerState.activeScene?.id;
     final pathSceneId = _extractSceneIdFromPath(currentPath);
     final isTiktokFullScreen = ref.watch(fullScreenModeProvider);
+    final allowMainPageGravityOrientation = ref.watch(
+      mainPageGravityOrientationProvider,
+    );
+
+    final isVideoFullScreen =
+        playerState.isFullScreen ||
+        isTiktokFullScreen ||
+        currentPath.contains('/fullscreen');
+    _syncMainPageOrientations(
+      allowGravity: allowMainPageGravityOrientation,
+      isVideoFullScreen: isVideoFullScreen,
+    );
 
     // Consider we are in fullscreen if the provider says so, OR if we are on a known fullscreen path.
     // This provides a more immediate UI response during route transitions.

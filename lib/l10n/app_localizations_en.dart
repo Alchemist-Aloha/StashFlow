@@ -760,6 +760,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Shake your device to jump to a random item in the current tab';
 
   @override
+  String get settings_interface_main_pages_gravity_orientation =>
+      'Gravity-controlled orientation (main pages)';
+
+  @override
+  String get settings_interface_main_pages_gravity_orientation_subtitle =>
+      'Allow main pages to rotate using the device sensor. Fullscreen video playback follows its own orientation settings.';
+
+  @override
   String get settings_interface_show_edit => 'Show Edit Button';
 
   @override

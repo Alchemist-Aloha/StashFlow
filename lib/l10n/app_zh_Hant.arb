@@ -288,6 +288,8 @@
   "settings_interface_show_random_subtitle": "在列表和詳情頁面啟用或停用浮動隨機按鈕",
   "settings_interface_shake_random": "搖一搖發現",
   "settings_interface_shake_random_subtitle": "搖晃您的裝置以跳轉到目前分頁中的隨機項目",
+  "settings_interface_main_pages_gravity_orientation": "重力控制的方向（主頁面）",
+  "settings_interface_main_pages_gravity_orientation_subtitle": "允許主頁面使用裝置感測器旋轉。全螢幕影片播放將使用其自己的方向設定。",
   "settings_interface_show_edit": "顯示編輯按鈕",
   "settings_interface_show_edit_subtitle": "在場景詳情頁面上啟用或停用編輯按鈕",
   "settings_interface_customize_tabs": "自訂分頁",

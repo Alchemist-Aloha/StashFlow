@@ -7,6 +7,7 @@ import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/navigation_customization_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/gesture_settings_provider.dart';
+import 'package:stash_app_flutter/features/setup/presentation/providers/main_page_orientation_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/scrape_customization_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_list_provider.dart';
@@ -31,6 +32,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   bool _sceneGridLayout = false;
   bool _sceneTiktokLayout = false;
   bool _galleryGridLayout = true;
+  bool _mainPageGravityOrientation = true;
   bool _imageFullscreenVerticalSwipe = true;
 
   int? _sceneGridColumns;
@@ -64,6 +66,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     _sceneGridLayout = ref.read(sceneGridLayoutProvider);
     _sceneTiktokLayout = ref.read(sceneTiktokLayoutProvider);
     _galleryGridLayout = ref.read(galleryGridLayoutProvider);
+    _mainPageGravityOrientation = ref.read(mainPageGravityOrientationProvider);
     _imageFullscreenVerticalSwipe =
         prefs.getBool(_imageFullscreenVerticalSwipeKey) ?? true;
 
@@ -96,6 +99,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     ref.read(sceneGridLayoutProvider.notifier).set(_sceneGridLayout);
     ref.read(sceneTiktokLayoutProvider.notifier).set(_sceneTiktokLayout);
     ref.read(galleryGridLayoutProvider.notifier).set(_galleryGridLayout);
+    ref
+        .read(mainPageGravityOrientationProvider.notifier)
+        .set(_mainPageGravityOrientation);
 
     ref.read(sceneGridColumnsProvider.notifier).set(_sceneGridColumns);
     ref.read(galleryGridColumnsProvider.notifier).set(_galleryGridColumns);
@@ -216,6 +222,25 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                             ref
                                 .read(shakeToRandomEnabledProvider.notifier)
                                 .setShakeToRandom(value);
+                          },
+                        ),
+                        const Divider(height: AppTheme.spacingLarge),
+                        SwitchListTile.adaptive(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(
+                            context
+                                .l10n
+                                .settings_interface_main_pages_gravity_orientation,
+                          ),
+                          subtitle: Text(
+                            context
+                                .l10n
+                                .settings_interface_main_pages_gravity_orientation_subtitle,
+                          ),
+                          value: _mainPageGravityOrientation,
+                          onChanged: (value) async {
+                            setState(() => _mainPageGravityOrientation = value);
+                            await _saveSettings();
                           },
                         ),
                         const Divider(height: AppTheme.spacingLarge),

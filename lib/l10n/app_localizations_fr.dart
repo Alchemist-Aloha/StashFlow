@@ -773,6 +773,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Secouez votre appareil pour passer à un élément aléatoire dans l\'onglet actuel';
 
   @override
+  String get settings_interface_main_pages_gravity_orientation =>
+      'Orientation contrôlée par la gravité (pages principales)';
+
+  @override
+  String get settings_interface_main_pages_gravity_orientation_subtitle =>
+      'Autoriser les pages principales à pivoter à l\'aide du capteur de l\'appareil. La lecture vidéo en plein écran utilise ses propres paramètres d\'orientation.';
+
+  @override
   String get settings_interface_show_edit => 'Afficher le bouton d\'édition';
 
   @override

@@ -7,6 +7,7 @@ import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_detai
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_details_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
+import 'package:stash_app_flutter/l10n/app_localizations.dart';
 
 import '../../helpers/test_helpers.dart';
 
@@ -147,7 +148,8 @@ void main() {
     await tester.tap(find.byIcon(Icons.more_vert));
     await tester.pump(const Duration(milliseconds: 500));
 
-    expect(find.textContaining('Scene Info'), findsOneWidget);
+    final l10n = AppLocalizations.of(tester.element(find.byType(SceneCard)))!;
+    expect(find.text(l10n.details_scene), findsOneWidget);
   });
 
   test(

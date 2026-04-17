@@ -781,6 +781,14 @@ class AppLocalizationsEs extends AppLocalizations {
       'Agita tu dispositivo para saltar a un elemento aleatorio en la pestaña actual';
 
   @override
+  String get settings_interface_main_pages_gravity_orientation =>
+      'Orientación controlada por gravedad (páginas principales)';
+
+  @override
+  String get settings_interface_main_pages_gravity_orientation_subtitle =>
+      'Permite que las páginas principales roten usando el sensor del dispositivo. La reproducción de video en pantalla completa usa su propia configuración de orientación.';
+
+  @override
   String get settings_interface_show_edit => 'Mostrar botón de editar';
 
   @override

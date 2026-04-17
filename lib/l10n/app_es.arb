@@ -259,6 +259,8 @@
   "settings_interface_show_random_subtitle": "Habilitar o deshabilitar los botones flotantes de casino en las páginas de lista y detalles",
   "settings_interface_shake_random": "Agitar para descubrir",
   "settings_interface_shake_random_subtitle": "Agita tu dispositivo para saltar a un elemento aleatorio en la pestaña actual",
+  "settings_interface_main_pages_gravity_orientation": "Orientación controlada por gravedad (páginas principales)",
+  "settings_interface_main_pages_gravity_orientation_subtitle": "Permite que las páginas principales roten usando el sensor del dispositivo. La reproducción de video en pantalla completa usa su propia configuración de orientación.",
   "settings_interface_show_edit": "Mostrar botón de editar",
   "settings_interface_show_edit_subtitle": "Habilitar o deshabilitar el botón de editar en la página de detalles de la escena",
   "settings_interface_customize_tabs": "Personalizar pestañas",

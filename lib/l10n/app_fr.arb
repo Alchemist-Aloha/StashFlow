@@ -259,6 +259,8 @@
   "settings_interface_show_random_subtitle": "Activer ou désactiver les boutons flottants de casino sur les pages de liste et de détails",
   "settings_interface_shake_random": "Secouer pour découvrir",
   "settings_interface_shake_random_subtitle": "Secouez votre appareil pour passer à un élément aléatoire dans l'onglet actuel",
+  "settings_interface_main_pages_gravity_orientation": "Orientation contrôlée par la gravité (pages principales)",
+  "settings_interface_main_pages_gravity_orientation_subtitle": "Autoriser les pages principales à pivoter à l'aide du capteur de l'appareil. La lecture vidéo en plein écran utilise ses propres paramètres d'orientation.",
   "settings_interface_show_edit": "Afficher le bouton d'édition",
   "settings_interface_show_edit_subtitle": "Activer ou désactiver le bouton d'édition sur la page de détails de la scène",
   "settings_interface_customize_tabs": "Personnaliser les onglets",

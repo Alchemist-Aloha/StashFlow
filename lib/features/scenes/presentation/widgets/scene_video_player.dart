@@ -11,6 +11,7 @@ import 'package:window_manager/window_manager.dart';
 
 import '../../domain/entities/scene.dart';
 import '../providers/video_player_provider.dart';
+import '../../../setup/presentation/providers/main_page_orientation_provider.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
@@ -438,9 +439,9 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
           // Landscape
           orientations = allowGravity
               ? [
-                DeviceOrientation.landscapeLeft,
-                DeviceOrientation.landscapeRight,
-              ]
+                  DeviceOrientation.landscapeLeft,
+                  DeviceOrientation.landscapeRight,
+                ]
               : [DeviceOrientation.landscapeLeft];
         } else if (aspectRatio < 1.0) {
           // Portrait
@@ -451,11 +452,11 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
           // Square
           orientations = allowGravity
               ? [
-                DeviceOrientation.portraitUp,
-                DeviceOrientation.portraitDown,
-                DeviceOrientation.landscapeLeft,
-                DeviceOrientation.landscapeRight,
-              ]
+                  DeviceOrientation.portraitUp,
+                  DeviceOrientation.portraitDown,
+                  DeviceOrientation.landscapeLeft,
+                  DeviceOrientation.landscapeRight,
+                ]
               : [DeviceOrientation.portraitUp];
         }
 
@@ -521,13 +522,20 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
         }
       }());
     } else {
+      final allowMainPageGravityOrientation = ref.read(
+        mainPageGravityOrientationProvider,
+      );
       unawaited(() async {
-        await SystemChrome.setPreferredOrientations([
-          DeviceOrientation.portraitUp,
-          DeviceOrientation.portraitDown,
-          DeviceOrientation.landscapeLeft,
-          DeviceOrientation.landscapeRight,
-        ]);
+        await SystemChrome.setPreferredOrientations(
+          allowMainPageGravityOrientation
+              ? [
+                  DeviceOrientation.portraitUp,
+                  DeviceOrientation.portraitDown,
+                  DeviceOrientation.landscapeLeft,
+                  DeviceOrientation.landscapeRight,
+                ]
+              : [DeviceOrientation.portraitUp],
+        );
 
         // On Web, toggling fullscreen and the Hero transition can trigger a pause
         if (wasPlaying && kIsWeb) {
