@@ -346,6 +346,8 @@
   "settings_playback_seek_drag": "Drag the timeline to seek",
   "settings_playback_seek_drag_label": "Drag",
   "settings_playback_seek_double_tap_label": "Double-tap",
+  "settings_playback_gravity_orientation": "Gravity-controlled orientation",
+  "settings_playback_gravity_orientation_subtitle": "Allow rotating between matching orientations using the device sensor (e.g. flipping landscape left/right).",
   "settings_playback_subtitle_lang_none_disabled": "None (Disabled)",
   "settings_playback_subtitle_lang_auto_if_only_one": "Auto (If only one)",
   "settings_playback_subtitle_lang_english": "English",
