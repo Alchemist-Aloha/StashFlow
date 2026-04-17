@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import '../../../../../core/presentation/providers/desktop_capabilities_provider.dart';
 
 import '../../widgets/settings_page_shell.dart';
 
@@ -11,6 +12,7 @@ class SettingsHubPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isDesktop = ref.watch(desktopCapabilitiesProvider);
 
     return SettingsPageShell(
       title: 'Settings',
@@ -50,6 +52,15 @@ class SettingsHubPage extends ConsumerWidget {
                   onTap: () => context.push('/settings/playback'),
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),
+                if (isDesktop) ...[
+                  SettingsActionCard(
+                    icon: Icons.keyboard_rounded,
+                    title: 'Keyboard',
+                    subtitle: 'Customizable shortcuts and hotkeys',
+                    onTap: () => context.push('/settings/keybinds'),
+                  ),
+                  const SizedBox(height: AppTheme.spacingSmall),
+                ],
                 SettingsActionCard(
                   icon: Icons.palette_rounded,
                   title: 'Appearance',

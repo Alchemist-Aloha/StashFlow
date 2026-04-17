@@ -145,4 +145,24 @@ class PlaybackQueue extends _$PlaybackQueue {
       state = state.copyWith(currentIndex: nextIndex);
     }
   }
+
+  /// Returns the previous scene in the sequence, if any.
+  Scene? getPreviousScene() {
+    if (state.currentIndex > 0) {
+      return state.sequence[state.currentIndex - 1];
+    }
+    return null;
+  }
+
+  /// Decrements the current index.
+  void playPrevious() {
+    final prevIndex = state.currentIndex - 1;
+    AppLogStore.instance.add(
+      'PlaybackQueue playPrevious: prevIndex=$prevIndex',
+      source: 'playback_queue',
+    );
+    if (prevIndex >= 0) {
+      state = state.copyWith(currentIndex: prevIndex);
+    }
+  }
 }

@@ -4,12 +4,13 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/gestures.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/providers/desktop_capabilities_provider.dart';
 import '../../../../core/presentation/providers/desktop_settings_provider.dart';
+import '../../../../core/presentation/providers/keybinds_provider.dart';
 import '../../../../core/utils/pip_mode.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/app_log_store.dart';
@@ -336,6 +337,28 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       widget.controller.play();
     }
     _showControlsTemporarily();
+  }
+
+  void _playNext() {
+    final queue = ref.read(playbackQueueProvider.notifier);
+    final next = queue.getNextScene();
+    if (next != null) {
+      queue.playNext();
+      if (mounted) {
+        GoRouter.of(context).pushReplacement('/scenes/scene/${next.id}');
+      }
+    }
+  }
+
+  void _playPrevious() {
+    final queue = ref.read(playbackQueueProvider.notifier);
+    final prev = queue.getPreviousScene();
+    if (prev != null) {
+      queue.playPrevious();
+      if (mounted) {
+        GoRouter.of(context).pushReplacement('/scenes/scene/${prev.id}');
+      }
+    }
   }
 
   String _format(Duration d) {
@@ -721,33 +744,90 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     final sliderValue = currentMs.clamp(0, durationMs.toDouble()).toDouble();
 
     final isDesktop = ref.watch(desktopCapabilitiesProvider);
+    final keybinds = ref.watch(keybindsProvider);
+
+    Map<ShortcutActivator, VoidCallback> bindings = {};
+    for (var entry in keybinds.binds.entries) {
+      final action = entry.key;
+      final bind = entry.value;
+
+      VoidCallback? callback;
+      switch (action) {
+        case KeybindAction.playPause:
+          callback = _togglePlay;
+          break;
+        case KeybindAction.seekForward:
+          callback = () => _seekRelativeSeconds(5);
+          break;
+        case KeybindAction.seekBackward:
+          callback = () => _seekRelativeSeconds(-5);
+          break;
+        case KeybindAction.seekForwardLarge:
+          callback = () => _seekRelativeSeconds(10);
+          break;
+        case KeybindAction.seekBackwardLarge:
+          callback = () => _seekRelativeSeconds(-10);
+          break;
+        case KeybindAction.volumeUp:
+          callback = () {
+            final currentVol = ref.read(desktopSettingsProvider).volume;
+            ref.read(playerStateProvider.notifier).setVolume(currentVol + 0.05);
+          };
+          break;
+        case KeybindAction.volumeDown:
+          callback = () {
+            final currentVol = ref.read(desktopSettingsProvider).volume;
+            ref.read(playerStateProvider.notifier).setVolume(currentVol - 0.05);
+          };
+          break;
+        case KeybindAction.toggleMute:
+          callback = () => ref.read(playerStateProvider.notifier).toggleMute();
+          break;
+        case KeybindAction.toggleFullscreen:
+          callback = () => widget.onFullScreenToggle?.call();
+          break;
+        case KeybindAction.togglePip:
+          callback = () {
+            if (widget.enableNativePip && !kIsWeb && Platform.isAndroid) {
+              PipMode.enterIfAvailable(
+                aspectRatio: widget.controller.value.aspectRatio,
+              );
+            }
+          };
+          break;
+        case KeybindAction.nextScene:
+          callback = _playNext;
+          break;
+        case KeybindAction.previousScene:
+          callback = _playPrevious;
+          break;
+        case KeybindAction.speedUp:
+          callback = () {
+            final currentSpeed = widget.controller.value.playbackSpeed;
+            widget.controller.setPlaybackSpeed(currentSpeed + 0.25);
+          };
+          break;
+        case KeybindAction.speedDown:
+          callback = () {
+            final currentSpeed = widget.controller.value.playbackSpeed;
+            widget.controller.setPlaybackSpeed(currentSpeed - 0.25);
+          };
+          break;
+        case KeybindAction.resetSpeed:
+          callback = () => widget.controller.setPlaybackSpeed(1.0);
+          break;
+        case KeybindAction.closePlayer:
+          callback = () => ref.read(playerStateProvider.notifier).stop();
+          break;
+      }
+
+      bindings[bind.toActivator()] = callback;
+    }
 
     return PopScope(
       canPop: !_isScrubbing,
       child: CallbackShortcuts(
-        bindings: {
-          const SingleActivator(LogicalKeyboardKey.space): _togglePlay,
-          const SingleActivator(LogicalKeyboardKey.arrowLeft): () =>
-              _seekRelativeSeconds(-5),
-          const SingleActivator(LogicalKeyboardKey.arrowRight): () =>
-              _seekRelativeSeconds(5),
-          const SingleActivator(LogicalKeyboardKey.keyJ): () =>
-              _seekRelativeSeconds(-10),
-          const SingleActivator(LogicalKeyboardKey.keyL): () =>
-              _seekRelativeSeconds(10),
-          const SingleActivator(LogicalKeyboardKey.keyF): () =>
-              widget.onFullScreenToggle?.call(),
-          const SingleActivator(LogicalKeyboardKey.keyM): () =>
-              ref.read(playerStateProvider.notifier).toggleMute(),
-          const SingleActivator(LogicalKeyboardKey.arrowUp): () {
-            final currentVol = ref.read(desktopSettingsProvider).volume;
-            ref.read(playerStateProvider.notifier).setVolume(currentVol + 0.05);
-          },
-          const SingleActivator(LogicalKeyboardKey.arrowDown): () {
-            final currentVol = ref.read(desktopSettingsProvider).volume;
-            ref.read(playerStateProvider.notifier).setVolume(currentVol - 0.05);
-          },
-        },
+        bindings: bindings,
         child: Focus(
           autofocus: true,
           child: LayoutBuilder(
@@ -762,17 +842,26 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                       child: Listener(
                         onPointerSignal: (pointerSignal) {
                           if (pointerSignal is PointerScrollEvent) {
-                            final currentVol = ref
-                                .read(desktopSettingsProvider)
-                                .volume;
-                            if (pointerSignal.scrollDelta.dy < 0) {
-                              ref
-                                  .read(playerStateProvider.notifier)
-                                  .setVolume(currentVol + 0.05);
-                            } else {
-                              ref
-                                  .read(playerStateProvider.notifier)
-                                  .setVolume(currentVol - 0.05);
+                            if (pointerSignal.scrollDelta.dy != 0) {
+                              // Vertical scroll -> Volume
+                              final currentVol =
+                                  ref.read(desktopSettingsProvider).volume;
+                              if (pointerSignal.scrollDelta.dy < 0) {
+                                ref
+                                    .read(playerStateProvider.notifier)
+                                    .setVolume(currentVol + 0.05);
+                              } else {
+                                ref
+                                    .read(playerStateProvider.notifier)
+                                    .setVolume(currentVol - 0.05);
+                              }
+                            } else if (pointerSignal.scrollDelta.dx != 0) {
+                              // Horizontal scroll -> Seek
+                              if (pointerSignal.scrollDelta.dx > 0) {
+                                _seekRelativeSeconds(5);
+                              } else {
+                                _seekRelativeSeconds(-5);
+                              }
                             }
                           }
                         },
@@ -807,7 +896,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                               ? (_) => _endDragSeek()
                               : null,
                           onHorizontalDragCancel: !widget.useDoubleTapSeek
-                              ? _endDragSeek
+                              ? () => _endDragSeek()
                               : null,
                           child: const ColoredBox(color: Colors.transparent),
                         ),

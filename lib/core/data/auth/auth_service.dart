@@ -92,10 +92,7 @@ class AuthService {
         final dummyCookie = Cookie('web_session', 'active')
           ..domain = loginUri.host
           ..path = '/';
-        await cookieJar.saveFromResponse(
-          loginUri,
-          [dummyCookie],
-        );
+        await cookieJar.saveFromResponse(loginUri, [dummyCookie]);
       }
       return true;
     }

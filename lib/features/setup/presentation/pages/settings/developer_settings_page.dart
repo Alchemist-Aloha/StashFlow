@@ -33,7 +33,8 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
     final prefs = ref.read(sharedPreferencesProvider);
     setState(() {
       _showVideoDebugInfo = prefs.getBool(_showVideoDebugInfoKey) ?? false;
-      _allowWebPasswordLogin = prefs.getBool(_allowWebPasswordLoginKey) ?? false;
+      _allowWebPasswordLogin =
+          prefs.getBool(_allowWebPasswordLoginKey) ?? false;
     });
   }
 
@@ -63,7 +64,9 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
                   onChanged: (value) {
                     setState(() => _showVideoDebugInfo = value);
                     _saveSetting(_showVideoDebugInfoKey, value);
-                    ref.read(playerStateProvider.notifier).setShowVideoDebugInfo(value);
+                    ref
+                        .read(playerStateProvider.notifier)
+                        .setShowVideoDebugInfo(value);
                   },
                 ),
                 const Divider(height: 1),
@@ -93,7 +96,7 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
                 },
               ),
             ),
-          ]
+          ],
         ],
       ),
     );
