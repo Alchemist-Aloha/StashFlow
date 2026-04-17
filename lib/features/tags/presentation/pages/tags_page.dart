@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/tag_list_provider.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
-import '../../../../core/presentation/providers/layout_settings_provider.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/utils/l10n_extensions.dart';
@@ -354,7 +353,6 @@ class _TagsPageState extends ConsumerState<TagsPage> {
   @override
   Widget build(BuildContext context) {
     final tagsAsync = ref.watch(tagListProvider);
-    final gridColumns = ref.watch(tagGridColumnsProvider);
     final favoritesOnly = ref.watch(tagFavoritesOnlyProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final scrollController = ref.watch(tagScrollControllerProvider);

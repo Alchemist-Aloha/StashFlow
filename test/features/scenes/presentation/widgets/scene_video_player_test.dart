@@ -91,7 +91,7 @@ void main() {
     final iconFinder = find.byIcon(Icons.play_arrow_rounded);
     expect(iconFinder, findsOneWidget);
     expect(
-      find.ancestor(of: iconFinder, matching: find.byType(FilledButton)),
+      find.ancestor(of: iconFinder, matching: find.byType(IconButton)),
       findsOneWidget,
     );
   });

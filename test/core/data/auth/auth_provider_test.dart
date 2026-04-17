@@ -7,7 +7,6 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/data/auth/auth_mode.dart';
 import 'package:stash_app_flutter/core/data/auth/auth_provider.dart';

@@ -511,13 +511,11 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                                 onPressed: _isSaving
                                     ? null
                                     : () async {
+                                        final messenger = ScaffoldMessenger.of(context);
                                         await ref
                                             .read(authProvider.notifier)
                                             .logout();
-                                        if (!mounted) return;
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
+                                        messenger.showSnackBar(
                                           const SnackBar(
                                             content: Text(
                                               'Logged out and cookies cleared.',
