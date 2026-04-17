@@ -15,16 +15,17 @@ class KeybindSettingsPage extends ConsumerWidget {
     return SettingsPageShell(
       title: 'Keyboard Shortcuts',
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
             padding: const EdgeInsets.all(AppTheme.spacingMedium),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Customize your keyboard shortcuts.',
-                  style: TextStyle(fontSize: 16),
+                const Expanded(
+                  child: Text(
+                    'Customize your keyboard shortcuts.',
+                    style: TextStyle(fontSize: 16),
+                  ),
                 ),
                 TextButton.icon(
                   onPressed: () =>
@@ -46,6 +47,10 @@ class KeybindSettingsPage extends ConsumerWidget {
                   title: Text(_getActionLabel(action)),
                   subtitle: Text(_getActionDescription(action)),
                   trailing: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(80, 36),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                    ),
                     onPressed: () => _showCaptureDialog(context, ref, action),
                     child: Text(bind?.label ?? 'Not bound'),
                   ),
