@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
@@ -16,7 +17,7 @@ class GroupDetailsPage extends ConsumerWidget {
     final groupAsync = ref.watch(groupDetailsProvider(groupId));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Group Details')),
+      appBar: AppBar(title: Text(context.l10n.details_group)),
       body: groupAsync.when(
         data: (group) => RefreshIndicator(
           onRefresh: () async {

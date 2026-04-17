@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../studios/presentation/providers/studio_list_provider.dart';
 import '../../../performers/presentation/providers/performer_list_provider.dart';
@@ -73,7 +74,7 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
             TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search...',
+                hintText: context.l10n.common_search_placeholder,
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.clear),
@@ -153,7 +154,7 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
                 ),
                 error: (err, _) => Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Text('Error: $err'),
+                  child: Text(context.l10n.common_error(err.toString())),
                 ),
               ),
             ),

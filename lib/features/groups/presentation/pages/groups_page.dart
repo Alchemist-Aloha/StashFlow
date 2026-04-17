@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
@@ -99,7 +100,7 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
             group.name.isEmpty ? 'Unnamed group' : group.name,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle: Text('ID: ${group.id}'),
+          subtitle: Text(context.l10n.common_id(group.id.toString()))),
           onTap: () => context.push('/group/${group.id}'),
         ),
       ),

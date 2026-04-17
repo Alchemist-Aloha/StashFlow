@@ -92,7 +92,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get common_view_all => '전체 보기';
 
   @override
-  String get common_default => 'Default';
+  String get common_default => '기본값';
 
   @override
   String get common_later => '나중에';
@@ -104,7 +104,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get common_configure_now => '지금 설정';
 
   @override
-  String get common_clear_rating => '평점 지우기';
+  String get common_clear_rating => '평가 삭제';
 
   @override
   String get common_no_media => '미디어가 없습니다';
@@ -187,509 +187,632 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get settings_title => 'Settings';
+  String get common_no_media_available => '미디어 없음';
 
   @override
-  String get settings_customize => 'Customize StashFlow';
+  String common_id(Object id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String get common_search_placeholder => '검색...';
+
+  @override
+  String get common_pause => '일시정지';
+
+  @override
+  String get common_play => '재생';
+
+  @override
+  String get common_close => '닫기';
+
+  @override
+  String get common_save => '저장';
+
+  @override
+  String get common_unmute => '음소거 해제';
+
+  @override
+  String get common_mute => '음소거';
+
+  @override
+  String get common_back => '뒤로';
+
+  @override
+  String get common_rate => '평가하기';
+
+  @override
+  String get common_previous => '이전';
+
+  @override
+  String get common_next => '다음';
+
+  @override
+  String get common_favorite => '즐겨찾기';
+
+  @override
+  String get common_unfavorite => '즐겨찾기 해제';
+
+  @override
+  String get common_version => '버전';
+
+  @override
+  String get common_loading => '로딩 중';
+
+  @override
+  String get common_unavailable => '사용 불가';
+
+  @override
+  String get common_details => '상세 정보';
+
+  @override
+  String get common_title => '제목';
+
+  @override
+  String get common_release_date => '출시일';
+
+  @override
+  String get common_url => 'URL';
+
+  @override
+  String get common_no_url => 'URL 없음';
+
+  @override
+  String get common_sort => '정렬';
+
+  @override
+  String get common_filter => '필터';
+
+  @override
+  String get common_search => '검색';
+
+  @override
+  String get common_settings => '설정';
+
+  @override
+  String get common_reset_to_1x => '1배속으로 재설정';
+
+  @override
+  String get common_skip_next => '다음 건너뛰기';
+
+  @override
+  String get common_select_subtitle => '자막 선택';
+
+  @override
+  String get common_playback_speed => '재생 속도';
+
+  @override
+  String get common_pip => 'PIP';
+
+  @override
+  String get common_toggle_fullscreen => '전체 화면 전환';
+
+  @override
+  String get common_exit_fullscreen => '전체 화면 종료';
+
+  @override
+  String get common_copy_logs => '로그 복사';
+
+  @override
+  String get common_clear_logs => '로그 삭제';
+
+  @override
+  String get common_enable_autoscroll => '자동 스크롤 활성화';
+
+  @override
+  String get common_disable_autoscroll => '자동 스크롤 비활성화';
+
+  @override
+  String get details_group => '그룹 상세 정보';
+
+  @override
+  String get details_scene_scrape => '메타데이터 스크래핑';
+
+  @override
+  String get details_scene_add_performer => '출연자 추가';
+
+  @override
+  String get details_scene_add_tag => '태그 추가';
+
+  @override
+  String get details_scene_add_url => 'URL 추가';
+
+  @override
+  String get details_scene_remove_url => 'URL 제거';
+
+  @override
+  String get random_studio => '랜덤 스튜디오';
+
+  @override
+  String get random_gallery => '랜덤 갤러리';
+
+  @override
+  String get random_tag => '랜덤 태그';
+
+  @override
+  String get random_scene => '랜덤 장면';
+
+  @override
+  String get random_performer => '랜덤 출연자';
+
+  @override
+  String get settings_title => '설정';
+
+  @override
+  String get settings_customize => 'StashFlow 사용자 정의';
 
   @override
   String get settings_customize_subtitle =>
-      'Tune playback, appearance, layout, and support tools from one place.';
+      '재생, 모양, 레이아웃 및 지원 도구를 한 곳에서 조정하세요.';
 
   @override
-  String get settings_core_section => 'Core settings';
+  String get settings_core_section => '핵심 설정';
 
   @override
-  String get settings_core_subtitle => 'Most-used configuration pages';
+  String get settings_core_subtitle => '가장 많이 사용되는 설정 페이지';
 
   @override
-  String get settings_server => 'Server';
+  String get settings_server => '서버';
 
   @override
-  String get settings_server_subtitle => 'Connection and API configuration';
+  String get settings_server_subtitle => '연결 및 API 설정';
 
   @override
-  String get settings_playback => 'Playback';
+  String get settings_playback => '재생';
 
   @override
-  String get settings_playback_subtitle => 'Player behavior and interactions';
+  String get settings_playback_subtitle => '플레이어 동작 및 상호작용';
 
   @override
-  String get settings_keyboard => 'Keyboard';
+  String get settings_keyboard => '키보드';
 
   @override
-  String get settings_keyboard_subtitle => 'Customizable shortcuts and hotkeys';
+  String get settings_keyboard_subtitle => '사용자 정의 가능한 단축키 및 핫키';
 
   @override
-  String get settings_appearance => 'Appearance';
+  String get settings_appearance => '모양';
 
   @override
-  String get settings_appearance_subtitle => 'Theme and colors';
+  String get settings_appearance_subtitle => '테마 및 색상';
 
   @override
-  String get settings_interface => 'Interface';
+  String get settings_interface => '인터페이스';
 
   @override
-  String get settings_interface_subtitle => 'Navigation and layout defaults';
+  String get settings_interface_subtitle => '탐색 및 레이아웃 기본값';
 
   @override
-  String get settings_support => 'Support';
+  String get settings_support => '지원';
 
   @override
-  String get settings_support_subtitle => 'Diagnostics and about';
+  String get settings_support_subtitle => '진단 및 정보';
 
   @override
-  String get settings_develop => 'Develop';
+  String get settings_develop => '개발';
 
   @override
-  String get settings_develop_subtitle => 'Advanced tools and overrides';
+  String get settings_develop_subtitle => '고급 도구 및 재정의';
 
   @override
-  String get settings_appearance_title => 'Appearance Settings';
+  String get settings_appearance_title => '모양 설정';
 
   @override
-  String get settings_appearance_theme_mode => 'Theme Mode';
+  String get settings_appearance_theme_mode => '테마 모드';
 
   @override
-  String get settings_appearance_theme_mode_subtitle =>
-      'Choose how the app follows brightness changes';
+  String get settings_appearance_theme_mode_subtitle => '앱이 밝기 변화를 따르는 방식 선택';
 
   @override
-  String get settings_appearance_theme_system => 'System';
+  String get settings_appearance_theme_system => '시스템';
 
   @override
-  String get settings_appearance_theme_light => 'Light';
+  String get settings_appearance_theme_light => '밝게';
 
   @override
-  String get settings_appearance_theme_dark => 'Dark';
+  String get settings_appearance_theme_dark => '어둡게';
 
   @override
-  String get settings_appearance_primary_color => 'Primary Color';
+  String get settings_appearance_primary_color => '기본 색상';
 
   @override
   String get settings_appearance_primary_color_subtitle =>
-      'Pick a seed color for the Material 3 palette';
+      'Material 3 팔레트의 시드 색상 선택';
 
   @override
-  String get settings_appearance_advanced_theming => 'Advanced Theming';
+  String get settings_appearance_advanced_theming => '고급 테마 설정';
 
   @override
   String get settings_appearance_advanced_theming_subtitle =>
-      'Optimizations for specific screen types';
+      '특정 화면 유형에 대한 최적화';
 
   @override
-  String get settings_appearance_true_black => 'True Black (AMOLED)';
+  String get settings_appearance_true_black => '트루 블랙 (AMOLED)';
 
   @override
   String get settings_appearance_true_black_subtitle =>
-      'Use pure black backgrounds in dark mode to save battery on OLED screens';
+      '어두운 모드에서 순수 검정색 배경을 사용하여 OLED 화면의 배터리 절약';
 
   @override
-  String get settings_appearance_custom_hex => 'Custom Hex Color';
+  String get settings_appearance_custom_hex => '사용자 정의 헥스 색상';
 
   @override
-  String get settings_appearance_custom_hex_helper =>
-      'Enter an 8-digit ARGB hex code';
+  String get settings_appearance_custom_hex_helper => '8자리 ARGB 헥스 코드를 입력하세요';
 
   @override
-  String get settings_interface_title => 'Interface Settings';
+  String get settings_interface_title => '인터페이스 설정';
 
   @override
-  String get settings_interface_language => 'Language';
+  String get settings_interface_language => '언어';
 
   @override
-  String get settings_interface_language_subtitle =>
-      'Overwrite the default system language';
+  String get settings_interface_language_subtitle => '기본 시스템 언어 재정의';
 
   @override
-  String get settings_interface_app_language => 'App Language';
+  String get settings_interface_app_language => '앱 언어';
 
   @override
-  String get settings_interface_navigation => 'Navigation';
+  String get settings_interface_navigation => '탐색';
 
   @override
-  String get settings_interface_navigation_subtitle =>
-      'Visibility of global navigation shortcuts';
+  String get settings_interface_navigation_subtitle => '전역 탐색 단축키 표시 여부';
 
   @override
-  String get settings_interface_show_random => 'Show Random Navigation Buttons';
+  String get settings_interface_show_random => '랜덤 탐색 버튼 표시';
 
   @override
   String get settings_interface_show_random_subtitle =>
-      'Enable or disable the floating casino buttons across list and details pages';
+      '목록 및 상세 페이지에서 부동 카지노 버튼 활성화 또는 비활성화';
 
   @override
-  String get settings_interface_shake_random => 'Shake to Discover';
+  String get settings_interface_shake_random => '흔들어서 발견하기';
 
   @override
   String get settings_interface_shake_random_subtitle =>
-      'Shake your device to jump to a random item in the current tab';
+      '기기를 흔들어 현재 탭의 랜덤 항목으로 이동';
 
   @override
-  String get settings_interface_show_edit => 'Show Edit Button';
+  String get settings_interface_show_edit => '편집 버튼 표시';
 
   @override
   String get settings_interface_show_edit_subtitle =>
-      'Enable or disable the edit button on the scene details page';
+      '장면 상세 페이지에서 편집 버튼 활성화 또는 비활성화';
 
   @override
-  String get settings_interface_customize_tabs => 'Customize Tabs';
+  String get settings_interface_customize_tabs => '탭 사용자 정의';
 
   @override
   String get settings_interface_customize_tabs_subtitle =>
-      'Reorder or hide navigation menu items';
+      '탐색 메뉴 항목 순서 변경 또는 숨기기';
 
   @override
-  String get settings_interface_scenes_layout => 'Scenes Layout';
+  String get settings_interface_scenes_layout => '장면 레이아웃';
 
   @override
-  String get settings_interface_scenes_layout_subtitle =>
-      'Default browsing mode for scenes';
+  String get settings_interface_scenes_layout_subtitle => '장면의 기본 브라우징 모드';
 
   @override
-  String get settings_interface_galleries_layout => 'Galleries Layout';
+  String get settings_interface_galleries_layout => '갤러리 레이아웃';
 
   @override
-  String get settings_interface_galleries_layout_subtitle =>
-      'Default browsing mode for galleries';
+  String get settings_interface_galleries_layout_subtitle => '갤러리의 기본 브라우징 모드';
 
   @override
-  String get settings_interface_layout_default => 'Default Layout';
+  String get settings_interface_layout_default => '기본 레이아웃';
 
   @override
-  String get settings_interface_layout_default_desc =>
-      'Choose the default layout for the page';
+  String get settings_interface_layout_default_desc => '페이지의 기본 레이아웃 선택';
 
   @override
-  String get settings_interface_layout_list => 'List';
+  String get settings_interface_layout_list => '목록';
 
   @override
-  String get settings_interface_layout_grid => 'Grid';
+  String get settings_interface_layout_grid => '그리드';
 
   @override
-  String get settings_interface_layout_tiktok => 'Infinite Scroll';
+  String get settings_interface_layout_tiktok => '무한 스크롤';
 
   @override
-  String get settings_interface_grid_columns => 'Grid Columns';
+  String get settings_interface_grid_columns => '그리드 열';
 
   @override
-  String get settings_interface_image_viewer => 'Image Viewer';
+  String get settings_interface_image_viewer => '이미지 뷰어';
 
   @override
-  String get settings_interface_image_viewer_subtitle =>
-      'Configure fullscreen image browsing behavior';
+  String get settings_interface_image_viewer_subtitle => '전체 화면 이미지 브라우징 동작 설정';
 
   @override
-  String get settings_interface_swipe_direction => 'Fullscreen Swipe Direction';
+  String get settings_interface_swipe_direction => '전체 화면 스와이프 방향';
 
   @override
   String get settings_interface_swipe_direction_desc =>
-      'Choose how images advance in fullscreen mode';
+      '전체 화면 모드에서 이미지가 넘어가는 방식 선택';
 
   @override
-  String get settings_interface_swipe_vertical => 'Vertical';
+  String get settings_interface_swipe_vertical => '세로';
 
   @override
-  String get settings_interface_swipe_horizontal => 'Horizontal';
+  String get settings_interface_swipe_horizontal => '가로';
 
   @override
-  String get settings_interface_waterfall_columns => 'Waterfall Grid Columns';
+  String get settings_interface_waterfall_columns => '폭포수 그리드 열';
 
   @override
-  String get settings_interface_performer_layouts => 'Performer Layouts';
+  String get settings_interface_performer_layouts => '출연자 레이아웃';
 
   @override
   String get settings_interface_performer_layouts_subtitle =>
-      'Media and gallery defaults for performers';
+      '출연자의 미디어 및 갤러리 기본값';
 
   @override
-  String get settings_interface_studio_layouts => 'Studio Layouts';
+  String get settings_interface_studio_layouts => '스튜디오 레이아웃';
 
   @override
   String get settings_interface_studio_layouts_subtitle =>
-      'Media and gallery defaults for studios';
+      '스튜디오의 미디어 및 갤러리 기본값';
 
   @override
-  String get settings_interface_tag_layouts => 'Tag Layouts';
+  String get settings_interface_tag_layouts => '태그 레이아웃';
 
   @override
-  String get settings_interface_tag_layouts_subtitle =>
-      'Media and gallery defaults for tags';
+  String get settings_interface_tag_layouts_subtitle => '태그의 미디어 및 갤러리 기본값';
 
   @override
-  String get settings_interface_media_layout => 'Media Layout';
+  String get settings_interface_media_layout => '미디어 레이아웃';
 
   @override
-  String get settings_interface_media_layout_subtitle =>
-      'Layout for Media page';
+  String get settings_interface_media_layout_subtitle => '미디어 페이지용 레이아웃';
 
   @override
-  String get settings_interface_galleries_layout_item => 'Galleries Layout';
+  String get settings_interface_galleries_layout_item => '갤러리 레이아웃';
 
   @override
   String get settings_interface_galleries_layout_subtitle_item =>
-      'Layout for Galleries page';
+      '갤러리 페이지용 레이아웃';
 
   @override
-  String get settings_server_title => 'Server Settings';
+  String get settings_server_title => '서버 설정';
 
   @override
-  String get settings_server_status => 'Connection Status';
+  String get settings_server_status => '연결 상태';
 
   @override
-  String get settings_server_status_subtitle =>
-      'Live connectivity against the configured server';
+  String get settings_server_status_subtitle => '구성된 서버에 대한 실시간 연결 상태';
 
   @override
-  String get settings_server_details => 'Server Details';
+  String get settings_server_details => '서버 상세 정보';
 
   @override
-  String get settings_server_details_subtitle =>
-      'Configure endpoint and authentication method';
+  String get settings_server_details_subtitle => '엔드포인트 및 인증 방식 설정';
 
   @override
-  String get settings_server_url => 'GraphQL server URL';
+  String get settings_server_url => 'GraphQL 서버 URL';
 
   @override
   String get settings_server_url_helper =>
-      'Example format: http(s)://host:port/graphql.';
+      '예시 형식: http(s)://host:port/graphql.';
 
   @override
-  String get settings_server_auth_method => 'Authentication Method';
+  String get settings_server_auth_method => '인증 방식';
 
   @override
-  String get settings_server_auth_apikey => 'API Key';
+  String get settings_server_auth_apikey => 'API 키';
 
   @override
-  String get settings_server_auth_password => 'Username + Password';
+  String get settings_server_auth_password => '사용자 이름 + 비밀번호';
 
   @override
   String get settings_server_auth_password_desc =>
-      'Recommended: use your Stash username/password session.';
+      '권장: Stash 사용자 이름/비밀번호 세션을 사용하세요.';
 
   @override
-  String get settings_server_auth_apikey_desc =>
-      'Use API key for static-token authentication.';
+  String get settings_server_auth_apikey_desc => '정적 토큰 인증을 위해 API 키를 사용하세요.';
 
   @override
-  String get settings_server_username => 'Username';
+  String get settings_server_username => '사용자 이름';
 
   @override
-  String get settings_server_password => 'Password';
+  String get settings_server_password => '비밀번호';
 
   @override
-  String get settings_server_login_test => 'Login & Test';
+  String get settings_server_login_test => '로그인 및 테스트';
 
   @override
-  String get settings_server_test => 'Test Connection';
+  String get settings_server_test => '연결 테스트';
 
   @override
-  String get settings_server_logout => 'Logout';
+  String get settings_server_logout => '로그아웃';
 
   @override
-  String get settings_server_clear => 'Clear Settings';
+  String get settings_server_clear => '설정 초기화';
 
   @override
   String settings_server_connected(String version) {
-    return 'Connected (Stash $version)';
+    return '연결됨 (Stash $version)';
   }
 
   @override
-  String get settings_server_checking => 'Checking connection...';
+  String get settings_server_checking => '연결 확인 중...';
 
   @override
   String settings_server_failed(String error) {
-    return 'Failed: $error';
+    return '실패: $error';
   }
 
   @override
-  String get settings_server_invalid_url => 'Invalid server URL';
+  String get settings_server_invalid_url => '잘못된 서버 URL';
 
   @override
   String get settings_server_resolve_error =>
-      'Could not resolve server URL. Check host, port, and credentials.';
+      '서버 URL을 확인할 수 없습니다. 호스트, 포트 및 자격 증명을 확인하세요.';
 
   @override
-  String get settings_server_logout_confirm =>
-      'Logged out and cookies cleared.';
+  String get settings_server_logout_confirm => '로그아웃되었으며 쿠키가 삭제되었습니다.';
 
   @override
-  String get settings_playback_title => 'Playback Settings';
+  String get settings_playback_title => '재생 설정';
 
   @override
-  String get settings_playback_behavior => 'Playback behavior';
+  String get settings_playback_behavior => '재생 동작';
 
   @override
-  String get settings_playback_behavior_subtitle =>
-      'Default playback and background handling';
+  String get settings_playback_behavior_subtitle => '기본 재생 및 백그라운드 처리';
 
   @override
-  String get settings_playback_prefer_streams => 'Prefer sceneStreams first';
+  String get settings_playback_prefer_streams => 'sceneStreams 우선';
 
   @override
   String get settings_playback_prefer_streams_subtitle =>
-      'When off, playback directly uses paths.stream';
+      '꺼져 있으면 재생 시 paths.stream을 직접 사용합니다';
 
   @override
-  String get settings_playback_autoplay => 'Autoplay Next Scene';
+  String get settings_playback_autoplay => '다음 장면 자동 재생';
 
   @override
   String get settings_playback_autoplay_subtitle =>
-      'Automatically play the next scene when current playback ends';
+      '현재 재생이 끝나면 자동으로 다음 장면을 재생합니다';
 
   @override
-  String get settings_playback_background => 'Background Playback';
+  String get settings_playback_background => '백그라운드 재생';
 
   @override
   String get settings_playback_background_subtitle =>
-      'Keep video audio playing when app is backgrounded';
+      '앱이 백그라운드로 전환되어도 동영상 오디오를 계속 재생합니다';
 
   @override
-  String get settings_playback_pip => 'Native Picture-in-Picture';
+  String get settings_playback_pip => '네이티브 화면 속 화면 (PiP)';
 
   @override
   String get settings_playback_pip_subtitle =>
-      'Enable Android PiP button and auto-enter on background';
+      'Android PiP 버튼을 활성화하고 백그라운드 전환 시 자동 진입합니다';
 
   @override
-  String get settings_playback_subtitles => 'Subtitle settings';
+  String get settings_playback_subtitles => '자막 설정';
 
   @override
-  String get settings_playback_subtitles_subtitle =>
-      'Automatic loading and appearance';
+  String get settings_playback_subtitles_subtitle => '자동 로드 및 모양';
 
   @override
-  String get settings_playback_subtitle_lang => 'Default Subtitle Language';
+  String get settings_playback_subtitle_lang => '기본 자막 언어';
 
   @override
-  String get settings_playback_subtitle_lang_subtitle =>
-      'Auto-load if available';
+  String get settings_playback_subtitle_lang_subtitle => '가능한 경우 자동 로드';
 
   @override
-  String get settings_playback_subtitle_size => 'Subtitle Font Size';
+  String get settings_playback_subtitle_size => '자막 글꼴 크기';
 
   @override
-  String get settings_playback_subtitle_pos => 'Subtitle Vertical Position';
+  String get settings_playback_subtitle_pos => '자막 세로 위치';
 
   @override
   String settings_playback_subtitle_pos_desc(String percent) {
-    return '$percent% from bottom';
+    return '하단에서 $percent%';
   }
 
   @override
-  String get settings_playback_subtitle_align => 'Subtitle Text Alignment';
+  String get settings_playback_subtitle_align => '자막 텍스트 정렬';
 
   @override
-  String get settings_playback_subtitle_align_subtitle =>
-      'Alignment for multiline subtitles';
+  String get settings_playback_subtitle_align_subtitle => '다중 행 자막 정렬';
 
   @override
-  String get settings_playback_seek => 'Seek interaction';
+  String get settings_playback_seek => '탐색 상호작용';
 
   @override
-  String get settings_playback_seek_subtitle =>
-      'Choose how scrubbing works during playback';
+  String get settings_playback_seek_subtitle => '재생 중 스크러빙 작동 방식 선택';
 
   @override
-  String get settings_playback_seek_double_tap =>
-      'Double-tap left/right to seek 10s';
+  String get settings_playback_seek_double_tap => '왼쪽/오른쪽 두 번 탭하여 10초 탐색';
 
   @override
-  String get settings_playback_seek_drag => 'Drag the timeline to seek';
+  String get settings_playback_seek_drag => '타임라인을 드래그하여 탐색';
 
   @override
-  String get settings_playback_seek_drag_label => 'Drag';
+  String get settings_playback_seek_drag_label => '드래그';
 
   @override
-  String get settings_playback_seek_double_tap_label => 'Double-tap';
+  String get settings_playback_seek_double_tap_label => '두 번 탭';
 
   @override
-  String get settings_support_title => 'Support';
+  String get settings_support_title => '지원';
 
   @override
-  String get settings_support_diagnostics => 'Diagnostics and project info';
+  String get settings_support_diagnostics => '진단 및 프로젝트 정보';
 
   @override
   String get settings_support_diagnostics_subtitle =>
-      'Open runtime logs or jump to the repository when you need help.';
+      '도움이 필요할 때 런타임 로그를 열거나 저장소로 이동하세요.';
 
   @override
-  String get settings_support_update_available => 'Update Available';
+  String get settings_support_update_available => '업데이트 가능';
 
   @override
   String get settings_support_update_available_subtitle =>
-      'A newer version is available on GitHub';
+      'GitHub에서 새 버전을 사용할 수 있습니다';
 
   @override
   String settings_support_update_to(String version) {
-    return 'Update to $version';
+    return '$version 버전으로 업데이트';
   }
 
   @override
-  String get settings_support_update_to_subtitle =>
-      'New features and improvements are waiting for you.';
+  String get settings_support_update_to_subtitle => '새로운 기능과 개선 사항이 기다리고 있습니다.';
 
   @override
-  String get settings_support_about => 'About';
+  String get settings_support_about => '정보';
 
   @override
-  String get settings_support_about_subtitle =>
-      'Project and source information';
+  String get settings_support_about_subtitle => '프로젝트 및 소스 정보';
 
   @override
-  String get settings_support_version => 'Version';
+  String get settings_support_version => '버전';
 
   @override
-  String get settings_support_version_loading => 'Loading version info...';
+  String get settings_support_version_loading => '버전 정보 로드 중...';
 
   @override
-  String get settings_support_version_unavailable => 'Version info unavailable';
+  String get settings_support_version_unavailable => '버전 정보를 사용할 수 없음';
 
   @override
-  String get settings_support_github => 'GitHub Repository';
+  String get settings_support_github => 'GitHub 저장소';
 
   @override
-  String get settings_support_github_subtitle =>
-      'View source code and report issues';
+  String get settings_support_github_subtitle => '소스 코드를 확인하고 문제를 보고하세요';
 
   @override
-  String get settings_support_github_error => 'Could not open GitHub link';
+  String get settings_support_github_error => 'GitHub 링크를 열 수 없습니다';
 
   @override
-  String get settings_develop_title => 'Develop';
+  String get settings_develop_title => '개발';
 
   @override
-  String get settings_develop_diagnostics => 'Diagnostic Tools';
+  String get settings_develop_diagnostics => '진단 도구';
 
   @override
-  String get settings_develop_diagnostics_subtitle =>
-      'Troubleshooting and performance';
+  String get settings_develop_diagnostics_subtitle => '문제 해결 및 성능';
 
   @override
-  String get settings_develop_video_debug => 'Show Video Debug Info';
+  String get settings_develop_video_debug => '비디오 디버그 정보 표시';
 
   @override
   String get settings_develop_video_debug_subtitle =>
-      'Display technical playback details as an overlay on the video player.';
+      '비디오 플레이어 위에 기술적인 재생 세부 정보를 오버레이로 표시합니다.';
 
   @override
-  String get settings_develop_log_viewer => 'Debug Log Viewer';
+  String get settings_develop_log_viewer => '디버그 로그 뷰어';
 
   @override
-  String get settings_develop_log_viewer_subtitle =>
-      'Open a live view of in-app logs.';
+  String get settings_develop_log_viewer_subtitle => '앱 내 로그의 실시간 보기를 엽니다.';
 
   @override
-  String get settings_develop_web_overrides => 'Web Overrides';
+  String get settings_develop_web_overrides => '웹 재정의';
 
   @override
-  String get settings_develop_web_overrides_subtitle =>
-      'Advanced flags for web platform';
+  String get settings_develop_web_overrides_subtitle => '웹 플랫폼용 고급 플래그';
 
   @override
-  String get settings_develop_web_auth => 'Allow Password Login on Web';
+  String get settings_develop_web_auth => '웹에서 비밀번호 로그인 허용';
 
   @override
   String get settings_develop_web_auth_subtitle =>
-      'Overrides the native-only restriction and forces the Username + Password auth method to be visible on Flutter Web.';
+      '네이티브 전용 제한을 무시하고 Flutter 웹에서 사용자 이름 + 비밀번호 인증 방식을 강제로 표시합니다.';
 }

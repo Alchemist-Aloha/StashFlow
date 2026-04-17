@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -441,25 +442,25 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                     IconButton(
                       icon: const Icon(Icons.sort),
                       onPressed: widget.onSortPressed,
-                      tooltip: 'Sort',
+                      tooltip: context.l10n.common_sort,
                     ),
                   if (widget.onFilterPressed != null)
                     IconButton(
                       icon: const Icon(Icons.filter_list),
                       onPressed: widget.onFilterPressed,
-                      tooltip: 'Filter',
+                      tooltip: context.l10n.common_filter,
                     ),
                   IconButton(
                     icon: const Icon(Icons.search),
                     onPressed: () => setState(() => _isSearching = true),
-                    tooltip: 'Search',
+                    tooltip: context.l10n.common_search,
                   ),
                 ],
                 if (!_isSearching)
                   IconButton(
                     icon: const Icon(Icons.settings),
                     onPressed: () => context.push('/settings'),
-                    tooltip: 'Settings',
+                    tooltip: context.l10n.common_settings,
                   ),
                 ...widget.actions,
               ],

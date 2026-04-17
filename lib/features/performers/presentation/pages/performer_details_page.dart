@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -72,7 +73,7 @@ class PerformerDetailsPage extends ConsumerWidget {
       floatingActionButton: randomNavigationEnabled
           ? FloatingActionButton.small(
               onPressed: () => _openRandomPerformer(context, ref),
-              tooltip: 'Random performer',
+              tooltip: context.l10n.random_performer,
               child: const Icon(Icons.casino_outlined),
             )
           : null,
@@ -286,7 +287,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                                         ScaffoldMessenger.of(
                                           context,
                                         ).showSnackBar(
-                                          SnackBar(content: Text('Error: $e')),
+                                          SnackBar(content: Text(context.l10n.common_error(e.toString()))),
                                         );
                                       }
                                     }
@@ -449,7 +450,7 @@ class PerformerDetailsPage extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+        error: (err, stack) => Center(child: Text(context.l10n.common_error(err.toString()))),
       ),
     );
   }

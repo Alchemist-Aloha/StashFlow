@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:stash_app_flutter/l10n/app_localizations.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/models/scraped_scene.dart';
@@ -397,7 +399,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
               IconButton(
                 onPressed: _scrape,
                 icon: const Icon(Icons.search),
-                tooltip: 'Scrape metadata',
+                tooltip: context.l10n.details_scene_scrape,
               ),
           IconButton(
             onPressed: _isSaving ? null : _save,
@@ -411,7 +413,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                     ),
                   )
                 : const Icon(Icons.save),
-            tooltip: 'Save',
+            tooltip: context.l10n.common_save,
           ),
         ],
       ),
@@ -442,8 +444,8 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
               ),
             TextField(
               controller: _titleController,
-              decoration: const InputDecoration(
-                labelText: 'Title',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.common_title,
                 border: OutlineInputBorder(),
               ),
             ),
@@ -451,8 +453,8 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
             TextField(
               controller: _detailsController,
               maxLines: 5,
-              decoration: const InputDecoration(
-                labelText: 'Details',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.common_details,
                 border: OutlineInputBorder(),
               ),
             ),
@@ -461,8 +463,8 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
               controller: _dateController,
               readOnly: true,
               onTap: _pickDate,
-              decoration: const InputDecoration(
-                labelText: 'Release Date',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.common_release_date,
                 border: OutlineInputBorder(),
                 suffixIcon: Icon(Icons.calendar_today),
               ),
@@ -475,7 +477,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
             InkWell(
               onTap: _pickStudio,
               child: InputDecorator(
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: 12,
@@ -516,7 +518,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                 IconButton(
                   onPressed: _pickPerformers,
                   icon: const Icon(Icons.add_circle_outline),
-                  tooltip: 'Add Performer',
+                  tooltip: context.l10n.details_scene_add_performer,
                 ),
               ],
             ),
@@ -545,7 +547,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                 IconButton(
                   onPressed: _pickTags,
                   icon: const Icon(Icons.add_circle_outline),
-                  tooltip: 'Add Tag',
+                  tooltip: context.l10n.details_scene_add_tag,
                 ),
               ],
             ),
@@ -573,7 +575,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                 IconButton(
                   onPressed: _addUrlField,
                   icon: const Icon(Icons.add_circle_outline),
-                  tooltip: 'Add URL',
+                  tooltip: context.l10n.details_scene_add_url,
                 ),
               ],
             ),
@@ -587,8 +589,8 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                     Expanded(
                       child: TextField(
                         controller: controller,
-                        decoration: const InputDecoration(
-                          labelText: 'URL',
+                        decoration: InputDecoration(
+                          labelText: AppLocalizations.of(context)!.common_url,
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -596,7 +598,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                     IconButton(
                       onPressed: () => _removeUrlField(index),
                       icon: const Icon(Icons.remove_circle_outline),
-                      tooltip: 'Remove URL',
+                      tooltip: context.l10n.details_scene_remove_url,
                     ),
                   ],
                 ),

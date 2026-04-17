@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
@@ -52,7 +53,7 @@ class TagDetailsPage extends ConsumerWidget {
       floatingActionButton: randomNavigationEnabled
           ? FloatingActionButton.small(
               onPressed: () => _openRandomTag(context, ref),
-              tooltip: 'Random tag',
+              tooltip: context.l10n.random_tag,
               child: const Icon(Icons.casino_outlined),
             )
           : null,
@@ -229,7 +230,7 @@ class TagDetailsPage extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+        error: (err, stack) => Center(child: Text(context.l10n.common_error(err.toString()))),
       ),
     );
   }

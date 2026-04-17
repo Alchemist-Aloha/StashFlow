@@ -126,7 +126,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                           tempDescending = false;
                         });
                       },
-                      child: const Text('Reset'),
+                      child: Text(context.l10n.common_reset),
                     ),
                   ],
                 ),
@@ -455,7 +455,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
           ? studiosAsync.maybeWhen(
               data: (studios) => FloatingActionButton.small(
                 onPressed: _openRandomStudio,
-                tooltip: 'Random studio',
+                tooltip: context.l10n.random_studio,
                 child: const Icon(Icons.casino_outlined),
               ),
               orElse: () => null,

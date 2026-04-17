@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/gestures.dart';
@@ -949,7 +950,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                           child: Row(
                             children: [
                               IconButton(
-                                tooltip: 'Exit Fullscreen',
+                                tooltip: context.l10n.common_exit_fullscreen,
                                 style: _controlButtonStyle(colorScheme),
                                 icon: const Icon(Icons.arrow_back_rounded),
                                 onPressed: () {

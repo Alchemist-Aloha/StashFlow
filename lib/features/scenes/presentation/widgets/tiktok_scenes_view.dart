@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
@@ -304,7 +305,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
         );
       },
       loading: () => const Center(child: CircularProgressContext()),
-      error: (e, st) => Center(child: Text('Error: $e')),
+      error: (e, st) => Center(child: Text(context.l10n.common_error(e.toString()))),
     );
   }
 }
@@ -755,7 +756,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                         const SizedBox(height: 16),
                         _OverlayButton(
                           icon: Icons.fullscreen,
-                          tooltip: 'Toggle Fullscreen',
+                          tooltip: context.l10n.common_toggle_fullscreen,
                           onTap: _toggleFullScreen,
                         ),
                         const SizedBox(height: 16),

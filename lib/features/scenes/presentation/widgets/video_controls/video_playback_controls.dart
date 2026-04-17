@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../../../../../core/utils/l10n_extensions.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../../../core/utils/pip_mode.dart';
@@ -112,7 +113,7 @@ class VideoPlaybackControls extends StatelessWidget {
         if (nextScene != null && !isFullScreen) ...[
           const SizedBox(width: 8),
           IconButton(
-            tooltip: 'Skip Next',
+            tooltip: context.l10n.common_skip_next,
             style: _controlButtonStyle(colorScheme),
             iconSize: 20,
             icon: const Icon(Icons.skip_next_rounded),
@@ -138,7 +139,7 @@ class VideoPlaybackControls extends StatelessWidget {
         const SizedBox(width: 8),
         if (scene.captions.isNotEmpty)
           PopupMenuButton<String?>(
-            tooltip: 'Select subtitle',
+            tooltip: context.l10n.common_select_subtitle,
             icon: Icon(
               Icons.subtitles_rounded,
               size: 20,
@@ -228,7 +229,7 @@ class VideoPlaybackControls extends StatelessWidget {
           ),
         const SizedBox(width: 8),
         PopupMenuButton<double>(
-          tooltip: 'Playback speed',
+          tooltip: context.l10n.common_playback_speed,
           initialValue: playbackSpeed,
           color: colorScheme.surfaceContainerHigh,
           surfaceTintColor: colorScheme.surfaceTint,
@@ -296,7 +297,7 @@ class VideoPlaybackControls extends StatelessWidget {
         const SizedBox(width: 6),
         if (enableNativePip && !kIsWeb && Platform.isAndroid)
           IconButton(
-            tooltip: 'Picture-in-Picture',
+            tooltip: context.l10n.common_pip,
             style: _controlButtonStyle(colorScheme),
             icon: const Icon(Icons.picture_in_picture_alt_outlined),
             onPressed: () async {
@@ -313,7 +314,7 @@ class VideoPlaybackControls extends StatelessWidget {
         GestureDetector(
           onTap: () {}, // Consume tap to prevent propagation
           child: IconButton(
-            tooltip: 'Toggle Fullscreen',
+            tooltip: context.l10n.common_toggle_fullscreen,
             style: _controlButtonStyle(colorScheme),
             icon: Icon(
               isFullScreen

@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -576,7 +577,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                           IconButton.filledTonal(
                             icon: const Icon(Icons.arrow_back_rounded),
                             onPressed: () => context.pop(),
-                            tooltip: 'Back',
+                            tooltip: context.l10n.common_back,
                           ),
                           const SizedBox(width: 10),
                           Expanded(
@@ -720,7 +721,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                         children: [
                           IconButton.filledTonal(
                             icon: const Icon(Icons.chevron_left_rounded),
-                            tooltip: 'Previous image',
+                            tooltip: context.l10n.common_previous,
                             onPressed: canGoPrevious
                                 ? _goToPreviousImage
                                 : null,
@@ -736,7 +737,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                           const SizedBox(width: 10),
                           IconButton.filledTonal(
                             icon: const Icon(Icons.chevron_right_rounded),
-                            tooltip: 'Next image',
+                            tooltip: context.l10n.common_next,
                             onPressed: canGoNext
                                 ? () => _goToNextImage(loadedItemCount)
                                 : null,

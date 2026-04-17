@@ -49,7 +49,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text('Update Available'),
+        title: Text(context.l10n.common_update_available),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,7 +69,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
               ref.read(startupUpdateCheckProvider.notifier).markChecked();
               Navigator.pop(context);
             },
-            child: const Text('Later'),
+            child: Text(context.l10n.common_later),
           ),
           FilledButton(
             onPressed: () async {
@@ -84,7 +84,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
                 Navigator.pop(context);
               }
             },
-            child: const Text('Update Now'),
+            child: Text(context.l10n.common_update_now),
           ),
         ],
       ),
@@ -99,7 +99,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
-          title: const Text('Setup Required'),
+          title: Text(context.l10n.common_setup_required),
           content: const Text(
             'To get started, you need to configure your Stash server connection details.',
           ),
@@ -109,7 +109,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
                 Navigator.pop(context);
                 context.push('/settings/server');
               },
-              child: const Text('Configure Now'),
+              child: Text(context.l10n.common_configure_now),
             ),
           ],
         ),

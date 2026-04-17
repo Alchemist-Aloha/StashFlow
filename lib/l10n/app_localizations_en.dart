@@ -191,6 +191,155 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get common_no_media_available => 'No media available';
+
+  @override
+  String common_id(Object id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String get common_search_placeholder => 'Search...';
+
+  @override
+  String get common_pause => 'Pause';
+
+  @override
+  String get common_play => 'Play';
+
+  @override
+  String get common_close => 'Close';
+
+  @override
+  String get common_save => 'Save';
+
+  @override
+  String get common_unmute => 'Unmute';
+
+  @override
+  String get common_mute => 'Mute';
+
+  @override
+  String get common_back => 'Back';
+
+  @override
+  String get common_rate => 'Rate';
+
+  @override
+  String get common_previous => 'Previous';
+
+  @override
+  String get common_next => 'Next';
+
+  @override
+  String get common_favorite => 'Favorite';
+
+  @override
+  String get common_unfavorite => 'Unfavorite';
+
+  @override
+  String get common_version => 'Version';
+
+  @override
+  String get common_loading => 'Loading...';
+
+  @override
+  String get common_unavailable => 'Unavailable';
+
+  @override
+  String get common_details => 'Details';
+
+  @override
+  String get common_title => 'Title';
+
+  @override
+  String get common_release_date => 'Release Date';
+
+  @override
+  String get common_url => 'URL';
+
+  @override
+  String get common_no_url => 'No URL';
+
+  @override
+  String get common_sort => 'Sort';
+
+  @override
+  String get common_filter => 'Filter';
+
+  @override
+  String get common_search => 'Search';
+
+  @override
+  String get common_settings => 'Settings';
+
+  @override
+  String get common_reset_to_1x => 'Reset to 1x';
+
+  @override
+  String get common_skip_next => 'Skip Next';
+
+  @override
+  String get common_select_subtitle => 'Select subtitle';
+
+  @override
+  String get common_playback_speed => 'Playback speed';
+
+  @override
+  String get common_pip => 'Picture-in-Picture';
+
+  @override
+  String get common_toggle_fullscreen => 'Toggle Fullscreen';
+
+  @override
+  String get common_exit_fullscreen => 'Exit Fullscreen';
+
+  @override
+  String get common_copy_logs => 'Copy all logs';
+
+  @override
+  String get common_clear_logs => 'Clear logs';
+
+  @override
+  String get common_enable_autoscroll => 'Enable auto-scroll';
+
+  @override
+  String get common_disable_autoscroll => 'Disable auto-scroll';
+
+  @override
+  String get details_group => 'Group Details';
+
+  @override
+  String get details_scene_scrape => 'Scrape metadata';
+
+  @override
+  String get details_scene_add_performer => 'Add Performer';
+
+  @override
+  String get details_scene_add_tag => 'Add Tag';
+
+  @override
+  String get details_scene_add_url => 'Add URL';
+
+  @override
+  String get details_scene_remove_url => 'Remove URL';
+
+  @override
+  String get random_studio => 'Random studio';
+
+  @override
+  String get random_gallery => 'Random gallery';
+
+  @override
+  String get random_tag => 'Random tag';
+
+  @override
+  String get random_scene => 'Random scene';
+
+  @override
+  String get random_performer => 'Random performer';
+
+  @override
   String get settings_title => 'Settings';
 
   @override

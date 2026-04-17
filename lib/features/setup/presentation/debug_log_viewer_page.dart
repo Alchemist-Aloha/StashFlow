@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/utils/app_log_store.dart';
@@ -53,7 +54,7 @@ class _DebugLogViewerPageState extends State<DebugLogViewerPage> {
         title: const Text('Debug Log Viewer'),
         actions: [
           IconButton(
-            tooltip: _autoScroll ? 'Disable auto-scroll' : 'Enable auto-scroll',
+            tooltip: _autoScroll ? context.l10n.common_disable_autoscroll : context.l10n.common_enable_autoscroll,
             icon: Icon(_autoScroll ? Icons.lock_open : Icons.lock),
             onPressed: () {
               setState(() => _autoScroll = !_autoScroll);
@@ -63,12 +64,12 @@ class _DebugLogViewerPageState extends State<DebugLogViewerPage> {
             },
           ),
           IconButton(
-            tooltip: 'Copy all logs',
+            tooltip: context.l10n.common_copy_logs,
             icon: const Icon(Icons.copy_all_outlined),
             onPressed: _copyAllLogs,
           ),
           IconButton(
-            tooltip: 'Clear logs',
+            tooltip: context.l10n.common_clear_logs,
             icon: const Icon(Icons.delete_outline),
             onPressed: () {
               AppLogStore.instance.clear();

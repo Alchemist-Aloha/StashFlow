@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/image_filter.dart';
 import '../providers/image_list_provider.dart';
@@ -62,7 +63,7 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
                           _tempOrganizedOnly = false;
                         });
                       },
-                      child: const Text('Reset'),
+                      child: Text(context.l10n.common_reset),
                     ),
                   ],
                 ),

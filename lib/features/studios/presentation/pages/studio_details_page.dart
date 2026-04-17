@@ -53,7 +53,7 @@ class StudioDetailsPage extends ConsumerWidget {
       floatingActionButton: randomNavigationEnabled
           ? FloatingActionButton.small(
               onPressed: () => _openRandomStudio(context, ref),
-              tooltip: 'Random studio',
+              tooltip: context.l10n.random_studio,
               child: const Icon(Icons.casino_outlined),
             )
           : null,
@@ -231,7 +231,7 @@ class StudioDetailsPage extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+        error: (err, stack) => Center(child: Text(context.l10n.common_error(err.toString()))),
       ),
     );
   }

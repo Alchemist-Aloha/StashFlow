@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../providers/scene_list_provider.dart';
@@ -63,7 +64,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                             _tempOrganizedOnly = false;
                           });
                         },
-                        child: const Text('Reset'),
+                        child: Text(context.l10n.common_reset),
                       ),
                     ],
                   ),

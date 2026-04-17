@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:math';
@@ -187,7 +188,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                               tempDescending = true;
                             });
                           },
-                          child: const Text('Reset'),
+                          child: Text(context.l10n.common_reset),
                         ),
                       ],
                     ),
@@ -429,7 +430,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
               data: (scenes) => FloatingActionButton.small(
                 heroTag: 'scenes_random_fab',
                 onPressed: _openRandomScene,
-                tooltip: 'Random scene',
+                tooltip: context.l10n.random_scene,
                 child: const Icon(Icons.casino_outlined),
               ),
               orElse: () => null,

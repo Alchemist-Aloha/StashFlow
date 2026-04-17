@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
@@ -132,7 +133,7 @@ class SupportSettingsPage extends ConsumerWidget {
                       if (context.mounted) {
                         ScaffoldMessenger.of(
                           context,
-                        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+                        ).showSnackBar(SnackBar(content: Text(context.l10n.common_error(e.toString()))));
                       }
                     }
                   },

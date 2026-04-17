@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
@@ -132,7 +133,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                               tempDescending = false;
                             });
                           },
-                          child: const Text('Reset'),
+                          child: Text(context.l10n.common_reset),
                         ),
                       ],
                     ),
@@ -343,7 +344,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
           ? FloatingActionButton.small(
               heroTag: 'images_random_fab',
               onPressed: _openRandomGallery,
-              tooltip: 'Random gallery',
+              tooltip: context.l10n.random_gallery,
               child: const Icon(Icons.casino_outlined),
             )
           : null,

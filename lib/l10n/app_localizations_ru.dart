@@ -96,7 +96,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get common_view_all => 'Посмотреть все';
 
   @override
-  String get common_default => 'Default';
+  String get common_default => 'По умолчанию';
 
   @override
   String get common_later => 'Позже';
@@ -108,7 +108,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get common_configure_now => 'Настроить сейчас';
 
   @override
-  String get common_clear_rating => 'Очистить рейтинг';
+  String get common_clear_rating => 'очистить рейтинг';
 
   @override
   String get common_no_media => 'Медиафайлы отсутствуют';
@@ -194,509 +194,672 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get settings_title => 'Settings';
+  String get common_no_media_available => 'нет доступных медиа';
 
   @override
-  String get settings_customize => 'Customize StashFlow';
+  String common_id(Object id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String get common_search_placeholder => 'Поиск...';
+
+  @override
+  String get common_pause => 'пауза';
+
+  @override
+  String get common_play => 'играть';
+
+  @override
+  String get common_close => 'закрыть';
+
+  @override
+  String get common_save => 'сохранить';
+
+  @override
+  String get common_unmute => 'включить звук';
+
+  @override
+  String get common_mute => 'без звука';
+
+  @override
+  String get common_back => 'назад';
+
+  @override
+  String get common_rate => 'оценить';
+
+  @override
+  String get common_previous => 'предыд.';
+
+  @override
+  String get common_next => 'след.';
+
+  @override
+  String get common_favorite => 'избранное';
+
+  @override
+  String get common_unfavorite => 'убрать из избр.';
+
+  @override
+  String get common_version => 'версия';
+
+  @override
+  String get common_loading => 'загрузка';
+
+  @override
+  String get common_unavailable => 'недоступно';
+
+  @override
+  String get common_details => 'детали';
+
+  @override
+  String get common_title => 'название';
+
+  @override
+  String get common_release_date => 'дата выхода';
+
+  @override
+  String get common_url => 'URL';
+
+  @override
+  String get common_no_url => 'нет URL';
+
+  @override
+  String get common_sort => 'сорт.';
+
+  @override
+  String get common_filter => 'фильтр';
+
+  @override
+  String get common_search => 'поиск';
+
+  @override
+  String get common_settings => 'настройки';
+
+  @override
+  String get common_reset_to_1x => 'сброс до 1x';
+
+  @override
+  String get common_skip_next => 'пропустить';
+
+  @override
+  String get common_select_subtitle => 'выбрать субтитры';
+
+  @override
+  String get common_playback_speed => 'скор. воспр.';
+
+  @override
+  String get common_pip => 'картинка в карт.';
+
+  @override
+  String get common_toggle_fullscreen => 'весь экран';
+
+  @override
+  String get common_exit_fullscreen => 'выйти из полноэкр.';
+
+  @override
+  String get common_copy_logs => 'коп. логи';
+
+  @override
+  String get common_clear_logs => 'очистить логи';
+
+  @override
+  String get common_enable_autoscroll => 'автопрокрутка вкл';
+
+  @override
+  String get common_disable_autoscroll => 'автопрокрутка выкл';
+
+  @override
+  String get details_group => 'детали группы';
+
+  @override
+  String get details_scene_scrape => 'собрать метаданные';
+
+  @override
+  String get details_scene_add_performer => 'добавить исполнителя';
+
+  @override
+  String get details_scene_add_tag => 'добавить тег';
+
+  @override
+  String get details_scene_add_url => 'добавить URL';
+
+  @override
+  String get details_scene_remove_url => 'удалить URL';
+
+  @override
+  String get random_studio => 'случайная студия';
+
+  @override
+  String get random_gallery => 'случайная галерея';
+
+  @override
+  String get random_tag => 'случайный тег';
+
+  @override
+  String get random_scene => 'случайная сцена';
+
+  @override
+  String get random_performer => 'случайный исполнитель';
+
+  @override
+  String get settings_title => 'Настройки';
+
+  @override
+  String get settings_customize => 'Настройка StashFlow';
 
   @override
   String get settings_customize_subtitle =>
-      'Tune playback, appearance, layout, and support tools from one place.';
+      'Настройте воспроизведение, внешний вид, макет и инструменты поддержки в одном месте.';
 
   @override
-  String get settings_core_section => 'Core settings';
+  String get settings_core_section => 'Основные настройки';
 
   @override
-  String get settings_core_subtitle => 'Most-used configuration pages';
+  String get settings_core_subtitle =>
+      'Самые используемые страницы конфигурации';
 
   @override
-  String get settings_server => 'Server';
+  String get settings_server => 'Сервер';
 
   @override
-  String get settings_server_subtitle => 'Connection and API configuration';
+  String get settings_server_subtitle => 'Конфигурация подключения и API';
 
   @override
-  String get settings_playback => 'Playback';
+  String get settings_playback => 'Воспроизведение';
 
   @override
-  String get settings_playback_subtitle => 'Player behavior and interactions';
+  String get settings_playback_subtitle => 'Поведение плеера и взаимодействия';
 
   @override
-  String get settings_keyboard => 'Keyboard';
+  String get settings_keyboard => 'Клавиатура';
 
   @override
-  String get settings_keyboard_subtitle => 'Customizable shortcuts and hotkeys';
+  String get settings_keyboard_subtitle => 'Настраиваемые сочетания клавиш';
 
   @override
-  String get settings_appearance => 'Appearance';
+  String get settings_appearance => 'Внешний вид';
 
   @override
-  String get settings_appearance_subtitle => 'Theme and colors';
+  String get settings_appearance_subtitle => 'Тема и цвета';
 
   @override
-  String get settings_interface => 'Interface';
+  String get settings_interface => 'Интерфейс';
 
   @override
-  String get settings_interface_subtitle => 'Navigation and layout defaults';
+  String get settings_interface_subtitle =>
+      'Навигация и настройки макета по умолчанию';
 
   @override
-  String get settings_support => 'Support';
+  String get settings_support => 'Поддержка';
 
   @override
-  String get settings_support_subtitle => 'Diagnostics and about';
+  String get settings_support_subtitle => 'Диагностика и информация';
 
   @override
-  String get settings_develop => 'Develop';
+  String get settings_develop => 'Разработка';
 
   @override
-  String get settings_develop_subtitle => 'Advanced tools and overrides';
+  String get settings_develop_subtitle =>
+      'Расширенные инструменты и переопределения';
 
   @override
-  String get settings_appearance_title => 'Appearance Settings';
+  String get settings_appearance_title => 'Настройки внешнего вида';
 
   @override
-  String get settings_appearance_theme_mode => 'Theme Mode';
+  String get settings_appearance_theme_mode => 'Режим темы';
 
   @override
   String get settings_appearance_theme_mode_subtitle =>
-      'Choose how the app follows brightness changes';
+      'Выберите, как приложение следует за изменениями яркости';
 
   @override
-  String get settings_appearance_theme_system => 'System';
+  String get settings_appearance_theme_system => 'Системная';
 
   @override
-  String get settings_appearance_theme_light => 'Light';
+  String get settings_appearance_theme_light => 'Светлая';
 
   @override
-  String get settings_appearance_theme_dark => 'Dark';
+  String get settings_appearance_theme_dark => 'Темная';
 
   @override
-  String get settings_appearance_primary_color => 'Primary Color';
+  String get settings_appearance_primary_color => 'Основной цвет';
 
   @override
   String get settings_appearance_primary_color_subtitle =>
-      'Pick a seed color for the Material 3 palette';
+      'Выберите базовый цвет для палитры Material 3';
 
   @override
-  String get settings_appearance_advanced_theming => 'Advanced Theming';
+  String get settings_appearance_advanced_theming => 'Расширенная темизация';
 
   @override
   String get settings_appearance_advanced_theming_subtitle =>
-      'Optimizations for specific screen types';
+      'Оптимизация для конкретных типов экранов';
 
   @override
-  String get settings_appearance_true_black => 'True Black (AMOLED)';
+  String get settings_appearance_true_black => 'Истинный черный (AMOLED)';
 
   @override
   String get settings_appearance_true_black_subtitle =>
-      'Use pure black backgrounds in dark mode to save battery on OLED screens';
+      'Использовать чисто черный фон в темном режиме для экономии заряда батареи на OLED-экранах';
 
   @override
-  String get settings_appearance_custom_hex => 'Custom Hex Color';
+  String get settings_appearance_custom_hex => 'Пользовательский Hex-цвет';
 
   @override
   String get settings_appearance_custom_hex_helper =>
-      'Enter an 8-digit ARGB hex code';
+      'Введите 8-значный ARGB hex-код';
 
   @override
-  String get settings_interface_title => 'Interface Settings';
+  String get settings_interface_title => 'Настройки интерфейса';
 
   @override
-  String get settings_interface_language => 'Language';
+  String get settings_interface_language => 'Язык';
 
   @override
   String get settings_interface_language_subtitle =>
-      'Overwrite the default system language';
+      'Переопределить язык системы по умолчанию';
 
   @override
-  String get settings_interface_app_language => 'App Language';
+  String get settings_interface_app_language => 'Язык приложения';
 
   @override
-  String get settings_interface_navigation => 'Navigation';
+  String get settings_interface_navigation => 'Навигация';
 
   @override
   String get settings_interface_navigation_subtitle =>
-      'Visibility of global navigation shortcuts';
+      'Видимость глобальных ярлыков навигации';
 
   @override
-  String get settings_interface_show_random => 'Show Random Navigation Buttons';
+  String get settings_interface_show_random =>
+      'Показывать кнопки случайной навигации';
 
   @override
   String get settings_interface_show_random_subtitle =>
-      'Enable or disable the floating casino buttons across list and details pages';
+      'Включить или отключить плавающие кнопки казино на страницах списков и деталей';
 
   @override
-  String get settings_interface_shake_random => 'Shake to Discover';
+  String get settings_interface_shake_random => 'Встряхнуть для открытия';
 
   @override
   String get settings_interface_shake_random_subtitle =>
-      'Shake your device to jump to a random item in the current tab';
+      'Встряхните устройство, чтобы перейти к случайному элементу в текущей вкладке';
 
   @override
-  String get settings_interface_show_edit => 'Show Edit Button';
+  String get settings_interface_show_edit => 'Показывать кнопку редактирования';
 
   @override
   String get settings_interface_show_edit_subtitle =>
-      'Enable or disable the edit button on the scene details page';
+      'Включить или отключить кнопку редактирования на странице деталей сцены';
 
   @override
-  String get settings_interface_customize_tabs => 'Customize Tabs';
+  String get settings_interface_customize_tabs => 'Настройка вкладок';
 
   @override
   String get settings_interface_customize_tabs_subtitle =>
-      'Reorder or hide navigation menu items';
+      'Изменить порядок или скрыть элементы меню навигации';
 
   @override
-  String get settings_interface_scenes_layout => 'Scenes Layout';
+  String get settings_interface_scenes_layout => 'Макет сцен';
 
   @override
   String get settings_interface_scenes_layout_subtitle =>
-      'Default browsing mode for scenes';
+      'Режим просмотра по умолчанию для сцен';
 
   @override
-  String get settings_interface_galleries_layout => 'Galleries Layout';
+  String get settings_interface_galleries_layout => 'Макет галерей';
 
   @override
   String get settings_interface_galleries_layout_subtitle =>
-      'Default browsing mode for galleries';
+      'Режим просмотра по умолчанию для галерей';
 
   @override
-  String get settings_interface_layout_default => 'Default Layout';
+  String get settings_interface_layout_default => 'Макет по умолчанию';
 
   @override
   String get settings_interface_layout_default_desc =>
-      'Choose the default layout for the page';
+      'Выберите макет по умолчанию для страницы';
 
   @override
-  String get settings_interface_layout_list => 'List';
+  String get settings_interface_layout_list => 'Список';
 
   @override
-  String get settings_interface_layout_grid => 'Grid';
+  String get settings_interface_layout_grid => 'Сетка';
 
   @override
-  String get settings_interface_layout_tiktok => 'Infinite Scroll';
+  String get settings_interface_layout_tiktok => 'Бесконечная прокрутка';
 
   @override
-  String get settings_interface_grid_columns => 'Grid Columns';
+  String get settings_interface_grid_columns => 'Колонки сетки';
 
   @override
-  String get settings_interface_image_viewer => 'Image Viewer';
+  String get settings_interface_image_viewer => 'Просмотр изображений';
 
   @override
   String get settings_interface_image_viewer_subtitle =>
-      'Configure fullscreen image browsing behavior';
+      'Настроить поведение полноэкранного просмотра изображений';
 
   @override
-  String get settings_interface_swipe_direction => 'Fullscreen Swipe Direction';
+  String get settings_interface_swipe_direction =>
+      'Направление свайпа в полноэкранном режиме';
 
   @override
   String get settings_interface_swipe_direction_desc =>
-      'Choose how images advance in fullscreen mode';
+      'Выберите способ перелистывания изображений в полноэкранном режиме';
 
   @override
-  String get settings_interface_swipe_vertical => 'Vertical';
+  String get settings_interface_swipe_vertical => 'Вертикально';
 
   @override
-  String get settings_interface_swipe_horizontal => 'Horizontal';
+  String get settings_interface_swipe_horizontal => 'Горизонтально';
 
   @override
-  String get settings_interface_waterfall_columns => 'Waterfall Grid Columns';
+  String get settings_interface_waterfall_columns => 'Колонки сетки «Водопад»';
 
   @override
-  String get settings_interface_performer_layouts => 'Performer Layouts';
+  String get settings_interface_performer_layouts => 'Макеты исполнителей';
 
   @override
   String get settings_interface_performer_layouts_subtitle =>
-      'Media and gallery defaults for performers';
+      'Настройки медиа и галерей для исполнителей по умолчанию';
 
   @override
-  String get settings_interface_studio_layouts => 'Studio Layouts';
+  String get settings_interface_studio_layouts => 'Макеты студий';
 
   @override
   String get settings_interface_studio_layouts_subtitle =>
-      'Media and gallery defaults for studios';
+      'Настройки медиа и галерей для студий по умолчанию';
 
   @override
-  String get settings_interface_tag_layouts => 'Tag Layouts';
+  String get settings_interface_tag_layouts => 'Макеты тегов';
 
   @override
   String get settings_interface_tag_layouts_subtitle =>
-      'Media and gallery defaults for tags';
+      'Настройки медиа и галерей для тегов по умолчанию';
 
   @override
-  String get settings_interface_media_layout => 'Media Layout';
+  String get settings_interface_media_layout => 'Макет медиа';
 
   @override
   String get settings_interface_media_layout_subtitle =>
-      'Layout for Media page';
+      'Макет для страницы Медиа';
 
   @override
-  String get settings_interface_galleries_layout_item => 'Galleries Layout';
+  String get settings_interface_galleries_layout_item => 'Макет галерей';
 
   @override
   String get settings_interface_galleries_layout_subtitle_item =>
-      'Layout for Galleries page';
+      'Макет для страницы Галереи';
 
   @override
-  String get settings_server_title => 'Server Settings';
+  String get settings_server_title => 'Настройки сервера';
 
   @override
-  String get settings_server_status => 'Connection Status';
+  String get settings_server_status => 'Статус подключения';
 
   @override
   String get settings_server_status_subtitle =>
-      'Live connectivity against the configured server';
+      'Текущее состояние подключения к настроенному серверу';
 
   @override
-  String get settings_server_details => 'Server Details';
+  String get settings_server_details => 'Детали сервера';
 
   @override
   String get settings_server_details_subtitle =>
-      'Configure endpoint and authentication method';
+      'Настройте адрес и метод аутентификации';
 
   @override
-  String get settings_server_url => 'GraphQL server URL';
+  String get settings_server_url => 'URL GraphQL-сервера';
 
   @override
   String get settings_server_url_helper =>
-      'Example format: http(s)://host:port/graphql.';
+      'Пример формата: http(s)://host:port/graphql.';
 
   @override
-  String get settings_server_auth_method => 'Authentication Method';
+  String get settings_server_auth_method => 'Метод аутентификации';
 
   @override
-  String get settings_server_auth_apikey => 'API Key';
+  String get settings_server_auth_apikey => 'API-ключ';
 
   @override
-  String get settings_server_auth_password => 'Username + Password';
+  String get settings_server_auth_password => 'Имя пользователя + Пароль';
 
   @override
   String get settings_server_auth_password_desc =>
-      'Recommended: use your Stash username/password session.';
+      'Рекомендуется: используйте имя пользователя и пароль Stash.';
 
   @override
   String get settings_server_auth_apikey_desc =>
-      'Use API key for static-token authentication.';
+      'Используйте API-ключ для аутентификации по статическому токену.';
 
   @override
-  String get settings_server_username => 'Username';
+  String get settings_server_username => 'Имя пользователя';
 
   @override
-  String get settings_server_password => 'Password';
+  String get settings_server_password => 'Пароль';
 
   @override
-  String get settings_server_login_test => 'Login & Test';
+  String get settings_server_login_test => 'Войти и проверить';
 
   @override
-  String get settings_server_test => 'Test Connection';
+  String get settings_server_test => 'Проверить подключение';
 
   @override
-  String get settings_server_logout => 'Logout';
+  String get settings_server_logout => 'Выйти';
 
   @override
-  String get settings_server_clear => 'Clear Settings';
+  String get settings_server_clear => 'Очистить настройки';
 
   @override
   String settings_server_connected(String version) {
-    return 'Connected (Stash $version)';
+    return 'Подключено (Stash $version)';
   }
 
   @override
-  String get settings_server_checking => 'Checking connection...';
+  String get settings_server_checking => 'Проверка подключения...';
 
   @override
   String settings_server_failed(String error) {
-    return 'Failed: $error';
+    return 'Ошибка: $error';
   }
 
   @override
-  String get settings_server_invalid_url => 'Invalid server URL';
+  String get settings_server_invalid_url => 'Недопустимый URL сервера';
 
   @override
   String get settings_server_resolve_error =>
-      'Could not resolve server URL. Check host, port, and credentials.';
+      'Не удалось разрешить URL сервера. Проверьте хост, порт и учетные данные.';
 
   @override
   String get settings_server_logout_confirm =>
-      'Logged out and cookies cleared.';
+      'Выход выполнен, файлы cookie очищены.';
 
   @override
-  String get settings_playback_title => 'Playback Settings';
+  String get settings_playback_title => 'Настройки воспроизведения';
 
   @override
-  String get settings_playback_behavior => 'Playback behavior';
+  String get settings_playback_behavior => 'Поведение воспроизведения';
 
   @override
   String get settings_playback_behavior_subtitle =>
-      'Default playback and background handling';
+      'Настройки воспроизведения и фонового режима по умолчанию';
 
   @override
-  String get settings_playback_prefer_streams => 'Prefer sceneStreams first';
+  String get settings_playback_prefer_streams => 'Предпочитать sceneStreams';
 
   @override
   String get settings_playback_prefer_streams_subtitle =>
-      'When off, playback directly uses paths.stream';
+      'Если отключено, воспроизведение использует paths.stream напрямую';
 
   @override
-  String get settings_playback_autoplay => 'Autoplay Next Scene';
+  String get settings_playback_autoplay =>
+      'Автовоспроизведение следующей сцены';
 
   @override
   String get settings_playback_autoplay_subtitle =>
-      'Automatically play the next scene when current playback ends';
+      'Автоматически воспроизводить следующую сцену по завершении текущей';
 
   @override
-  String get settings_playback_background => 'Background Playback';
+  String get settings_playback_background => 'Фоновое воспроизведение';
 
   @override
   String get settings_playback_background_subtitle =>
-      'Keep video audio playing when app is backgrounded';
+      'Продолжать воспроизведение звука видео при сворачивании приложения';
 
   @override
-  String get settings_playback_pip => 'Native Picture-in-Picture';
+  String get settings_playback_pip => 'Нативная «Картинка в картинке»';
 
   @override
   String get settings_playback_pip_subtitle =>
-      'Enable Android PiP button and auto-enter on background';
+      'Включить кнопку PiP на Android и автоматический переход при сворачивании';
 
   @override
-  String get settings_playback_subtitles => 'Subtitle settings';
+  String get settings_playback_subtitles => 'Настройки субтитров';
 
   @override
   String get settings_playback_subtitles_subtitle =>
-      'Automatic loading and appearance';
+      'Автоматическая загрузка и внешний вид';
 
   @override
-  String get settings_playback_subtitle_lang => 'Default Subtitle Language';
+  String get settings_playback_subtitle_lang => 'Язык субтитров по умолчанию';
 
   @override
   String get settings_playback_subtitle_lang_subtitle =>
-      'Auto-load if available';
+      'Автозагрузка при наличии';
 
   @override
-  String get settings_playback_subtitle_size => 'Subtitle Font Size';
+  String get settings_playback_subtitle_size => 'Размер шрифта субтитров';
 
   @override
-  String get settings_playback_subtitle_pos => 'Subtitle Vertical Position';
+  String get settings_playback_subtitle_pos =>
+      'Вертикальное положение субтитров';
 
   @override
   String settings_playback_subtitle_pos_desc(String percent) {
-    return '$percent% from bottom';
+    return '$percent% снизу';
   }
 
   @override
-  String get settings_playback_subtitle_align => 'Subtitle Text Alignment';
+  String get settings_playback_subtitle_align =>
+      'Выравнивание текста субтитров';
 
   @override
   String get settings_playback_subtitle_align_subtitle =>
-      'Alignment for multiline subtitles';
+      'Выравнивание для многострочных субтитров';
 
   @override
-  String get settings_playback_seek => 'Seek interaction';
+  String get settings_playback_seek => 'Взаимодействие при перемотке';
 
   @override
   String get settings_playback_seek_subtitle =>
-      'Choose how scrubbing works during playback';
+      'Выберите способ перемотки во время воспроизведения';
 
   @override
   String get settings_playback_seek_double_tap =>
-      'Double-tap left/right to seek 10s';
+      'Двойное нажатие влево/вправо для перемотки на 10с';
 
   @override
-  String get settings_playback_seek_drag => 'Drag the timeline to seek';
+  String get settings_playback_seek_drag =>
+      'Перетаскивание временной шкалы для перемотки';
 
   @override
-  String get settings_playback_seek_drag_label => 'Drag';
+  String get settings_playback_seek_drag_label => 'Перетаскивание';
 
   @override
-  String get settings_playback_seek_double_tap_label => 'Double-tap';
+  String get settings_playback_seek_double_tap_label => 'Двойное нажатие';
 
   @override
-  String get settings_support_title => 'Support';
+  String get settings_support_title => 'Поддержка';
 
   @override
-  String get settings_support_diagnostics => 'Diagnostics and project info';
+  String get settings_support_diagnostics =>
+      'Диагностика и информация о проекте';
 
   @override
   String get settings_support_diagnostics_subtitle =>
-      'Open runtime logs or jump to the repository when you need help.';
+      'Открыть журналы работы или перейти в репозиторий за помощью.';
 
   @override
-  String get settings_support_update_available => 'Update Available';
+  String get settings_support_update_available => 'Доступно обновление';
 
   @override
   String get settings_support_update_available_subtitle =>
-      'A newer version is available on GitHub';
+      'На GitHub доступна более новая версия';
 
   @override
   String settings_support_update_to(String version) {
-    return 'Update to $version';
+    return 'Обновить до $version';
   }
 
   @override
   String get settings_support_update_to_subtitle =>
-      'New features and improvements are waiting for you.';
+      'Вас ждут новые функции и улучшения.';
 
   @override
-  String get settings_support_about => 'About';
+  String get settings_support_about => 'О программе';
 
   @override
   String get settings_support_about_subtitle =>
-      'Project and source information';
+      'Информация о проекте и исходном коде';
 
   @override
-  String get settings_support_version => 'Version';
+  String get settings_support_version => 'Версия';
 
   @override
-  String get settings_support_version_loading => 'Loading version info...';
+  String get settings_support_version_loading =>
+      'Загрузка информации о версии...';
 
   @override
-  String get settings_support_version_unavailable => 'Version info unavailable';
+  String get settings_support_version_unavailable =>
+      'Информация о версии недоступна';
 
   @override
-  String get settings_support_github => 'GitHub Repository';
+  String get settings_support_github => 'Репозиторий GitHub';
 
   @override
   String get settings_support_github_subtitle =>
-      'View source code and report issues';
+      'Просмотр исходного кода и сообщение об ошибках';
 
   @override
-  String get settings_support_github_error => 'Could not open GitHub link';
+  String get settings_support_github_error =>
+      'Не удалось открыть ссылку на GitHub';
 
   @override
-  String get settings_develop_title => 'Develop';
+  String get settings_develop_title => 'Разработка';
 
   @override
-  String get settings_develop_diagnostics => 'Diagnostic Tools';
+  String get settings_develop_diagnostics => 'Инструменты диагностики';
 
   @override
   String get settings_develop_diagnostics_subtitle =>
-      'Troubleshooting and performance';
+      'Устранение неполадок и производительность';
 
   @override
-  String get settings_develop_video_debug => 'Show Video Debug Info';
+  String get settings_develop_video_debug =>
+      'Показывать отладочную информацию видео';
 
   @override
   String get settings_develop_video_debug_subtitle =>
-      'Display technical playback details as an overlay on the video player.';
+      'Отображать технические детали воспроизведения поверх видеоплеера.';
 
   @override
-  String get settings_develop_log_viewer => 'Debug Log Viewer';
+  String get settings_develop_log_viewer => 'Просмотр журнала отладки';
 
   @override
   String get settings_develop_log_viewer_subtitle =>
-      'Open a live view of in-app logs.';
+      'Открыть просмотр журналов приложения в реальном времени.';
 
   @override
-  String get settings_develop_web_overrides => 'Web Overrides';
+  String get settings_develop_web_overrides => 'Переопределения для Web';
 
   @override
   String get settings_develop_web_overrides_subtitle =>
-      'Advanced flags for web platform';
+      'Расширенные флаги для веб-платформы';
 
   @override
-  String get settings_develop_web_auth => 'Allow Password Login on Web';
+  String get settings_develop_web_auth => 'Разрешить вход по паролю в Web';
 
   @override
   String get settings_develop_web_auth_subtitle =>
-      'Overrides the native-only restriction and forces the Username + Password auth method to be visible on Flutter Web.';
+      'Переопределяет ограничение «только для нативных приложений» и делает видимым метод аутентификации по имени пользователя и паролю во Flutter Web.';
 }

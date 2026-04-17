@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -195,7 +196,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           ? sceneAsync.maybeWhen(
               data: (_) => FloatingActionButton.small(
                 onPressed: () => _openRandomScene(context),
-                tooltip: 'Random scene',
+                tooltip: context.l10n.random_scene,
                 child: const Icon(Icons.casino_outlined),
               ),
               orElse: () => null,

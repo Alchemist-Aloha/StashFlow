@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
@@ -79,7 +80,7 @@ class MiniPlayer extends ConsumerWidget {
                 ),
               ),
               IconButton(
-                tooltip: 'Close Player',
+                tooltip: context.l10n.common_close,
                 onPressed: () => ref.read(playerStateProvider.notifier).stop(),
                 icon: Icon(Icons.close, color: context.colors.onSurface),
               ),

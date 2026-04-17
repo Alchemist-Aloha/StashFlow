@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../domain/entities/performer.dart';
@@ -155,7 +156,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                           tempDescending = false;
                         });
                       },
-                      child: const Text('Reset'),
+                      child: Text(context.l10n.common_reset),
                     ),
                   ],
                 ),
@@ -303,7 +304,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                           tempGenders.clear();
                         });
                       },
-                      child: const Text('Reset'),
+                      child: Text(context.l10n.common_reset),
                     ),
                   ],
                 ),
@@ -507,7 +508,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
           ? performersAsync.maybeWhen(
               data: (performers) => FloatingActionButton.small(
                 onPressed: _openRandomPerformer,
-                tooltip: 'Random performer',
+                tooltip: context.l10n.random_performer,
                 child: const Icon(Icons.casino_outlined),
               ),
               orElse: () => null,

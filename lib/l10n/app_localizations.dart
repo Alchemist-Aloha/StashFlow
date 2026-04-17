@@ -414,6 +414,300 @@ abstract class AppLocalizations {
   /// **'Error: {message}'**
   String common_error(String message);
 
+  /// No description provided for @common_no_media_available.
+  ///
+  /// In en, this message translates to:
+  /// **'No media available'**
+  String get common_no_media_available;
+
+  /// No description provided for @common_id.
+  ///
+  /// In en, this message translates to:
+  /// **'ID: {id}'**
+  String common_id(Object id);
+
+  /// No description provided for @common_search_placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search...'**
+  String get common_search_placeholder;
+
+  /// No description provided for @common_pause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get common_pause;
+
+  /// No description provided for @common_play.
+  ///
+  /// In en, this message translates to:
+  /// **'Play'**
+  String get common_play;
+
+  /// No description provided for @common_close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get common_close;
+
+  /// No description provided for @common_save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get common_save;
+
+  /// No description provided for @common_unmute.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmute'**
+  String get common_unmute;
+
+  /// No description provided for @common_mute.
+  ///
+  /// In en, this message translates to:
+  /// **'Mute'**
+  String get common_mute;
+
+  /// No description provided for @common_back.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get common_back;
+
+  /// No description provided for @common_rate.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate'**
+  String get common_rate;
+
+  /// No description provided for @common_previous.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get common_previous;
+
+  /// No description provided for @common_next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get common_next;
+
+  /// No description provided for @common_favorite.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorite'**
+  String get common_favorite;
+
+  /// No description provided for @common_unfavorite.
+  ///
+  /// In en, this message translates to:
+  /// **'Unfavorite'**
+  String get common_unfavorite;
+
+  /// No description provided for @common_version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get common_version;
+
+  /// No description provided for @common_loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get common_loading;
+
+  /// No description provided for @common_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get common_unavailable;
+
+  /// No description provided for @common_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get common_details;
+
+  /// No description provided for @common_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get common_title;
+
+  /// No description provided for @common_release_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Release Date'**
+  String get common_release_date;
+
+  /// No description provided for @common_url.
+  ///
+  /// In en, this message translates to:
+  /// **'URL'**
+  String get common_url;
+
+  /// No description provided for @common_no_url.
+  ///
+  /// In en, this message translates to:
+  /// **'No URL'**
+  String get common_no_url;
+
+  /// No description provided for @common_sort.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort'**
+  String get common_sort;
+
+  /// No description provided for @common_filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get common_filter;
+
+  /// No description provided for @common_search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get common_search;
+
+  /// No description provided for @common_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get common_settings;
+
+  /// No description provided for @common_reset_to_1x.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset to 1x'**
+  String get common_reset_to_1x;
+
+  /// No description provided for @common_skip_next.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip Next'**
+  String get common_skip_next;
+
+  /// No description provided for @common_select_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select subtitle'**
+  String get common_select_subtitle;
+
+  /// No description provided for @common_playback_speed.
+  ///
+  /// In en, this message translates to:
+  /// **'Playback speed'**
+  String get common_playback_speed;
+
+  /// No description provided for @common_pip.
+  ///
+  /// In en, this message translates to:
+  /// **'Picture-in-Picture'**
+  String get common_pip;
+
+  /// No description provided for @common_toggle_fullscreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle Fullscreen'**
+  String get common_toggle_fullscreen;
+
+  /// No description provided for @common_exit_fullscreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit Fullscreen'**
+  String get common_exit_fullscreen;
+
+  /// No description provided for @common_copy_logs.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy all logs'**
+  String get common_copy_logs;
+
+  /// No description provided for @common_clear_logs.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear logs'**
+  String get common_clear_logs;
+
+  /// No description provided for @common_enable_autoscroll.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable auto-scroll'**
+  String get common_enable_autoscroll;
+
+  /// No description provided for @common_disable_autoscroll.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable auto-scroll'**
+  String get common_disable_autoscroll;
+
+  /// No description provided for @details_group.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Details'**
+  String get details_group;
+
+  /// No description provided for @details_scene_scrape.
+  ///
+  /// In en, this message translates to:
+  /// **'Scrape metadata'**
+  String get details_scene_scrape;
+
+  /// No description provided for @details_scene_add_performer.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Performer'**
+  String get details_scene_add_performer;
+
+  /// No description provided for @details_scene_add_tag.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Tag'**
+  String get details_scene_add_tag;
+
+  /// No description provided for @details_scene_add_url.
+  ///
+  /// In en, this message translates to:
+  /// **'Add URL'**
+  String get details_scene_add_url;
+
+  /// No description provided for @details_scene_remove_url.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove URL'**
+  String get details_scene_remove_url;
+
+  /// No description provided for @random_studio.
+  ///
+  /// In en, this message translates to:
+  /// **'Random studio'**
+  String get random_studio;
+
+  /// No description provided for @random_gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Random gallery'**
+  String get random_gallery;
+
+  /// No description provided for @random_tag.
+  ///
+  /// In en, this message translates to:
+  /// **'Random tag'**
+  String get random_tag;
+
+  /// No description provided for @random_scene.
+  ///
+  /// In en, this message translates to:
+  /// **'Random scene'**
+  String get random_scene;
+
+  /// No description provided for @random_performer.
+  ///
+  /// In en, this message translates to:
+  /// **'Random performer'**
+  String get random_performer;
+
   /// No description provided for @settings_title.
   ///
   /// In en, this message translates to:

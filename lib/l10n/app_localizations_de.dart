@@ -94,7 +94,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get common_view_all => 'Alle anzeigen';
 
   @override
-  String get common_default => 'Default';
+  String get common_default => 'Standard';
 
   @override
   String get common_later => 'Später';
@@ -196,509 +196,666 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get settings_title => 'Settings';
+  String get common_no_media_available => 'keine Medien verfügbar';
 
   @override
-  String get settings_customize => 'Customize StashFlow';
+  String common_id(Object id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String get common_search_placeholder => 'Suchen...';
+
+  @override
+  String get common_pause => 'Pause';
+
+  @override
+  String get common_play => 'Wiedergabe';
+
+  @override
+  String get common_close => 'schließen';
+
+  @override
+  String get common_save => 'speichern';
+
+  @override
+  String get common_unmute => 'Ton an';
+
+  @override
+  String get common_mute => 'stumm';
+
+  @override
+  String get common_back => 'zurück';
+
+  @override
+  String get common_rate => 'bewerten';
+
+  @override
+  String get common_previous => 'zurück';
+
+  @override
+  String get common_next => 'weiter';
+
+  @override
+  String get common_favorite => 'Favorit';
+
+  @override
+  String get common_unfavorite => 'entfavorisieren';
+
+  @override
+  String get common_version => 'Version';
+
+  @override
+  String get common_loading => 'lädt';
+
+  @override
+  String get common_unavailable => 'nicht verfügbar';
+
+  @override
+  String get common_details => 'Details';
+
+  @override
+  String get common_title => 'Titel';
+
+  @override
+  String get common_release_date => 'Veröffentlichungsdatum';
+
+  @override
+  String get common_url => 'URL';
+
+  @override
+  String get common_no_url => 'keine URL';
+
+  @override
+  String get common_sort => 'sortieren';
+
+  @override
+  String get common_filter => 'filtern';
+
+  @override
+  String get common_search => 'suchen';
+
+  @override
+  String get common_settings => 'Einstellungen';
+
+  @override
+  String get common_reset_to_1x => 'auf 1x zurücksetzen';
+
+  @override
+  String get common_skip_next => 'überspringen';
+
+  @override
+  String get common_select_subtitle => 'Untertitel wählen';
+
+  @override
+  String get common_playback_speed => 'Tempo';
+
+  @override
+  String get common_pip => 'Bild-im-Bild';
+
+  @override
+  String get common_toggle_fullscreen => 'Vollbild umschalten';
+
+  @override
+  String get common_exit_fullscreen => 'Vollbild beenden';
+
+  @override
+  String get common_copy_logs => 'Logs kopieren';
+
+  @override
+  String get common_clear_logs => 'Logs löschen';
+
+  @override
+  String get common_enable_autoscroll => 'Auto-Scroll an';
+
+  @override
+  String get common_disable_autoscroll => 'Auto-Scroll aus';
+
+  @override
+  String get details_group => 'Gruppendetails';
+
+  @override
+  String get details_scene_scrape => 'Metadaten scrapen';
+
+  @override
+  String get details_scene_add_performer => 'Darsteller hinzufügen';
+
+  @override
+  String get details_scene_add_tag => 'Tag hinzufügen';
+
+  @override
+  String get details_scene_add_url => 'URL hinzufügen';
+
+  @override
+  String get details_scene_remove_url => 'URL entfernen';
+
+  @override
+  String get random_studio => 'Zufälliges Studio';
+
+  @override
+  String get random_gallery => 'Zufällige Galerie';
+
+  @override
+  String get random_tag => 'Zufälliger Tag';
+
+  @override
+  String get random_scene => 'Zufällige Szene';
+
+  @override
+  String get random_performer => 'Zufälliger Darsteller';
+
+  @override
+  String get settings_title => 'Einstellungen';
+
+  @override
+  String get settings_customize => 'StashFlow anpassen';
 
   @override
   String get settings_customize_subtitle =>
-      'Tune playback, appearance, layout, and support tools from one place.';
+      'Wiedergabe, Aussehen, Layout und Support-Tools an einem Ort optimieren.';
 
   @override
-  String get settings_core_section => 'Core settings';
+  String get settings_core_section => 'Kern-Einstellungen';
 
   @override
-  String get settings_core_subtitle => 'Most-used configuration pages';
+  String get settings_core_subtitle => 'Meistgenutzte Konfigurationsseiten';
 
   @override
   String get settings_server => 'Server';
 
   @override
-  String get settings_server_subtitle => 'Connection and API configuration';
+  String get settings_server_subtitle => 'Verbindung und API-Konfiguration';
 
   @override
-  String get settings_playback => 'Playback';
+  String get settings_playback => 'Wiedergabe';
 
   @override
-  String get settings_playback_subtitle => 'Player behavior and interactions';
+  String get settings_playback_subtitle => 'Player-Verhalten und Interaktionen';
 
   @override
-  String get settings_keyboard => 'Keyboard';
+  String get settings_keyboard => 'Tastatur';
 
   @override
-  String get settings_keyboard_subtitle => 'Customizable shortcuts and hotkeys';
+  String get settings_keyboard_subtitle =>
+      'Anpassbare Verknüpfungen und Hotkeys';
 
   @override
-  String get settings_appearance => 'Appearance';
+  String get settings_appearance => 'Erscheinungsbild';
 
   @override
-  String get settings_appearance_subtitle => 'Theme and colors';
+  String get settings_appearance_subtitle => 'Design und Farben';
 
   @override
-  String get settings_interface => 'Interface';
+  String get settings_interface => 'Benutzeroberfläche';
 
   @override
-  String get settings_interface_subtitle => 'Navigation and layout defaults';
+  String get settings_interface_subtitle => 'Navigations- und Layout-Standards';
 
   @override
   String get settings_support => 'Support';
 
   @override
-  String get settings_support_subtitle => 'Diagnostics and about';
+  String get settings_support_subtitle => 'Diagnose und Informationen';
 
   @override
-  String get settings_develop => 'Develop';
+  String get settings_develop => 'Entwickeln';
 
   @override
-  String get settings_develop_subtitle => 'Advanced tools and overrides';
+  String get settings_develop_subtitle => 'Erweiterte Tools und Overrides';
 
   @override
-  String get settings_appearance_title => 'Appearance Settings';
+  String get settings_appearance_title => 'Darstellungs-Einstellungen';
 
   @override
-  String get settings_appearance_theme_mode => 'Theme Mode';
+  String get settings_appearance_theme_mode => 'Design-Modus';
 
   @override
   String get settings_appearance_theme_mode_subtitle =>
-      'Choose how the app follows brightness changes';
+      'Wählen Sie, wie die App auf Helligkeitsänderungen reagiert';
 
   @override
   String get settings_appearance_theme_system => 'System';
 
   @override
-  String get settings_appearance_theme_light => 'Light';
+  String get settings_appearance_theme_light => 'Hell';
 
   @override
-  String get settings_appearance_theme_dark => 'Dark';
+  String get settings_appearance_theme_dark => 'Dunkel';
 
   @override
-  String get settings_appearance_primary_color => 'Primary Color';
+  String get settings_appearance_primary_color => 'Primärfarbe';
 
   @override
   String get settings_appearance_primary_color_subtitle =>
-      'Pick a seed color for the Material 3 palette';
+      'Wählen Sie eine Ausgangsfarbe für die Material 3-Palette';
 
   @override
-  String get settings_appearance_advanced_theming => 'Advanced Theming';
+  String get settings_appearance_advanced_theming => 'Erweitertes Theming';
 
   @override
   String get settings_appearance_advanced_theming_subtitle =>
-      'Optimizations for specific screen types';
+      'Optimierungen für spezifische Bildschirmtypen';
 
   @override
-  String get settings_appearance_true_black => 'True Black (AMOLED)';
+  String get settings_appearance_true_black => 'Echtes Schwarz (AMOLED)';
 
   @override
   String get settings_appearance_true_black_subtitle =>
-      'Use pure black backgrounds in dark mode to save battery on OLED screens';
+      'Verwenden Sie rein schwarze Hintergründe im dunklen Modus, um Akku bei OLED-Bildschirmen zu sparen';
 
   @override
-  String get settings_appearance_custom_hex => 'Custom Hex Color';
+  String get settings_appearance_custom_hex => 'Benutzerdefinierte Hex-Farbe';
 
   @override
   String get settings_appearance_custom_hex_helper =>
-      'Enter an 8-digit ARGB hex code';
+      'Geben Sie einen 8-stelligen ARGB-Hex-Code ein';
 
   @override
-  String get settings_interface_title => 'Interface Settings';
+  String get settings_interface_title => 'Interface-Einstellungen';
 
   @override
-  String get settings_interface_language => 'Language';
+  String get settings_interface_language => 'Sprache';
 
   @override
   String get settings_interface_language_subtitle =>
-      'Overwrite the default system language';
+      'Die Standard-Systemsprache überschreiben';
 
   @override
-  String get settings_interface_app_language => 'App Language';
+  String get settings_interface_app_language => 'App-Sprache';
 
   @override
   String get settings_interface_navigation => 'Navigation';
 
   @override
   String get settings_interface_navigation_subtitle =>
-      'Visibility of global navigation shortcuts';
+      'Sichtbarkeit globaler Navigationskürzel';
 
   @override
-  String get settings_interface_show_random => 'Show Random Navigation Buttons';
+  String get settings_interface_show_random =>
+      'Zufalls-Navigationsschaltflächen anzeigen';
 
   @override
   String get settings_interface_show_random_subtitle =>
-      'Enable or disable the floating casino buttons across list and details pages';
+      'Aktivieren oder deaktivieren Sie die schwebenden Casino-Schaltflächen auf Listen- und Detailseiten';
 
   @override
-  String get settings_interface_shake_random => 'Shake to Discover';
+  String get settings_interface_shake_random => 'Schütteln zum Entdecken';
 
   @override
   String get settings_interface_shake_random_subtitle =>
-      'Shake your device to jump to a random item in the current tab';
+      'Schütteln Sie Ihr Gerät, um zu einem zufälligen Element im aktuellen Tab zu springen';
 
   @override
-  String get settings_interface_show_edit => 'Show Edit Button';
+  String get settings_interface_show_edit => 'Bearbeiten-Schaltfläche anzeigen';
 
   @override
   String get settings_interface_show_edit_subtitle =>
-      'Enable or disable the edit button on the scene details page';
+      'Aktivieren oder deaktivieren Sie die Bearbeiten-Schaltfläche auf der Szenendetailseite';
 
   @override
-  String get settings_interface_customize_tabs => 'Customize Tabs';
+  String get settings_interface_customize_tabs => 'Tabs anpassen';
 
   @override
   String get settings_interface_customize_tabs_subtitle =>
-      'Reorder or hide navigation menu items';
+      'Navigationselemente neu anordnen oder ausblenden';
 
   @override
-  String get settings_interface_scenes_layout => 'Scenes Layout';
+  String get settings_interface_scenes_layout => 'Szenen-Layout';
 
   @override
   String get settings_interface_scenes_layout_subtitle =>
-      'Default browsing mode for scenes';
+      'Standard-Browsing-Modus für Szenen';
 
   @override
-  String get settings_interface_galleries_layout => 'Galleries Layout';
+  String get settings_interface_galleries_layout => 'Galerien-Layout';
 
   @override
   String get settings_interface_galleries_layout_subtitle =>
-      'Default browsing mode for galleries';
+      'Standard-Browsing-Modus für Galerien';
 
   @override
-  String get settings_interface_layout_default => 'Default Layout';
+  String get settings_interface_layout_default => 'Standard-Layout';
 
   @override
   String get settings_interface_layout_default_desc =>
-      'Choose the default layout for the page';
+      'Wählen Sie das Standard-Layout für die Seite';
 
   @override
-  String get settings_interface_layout_list => 'List';
+  String get settings_interface_layout_list => 'Liste';
 
   @override
-  String get settings_interface_layout_grid => 'Grid';
+  String get settings_interface_layout_grid => 'Raster';
 
   @override
-  String get settings_interface_layout_tiktok => 'Infinite Scroll';
+  String get settings_interface_layout_tiktok => 'Endloses Scrollen';
 
   @override
-  String get settings_interface_grid_columns => 'Grid Columns';
+  String get settings_interface_grid_columns => 'Rasterspalten';
 
   @override
-  String get settings_interface_image_viewer => 'Image Viewer';
+  String get settings_interface_image_viewer => 'Bildbetrachter';
 
   @override
   String get settings_interface_image_viewer_subtitle =>
-      'Configure fullscreen image browsing behavior';
+      'Vollbild-Bild-Browsing-Verhalten konfigurieren';
 
   @override
-  String get settings_interface_swipe_direction => 'Fullscreen Swipe Direction';
+  String get settings_interface_swipe_direction => 'Vollbild-Wischrichtung';
 
   @override
   String get settings_interface_swipe_direction_desc =>
-      'Choose how images advance in fullscreen mode';
+      'Wählen Sie, wie Bilder im Vollbildmodus gewechselt werden';
 
   @override
-  String get settings_interface_swipe_vertical => 'Vertical';
+  String get settings_interface_swipe_vertical => 'Vertikal';
 
   @override
   String get settings_interface_swipe_horizontal => 'Horizontal';
 
   @override
-  String get settings_interface_waterfall_columns => 'Waterfall Grid Columns';
+  String get settings_interface_waterfall_columns => 'Wasserfall-Rasterspalten';
 
   @override
-  String get settings_interface_performer_layouts => 'Performer Layouts';
+  String get settings_interface_performer_layouts => 'Darsteller-Layouts';
 
   @override
   String get settings_interface_performer_layouts_subtitle =>
-      'Media and gallery defaults for performers';
+      'Medien- und Galerie-Standards für Darsteller';
 
   @override
-  String get settings_interface_studio_layouts => 'Studio Layouts';
+  String get settings_interface_studio_layouts => 'Studio-Layouts';
 
   @override
   String get settings_interface_studio_layouts_subtitle =>
-      'Media and gallery defaults for studios';
+      'Medien- und Galerie-Standards für Studios';
 
   @override
-  String get settings_interface_tag_layouts => 'Tag Layouts';
+  String get settings_interface_tag_layouts => 'Tag-Layouts';
 
   @override
   String get settings_interface_tag_layouts_subtitle =>
-      'Media and gallery defaults for tags';
+      'Medien- und Galerie-Standards für Tags';
 
   @override
-  String get settings_interface_media_layout => 'Media Layout';
+  String get settings_interface_media_layout => 'Medien-Layout';
 
   @override
   String get settings_interface_media_layout_subtitle =>
-      'Layout for Media page';
+      'Layout für die Medienseite';
 
   @override
-  String get settings_interface_galleries_layout_item => 'Galleries Layout';
+  String get settings_interface_galleries_layout_item => 'Galerien-Layout';
 
   @override
   String get settings_interface_galleries_layout_subtitle_item =>
-      'Layout for Galleries page';
+      'Layout für die Galerieseite';
 
   @override
-  String get settings_server_title => 'Server Settings';
+  String get settings_server_title => 'Server-Einstellungen';
 
   @override
-  String get settings_server_status => 'Connection Status';
+  String get settings_server_status => 'Verbindungsstatus';
 
   @override
   String get settings_server_status_subtitle =>
-      'Live connectivity against the configured server';
+      'Live-Konnektivität zum konfigurierten Server';
 
   @override
-  String get settings_server_details => 'Server Details';
+  String get settings_server_details => 'Server-Details';
 
   @override
   String get settings_server_details_subtitle =>
-      'Configure endpoint and authentication method';
+      'Endpunkt und Authentifizierungsmethode konfigurieren';
 
   @override
-  String get settings_server_url => 'GraphQL server URL';
+  String get settings_server_url => 'GraphQL Server-URL';
 
   @override
   String get settings_server_url_helper =>
-      'Example format: http(s)://host:port/graphql.';
+      'Beispielformat: http(s)://host:port/graphql.';
 
   @override
-  String get settings_server_auth_method => 'Authentication Method';
+  String get settings_server_auth_method => 'Authentifizierungsmethode';
 
   @override
-  String get settings_server_auth_apikey => 'API Key';
+  String get settings_server_auth_apikey => 'API-Key';
 
   @override
-  String get settings_server_auth_password => 'Username + Password';
+  String get settings_server_auth_password => 'Benutzername + Passwort';
 
   @override
   String get settings_server_auth_password_desc =>
-      'Recommended: use your Stash username/password session.';
+      'Empfohlen: Verwenden Sie Ihre Stash Benutzername/Passwort-Sitzung.';
 
   @override
   String get settings_server_auth_apikey_desc =>
-      'Use API key for static-token authentication.';
+      'Verwenden Sie einen API-Key für die statische Token-Authentifizierung.';
 
   @override
-  String get settings_server_username => 'Username';
+  String get settings_server_username => 'Benutzername';
 
   @override
-  String get settings_server_password => 'Password';
+  String get settings_server_password => 'Passwort';
 
   @override
-  String get settings_server_login_test => 'Login & Test';
+  String get settings_server_login_test => 'Anmelden & Testen';
 
   @override
-  String get settings_server_test => 'Test Connection';
+  String get settings_server_test => 'Verbindung testen';
 
   @override
-  String get settings_server_logout => 'Logout';
+  String get settings_server_logout => 'Abmelden';
 
   @override
-  String get settings_server_clear => 'Clear Settings';
+  String get settings_server_clear => 'Einstellungen löschen';
 
   @override
   String settings_server_connected(String version) {
-    return 'Connected (Stash $version)';
+    return 'Verbunden (Stash $version)';
   }
 
   @override
-  String get settings_server_checking => 'Checking connection...';
+  String get settings_server_checking => 'Verbindung wird geprüft...';
 
   @override
   String settings_server_failed(String error) {
-    return 'Failed: $error';
+    return 'Fehlgeschlagen: $error';
   }
 
   @override
-  String get settings_server_invalid_url => 'Invalid server URL';
+  String get settings_server_invalid_url => 'Ungültige Server-URL';
 
   @override
   String get settings_server_resolve_error =>
-      'Could not resolve server URL. Check host, port, and credentials.';
+      'Server-URL konnte nicht aufgelöst werden. Überprüfen Sie Host, Port und Zugangsdaten.';
 
   @override
   String get settings_server_logout_confirm =>
-      'Logged out and cookies cleared.';
+      'Abgemeldet und Cookies gelöscht.';
 
   @override
-  String get settings_playback_title => 'Playback Settings';
+  String get settings_playback_title => 'Wiedergabe-Einstellungen';
 
   @override
-  String get settings_playback_behavior => 'Playback behavior';
+  String get settings_playback_behavior => 'Wiedergabeverhalten';
 
   @override
   String get settings_playback_behavior_subtitle =>
-      'Default playback and background handling';
+      'Standard-Wiedergabe- und Hintergrund-Handling';
 
   @override
-  String get settings_playback_prefer_streams => 'Prefer sceneStreams first';
+  String get settings_playback_prefer_streams => 'sceneStreams bevorzugen';
 
   @override
   String get settings_playback_prefer_streams_subtitle =>
-      'When off, playback directly uses paths.stream';
+      'Wenn deaktiviert, wird die Wiedergabe direkt über paths.stream ausgeführt';
 
   @override
-  String get settings_playback_autoplay => 'Autoplay Next Scene';
+  String get settings_playback_autoplay =>
+      'Nächste Szene automatisch abspielen';
 
   @override
   String get settings_playback_autoplay_subtitle =>
-      'Automatically play the next scene when current playback ends';
+      'Nächste Szene automatisch abspielen, wenn die aktuelle endet';
 
   @override
-  String get settings_playback_background => 'Background Playback';
+  String get settings_playback_background => 'Hintergrund-Wiedergabe';
 
   @override
   String get settings_playback_background_subtitle =>
-      'Keep video audio playing when app is backgrounded';
+      'Video-Audio weiter abspielen, wenn die App im Hintergrund ist';
 
   @override
-  String get settings_playback_pip => 'Native Picture-in-Picture';
+  String get settings_playback_pip => 'Natives Bild-im-Bild';
 
   @override
   String get settings_playback_pip_subtitle =>
-      'Enable Android PiP button and auto-enter on background';
+      'Android PiP-Schaltfläche aktivieren und automatisch bei Hintergrundwechsel starten';
 
   @override
-  String get settings_playback_subtitles => 'Subtitle settings';
+  String get settings_playback_subtitles => 'Untertitel-Einstellungen';
 
   @override
   String get settings_playback_subtitles_subtitle =>
-      'Automatic loading and appearance';
+      'Automatisches Laden und Erscheinungsbild';
 
   @override
-  String get settings_playback_subtitle_lang => 'Default Subtitle Language';
+  String get settings_playback_subtitle_lang => 'Standard-Untertitelsprache';
 
   @override
   String get settings_playback_subtitle_lang_subtitle =>
-      'Auto-load if available';
+      'Automatisch laden, falls verfügbar';
 
   @override
-  String get settings_playback_subtitle_size => 'Subtitle Font Size';
+  String get settings_playback_subtitle_size => 'Schriftgröße der Untertitel';
 
   @override
-  String get settings_playback_subtitle_pos => 'Subtitle Vertical Position';
+  String get settings_playback_subtitle_pos =>
+      'Vertikale Position der Untertitel';
 
   @override
   String settings_playback_subtitle_pos_desc(String percent) {
-    return '$percent% from bottom';
+    return '$percent% von unten';
   }
 
   @override
-  String get settings_playback_subtitle_align => 'Subtitle Text Alignment';
+  String get settings_playback_subtitle_align =>
+      'Textausrichtung der Untertitel';
 
   @override
   String get settings_playback_subtitle_align_subtitle =>
-      'Alignment for multiline subtitles';
+      'Ausrichtung für mehrzeilige Untertitel';
 
   @override
-  String get settings_playback_seek => 'Seek interaction';
+  String get settings_playback_seek => 'Seek-Interaktion';
 
   @override
   String get settings_playback_seek_subtitle =>
-      'Choose how scrubbing works during playback';
+      'Wählen Sie, wie das Vorspulen während der Wiedergabe funktioniert';
 
   @override
   String get settings_playback_seek_double_tap =>
-      'Double-tap left/right to seek 10s';
+      'Doppeltippen links/rechts zum Springen (10s)';
 
   @override
-  String get settings_playback_seek_drag => 'Drag the timeline to seek';
+  String get settings_playback_seek_drag =>
+      'Ziehen Sie auf der Zeitachse zum Suchen';
 
   @override
-  String get settings_playback_seek_drag_label => 'Drag';
+  String get settings_playback_seek_drag_label => 'Ziehen';
 
   @override
-  String get settings_playback_seek_double_tap_label => 'Double-tap';
+  String get settings_playback_seek_double_tap_label => 'Doppeltippen';
 
   @override
   String get settings_support_title => 'Support';
 
   @override
-  String get settings_support_diagnostics => 'Diagnostics and project info';
+  String get settings_support_diagnostics => 'Diagnose und Projektinfo';
 
   @override
   String get settings_support_diagnostics_subtitle =>
-      'Open runtime logs or jump to the repository when you need help.';
+      'Laufzeit-Logs öffnen oder zum Repository springen, wenn Sie Hilfe benötigen.';
 
   @override
-  String get settings_support_update_available => 'Update Available';
+  String get settings_support_update_available => 'Update verfügbar';
 
   @override
   String get settings_support_update_available_subtitle =>
-      'A newer version is available on GitHub';
+      'Eine neuere Version ist auf GitHub verfügbar';
 
   @override
   String settings_support_update_to(String version) {
-    return 'Update to $version';
+    return 'Update auf $version';
   }
 
   @override
   String get settings_support_update_to_subtitle =>
-      'New features and improvements are waiting for you.';
+      'Neue Funktionen und Verbesserungen warten auf Sie.';
 
   @override
-  String get settings_support_about => 'About';
+  String get settings_support_about => 'Über';
 
   @override
   String get settings_support_about_subtitle =>
-      'Project and source information';
+      'Projekt- und Quellinformationen';
 
   @override
   String get settings_support_version => 'Version';
 
   @override
-  String get settings_support_version_loading => 'Loading version info...';
+  String get settings_support_version_loading => 'Versionsinfo wird geladen...';
 
   @override
-  String get settings_support_version_unavailable => 'Version info unavailable';
+  String get settings_support_version_unavailable =>
+      'Versionsinfo nicht verfügbar';
 
   @override
-  String get settings_support_github => 'GitHub Repository';
+  String get settings_support_github => 'GitHub-Repository';
 
   @override
   String get settings_support_github_subtitle =>
-      'View source code and report issues';
+      'Quellcode anzeigen und Probleme melden';
 
   @override
-  String get settings_support_github_error => 'Could not open GitHub link';
+  String get settings_support_github_error =>
+      'GitHub-Link konnte nicht geöffnet werden';
 
   @override
-  String get settings_develop_title => 'Develop';
+  String get settings_develop_title => 'Entwickeln';
 
   @override
-  String get settings_develop_diagnostics => 'Diagnostic Tools';
+  String get settings_develop_diagnostics => 'Diagnose-Tools';
 
   @override
   String get settings_develop_diagnostics_subtitle =>
-      'Troubleshooting and performance';
+      'Fehlerbehebung und Leistung';
 
   @override
-  String get settings_develop_video_debug => 'Show Video Debug Info';
+  String get settings_develop_video_debug => 'Video-Debug-Info anzeigen';
 
   @override
   String get settings_develop_video_debug_subtitle =>
-      'Display technical playback details as an overlay on the video player.';
+      'Technische Wiedergabedetails als Overlay im Videoplayer anzeigen.';
 
   @override
-  String get settings_develop_log_viewer => 'Debug Log Viewer';
+  String get settings_develop_log_viewer => 'Debug-Log-Viewer';
 
   @override
   String get settings_develop_log_viewer_subtitle =>
-      'Open a live view of in-app logs.';
+      'Live-Ansicht der In-App-Logs öffnen.';
 
   @override
-  String get settings_develop_web_overrides => 'Web Overrides';
+  String get settings_develop_web_overrides => 'Web-Overrides';
 
   @override
   String get settings_develop_web_overrides_subtitle =>
-      'Advanced flags for web platform';
+      'Erweiterte Flags für die Web-Plattform';
 
   @override
-  String get settings_develop_web_auth => 'Allow Password Login on Web';
+  String get settings_develop_web_auth => 'Passwort-Login im Web erlauben';
 
   @override
   String get settings_develop_web_auth_subtitle =>
-      'Overrides the native-only restriction and forces the Username + Password auth method to be visible on Flutter Web.';
+      'Hebt die Native-only-Beschränkung auf und erzwingt die Sichtbarkeit der Benutzername + Passwort-Authentifizierungsmethode in Flutter Web.';
 }

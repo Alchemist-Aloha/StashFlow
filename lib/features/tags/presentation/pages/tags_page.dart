@@ -440,7 +440,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
           ? tagsAsync.maybeWhen(
               data: (tags) => FloatingActionButton.small(
                 onPressed: _openRandomTag,
-                tooltip: 'Random tag',
+                tooltip: context.l10n.random_tag,
                 child: const Icon(Icons.casino_outlined),
               ),
               orElse: () => null,
