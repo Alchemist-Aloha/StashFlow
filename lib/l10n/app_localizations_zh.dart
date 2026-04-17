@@ -110,13 +110,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get common_no_media => '暂无媒体';
 
   @override
-  String get common_show => 'Show';
+  String get common_show => '显示';
 
   @override
-  String get common_hide => 'Hide';
+  String get common_hide => '隐藏';
 
   @override
-  String get galleries_filter_saved => 'Filter preferences saved as default';
+  String get galleries_filter_saved => '筛选偏好已保存为默认';
 
   @override
   String get common_setup_required => '需要设置';
@@ -1146,77 +1146,75 @@ class AppLocalizationsZh extends AppLocalizations {
   String get common_done => '完成';
 
   @override
-  String get settings_keybind_assign_shortcut => 'Assign Shortcut';
+  String get settings_keybind_assign_shortcut => '分配快捷键';
 
   @override
-  String get settings_keybind_press_any => 'Press any key combination...';
+  String get settings_keybind_press_any => '按任意键组合...';
 
   @override
-  String get scenes_select_tags => 'Select Tags';
+  String get scenes_select_tags => '选择标签';
 
   @override
-  String get scenes_no_scrapers => 'No scrapers available';
+  String get scenes_no_scrapers => '没有可用的抓取器';
 
   @override
-  String get scenes_select_scraper => 'Select Scraper';
+  String get scenes_select_scraper => '选择抓取器';
 
   @override
-  String get scenes_no_results_found => 'No results found';
+  String get scenes_no_results_found => '未找到结果';
 
   @override
-  String get scenes_select_result => 'Select Result';
+  String get scenes_select_result => '选择结果';
 
   @override
   String scenes_scrape_failed(String error) {
-    return 'Scrape failed: $error';
+    return '抓取失败：$error';
   }
 
   @override
-  String get scenes_updated_successfully => 'Scene updated successfully';
+  String get scenes_updated_successfully => '场景更新成功';
 
   @override
   String scenes_update_failed(String error) {
-    return 'Failed to update scene: $error';
+    return '场景更新失败：$error';
   }
 
   @override
-  String get scenes_edit_title => 'Edit Scene';
+  String get scenes_edit_title => '编辑场景';
 
   @override
-  String get scenes_field_studio => 'Studio';
+  String get scenes_field_studio => '制片商';
 
   @override
-  String get scenes_field_tags => 'Tags';
+  String get scenes_field_tags => '标签';
 
   @override
-  String get scenes_field_urls => 'URLs';
+  String get scenes_field_urls => 'URL';
 
   @override
-  String get common_no_title => 'No title';
+  String get common_no_title => '无标题';
 
   @override
-  String get scenes_select_studio => 'Select Studio';
+  String get scenes_select_studio => '选择制片商';
 
   @override
-  String get scenes_select_performers => 'Select Performers';
+  String get scenes_select_performers => '选择出演者';
 
   @override
-  String get scenes_unmatched_scraped_tags => 'Unmatched Scraped Tags';
+  String get scenes_unmatched_scraped_tags => '未匹配的抓取标签';
 
   @override
-  String get scenes_unmatched_scraped_performers =>
-      'Unmatched Scraped Performers';
+  String get scenes_unmatched_scraped_performers => '未匹配的抓取出演者';
 
   @override
-  String get scenes_no_matching_performer_found =>
-      'No matching performer found in library';
+  String get scenes_no_matching_performer_found => '在库中未找到匹配的出演者';
 
   @override
-  String get common_unknown => 'Unknown';
+  String get common_unknown => '未知';
 
   @override
   String scenes_studio_id_prefix(String id) {
-    return 'Studio ID: $id';
+    return '制片商 ID：$id';
   }
 }
 
@@ -1324,6 +1322,15 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get common_no_media => '暂无媒体';
+
+  @override
+  String get common_show => '显示';
+
+  @override
+  String get common_hide => '隐藏';
+
+  @override
+  String get galleries_filter_saved => '筛选偏好已保存为默认';
 
   @override
   String get common_setup_required => '需要设置';
@@ -2351,6 +2358,78 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get common_done => '完成';
+
+  @override
+  String get settings_keybind_assign_shortcut => '分配快捷键';
+
+  @override
+  String get settings_keybind_press_any => '按任意键组合...';
+
+  @override
+  String get scenes_select_tags => '选择标签';
+
+  @override
+  String get scenes_no_scrapers => '没有可用的抓取器';
+
+  @override
+  String get scenes_select_scraper => '选择抓取器';
+
+  @override
+  String get scenes_no_results_found => '未找到结果';
+
+  @override
+  String get scenes_select_result => '选择结果';
+
+  @override
+  String scenes_scrape_failed(String error) {
+    return '抓取失败：$error';
+  }
+
+  @override
+  String get scenes_updated_successfully => '场景更新成功';
+
+  @override
+  String scenes_update_failed(String error) {
+    return '场景更新失败：$error';
+  }
+
+  @override
+  String get scenes_edit_title => '编辑场景';
+
+  @override
+  String get scenes_field_studio => '制片商';
+
+  @override
+  String get scenes_field_tags => '标签';
+
+  @override
+  String get scenes_field_urls => 'URL';
+
+  @override
+  String get common_no_title => '无标题';
+
+  @override
+  String get scenes_select_studio => '选择制片商';
+
+  @override
+  String get scenes_select_performers => '选择出演者';
+
+  @override
+  String get scenes_unmatched_scraped_tags => '未匹配的抓取标签';
+
+  @override
+  String get scenes_unmatched_scraped_performers => '未匹配的抓取出演者';
+
+  @override
+  String get scenes_no_matching_performer_found => '在库中未找到匹配的出演者';
+
+  @override
+  String get common_unknown => '未知';
+
+  @override
+  String scenes_studio_id_prefix(String id) {
+    return '制片商 ID：$id';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -2459,6 +2538,15 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get common_no_media => '沒有可用的媒體';
+
+  @override
+  String get common_show => '顯示';
+
+  @override
+  String get common_hide => '隱藏';
+
+  @override
+  String get galleries_filter_saved => '篩選偏好已儲存為預設';
 
   @override
   String get common_setup_required => '需要設定';
@@ -3488,4 +3576,76 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get common_done => '完成';
+
+  @override
+  String get settings_keybind_assign_shortcut => '分配快速鍵';
+
+  @override
+  String get settings_keybind_press_any => '按任何鍵組合...';
+
+  @override
+  String get scenes_select_tags => '選取標籤';
+
+  @override
+  String get scenes_no_scrapers => '沒有可用的抓取器';
+
+  @override
+  String get scenes_select_scraper => '選取抓取器';
+
+  @override
+  String get scenes_no_results_found => '未找到結果';
+
+  @override
+  String get scenes_select_result => '選擇結果';
+
+  @override
+  String scenes_scrape_failed(String error) {
+    return '抓取失敗：$error';
+  }
+
+  @override
+  String get scenes_updated_successfully => '場景更新成功';
+
+  @override
+  String scenes_update_failed(String error) {
+    return '場景更新失敗：$error';
+  }
+
+  @override
+  String get scenes_edit_title => '編輯場景';
+
+  @override
+  String get scenes_field_studio => '製片商';
+
+  @override
+  String get scenes_field_tags => '標籤';
+
+  @override
+  String get scenes_field_urls => 'URL';
+
+  @override
+  String get common_no_title => '無標題';
+
+  @override
+  String get scenes_select_studio => '選取製片商';
+
+  @override
+  String get scenes_select_performers => '選取演出者';
+
+  @override
+  String get scenes_unmatched_scraped_tags => '未匹配的抓取標籤';
+
+  @override
+  String get scenes_unmatched_scraped_performers => '未匹配的抓取演出者';
+
+  @override
+  String get scenes_no_matching_performer_found => '在資料庫中未找到匹配的演出者';
+
+  @override
+  String get common_unknown => '未知';
+
+  @override
+  String scenes_studio_id_prefix(String id) {
+    return '製片商 ID：$id';
+  }
 }

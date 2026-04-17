@@ -1167,76 +1167,74 @@ class AppLocalizationsJa extends AppLocalizations {
   String get common_done => '完了';
 
   @override
-  String get settings_keybind_assign_shortcut => 'Assign Shortcut';
+  String get settings_keybind_assign_shortcut => 'ショートカットを割り当て';
 
   @override
-  String get settings_keybind_press_any => 'Press any key combination...';
+  String get settings_keybind_press_any => '任意のキーの組み合わせを押してください...';
 
   @override
-  String get scenes_select_tags => 'Select Tags';
+  String get scenes_select_tags => 'タグを選択';
 
   @override
-  String get scenes_no_scrapers => 'No scrapers available';
+  String get scenes_no_scrapers => '使用可能なスクレイパーがありません';
 
   @override
-  String get scenes_select_scraper => 'Select Scraper';
+  String get scenes_select_scraper => 'スクレイパーを選択';
 
   @override
-  String get scenes_no_results_found => 'No results found';
+  String get scenes_no_results_found => '結果が見つかりませんでした';
 
   @override
-  String get scenes_select_result => 'Select Result';
+  String get scenes_select_result => '結果を選択';
 
   @override
   String scenes_scrape_failed(String error) {
-    return 'Scrape failed: $error';
+    return 'スクレイプに失敗しました: $error';
   }
 
   @override
-  String get scenes_updated_successfully => 'Scene updated successfully';
+  String get scenes_updated_successfully => 'シーンが正常に更新されました';
 
   @override
   String scenes_update_failed(String error) {
-    return 'Failed to update scene: $error';
+    return 'シーンの更新に失敗しました: $error';
   }
 
   @override
-  String get scenes_edit_title => 'Edit Scene';
+  String get scenes_edit_title => 'シーンを編集';
 
   @override
-  String get scenes_field_studio => 'Studio';
+  String get scenes_field_studio => 'スタジオ';
 
   @override
-  String get scenes_field_tags => 'Tags';
+  String get scenes_field_tags => 'タグ';
 
   @override
-  String get scenes_field_urls => 'URLs';
+  String get scenes_field_urls => 'URL';
 
   @override
-  String get common_no_title => 'No title';
+  String get common_no_title => 'タイトルなし';
 
   @override
-  String get scenes_select_studio => 'Select Studio';
+  String get scenes_select_studio => 'スタジオを選択';
 
   @override
-  String get scenes_select_performers => 'Select Performers';
+  String get scenes_select_performers => '出演者を選択';
 
   @override
-  String get scenes_unmatched_scraped_tags => 'Unmatched Scraped Tags';
+  String get scenes_unmatched_scraped_tags => '一致しないスクレイプ済みタグ';
 
   @override
-  String get scenes_unmatched_scraped_performers =>
-      'Unmatched Scraped Performers';
+  String get scenes_unmatched_scraped_performers => '一致しないスクレイプ済み出演者';
 
   @override
-  String get scenes_no_matching_performer_found =>
-      'No matching performer found in library';
+  String get scenes_no_matching_performer_found => 'ライブラリに一致する出演者が見つかりません';
 
   @override
-  String get common_unknown => 'Unknown';
+  String get common_unknown => '不明';
 
   @override
   String scenes_studio_id_prefix(String id) {
-    return 'Studio ID: $id';
+    return 'スタジオID: $id';
   }
 }

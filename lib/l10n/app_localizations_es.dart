@@ -1244,53 +1244,54 @@ class AppLocalizationsEs extends AppLocalizations {
   String get common_done => 'Hecho';
 
   @override
-  String get settings_keybind_assign_shortcut => 'Assign Shortcut';
+  String get settings_keybind_assign_shortcut => 'Asignar acceso directo';
 
   @override
-  String get settings_keybind_press_any => 'Press any key combination...';
+  String get settings_keybind_press_any =>
+      'Presiona cualquier combinación de teclas...';
 
   @override
-  String get scenes_select_tags => 'Select Tags';
+  String get scenes_select_tags => 'Seleccionar etiquetas';
 
   @override
-  String get scenes_no_scrapers => 'No scrapers available';
+  String get scenes_no_scrapers => 'No hay scrapers disponibles';
 
   @override
-  String get scenes_select_scraper => 'Select Scraper';
+  String get scenes_select_scraper => 'Seleccionar scraper';
 
   @override
-  String get scenes_no_results_found => 'No results found';
+  String get scenes_no_results_found => 'No se encontraron resultados';
 
   @override
-  String get scenes_select_result => 'Select Result';
+  String get scenes_select_result => 'Seleccionar resultado';
 
   @override
   String scenes_scrape_failed(String error) {
-    return 'Scrape failed: $error';
+    return 'Error de extracción: $error';
   }
 
   @override
-  String get scenes_updated_successfully => 'Scene updated successfully';
+  String get scenes_updated_successfully => 'Escena actualizada con éxito';
 
   @override
   String scenes_update_failed(String error) {
-    return 'Failed to update scene: $error';
+    return 'Error al actualizar la escena: $error';
   }
 
   @override
-  String get scenes_edit_title => 'Edit Scene';
+  String get scenes_edit_title => 'Editar escena';
 
   @override
-  String get scenes_field_studio => 'Studio';
+  String get scenes_field_studio => 'Estudio';
 
   @override
-  String get scenes_field_tags => 'Tags';
+  String get scenes_field_tags => 'Etiquetas';
 
   @override
   String get scenes_field_urls => 'URLs';
 
   @override
-  String get common_no_title => 'No title';
+  String get common_no_title => 'Sin título';
 
   @override
   String get scenes_select_studio => 'Select Studio';

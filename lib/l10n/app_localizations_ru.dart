@@ -114,13 +114,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get common_no_media => 'Медиафайлы отсутствуют';
 
   @override
-  String get common_show => 'Show';
+  String get common_show => 'показать';
 
   @override
-  String get common_hide => 'Hide';
+  String get common_hide => 'скрыть';
 
   @override
-  String get galleries_filter_saved => 'Filter preferences saved as default';
+  String get galleries_filter_saved =>
+      'Настройки фильтра сохранены по умолчанию';
 
   @override
   String get common_setup_required => 'Требуется настройка';
@@ -1221,76 +1222,77 @@ class AppLocalizationsRu extends AppLocalizations {
   String get common_done => 'Готово';
 
   @override
-  String get settings_keybind_assign_shortcut => 'Assign Shortcut';
+  String get settings_keybind_assign_shortcut => 'Назначить сочетание клавиш';
 
   @override
-  String get settings_keybind_press_any => 'Press any key combination...';
+  String get settings_keybind_press_any => 'Нажмите любую комбинацию клавиш...';
 
   @override
-  String get scenes_select_tags => 'Select Tags';
+  String get scenes_select_tags => 'Выбрать теги';
 
   @override
-  String get scenes_no_scrapers => 'No scrapers available';
+  String get scenes_no_scrapers => 'Нет доступных скрейперов';
 
   @override
-  String get scenes_select_scraper => 'Select Scraper';
+  String get scenes_select_scraper => 'Выбрать скрейпер';
 
   @override
-  String get scenes_no_results_found => 'No results found';
+  String get scenes_no_results_found => 'Результаты не найдены';
 
   @override
-  String get scenes_select_result => 'Select Result';
+  String get scenes_select_result => 'Выбрать результат';
 
   @override
   String scenes_scrape_failed(String error) {
-    return 'Scrape failed: $error';
+    return 'Сбор данных не удался: $error';
   }
 
   @override
-  String get scenes_updated_successfully => 'Scene updated successfully';
+  String get scenes_updated_successfully => 'Сцена успешно обновлена';
 
   @override
   String scenes_update_failed(String error) {
-    return 'Failed to update scene: $error';
+    return 'Не удалось обновить сцену: $error';
   }
 
   @override
-  String get scenes_edit_title => 'Edit Scene';
+  String get scenes_edit_title => 'Редактировать сцену';
 
   @override
-  String get scenes_field_studio => 'Studio';
+  String get scenes_field_studio => 'Студия';
 
   @override
-  String get scenes_field_tags => 'Tags';
+  String get scenes_field_tags => 'Теги';
 
   @override
-  String get scenes_field_urls => 'URLs';
+  String get scenes_field_urls => 'URL';
 
   @override
-  String get common_no_title => 'No title';
+  String get common_no_title => 'Без названия';
 
   @override
-  String get scenes_select_studio => 'Select Studio';
+  String get scenes_select_studio => 'Выбрать студию';
 
   @override
-  String get scenes_select_performers => 'Select Performers';
+  String get scenes_select_performers => 'Выбрать исполнителей';
 
   @override
-  String get scenes_unmatched_scraped_tags => 'Unmatched Scraped Tags';
+  String get scenes_unmatched_scraped_tags =>
+      'Несопоставленные полученные теги';
 
   @override
   String get scenes_unmatched_scraped_performers =>
-      'Unmatched Scraped Performers';
+      'Несопоставленные полученные исполнители';
 
   @override
   String get scenes_no_matching_performer_found =>
-      'No matching performer found in library';
+      'Не найден подходящий исполнитель в библиотеке';
 
   @override
-  String get common_unknown => 'Unknown';
+  String get common_unknown => 'Неизвестно';
 
   @override
   String scenes_studio_id_prefix(String id) {
-    return 'Studio ID: $id';
+    return 'ID студии: $id';
   }
 }

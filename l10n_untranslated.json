@@ -1,0 +1,39 @@
+{
+  "es": [
+    "common_show",
+    "common_hide",
+    "galleries_filter_saved",
+    "scenes_select_studio",
+    "scenes_select_performers",
+    "scenes_unmatched_scraped_tags",
+    "scenes_unmatched_scraped_performers",
+    "scenes_no_matching_performer_found",
+    "common_unknown",
+    "scenes_studio_id_prefix"
+  ],
+
+  "fr": [
+    "common_show",
+    "common_hide",
+    "galleries_filter_saved",
+    "scenes_select_studio",
+    "scenes_select_performers",
+    "scenes_unmatched_scraped_tags",
+    "scenes_unmatched_scraped_performers",
+    "scenes_no_matching_performer_found",
+    "common_unknown",
+    "scenes_studio_id_prefix"
+  ],
+
+  "ja": [
+    "common_show",
+    "common_hide",
+    "galleries_filter_saved"
+  ],
+
+  "ko": [
+    "common_show",
+    "common_hide",
+    "galleries_filter_saved"
+  ]
+}

@@ -112,13 +112,14 @@ class AppLocalizationsIt extends AppLocalizations {
   String get common_no_media => 'Nessun media disponibile';
 
   @override
-  String get common_show => 'Show';
+  String get common_show => 'Mostra';
 
   @override
-  String get common_hide => 'Hide';
+  String get common_hide => 'Nascondi';
 
   @override
-  String get galleries_filter_saved => 'Filter preferences saved as default';
+  String get galleries_filter_saved =>
+      'Preferenze filtro salvate come predefinite';
 
   @override
   String get common_setup_required => 'Configurazione Richiesta';
@@ -1251,7 +1252,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get scenes_select_scraper => 'Seleziona scraper';
 
   @override
-  String get scenes_no_results_found => 'No results found';
+  String get scenes_no_results_found => 'Nessun risultato trovato';
 
   @override
   String get scenes_select_result => 'Seleziona risultato';
@@ -1276,7 +1277,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get scenes_field_studio => 'Studio';
 
   @override
-  String get scenes_field_tags => 'Tags';
+  String get scenes_field_tags => 'Tag';
 
   @override
   String get scenes_field_urls => 'URLs';
@@ -1285,27 +1286,27 @@ class AppLocalizationsIt extends AppLocalizations {
   String get common_no_title => 'Nessun titolo';
 
   @override
-  String get scenes_select_studio => 'Select Studio';
+  String get scenes_select_studio => 'Seleziona studio';
 
   @override
-  String get scenes_select_performers => 'Select Performers';
+  String get scenes_select_performers => 'Seleziona interpreti';
 
   @override
-  String get scenes_unmatched_scraped_tags => 'Unmatched Scraped Tags';
+  String get scenes_unmatched_scraped_tags => 'Tag estratti non corrispondenti';
 
   @override
   String get scenes_unmatched_scraped_performers =>
-      'Unmatched Scraped Performers';
+      'Interpreti estratti non corrispondenti';
 
   @override
   String get scenes_no_matching_performer_found =>
-      'No matching performer found in library';
+      'Nessun interprete corrispondente trovato nella libreria';
 
   @override
-  String get common_unknown => 'Unknown';
+  String get common_unknown => 'Sconosciuto';
 
   @override
   String scenes_studio_id_prefix(String id) {
-    return 'Studio ID: $id';
+    return 'ID studio: $id';
   }
 }

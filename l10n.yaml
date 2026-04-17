@@ -15,4 +15,5 @@ preferred-supported-locales:
   - zh
   - zh_Hans
   - zh_Hant
+untranslated-messages-file: l10n_untranslated.json
 

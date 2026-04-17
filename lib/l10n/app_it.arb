@@ -452,5 +452,19 @@
   "scenes_field_sources": "Fonti",
   "scenes_field_sources_hint": "Aggiungi sorgenti separate da virgole",
   "scenes_field_title": "Titolo",
-  "scenes_field_title_hint": "Titolo della scena"
+  "scenes_field_title_hint": "Titolo della scena",
+  "common_show": "Mostra",
+  "common_hide": "Nascondi",
+  "galleries_filter_saved": "Preferenze filtro salvate come predefinite",
+  "scenes_no_results_found": "Nessun risultato trovato",
+  "scenes_field_studio": "Studio",
+  "scenes_field_tags": "Tag",
+  "scenes_field_urls": "URLs",
+  "scenes_select_studio": "Seleziona studio",
+  "scenes_select_performers": "Seleziona interpreti",
+  "scenes_unmatched_scraped_tags": "Tag estratti non corrispondenti",
+  "scenes_unmatched_scraped_performers": "Interpreti estratti non corrispondenti",
+  "scenes_no_matching_performer_found": "Nessun interprete corrispondente trovato nella libreria",
+  "common_unknown": "Sconosciuto",
+  "scenes_studio_id_prefix": "ID studio: {id}"
 }

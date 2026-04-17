@@ -1236,41 +1236,42 @@ class AppLocalizationsFr extends AppLocalizations {
   String get common_done => 'Terminé';
 
   @override
-  String get settings_keybind_assign_shortcut => 'Assign Shortcut';
+  String get settings_keybind_assign_shortcut => 'Attribuer un raccourci';
 
   @override
-  String get settings_keybind_press_any => 'Press any key combination...';
+  String get settings_keybind_press_any =>
+      'Appuyez sur n\'importe quelle combinaison de touches...';
 
   @override
-  String get scenes_select_tags => 'Select Tags';
+  String get scenes_select_tags => 'Sélectionner des tags';
 
   @override
-  String get scenes_no_scrapers => 'No scrapers available';
+  String get scenes_no_scrapers => 'Aucun scrapper disponible';
 
   @override
-  String get scenes_select_scraper => 'Select Scraper';
+  String get scenes_select_scraper => 'Sélectionner un scrapper';
 
   @override
-  String get scenes_no_results_found => 'No results found';
+  String get scenes_no_results_found => 'Aucun résultat trouvé';
 
   @override
-  String get scenes_select_result => 'Select Result';
+  String get scenes_select_result => 'Sélectionner un résultat';
 
   @override
   String scenes_scrape_failed(String error) {
-    return 'Scrape failed: $error';
+    return 'Échec de l\'extraction : $error';
   }
 
   @override
-  String get scenes_updated_successfully => 'Scene updated successfully';
+  String get scenes_updated_successfully => 'Scène mise à jour avec succès';
 
   @override
   String scenes_update_failed(String error) {
-    return 'Failed to update scene: $error';
+    return 'Échec de la mise à jour de la scène : $error';
   }
 
   @override
-  String get scenes_edit_title => 'Edit Scene';
+  String get scenes_edit_title => 'Modifier la scène';
 
   @override
   String get scenes_field_studio => 'Studio';
@@ -1282,7 +1283,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get scenes_field_urls => 'URLs';
 
   @override
-  String get common_no_title => 'No title';
+  String get common_no_title => 'Sans titre';
 
   @override
   String get scenes_select_studio => 'Select Studio';

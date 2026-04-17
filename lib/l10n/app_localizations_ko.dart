@@ -1166,76 +1166,75 @@ class AppLocalizationsKo extends AppLocalizations {
   String get common_done => '완료';
 
   @override
-  String get settings_keybind_assign_shortcut => 'Assign Shortcut';
+  String get settings_keybind_assign_shortcut => '단축키 할당';
 
   @override
-  String get settings_keybind_press_any => 'Press any key combination...';
+  String get settings_keybind_press_any => '아무 키 조합이나 누르세요...';
 
   @override
-  String get scenes_select_tags => 'Select Tags';
+  String get scenes_select_tags => '태그 선택';
 
   @override
-  String get scenes_no_scrapers => 'No scrapers available';
+  String get scenes_no_scrapers => '사용 가능한 스크레이퍼가 없습니다';
 
   @override
-  String get scenes_select_scraper => 'Select Scraper';
+  String get scenes_select_scraper => '스크레이퍼 선택';
 
   @override
-  String get scenes_no_results_found => 'No results found';
+  String get scenes_no_results_found => '결과를 찾을 수 없습니다';
 
   @override
-  String get scenes_select_result => 'Select Result';
+  String get scenes_select_result => '결과 선택';
 
   @override
   String scenes_scrape_failed(String error) {
-    return 'Scrape failed: $error';
+    return '스크랩 실패: $error';
   }
 
   @override
-  String get scenes_updated_successfully => 'Scene updated successfully';
+  String get scenes_updated_successfully => '장면이 성공적으로 업데이트되었습니다';
 
   @override
   String scenes_update_failed(String error) {
-    return 'Failed to update scene: $error';
+    return '장면 업데이트에 실패했습니다: $error';
   }
 
   @override
-  String get scenes_edit_title => 'Edit Scene';
+  String get scenes_edit_title => '장면 편집';
 
   @override
-  String get scenes_field_studio => 'Studio';
+  String get scenes_field_studio => '스튜디오';
 
   @override
-  String get scenes_field_tags => 'Tags';
+  String get scenes_field_tags => '태그';
 
   @override
-  String get scenes_field_urls => 'URLs';
+  String get scenes_field_urls => 'URL';
 
   @override
-  String get common_no_title => 'No title';
+  String get common_no_title => '제목 없음';
 
   @override
-  String get scenes_select_studio => 'Select Studio';
+  String get scenes_select_studio => '스튜디오 선택';
 
   @override
-  String get scenes_select_performers => 'Select Performers';
+  String get scenes_select_performers => '출연자 선택';
 
   @override
-  String get scenes_unmatched_scraped_tags => 'Unmatched Scraped Tags';
+  String get scenes_unmatched_scraped_tags => '일치하지 않는 스크랩된 태그';
 
   @override
-  String get scenes_unmatched_scraped_performers =>
-      'Unmatched Scraped Performers';
+  String get scenes_unmatched_scraped_performers => '일치하지 않는 스크랩된 출연자';
 
   @override
   String get scenes_no_matching_performer_found =>
-      'No matching performer found in library';
+      '라이브러리에서 일치하는 출연자를 찾을 수 없습니다';
 
   @override
-  String get common_unknown => 'Unknown';
+  String get common_unknown => '알 수 없음';
 
   @override
   String scenes_studio_id_prefix(String id) {
-    return 'Studio ID: $id';
+    return '스튜디오 ID: $id';
   }
 }
