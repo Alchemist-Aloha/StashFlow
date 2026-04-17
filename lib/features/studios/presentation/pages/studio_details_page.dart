@@ -11,6 +11,7 @@ import '../providers/studio_galleries_provider.dart';
 import '../../../images/presentation/providers/image_list_provider.dart';
 
 import '../../../../core/presentation/widgets/section_header.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/widgets/media_strip.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
@@ -29,8 +30,8 @@ class StudioDetailsPage extends ConsumerWidget {
 
     if (randomStudio == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No studios available for random navigation'),
+        SnackBar(
+          content: Text(context.l10n.studios_no_random),
         ),
       );
       return;
@@ -48,7 +49,7 @@ class StudioDetailsPage extends ConsumerWidget {
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Studio Details')),
+      appBar: AppBar(title: Text(context.l10n.details_studio)),
       floatingActionButton: randomNavigationEnabled
           ? FloatingActionButton.small(
               onPressed: () => _openRandomStudio(context, ref),
