@@ -1081,6 +1081,47 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settings_playback_seek_double_tap_label => 'Doppio tocco';
 
   @override
+  String get settings_playback_subtitle_lang_none_disabled =>
+      'Nessuno (Disattivato)';
+
+  @override
+  String get settings_playback_subtitle_lang_auto_if_only_one =>
+      'Automatico (Se ce n\'è solo uno)';
+
+  @override
+  String get settings_playback_subtitle_lang_english => 'Inglese';
+
+  @override
+  String get settings_playback_subtitle_lang_chinese => 'Cinese';
+
+  @override
+  String get settings_playback_subtitle_lang_german => 'Tedesco';
+
+  @override
+  String get settings_playback_subtitle_lang_french => 'Francese';
+
+  @override
+  String get settings_playback_subtitle_lang_spanish => 'Spagnolo';
+
+  @override
+  String get settings_playback_subtitle_lang_italian => 'Italiano';
+
+  @override
+  String get settings_playback_subtitle_lang_japanese => 'Giapponese';
+
+  @override
+  String get settings_playback_subtitle_lang_korean => 'Coreano';
+
+  @override
+  String get settings_playback_subtitle_align_left => 'Sinistra';
+
+  @override
+  String get settings_playback_subtitle_align_center => 'Centro';
+
+  @override
+  String get settings_playback_subtitle_align_right => 'Destra';
+
+  @override
   String get settings_support_title => 'Supporto';
 
   @override

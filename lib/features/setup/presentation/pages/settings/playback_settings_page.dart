@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
-import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import '../../widgets/settings_page_shell.dart';
@@ -191,8 +190,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
-                    title: 'Seek interaction',
-                    subtitle: 'Choose how scrubbing works during playback',
+                    title: context.l10n.settings_playback_seek,
+                    subtitle: context.l10n.settings_playback_seek_subtitle,
                     child: _buildSeekInteractionSelector(),
                   ),
                 ],
@@ -203,16 +202,16 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
 
   Widget _buildDefaultSubtitleSelector() {
     final languages = [
-      ('none', 'None (Disabled)'),
-      ('auto', 'Auto (If only one)'),
-      ('en', 'English'),
-      ('zh', 'Chinese'),
-      ('de', 'German'),
-      ('fr', 'French'),
-      ('es', 'Spanish'),
-      ('it', 'Italian'),
-      ('ja', 'Japanese'),
-      ('ko', 'Korean'),
+      ('none', context.l10n.settings_playback_subtitle_lang_none_disabled),
+      ('auto', context.l10n.settings_playback_subtitle_lang_auto_if_only_one),
+      ('en', context.l10n.settings_playback_subtitle_lang_english),
+      ('zh', context.l10n.settings_playback_subtitle_lang_chinese),
+      ('de', context.l10n.settings_playback_subtitle_lang_german),
+      ('fr', context.l10n.settings_playback_subtitle_lang_french),
+      ('es', context.l10n.settings_playback_subtitle_lang_spanish),
+      ('it', context.l10n.settings_playback_subtitle_lang_italian),
+      ('ja', context.l10n.settings_playback_subtitle_lang_japanese),
+      ('ko', context.l10n.settings_playback_subtitle_lang_korean),
     ];
 
     return ListTile(
@@ -273,7 +272,9 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
           children: [
             Text(context.l10n.settings_playback_subtitle_pos),
             Text(
-              '${(_subtitlePositionBottomRatio * 100).round()}% from bottom',
+              context.l10n.settings_playback_subtitle_pos_desc(
+                (_subtitlePositionBottomRatio * 100).round().toString(),
+              ),
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ],
@@ -296,9 +297,9 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
 
   Widget _buildSubtitleAlignmentSelector() {
     final alignments = [
-      ('left', 'Left'),
-      ('center', 'Center'),
-      ('right', 'Right'),
+      ('left', context.l10n.settings_playback_subtitle_align_left),
+      ('center', context.l10n.settings_playback_subtitle_align_center),
+      ('right', context.l10n.settings_playback_subtitle_align_right),
     ];
 
     return ListTile(

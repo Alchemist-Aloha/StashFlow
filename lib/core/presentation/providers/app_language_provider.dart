@@ -18,7 +18,10 @@ class AppLanguageNotifier extends Notifier<Locale?> {
       if (parts.length == 2) {
         // Treat common script codes (e.g. Hans/Hant) as scriptCode, not country.
         if (parts[1] == 'Hans' || parts[1] == 'Hant') {
-          return Locale.fromSubtags(languageCode: parts[0], scriptCode: parts[1]);
+          return Locale.fromSubtags(
+            languageCode: parts[0],
+            scriptCode: parts[1],
+          );
         }
         return Locale(parts[0], parts[1]);
       }
@@ -43,7 +46,10 @@ class AppLanguageNotifier extends Notifier<Locale?> {
         final parts = languageCode.split('_');
         if (parts.length == 2) {
           if (parts[1] == 'Hans' || parts[1] == 'Hant') {
-            state = Locale.fromSubtags(languageCode: parts[0], scriptCode: parts[1]);
+            state = Locale.fromSubtags(
+              languageCode: parts[0],
+              scriptCode: parts[1],
+            );
           } else {
             state = Locale(parts[0], parts[1]);
           }

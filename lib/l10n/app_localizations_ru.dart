@@ -1066,6 +1066,46 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_playback_seek_double_tap_label => 'Двойное нажатие';
 
   @override
+  String get settings_playback_subtitle_lang_none_disabled => 'Нет (Отключено)';
+
+  @override
+  String get settings_playback_subtitle_lang_auto_if_only_one =>
+      'Авто (если только один)';
+
+  @override
+  String get settings_playback_subtitle_lang_english => 'Английский';
+
+  @override
+  String get settings_playback_subtitle_lang_chinese => 'Китайский';
+
+  @override
+  String get settings_playback_subtitle_lang_german => 'Немецкий';
+
+  @override
+  String get settings_playback_subtitle_lang_french => 'Французский';
+
+  @override
+  String get settings_playback_subtitle_lang_spanish => 'Испанский';
+
+  @override
+  String get settings_playback_subtitle_lang_italian => 'Итальянский';
+
+  @override
+  String get settings_playback_subtitle_lang_japanese => 'Японский';
+
+  @override
+  String get settings_playback_subtitle_lang_korean => 'Корейский';
+
+  @override
+  String get settings_playback_subtitle_align_left => 'Слева';
+
+  @override
+  String get settings_playback_subtitle_align_center => 'По центру';
+
+  @override
+  String get settings_playback_subtitle_align_right => 'Справа';
+
+  @override
   String get settings_support_title => 'Поддержка';
 
   @override

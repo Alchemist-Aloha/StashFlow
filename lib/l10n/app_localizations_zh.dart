@@ -1008,6 +1008,45 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_playback_seek_double_tap_label => '双击';
 
   @override
+  String get settings_playback_subtitle_lang_none_disabled => '无（禁用）';
+
+  @override
+  String get settings_playback_subtitle_lang_auto_if_only_one => '自动（仅有一个时）';
+
+  @override
+  String get settings_playback_subtitle_lang_english => '英语';
+
+  @override
+  String get settings_playback_subtitle_lang_chinese => '中文';
+
+  @override
+  String get settings_playback_subtitle_lang_german => '德语';
+
+  @override
+  String get settings_playback_subtitle_lang_french => '法语';
+
+  @override
+  String get settings_playback_subtitle_lang_spanish => '西班牙语';
+
+  @override
+  String get settings_playback_subtitle_lang_italian => '意大利语';
+
+  @override
+  String get settings_playback_subtitle_lang_japanese => '日语';
+
+  @override
+  String get settings_playback_subtitle_lang_korean => '韩语';
+
+  @override
+  String get settings_playback_subtitle_align_left => '左对齐';
+
+  @override
+  String get settings_playback_subtitle_align_center => '居中';
+
+  @override
+  String get settings_playback_subtitle_align_right => '右对齐';
+
+  @override
   String get settings_support_title => '支持';
 
   @override
@@ -2268,6 +2307,45 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_playback_seek_double_tap_label => '双击';
+
+  @override
+  String get settings_playback_subtitle_lang_none_disabled => '无（禁用）';
+
+  @override
+  String get settings_playback_subtitle_lang_auto_if_only_one => '自动（仅有一个时）';
+
+  @override
+  String get settings_playback_subtitle_lang_english => '英语';
+
+  @override
+  String get settings_playback_subtitle_lang_chinese => '中文';
+
+  @override
+  String get settings_playback_subtitle_lang_german => '德语';
+
+  @override
+  String get settings_playback_subtitle_lang_french => '法语';
+
+  @override
+  String get settings_playback_subtitle_lang_spanish => '西班牙语';
+
+  @override
+  String get settings_playback_subtitle_lang_italian => '意大利语';
+
+  @override
+  String get settings_playback_subtitle_lang_japanese => '日语';
+
+  @override
+  String get settings_playback_subtitle_lang_korean => '韩语';
+
+  @override
+  String get settings_playback_subtitle_align_left => '左对齐';
+
+  @override
+  String get settings_playback_subtitle_align_center => '居中';
+
+  @override
+  String get settings_playback_subtitle_align_right => '右对齐';
 
   @override
   String get settings_support_title => '支持';
@@ -3533,6 +3611,45 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_playback_seek_double_tap_label => '雙擊';
+
+  @override
+  String get settings_playback_subtitle_lang_none_disabled => '無（停用）';
+
+  @override
+  String get settings_playback_subtitle_lang_auto_if_only_one => '自動（僅有一個時）';
+
+  @override
+  String get settings_playback_subtitle_lang_english => '英語';
+
+  @override
+  String get settings_playback_subtitle_lang_chinese => '中文';
+
+  @override
+  String get settings_playback_subtitle_lang_german => '德語';
+
+  @override
+  String get settings_playback_subtitle_lang_french => '法語';
+
+  @override
+  String get settings_playback_subtitle_lang_spanish => '西班牙語';
+
+  @override
+  String get settings_playback_subtitle_lang_italian => '義大利語';
+
+  @override
+  String get settings_playback_subtitle_lang_japanese => '日語';
+
+  @override
+  String get settings_playback_subtitle_lang_korean => '韓語';
+
+  @override
+  String get settings_playback_subtitle_align_left => '靠左';
+
+  @override
+  String get settings_playback_subtitle_align_center => '置中';
+
+  @override
+  String get settings_playback_subtitle_align_right => '靠右';
 
   @override
   String get settings_support_title => '支援';

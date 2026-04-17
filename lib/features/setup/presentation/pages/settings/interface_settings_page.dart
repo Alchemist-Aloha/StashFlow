@@ -142,16 +142,16 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SettingsSectionCard(
-                    title: 'Language',
-                    subtitle: 'Overwrite the default system language',
+                    title: context.l10n.settings_interface_language,
+                    subtitle: context.l10n.settings_interface_language_subtitle,
                     child: Column(
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'App Language',
-                              style: TextStyle(fontSize: 16),
+                            Text(
+                              context.l10n.settings_interface_app_language,
+                              style: const TextStyle(fontSize: 16),
                             ),
                             DropdownButton<String?>(
                               value:
@@ -254,8 +254,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
-                    title: 'Scenes Layout',
-                    subtitle: 'Default browsing mode for scenes',
+                    title: context.l10n.settings_interface_scenes_layout,
+                    subtitle: context.l10n.settings_interface_scenes_layout_subtitle,
                     child: Column(
                       children: [
                         _buildLayoutRow(
@@ -294,7 +294,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         if (_sceneGridLayout) ...[
                           const Divider(height: AppTheme.spacingLarge),
                           _buildGridColumnSetting(
-                            label: 'Grid Columns',
+                            label: context.l10n.settings_interface_grid_columns,
                             value: _sceneGridColumns,
                             onChanged: (value) async {
                               setState(() => _sceneGridColumns = value);
@@ -307,15 +307,14 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
-                    title: 'Galleries Layout',
-                    subtitle: 'Default browsing mode for galleries',
+                    title: context.l10n.settings_interface_galleries_layout,
+                    subtitle: context.l10n.settings_interface_galleries_layout_subtitle,
                     child: Column(
                       children: [
                         _buildLayoutRow(
                           context,
-                          label: 'Default Layout',
-                          description:
-                              'Choose the default layout for the Galleries page',
+                          label: context.l10n.settings_interface_layout_default,
+                          description: context.l10n.settings_interface_galleries_layout_subtitle_item,
                           value: _galleryGridLayout ? 'grid' : 'list',
                           options: [
                             ButtonSegment<String>(
@@ -339,7 +338,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         if (_galleryGridLayout) ...[
                           const Divider(height: AppTheme.spacingLarge),
                           _buildGridColumnSetting(
-                            label: 'Grid Columns',
+                            label: context.l10n.settings_interface_grid_columns,
                             value: _galleryGridColumns,
                             onChanged: (value) async {
                               setState(() => _galleryGridColumns = value);
@@ -352,15 +351,14 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
-                    title: 'Image Viewer',
-                    subtitle: 'Configure fullscreen image browsing behavior',
+                    title: context.l10n.settings_interface_image_viewer,
+                    subtitle: context.l10n.settings_interface_image_viewer_subtitle,
                     child: Column(
                       children: [
                         _buildLayoutRow(
                           context,
-                          label: 'Fullscreen Swipe Direction',
-                          description:
-                              'Choose how images advance in fullscreen mode',
+                          label: context.l10n.settings_interface_swipe_direction,
+                          description: context.l10n.settings_interface_swipe_direction_desc,
                           value: _imageFullscreenVerticalSwipe
                               ? 'vertical'
                               : 'horizontal',
@@ -386,7 +384,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         ),
                         const Divider(height: AppTheme.spacingLarge),
                         _buildGridColumnSetting(
-                          label: 'Waterfall Grid Columns',
+                          label: context.l10n.settings_interface_waterfall_columns,
                           value: _imageGridColumns,
                           onChanged: (value) async {
                             setState(() => _imageGridColumns = value);
@@ -398,13 +396,14 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
-                    title: 'Performer Layouts',
-                    subtitle: 'Media and gallery defaults for performers',
+                    title: context.l10n.settings_interface_performer_layouts,
+                    subtitle: context.l10n.settings_interface_performer_layouts_subtitle,
                     child: Column(
                       children: [
                         _buildLayoutSetting(
-                          title: 'Media Layout',
-                          subtitle: 'Layout for Performer Media page',
+                          title: context.l10n.settings_interface_media_layout,
+                          subtitle:
+                              context.l10n.settings_interface_media_layout_subtitle,
                           currentValue: _performerMediaGridLayout,
                           onChanged: (isGrid) {
                             setState(() => _performerMediaGridLayout = isGrid);
@@ -413,8 +412,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         ),
                         const Divider(height: AppTheme.spacingLarge),
                         _buildLayoutSetting(
-                          title: 'Galleries Layout',
-                          subtitle: 'Layout for Performer Galleries page',
+                          title: context.l10n.settings_interface_galleries_layout_item,
+                          subtitle:
+                              context.l10n.settings_interface_galleries_layout_subtitle_item,
                           currentValue: _performerGalleriesGridLayout,
                           onChanged: (isGrid) {
                             setState(
@@ -425,7 +425,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         ),
                         const Divider(height: AppTheme.spacingLarge),
                         _buildGridColumnSetting(
-                          label: 'Grid Columns',
+                          label: context.l10n.settings_interface_grid_columns,
                           value: _performerGridColumns,
                           onChanged: (value) async {
                             setState(() => _performerGridColumns = value);
@@ -437,13 +437,14 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
-                    title: 'Studio Layouts',
-                    subtitle: 'Media and gallery defaults for studios',
+                    title: context.l10n.settings_interface_studio_layouts,
+                    subtitle: context.l10n.settings_interface_studio_layouts_subtitle,
                     child: Column(
                       children: [
                         _buildLayoutSetting(
-                          title: 'Media Layout',
-                          subtitle: 'Layout for Studio Media page',
+                          title: context.l10n.settings_interface_media_layout,
+                          subtitle:
+                              context.l10n.settings_interface_media_layout_subtitle,
                           currentValue: _studioMediaGridLayout,
                           onChanged: (isGrid) {
                             setState(() => _studioMediaGridLayout = isGrid);
@@ -452,8 +453,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         ),
                         const Divider(height: AppTheme.spacingLarge),
                         _buildLayoutSetting(
-                          title: 'Galleries Layout',
-                          subtitle: 'Layout for Studio Galleries page',
+                          title: context.l10n.settings_interface_galleries_layout_item,
+                          subtitle:
+                              context.l10n.settings_interface_galleries_layout_subtitle_item,
                           currentValue: _studioGalleriesGridLayout,
                           onChanged: (isGrid) {
                             setState(() => _studioGalleriesGridLayout = isGrid);
@@ -462,7 +464,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         ),
                         const Divider(height: AppTheme.spacingLarge),
                         _buildGridColumnSetting(
-                          label: 'Grid Columns',
+                          label: context.l10n.settings_interface_grid_columns,
                           value: _studioGridColumns,
                           onChanged: (value) async {
                             setState(() => _studioGridColumns = value);
@@ -474,13 +476,14 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
-                    title: 'Tag Layouts',
-                    subtitle: 'Media and gallery defaults for tags',
+                    title: context.l10n.settings_interface_tag_layouts,
+                    subtitle: context.l10n.settings_interface_tag_layouts_subtitle,
                     child: Column(
                       children: [
                         _buildLayoutSetting(
-                          title: 'Media Layout',
-                          subtitle: 'Layout for Tag Media page',
+                          title: context.l10n.settings_interface_media_layout,
+                          subtitle:
+                              context.l10n.settings_interface_media_layout_subtitle,
                           currentValue: _tagMediaGridLayout,
                           onChanged: (isGrid) {
                             setState(() => _tagMediaGridLayout = isGrid);
@@ -489,8 +492,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         ),
                         const Divider(height: AppTheme.spacingLarge),
                         _buildLayoutSetting(
-                          title: 'Galleries Layout',
-                          subtitle: 'Layout for Tag Galleries page',
+                          title: context.l10n.settings_interface_galleries_layout_item,
+                          subtitle:
+                              context.l10n.settings_interface_galleries_layout_subtitle_item,
                           currentValue: _tagGalleriesGridLayout,
                           onChanged: (isGrid) {
                             setState(() => _tagGalleriesGridLayout = isGrid);
@@ -499,7 +503,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         ),
                         const Divider(height: AppTheme.spacingLarge),
                         _buildGridColumnSetting(
-                          label: 'Grid Columns',
+                          label: context.l10n.settings_interface_grid_columns,
                           value: _tagGridColumns,
                           onChanged: (value) async {
                             setState(() => _tagGridColumns = value);

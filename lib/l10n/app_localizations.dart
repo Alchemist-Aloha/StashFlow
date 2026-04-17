@@ -2022,6 +2022,84 @@ abstract class AppLocalizations {
   /// **'Double-tap'**
   String get settings_playback_seek_double_tap_label;
 
+  /// No description provided for @settings_playback_subtitle_lang_none_disabled.
+  ///
+  /// In en, this message translates to:
+  /// **'None (Disabled)'**
+  String get settings_playback_subtitle_lang_none_disabled;
+
+  /// No description provided for @settings_playback_subtitle_lang_auto_if_only_one.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto (If only one)'**
+  String get settings_playback_subtitle_lang_auto_if_only_one;
+
+  /// No description provided for @settings_playback_subtitle_lang_english.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get settings_playback_subtitle_lang_english;
+
+  /// No description provided for @settings_playback_subtitle_lang_chinese.
+  ///
+  /// In en, this message translates to:
+  /// **'Chinese'**
+  String get settings_playback_subtitle_lang_chinese;
+
+  /// No description provided for @settings_playback_subtitle_lang_german.
+  ///
+  /// In en, this message translates to:
+  /// **'German'**
+  String get settings_playback_subtitle_lang_german;
+
+  /// No description provided for @settings_playback_subtitle_lang_french.
+  ///
+  /// In en, this message translates to:
+  /// **'French'**
+  String get settings_playback_subtitle_lang_french;
+
+  /// No description provided for @settings_playback_subtitle_lang_spanish.
+  ///
+  /// In en, this message translates to:
+  /// **'Spanish'**
+  String get settings_playback_subtitle_lang_spanish;
+
+  /// No description provided for @settings_playback_subtitle_lang_italian.
+  ///
+  /// In en, this message translates to:
+  /// **'Italian'**
+  String get settings_playback_subtitle_lang_italian;
+
+  /// No description provided for @settings_playback_subtitle_lang_japanese.
+  ///
+  /// In en, this message translates to:
+  /// **'Japanese'**
+  String get settings_playback_subtitle_lang_japanese;
+
+  /// No description provided for @settings_playback_subtitle_lang_korean.
+  ///
+  /// In en, this message translates to:
+  /// **'Korean'**
+  String get settings_playback_subtitle_lang_korean;
+
+  /// No description provided for @settings_playback_subtitle_align_left.
+  ///
+  /// In en, this message translates to:
+  /// **'Left'**
+  String get settings_playback_subtitle_align_left;
+
+  /// No description provided for @settings_playback_subtitle_align_center.
+  ///
+  /// In en, this message translates to:
+  /// **'Center'**
+  String get settings_playback_subtitle_align_center;
+
+  /// No description provided for @settings_playback_subtitle_align_right.
+  ///
+  /// In en, this message translates to:
+  /// **'Right'**
+  String get settings_playback_subtitle_align_right;
+
   /// No description provided for @settings_support_title.
   ///
   /// In en, this message translates to:

@@ -1072,6 +1072,47 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_playback_seek_double_tap_label => 'Doppeltippen';
 
   @override
+  String get settings_playback_subtitle_lang_none_disabled =>
+      'Keine (Deaktiviert)';
+
+  @override
+  String get settings_playback_subtitle_lang_auto_if_only_one =>
+      'Automatisch (Wenn nur eins)';
+
+  @override
+  String get settings_playback_subtitle_lang_english => 'Englisch';
+
+  @override
+  String get settings_playback_subtitle_lang_chinese => 'Chinesisch';
+
+  @override
+  String get settings_playback_subtitle_lang_german => 'Deutsch';
+
+  @override
+  String get settings_playback_subtitle_lang_french => 'Französisch';
+
+  @override
+  String get settings_playback_subtitle_lang_spanish => 'Spanisch';
+
+  @override
+  String get settings_playback_subtitle_lang_italian => 'Italienisch';
+
+  @override
+  String get settings_playback_subtitle_lang_japanese => 'Japanisch';
+
+  @override
+  String get settings_playback_subtitle_lang_korean => 'Koreanisch';
+
+  @override
+  String get settings_playback_subtitle_align_left => 'Links';
+
+  @override
+  String get settings_playback_subtitle_align_center => 'Zentriert';
+
+  @override
+  String get settings_playback_subtitle_align_right => 'Rechts';
+
+  @override
   String get settings_support_title => 'Support';
 
   @override

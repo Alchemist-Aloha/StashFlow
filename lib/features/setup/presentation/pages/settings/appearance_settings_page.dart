@@ -136,14 +136,14 @@ class _AppearanceSettingsPageState
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
-                    title: 'Primary Color',
-                    subtitle: 'Pick a seed color for the Material 3 palette',
+                    title: l10n.settings_appearance_primary_color,
+                    subtitle: l10n.settings_appearance_primary_color_subtitle,
                     child: _buildColorSelector(),
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
-                    title: 'Advanced Theming',
-                    subtitle: 'Optimizations for specific screen types',
+                    title: l10n.settings_appearance_advanced_theming,
+                    subtitle: l10n.settings_appearance_advanced_theming_subtitle,
                     child: Column(
                       children: [
                         SwitchListTile.adaptive(

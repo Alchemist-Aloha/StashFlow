@@ -1024,6 +1024,45 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_playback_seek_double_tap_label => '두 번 탭';
 
   @override
+  String get settings_playback_subtitle_lang_none_disabled => '없음(비활성화)';
+
+  @override
+  String get settings_playback_subtitle_lang_auto_if_only_one => '자동(하나만 있을 때)';
+
+  @override
+  String get settings_playback_subtitle_lang_english => '영어';
+
+  @override
+  String get settings_playback_subtitle_lang_chinese => '중국어';
+
+  @override
+  String get settings_playback_subtitle_lang_german => '독일어';
+
+  @override
+  String get settings_playback_subtitle_lang_french => '프랑스어';
+
+  @override
+  String get settings_playback_subtitle_lang_spanish => '스페인어';
+
+  @override
+  String get settings_playback_subtitle_lang_italian => '이탈리아어';
+
+  @override
+  String get settings_playback_subtitle_lang_japanese => '일본어';
+
+  @override
+  String get settings_playback_subtitle_lang_korean => '한국어';
+
+  @override
+  String get settings_playback_subtitle_align_left => '왼쪽';
+
+  @override
+  String get settings_playback_subtitle_align_center => '가운데';
+
+  @override
+  String get settings_playback_subtitle_align_right => '오른쪽';
+
+  @override
   String get settings_support_title => '지원';
 
   @override

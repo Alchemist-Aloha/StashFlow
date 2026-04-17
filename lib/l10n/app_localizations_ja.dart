@@ -1025,6 +1025,45 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_playback_seek_double_tap_label => 'ダブルタップ';
 
   @override
+  String get settings_playback_subtitle_lang_none_disabled => 'なし（無効）';
+
+  @override
+  String get settings_playback_subtitle_lang_auto_if_only_one => '自動（1つのみの場合）';
+
+  @override
+  String get settings_playback_subtitle_lang_english => '英語';
+
+  @override
+  String get settings_playback_subtitle_lang_chinese => '中国語';
+
+  @override
+  String get settings_playback_subtitle_lang_german => 'ドイツ語';
+
+  @override
+  String get settings_playback_subtitle_lang_french => 'フランス語';
+
+  @override
+  String get settings_playback_subtitle_lang_spanish => 'スペイン語';
+
+  @override
+  String get settings_playback_subtitle_lang_italian => 'イタリア語';
+
+  @override
+  String get settings_playback_subtitle_lang_japanese => '日本語';
+
+  @override
+  String get settings_playback_subtitle_lang_korean => '韓国語';
+
+  @override
+  String get settings_playback_subtitle_align_left => '左';
+
+  @override
+  String get settings_playback_subtitle_align_center => '中央';
+
+  @override
+  String get settings_playback_subtitle_align_right => '右';
+
+  @override
   String get settings_support_title => 'サポート';
 
   @override
