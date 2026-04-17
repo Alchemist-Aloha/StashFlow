@@ -471,4 +471,13 @@
   "scenes_field_tags": "Tags",
   "scenes_field_urls": "URLs",
   "common_no_title": "No title"
+  ,
+  "scenes_select_studio": "Select Studio",
+  "scenes_select_performers": "Select Performers",
+  "scenes_unmatched_scraped_tags": "Unmatched Scraped Tags",
+  "scenes_unmatched_scraped_performers": "Unmatched Scraped Performers",
+  "scenes_no_matching_performer_found": "No matching performer found in library",
+  "common_unknown": "Unknown",
+  "scenes_studio_id_prefix": "Studio ID: {id}",
+  "@scenes_studio_id_prefix": {"placeholders": {"id": {"type": "String"}}}
 }

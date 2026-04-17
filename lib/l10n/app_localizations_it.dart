@@ -470,10 +470,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get scenes_filter_title => 'Filtra scene';
 
   @override
-  String get scenes_watched => 'Visto';
+  String get scenes_watched => 'Guardato';
 
   @override
-  String get scenes_unwatched => 'Non visto';
+  String get scenes_unwatched => 'Non guardato';
 
   @override
   String get performers_title => 'Attori';
@@ -1232,4 +1232,80 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get common_done => 'Fatto';
+
+  @override
+  String get settings_keybind_assign_shortcut =>
+      'Premi una scorciatoia per assegnare';
+
+  @override
+  String get settings_keybind_press_any =>
+      'Premi qualsiasi tasto per assegnare la scorciatoia';
+
+  @override
+  String get scenes_select_tags => 'Seleziona tag';
+
+  @override
+  String get scenes_no_scrapers => 'Nessun scraper trovato';
+
+  @override
+  String get scenes_select_scraper => 'Seleziona scraper';
+
+  @override
+  String get scenes_no_results_found => 'No results found';
+
+  @override
+  String get scenes_select_result => 'Seleziona risultato';
+
+  @override
+  String scenes_scrape_failed(String error) {
+    return 'Estrazione fallita';
+  }
+
+  @override
+  String get scenes_updated_successfully => 'Scene aggiornate con successo';
+
+  @override
+  String scenes_update_failed(String error) {
+    return 'Aggiornamento scene fallito';
+  }
+
+  @override
+  String get scenes_edit_title => 'Modifica scena';
+
+  @override
+  String get scenes_field_studio => 'Studio';
+
+  @override
+  String get scenes_field_tags => 'Tags';
+
+  @override
+  String get scenes_field_urls => 'URLs';
+
+  @override
+  String get common_no_title => 'Nessun titolo';
+
+  @override
+  String get scenes_select_studio => 'Select Studio';
+
+  @override
+  String get scenes_select_performers => 'Select Performers';
+
+  @override
+  String get scenes_unmatched_scraped_tags => 'Unmatched Scraped Tags';
+
+  @override
+  String get scenes_unmatched_scraped_performers =>
+      'Unmatched Scraped Performers';
+
+  @override
+  String get scenes_no_matching_performer_found =>
+      'No matching performer found in library';
+
+  @override
+  String get common_unknown => 'Unknown';
+
+  @override
+  String scenes_studio_id_prefix(String id) {
+    return 'Studio ID: $id';
+  }
 }

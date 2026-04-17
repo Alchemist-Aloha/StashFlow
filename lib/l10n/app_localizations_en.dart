@@ -1204,4 +1204,78 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get common_done => 'Done';
+
+  @override
+  String get settings_keybind_assign_shortcut => 'Assign Shortcut';
+
+  @override
+  String get settings_keybind_press_any => 'Press any key combination...';
+
+  @override
+  String get scenes_select_tags => 'Select Tags';
+
+  @override
+  String get scenes_no_scrapers => 'No scrapers available';
+
+  @override
+  String get scenes_select_scraper => 'Select Scraper';
+
+  @override
+  String get scenes_no_results_found => 'No results found';
+
+  @override
+  String get scenes_select_result => 'Select Result';
+
+  @override
+  String scenes_scrape_failed(String error) {
+    return 'Scrape failed: $error';
+  }
+
+  @override
+  String get scenes_updated_successfully => 'Scene updated successfully';
+
+  @override
+  String scenes_update_failed(String error) {
+    return 'Failed to update scene: $error';
+  }
+
+  @override
+  String get scenes_edit_title => 'Edit Scene';
+
+  @override
+  String get scenes_field_studio => 'Studio';
+
+  @override
+  String get scenes_field_tags => 'Tags';
+
+  @override
+  String get scenes_field_urls => 'URLs';
+
+  @override
+  String get common_no_title => 'No title';
+
+  @override
+  String get scenes_select_studio => 'Select Studio';
+
+  @override
+  String get scenes_select_performers => 'Select Performers';
+
+  @override
+  String get scenes_unmatched_scraped_tags => 'Unmatched Scraped Tags';
+
+  @override
+  String get scenes_unmatched_scraped_performers =>
+      'Unmatched Scraped Performers';
+
+  @override
+  String get scenes_no_matching_performer_found =>
+      'No matching performer found in library';
+
+  @override
+  String get common_unknown => 'Unknown';
+
+  @override
+  String scenes_studio_id_prefix(String id) {
+    return 'Studio ID: $id';
+  }
 }

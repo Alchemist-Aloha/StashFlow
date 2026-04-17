@@ -2279,6 +2279,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Done'**
   String get common_done;
+
+  /// No description provided for @settings_keybind_assign_shortcut.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign Shortcut'**
+  String get settings_keybind_assign_shortcut;
+
+  /// No description provided for @settings_keybind_press_any.
+  ///
+  /// In en, this message translates to:
+  /// **'Press any key combination...'**
+  String get settings_keybind_press_any;
+
+  /// No description provided for @scenes_select_tags.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Tags'**
+  String get scenes_select_tags;
+
+  /// No description provided for @scenes_no_scrapers.
+  ///
+  /// In en, this message translates to:
+  /// **'No scrapers available'**
+  String get scenes_no_scrapers;
+
+  /// No description provided for @scenes_select_scraper.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Scraper'**
+  String get scenes_select_scraper;
+
+  /// No description provided for @scenes_no_results_found.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get scenes_no_results_found;
+
+  /// No description provided for @scenes_select_result.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Result'**
+  String get scenes_select_result;
+
+  /// No description provided for @scenes_scrape_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Scrape failed: {error}'**
+  String scenes_scrape_failed(String error);
+
+  /// No description provided for @scenes_updated_successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene updated successfully'**
+  String get scenes_updated_successfully;
+
+  /// No description provided for @scenes_update_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update scene: {error}'**
+  String scenes_update_failed(String error);
+
+  /// No description provided for @scenes_edit_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Scene'**
+  String get scenes_edit_title;
+
+  /// No description provided for @scenes_field_studio.
+  ///
+  /// In en, this message translates to:
+  /// **'Studio'**
+  String get scenes_field_studio;
+
+  /// No description provided for @scenes_field_tags.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get scenes_field_tags;
+
+  /// No description provided for @scenes_field_urls.
+  ///
+  /// In en, this message translates to:
+  /// **'URLs'**
+  String get scenes_field_urls;
+
+  /// No description provided for @common_no_title.
+  ///
+  /// In en, this message translates to:
+  /// **'No title'**
+  String get common_no_title;
+
+  /// No description provided for @scenes_select_studio.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Studio'**
+  String get scenes_select_studio;
+
+  /// No description provided for @scenes_select_performers.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Performers'**
+  String get scenes_select_performers;
+
+  /// No description provided for @scenes_unmatched_scraped_tags.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmatched Scraped Tags'**
+  String get scenes_unmatched_scraped_tags;
+
+  /// No description provided for @scenes_unmatched_scraped_performers.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmatched Scraped Performers'**
+  String get scenes_unmatched_scraped_performers;
+
+  /// No description provided for @scenes_no_matching_performer_found.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching performer found in library'**
+  String get scenes_no_matching_performer_found;
+
+  /// No description provided for @common_unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get common_unknown;
+
+  /// No description provided for @scenes_studio_id_prefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Studio ID: {id}'**
+  String scenes_studio_id_prefix(String id);
 }
 
 class _AppLocalizationsDelegate

@@ -117,8 +117,8 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
   Future<void> _pickStudio() async {
     final result = await showDialog<Studio>(
       context: context,
-      builder: (context) => const EntityPicker<Studio>(
-        title: 'Select Studio',
+      builder: (context) => EntityPicker<Studio>(
+        title: context.l10n.scenes_select_studio,
         providerType: 'studio',
       ),
     );
@@ -135,7 +135,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
     final results = await showDialog<List<Performer>>(
       context: context,
       builder: (context) => EntityPicker<Performer>(
-        title: 'Select Performers',
+        title: context.l10n.scenes_select_performers,
         providerType: 'performer',
         multiSelect: true,
         initialSelection: _selectedPerformerIds,
@@ -236,7 +236,6 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                 itemBuilder: (context, index) {
                   final r = results[index];
                   return ListTile(
-                    title: Text(r.title ?? 'No title'),
                     title: Text(r.title ?? context.l10n.common_no_title),
                     subtitle: Text(r.urls.isNotEmpty ? r.urls.first : context.l10n.common_no_url),
                     onTap: () => Navigator.of(context).pop(r),
@@ -279,7 +278,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
           final id = p.storedId;
           if (id != null && !_selectedPerformerIds.contains(id)) {
             _selectedPerformerIds.add(id);
-            _selectedPerformerNames.add(p.name ?? 'Unknown');
+            _selectedPerformerNames.add(p.name ?? context.l10n.common_unknown);
           }
         }
 
@@ -297,7 +296,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
 
         if (selected.studioId != null && _selectedStudioId == null) {
           _selectedStudioId = selected.studioId;
-          _selectedStudioName = 'Studio ID: ${selected.studioId}';
+          _selectedStudioName = context.l10n.scenes_studio_id_prefix(selected.studioId!);
         }
       });
     } catch (e) {
@@ -384,7 +383,6 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
       appBar: AppBar(
         title: Text(context.l10n.scenes_edit_title),
         actions: [
-            title: Text(context.l10n.scenes_field_studio, style: Theme.of(context).textTheme.labelLarge),
           if (scrapeEnabled)
             if (_isScraping)
               const Center(
@@ -474,7 +472,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
             const SizedBox(height: AppTheme.spacingMedium),
 
             // Studio
-            Text('Studio', style: Theme.of(context).textTheme.labelLarge),
+            Text(context.l10n.scenes_field_studio, style: Theme.of(context).textTheme.labelLarge),
             const SizedBox(height: AppTheme.spacingSmall),
             InkWell(
               onTap: _pickStudio,
@@ -488,7 +486,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                 ),
                 child: Row(
                   children: [
-                    Expanded(child: Text(_selectedStudioName ?? 'None')),
+                    Expanded(child: Text(_selectedStudioName ?? context.l10n.common_none)),
                     if (_selectedStudioId != null)
                       IconButton(
                         padding: EdgeInsets.zero,
@@ -513,7 +511,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
             Row(
               children: [
                 Text(
-                  'Performers',
+                  context.l10n.performers_title,
                   style: Theme.of(context).textTheme.labelLarge,
                 ),
                 const Spacer(),
@@ -544,8 +542,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
             // Tags
             Row(
               children: [
-                Text('Tags', style: Theme.of(context).textTheme.labelLarge),
-                                Text(context.l10n.scenes_field_tags, style: Theme.of(context).textTheme.labelLarge),
+                Text(context.l10n.scenes_field_tags, style: Theme.of(context).textTheme.labelLarge),
                 const Spacer(),
                 IconButton(
                   onPressed: _pickTags,
@@ -573,8 +570,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
 
             Row(
               children: [
-                Text('URLs', style: Theme.of(context).textTheme.titleMedium),
-                                Text(context.l10n.scenes_field_urls, style: Theme.of(context).textTheme.titleMedium),
+                Text(context.l10n.scenes_field_urls, style: Theme.of(context).textTheme.titleMedium),
                 const Spacer(),
                 IconButton(
                   onPressed: _addUrlField,
@@ -613,7 +609,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Unmatched Scraped Tags',
+                  context.l10n.scenes_unmatched_scraped_tags,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
@@ -641,7 +637,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Unmatched Scraped Performers',
+                  context.l10n.scenes_unmatched_scraped_performers,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
@@ -651,9 +647,9 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                     .map(
                       (p) => ListTile(
                         dense: true,
-                        title: Text(p.name ?? 'Unknown'),
-                        subtitle: const Text(
-                          'No matching performer found in library',
+                        title: Text(p.name ?? context.l10n.common_unknown),
+                        subtitle: Text(
+                          context.l10n.scenes_no_matching_performer_found,
                         ),
                         leading: const Icon(Icons.person_off_outlined),
                       ),
