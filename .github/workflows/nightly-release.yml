@@ -129,20 +129,13 @@ jobs:
           zip -r ../../../../../StashFlow-macos-nightly.zip *.app
         shell: bash
 
-      - name: Staging artifacts
-        run: |
-          mkdir -p staging
-          # Copy Android APKs if they exist
-          cp build/app/outputs/flutter-apk/app-*-release.apk staging/ 2>/dev/null || true
-          # Copy other platform zips if they exist
-          cp StashFlow-*-nightly.zip staging/ 2>/dev/null || true
-        shell: bash
-
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: StashFlow-nightly-${{ matrix.artifact_name }}
-          path: staging/*
+          path: |
+            build/app/outputs/flutter-apk/app-*-release.apk
+            StashFlow-*-nightly.zip
 
   release:
     needs: build
@@ -154,40 +147,17 @@ jobs:
         id: slug
         run: echo "sha_short=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
 
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-          merge-multiple: true
-
-      - name: List artifacts for debugging
-        run: ls -R artifacts
-
-      - name: Delete existing Nightly Release
-        uses: actions/github-script@v7
-        with:
-          script: |
-            try {
-              const release = await github.rest.repos.getReleaseByTag({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                tag: 'nightly',
-              });
-              await github.rest.repos.deleteRelease({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                release_id: release.data.id,
-              });
-              console.log('Deleted existing nightly release');
-            } catch (error) {
-              console.log('No existing nightly release to delete or error:', error.message);
-            }
-
       - name: Checkout repository for tag update
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: true
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
 
       - name: Update/Push rolling `nightly` tag
         run: |
@@ -198,7 +168,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create New Rolling Nightly Release
+      - name: Update Rolling Nightly Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: nightly
@@ -206,7 +176,6 @@ jobs:
           body: "Latest development build from the dev branch. Commit: ${{ github.sha }}"
           prerelease: true
           make_latest: true
-          generate_release_notes: true
-          files: artifacts/*
+          files: artifacts/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
