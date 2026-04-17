@@ -270,6 +270,9 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
 
     int crossAxisCount = gridColumns ?? (isTablet ? 3 : (isMobile ? 2 : 5));
 
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final memCacheWidth = (screenWidth / crossAxisCount * 1.5).toInt();
+
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return ListPageScaffold<entity.Image>(
@@ -374,10 +377,6 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
               itemBuilder: (context, index) {
                 final items = imagesAsync.value ?? [];
                 if (index >= items.length) return const SizedBox.shrink();
-
-                final screenWidth = MediaQuery.sizeOf(context).width;
-                final memCacheWidth = (screenWidth / crossAxisCount * 1.5)
-                    .toInt();
 
                 return RepaintBoundary(
                   child: ImageCard(
