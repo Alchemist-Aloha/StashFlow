@@ -614,7 +614,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                 Icon(iconData, color: Colors.white, size: 48),
                 const SizedBox(height: 8),
                 Text(
-                  isMuted ? context.l10n.common_mute : '${(volume * 100).round()}%',
+                  isMuted
+                      ? context.l10n.common_mute
+                      : '${(volume * 100).round()}%',
                   style: const TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ],

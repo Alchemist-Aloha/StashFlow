@@ -198,8 +198,8 @@ class VideoPlaybackControls extends StatelessWidget {
                         (selectedType.isEmpty && isUnknownLangSelection));
 
                 final label = c.languageCode == '00' || c.languageCode.isEmpty
-                  ? '${context.l10n.common_unknown} (${c.captionType})'
-                  : '${c.languageCode.toUpperCase()} (${c.captionType})';
+                    ? '${context.l10n.common_unknown} (${c.captionType})'
+                    : '${c.languageCode.toUpperCase()} (${c.captionType})';
 
                 items.add(
                   PopupMenuItem<String?>(

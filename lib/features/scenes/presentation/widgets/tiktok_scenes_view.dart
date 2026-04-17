@@ -412,7 +412,10 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(context.l10n.common_rate, style: context.textTheme.titleLarge),
+              Text(
+                context.l10n.common_rate,
+                style: context.textTheme.titleLarge,
+              ),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,

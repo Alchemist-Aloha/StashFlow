@@ -433,7 +433,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
             style: context.textTheme.bodySmall,
           ),
         ),
-        ),
+      ),
       floatingActionButton: randomNavigationEnabled
           ? tagsAsync.maybeWhen(
               data: (tags) => FloatingActionButton.small(

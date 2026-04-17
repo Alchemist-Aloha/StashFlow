@@ -129,11 +129,11 @@ class TagDetailsPage extends ConsumerWidget {
                                   top: AppTheme.spacingSmall,
                                 ),
                                 child: Text(
-                                      context.l10n.common_no_media_found,
-                                      style: context.textTheme.bodySmall?.copyWith(
-                                        color: context.colors.onSurfaceVariant,
-                                      ),
-                                    ),
+                                  context.l10n.common_no_media_found,
+                                  style: context.textTheme.bodySmall?.copyWith(
+                                    color: context.colors.onSurfaceVariant,
+                                  ),
+                                ),
                               );
                             }
                             final shuffledItems = [...mediaItems]

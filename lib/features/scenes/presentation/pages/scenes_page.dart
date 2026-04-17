@@ -193,7 +193,10 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                       ],
                     ),
                     const SizedBox(height: AppTheme.spacingMedium),
-                    Text(context.l10n.common_sort_method, style: context.textTheme.labelLarge),
+                    Text(
+                      context.l10n.common_sort_method,
+                      style: context.textTheme.labelLarge,
+                    ),
                     const SizedBox(height: AppTheme.spacingSmall),
                     Wrap(
                       spacing: AppTheme.spacingSmall,
@@ -214,7 +217,10 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                           .toList(),
                     ),
                     const SizedBox(height: AppTheme.spacingMedium),
-                    Text(context.l10n.common_direction, style: context.textTheme.labelLarge),
+                    Text(
+                      context.l10n.common_direction,
+                      style: context.textTheme.labelLarge,
+                    ),
                     const SizedBox(height: AppTheme.spacingSmall),
                     SizedBox(
                       width: double.infinity,
