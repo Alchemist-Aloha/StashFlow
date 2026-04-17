@@ -30,6 +30,13 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   bool _galleryGridLayout = true;
   bool _imageFullscreenVerticalSwipe = true;
 
+  int? _sceneGridColumns;
+  int? _galleryGridColumns;
+  int? _performerGridColumns;
+  int? _imageGridColumns;
+  int? _studioGridColumns;
+  int? _tagGridColumns;
+
   // New settings
   bool _performerMediaGridLayout = true;
   bool _performerGalleriesGridLayout = true;
@@ -57,6 +64,13 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     _imageFullscreenVerticalSwipe =
         prefs.getBool(_imageFullscreenVerticalSwipeKey) ?? true;
 
+    _sceneGridColumns = ref.read(sceneGridColumnsProvider);
+    _galleryGridColumns = ref.read(galleryGridColumnsProvider);
+    _performerGridColumns = ref.read(performerGridColumnsProvider);
+    _imageGridColumns = ref.read(imageGridColumnsProvider);
+    _studioGridColumns = ref.read(studioGridColumnsProvider);
+    _tagGridColumns = ref.read(tagGridColumnsProvider);
+
     _performerMediaGridLayout = ref.read(performerMediaGridLayoutProvider);
     _performerGalleriesGridLayout = ref.read(
       performerGalleriesGridLayoutProvider,
@@ -79,6 +93,13 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     ref.read(sceneGridLayoutProvider.notifier).set(_sceneGridLayout);
     ref.read(sceneTiktokLayoutProvider.notifier).set(_sceneTiktokLayout);
     ref.read(galleryGridLayoutProvider.notifier).set(_galleryGridLayout);
+
+    ref.read(sceneGridColumnsProvider.notifier).set(_sceneGridColumns);
+    ref.read(galleryGridColumnsProvider.notifier).set(_galleryGridColumns);
+    ref.read(performerGridColumnsProvider.notifier).set(_performerGridColumns);
+    ref.read(imageGridColumnsProvider.notifier).set(_imageGridColumns);
+    ref.read(studioGridColumnsProvider.notifier).set(_studioGridColumns);
+    ref.read(tagGridColumnsProvider.notifier).set(_tagGridColumns);
 
     ref
         .read(performerMediaGridLayoutProvider.notifier)
@@ -203,100 +224,143 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   SettingsSectionCard(
                     title: 'Scenes Layout',
                     subtitle: 'Default browsing mode for scenes',
-                    child: _buildLayoutRow(
-                      context,
-                      label: 'Default Layout',
-                      description:
-                          'Choose the default layout for the Scenes page',
-                      value: _sceneTiktokLayout
-                          ? 'tiktok'
-                          : (_sceneGridLayout ? 'grid' : 'list'),
-                      options: const [
-                        ButtonSegment<String>(
-                          value: 'list',
-                          label: Text('List'),
-                          icon: Icon(Icons.view_list),
+                    child: Column(
+                      children: [
+                        _buildLayoutRow(
+                          context,
+                          label: 'Default Layout',
+                          description:
+                              'Choose the default layout for the Scenes page',
+                          value: _sceneTiktokLayout
+                              ? 'tiktok'
+                              : (_sceneGridLayout ? 'grid' : 'list'),
+                          options: const [
+                            ButtonSegment<String>(
+                              value: 'list',
+                              label: Text('List'),
+                              icon: Icon(Icons.view_list),
+                            ),
+                            ButtonSegment<String>(
+                              value: 'grid',
+                              label: Text('Grid'),
+                              icon: Icon(Icons.grid_view),
+                            ),
+                            ButtonSegment<String>(
+                              value: 'tiktok',
+                              label: Text('Infinite Scroll'),
+                              icon: Icon(Icons.swipe_up),
+                            ),
+                          ],
+                          onSelected: (value) async {
+                            setState(() {
+                              _sceneTiktokLayout = value == 'tiktok';
+                              _sceneGridLayout = value == 'grid';
+                            });
+                            await _saveSettings();
+                          },
                         ),
-                        ButtonSegment<String>(
-                          value: 'grid',
-                          label: Text('Grid'),
-                          icon: Icon(Icons.grid_view),
-                        ),
-                        ButtonSegment<String>(
-                          value: 'tiktok',
-                          label: Text('Infinite Scroll'),
-                          icon: Icon(Icons.swipe_up),
-                        ),
+                        if (_sceneGridLayout) ...[
+                          const Divider(height: AppTheme.spacingLarge),
+                          _buildGridColumnSetting(
+                            label: 'Grid Columns',
+                            value: _sceneGridColumns,
+                            onChanged: (value) async {
+                              setState(() => _sceneGridColumns = value);
+                              await _saveSettings();
+                            },
+                          ),
+                        ],
                       ],
-                      onSelected: (value) async {
-                        setState(() {
-                          _sceneTiktokLayout = value == 'tiktok';
-                          _sceneGridLayout = value == 'grid';
-                        });
-                        await _saveSettings();
-                      },
                     ),
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
                     title: 'Galleries Layout',
                     subtitle: 'Default browsing mode for galleries',
-                    child: _buildLayoutRow(
-                      context,
-                      label: 'Default Layout',
-                      description:
-                          'Choose the default layout for the Galleries page',
-                      value: _galleryGridLayout ? 'grid' : 'list',
-                      options: const [
-                        ButtonSegment<String>(
-                          value: 'list',
-                          label: Text('List'),
-                          icon: Icon(Icons.view_list),
+                    child: Column(
+                      children: [
+                        _buildLayoutRow(
+                          context,
+                          label: 'Default Layout',
+                          description:
+                              'Choose the default layout for the Galleries page',
+                          value: _galleryGridLayout ? 'grid' : 'list',
+                          options: const [
+                            ButtonSegment<String>(
+                              value: 'list',
+                              label: Text('List'),
+                              icon: Icon(Icons.view_list),
+                            ),
+                            ButtonSegment<String>(
+                              value: 'grid',
+                              label: Text('Grid'),
+                              icon: Icon(Icons.grid_view),
+                            ),
+                          ],
+                          onSelected: (value) async {
+                            setState(() {
+                              _galleryGridLayout = value == 'grid';
+                            });
+                            await _saveSettings();
+                          },
                         ),
-                        ButtonSegment<String>(
-                          value: 'grid',
-                          label: Text('Grid'),
-                          icon: Icon(Icons.grid_view),
-                        ),
+                        if (_galleryGridLayout) ...[
+                          const Divider(height: AppTheme.spacingLarge),
+                          _buildGridColumnSetting(
+                            label: 'Grid Columns',
+                            value: _galleryGridColumns,
+                            onChanged: (value) async {
+                              setState(() => _galleryGridColumns = value);
+                              await _saveSettings();
+                            },
+                          ),
+                        ],
                       ],
-                      onSelected: (value) async {
-                        setState(() {
-                          _galleryGridLayout = value == 'grid';
-                        });
-                        await _saveSettings();
-                      },
                     ),
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
                     title: 'Image Viewer',
                     subtitle: 'Configure fullscreen image browsing behavior',
-                    child: _buildLayoutRow(
-                      context,
-                      label: 'Fullscreen Swipe Direction',
-                      description:
-                          'Choose how images advance in fullscreen mode',
-                      value: _imageFullscreenVerticalSwipe
-                          ? 'vertical'
-                          : 'horizontal',
-                      options: const [
-                        ButtonSegment<String>(
-                          value: 'vertical',
-                          label: Text('Vertical'),
-                          icon: Icon(Icons.swap_vert_rounded),
+                    child: Column(
+                      children: [
+                        _buildLayoutRow(
+                          context,
+                          label: 'Fullscreen Swipe Direction',
+                          description:
+                              'Choose how images advance in fullscreen mode',
+                          value: _imageFullscreenVerticalSwipe
+                              ? 'vertical'
+                              : 'horizontal',
+                          options: const [
+                            ButtonSegment<String>(
+                              value: 'vertical',
+                              label: Text('Vertical'),
+                              icon: Icon(Icons.swap_vert_rounded),
+                            ),
+                            ButtonSegment<String>(
+                              value: 'horizontal',
+                              label: Text('Horizontal'),
+                              icon: Icon(Icons.swap_horiz_rounded),
+                            ),
+                          ],
+                          onSelected: (value) async {
+                            setState(() {
+                              _imageFullscreenVerticalSwipe = value == 'vertical';
+                            });
+                            await _saveSettings();
+                          },
                         ),
-                        ButtonSegment<String>(
-                          value: 'horizontal',
-                          label: Text('Horizontal'),
-                          icon: Icon(Icons.swap_horiz_rounded),
+                        const Divider(height: AppTheme.spacingLarge),
+                        _buildGridColumnSetting(
+                          label: 'Waterfall Grid Columns',
+                          value: _imageGridColumns,
+                          onChanged: (value) async {
+                            setState(() => _imageGridColumns = value);
+                            await _saveSettings();
+                          },
                         ),
                       ],
-                      onSelected: (value) async {
-                        setState(() {
-                          _imageFullscreenVerticalSwipe = value == 'vertical';
-                        });
-                        await _saveSettings();
-                      },
                     ),
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
@@ -324,6 +388,15 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                               () => _performerGalleriesGridLayout = isGrid,
                             );
                             _saveSettings();
+                          },
+                        ),
+                        const Divider(height: AppTheme.spacingLarge),
+                        _buildGridColumnSetting(
+                          label: 'Grid Columns',
+                          value: _performerGridColumns,
+                          onChanged: (value) async {
+                            setState(() => _performerGridColumns = value);
+                            await _saveSettings();
                           },
                         ),
                       ],
@@ -354,6 +427,15 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                             _saveSettings();
                           },
                         ),
+                        const Divider(height: AppTheme.spacingLarge),
+                        _buildGridColumnSetting(
+                          label: 'Grid Columns',
+                          value: _studioGridColumns,
+                          onChanged: (value) async {
+                            setState(() => _studioGridColumns = value);
+                            await _saveSettings();
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -380,6 +462,15 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           onChanged: (isGrid) {
                             setState(() => _tagGalleriesGridLayout = isGrid);
                             _saveSettings();
+                          },
+                        ),
+                        const Divider(height: AppTheme.spacingLarge),
+                        _buildGridColumnSetting(
+                          label: 'Grid Columns',
+                          value: _tagGridColumns,
+                          onChanged: (value) async {
+                            setState(() => _tagGridColumns = value);
+                            await _saveSettings();
                           },
                         ),
                       ],
@@ -546,6 +637,32 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
           ],
         );
       },
+    );
+  }
+
+  Widget _buildGridColumnSetting({
+    required String label,
+    required int? value,
+    required ValueChanged<int?> onChanged,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: const TextStyle(fontSize: 16)),
+        DropdownButton<int?>(
+          value: value,
+          dropdownColor: colorScheme.surface,
+          items: [
+            const DropdownMenuItem<int?>(value: null, child: Text('Default')),
+            ...List.generate(10, (index) => index + 1).map(
+              (i) => DropdownMenuItem<int?>(value: i, child: Text(i.toString())),
+            ),
+          ],
+          onChanged: onChanged,
+        ),
+      ],
     );
   }
 }

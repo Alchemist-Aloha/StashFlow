@@ -25,6 +25,7 @@ class PerformerGalleriesGridPage extends ConsumerWidget {
       performerGalleriesGridProvider(performerId),
     );
     final isGridView = ref.watch(performerGalleriesGridLayoutProvider);
+    final gridColumns = ref.watch(performerGridColumnsProvider);
 
     return ListPageScaffold<PerformerGalleryItem>(
       title: 'All Performer Galleries',
@@ -38,7 +39,11 @@ class PerformerGalleriesGridPage extends ConsumerWidget {
       onFetchNextPage: () => ref
           .read(performerGalleriesGridProvider(performerId).notifier)
           .fetchNextPage(),
-      gridDelegate: isGridView ? GridUtils.createDelegate() : null,
+      gridDelegate: isGridView
+          ? GridUtils.createDelegate(
+              crossAxisCount: gridColumns ?? 2,
+            )
+          : null,
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, item, memCacheWidth, memCacheHeight) => GridCard(
         title: item.title,

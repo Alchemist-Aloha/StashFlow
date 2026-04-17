@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/studio_list_provider.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
+import '../../../../core/presentation/providers/layout_settings_provider.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
@@ -368,6 +369,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
   @override
   Widget build(BuildContext context) {
     final studiosAsync = ref.watch(studioListProvider);
+    final gridColumns = ref.watch(studioGridColumnsProvider);
     final favoritesOnly = ref.watch(studioFavoritesOnlyProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final scrollController = ref.watch(studioScrollControllerProvider);

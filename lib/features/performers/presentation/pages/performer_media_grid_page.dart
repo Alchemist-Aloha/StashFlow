@@ -22,6 +22,7 @@ class PerformerMediaGridPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mediaAsync = ref.watch(performerMediaGridProvider(performerId));
     final isGridView = ref.watch(performerMediaGridLayoutProvider);
+    final gridColumns = ref.watch(performerGridColumnsProvider);
 
     return ListPageScaffold<PerformerMediaItem>(
       title: 'All Performer Media',
@@ -35,7 +36,11 @@ class PerformerMediaGridPage extends ConsumerWidget {
       onFetchNextPage: () => ref
           .read(performerMediaGridProvider(performerId).notifier)
           .fetchNextPage(),
-      gridDelegate: isGridView ? GridUtils.createDelegate() : null,
+      gridDelegate: isGridView
+          ? GridUtils.createDelegate(
+              crossAxisCount: gridColumns ?? 2,
+            )
+          : null,
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, item, memCacheWidth, memCacheHeight) => GridCard(
         title: item.title,

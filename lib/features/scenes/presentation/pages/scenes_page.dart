@@ -9,6 +9,7 @@ import '../providers/playback_queue_provider.dart';
 import '../widgets/scene_card.dart';
 import '../widgets/tiktok_scenes_view.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
+import '../../../../core/presentation/providers/layout_settings_provider.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
@@ -317,6 +318,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
 
     final isTiktokLayout = ref.watch(sceneTiktokLayoutProvider);
     final isGridView = ref.watch(sceneGridLayoutProvider);
+    final gridColumns = ref.watch(sceneGridColumnsProvider);
     final scenesAsync = ref.watch(sceneListProvider);
 
     // Use select for more granular watching where possible
@@ -399,7 +401,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       ],
       gridDelegate: isGridView
           ? GridUtils.createDelegate(
-              crossAxisCount: _getGridColumnCount(context),
+              crossAxisCount: gridColumns ?? _getGridColumnCount(context),
             )
           : null,
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,

@@ -17,6 +17,7 @@ import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
+import '../../../../core/presentation/providers/layout_settings_provider.dart';
 
 enum _GallerySortOption { title, date, rating, imageCount, path, random }
 
@@ -279,6 +280,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
   Widget build(BuildContext context) {
     final galleriesAsync = ref.watch(galleryListProvider);
     final isGridView = ref.watch(galleryGridLayoutProvider);
+    final gridColumns = ref.watch(galleryGridColumnsProvider);
     final filterActive = ref.watch(
       galleryFilterStateProvider.select((s) => s != GalleryFilter.empty()),
     );
@@ -349,7 +351,11 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
       onRefresh: () => ref.read(galleryListProvider.notifier).refresh(),
       onFetchNextPage: () =>
           ref.read(galleryListProvider.notifier).fetchNextPage(),
-      gridDelegate: isGridView ? GridUtils.createDelegate() : null,
+      gridDelegate: isGridView
+          ? GridUtils.createDelegate(
+              crossAxisCount: gridColumns ?? 2,
+            )
+          : null,
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, gallery, memCacheWidth, memCacheHeight) =>
           GalleryCard(

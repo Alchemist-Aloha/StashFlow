@@ -22,6 +22,7 @@ class StudioMediaGridPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mediaAsync = ref.watch(studioMediaGridProvider(studioId));
     final isGridView = ref.watch(studioMediaGridLayoutProvider);
+    final gridColumns = ref.watch(studioGridColumnsProvider);
 
     return ListPageScaffold<StudioMediaItem>(
       title: 'Studio Media',
@@ -33,7 +34,11 @@ class StudioMediaGridPage extends ConsumerWidget {
       onRefresh: () => ref.refresh(studioMediaGridProvider(studioId).future),
       onFetchNextPage: () =>
           ref.read(studioMediaGridProvider(studioId).notifier).fetchNextPage(),
-      gridDelegate: isGridView ? GridUtils.createDelegate() : null,
+      gridDelegate: isGridView
+          ? GridUtils.createDelegate(
+              crossAxisCount: gridColumns ?? 2,
+            )
+          : null,
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, item, memCacheWidth, memCacheHeight) => GridCard(
         title: item.title,

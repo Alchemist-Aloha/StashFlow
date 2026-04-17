@@ -20,6 +20,7 @@ class TagGalleriesGridPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final galleriesAsync = ref.watch(tagGalleriesGridProvider(tagId));
     final isGridView = ref.watch(tagGalleriesGridLayoutProvider);
+    final gridColumns = ref.watch(tagGridColumnsProvider);
 
     return ListPageScaffold<PerformerGalleryItem>(
       title: 'Tag Galleries',
@@ -30,7 +31,11 @@ class TagGalleriesGridPage extends ConsumerWidget {
       onRefresh: () => ref.refresh(tagGalleriesGridProvider(tagId).future),
       onFetchNextPage: () =>
           ref.read(tagGalleriesGridProvider(tagId).notifier).fetchNextPage(),
-      gridDelegate: isGridView ? GridUtils.createDelegate() : null,
+      gridDelegate: isGridView
+          ? GridUtils.createDelegate(
+              crossAxisCount: gridColumns ?? 2,
+            )
+          : null,
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, item, memCacheWidth, memCacheHeight) => GridCard(
         title: item.title,

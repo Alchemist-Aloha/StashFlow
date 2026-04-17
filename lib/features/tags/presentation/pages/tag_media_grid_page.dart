@@ -22,6 +22,7 @@ class TagMediaGridPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mediaAsync = ref.watch(tagMediaGridProvider(tagId));
     final isGridView = ref.watch(tagMediaGridLayoutProvider);
+    final gridColumns = ref.watch(tagGridColumnsProvider);
 
     return ListPageScaffold<TagMediaItem>(
       title: 'Tag Media',
@@ -33,7 +34,11 @@ class TagMediaGridPage extends ConsumerWidget {
       onRefresh: () => ref.refresh(tagMediaGridProvider(tagId).future),
       onFetchNextPage: () =>
           ref.read(tagMediaGridProvider(tagId).notifier).fetchNextPage(),
-      gridDelegate: isGridView ? GridUtils.createDelegate() : null,
+      gridDelegate: isGridView
+          ? GridUtils.createDelegate(
+              crossAxisCount: gridColumns ?? 2,
+            )
+          : null,
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, item, memCacheWidth, memCacheHeight) => GridCard(
         title: item.title,

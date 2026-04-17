@@ -5,6 +5,7 @@ import '../../domain/entities/performer.dart';
 import '../providers/performer_list_provider.dart';
 import '../widgets/performer_card.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
+import '../../../../core/presentation/providers/layout_settings_provider.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
@@ -421,6 +422,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
   @override
   Widget build(BuildContext context) {
     final performersAsync = ref.watch(performerListProvider);
+    final gridColumns = ref.watch(performerGridColumnsProvider);
     final filterState = ref.watch(performerFilterProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final scrollController = ref.watch(performerScrollControllerProvider);
@@ -483,14 +485,14 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
           ],
         ),
       ],
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: gridColumns ?? 3,
         crossAxisSpacing: AppTheme.spacingSmall,
         mainAxisSpacing: AppTheme.spacingSmall,
         childAspectRatio: 0.85,
       ),
-      mobileCrossAxisCount: 3,
-      tabletCrossAxisCount: 5,
+      mobileCrossAxisCount: gridColumns ?? 3,
+      tabletCrossAxisCount: gridColumns ?? 5,
       itemBuilder: (context, performer, memCacheWidth, memCacheHeight) {
         return PerformerCard(
           performer: performer,
