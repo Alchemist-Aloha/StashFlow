@@ -359,6 +359,91 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
     }
   }
 
+  Widget _buildGridView(
+    BuildContext context,
+    List<T> items,
+    int? memCacheWidth,
+  ) {
+    return GridView.builder(
+      controller: widget.scrollController,
+      padding: widget.padding,
+      gridDelegate: _getResponsiveGridDelegate(context),
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        if (index == 0 &&
+            widget.imageUrlBuilder != null &&
+            _measuredItemExtent == null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_measuredItemExtent == null &&
+                _firstItemKey.currentContext != null) {
+              final size = _firstItemKey.currentContext!.size;
+              if (size != null) {
+                setState(() {
+                  _measuredItemExtent = size.height;
+                });
+              }
+            }
+          });
+        }
+
+        return RepaintBoundary(
+          child: KeyedSubtree(
+            key: index == 0 ? _firstItemKey : null,
+            child: widget.itemBuilder!(
+              context,
+              items[index],
+              memCacheWidth,
+              null,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildListView(
+    BuildContext context,
+    List<T> items,
+    int? memCacheWidth,
+  ) {
+    return ListView.builder(
+      controller: widget.scrollController,
+      padding: widget.padding,
+      itemCount: items.length,
+      itemExtent: widget.itemExtent,
+      itemBuilder: (context, index) {
+        if (index == 0 &&
+            widget.imageUrlBuilder != null &&
+            widget.itemExtent == null &&
+            _measuredItemExtent == null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_measuredItemExtent == null &&
+                _firstItemKey.currentContext != null) {
+              final size = _firstItemKey.currentContext!.size;
+              if (size != null) {
+                setState(() {
+                  _measuredItemExtent = size.height;
+                });
+              }
+            }
+          });
+        }
+
+        return RepaintBoundary(
+          child: KeyedSubtree(
+            key: index == 0 ? _firstItemKey : null,
+            child: widget.itemBuilder!(
+              context,
+              items[index],
+              memCacheWidth,
+              null,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -484,83 +569,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                 Widget body =
                     widget.customBody ??
                     (widget.gridDelegate != null
-                        ? GridView.builder(
-                            controller: widget.scrollController,
-                            padding: widget.padding,
-                            gridDelegate: _getResponsiveGridDelegate(context),
-                            itemCount: items.length,
-                            itemBuilder: (context, index) {
-                              if (index == 0 &&
-                                  widget.imageUrlBuilder != null &&
-                                  _measuredItemExtent == null) {
-                                WidgetsBinding.instance.addPostFrameCallback((
-                                  _,
-                                ) {
-                                  if (_measuredItemExtent == null &&
-                                      _firstItemKey.currentContext != null) {
-                                    final size =
-                                        _firstItemKey.currentContext!.size;
-                                    if (size != null) {
-                                      setState(() {
-                                        _measuredItemExtent = size.height;
-                                      });
-                                    }
-                                  }
-                                });
-                              }
-
-                              return RepaintBoundary(
-                                child: KeyedSubtree(
-                                  key: index == 0 ? _firstItemKey : null,
-                                  child: widget.itemBuilder!(
-                                    context,
-                                    items[index],
-                                    memCacheWidth,
-                                    null,
-                                  ),
-                                ),
-                              );
-                            },
-                          )
-                        : ListView.builder(
-                            controller: widget.scrollController,
-                            padding: widget.padding,
-                            itemCount: items.length,
-                            itemExtent: widget.itemExtent,
-                            itemBuilder: (context, index) {
-                              if (index == 0 &&
-                                  widget.imageUrlBuilder != null &&
-                                  widget.itemExtent == null &&
-                                  _measuredItemExtent == null) {
-                                WidgetsBinding.instance.addPostFrameCallback((
-                                  _,
-                                ) {
-                                  if (_measuredItemExtent == null &&
-                                      _firstItemKey.currentContext != null) {
-                                    final size =
-                                        _firstItemKey.currentContext!.size;
-                                    if (size != null) {
-                                      setState(() {
-                                        _measuredItemExtent = size.height;
-                                      });
-                                    }
-                                  }
-                                });
-                              }
-
-                              return RepaintBoundary(
-                                child: KeyedSubtree(
-                                  key: index == 0 ? _firstItemKey : null,
-                                  child: widget.itemBuilder!(
-                                    context,
-                                    items[index],
-                                    memCacheWidth,
-                                    null,
-                                  ),
-                                ),
-                              );
-                            },
-                          ));
+                        ? _buildGridView(context, items, memCacheWidth)
+                        : _buildListView(context, items, memCacheWidth));
 
                 if (widget.onRefresh != null) {
                   body = RefreshIndicator(
