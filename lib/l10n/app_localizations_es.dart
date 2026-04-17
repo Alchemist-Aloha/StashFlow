@@ -477,25 +477,26 @@ class AppLocalizationsEs extends AppLocalizations {
   String get scenes_unwatched => 'Sin ver';
 
   @override
-  String get scenes_search_hint => 'Search scenes...';
+  String get scenes_search_hint => 'Buscar escenas...';
 
   @override
-  String get scenes_sort_header => 'Sort Scenes';
+  String get scenes_sort_header => 'Ordenar escenas';
 
   @override
-  String get scenes_sort_duration => 'Duration';
+  String get scenes_sort_duration => 'Duración';
 
   @override
-  String get scenes_sort_bitrate => 'Bitrate';
+  String get scenes_sort_bitrate => 'Tasa de bits';
 
   @override
-  String get scenes_sort_framerate => 'Framerate';
+  String get scenes_sort_framerate => 'Frecuencia de fotogramas';
 
   @override
-  String get scenes_sort_saved_default => 'Sort preferences saved as default';
+  String get scenes_sort_saved_default =>
+      'Preferencias de orden guardadas como predeterminado';
 
   @override
-  String get scenes_sort_tooltip => 'Sort options';
+  String get scenes_sort_tooltip => 'Opciones de orden';
 
   @override
   String get tags_search_hint => 'Buscar etiquetas...';

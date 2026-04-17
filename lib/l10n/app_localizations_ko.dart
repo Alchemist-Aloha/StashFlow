@@ -465,34 +465,34 @@ class AppLocalizationsKo extends AppLocalizations {
   String get scenes_unwatched => '안 본 항목';
 
   @override
-  String get scenes_search_hint => 'Search scenes...';
+  String get scenes_search_hint => '장면 검색...';
 
   @override
-  String get scenes_sort_header => 'Sort Scenes';
+  String get scenes_sort_header => '장면 정렬';
 
   @override
-  String get scenes_sort_duration => 'Duration';
+  String get scenes_sort_duration => '길이';
 
   @override
-  String get scenes_sort_bitrate => 'Bitrate';
+  String get scenes_sort_bitrate => '비트레이트';
 
   @override
-  String get scenes_sort_framerate => 'Framerate';
+  String get scenes_sort_framerate => '프레임 속도';
 
   @override
-  String get scenes_sort_saved_default => 'Sort preferences saved as default';
+  String get scenes_sort_saved_default => '정렬 설정이 기본값으로 저장됨';
 
   @override
-  String get scenes_sort_tooltip => 'Sort options';
+  String get scenes_sort_tooltip => '정렬 옵션';
 
   @override
-  String get tags_search_hint => 'Search tags...';
+  String get tags_search_hint => '태그 검색...';
 
   @override
-  String get tags_sort_tooltip => 'Sort options';
+  String get tags_sort_tooltip => '정렬 옵션';
 
   @override
-  String get tags_filter_tooltip => 'Filter options';
+  String get tags_filter_tooltip => '필터 옵션';
 
   @override
   String get performers_title => '출연자';
@@ -871,7 +871,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
 
   @override
-  String get settings_server_login_failed => 'Login failed';
+  String get settings_server_login_failed => '로그인 실패';
 
   @override
   String get settings_server_auth_method => '인증 방식';

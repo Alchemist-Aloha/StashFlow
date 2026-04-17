@@ -109,9 +109,9 @@ abstract class AppLocalizations {
     Locale('ru'),
     Locale('ja'),
     Locale('ko'),
-    Locale('zh'),
     Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
     Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
+    Locale('zh'),
   ];
 
   /// The name of the application

@@ -465,34 +465,34 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scenes_unwatched => '未看';
 
   @override
-  String get scenes_search_hint => 'Search scenes...';
+  String get scenes_search_hint => '搜索场景...';
 
   @override
-  String get scenes_sort_header => 'Sort Scenes';
+  String get scenes_sort_header => '排序场景';
 
   @override
-  String get scenes_sort_duration => 'Duration';
+  String get scenes_sort_duration => '时长';
 
   @override
-  String get scenes_sort_bitrate => 'Bitrate';
+  String get scenes_sort_bitrate => '比特率';
 
   @override
-  String get scenes_sort_framerate => 'Framerate';
+  String get scenes_sort_framerate => '帧率';
 
   @override
-  String get scenes_sort_saved_default => 'Sort preferences saved as default';
+  String get scenes_sort_saved_default => '排序偏好已保存为默认';
 
   @override
-  String get scenes_sort_tooltip => 'Sort options';
+  String get scenes_sort_tooltip => '排序选项';
 
   @override
-  String get tags_search_hint => 'Search tags...';
+  String get tags_search_hint => '搜索标签...';
 
   @override
-  String get tags_sort_tooltip => 'Sort options';
+  String get tags_sort_tooltip => '排序选项';
 
   @override
-  String get tags_filter_tooltip => 'Filter options';
+  String get tags_filter_tooltip => '筛选选项';
 
   @override
   String get performers_title => '演职人员';
@@ -860,7 +860,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
 
   @override
-  String get settings_server_login_failed => 'Login failed';
+  String get settings_server_login_failed => '登录失败';
 
   @override
   String get settings_server_auth_method => '身份验证方式';
@@ -1727,34 +1727,34 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scenes_unwatched => '未看';
 
   @override
-  String get scenes_search_hint => 'Search scenes...';
+  String get scenes_search_hint => '搜索场景...';
 
   @override
-  String get scenes_sort_header => 'Sort Scenes';
+  String get scenes_sort_header => '排序场景';
 
   @override
-  String get scenes_sort_duration => 'Duration';
+  String get scenes_sort_duration => '时长';
 
   @override
-  String get scenes_sort_bitrate => 'Bitrate';
+  String get scenes_sort_bitrate => '比特率';
 
   @override
-  String get scenes_sort_framerate => 'Framerate';
+  String get scenes_sort_framerate => '帧率';
 
   @override
-  String get scenes_sort_saved_default => 'Sort preferences saved as default';
+  String get scenes_sort_saved_default => '排序偏好已保存为默认';
 
   @override
-  String get scenes_sort_tooltip => 'Sort options';
+  String get scenes_sort_tooltip => '排序选项';
 
   @override
-  String get tags_search_hint => 'Search tags...';
+  String get tags_search_hint => '搜索标签...';
 
   @override
-  String get tags_sort_tooltip => 'Sort options';
+  String get tags_sort_tooltip => '排序选项';
 
   @override
-  String get tags_filter_tooltip => 'Filter options';
+  String get tags_filter_tooltip => '筛选选项';
 
   @override
   String get performers_title => '演职人员';
@@ -2122,7 +2122,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
 
   @override
-  String get settings_server_login_failed => 'Login failed';
+  String get settings_server_login_failed => '登录失败';
 
   @override
   String get settings_server_auth_method => '身份验证方式';
@@ -2991,34 +2991,34 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scenes_unwatched => '未看';
 
   @override
-  String get scenes_search_hint => 'Search scenes...';
+  String get scenes_search_hint => '搜尋場景...';
 
   @override
-  String get scenes_sort_header => 'Sort Scenes';
+  String get scenes_sort_header => '排序場景';
 
   @override
-  String get scenes_sort_duration => 'Duration';
+  String get scenes_sort_duration => '時長';
 
   @override
-  String get scenes_sort_bitrate => 'Bitrate';
+  String get scenes_sort_bitrate => '比特率';
 
   @override
-  String get scenes_sort_framerate => 'Framerate';
+  String get scenes_sort_framerate => '幀率';
 
   @override
-  String get scenes_sort_saved_default => 'Sort preferences saved as default';
+  String get scenes_sort_saved_default => '排序偏好已保存為預設';
 
   @override
-  String get scenes_sort_tooltip => 'Sort options';
+  String get scenes_sort_tooltip => '排序選項';
 
   @override
-  String get tags_search_hint => 'Search tags...';
+  String get tags_search_hint => '搜尋標籤...';
 
   @override
-  String get tags_sort_tooltip => 'Sort options';
+  String get tags_sort_tooltip => '排序選項';
 
   @override
-  String get tags_filter_tooltip => 'Filter options';
+  String get tags_filter_tooltip => '篩選選項';
 
   @override
   String get performers_title => '演職人員';
@@ -3386,7 +3386,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
 
   @override
-  String get settings_server_login_failed => 'Login failed';
+  String get settings_server_login_failed => '登入失敗';
 
   @override
   String get settings_server_auth_method => '驗證方式';

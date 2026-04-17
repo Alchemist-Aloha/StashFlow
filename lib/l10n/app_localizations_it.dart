@@ -477,34 +477,35 @@ class AppLocalizationsIt extends AppLocalizations {
   String get scenes_unwatched => 'Non guardato';
 
   @override
-  String get scenes_search_hint => 'Search scenes...';
+  String get scenes_search_hint => 'Cerca scene...';
 
   @override
-  String get scenes_sort_header => 'Sort Scenes';
+  String get scenes_sort_header => 'Ordina scene';
 
   @override
-  String get scenes_sort_duration => 'Duration';
+  String get scenes_sort_duration => 'Durata';
 
   @override
   String get scenes_sort_bitrate => 'Bitrate';
 
   @override
-  String get scenes_sort_framerate => 'Framerate';
+  String get scenes_sort_framerate => 'Frequenza fotogrammi';
 
   @override
-  String get scenes_sort_saved_default => 'Sort preferences saved as default';
+  String get scenes_sort_saved_default =>
+      'Preferenze di ordinamento salvate come predefinito';
 
   @override
-  String get scenes_sort_tooltip => 'Sort options';
+  String get scenes_sort_tooltip => 'Opzioni di ordinamento';
 
   @override
-  String get tags_search_hint => 'Search tags...';
+  String get tags_search_hint => 'Cerca tag...';
 
   @override
-  String get tags_sort_tooltip => 'Sort options';
+  String get tags_sort_tooltip => 'Opzioni di ordinamento';
 
   @override
-  String get tags_filter_tooltip => 'Filter options';
+  String get tags_filter_tooltip => 'Opzioni di filtro';
 
   @override
   String get performers_title => 'Attori';
@@ -910,7 +911,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
 
   @override
-  String get settings_server_login_failed => 'Login failed';
+  String get settings_server_login_failed => 'Accesso non riuscito';
 
   @override
   String get settings_server_auth_method => 'Metodo di Autenticazione';

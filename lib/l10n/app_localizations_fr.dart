@@ -475,25 +475,26 @@ class AppLocalizationsFr extends AppLocalizations {
   String get scenes_unwatched => 'Non vu';
 
   @override
-  String get scenes_search_hint => 'Search scenes...';
+  String get scenes_search_hint => 'Rechercher des scènes...';
 
   @override
-  String get scenes_sort_header => 'Sort Scenes';
+  String get scenes_sort_header => 'Trier les scènes';
 
   @override
-  String get scenes_sort_duration => 'Duration';
+  String get scenes_sort_duration => 'Durée';
 
   @override
-  String get scenes_sort_bitrate => 'Bitrate';
+  String get scenes_sort_bitrate => 'Débit';
 
   @override
-  String get scenes_sort_framerate => 'Framerate';
+  String get scenes_sort_framerate => 'Fréquence d\'images';
 
   @override
-  String get scenes_sort_saved_default => 'Sort preferences saved as default';
+  String get scenes_sort_saved_default =>
+      'Préférences de tri enregistrées par défaut';
 
   @override
-  String get scenes_sort_tooltip => 'Sort options';
+  String get scenes_sort_tooltip => 'Options de tri';
 
   @override
   String get tags_search_hint => 'Rechercher des tags...';

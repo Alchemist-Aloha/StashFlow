@@ -467,34 +467,34 @@ class AppLocalizationsJa extends AppLocalizations {
   String get scenes_unwatched => '未視聴';
 
   @override
-  String get scenes_search_hint => 'Search scenes...';
+  String get scenes_search_hint => 'シーンを検索...';
 
   @override
-  String get scenes_sort_header => 'Sort Scenes';
+  String get scenes_sort_header => 'シーンを並べ替え';
 
   @override
-  String get scenes_sort_duration => 'Duration';
+  String get scenes_sort_duration => '長さ';
 
   @override
-  String get scenes_sort_bitrate => 'Bitrate';
+  String get scenes_sort_bitrate => 'ビットレート';
 
   @override
-  String get scenes_sort_framerate => 'Framerate';
+  String get scenes_sort_framerate => 'フレームレート';
 
   @override
-  String get scenes_sort_saved_default => 'Sort preferences saved as default';
+  String get scenes_sort_saved_default => '並べ替えの設定がデフォルトとして保存されました';
 
   @override
-  String get scenes_sort_tooltip => 'Sort options';
+  String get scenes_sort_tooltip => 'ソートオプション';
 
   @override
-  String get tags_search_hint => 'Search tags...';
+  String get tags_search_hint => 'タグを検索...';
 
   @override
-  String get tags_sort_tooltip => 'Sort options';
+  String get tags_sort_tooltip => 'ソートオプション';
 
   @override
-  String get tags_filter_tooltip => 'Filter options';
+  String get tags_filter_tooltip => 'フィルターオプション';
 
   @override
   String get performers_title => 'パフォーマー';
@@ -872,7 +872,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
 
   @override
-  String get settings_server_login_failed => 'Login failed';
+  String get settings_server_login_failed => 'ログインに失敗しました';
 
   @override
   String get settings_server_auth_method => '認証方法';

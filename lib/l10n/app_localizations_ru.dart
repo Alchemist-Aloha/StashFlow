@@ -473,34 +473,35 @@ class AppLocalizationsRu extends AppLocalizations {
   String get scenes_unwatched => 'Не просмотрено';
 
   @override
-  String get scenes_search_hint => 'Search scenes...';
+  String get scenes_search_hint => 'Поиск сцен...';
 
   @override
-  String get scenes_sort_header => 'Sort Scenes';
+  String get scenes_sort_header => 'Сортировать сцены';
 
   @override
-  String get scenes_sort_duration => 'Duration';
+  String get scenes_sort_duration => 'Длительность';
 
   @override
-  String get scenes_sort_bitrate => 'Bitrate';
+  String get scenes_sort_bitrate => 'Битрейт';
 
   @override
-  String get scenes_sort_framerate => 'Framerate';
+  String get scenes_sort_framerate => 'Частота кадров';
 
   @override
-  String get scenes_sort_saved_default => 'Sort preferences saved as default';
+  String get scenes_sort_saved_default =>
+      'Настройки сортировки сохранены по умолчанию';
 
   @override
-  String get scenes_sort_tooltip => 'Sort options';
+  String get scenes_sort_tooltip => 'Параметры сортировки';
 
   @override
-  String get tags_search_hint => 'Search tags...';
+  String get tags_search_hint => 'Поиск тегов...';
 
   @override
-  String get tags_sort_tooltip => 'Sort options';
+  String get tags_sort_tooltip => 'Параметры сортировки';
 
   @override
-  String get tags_filter_tooltip => 'Filter options';
+  String get tags_filter_tooltip => 'Параметры фильтрации';
 
   @override
   String get performers_title => 'Исполнители';
@@ -897,7 +898,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
 
   @override
-  String get settings_server_login_failed => 'Login failed';
+  String get settings_server_login_failed => 'Ошибка входа';
 
   @override
   String get settings_server_auth_method => 'Метод аутентификации';
