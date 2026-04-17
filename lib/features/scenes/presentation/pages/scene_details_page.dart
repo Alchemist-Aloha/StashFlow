@@ -308,236 +308,251 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   }
 
   Widget _buildMainInfo(BuildContext context, Scene scene, bool scrapeEnabled) {
-    final primaryFile = scene.files.isNotEmpty ? scene.files.first : null;
-    final detailsText = (scene.details ?? '').trim();
-    final hasDetails = detailsText.isNotEmpty;
-    final canExpandDetails =
-        detailsText.length > 260 || detailsText.contains('\n');
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildTitle(context, scene),
+        const SizedBox(height: 6),
+        _buildStudioAndDate(context, scene),
+        const SizedBox(height: 10),
+        _buildTechnicalMetadata(context, scene),
+        const SizedBox(height: 16),
+        _buildActions(context, scene, scrapeEnabled),
+        Divider(
+          height: 32,
+          color: context.colors.outline.withValues(alpha: 0.2),
+        ),
+        _buildDetails(context, scene),
+      ],
+    );
+  }
+
+  Widget _buildTitle(BuildContext context, Scene scene) {
+    return Text(
+      scene.displayTitle,
+      style: context.textTheme.headlineSmall?.copyWith(
+        fontWeight: FontWeight.bold,
+        color: context.colors.onSurface,
+      ),
+    );
+  }
+
+  Widget _buildStudioAndDate(BuildContext context, Scene scene) {
     final canOpenStudio =
         scene.studioId != null && (scene.studioName ?? '').trim().isNotEmpty;
+
+    return Row(
+      children: [
+        if (scene.studioName != null)
+          GestureDetector(
+            onTap: canOpenStudio
+                ? () => context.push('/studios/studio/${scene.studioId}')
+                : null,
+            child: Text(
+              scene.studioName!,
+              style: context.textTheme.titleMedium?.copyWith(
+                color: canOpenStudio
+                    ? context.colors.primary
+                    : context.colors.onSurface,
+                fontWeight: FontWeight.w500,
+                decoration: canOpenStudio
+                    ? TextDecoration.underline
+                    : TextDecoration.none,
+              ),
+            ),
+          ),
+        if (scene.studioName != null)
+          Text(
+            ' • ',
+            style: TextStyle(
+              color: context.colors.onSurface.withValues(alpha: 0.5),
+            ),
+          ),
+        Text(
+          scene.date.year.toString(),
+          style: context.textTheme.titleMedium?.copyWith(
+            color: context.colors.onSurface.withValues(alpha: 0.6),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTechnicalMetadata(BuildContext context, Scene scene) {
+    final primaryFile = scene.files.isNotEmpty ? scene.files.first : null;
+
+    return Wrap(
+      spacing: 6,
+      runSpacing: 6,
+      children: [
+        if (primaryFile?.duration != null)
+          _buildChip(
+            context,
+            _formatDuration(primaryFile!.duration),
+            icon: Icons.timer,
+          ),
+        if (primaryFile?.width != null && primaryFile?.height != null)
+          _buildChip(
+            context,
+            '${primaryFile!.width}x${primaryFile.height}',
+            icon: Icons.fullscreen,
+          ),
+        if (primaryFile?.frameRate != null)
+          _buildChip(
+            context,
+            '${primaryFile!.frameRate!.toStringAsFixed(2)} fps',
+            icon: Icons.slow_motion_video,
+          ),
+        if (primaryFile?.bitRate != null)
+          _buildChip(
+            context,
+            '${(primaryFile!.bitRate! / 1000000).toStringAsFixed(2)} Mbps',
+            icon: Icons.speed,
+          ),
+        if (scene.rating100 != null)
+          _buildChip(
+            context,
+            'Rating: ${(scene.rating100! / 20).toStringAsFixed(1)}',
+            icon: Icons.star,
+            iconColor: context.colors.ratingColor,
+          ),
+        _buildChip(context, '${scene.playCount} plays', icon: Icons.play_arrow),
+      ],
+    );
+  }
+
+  Widget _buildActions(BuildContext context, Scene scene, bool scrapeEnabled) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        for (var i = 1; i <= 5; i++)
+          GestureDetector(
+            onTap: () async {
+              final currentRating = scene.rating100 ?? 0;
+              final newRating = (currentRating == i * 20) ? 0 : i * 20;
+
+              try {
+                await ref
+                    .read(sceneRepositoryProvider)
+                    .updateSceneRating(scene.id, newRating);
+                ref.invalidate(sceneDetailsProvider(scene.id));
+                _invalidateSceneListUnlessRandom();
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to update rating: $e')),
+                  );
+                }
+              }
+            },
+            child: Icon(
+              (scene.rating100 ?? 0) >= i * 20 ? Icons.star : Icons.star_border,
+              color: context.colors.ratingColor,
+              size: 28,
+            ),
+          ),
+        if (scene.rating100 != null && scene.rating100! > 0)
+          Text(
+            (scene.rating100! / 20).toStringAsFixed(1),
+            style: context.textTheme.bodyMedium?.copyWith(
+              color: context.colors.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
+        FilledButton.tonalIcon(
+          onPressed: () async {
+            try {
+              await ref
+                  .read(sceneRepositoryProvider)
+                  .incrementSceneOCounter(scene.id);
+              ref.invalidate(sceneDetailsProvider(scene.id));
+              _invalidateSceneListUnlessRandom();
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('O count incremented')),
+                );
+              }
+            } catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Failed to increment O count: $e')),
+                );
+              }
+            }
+          },
+          style: FilledButton.styleFrom(
+            visualDensity: VisualDensity.compact,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            minimumSize: const Size(0, 32),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          ),
+          icon: const Icon(Icons.water_drop_outlined),
+          label: Text('${scene.oCounter}'),
+        ),
+        if (scrapeEnabled)
+          FilledButton.tonalIcon(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => SceneEditPage(scene: scene),
+                ),
+              );
+            },
+            style: FilledButton.styleFrom(
+              visualDensity: VisualDensity.compact,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              minimumSize: const Size(0, 32),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            ),
+            icon: const Icon(Icons.edit_outlined),
+            label: const Text('Edit'),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildDetails(BuildContext context, Scene scene) {
+    final detailsText = (scene.details ?? '').trim();
+    if (detailsText.isEmpty) return const SizedBox.shrink();
+
+    final canExpandDetails =
+        detailsText.length > 260 || detailsText.contains('\n');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          scene.displayTitle,
-          style: context.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: context.colors.onSurface,
-          ),
-        ),
-        const SizedBox(height: 6),
         Row(
           children: [
-            if (scene.studioName != null)
-              GestureDetector(
-                onTap: canOpenStudio
-                    ? () => context.push('/studios/studio/${scene.studioId}')
-                    : null,
-                child: Text(
-                  scene.studioName!,
-                  style: context.textTheme.titleMedium?.copyWith(
-                    color: canOpenStudio
-                        ? context.colors.primary
-                        : context.colors.onSurface,
-                    fontWeight: FontWeight.w500,
-                    decoration: canOpenStudio
-                        ? TextDecoration.underline
-                        : TextDecoration.none,
-                  ),
-                ),
-              ),
-            if (scene.studioName != null)
-              Text(
-                ' • ',
-                style: TextStyle(
-                  color: context.colors.onSurface.withValues(alpha: 0.5),
-                ),
-              ),
             Text(
-              scene.date.year.toString(),
+              'Details',
               style: context.textTheme.titleMedium?.copyWith(
-                color: context.colors.onSurface.withValues(alpha: 0.6),
+                fontWeight: FontWeight.w600,
               ),
             ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Wrap(
-          spacing: 6,
-          runSpacing: 6,
-          children: [
-            if (primaryFile?.duration != null)
-              _buildChip(
-                context,
-                _formatDuration(primaryFile!.duration),
-                icon: Icons.timer,
-              ),
-            if (primaryFile?.width != null && primaryFile?.height != null)
-              _buildChip(
-                context,
-                '${primaryFile!.width}x${primaryFile.height}',
-                icon: Icons.fullscreen,
-              ),
-            if (primaryFile?.frameRate != null)
-              _buildChip(
-                context,
-                '${primaryFile!.frameRate!.toStringAsFixed(2)} fps',
-                icon: Icons.slow_motion_video,
-              ),
-            if (primaryFile?.bitRate != null)
-              _buildChip(
-                context,
-                '${(primaryFile!.bitRate! / 1000000).toStringAsFixed(2)} Mbps',
-                icon: Icons.speed,
-              ),
-            if (scene.rating100 != null)
-              _buildChip(
-                context,
-                'Rating: ${(scene.rating100! / 20).toStringAsFixed(1)}',
-                icon: Icons.star,
-                iconColor: context.colors.ratingColor,
-              ),
-            _buildChip(
-              context,
-              '${scene.playCount} plays',
-              icon: Icons.play_arrow,
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            for (var i = 1; i <= 5; i++)
-              GestureDetector(
-                onTap: () async {
-                  final currentRating = scene.rating100 ?? 0;
-                  final newRating = (currentRating == i * 20) ? 0 : i * 20;
-
-                  try {
-                    await ref
-                        .read(sceneRepositoryProvider)
-                        .updateSceneRating(scene.id, newRating);
-                    ref.invalidate(sceneDetailsProvider(scene.id));
-                    _invalidateSceneListUnlessRandom();
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Failed to update rating: $e')),
-                      );
-                    }
-                  }
-                },
-                child: Icon(
-                  (scene.rating100 ?? 0) >= i * 20
-                      ? Icons.star
-                      : Icons.star_border,
-                  color: context.colors.ratingColor,
-                  size: 28,
-                ),
-              ),
-            if (scene.rating100 != null && scene.rating100! > 0)
-              Text(
-                (scene.rating100! / 20).toStringAsFixed(1),
-                style: context.textTheme.bodyMedium?.copyWith(
-                  color: context.colors.onSurface.withValues(alpha: 0.7),
-                ),
-              ),
-            FilledButton.tonalIcon(
-              onPressed: () async {
-                try {
-                  await ref
-                      .read(sceneRepositoryProvider)
-                      .incrementSceneOCounter(scene.id);
-                  ref.invalidate(sceneDetailsProvider(scene.id));
-                  _invalidateSceneListUnlessRandom();
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('O count incremented')),
-                    );
-                  }
-                } catch (e) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Failed to increment O count: $e'),
-                      ),
-                    );
-                  }
-                }
-              },
-              style: FilledButton.styleFrom(
-                visualDensity: VisualDensity.compact,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                minimumSize: const Size(0, 32),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              ),
-              icon: const Icon(Icons.water_drop_outlined),
-              label: Text('${scene.oCounter}'),
-            ),
-            if (scrapeEnabled)
-              FilledButton.tonalIcon(
+            const Spacer(),
+            if (canExpandDetails)
+              TextButton(
                 onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => SceneEditPage(scene: scene),
-                    ),
-                  );
+                  setState(() => _detailsExpanded = !_detailsExpanded);
                 },
-                style: FilledButton.styleFrom(
-                  visualDensity: VisualDensity.compact,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  minimumSize: const Size(0, 32),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 6,
-                  ),
-                ),
-                icon: const Icon(Icons.edit_outlined),
-                label: const Text('Edit'),
+                child: Text(_detailsExpanded ? 'Show less' : 'Show more'),
               ),
           ],
+        ),
+        const SizedBox(height: AppTheme.spacingSmall),
+        Text(
+          detailsText,
+          maxLines: _detailsExpanded ? null : _collapsedDetailsLines,
+          overflow: _detailsExpanded ? null : TextOverflow.ellipsis,
+          style: context.textTheme.bodyMedium?.copyWith(
+            color: context.colors.onSurface.withValues(alpha: 0.8),
+          ),
         ),
         Divider(
           height: 32,
           color: context.colors.outline.withValues(alpha: 0.2),
         ),
-        if (hasDetails) ...[
-          Row(
-            children: [
-              Text(
-                'Details',
-                style: context.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const Spacer(),
-              if (canExpandDetails)
-                TextButton(
-                  onPressed: () {
-                    setState(() => _detailsExpanded = !_detailsExpanded);
-                  },
-                  child: Text(_detailsExpanded ? 'Show less' : 'Show more'),
-                ),
-            ],
-          ),
-          const SizedBox(height: AppTheme.spacingSmall),
-          Text(
-            detailsText,
-            maxLines: _detailsExpanded ? null : _collapsedDetailsLines,
-            overflow: _detailsExpanded ? null : TextOverflow.ellipsis,
-            style: context.textTheme.bodyMedium?.copyWith(
-              color: context.colors.onSurface.withValues(alpha: 0.8),
-            ),
-          ),
-          Divider(
-            height: 32,
-            color: context.colors.outline.withValues(alpha: 0.2),
-          ),
-        ],
       ],
     );
   }
