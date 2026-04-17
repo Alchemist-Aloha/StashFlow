@@ -117,7 +117,7 @@ class StudioDetailsPage extends ConsumerWidget {
                         ],
                         const Divider(height: 32, color: Colors.grey),
                         SectionHeader(
-                          title: 'Media',
+                          title: context.l10n.details_media,
                           onViewAll: () => context.push(
                             '/studios/studio/${studio.id}/media',
                           ),
@@ -130,7 +130,7 @@ class StudioDetailsPage extends ConsumerWidget {
                                   top: AppTheme.spacingSmall,
                                 ),
                                 child: Text(
-                                  'No media found',
+                                  context.l10n.common_no_media_found,
                                   style: context.textTheme.bodySmall?.copyWith(
                                     color: context.colors.onSurfaceVariant,
                                   ),
@@ -160,7 +160,7 @@ class StudioDetailsPage extends ConsumerWidget {
                             child: Center(child: CircularProgressIndicator()),
                           ),
                           error: (err, stack) => Text(
-                            'Failed to load media: $err',
+                            context.l10n.common_error(err.toString()),
                             style: TextStyle(
                               color: context.colors.onSurface.withValues(
                                 alpha: 0.7,
@@ -178,7 +178,7 @@ class StudioDetailsPage extends ConsumerWidget {
                               children: [
                                 const SizedBox(height: AppTheme.spacingMedium),
                                 SectionHeader(
-                                  title: 'Galleries',
+                                  title: context.l10n.details_galleries,
                                   onViewAll: () => context.push(
                                     '/studios/studio/${studio.id}/galleries',
                                   ),
@@ -212,7 +212,7 @@ class StudioDetailsPage extends ConsumerWidget {
                             child: Center(child: CircularProgressIndicator()),
                           ),
                           error: (err, stack) => Text(
-                            'Failed to load galleries: $err',
+                            context.l10n.common_error(err.toString()),
                             style: TextStyle(
                               color: context.colors.onSurface.withValues(
                                 alpha: 0.7,

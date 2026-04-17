@@ -339,7 +339,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
             visualDensity: VisualDensity.compact,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
-                        segments: [
+          segments: [
             ButtonSegment<bool>(
               value: false,
               icon: const Icon(Icons.drag_indicator),

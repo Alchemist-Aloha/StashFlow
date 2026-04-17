@@ -246,7 +246,9 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                       min: 1,
                       max: 15,
                       divisions: 28,
-                      label: '${intervalSeconds.toStringAsFixed(1)}s',
+                      label: context.l10n.images_slideshow_interval(
+                        intervalSeconds,
+                      ),
                       onChanged: (v) {
                         setDialogState(() => intervalSeconds = v);
                       },
@@ -262,7 +264,9 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                       min: 120,
                       max: 1400,
                       divisions: 32,
-                      label: '${transitionMs.round()}ms',
+                      label: context.l10n.images_slideshow_transition_ms(
+                        transitionMs.round(),
+                      ),
                       onChanged: (v) {
                         setDialogState(() => transitionMs = v);
                       },

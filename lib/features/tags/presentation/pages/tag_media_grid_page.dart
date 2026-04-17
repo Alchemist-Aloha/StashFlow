@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/grid_utils.dart';
@@ -25,8 +26,8 @@ class TagMediaGridPage extends ConsumerWidget {
     final gridColumns = ref.watch(tagGridColumnsProvider);
 
     return ListPageScaffold<TagMediaItem>(
-      title: 'Tag Media',
-      searchHint: 'Search media...',
+      title: context.l10n.details_media,
+      searchHint: context.l10n.common_search_placeholder,
       // Currently, search is not implemented on the provider for this specific view.
       onSearchChanged: (_) {},
       provider: mediaAsync,

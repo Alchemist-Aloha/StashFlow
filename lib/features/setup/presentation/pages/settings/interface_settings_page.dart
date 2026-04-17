@@ -180,13 +180,20 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_interface_navigation,
-                    subtitle: context.l10n.settings_interface_navigation_subtitle,
+                    subtitle:
+                        context.l10n.settings_interface_navigation_subtitle,
                     child: Column(
                       children: [
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
-                          title: Text(context.l10n.settings_interface_show_random),
-                          subtitle: Text(context.l10n.settings_interface_show_random_subtitle),
+                          title: Text(
+                            context.l10n.settings_interface_show_random,
+                          ),
+                          subtitle: Text(
+                            context
+                                .l10n
+                                .settings_interface_show_random_subtitle,
+                          ),
                           value: _showRandomNavigation,
                           onChanged: (value) async {
                             setState(() => _showRandomNavigation = value);
@@ -196,8 +203,14 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         const Divider(height: AppTheme.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
-                          title: Text(context.l10n.settings_interface_shake_random),
-                          subtitle: Text(context.l10n.settings_interface_shake_random_subtitle),
+                          title: Text(
+                            context.l10n.settings_interface_shake_random,
+                          ),
+                          subtitle: Text(
+                            context
+                                .l10n
+                                .settings_interface_shake_random_subtitle,
+                          ),
                           value: ref.watch(shakeToRandomEnabledProvider),
                           onChanged: (value) {
                             ref
@@ -210,7 +223,11 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           contentPadding: EdgeInsets.zero,
                           title: Row(
                             children: [
-                              Expanded(child: Text(context.l10n.settings_interface_show_edit)),
+                              Expanded(
+                                child: Text(
+                                  context.l10n.settings_interface_show_edit,
+                                ),
+                              ),
                               const SizedBox(width: 8),
                               Container(
                                 padding: const EdgeInsets.symmetric(
@@ -232,7 +249,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                               ),
                             ],
                           ),
-                          subtitle: Text(context.l10n.settings_interface_show_edit_subtitle),
+                          subtitle: Text(
+                            context.l10n.settings_interface_show_edit_subtitle,
+                          ),
                           value: _showScrapeButton,
                           onChanged: (value) async {
                             setState(() => _showScrapeButton = value);
@@ -242,8 +261,14 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         const Divider(height: AppTheme.spacingLarge),
                         ListTile(
                           contentPadding: EdgeInsets.zero,
-                          title: Text(context.l10n.settings_interface_customize_tabs),
-                          subtitle: Text(context.l10n.settings_interface_customize_tabs_subtitle),
+                          title: Text(
+                            context.l10n.settings_interface_customize_tabs,
+                          ),
+                          subtitle: Text(
+                            context
+                                .l10n
+                                .settings_interface_customize_tabs_subtitle,
+                          ),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: () {
                             context.push('/settings/interface/navigation');
@@ -255,31 +280,39 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_interface_scenes_layout,
-                    subtitle: context.l10n.settings_interface_scenes_layout_subtitle,
+                    subtitle:
+                        context.l10n.settings_interface_scenes_layout_subtitle,
                     child: Column(
                       children: [
                         _buildLayoutRow(
                           context,
                           label: context.l10n.settings_interface_layout_default,
-                          description:
-                              context.l10n.settings_interface_layout_default_desc,
+                          description: context
+                              .l10n
+                              .settings_interface_layout_default_desc,
                           value: _sceneTiktokLayout
                               ? 'tiktok'
                               : (_sceneGridLayout ? 'grid' : 'list'),
                           options: [
                             ButtonSegment<String>(
                               value: 'list',
-                              label: Text(context.l10n.settings_interface_layout_list),
+                              label: Text(
+                                context.l10n.settings_interface_layout_list,
+                              ),
                               icon: Icon(Icons.view_list),
                             ),
                             ButtonSegment<String>(
                               value: 'grid',
-                              label: Text(context.l10n.settings_interface_layout_grid),
+                              label: Text(
+                                context.l10n.settings_interface_layout_grid,
+                              ),
                               icon: Icon(Icons.grid_view),
                             ),
                             ButtonSegment<String>(
                               value: 'tiktok',
-                              label: Text(context.l10n.settings_interface_layout_tiktok),
+                              label: Text(
+                                context.l10n.settings_interface_layout_tiktok,
+                              ),
                               icon: Icon(Icons.swipe_up),
                             ),
                           ],
@@ -308,23 +341,31 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_interface_galleries_layout,
-                    subtitle: context.l10n.settings_interface_galleries_layout_subtitle,
+                    subtitle: context
+                        .l10n
+                        .settings_interface_galleries_layout_subtitle,
                     child: Column(
                       children: [
                         _buildLayoutRow(
                           context,
                           label: context.l10n.settings_interface_layout_default,
-                          description: context.l10n.settings_interface_galleries_layout_subtitle_item,
+                          description: context
+                              .l10n
+                              .settings_interface_galleries_layout_subtitle_item,
                           value: _galleryGridLayout ? 'grid' : 'list',
                           options: [
                             ButtonSegment<String>(
                               value: 'list',
-                              label: Text(context.l10n.settings_interface_layout_list),
+                              label: Text(
+                                context.l10n.settings_interface_layout_list,
+                              ),
                               icon: Icon(Icons.view_list),
                             ),
                             ButtonSegment<String>(
                               value: 'grid',
-                              label: Text(context.l10n.settings_interface_layout_grid),
+                              label: Text(
+                                context.l10n.settings_interface_layout_grid,
+                              ),
                               icon: Icon(Icons.grid_view),
                             ),
                           ],
@@ -352,25 +393,35 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_interface_image_viewer,
-                    subtitle: context.l10n.settings_interface_image_viewer_subtitle,
+                    subtitle:
+                        context.l10n.settings_interface_image_viewer_subtitle,
                     child: Column(
                       children: [
                         _buildLayoutRow(
                           context,
-                          label: context.l10n.settings_interface_swipe_direction,
-                          description: context.l10n.settings_interface_swipe_direction_desc,
+                          label:
+                              context.l10n.settings_interface_swipe_direction,
+                          description: context
+                              .l10n
+                              .settings_interface_swipe_direction_desc,
                           value: _imageFullscreenVerticalSwipe
                               ? 'vertical'
                               : 'horizontal',
                           options: [
                             ButtonSegment<String>(
                               value: 'vertical',
-                              label: Text(context.l10n.settings_interface_swipe_vertical),
+                              label: Text(
+                                context.l10n.settings_interface_swipe_vertical,
+                              ),
                               icon: Icon(Icons.swap_vert_rounded),
                             ),
                             ButtonSegment<String>(
                               value: 'horizontal',
-                              label: Text(context.l10n.settings_interface_swipe_horizontal),
+                              label: Text(
+                                context
+                                    .l10n
+                                    .settings_interface_swipe_horizontal,
+                              ),
                               icon: Icon(Icons.swap_horiz_rounded),
                             ),
                           ],
@@ -384,7 +435,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         ),
                         const Divider(height: AppTheme.spacingLarge),
                         _buildGridColumnSetting(
-                          label: context.l10n.settings_interface_waterfall_columns,
+                          label:
+                              context.l10n.settings_interface_waterfall_columns,
                           value: _imageGridColumns,
                           onChanged: (value) async {
                             setState(() => _imageGridColumns = value);
@@ -397,13 +449,16 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_interface_performer_layouts,
-                    subtitle: context.l10n.settings_interface_performer_layouts_subtitle,
+                    subtitle: context
+                        .l10n
+                        .settings_interface_performer_layouts_subtitle,
                     child: Column(
                       children: [
                         _buildLayoutSetting(
                           title: context.l10n.settings_interface_media_layout,
-                          subtitle:
-                              context.l10n.settings_interface_media_layout_subtitle,
+                          subtitle: context
+                              .l10n
+                              .settings_interface_media_layout_subtitle,
                           currentValue: _performerMediaGridLayout,
                           onChanged: (isGrid) {
                             setState(() => _performerMediaGridLayout = isGrid);
@@ -412,9 +467,12 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         ),
                         const Divider(height: AppTheme.spacingLarge),
                         _buildLayoutSetting(
-                          title: context.l10n.settings_interface_galleries_layout_item,
-                          subtitle:
-                              context.l10n.settings_interface_galleries_layout_subtitle_item,
+                          title: context
+                              .l10n
+                              .settings_interface_galleries_layout_item,
+                          subtitle: context
+                              .l10n
+                              .settings_interface_galleries_layout_subtitle_item,
                           currentValue: _performerGalleriesGridLayout,
                           onChanged: (isGrid) {
                             setState(
@@ -438,13 +496,15 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_interface_studio_layouts,
-                    subtitle: context.l10n.settings_interface_studio_layouts_subtitle,
+                    subtitle:
+                        context.l10n.settings_interface_studio_layouts_subtitle,
                     child: Column(
                       children: [
                         _buildLayoutSetting(
                           title: context.l10n.settings_interface_media_layout,
-                          subtitle:
-                              context.l10n.settings_interface_media_layout_subtitle,
+                          subtitle: context
+                              .l10n
+                              .settings_interface_media_layout_subtitle,
                           currentValue: _studioMediaGridLayout,
                           onChanged: (isGrid) {
                             setState(() => _studioMediaGridLayout = isGrid);
@@ -453,9 +513,12 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         ),
                         const Divider(height: AppTheme.spacingLarge),
                         _buildLayoutSetting(
-                          title: context.l10n.settings_interface_galleries_layout_item,
-                          subtitle:
-                              context.l10n.settings_interface_galleries_layout_subtitle_item,
+                          title: context
+                              .l10n
+                              .settings_interface_galleries_layout_item,
+                          subtitle: context
+                              .l10n
+                              .settings_interface_galleries_layout_subtitle_item,
                           currentValue: _studioGalleriesGridLayout,
                           onChanged: (isGrid) {
                             setState(() => _studioGalleriesGridLayout = isGrid);
@@ -477,13 +540,15 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_interface_tag_layouts,
-                    subtitle: context.l10n.settings_interface_tag_layouts_subtitle,
+                    subtitle:
+                        context.l10n.settings_interface_tag_layouts_subtitle,
                     child: Column(
                       children: [
                         _buildLayoutSetting(
                           title: context.l10n.settings_interface_media_layout,
-                          subtitle:
-                              context.l10n.settings_interface_media_layout_subtitle,
+                          subtitle: context
+                              .l10n
+                              .settings_interface_media_layout_subtitle,
                           currentValue: _tagMediaGridLayout,
                           onChanged: (isGrid) {
                             setState(() => _tagMediaGridLayout = isGrid);
@@ -492,9 +557,12 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         ),
                         const Divider(height: AppTheme.spacingLarge),
                         _buildLayoutSetting(
-                          title: context.l10n.settings_interface_galleries_layout_item,
-                          subtitle:
-                              context.l10n.settings_interface_galleries_layout_subtitle_item,
+                          title: context
+                              .l10n
+                              .settings_interface_galleries_layout_item,
+                          subtitle: context
+                              .l10n
+                              .settings_interface_galleries_layout_subtitle_item,
                           currentValue: _tagGalleriesGridLayout,
                           onChanged: (isGrid) {
                             setState(() => _tagGalleriesGridLayout = isGrid);

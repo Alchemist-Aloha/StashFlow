@@ -143,7 +143,8 @@ class _AppearanceSettingsPageState
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
                     title: l10n.settings_appearance_advanced_theming,
-                    subtitle: l10n.settings_appearance_advanced_theming_subtitle,
+                    subtitle:
+                        l10n.settings_appearance_advanced_theming_subtitle,
                     child: Column(
                       children: [
                         SwitchListTile.adaptive(

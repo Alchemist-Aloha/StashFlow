@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/grid_utils.dart';
@@ -23,8 +24,8 @@ class TagGalleriesGridPage extends ConsumerWidget {
     final gridColumns = ref.watch(tagGridColumnsProvider);
 
     return ListPageScaffold<PerformerGalleryItem>(
-      title: 'Tag Galleries',
-      searchHint: 'Search galleries...',
+      title: context.l10n.details_galleries,
+      searchHint: context.l10n.common_search_placeholder,
       onSearchChanged: (_) {},
       provider: galleriesAsync,
       imageUrlBuilder: (item) => item.thumbnailUrl,

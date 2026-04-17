@@ -66,11 +66,16 @@ class GalleryDetailsPage extends ConsumerWidget {
                           if (gallery.date != null)
                             _buildChip(context, gallery.date!),
                           if (gallery.imageCount != null)
-                            _buildChip(context, '${gallery.imageCount} images'),
+                            _buildChip(
+                              context,
+                              '${gallery.imageCount} ${context.l10n.common_image}',
+                            ),
                           if (gallery.rating100 != null)
                             _buildChip(
                               context,
-                              'Rating: ${(gallery.rating100! / 20).toStringAsFixed(1)}',
+                              context.l10n.images_rating(
+                                (gallery.rating100! / 20).toStringAsFixed(1),
+                              ),
                               icon: Icons.star,
                               iconColor: context.colors.ratingColor,
                             ),
@@ -82,8 +87,8 @@ class GalleryDetailsPage extends ConsumerWidget {
                           height: 32,
                           color: context.colors.outline.withValues(alpha: 0.2),
                         ),
-                        const SectionHeader(
-                          title: 'Details',
+                        SectionHeader(
+                          title: context.l10n.common_details,
                           padding: EdgeInsets.zero,
                         ),
                         const SizedBox(height: AppTheme.spacingSmall),
@@ -105,7 +110,7 @@ class GalleryDetailsPage extends ConsumerWidget {
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => ErrorStateView(
-          message: 'Failed to load gallery details.\n$err',
+          message: context.l10n.common_error(err.toString()),
           onRetry: () => ref.refresh(galleryDetailsProvider(galleryId)),
         ),
       ),

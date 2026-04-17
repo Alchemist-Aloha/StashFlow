@@ -296,7 +296,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
           children: [
             IconButton(
               icon: const Icon(Icons.sort),
-              tooltip: 'Sort options',
+              tooltip: context.l10n.scenes_sort_tooltip,
               onPressed: _showSortPanel,
             ),
             if (_sortOption != _ImageSortOption.path || _sortDescending)

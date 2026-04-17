@@ -180,7 +180,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                         if (performer.aliasList.isNotEmpty) ...[
                           const SizedBox(height: AppTheme.spacingSmall),
                           Text(
-                            'Aliases: ${performer.aliasList.join(', ')}',
+                            performer.aliasList.join(', '),
                             style: context.textTheme.bodyMedium?.copyWith(
                               color: context.colors.onSurface.withValues(
                                 alpha: 0.8,
@@ -196,7 +196,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                             if (performer.gender != null)
                               _buildChip(context, performer.gender!),
                             if (age != null)
-                              _buildChip(context, '$age years old'),
+                              _buildChip(context, '$age'),
                             if (performer.birthdate != null)
                               _buildChip(context, performer.birthdate!),
                             if (performer.country != null)
@@ -213,8 +213,8 @@ class PerformerDetailsPage extends ConsumerWidget {
                         ),
                         if (performer.tagNames.isNotEmpty) ...[
                           const Divider(height: 32, color: Colors.grey),
-                          const SectionHeader(
-                            title: 'Tags',
+                          SectionHeader(
+                            title: context.l10n.details_tags,
                             padding: EdgeInsets.zero,
                           ),
                           const SizedBox(height: AppTheme.spacingSmall),
@@ -245,8 +245,8 @@ class PerformerDetailsPage extends ConsumerWidget {
                         ],
                         if (performer.urls.isNotEmpty) ...[
                           const Divider(height: 32, color: Colors.grey),
-                          const SectionHeader(
-                            title: 'Links',
+                          SectionHeader(
+                            title: context.l10n.details_links,
                             padding: EdgeInsets.zero,
                           ),
                           const SizedBox(height: AppTheme.spacingSmall),
@@ -273,9 +273,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                                             context,
                                           ).showSnackBar(
                                             SnackBar(
-                                              content: Text(
-                                                'Could not open $url',
-                                              ),
+                                              content: Text(context.l10n.common_error(url)),
                                             ),
                                           );
                                         }
@@ -330,7 +328,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                         if (performer.details != null &&
                             performer.details!.trim().isNotEmpty) ...[
                           const Divider(height: 32, color: Colors.grey),
-                          const SectionHeader(title: 'Details'),
+                          SectionHeader(title: context.l10n.common_details),
                           Text(
                             performer.details!,
                             style: context.textTheme.bodyMedium?.copyWith(
@@ -342,7 +340,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                         ],
                         const Divider(height: 32, color: Colors.grey),
                         SectionHeader(
-                          title: 'Media',
+                          title: context.l10n.details_media,
                           onViewAll: () => context.push(
                             '/performers/performer/${performer.id}/media',
                           ),
@@ -355,7 +353,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                                   top: AppTheme.spacingSmall,
                                 ),
                                 child: Text(
-                                  'No media found',
+                                  context.l10n.common_no_media_found,
                                   style: context.textTheme.bodySmall?.copyWith(
                                     color: context.colors.onSurfaceVariant,
                                   ),
@@ -385,7 +383,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                             child: Center(child: CircularProgressIndicator()),
                           ),
                           error: (err, stack) => Text(
-                            'Failed to load media: $err',
+                            context.l10n.common_error(err.toString()),
                             style: TextStyle(
                               color: context.colors.onSurface.withValues(
                                 alpha: 0.7,
@@ -403,7 +401,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                               children: [
                                 const SizedBox(height: AppTheme.spacingMedium),
                                 SectionHeader(
-                                  title: 'Galleries',
+                                  title: context.l10n.details_galleries,
                                   onViewAll: () => context.push(
                                     '/performers/performer/${performer.id}/galleries',
                                   ),

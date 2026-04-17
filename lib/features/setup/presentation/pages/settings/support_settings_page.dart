@@ -90,7 +90,7 @@ class SupportSettingsPage extends ConsumerWidget {
                       data: (version) => SettingsActionCard(
                         icon: Icons.info_outline_rounded,
                         title: l10n.settings_support_version,
-                        subtitle: 'StashFlow $version',
+                        subtitle: '${l10n.appTitle} $version',
                         onTap: () {},
                       ),
                       loading: () => SettingsActionCard(
