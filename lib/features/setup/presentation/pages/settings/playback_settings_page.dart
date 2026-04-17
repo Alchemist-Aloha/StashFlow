@@ -20,6 +20,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   static const _useDoubleTapSeekKey = 'video_use_double_tap_seek';
   static const _enableBackgroundPlaybackKey = 'video_background_playback';
   static const _enableNativePipKey = 'video_native_pip';
+  static const _videoGravityOrientationKey = 'video_gravity_orientation';
   static const _defaultSubtitleLanguageKey = 'default_subtitle_language';
   static const _subtitleFontSizeKey = 'subtitle_font_size';
   static const _subtitlePositionBottomRatioKey =
@@ -31,6 +32,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   bool _useDoubleTapSeek = true;
   bool _enableBackgroundPlayback = false;
   bool _enableNativePip = false;
+  bool _videoGravityOrientation = true;
   String _defaultSubtitleLanguage = 'none';
   double _subtitleFontSize = 18.0;
   double _subtitlePositionBottomRatio = 0.15;
@@ -51,6 +53,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     _enableBackgroundPlayback =
         prefs.getBool(_enableBackgroundPlaybackKey) ?? false;
     _enableNativePip = prefs.getBool(_enableNativePipKey) ?? false;
+    _videoGravityOrientation =
+        prefs.getBool(_videoGravityOrientationKey) ?? true;
     _defaultSubtitleLanguage =
         prefs.getString(_defaultSubtitleLanguageKey) ?? 'none';
     _subtitleFontSize = prefs.getDouble(_subtitleFontSizeKey) ?? 18.0;
@@ -72,6 +76,10 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
       _enableBackgroundPlayback,
     );
     await prefs.setBool(_enableNativePipKey, _enableNativePip);
+    await prefs.setBool(
+      _videoGravityOrientationKey,
+      _videoGravityOrientation,
+    );
     await prefs.setString(
       _defaultSubtitleLanguageKey,
       _defaultSubtitleLanguage,
@@ -88,6 +96,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     playerStateNotifier.setUseDoubleTapSeek(_useDoubleTapSeek);
     playerStateNotifier.setEnableBackgroundPlayback(_enableBackgroundPlayback);
     playerStateNotifier.setEnableNativePip(_enableNativePip);
+    playerStateNotifier.setVideoGravityOrientation(_videoGravityOrientation);
     playerStateNotifier.setDefaultSubtitleLanguage(_defaultSubtitleLanguage);
     playerStateNotifier.setSubtitleFontSize(_subtitleFontSize);
     playerStateNotifier.setSubtitlePositionBottomRatio(
@@ -166,6 +175,23 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                           value: _enableNativePip,
                           onChanged: (value) async {
                             setState(() => _enableNativePip = value);
+                            await _saveToggleSettings();
+                          },
+                        ),
+                        const Divider(height: AppTheme.spacingLarge),
+                        SwitchListTile.adaptive(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(
+                            context.l10n.settings_playback_gravity_orientation,
+                          ),
+                          subtitle: Text(
+                            context
+                                .l10n
+                                .settings_playback_gravity_orientation_subtitle,
+                          ),
+                          value: _videoGravityOrientation,
+                          onChanged: (value) async {
+                            setState(() => _videoGravityOrientation = value);
                             await _saveToggleSettings();
                           },
                         ),
