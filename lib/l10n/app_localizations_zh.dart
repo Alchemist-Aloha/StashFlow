@@ -465,6 +465,36 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scenes_unwatched => '未看';
 
   @override
+  String get scenes_search_hint => 'Search scenes...';
+
+  @override
+  String get scenes_sort_header => 'Sort Scenes';
+
+  @override
+  String get scenes_sort_duration => 'Duration';
+
+  @override
+  String get scenes_sort_bitrate => 'Bitrate';
+
+  @override
+  String get scenes_sort_framerate => 'Framerate';
+
+  @override
+  String get scenes_sort_saved_default => 'Sort preferences saved as default';
+
+  @override
+  String get scenes_sort_tooltip => 'Sort options';
+
+  @override
+  String get tags_search_hint => 'Search tags...';
+
+  @override
+  String get tags_sort_tooltip => 'Sort options';
+
+  @override
+  String get tags_filter_tooltip => 'Filter options';
+
+  @override
   String get performers_title => '演职人员';
 
   @override
@@ -825,6 +855,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settings_server_url_helper => '示例格式：http(s)://host:port/graphql。';
+
+  @override
+  String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
+
+  @override
+  String get settings_server_login_failed => 'Login failed';
 
   @override
   String get settings_server_auth_method => '身份验证方式';
@@ -1216,6 +1252,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String scenes_studio_id_prefix(String id) {
     return '制片商 ID：$id';
   }
+
+  @override
+  String get tags_search_placeholder => '搜索标签...';
+
+  @override
+  String get scenes_duration_short => '< 5分钟';
+
+  @override
+  String get scenes_duration_medium => '5-20分钟';
+
+  @override
+  String get scenes_duration_long => '> 20分钟';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -1679,6 +1727,36 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scenes_unwatched => '未看';
 
   @override
+  String get scenes_search_hint => 'Search scenes...';
+
+  @override
+  String get scenes_sort_header => 'Sort Scenes';
+
+  @override
+  String get scenes_sort_duration => 'Duration';
+
+  @override
+  String get scenes_sort_bitrate => 'Bitrate';
+
+  @override
+  String get scenes_sort_framerate => 'Framerate';
+
+  @override
+  String get scenes_sort_saved_default => 'Sort preferences saved as default';
+
+  @override
+  String get scenes_sort_tooltip => 'Sort options';
+
+  @override
+  String get tags_search_hint => 'Search tags...';
+
+  @override
+  String get tags_sort_tooltip => 'Sort options';
+
+  @override
+  String get tags_filter_tooltip => 'Filter options';
+
+  @override
   String get performers_title => '演职人员';
 
   @override
@@ -2039,6 +2117,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_server_url_helper => '示例格式：http(s)://host:port/graphql。';
+
+  @override
+  String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
+
+  @override
+  String get settings_server_login_failed => 'Login failed';
 
   @override
   String get settings_server_auth_method => '身份验证方式';
@@ -2430,6 +2514,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String scenes_studio_id_prefix(String id) {
     return '制片商 ID：$id';
   }
+
+  @override
+  String get tags_search_placeholder => '搜索标签...';
+
+  @override
+  String get scenes_duration_short => '< 5分钟';
+
+  @override
+  String get scenes_duration_medium => '5-20分钟';
+
+  @override
+  String get scenes_duration_long => '> 20分钟';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -2895,6 +2991,36 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scenes_unwatched => '未看';
 
   @override
+  String get scenes_search_hint => 'Search scenes...';
+
+  @override
+  String get scenes_sort_header => 'Sort Scenes';
+
+  @override
+  String get scenes_sort_duration => 'Duration';
+
+  @override
+  String get scenes_sort_bitrate => 'Bitrate';
+
+  @override
+  String get scenes_sort_framerate => 'Framerate';
+
+  @override
+  String get scenes_sort_saved_default => 'Sort preferences saved as default';
+
+  @override
+  String get scenes_sort_tooltip => 'Sort options';
+
+  @override
+  String get tags_search_hint => 'Search tags...';
+
+  @override
+  String get tags_sort_tooltip => 'Sort options';
+
+  @override
+  String get tags_filter_tooltip => 'Filter options';
+
+  @override
   String get performers_title => '演職人員';
 
   @override
@@ -3255,6 +3381,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_server_url_helper => '範例格式：http(s)://主機:連接埠/graphql。';
+
+  @override
+  String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
+
+  @override
+  String get settings_server_login_failed => 'Login failed';
 
   @override
   String get settings_server_auth_method => '驗證方式';
@@ -3648,4 +3780,16 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String scenes_studio_id_prefix(String id) {
     return '製片商 ID：$id';
   }
+
+  @override
+  String get tags_search_placeholder => '搜尋標籤...';
+
+  @override
+  String get scenes_duration_short => '< 5分鐘';
+
+  @override
+  String get scenes_duration_medium => '5-20分鐘';
+
+  @override
+  String get scenes_duration_long => '> 20分鐘';
 }

@@ -132,10 +132,22 @@
   "scenes_no_results_found": "Результаты не найдены",
   "scenes_select_result": "Выбрать результат",
   "scenes_scrape_failed": "Сбор данных не удался: {error}",
-  "@scenes_scrape_failed": {"placeholders": {"error": {"type": "String"}}},
+  "@scenes_scrape_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "scenes_updated_successfully": "Сцена успешно обновлена",
   "scenes_update_failed": "Не удалось обновить сцену: {error}",
-  "@scenes_update_failed": {"placeholders": {"error": {"type": "String"}}},
+  "@scenes_update_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "scenes_edit_title": "Редактировать сцену",
   "scenes_field_studio": "Студия",
   "scenes_field_tags": "Теги",
@@ -148,8 +160,23 @@
   "scenes_no_matching_performer_found": "Не найден подходящий исполнитель в библиотеке",
   "common_unknown": "Неизвестно",
   "scenes_studio_id_prefix": "ID студии: {id}",
-  "@scenes_studio_id_prefix": {"placeholders": {"id": {"type": "String"}}},
-
+  "scenes_search_hint": "Search scenes...",
+  "scenes_sort_header": "Sort Scenes",
+  "scenes_sort_duration": "Duration",
+  "scenes_sort_bitrate": "Bitrate",
+  "scenes_sort_framerate": "Framerate",
+  "scenes_sort_saved_default": "Sort preferences saved as default",
+  "scenes_sort_tooltip": "Sort options",
+  "tags_search_hint": "Search tags...",
+  "tags_sort_tooltip": "Sort options",
+  "tags_filter_tooltip": "Filter options",
+  "@scenes_studio_id_prefix": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "details_group": "детали группы",
   "details_synopsis": "Синопсис",
   "details_media": "Медиа",
@@ -161,16 +188,13 @@
   "details_scene_add_tag": "добавить тег",
   "details_scene_add_url": "добавить URL",
   "details_scene_remove_url": "удалить URL",
-
   "groups_title": "Группы",
   "groups_unnamed": "Группа без имени",
   "groups_untitled": "Группа без названия",
-
   "studios_title": "Студии",
   "studios_galleries_title": "Галереи студии",
   "studios_media_title": "Медиа студии",
   "studios_sort_title": "Сортировать студии",
-
   "galleries_title": "Галереи",
   "galleries_sort_title": "Сортировать галереи",
   "galleries_all_images": "Все изображения",
@@ -179,11 +203,9 @@
   "galleries_image_count": "Количество изображений",
   "galleries_organization": "Организация",
   "galleries_organized_only": "Только организованные",
-
   "scenes_filter_title": "Фильтровать сцены",
   "scenes_watched": "Просмотрено",
   "scenes_unwatched": "Не просмотрено",
-
   "performers_title": "Исполнители",
   "performers_sort_title": "Сортировать исполнителей",
   "performers_filter_title": "Фильтр исполнителей",
@@ -197,7 +219,6 @@
   "performers_gender_trans_male": "Транс-мужчина",
   "performers_gender_intersex": "Интерсекс",
   "performers_play_count": "Количество воспроизведений",
-
   "random_studio": "случайная студия",
   "random_gallery": "случайная галерея",
   "random_tag": "случайный тег",
@@ -288,14 +309,32 @@
   "common_gallery": "Галерея",
   "images_gallery_rating_unavailable": "Рейтинг галереи доступен только при просмотре галереи.",
   "images_rating": "Рейтинг: {rating} / 5",
-  "@images_rating": {"placeholders": {"rating": {"type": "String"}}},
+  "@images_rating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
   "images_filtered_by_gallery": "Отфильтровано по галерее",
   "images_slideshow_need_two": "Требуется как минимум 2 изображения для слайд-шоу.",
   "images_slideshow_start_title": "Запустить слайд-шоу",
   "images_slideshow_interval": "Интервал: {seconds}с",
-  "@images_slideshow_interval": {"placeholders": {"seconds": {"type": "num"}}},
+  "@images_slideshow_interval": {
+    "placeholders": {
+      "seconds": {
+        "type": "num"
+      }
+    }
+  },
   "images_slideshow_transition_ms": "Переход: {ms}мс",
-  "@images_slideshow_transition_ms": {"placeholders": {"ms": {"type": "num"}}},
+  "@images_slideshow_transition_ms": {
+    "placeholders": {
+      "ms": {
+        "type": "num"
+      }
+    }
+  },
   "common_forward": "Вперед",
   "common_backward": "Назад",
   "images_slideshow_loop_title": "Зациклить слайд-шоу",
@@ -450,8 +489,7 @@
         "type": "String"
       }
     }
-  }
-  ,
+  },
   "details_more_from_studio": "Еще от студии",
   "details_o_count_incremented": "Счет O увеличен",
   "details_show_less": "Показать меньше",
@@ -460,12 +498,22 @@
   "details_failed_increment_o_count": "Не удалось увеличить счет O: {error}",
   "@details_failed_update_rating": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "@details_failed_increment_o_count": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
-  }
+  },
+  "settings_server_url_example": "http://192.168.1.100:9999/graphql",
+  "settings_server_login_failed": "Login failed",
+  "tags_search_placeholder": "Поиск тегов...",
+  "scenes_duration_short": "< 5 мин.",
+  "scenes_duration_medium": "5-20 мин.",
+  "scenes_duration_long": "> 20 мин."
 }

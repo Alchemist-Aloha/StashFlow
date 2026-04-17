@@ -954,6 +954,66 @@ abstract class AppLocalizations {
   /// **'Unwatched'**
   String get scenes_unwatched;
 
+  /// No description provided for @scenes_search_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search scenes...'**
+  String get scenes_search_hint;
+
+  /// No description provided for @scenes_sort_header.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort Scenes'**
+  String get scenes_sort_header;
+
+  /// No description provided for @scenes_sort_duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get scenes_sort_duration;
+
+  /// No description provided for @scenes_sort_bitrate.
+  ///
+  /// In en, this message translates to:
+  /// **'Bitrate'**
+  String get scenes_sort_bitrate;
+
+  /// No description provided for @scenes_sort_framerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Framerate'**
+  String get scenes_sort_framerate;
+
+  /// No description provided for @scenes_sort_saved_default.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort preferences saved as default'**
+  String get scenes_sort_saved_default;
+
+  /// No description provided for @scenes_sort_tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort options'**
+  String get scenes_sort_tooltip;
+
+  /// No description provided for @tags_search_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search tags...'**
+  String get tags_search_hint;
+
+  /// No description provided for @tags_sort_tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort options'**
+  String get tags_sort_tooltip;
+
+  /// No description provided for @tags_filter_tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter options'**
+  String get tags_filter_tooltip;
+
   /// No description provided for @performers_title.
   ///
   /// In en, this message translates to:
@@ -1673,6 +1733,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Example format: http(s)://host:port/graphql.'**
   String get settings_server_url_helper;
+
+  /// No description provided for @settings_server_url_example.
+  ///
+  /// In en, this message translates to:
+  /// **'http://192.168.1.100:9999/graphql'**
+  String get settings_server_url_example;
+
+  /// No description provided for @settings_server_login_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Login failed'**
+  String get settings_server_login_failed;
 
   /// No description provided for @settings_server_auth_method.
   ///
@@ -2411,6 +2483,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Studio ID: {id}'**
   String scenes_studio_id_prefix(String id);
+
+  /// No description provided for @tags_search_placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search tags...'**
+  String get tags_search_placeholder;
+
+  /// No description provided for @scenes_duration_short.
+  ///
+  /// In en, this message translates to:
+  /// **'< 5m'**
+  String get scenes_duration_short;
+
+  /// No description provided for @scenes_duration_medium.
+  ///
+  /// In en, this message translates to:
+  /// **'5-20m'**
+  String get scenes_duration_medium;
+
+  /// No description provided for @scenes_duration_long.
+  ///
+  /// In en, this message translates to:
+  /// **'> 20m'**
+  String get scenes_duration_long;
 }
 
 class _AppLocalizationsDelegate

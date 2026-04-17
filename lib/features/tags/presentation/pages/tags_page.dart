@@ -360,8 +360,8 @@ class _TagsPageState extends ConsumerState<TagsPage> {
         _sortOption != _TagSortOption.name || _sortDescending;
 
     return ListPageScaffold<Tag>(
-      title: 'Tags',
-      searchHint: 'Search tags...',
+      title: context.l10n.nav_tags,
+      searchHint: context.l10n.tags_search_hint,
       onSearchChanged: _onSearchChanged,
       provider: tagsAsync,
       scrollController: scrollController,
@@ -375,7 +375,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
           children: [
             IconButton(
               icon: const Icon(Icons.sort),
-              tooltip: 'Sort options',
+              tooltip: context.l10n.tags_sort_tooltip,
               onPressed: _showSortPanel,
             ),
             if (hasSortOverride)
@@ -397,7 +397,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
           children: [
             IconButton(
               icon: const Icon(Icons.filter_list),
-              tooltip: 'Filter options',
+              tooltip: context.l10n.tags_filter_tooltip,
               onPressed: _showFilterPanel,
             ),
             if (favoritesOnly)
@@ -429,11 +429,11 @@ class _TagsPageState extends ConsumerState<TagsPage> {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           trailing: Text(
-            '${tag.sceneCount} scenes',
+            context.l10n.nScenes(tag.sceneCount),
             style: context.textTheme.bodySmall,
           ),
         ),
-      ),
+        ),
       floatingActionButton: randomNavigationEnabled
           ? tagsAsync.maybeWhen(
               data: (tags) => FloatingActionButton.small(

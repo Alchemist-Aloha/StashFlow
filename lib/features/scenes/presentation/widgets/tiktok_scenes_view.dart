@@ -763,7 +763,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                         const SizedBox(height: 16),
                         _OverlayButton(
                           icon: Icons.info_outline,
-                          tooltip: 'Scene Details',
+                          tooltip: context.l10n.details_scene,
                           onTap: () async {
                             await _handoffToGlobalPlayer();
                             if (context.mounted) {

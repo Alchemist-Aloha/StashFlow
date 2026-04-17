@@ -110,10 +110,22 @@
   "scenes_no_results_found": "未找到结果",
   "scenes_select_result": "选择结果",
   "scenes_scrape_failed": "抓取失败：{error}",
-  "@scenes_scrape_failed": {"placeholders": {"error": {"type": "String"}}},
+  "@scenes_scrape_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "scenes_updated_successfully": "场景更新成功",
   "scenes_update_failed": "场景更新失败：{error}",
-  "@scenes_update_failed": {"placeholders": {"error": {"type": "String"}}},
+  "@scenes_update_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "scenes_edit_title": "编辑场景",
   "scenes_field_studio": "制片商",
   "scenes_field_tags": "标签",
@@ -126,8 +138,13 @@
   "scenes_no_matching_performer_found": "在库中未找到匹配的出演者",
   "common_unknown": "未知",
   "scenes_studio_id_prefix": "制片商 ID：{id}",
-  "@scenes_studio_id_prefix": {"placeholders": {"id": {"type": "String"}}},
-
+  "@scenes_studio_id_prefix": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "details_group": "小组详情",
   "details_synopsis": "剧情简介",
   "details_media": "媒体",
@@ -139,16 +156,13 @@
   "details_scene_add_tag": "添加标签",
   "details_scene_add_url": "添加 URL",
   "details_scene_remove_url": "移除 URL",
-
   "groups_title": "小组",
   "groups_unnamed": "未命名小组",
   "groups_untitled": "无标题小组",
-
   "studios_title": "制片商",
   "studios_galleries_title": "制片商图库",
   "studios_media_title": "制片商媒体",
   "studios_sort_title": "制片商排序",
-
   "galleries_title": "图库",
   "galleries_sort_title": "图库排序",
   "galleries_all_images": "所有图片",
@@ -157,11 +171,19 @@
   "galleries_image_count": "图片数量",
   "galleries_organization": "整理",
   "galleries_organized_only": "仅已整理",
-
   "scenes_filter_title": "筛选场景",
   "scenes_watched": "已看",
   "scenes_unwatched": "未看",
-
+  "scenes_search_hint": "Search scenes...",
+  "scenes_sort_header": "Sort Scenes",
+  "scenes_sort_duration": "Duration",
+  "scenes_sort_bitrate": "Bitrate",
+  "scenes_sort_framerate": "Framerate",
+  "scenes_sort_saved_default": "Sort preferences saved as default",
+  "scenes_sort_tooltip": "Sort options",
+  "tags_search_hint": "Search tags...",
+  "tags_sort_tooltip": "Sort options",
+  "tags_filter_tooltip": "Filter options",
   "performers_title": "演职人员",
   "performers_sort_title": "演职人员排序",
   "performers_filter_title": "演职人员筛选",
@@ -175,7 +197,6 @@
   "performers_gender_trans_male": "跨性别男性",
   "performers_gender_intersex": "双性人",
   "performers_play_count": "播放次数",
-
   "random_studio": "随机制片商",
   "random_gallery": "随机图库",
   "random_tag": "随机标签",
@@ -295,14 +316,32 @@
   "common_gallery": "图库",
   "images_gallery_rating_unavailable": "图库评分仅在浏览图库时可用。",
   "images_rating": "评分：{rating} / 5",
-  "@images_rating": {"placeholders": {"rating": {"type": "String"}}},
+  "@images_rating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
   "images_filtered_by_gallery": "按画廊筛选",
   "images_slideshow_need_two": "幻灯片放映至少需要 2 张图片。",
   "images_slideshow_start_title": "开始幻灯片放映",
   "images_slideshow_interval": "间隔：{seconds}s",
-  "@images_slideshow_interval": {"placeholders": {"seconds": {"type": "num"}}},
+  "@images_slideshow_interval": {
+    "placeholders": {
+      "seconds": {
+        "type": "num"
+      }
+    }
+  },
   "images_slideshow_transition_ms": "过渡：{ms}ms",
-  "@images_slideshow_transition_ms": {"placeholders": {"ms": {"type": "num"}}},
+  "@images_slideshow_transition_ms": {
+    "placeholders": {
+      "ms": {
+        "type": "num"
+      }
+    }
+  },
   "common_forward": "前进",
   "common_backward": "后退",
   "images_slideshow_loop_title": "循环幻灯片放映",
@@ -450,8 +489,7 @@
         "type": "String"
       }
     }
-  }
-  ,
+  },
   "details_more_from_studio": "更多来自该制片商",
   "details_o_count_incremented": "O 计数已增加",
   "details_show_less": "显示较少",
@@ -460,12 +498,22 @@
   "details_failed_increment_o_count": "增加 O 计数失败：{error}",
   "@details_failed_update_rating": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "@details_failed_increment_o_count": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
-  }
+  },
+  "settings_server_url_example": "http://192.168.1.100:9999/graphql",
+  "settings_server_login_failed": "Login failed",
+  "tags_search_placeholder": "搜索标签...",
+  "scenes_duration_short": "< 5分钟",
+  "scenes_duration_medium": "5-20分钟",
+  "scenes_duration_long": "> 20分钟"
 }

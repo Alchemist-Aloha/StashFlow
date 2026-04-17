@@ -121,6 +121,23 @@
   "common_not_found": "{item} non trouvé",
   "common_add_favorite": "Ajouter aux favoris",
   "common_remove_favorite": "Retirer des favoris",
+  "common_show": "Afficher",
+  "common_hide": "Masquer",
+  "galleries_filter_saved": "Préférences de filtrage enregistrées par défaut",
+  "scenes_select_studio": "Sélectionner un studio",
+  "scenes_select_performers": "Sélectionner des interprètes",
+  "scenes_unmatched_scraped_tags": "Tags récupérés non appariés",
+  "scenes_unmatched_scraped_performers": "Interprètes récupérés non appariés",
+  "scenes_no_matching_performer_found": "Aucun interprète correspondant trouvé dans la bibliothèque",
+  "common_unknown": "Inconnu",
+  "scenes_studio_id_prefix": "ID du studio : {id}",
+  "@scenes_studio_id_prefix": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "details_group": "détails du groupe",
   "details_synopsis": "Synopsis",
   "details_media": "Médias",
@@ -137,16 +154,13 @@
   "random_tag": "tag aléatoire",
   "random_scene": "scène aléatoire",
   "random_performer": "interprète aléatoire",
-
   "groups_title": "Groupes",
   "groups_unnamed": "Groupe sans nom",
   "groups_untitled": "Groupe sans titre",
-
   "studios_title": "Studios",
   "studios_galleries_title": "Galeries du studio",
   "studios_media_title": "Médias du studio",
   "studios_sort_title": "Trier les studios",
-
   "galleries_title": "Galeries",
   "galleries_sort_title": "Trier les galeries",
   "galleries_all_images": "Toutes les images",
@@ -155,11 +169,19 @@
   "galleries_image_count": "Nombre d'images",
   "galleries_organization": "Organisation",
   "galleries_organized_only": "Organisé uniquement",
-
   "scenes_filter_title": "Filtrer les scènes",
   "scenes_watched": "Vu",
   "scenes_unwatched": "Non vu",
-
+  "scenes_search_hint": "Search scenes...",
+  "scenes_sort_header": "Sort Scenes",
+  "scenes_sort_duration": "Duration",
+  "scenes_sort_bitrate": "Bitrate",
+  "scenes_sort_framerate": "Framerate",
+  "scenes_sort_saved_default": "Sort preferences saved as default",
+  "scenes_sort_tooltip": "Sort options",
+  "tags_search_hint": "Rechercher des tags...",
+  "tags_sort_tooltip": "Options de tri",
+  "tags_filter_tooltip": "Options de filtrage",
   "performers_title": "Acteurs",
   "performers_sort_title": "Trier les acteurs",
   "performers_filter_title": "Filtrer les acteurs",
@@ -173,7 +195,6 @@
   "performers_gender_trans_male": "Homme trans",
   "performers_gender_intersex": "Intersexe",
   "performers_play_count": "Nombre de lectures",
-
   "settings_title": "Paramètres",
   "settings_customize": "Personnaliser StashFlow",
   "settings_customize_subtitle": "Réglez la lecture, l'apparence, la disposition et les outils de support en un seul endroit.",
@@ -259,14 +280,32 @@
   "common_gallery": "Galerie",
   "images_gallery_rating_unavailable": "La note de la galerie n'est disponible que lors de la navigation dans une galerie.",
   "images_rating": "Note : {rating} / 5",
-  "@images_rating": {"placeholders": {"rating": {"type": "String"}}},
+  "@images_rating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
   "images_filtered_by_gallery": "Filtré par galerie",
   "images_slideshow_need_two": "Il faut au moins 2 images pour le diaporama.",
   "images_slideshow_start_title": "Démarrer le diaporama",
   "images_slideshow_interval": "Intervalle : {seconds}s",
-  "@images_slideshow_interval": {"placeholders": {"seconds": {"type": "num"}}},
+  "@images_slideshow_interval": {
+    "placeholders": {
+      "seconds": {
+        "type": "num"
+      }
+    }
+  },
   "images_slideshow_transition_ms": "Transition : {ms}ms",
-  "@images_slideshow_transition_ms": {"placeholders": {"ms": {"type": "num"}}},
+  "@images_slideshow_transition_ms": {
+    "placeholders": {
+      "ms": {
+        "type": "num"
+      }
+    }
+  },
   "common_forward": "Avant",
   "common_backward": "Arrière",
   "images_slideshow_loop_title": "Boucle du diaporama",
@@ -306,6 +345,8 @@
   "settings_server_details_subtitle": "Configurer le point de terminaison et la méthode d'authentification",
   "settings_server_url": "URL du serveur GraphQL",
   "settings_server_url_helper": "Exemple de format : http(s)://hôte:port/graphql.",
+  "settings_server_url_example": "http://192.168.1.100:9999/graphql",
+  "settings_server_login_failed": "Échec de la connexion",
   "settings_server_auth_method": "Méthode d'authentification",
   "settings_server_auth_apikey": "Clé API",
   "settings_server_auth_password": "Utilisateur + Mot de passe",
@@ -421,21 +462,31 @@
         "type": "String"
       }
     }
-  }
-  ,
+  },
   "settings_keybind_assign_shortcut": "Attribuer un raccourci",
   "settings_keybind_press_any": "Appuyez sur n'importe quelle combinaison de touches...",
-
   "scenes_select_tags": "Sélectionner des tags",
   "scenes_no_scrapers": "Aucun scrapper disponible",
   "scenes_select_scraper": "Sélectionner un scrapper",
   "scenes_no_results_found": "Aucun résultat trouvé",
   "scenes_select_result": "Sélectionner un résultat",
   "scenes_scrape_failed": "Échec de l'extraction : {error}",
-  "@scenes_scrape_failed": {"placeholders": {"error": {"type": "String"}}},
+  "@scenes_scrape_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "scenes_updated_successfully": "Scène mise à jour avec succès",
   "scenes_update_failed": "Échec de la mise à jour de la scène : {error}",
-  "@scenes_update_failed": {"placeholders": {"error": {"type": "String"}}},
+  "@scenes_update_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "scenes_edit_title": "Modifier la scène",
   "scenes_field_studio": "Studio",
   "scenes_field_tags": "Tags",
@@ -449,12 +500,20 @@
   "details_failed_increment_o_count": "Échec de l'incrément du compteur O : {error}",
   "@details_failed_update_rating": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "@details_failed_increment_o_count": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
-  }
+  },
+  "tags_search_placeholder": "Rechercher des tags...",
+  "scenes_duration_short": "< 5 min.",
+  "scenes_duration_medium": "5-20 min.",
+  "scenes_duration_long": "> 20 min."
 }

@@ -165,9 +165,9 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                     spacing: AppTheme.spacingSmall,
                     runSpacing: AppTheme.spacingSmall,
                     children: [
-                      _buildDurationChip(null, 300, '< 5m'),
-                      _buildDurationChip(300, 1200, '5-20m'),
-                      _buildDurationChip(1200, null, '> 20m'),
+                      _buildDurationChip(null, 300, context.l10n.scenes_duration_short),
+                      _buildDurationChip(300, 1200, context.l10n.scenes_duration_medium),
+                      _buildDurationChip(1200, null, context.l10n.scenes_duration_long),
                     ],
                   ),
                   const SizedBox(height: AppTheme.spacingSmall),

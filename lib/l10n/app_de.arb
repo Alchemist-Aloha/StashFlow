@@ -121,7 +121,6 @@
   "common_not_found": "{item} nicht gefunden",
   "common_add_favorite": "Zu Favoriten hinzufügen",
   "common_remove_favorite": "Aus Favoriten entfernen",
-
   "details_group": "Gruppendetails",
   "details_synopsis": "Zusammenfassung",
   "details_media": "Medien",
@@ -133,16 +132,13 @@
   "details_scene_add_tag": "Tag hinzufügen",
   "details_scene_add_url": "URL hinzufügen",
   "details_scene_remove_url": "URL entfernen",
-
   "groups_title": "Gruppen",
   "groups_unnamed": "Unbenannte Gruppe",
   "groups_untitled": "Unbenannte Gruppe",
-
   "studios_title": "Studios",
   "studios_galleries_title": "Studio-Galerien",
   "studios_media_title": "Studio-Medien",
   "studios_sort_title": "Studios sortieren",
-
   "galleries_title": "Galerien",
   "galleries_sort_title": "Galerien sortieren",
   "galleries_all_images": "Alle Bilder",
@@ -151,11 +147,19 @@
   "galleries_image_count": "Anzahl der Bilder",
   "galleries_organization": "Organisation",
   "galleries_organized_only": "Nur organisiert",
-
   "scenes_filter_title": "Szenen filtern",
   "scenes_watched": "Gesehen",
   "scenes_unwatched": "Ungesehen",
-
+  "scenes_search_hint": "Search scenes...",
+  "scenes_sort_header": "Sort Scenes",
+  "scenes_sort_duration": "Duration",
+  "scenes_sort_bitrate": "Bitrate",
+  "scenes_sort_framerate": "Framerate",
+  "scenes_sort_saved_default": "Sort preferences saved as default",
+  "scenes_sort_tooltip": "Sort options",
+  "tags_search_hint": "Tags suchen...",
+  "tags_sort_tooltip": "Sortieroptionen",
+  "tags_filter_tooltip": "Filteroptionen",
   "performers_title": "Darsteller",
   "performers_sort_title": "Darsteller sortieren",
   "performers_filter_title": "Darsteller filtern",
@@ -169,7 +173,6 @@
   "performers_gender_trans_male": "Trans-männlich",
   "performers_gender_intersex": "Intersexuell",
   "performers_play_count": "Wiedergabeanzahl",
-
   "random_studio": "Zufälliges Studio",
   "random_gallery": "Zufällige Galerie",
   "random_tag": "Zufälliger Tag",
@@ -260,14 +263,32 @@
   "common_gallery": "Galerie",
   "images_gallery_rating_unavailable": "Die Galeriebewertung ist nur verfügbar, wenn Sie eine Galerie durchsuchen.",
   "images_rating": "Bewertung: {rating} / 5",
-  "@images_rating": {"placeholders": {"rating": {"type": "String"}}},
+  "@images_rating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
   "images_filtered_by_gallery": "Gefiltert nach Galerie",
   "images_slideshow_need_two": "Mindestens 2 Bilder werden für die Diashow benötigt.",
   "images_slideshow_start_title": "Diashow starten",
   "images_slideshow_interval": "Intervall: {seconds}s",
-  "@images_slideshow_interval": {"placeholders": {"seconds": {"type": "num"}}},
+  "@images_slideshow_interval": {
+    "placeholders": {
+      "seconds": {
+        "type": "num"
+      }
+    }
+  },
   "images_slideshow_transition_ms": "Übergang: {ms}ms",
-  "@images_slideshow_transition_ms": {"placeholders": {"ms": {"type": "num"}}},
+  "@images_slideshow_transition_ms": {
+    "placeholders": {
+      "ms": {
+        "type": "num"
+      }
+    }
+  },
   "common_forward": "Vorwärts",
   "common_backward": "Rückwärts",
   "images_slideshow_loop_title": "Diashow wiederholen",
@@ -307,6 +328,8 @@
   "settings_server_details_subtitle": "Endpunkt und Authentifizierungsmethode konfigurieren",
   "settings_server_url": "GraphQL Server-URL",
   "settings_server_url_helper": "Beispielformat: http(s)://host:port/graphql.",
+  "settings_server_url_example": "http://192.168.1.100:9999/graphql",
+  "settings_server_login_failed": "Anmeldung fehlgeschlagen",
   "settings_server_auth_method": "Authentifizierungsmethode",
   "settings_server_auth_apikey": "API-Key",
   "settings_server_auth_password": "Benutzername + Passwort",
@@ -422,21 +445,31 @@
         "type": "String"
       }
     }
-  }
-  ,
+  },
   "settings_keybind_assign_shortcut": "Tastenkürzel zuweisen",
   "settings_keybind_press_any": "Drücke eine beliebige Tastenkombination...",
-
   "scenes_select_tags": "Tags auswählen",
   "scenes_no_scrapers": "Keine Scraper verfügbar",
   "scenes_select_scraper": "Scraper auswählen",
   "scenes_no_results_found": "Keine Ergebnisse gefunden",
   "scenes_select_result": "Ergebnis auswählen",
   "scenes_scrape_failed": "Scrape fehlgeschlagen: {error}",
-  "@scenes_scrape_failed": {"placeholders": {"error": {"type": "String"}}},
+  "@scenes_scrape_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "scenes_updated_successfully": "Szene erfolgreich aktualisiert",
   "scenes_update_failed": "Fehler beim Aktualisieren der Szene: {error}",
-  "@scenes_update_failed": {"placeholders": {"error": {"type": "String"}}},
+  "@scenes_update_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "scenes_edit_title": "Szene bearbeiten",
   "scenes_field_studio": "Studio",
   "scenes_field_tags": "Tags",
@@ -460,12 +493,27 @@
   "details_failed_increment_o_count": "Fehler beim Erhöhen des O-Zählers: {error}",
   "@details_failed_update_rating": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "@details_failed_increment_o_count": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
-  }
+  },
+  "@scenes_studio_id_prefix": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tags_search_placeholder": "Tags durchsuchen...",
+  "scenes_duration_short": "< 5 Min.",
+  "scenes_duration_medium": "5-20 Min.",
+  "scenes_duration_long": "> 20 Min."
 }

@@ -469,6 +469,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scenes_unwatched => 'Unwatched';
 
   @override
+  String get scenes_search_hint => 'Search scenes...';
+
+  @override
+  String get scenes_sort_header => 'Sort Scenes';
+
+  @override
+  String get scenes_sort_duration => 'Duration';
+
+  @override
+  String get scenes_sort_bitrate => 'Bitrate';
+
+  @override
+  String get scenes_sort_framerate => 'Framerate';
+
+  @override
+  String get scenes_sort_saved_default => 'Sort preferences saved as default';
+
+  @override
+  String get scenes_sort_tooltip => 'Sort options';
+
+  @override
+  String get tags_search_hint => 'Search tags...';
+
+  @override
+  String get tags_sort_tooltip => 'Sort options';
+
+  @override
+  String get tags_filter_tooltip => 'Filter options';
+
+  @override
   String get performers_title => 'Performers';
 
   @override
@@ -857,6 +887,12 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settings_server_url_helper =>
       'Example format: http(s)://host:port/graphql.';
+
+  @override
+  String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
+
+  @override
+  String get settings_server_login_failed => 'Login failed';
 
   @override
   String get settings_server_auth_method => 'Authentication Method';
@@ -1278,4 +1314,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String scenes_studio_id_prefix(String id) {
     return 'Studio ID: $id';
   }
+
+  @override
+  String get tags_search_placeholder => 'Search tags...';
+
+  @override
+  String get scenes_duration_short => '< 5m';
+
+  @override
+  String get scenes_duration_medium => '5-20m';
+
+  @override
+  String get scenes_duration_long => '> 20m';
 }

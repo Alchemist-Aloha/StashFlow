@@ -139,16 +139,16 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
   /// Formats a [_SceneSortField] enum value for display in the UI.
   String _sortFieldLabel(_SceneSortField field) {
     return switch (field) {
-      _SceneSortField.date => 'Date',
-      _SceneSortField.rating => 'Rating',
-      _SceneSortField.playCount => 'Play Count',
-      _SceneSortField.title => 'Title',
-      _SceneSortField.duration => 'Duration',
-      _SceneSortField.bitrate => 'Bitrate',
-      _SceneSortField.framerate => 'Framerate',
-      _SceneSortField.updatedAt => 'Updated At',
-      _SceneSortField.createdAt => 'Created At',
-      _SceneSortField.random => 'Random',
+      _SceneSortField.date => context.l10n.common_date,
+      _SceneSortField.rating => context.l10n.common_rating,
+      _SceneSortField.playCount => context.l10n.performers_play_count,
+      _SceneSortField.title => context.l10n.common_title,
+      _SceneSortField.duration => context.l10n.scenes_sort_duration,
+      _SceneSortField.bitrate => context.l10n.scenes_sort_bitrate,
+      _SceneSortField.framerate => context.l10n.scenes_sort_framerate,
+      _SceneSortField.updatedAt => context.l10n.sort_updated_at,
+      _SceneSortField.createdAt => context.l10n.sort_created_at,
+      _SceneSortField.random => context.l10n.sort_random,
     };
   }
 
@@ -274,9 +274,9 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                           if (context.mounted) {
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                              SnackBar(
                                 content: Text(
-                                  'Sort preferences saved as default',
+                                  context.l10n.scenes_sort_saved_default,
                                 ),
                               ),
                             );
@@ -334,8 +334,8 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     final hasActiveFilters = filterActive || organizedOnly;
 
     return ListPageScaffold<Scene>(
-      title: 'StashFlow',
-      searchHint: 'Search scenes...',
+      title: context.l10n.appTitle,
+      searchHint: context.l10n.scenes_search_hint,
       onSearchChanged: _onSearchChanged,
       provider: scenesAsync,
       imageUrlBuilder: (scene) => scene.paths.screenshot,
@@ -362,7 +362,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
           children: [
             IconButton(
               icon: const Icon(Icons.sort),
-              tooltip: 'Sort options',
+              tooltip: context.l10n.scenes_sort_tooltip,
               onPressed: _showSortPanel,
             ),
             if (_sortField != _SceneSortField.date || !_sortDescending)

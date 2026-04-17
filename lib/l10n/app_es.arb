@@ -121,7 +121,23 @@
   "common_not_found": "{item} no encontrado",
   "common_add_favorite": "Añadir a favoritos",
   "common_remove_favorite": "Quitar de favoritos",
-
+  "common_show": "Mostrar",
+  "common_hide": "Ocultar",
+  "galleries_filter_saved": "Preferencias de filtrado guardadas como predeterminadas",
+  "scenes_select_studio": "Seleccionar estudio",
+  "scenes_select_performers": "Seleccionar intérpretes",
+  "scenes_unmatched_scraped_tags": "Etiquetas obtenidas sin emparejar",
+  "scenes_unmatched_scraped_performers": "Actores obtenidos sin emparejar",
+  "scenes_no_matching_performer_found": "No se encontró un intérprete coincidente en la biblioteca",
+  "common_unknown": "Desconocido",
+  "scenes_studio_id_prefix": "ID del estudio: {id}",
+  "@scenes_studio_id_prefix": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "details_group": "detalles del grupo",
   "details_synopsis": "Sinopsis",
   "details_media": "Medios",
@@ -133,16 +149,13 @@
   "details_scene_add_tag": "añadir etiqueta",
   "details_scene_add_url": "añadir URL",
   "details_scene_remove_url": "quitar URL",
-
   "groups_title": "Grupos",
   "groups_unnamed": "Grupo sin nombre",
   "groups_untitled": "Grupo sin título",
-
   "studios_title": "Estudios",
   "studios_galleries_title": "Galerías del estudio",
   "studios_media_title": "Medios del estudio",
   "studios_sort_title": "Ordenar estudios",
-
   "galleries_title": "Galerías",
   "galleries_sort_title": "Ordenar galerías",
   "galleries_all_images": "Todas las imágenes",
@@ -151,11 +164,19 @@
   "galleries_image_count": "Número de imágenes",
   "galleries_organization": "Organización",
   "galleries_organized_only": "Solo organizados",
-
   "scenes_filter_title": "Filtrar escenas",
   "scenes_watched": "Vistas",
   "scenes_unwatched": "Sin ver",
-
+  "scenes_search_hint": "Search scenes...",
+  "scenes_sort_header": "Sort Scenes",
+  "scenes_sort_duration": "Duration",
+  "scenes_sort_bitrate": "Bitrate",
+  "scenes_sort_framerate": "Framerate",
+  "scenes_sort_saved_default": "Sort preferences saved as default",
+  "scenes_sort_tooltip": "Sort options",
+  "tags_search_hint": "Buscar etiquetas...",
+  "tags_sort_tooltip": "Opciones de ordenación",
+  "tags_filter_tooltip": "Opciones de filtrado",
   "performers_title": "Actores",
   "performers_sort_title": "Ordenar actores",
   "performers_filter_title": "Filtrar actores",
@@ -169,7 +190,6 @@
   "performers_gender_trans_male": "Hombre trans",
   "performers_gender_intersex": "Intersexual",
   "performers_play_count": "Número de reproducciones",
-
   "random_studio": "estudio aleatorio",
   "random_gallery": "galería aleatoria",
   "random_tag": "etiqueta aleatoria",
@@ -260,14 +280,32 @@
   "common_gallery": "Galería",
   "images_gallery_rating_unavailable": "La clasificación de la galería solo está disponible cuando se navega en una galería.",
   "images_rating": "Clasificación: {rating} / 5",
-  "@images_rating": {"placeholders": {"rating": {"type": "String"}}},
+  "@images_rating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
   "images_filtered_by_gallery": "Filtrado por galería",
   "images_slideshow_need_two": "Se necesitan al menos 2 imágenes para la presentación.",
   "images_slideshow_start_title": "Iniciar presentación",
   "images_slideshow_interval": "Intervalo: {seconds}s",
-  "@images_slideshow_interval": {"placeholders": {"seconds": {"type": "num"}}},
+  "@images_slideshow_interval": {
+    "placeholders": {
+      "seconds": {
+        "type": "num"
+      }
+    }
+  },
   "images_slideshow_transition_ms": "Transición: {ms}ms",
-  "@images_slideshow_transition_ms": {"placeholders": {"ms": {"type": "num"}}},
+  "@images_slideshow_transition_ms": {
+    "placeholders": {
+      "ms": {
+        "type": "num"
+      }
+    }
+  },
   "common_forward": "Adelante",
   "common_backward": "Atrás",
   "images_slideshow_loop_title": "Repetir presentación",
@@ -307,6 +345,8 @@
   "settings_server_details_subtitle": "Configurar el endpoint y el método de autenticación",
   "settings_server_url": "URL del servidor GraphQL",
   "settings_server_url_helper": "Formato de ejemplo: http(s)://host:puerto/graphql.",
+  "settings_server_url_example": "http://192.168.1.100:9999/graphql",
+  "settings_server_login_failed": "Error de inicio de sesión",
   "settings_server_auth_method": "Método de autenticación",
   "settings_server_auth_apikey": "Clave API",
   "settings_server_auth_password": "Usuario + Contraseña",
@@ -422,21 +462,31 @@
         "type": "String"
       }
     }
-  }
-  ,
+  },
   "settings_keybind_assign_shortcut": "Asignar acceso directo",
   "settings_keybind_press_any": "Presiona cualquier combinación de teclas...",
-
   "scenes_select_tags": "Seleccionar etiquetas",
   "scenes_no_scrapers": "No hay scrapers disponibles",
   "scenes_select_scraper": "Seleccionar scraper",
   "scenes_no_results_found": "No se encontraron resultados",
   "scenes_select_result": "Seleccionar resultado",
   "scenes_scrape_failed": "Error de extracción: {error}",
-  "@scenes_scrape_failed": {"placeholders": {"error": {"type": "String"}}},
+  "@scenes_scrape_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "scenes_updated_successfully": "Escena actualizada con éxito",
   "scenes_update_failed": "Error al actualizar la escena: {error}",
-  "@scenes_update_failed": {"placeholders": {"error": {"type": "String"}}},
+  "@scenes_update_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "scenes_edit_title": "Editar escena",
   "scenes_field_studio": "Estudio",
   "scenes_field_tags": "Etiquetas",
@@ -450,12 +500,20 @@
   "details_failed_increment_o_count": "Error al incrementar el recuento O: {error}",
   "@details_failed_update_rating": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "@details_failed_increment_o_count": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
-  }
+  },
+  "tags_search_placeholder": "Buscar etiquetas...",
+  "scenes_duration_short": "< 5 min.",
+  "scenes_duration_medium": "5-20 min.",
+  "scenes_duration_long": "> 20 min."
 }

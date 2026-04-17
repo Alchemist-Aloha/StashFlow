@@ -112,13 +112,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get common_no_media => 'Aucun média disponible';
 
   @override
-  String get common_show => 'Show';
+  String get common_show => 'Afficher';
 
   @override
-  String get common_hide => 'Hide';
+  String get common_hide => 'Masquer';
 
   @override
-  String get galleries_filter_saved => 'Filter preferences saved as default';
+  String get galleries_filter_saved =>
+      'Préférences de filtrage enregistrées par défaut';
 
   @override
   String get common_setup_required => 'Configuration requise';
@@ -472,6 +473,36 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get scenes_unwatched => 'Non vu';
+
+  @override
+  String get scenes_search_hint => 'Search scenes...';
+
+  @override
+  String get scenes_sort_header => 'Sort Scenes';
+
+  @override
+  String get scenes_sort_duration => 'Duration';
+
+  @override
+  String get scenes_sort_bitrate => 'Bitrate';
+
+  @override
+  String get scenes_sort_framerate => 'Framerate';
+
+  @override
+  String get scenes_sort_saved_default => 'Sort preferences saved as default';
+
+  @override
+  String get scenes_sort_tooltip => 'Sort options';
+
+  @override
+  String get tags_search_hint => 'Rechercher des tags...';
+
+  @override
+  String get tags_sort_tooltip => 'Options de tri';
+
+  @override
+  String get tags_filter_tooltip => 'Options de filtrage';
 
   @override
   String get performers_title => 'Acteurs';
@@ -871,6 +902,12 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get settings_server_url_helper =>
       'Exemple de format : http(s)://hôte:port/graphql.';
+
+  @override
+  String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
+
+  @override
+  String get settings_server_login_failed => 'Échec de la connexion';
 
   @override
   String get settings_server_auth_method => 'Méthode d\'authentification';
@@ -1286,27 +1323,39 @@ class AppLocalizationsFr extends AppLocalizations {
   String get common_no_title => 'Sans titre';
 
   @override
-  String get scenes_select_studio => 'Select Studio';
+  String get scenes_select_studio => 'Sélectionner un studio';
 
   @override
-  String get scenes_select_performers => 'Select Performers';
+  String get scenes_select_performers => 'Sélectionner des interprètes';
 
   @override
-  String get scenes_unmatched_scraped_tags => 'Unmatched Scraped Tags';
+  String get scenes_unmatched_scraped_tags => 'Tags récupérés non appariés';
 
   @override
   String get scenes_unmatched_scraped_performers =>
-      'Unmatched Scraped Performers';
+      'Interprètes récupérés non appariés';
 
   @override
   String get scenes_no_matching_performer_found =>
-      'No matching performer found in library';
+      'Aucun interprète correspondant trouvé dans la bibliothèque';
 
   @override
-  String get common_unknown => 'Unknown';
+  String get common_unknown => 'Inconnu';
 
   @override
   String scenes_studio_id_prefix(String id) {
-    return 'Studio ID: $id';
+    return 'ID du studio : $id';
   }
+
+  @override
+  String get tags_search_placeholder => 'Rechercher des tags...';
+
+  @override
+  String get scenes_duration_short => '< 5 min.';
+
+  @override
+  String get scenes_duration_medium => '5-20 min.';
+
+  @override
+  String get scenes_duration_long => '> 20 min.';
 }

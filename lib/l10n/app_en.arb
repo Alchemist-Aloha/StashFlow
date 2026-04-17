@@ -165,6 +165,16 @@
   "scenes_filter_title": "Filter Scenes",
   "scenes_watched": "Watched",
   "scenes_unwatched": "Unwatched",
+  "scenes_search_hint": "Search scenes...",
+  "scenes_sort_header": "Sort Scenes",
+  "scenes_sort_duration": "Duration",
+  "scenes_sort_bitrate": "Bitrate",
+  "scenes_sort_framerate": "Framerate",
+  "scenes_sort_saved_default": "Sort preferences saved as default",
+  "scenes_sort_tooltip": "Sort options",
+  "tags_search_hint": "Search tags...",
+  "tags_sort_tooltip": "Sort options",
+  "tags_filter_tooltip": "Filter options",
 
   "performers_title": "Performers",
   "performers_sort_title": "Sort Performers",
@@ -288,6 +298,8 @@
   "settings_server_details_subtitle": "Configure endpoint and authentication method",
   "settings_server_url": "GraphQL server URL",
   "settings_server_url_helper": "Example format: http(s)://host:port/graphql.",
+  "settings_server_url_example": "http://192.168.1.100:9999/graphql",
+  "settings_server_login_failed": "Login failed",
   "settings_server_auth_method": "Authentication Method",
   "settings_server_auth_apikey": "API Key",
   "settings_server_auth_password": "Username + Password",
@@ -479,5 +491,9 @@
   "scenes_no_matching_performer_found": "No matching performer found in library",
   "common_unknown": "Unknown",
   "scenes_studio_id_prefix": "Studio ID: {id}",
-  "@scenes_studio_id_prefix": {"placeholders": {"id": {"type": "String"}}}
+  "@scenes_studio_id_prefix": {"placeholders": {"id": {"type": "String"}}},
+  "tags_search_placeholder": "Search tags...",
+  "scenes_duration_short": "< 5m",
+  "scenes_duration_medium": "5-20m",
+  "scenes_duration_long": "> 20m"
 }

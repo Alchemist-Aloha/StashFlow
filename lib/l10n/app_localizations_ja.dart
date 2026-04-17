@@ -112,13 +112,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get common_no_media => 'メディアがありません';
 
   @override
-  String get common_show => 'Show';
+  String get common_show => '表示';
 
   @override
-  String get common_hide => 'Hide';
+  String get common_hide => '非表示';
 
   @override
-  String get galleries_filter_saved => 'Filter preferences saved as default';
+  String get galleries_filter_saved => 'ギャラリーフィルターの設定がデフォルトとして保存されました';
 
   @override
   String get common_setup_required => '設定が必要です';
@@ -465,6 +465,36 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get scenes_unwatched => '未視聴';
+
+  @override
+  String get scenes_search_hint => 'Search scenes...';
+
+  @override
+  String get scenes_sort_header => 'Sort Scenes';
+
+  @override
+  String get scenes_sort_duration => 'Duration';
+
+  @override
+  String get scenes_sort_bitrate => 'Bitrate';
+
+  @override
+  String get scenes_sort_framerate => 'Framerate';
+
+  @override
+  String get scenes_sort_saved_default => 'Sort preferences saved as default';
+
+  @override
+  String get scenes_sort_tooltip => 'Sort options';
+
+  @override
+  String get tags_search_hint => 'Search tags...';
+
+  @override
+  String get tags_sort_tooltip => 'Sort options';
+
+  @override
+  String get tags_filter_tooltip => 'Filter options';
 
   @override
   String get performers_title => 'パフォーマー';
@@ -837,6 +867,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settings_server_url_helper => '例: http(s)://host:port/graphql';
+
+  @override
+  String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
+
+  @override
+  String get settings_server_login_failed => 'Login failed';
 
   @override
   String get settings_server_auth_method => '認証方法';
@@ -1237,4 +1273,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String scenes_studio_id_prefix(String id) {
     return 'スタジオID: $id';
   }
+
+  @override
+  String get tags_search_placeholder => 'タグを検索...';
+
+  @override
+  String get scenes_duration_short => '< 5分';
+
+  @override
+  String get scenes_duration_medium => '5-20分';
+
+  @override
+  String get scenes_duration_long => '> 20分';
 }

@@ -137,16 +137,13 @@
   "random_tag": "tag casuale",
   "random_scene": "scena casuale",
   "random_performer": "interprete casuale",
-
   "groups_title": "Gruppi",
   "groups_unnamed": "Gruppo senza nome",
   "groups_untitled": "Gruppo senza titolo",
-
   "studios_title": "Studio",
   "studios_galleries_title": "Gallerie dello studio",
   "studios_media_title": "Media dello studio",
   "studios_sort_title": "Ordina studio",
-
   "galleries_title": "Gallerie",
   "galleries_sort_title": "Ordina gallerie",
   "galleries_all_images": "Tutte le immagini",
@@ -155,11 +152,19 @@
   "galleries_image_count": "Conteggio immagini",
   "galleries_organization": "Organizzazione",
   "galleries_organized_only": "Solo organizzati",
-
   "scenes_filter_title": "Filtra scene",
-  "scenes_watched": "Visto",
-  "scenes_unwatched": "Non visto",
-
+  "scenes_watched": "Guardato",
+  "scenes_unwatched": "Non guardato",
+  "scenes_search_hint": "Search scenes...",
+  "scenes_sort_header": "Sort Scenes",
+  "scenes_sort_duration": "Duration",
+  "scenes_sort_bitrate": "Bitrate",
+  "scenes_sort_framerate": "Framerate",
+  "scenes_sort_saved_default": "Sort preferences saved as default",
+  "scenes_sort_tooltip": "Sort options",
+  "tags_search_hint": "Search tags...",
+  "tags_sort_tooltip": "Sort options",
+  "tags_filter_tooltip": "Filter options",
   "performers_title": "Attori",
   "performers_sort_title": "Ordina attori",
   "performers_filter_title": "Filtra attori",
@@ -173,7 +178,6 @@
   "performers_gender_trans_male": "Trans maschio",
   "performers_gender_intersex": "Intersessuale",
   "performers_play_count": "Conteggio riproduzioni",
-
   "settings_title": "Impostazioni",
   "settings_customize": "Personalizza StashFlow",
   "settings_customize_subtitle": "Regola riproduzione, aspetto, layout e strumenti di supporto da un unico posto.",
@@ -238,14 +242,32 @@
   "common_gallery": "Galleria",
   "images_gallery_rating_unavailable": "La valutazione della galleria è disponibile solo quando si sfoglia una galleria.",
   "images_rating": "Valutazione: {rating} / 5",
-  "@images_rating": {"placeholders": {"rating": {"type": "String"}}},
+  "@images_rating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
   "images_filtered_by_gallery": "Filtrato per galleria",
   "images_slideshow_need_two": "Sono necessarie almeno 2 immagini per la presentazione.",
   "images_slideshow_start_title": "Avvia presentazione",
   "images_slideshow_interval": "Intervallo: {seconds}s",
-  "@images_slideshow_interval": {"placeholders": {"seconds": {"type": "num"}}},
+  "@images_slideshow_interval": {
+    "placeholders": {
+      "seconds": {
+        "type": "num"
+      }
+    }
+  },
   "images_slideshow_transition_ms": "Transizione: {ms}ms",
-  "@images_slideshow_transition_ms": {"placeholders": {"ms": {"type": "num"}}},
+  "@images_slideshow_transition_ms": {
+    "placeholders": {
+      "ms": {
+        "type": "num"
+      }
+    }
+  },
   "common_forward": "Avanti",
   "common_backward": "Indietro",
   "images_slideshow_loop_title": "Loop presentazione",
@@ -393,8 +415,7 @@
         "type": "String"
       }
     }
-  }
-  ,
+  },
   "details_more_from_studio": "Altro dallo studio",
   "details_o_count_incremented": "Conteggio O incrementato",
   "details_show_less": "Mostra meno",
@@ -424,19 +445,19 @@
   "settings_keyboard_seek_backward_10_desc": "Torna indietro di 10 secondi",
   "@details_failed_update_rating": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "@details_failed_increment_o_count": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
-  }
-  ,
+  },
   "common_no_title": "Nessun titolo",
-  "scenes_filter_title": "Filtra scene",
-  "scenes_watched": "Guardato",
-  "scenes_unwatched": "Non guardato",
   "scenes_select_scraper": "Seleziona scraper",
   "scenes_scrape_failed": "Estrazione fallita",
   "scenes_updated_successfully": "Scene aggiornate con successo",
@@ -466,5 +487,39 @@
   "scenes_unmatched_scraped_performers": "Interpreti estratti non corrispondenti",
   "scenes_no_matching_performer_found": "Nessun interprete corrispondente trovato nella libreria",
   "common_unknown": "Sconosciuto",
-  "scenes_studio_id_prefix": "ID studio: {id}"
+  "scenes_studio_id_prefix": "ID studio: {id}",
+  "@scenes_update_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@scenes_scrape_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@scenes_studio_id_prefix": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "settings_server_url_example": "http://192.168.1.100:9999/graphql",
+  "@common_not_found": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "settings_server_login_failed": "Accesso non riuscito",
+  "tags_search_placeholder": "Cerca tag...",
+  "scenes_duration_short": "< 5 min.",
+  "scenes_duration_medium": "5-20 min.",
+  "scenes_duration_long": "> 20 min."
 }

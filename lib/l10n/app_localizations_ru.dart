@@ -473,6 +473,36 @@ class AppLocalizationsRu extends AppLocalizations {
   String get scenes_unwatched => 'Не просмотрено';
 
   @override
+  String get scenes_search_hint => 'Search scenes...';
+
+  @override
+  String get scenes_sort_header => 'Sort Scenes';
+
+  @override
+  String get scenes_sort_duration => 'Duration';
+
+  @override
+  String get scenes_sort_bitrate => 'Bitrate';
+
+  @override
+  String get scenes_sort_framerate => 'Framerate';
+
+  @override
+  String get scenes_sort_saved_default => 'Sort preferences saved as default';
+
+  @override
+  String get scenes_sort_tooltip => 'Sort options';
+
+  @override
+  String get tags_search_hint => 'Search tags...';
+
+  @override
+  String get tags_sort_tooltip => 'Sort options';
+
+  @override
+  String get tags_filter_tooltip => 'Filter options';
+
+  @override
   String get performers_title => 'Исполнители';
 
   @override
@@ -862,6 +892,12 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get settings_server_url_helper =>
       'Пример формата: http(s)://host:port/graphql.';
+
+  @override
+  String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
+
+  @override
+  String get settings_server_login_failed => 'Login failed';
 
   @override
   String get settings_server_auth_method => 'Метод аутентификации';
@@ -1295,4 +1331,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String scenes_studio_id_prefix(String id) {
     return 'ID студии: $id';
   }
+
+  @override
+  String get tags_search_placeholder => 'Поиск тегов...';
+
+  @override
+  String get scenes_duration_short => '< 5 мин.';
+
+  @override
+  String get scenes_duration_medium => '5-20 мин.';
+
+  @override
+  String get scenes_duration_long => '> 20 мин.';
 }

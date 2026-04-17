@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
@@ -242,7 +243,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${widget.scene.studioName ?? "Unknown Studio"} • ${widget.scene.date.year}',
+                        '${widget.scene.studioName ?? context.l10n.common_unknown} • ${widget.scene.date.year}',
                         style: TextStyle(
                           color: context.colors.onSurface.withValues(
                             alpha: 0.75,
@@ -311,7 +312,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        widget.scene.studioName ?? 'Unknown Studio',
+                        widget.scene.studioName ?? context.l10n.common_unknown,
                         style: TextStyle(
                           color: context.colors.onSurface.withValues(
                             alpha: 0.75,

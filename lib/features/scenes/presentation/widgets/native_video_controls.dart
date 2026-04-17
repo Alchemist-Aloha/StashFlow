@@ -535,7 +535,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       child: Row(
         children: [
           IconButton(
-            tooltip: 'Reset to 1x',
+            tooltip: context.l10n.common_reset_to_1x,
             style: _controlButtonStyle(colorScheme),
             iconSize: 20,
             icon: const Icon(Icons.refresh_rounded),
@@ -571,7 +571,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
           ),
           const SizedBox(width: 8),
           IconButton(
-            tooltip: 'Close speed slider',
+            tooltip: context.l10n.common_close,
             style: _controlButtonStyle(colorScheme),
             iconSize: 20,
             icon: const Icon(Icons.close_rounded),
@@ -614,7 +614,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                 Icon(iconData, color: Colors.white, size: 48),
                 const SizedBox(height: 8),
                 Text(
-                  isMuted ? 'Muted' : '${(volume * 100).round()}%',
+                  isMuted ? context.l10n.common_mute : '${(volume * 100).round()}%',
                   style: const TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ],

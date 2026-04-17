@@ -117,7 +117,7 @@ class TagDetailsPage extends ConsumerWidget {
                         ],
                         const Divider(height: 32, color: Colors.grey),
                         SectionHeader(
-                          title: 'Media',
+                          title: context.l10n.details_media,
                           onViewAll: () =>
                               context.push('/tags/tag/${tag.id}/media'),
                         ),
@@ -129,11 +129,11 @@ class TagDetailsPage extends ConsumerWidget {
                                   top: AppTheme.spacingSmall,
                                 ),
                                 child: Text(
-                                  'No media found',
-                                  style: context.textTheme.bodySmall?.copyWith(
-                                    color: context.colors.onSurfaceVariant,
-                                  ),
-                                ),
+                                      context.l10n.common_no_media_found,
+                                      style: context.textTheme.bodySmall?.copyWith(
+                                        color: context.colors.onSurfaceVariant,
+                                      ),
+                                    ),
                               );
                             }
                             final shuffledItems = [...mediaItems]
@@ -159,7 +159,7 @@ class TagDetailsPage extends ConsumerWidget {
                             child: Center(child: CircularProgressIndicator()),
                           ),
                           error: (err, stack) => Text(
-                            'Failed to load media: $err',
+                            context.l10n.common_error(err.toString()),
                             style: TextStyle(
                               color: context.colors.onSurface.withValues(
                                 alpha: 0.7,
@@ -177,7 +177,7 @@ class TagDetailsPage extends ConsumerWidget {
                               children: [
                                 const SizedBox(height: AppTheme.spacingMedium),
                                 SectionHeader(
-                                  title: 'Galleries',
+                                  title: context.l10n.galleries_title,
                                   onViewAll: () => context.push(
                                     '/tags/tag/${tag.id}/galleries',
                                   ),
@@ -211,7 +211,7 @@ class TagDetailsPage extends ConsumerWidget {
                             child: Center(child: CircularProgressIndicator()),
                           ),
                           error: (err, stack) => Text(
-                            'Failed to load galleries: $err',
+                            context.l10n.common_error(err.toString()),
                             style: TextStyle(
                               color: context.colors.onSurface.withValues(
                                 alpha: 0.7,

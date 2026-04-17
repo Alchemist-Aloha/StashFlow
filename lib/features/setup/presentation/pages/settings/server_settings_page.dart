@@ -241,7 +241,8 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
       if (_selectedAuthMode == AuthMode.password && attemptPasswordLogin) {
         final loggedIn = await authNotifier.login();
         if (!loggedIn && mounted) {
-          final error = ref.read(authProvider).errorMessage ?? 'Login failed';
+          final l10n = AppLocalizations.of(context)!;
+          final error = ref.read(authProvider).errorMessage ?? l10n.settings_server_login_failed;
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(error)));
@@ -361,8 +362,8 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                           focusNode: _baseUrlFocusNode,
                           decoration: InputDecoration(
                             labelText: l10n.settings_server_url,
-                            hintText: 'http://192.168.1.100:9999/graphql',
-                            helperText: l10n.settings_server_url_helper,
+                              hintText: l10n.settings_server_url_example,
+                              helperText: l10n.settings_server_url_helper,
                           ),
                           keyboardType: TextInputType.url,
                           textInputAction: TextInputAction.done,

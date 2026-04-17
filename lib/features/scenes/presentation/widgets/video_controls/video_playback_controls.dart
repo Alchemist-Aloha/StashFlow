@@ -177,7 +177,7 @@ class VideoPlaybackControls extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'None',
+                        context.l10n.common_none,
                         style: TextStyle(color: colorScheme.onSurface),
                       ),
                     ],
@@ -198,8 +198,8 @@ class VideoPlaybackControls extends StatelessWidget {
                         (selectedType.isEmpty && isUnknownLangSelection));
 
                 final label = c.languageCode == '00' || c.languageCode.isEmpty
-                    ? 'Unknown (${c.captionType})'
-                    : '${c.languageCode.toUpperCase()} (${c.captionType})';
+                  ? '${context.l10n.common_unknown} (${c.captionType})'
+                  : '${c.languageCode.toUpperCase()} (${c.captionType})';
 
                 items.add(
                   PopupMenuItem<String?>(

@@ -121,6 +121,9 @@
   "common_not_found": "{item}을(를) 찾을 수 없습니다",
   "common_add_favorite": "즐겨찾기에 추가",
   "common_remove_favorite": "즐겨찾기에서 삭제",
+  "common_show": "표시",
+  "common_hide": "숨기기",
+  "galleries_filter_saved": "필터 환경설정이 기본값으로 저장되었습니다",
   "details_group": "그룹 상세 정보",
   "details_synopsis": "시놉시스",
   "details_media": "미디어",
@@ -132,16 +135,13 @@
   "details_scene_add_tag": "태그 추가",
   "details_scene_add_url": "URL 추가",
   "details_scene_remove_url": "URL 제거",
-
   "groups_title": "그룹",
   "groups_unnamed": "이름 없는 그룹",
   "groups_untitled": "제목 없는 그룹",
-
   "studios_title": "스튜디오",
   "studios_galleries_title": "스튜디오 갤러리",
   "studios_media_title": "스튜디오 미디어",
   "studios_sort_title": "스튜디오 정렬",
-
   "galleries_title": "갤러리",
   "galleries_sort_title": "갤러리 정렬",
   "galleries_all_images": "모든 이미지",
@@ -150,11 +150,19 @@
   "galleries_image_count": "이미지 수",
   "galleries_organization": "정리",
   "galleries_organized_only": "정리된 항목만",
-
   "scenes_filter_title": "장면 필터",
   "scenes_watched": "본 항목",
   "scenes_unwatched": "안 본 항목",
-
+  "scenes_search_hint": "Search scenes...",
+  "scenes_sort_header": "Sort Scenes",
+  "scenes_sort_duration": "Duration",
+  "scenes_sort_bitrate": "Bitrate",
+  "scenes_sort_framerate": "Framerate",
+  "scenes_sort_saved_default": "Sort preferences saved as default",
+  "scenes_sort_tooltip": "Sort options",
+  "tags_search_hint": "Search tags...",
+  "tags_sort_tooltip": "Sort options",
+  "tags_filter_tooltip": "Filter options",
   "performers_title": "출연자",
   "performers_sort_title": "출연자 정렬",
   "performers_filter_title": "출연자 필터",
@@ -258,14 +266,32 @@
   "common_gallery": "갤러리",
   "images_gallery_rating_unavailable": "갤러리 평점은 갤러리를 탐색할 때만 사용할 수 있습니다.",
   "images_rating": "평점: {rating} / 5",
-  "@images_rating": {"placeholders": {"rating": {"type": "String"}}},
+  "@images_rating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
   "images_filtered_by_gallery": "갤러리로 필터링됨",
   "images_slideshow_need_two": "슬라이드쇼에는 최소 2개의 이미지가 필요합니다.",
   "images_slideshow_start_title": "슬라이드쇼 시작",
   "images_slideshow_interval": "간격: {seconds}s",
-  "@images_slideshow_interval": {"placeholders": {"seconds": {"type": "num"}}},
+  "@images_slideshow_interval": {
+    "placeholders": {
+      "seconds": {
+        "type": "num"
+      }
+    }
+  },
   "images_slideshow_transition_ms": "전환: {ms}ms",
-  "@images_slideshow_transition_ms": {"placeholders": {"ms": {"type": "num"}}},
+  "@images_slideshow_transition_ms": {
+    "placeholders": {
+      "ms": {
+        "type": "num"
+      }
+    }
+  },
   "common_forward": "앞으로",
   "common_backward": "뒤로",
   "images_slideshow_loop_title": "슬라이드쇼 반복",
@@ -420,21 +446,31 @@
         "type": "String"
       }
     }
-  }
-  ,
+  },
   "settings_keybind_assign_shortcut": "단축키 할당",
   "settings_keybind_press_any": "아무 키 조합이나 누르세요...",
-
   "scenes_select_tags": "태그 선택",
   "scenes_no_scrapers": "사용 가능한 스크레이퍼가 없습니다",
   "scenes_select_scraper": "스크레이퍼 선택",
   "scenes_no_results_found": "결과를 찾을 수 없습니다",
   "scenes_select_result": "결과 선택",
   "scenes_scrape_failed": "스크랩 실패: {error}",
-  "@scenes_scrape_failed": {"placeholders": {"error": {"type": "String"}}},
+  "@scenes_scrape_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "scenes_updated_successfully": "장면이 성공적으로 업데이트되었습니다",
   "scenes_update_failed": "장면 업데이트에 실패했습니다: {error}",
-  "@scenes_update_failed": {"placeholders": {"error": {"type": "String"}}},
+  "@scenes_update_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "scenes_edit_title": "장면 편집",
   "scenes_field_studio": "스튜디오",
   "scenes_field_tags": "태그",
@@ -455,12 +491,29 @@
   "details_failed_increment_o_count": "O 수 증가 실패: {error}",
   "@details_failed_update_rating": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "@details_failed_increment_o_count": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
-  }
+  },
+  "@scenes_studio_id_prefix": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "settings_server_url_example": "http://192.168.1.100:9999/graphql",
+  "settings_server_login_failed": "Login failed",
+  "tags_search_placeholder": "태그 검색...",
+  "scenes_duration_short": "< 5분",
+  "scenes_duration_medium": "5-20분",
+  "scenes_duration_long": "> 20분"
 }

@@ -132,10 +132,22 @@
   "scenes_no_results_found": "未找到結果",
   "scenes_select_result": "選擇結果",
   "scenes_scrape_failed": "抓取失敗：{error}",
-  "@scenes_scrape_failed": {"placeholders": {"error": {"type": "String"}}},
+  "@scenes_scrape_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "scenes_updated_successfully": "場景更新成功",
   "scenes_update_failed": "場景更新失敗：{error}",
-  "@scenes_update_failed": {"placeholders": {"error": {"type": "String"}}},
+  "@scenes_update_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "scenes_edit_title": "編輯場景",
   "scenes_field_studio": "製片商",
   "scenes_field_tags": "標籤",
@@ -148,7 +160,13 @@
   "scenes_no_matching_performer_found": "在資料庫中未找到匹配的演出者",
   "common_unknown": "未知",
   "scenes_studio_id_prefix": "製片商 ID：{id}",
-  "@scenes_studio_id_prefix": {"placeholders": {"id": {"type": "String"}}},
+  "@scenes_studio_id_prefix": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "details_group": "小組詳情",
   "details_synopsis": "劇情簡介",
   "details_media": "媒體",
@@ -160,16 +178,13 @@
   "details_scene_add_tag": "添加標籤",
   "details_scene_add_url": "添加 URL",
   "details_scene_remove_url": "移除 URL",
-
   "groups_title": "小組",
   "groups_unnamed": "未命名小組",
   "groups_untitled": "無標題小組",
-
   "studios_title": "製片商",
   "studios_galleries_title": "製片商圖庫",
   "studios_media_title": "製片商媒體",
   "studios_sort_title": "製片商排序",
-
   "galleries_title": "圖库",
   "galleries_sort_title": "圖库排序",
   "galleries_all_images": "所有圖片",
@@ -178,11 +193,19 @@
   "galleries_image_count": "圖片數量",
   "galleries_organization": "整理",
   "galleries_organized_only": "僅已整理",
-
   "scenes_filter_title": "篩選場景",
   "scenes_watched": "已看",
   "scenes_unwatched": "未看",
-
+  "scenes_search_hint": "Search scenes...",
+  "scenes_sort_header": "Sort Scenes",
+  "scenes_sort_duration": "Duration",
+  "scenes_sort_bitrate": "Bitrate",
+  "scenes_sort_framerate": "Framerate",
+  "scenes_sort_saved_default": "Sort preferences saved as default",
+  "scenes_sort_tooltip": "Sort options",
+  "tags_search_hint": "Search tags...",
+  "tags_sort_tooltip": "Sort options",
+  "tags_filter_tooltip": "Filter options",
   "performers_title": "演職人員",
   "performers_sort_title": "演職人員排序",
   "performers_filter_title": "演职人员篩選",
@@ -286,14 +309,32 @@
   "common_gallery": "圖庫",
   "images_gallery_rating_unavailable": "圖庫評分僅在瀏覽圖庫時可用。",
   "images_rating": "評分：{rating} / 5",
-  "@images_rating": {"placeholders": {"rating": {"type": "String"}}},
+  "@images_rating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
   "images_filtered_by_gallery": "按圖庫篩選",
   "images_slideshow_need_two": "幻燈片播放至少需要 2 張圖片。",
   "images_slideshow_start_title": "開始幻燈片播放",
   "images_slideshow_interval": "間隔：{seconds}s",
-  "@images_slideshow_interval": {"placeholders": {"seconds": {"type": "num"}}},
+  "@images_slideshow_interval": {
+    "placeholders": {
+      "seconds": {
+        "type": "num"
+      }
+    }
+  },
   "images_slideshow_transition_ms": "過渡：{ms}ms",
-  "@images_slideshow_transition_ms": {"placeholders": {"ms": {"type": "num"}}},
+  "@images_slideshow_transition_ms": {
+    "placeholders": {
+      "ms": {
+        "type": "num"
+      }
+    }
+  },
   "common_forward": "向前",
   "common_backward": "向後",
   "images_slideshow_loop_title": "循環幻燈片播放",
@@ -448,8 +489,7 @@
         "type": "String"
       }
     }
-  }
-  ,
+  },
   "details_more_from_studio": "來自該製片商的更多內容",
   "details_o_count_incremented": "O 計數已增加",
   "details_show_less": "顯示較少",
@@ -458,12 +498,22 @@
   "details_failed_increment_o_count": "增加 O 計數失敗：{error}",
   "@details_failed_update_rating": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "@details_failed_increment_o_count": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
-  }
+  },
+  "settings_server_url_example": "http://192.168.1.100:9999/graphql",
+  "settings_server_login_failed": "Login failed",
+  "tags_search_placeholder": "搜尋標籤...",
+  "scenes_duration_short": "< 5分鐘",
+  "scenes_duration_medium": "5-20分鐘",
+  "scenes_duration_long": "> 20分鐘"
 }

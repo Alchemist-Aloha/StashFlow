@@ -121,7 +121,6 @@
   "common_not_found": "{item} が見つかりません",
   "common_add_favorite": "お気に入りに追加",
   "common_remove_favorite": "お気に入りから削除",
-
   "details_group": "グループ詳細",
   "details_synopsis": "あらすじ",
   "details_media": "メディア",
@@ -133,16 +132,13 @@
   "details_scene_add_tag": "タグを追加",
   "details_scene_add_url": "URLを追加",
   "details_scene_remove_url": "URLを削除",
-
   "groups_title": "グループ",
   "groups_unnamed": "名前なしグループ",
   "groups_untitled": "無題のグループ",
-
   "studios_title": "スタジオ",
   "studios_galleries_title": "スタジオギャラリー",
   "studios_media_title": "スタジオメディア",
   "studios_sort_title": "スタジオを並べ替え",
-
   "galleries_title": "ギャラリー",
   "galleries_sort_title": "ギャラリーを並べ替え",
   "galleries_all_images": "すべての画像",
@@ -151,11 +147,9 @@
   "galleries_image_count": "画像数",
   "galleries_organization": "整理状態",
   "galleries_organized_only": "整理済みのみ",
-
   "scenes_filter_title": "シーンをフィルター",
   "scenes_watched": "視聴済み",
   "scenes_unwatched": "未視聴",
-
   "performers_title": "パフォーマー",
   "performers_sort_title": "パフォーマーを並べ替え",
   "performers_filter_title": "パフォーマーをフィルター",
@@ -169,7 +163,6 @@
   "performers_gender_trans_male": "トランス男性",
   "performers_gender_intersex": "インターセックス",
   "performers_play_count": "再生回数",
-
   "random_studio": "ランダムなスタジオ",
   "random_gallery": "ランダムなギャラリー",
   "random_tag": "ランダムなタグ",
@@ -244,36 +237,54 @@
   "settings_interface_customize_tabs": "タブをカスタマイズ",
   "settings_interface_customize_tabs_subtitle": "ナビゲーションメニュー項目の並べ替えや非表示を行います",
   "settings_interface_scenes_layout": "シーンのレイアウト",
-    "common_edit": "編集",
-    "common_resolution": "解像度",
-    "common_orientation": "方向",
-    "common_landscape": "横向き",
-    "common_portrait": "縦向き",
-    "common_square": "正方形",
-    "performers_filter_saved": "フィルタ設定をデフォルトとして保存しました",
-    "images_title": "画像",
-    "images_sort_title": "画像を並べ替え",
-    "images_sort_saved": "並べ替えの設定を既定として保存しました",
-    "image_rating_updated": "画像の評価が更新されました。",
-    "gallery_rating_updated": "ギャラリーの評価が更新されました。",
-    "common_image": "画像",
-    "common_gallery": "ギャラリー",
-    "images_gallery_rating_unavailable": "ギャラリーの評価は、ギャラリーを閲覧しているときにのみ利用できます。",
-    "images_rating": "評価：{rating} / 5",
-    "@images_rating": {"placeholders": {"rating": {"type": "String"}}},
-    "images_filtered_by_gallery": "ギャラリーでフィルタ済み",
-    "images_slideshow_need_two": "スライドショーには少なくとも画像が2枚必要です。",
-    "images_slideshow_start_title": "スライドショーを開始",
-    "images_slideshow_interval": "間隔: {seconds}s",
-    "@images_slideshow_interval": {"placeholders": {"seconds": {"type": "num"}}},
-    "images_slideshow_transition_ms": "トランジション: {ms}ms",
-    "@images_slideshow_transition_ms": {"placeholders": {"ms": {"type": "num"}}},
-    "common_forward": "進む",
-    "common_backward": "戻る",
-    "images_slideshow_loop_title": "スライドショーをループ",
-    "common_cancel": "キャンセル",
-    "common_start": "開始",
-    "common_done": "完了",
+  "common_edit": "編集",
+  "common_resolution": "解像度",
+  "common_orientation": "方向",
+  "common_landscape": "横向き",
+  "common_portrait": "縦向き",
+  "common_square": "正方形",
+  "performers_filter_saved": "フィルタ設定をデフォルトとして保存しました",
+  "images_title": "画像",
+  "images_sort_title": "画像を並べ替え",
+  "images_sort_saved": "並べ替えの設定を既定として保存しました",
+  "image_rating_updated": "画像の評価が更新されました。",
+  "gallery_rating_updated": "ギャラリーの評価が更新されました。",
+  "common_image": "画像",
+  "common_gallery": "ギャラリー",
+  "images_gallery_rating_unavailable": "ギャラリーの評価は、ギャラリーを閲覧しているときにのみ利用できます。",
+  "images_rating": "評価：{rating} / 5",
+  "@images_rating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
+  "images_filtered_by_gallery": "ギャラリーでフィルタ済み",
+  "images_slideshow_need_two": "スライドショーには少なくとも画像が2枚必要です。",
+  "images_slideshow_start_title": "スライドショーを開始",
+  "images_slideshow_interval": "間隔: {seconds}s",
+  "@images_slideshow_interval": {
+    "placeholders": {
+      "seconds": {
+        "type": "num"
+      }
+    }
+  },
+  "images_slideshow_transition_ms": "トランジション: {ms}ms",
+  "@images_slideshow_transition_ms": {
+    "placeholders": {
+      "ms": {
+        "type": "num"
+      }
+    }
+  },
+  "common_forward": "進む",
+  "common_backward": "戻る",
+  "images_slideshow_loop_title": "スライドショーをループ",
+  "common_cancel": "キャンセル",
+  "common_start": "開始",
+  "common_done": "完了",
   "settings_interface_scenes_layout_subtitle": "シーンのデフォルト閲覧モード",
   "settings_interface_galleries_layout": "ギャラリーのレイアウト",
   "settings_interface_galleries_layout_subtitle": "ギャラリーのデフォルト閲覧モード",
@@ -422,8 +433,7 @@
         "type": "String"
       }
     }
-  }
-  ,
+  },
   "details_more_from_studio": "スタジオのその他",
   "details_o_count_incremented": "Oカウントが増えました",
   "details_show_less": "簡易表示",
@@ -438,10 +448,22 @@
   "scenes_no_results_found": "結果が見つかりませんでした",
   "scenes_select_result": "結果を選択",
   "scenes_scrape_failed": "スクレイプに失敗しました: {error}",
-  "@scenes_scrape_failed": {"placeholders": {"error": {"type": "String"}}},
+  "@scenes_scrape_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "scenes_updated_successfully": "シーンが正常に更新されました",
   "scenes_update_failed": "シーンの更新に失敗しました: {error}",
-  "@scenes_update_failed": {"placeholders": {"error": {"type": "String"}}},
+  "@scenes_update_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "scenes_edit_title": "シーンを編集",
   "scenes_field_studio": "スタジオ",
   "scenes_field_tags": "タグ",
@@ -454,14 +476,44 @@
   "scenes_no_matching_performer_found": "ライブラリに一致する出演者が見つかりません",
   "common_unknown": "不明",
   "scenes_studio_id_prefix": "スタジオID: {id}",
+  "scenes_search_hint": "Search scenes...",
+  "scenes_sort_header": "Sort Scenes",
+  "scenes_sort_duration": "Duration",
+  "scenes_sort_bitrate": "Bitrate",
+  "scenes_sort_framerate": "Framerate",
+  "scenes_sort_saved_default": "Sort preferences saved as default",
+  "scenes_sort_tooltip": "Sort options",
+  "tags_search_hint": "Search tags...",
+  "tags_sort_tooltip": "Sort options",
+  "tags_filter_tooltip": "Filter options",
+  "common_show": "表示",
+  "common_hide": "非表示",
+  "galleries_filter_saved": "ギャラリーフィルターの設定がデフォルトとして保存されました",
   "@details_failed_update_rating": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "@details_failed_increment_o_count": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
-  }
+  },
+  "@scenes_studio_id_prefix": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "settings_server_url_example": "http://192.168.1.100:9999/graphql",
+  "settings_server_login_failed": "Login failed",
+  "tags_search_placeholder": "タグを検索...",
+  "scenes_duration_short": "< 5分",
+  "scenes_duration_medium": "5-20分",
+  "scenes_duration_long": "> 20分"
 }
