@@ -285,7 +285,7 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to update performer: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.details_failed_update_performer(e.toString()))));
       }
     }
   }
@@ -296,13 +296,13 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Performer'),
+        title: Text(context.l10n.scenes_edit_performer),
         actions: [
           if (scrapeEnabled)
             if (_isScraping)
               const Center(child: Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))))
             else
-              IconButton(onPressed: _scrape, icon: const Icon(Icons.search), tooltip: 'Scrape'),
+              IconButton(onPressed: _scrape, icon: const Icon(Icons.search), tooltip: context.l10n.details_scene_scrape),
           IconButton(
             onPressed: _isSaving ? null : _save,
             icon: _isSaving ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Icon(Icons.save),
@@ -324,20 +324,20 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
                       : Image.network(_scrapedImage!, height: 200, width: double.infinity, fit: BoxFit.cover),
                 ),
               ),
-            TextField(controller: _nameController, decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder())),
+            TextField(controller: _nameController, decoration: InputDecoration(labelText: context.l10n.common_name, border: const OutlineInputBorder())),
             const SizedBox(height: 16),
-            TextField(controller: _disambiguationController, decoration: const InputDecoration(labelText: 'Disambiguation', border: OutlineInputBorder())),
+            TextField(controller: _disambiguationController, decoration: InputDecoration(labelText: context.l10n.performers_field_disambiguation, border: const OutlineInputBorder())),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               value: _selectedGender,
-              decoration: const InputDecoration(labelText: 'Gender', border: OutlineInputBorder()),
-              items: const [
-                DropdownMenuItem(value: 'MALE', child: Text('Male')),
-                DropdownMenuItem(value: 'FEMALE', child: Text('Female')),
-                DropdownMenuItem(value: 'TRANSGENDER_MALE', child: Text('Trans Male')),
-                DropdownMenuItem(value: 'TRANSGENDER_FEMALE', child: Text('Trans Female')),
-                DropdownMenuItem(value: 'INTERSEX', child: Text('Intersex')),
-                DropdownMenuItem(value: 'NON_BINARY', child: Text('Non Binary')),
+              decoration: InputDecoration(labelText: context.l10n.performers_gender, border: const OutlineInputBorder()),
+              items: [
+                DropdownMenuItem(value: 'MALE', child: Text(context.l10n.performers_gender_male)),
+                DropdownMenuItem(value: 'FEMALE', child: Text(context.l10n.performers_gender_female)),
+                DropdownMenuItem(value: 'TRANSGENDER_MALE', child: Text(context.l10n.performers_gender_trans_male)),
+                DropdownMenuItem(value: 'TRANSGENDER_FEMALE', child: Text(context.l10n.performers_gender_trans_female)),
+                DropdownMenuItem(value: 'INTERSEX', child: Text(context.l10n.performers_gender_intersex)),
+                DropdownMenuItem(value: 'NON_BINARY', child: Text(context.l10n.performers_gender_non_binary)),
               ],
               onChanged: (val) => setState(() => _selectedGender = val),
             ),
@@ -348,7 +348,7 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
                   child: TextField(
                     readOnly: true,
                     controller: TextEditingController(text: _birthdate?.toIso8601String().split('T').first ?? ''),
-                    decoration: const InputDecoration(labelText: 'Birthdate', border: OutlineInputBorder(), suffixIcon: Icon(Icons.calendar_today)),
+                    decoration: InputDecoration(labelText: context.l10n.performers_field_birthdate, border: const OutlineInputBorder(), suffixIcon: const Icon(Icons.calendar_today)),
                     onTap: () async {
                       final picked = await showDatePicker(context: context, initialDate: _birthdate ?? DateTime.now(), firstDate: DateTime(1900), lastDate: DateTime.now());
                       if (picked != null) setState(() => _birthdate = picked);
@@ -360,7 +360,7 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
                   child: TextField(
                     readOnly: true,
                     controller: TextEditingController(text: _deathDate?.toIso8601String().split('T').first ?? ''),
-                    decoration: const InputDecoration(labelText: 'Death Date', border: OutlineInputBorder(), suffixIcon: Icon(Icons.calendar_today)),
+                    decoration: InputDecoration(labelText: context.l10n.performers_field_deathdate, border: const OutlineInputBorder(), suffixIcon: const Icon(Icons.calendar_today)),
                     onTap: () async {
                       final picked = await showDatePicker(context: context, initialDate: _deathDate ?? DateTime.now(), firstDate: DateTime(1900), lastDate: DateTime.now());
                       if (picked != null) setState(() => _deathDate = picked);
@@ -372,57 +372,57 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
             const SizedBox(height: 16),
             Row(
               children: [
-                Expanded(child: TextField(controller: _heightController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Height (cm)', border: OutlineInputBorder()))),
+                Expanded(child: TextField(controller: _heightController, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: context.l10n.performers_field_height_cm, border: const OutlineInputBorder()))),
                 const SizedBox(width: 16),
-                Expanded(child: TextField(controller: _weightController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Weight (kg)', border: OutlineInputBorder()))),
+                Expanded(child: TextField(controller: _weightController, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: context.l10n.performers_field_weight_kg, border: const OutlineInputBorder()))),
               ],
             ),
             const SizedBox(height: 16),
-            TextField(controller: _measurementsController, decoration: const InputDecoration(labelText: 'Measurements', border: OutlineInputBorder())),
+            TextField(controller: _measurementsController, decoration: InputDecoration(labelText: context.l10n.performers_field_measurements, border: const OutlineInputBorder())),
             const SizedBox(height: 16),
-            TextField(controller: _fakeTitsController, decoration: const InputDecoration(labelText: 'Fake Tits', border: OutlineInputBorder())),
+            TextField(controller: _fakeTitsController, decoration: InputDecoration(labelText: context.l10n.performers_field_fake_tits, border: const OutlineInputBorder())),
             const SizedBox(height: 16),
-            TextField(controller: _penisLengthController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Penis Length', border: OutlineInputBorder())),
+            TextField(controller: _penisLengthController, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: context.l10n.performers_field_penis_length, border: const OutlineInputBorder())),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               value: _selectedCircumcised,
-              decoration: const InputDecoration(labelText: 'Circumcised', border: OutlineInputBorder()),
-              items: const [
-                DropdownMenuItem(value: 'CUT', child: Text('Cut')),
-                DropdownMenuItem(value: 'UNCUT', child: Text('Uncut')),
+              decoration: InputDecoration(labelText: context.l10n.performers_circumcised, border: const OutlineInputBorder()),
+              items: [
+                DropdownMenuItem(value: 'CUT', child: Text(context.l10n.performers_circumcised_cut)),
+                DropdownMenuItem(value: 'UNCUT', child: Text(context.l10n.performers_circumcised_uncut)),
               ],
               onChanged: (val) => setState(() => _selectedCircumcised = val),
             ),
             const SizedBox(height: 16),
-            TextField(controller: _ethnicityController, decoration: const InputDecoration(labelText: 'Ethnicity', border: OutlineInputBorder())),
+            TextField(controller: _ethnicityController, decoration: InputDecoration(labelText: context.l10n.performers_field_ethnicity, border: const OutlineInputBorder())),
             const SizedBox(height: 16),
-            TextField(controller: _countryController, decoration: const InputDecoration(labelText: 'Country', border: OutlineInputBorder())),
+            TextField(controller: _countryController, decoration: InputDecoration(labelText: context.l10n.performers_field_country, border: const OutlineInputBorder())),
             const SizedBox(height: 16),
             Row(
               children: [
-                Expanded(child: TextField(controller: _eyeColorController, decoration: const InputDecoration(labelText: 'Eye Color', border: OutlineInputBorder()))),
+                Expanded(child: TextField(controller: _eyeColorController, decoration: InputDecoration(labelText: context.l10n.performers_field_eye_color, border: const OutlineInputBorder()))),
                 const SizedBox(width: 16),
-                Expanded(child: TextField(controller: _hairColorController, decoration: const InputDecoration(labelText: 'Hair Color', border: OutlineInputBorder()))),
+                Expanded(child: TextField(controller: _hairColorController, decoration: InputDecoration(labelText: context.l10n.performers_field_hair_color, border: const OutlineInputBorder()))),
               ],
             ),
             const SizedBox(height: 16),
             Row(
               children: [
-                Expanded(child: TextField(controller: _careerStartController, decoration: const InputDecoration(labelText: 'Career Start', border: OutlineInputBorder()))),
+                Expanded(child: TextField(controller: _careerStartController, decoration: InputDecoration(labelText: context.l10n.performers_field_career_start, border: const OutlineInputBorder()))),
                 const SizedBox(width: 16),
-                Expanded(child: TextField(controller: _careerEndController, decoration: const InputDecoration(labelText: 'Career End', border: OutlineInputBorder()))),
+                Expanded(child: TextField(controller: _careerEndController, decoration: InputDecoration(labelText: context.l10n.performers_field_career_end, border: const OutlineInputBorder()))),
               ],
             ),
             const SizedBox(height: 16),
-            TextField(controller: _tattoosController, decoration: const InputDecoration(labelText: 'Tattoos', border: OutlineInputBorder())),
+            TextField(controller: _tattoosController, decoration: InputDecoration(labelText: context.l10n.performers_field_tattoos, border: const OutlineInputBorder())),
             const SizedBox(height: 16),
-            TextField(controller: _piercingsController, decoration: const InputDecoration(labelText: 'Piercings', border: OutlineInputBorder())),
+            TextField(controller: _piercingsController, decoration: InputDecoration(labelText: context.l10n.performers_field_piercings, border: const OutlineInputBorder())),
             const SizedBox(height: 16),
-            TextField(controller: _detailsController, maxLines: 5, decoration: const InputDecoration(labelText: 'Details', border: OutlineInputBorder())),
+            TextField(controller: _detailsController, maxLines: 5, decoration: InputDecoration(labelText: context.l10n.common_details, border: const OutlineInputBorder())),
             const SizedBox(height: 16),
-            _buildListField('Aliases', _aliasControllers, () => setState(() => _aliasControllers.add(TextEditingController())), (i) => setState(() { _aliasControllers[i].dispose(); _aliasControllers.removeAt(i); if (_aliasControllers.isEmpty) _aliasControllers.add(TextEditingController()); })),
+            _buildListField(context.l10n.performers_field_aliases, _aliasControllers, () => setState(() => _aliasControllers.add(TextEditingController())), (i) => setState(() { _aliasControllers[i].dispose(); _aliasControllers.removeAt(i); if (_aliasControllers.isEmpty) _aliasControllers.add(TextEditingController()); })),
             const SizedBox(height: 16),
-            _buildListField('URLs', _urlControllers, () => setState(() => _urlControllers.add(TextEditingController())), (i) => setState(() { _urlControllers[i].dispose(); _urlControllers.removeAt(i); if (_urlControllers.isEmpty) _urlControllers.add(TextEditingController()); })),
+            _buildListField(context.l10n.scenes_field_urls, _urlControllers, () => setState(() => _urlControllers.add(TextEditingController())), (i) => setState(() { _urlControllers[i].dispose(); _urlControllers.removeAt(i); if (_urlControllers.isEmpty) _urlControllers.add(TextEditingController()); })),
           ],
         ),
       ),

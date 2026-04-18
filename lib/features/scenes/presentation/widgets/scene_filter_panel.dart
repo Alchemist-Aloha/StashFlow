@@ -489,7 +489,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Duplicated', style: context.textTheme.labelLarge),
+        Text(context.l10n.scenes_duplicated, style: context.textTheme.labelLarge),
         Wrap(
           spacing: 4,
           children: options.map((opt) {
@@ -567,7 +567,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Organized', style: context.textTheme.labelLarge),
+        Text(context.l10n.common_organized, style: context.textTheme.labelLarge),
         Wrap(
           spacing: 8,
           children: OrganizedFilter.values.map((option) {
@@ -605,7 +605,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Resolution', style: context.textTheme.labelLarge),
+        Text(context.l10n.images_resolution_title, style: context.textTheme.labelLarge),
         Wrap(
           spacing: 4,
           children: resolutions.map((res) {
@@ -642,7 +642,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Orientation', style: context.textTheme.labelLarge),
+        Text(context.l10n.common_orientation, style: context.textTheme.labelLarge),
         Wrap(
           spacing: 4,
           children: orientations.map((ori) {

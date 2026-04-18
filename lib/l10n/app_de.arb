@@ -536,8 +536,7 @@
   "scenes_duration_medium": "5-20 Min.",
   "scenes_duration_long": "> 20 Min.",
   "settings_playback_gravity_orientation": "Schwerkraftgesteuerte Ausrichtung",
-  "settings_playback_gravity_orientation_subtitle": "Erlaube die Rotation zwischen passenden Ausrichtungen mithilfe des Gerätesensors (z. B. Landschaft links/rechts)."
-,
+  "settings_playback_gravity_orientation_subtitle": "Erlaube die Rotation zwischen passenden Ausrichtungen mithilfe des Gerätesensors (z. B. Landschaft links/rechts).",
   "sort_height": "Größe",
   "sort_birthdate": "Geburtsdatum",
   "sort_tag_count": "Anzahl Tags",
@@ -566,5 +565,76 @@
   "details_scene_fingerprint_query": "Szenen-Fingerprint-Abfrage",
   "scenes_available_scrapers": "Verfügbare Scraper",
   "scrape_results_existing": "Bereits vorhanden",
-  "scrape_results_scraped": "Erfasste Ergebnisse"
+  "scrape_results_scraped": "Erfasste Ergebnisse",
+  "details_failed_update_performer": "Aktualisierung des Darstellers fehlgeschlagen: {error}",
+  "@details_failed_update_performer": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "performers_gender_non_binary": "Nicht-binär",
+  "performers_circumcised": "Beschneidung",
+  "performers_circumcised_cut": "Beschnitten",
+  "performers_circumcised_uncut": "Unbeschnitten",
+  "performers_field_disambiguation": "Disambiguierung",
+  "performers_field_birthdate": "Geburtsdatum",
+  "performers_field_deathdate": "Todesdatum",
+  "performers_field_height_cm": "Größe (cm)",
+  "performers_field_weight_kg": "Gewicht (kg)",
+  "performers_field_measurements": "Maße",
+  "performers_field_fake_tits": "Künstliche Brüste",
+  "performers_field_penis_length": "Penislänge",
+  "performers_field_ethnicity": "Ethnie",
+  "performers_field_country": "Land",
+  "performers_field_eye_color": "Augenfarbe",
+  "performers_field_hair_color": "Haarfarbe",
+  "performers_field_career_start": "Karrierebeginn",
+  "performers_field_career_end": "Karriereende",
+  "performers_field_tattoos": "Tätowierungen",
+  "performers_field_piercings": "Piercings",
+  "performers_field_aliases": "Aliase",
+  "common_organized": "Organisiert",
+  "scenes_duplicated": "Dupliziert",
+  "filter_modifier": "Modifikator",
+  "filter_value": "Wert",
+  "filter_equals": "Gleich",
+  "filter_not_equals": "Nicht gleich",
+  "filter_greater_than": "Größer als",
+  "filter_less_than": "Kleiner als",
+  "filter_is_null": "Ist null",
+  "filter_not_null": "Ist nicht null",
+  "images_resolution_title": "Auflösung",
+  "resolution_144p": "144p",
+  "resolution_240p": "240p",
+  "resolution_360p": "360p",
+  "resolution_480p": "480p",
+  "resolution_540p": "540p",
+  "resolution_720p": "720p",
+  "resolution_1080p": "1080p",
+  "resolution_1440p": "1440p",
+  "resolution_1920p": "1920p",
+  "resolution_2160p": "4K (2160p)",
+  "resolution_4320p": "8K (4320p)",
+  "images_orientation_title": "Ausrichtung",
+  "common_or": "ODER",
+  "scrape_from_url": "Von URL scrapen",
+  "scenes_phash_started": "Phash-Generierung gestartet",
+  "scenes_phash_failed": "Phash-Generierung fehlgeschlagen: {error}",
+  "@scenes_phash_failed": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "details_failed_update_studio": "Aktualisierung des Studios fehlgeschlagen: {error}",
+  "@details_failed_update_studio": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  }
 }

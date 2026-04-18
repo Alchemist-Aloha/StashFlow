@@ -485,6 +485,11 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String details_failed_update_performer(Object error) {
+    return 'Aktualisierung des Darstellers fehlgeschlagen: $error';
+  }
+
+  @override
   String details_failed_increment_o_count(String error) {
     return 'Fehler beim Erhöhen des O-Zählers: $error';
   }
@@ -623,7 +628,76 @@ class AppLocalizationsDe extends AppLocalizations {
   String get performers_gender_intersex => 'Intersexuell';
 
   @override
+  String get performers_gender_non_binary => 'Nicht-binär';
+
+  @override
+  String get performers_circumcised => 'Beschneidung';
+
+  @override
+  String get performers_circumcised_cut => 'Beschnitten';
+
+  @override
+  String get performers_circumcised_uncut => 'Unbeschnitten';
+
+  @override
   String get performers_play_count => 'Wiedergabeanzahl';
+
+  @override
+  String get performers_field_disambiguation => 'Disambiguierung';
+
+  @override
+  String get performers_field_birthdate => 'Geburtsdatum';
+
+  @override
+  String get performers_field_deathdate => 'Todesdatum';
+
+  @override
+  String get performers_field_height_cm => 'Größe (cm)';
+
+  @override
+  String get performers_field_weight_kg => 'Gewicht (kg)';
+
+  @override
+  String get performers_field_measurements => 'Maße';
+
+  @override
+  String get performers_field_fake_tits => 'Künstliche Brüste';
+
+  @override
+  String get performers_field_penis_length => 'Penislänge';
+
+  @override
+  String get performers_field_ethnicity => 'Ethnie';
+
+  @override
+  String get performers_field_country => 'Land';
+
+  @override
+  String get performers_field_eye_color => 'Augenfarbe';
+
+  @override
+  String get performers_field_hair_color => 'Haarfarbe';
+
+  @override
+  String get performers_field_career_start => 'Karrierebeginn';
+
+  @override
+  String get performers_field_career_end => 'Karriereende';
+
+  @override
+  String get performers_field_tattoos => 'Tätowierungen';
+
+  @override
+  String get performers_field_piercings => 'Piercings';
+
+  @override
+  String get performers_field_aliases => 'Aliase';
+
+  @override
+  String get common_organized => 'Organisiert';
+
+  @override
+  String get scenes_duplicated => 'Dupliziert';
 
   @override
   String get random_studio => 'Zufälliges Studio';
@@ -639,6 +713,88 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get random_performer => 'Zufälliger Darsteller';
+
+  @override
+  String get filter_modifier => 'Modifikator';
+
+  @override
+  String get filter_value => 'Wert';
+
+  @override
+  String get filter_equals => 'Gleich';
+
+  @override
+  String get filter_not_equals => 'Nicht gleich';
+
+  @override
+  String get filter_greater_than => 'Größer als';
+
+  @override
+  String get filter_less_than => 'Kleiner als';
+
+  @override
+  String get filter_is_null => 'Ist null';
+
+  @override
+  String get filter_not_null => 'Ist nicht null';
+
+  @override
+  String get images_resolution_title => 'Auflösung';
+
+  @override
+  String get resolution_144p => '144p';
+
+  @override
+  String get resolution_240p => '240p';
+
+  @override
+  String get resolution_360p => '360p';
+
+  @override
+  String get resolution_480p => '480p';
+
+  @override
+  String get resolution_540p => '540p';
+
+  @override
+  String get resolution_720p => '720p';
+
+  @override
+  String get resolution_1080p => '1080p';
+
+  @override
+  String get resolution_1440p => '1440p';
+
+  @override
+  String get resolution_1920p => '1920p';
+
+  @override
+  String get resolution_2160p => '4K (2160p)';
+
+  @override
+  String get resolution_4320p => '8K (4320p)';
+
+  @override
+  String get images_orientation_title => 'Ausrichtung';
+
+  @override
+  String get common_or => 'ODER';
+
+  @override
+  String get scrape_from_url => 'Von URL scrapen';
+
+  @override
+  String get scenes_phash_started => 'Phash-Generierung gestartet';
+
+  @override
+  String scenes_phash_failed(Object error) {
+    return 'Phash-Generierung fehlgeschlagen: $error';
+  }
+
+  @override
+  String details_failed_update_studio(Object error) {
+    return 'Aktualisierung des Studios fehlgeschlagen: $error';
+  }
 
   @override
   String get settings_title => 'Einstellungen';

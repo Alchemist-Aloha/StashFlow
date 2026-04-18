@@ -160,7 +160,7 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to update studio: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.details_failed_update_studio(e.toString()))));
       }
     }
   }
@@ -171,13 +171,13 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Studio'),
+        title: Text(context.l10n.scenes_edit_studio),
         actions: [
           if (scrapeEnabled)
             if (_isScraping)
               const Center(child: Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))))
             else
-              IconButton(onPressed: _scrape, icon: const Icon(Icons.search), tooltip: 'Scrape'),
+              IconButton(onPressed: _scrape, icon: const Icon(Icons.search), tooltip: context.l10n.details_scene_scrape),
           IconButton(
             onPressed: _isSaving ? null : _save,
             icon: _isSaving ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Icon(Icons.save),
@@ -199,11 +199,11 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
                       : Image.network(_scrapedImage!, height: 150, width: double.infinity, fit: BoxFit.contain),
                 ),
               ),
-            TextField(controller: _nameController, decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder())),
+            TextField(controller: _nameController, decoration: InputDecoration(labelText: context.l10n.common_name, border: const OutlineInputBorder())),
             const SizedBox(height: 16),
-            TextField(controller: _urlController, decoration: const InputDecoration(labelText: 'URL', border: OutlineInputBorder())),
+            TextField(controller: _urlController, decoration: InputDecoration(labelText: context.l10n.common_url, border: const OutlineInputBorder())),
             const SizedBox(height: 16),
-            TextField(controller: _detailsController, maxLines: 5, decoration: const InputDecoration(labelText: 'Details', border: OutlineInputBorder())),
+            TextField(controller: _detailsController, maxLines: 5, decoration: InputDecoration(labelText: context.l10n.common_details, border: const OutlineInputBorder())),
           ],
         ),
       ),

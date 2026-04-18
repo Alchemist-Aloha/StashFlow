@@ -374,7 +374,7 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Gender', style: context.textTheme.labelLarge),
+        Text(context.l10n.performers_gender, style: context.textTheme.labelLarge),
         Wrap(
           spacing: 4,
           children: genders.map((g) {
@@ -407,7 +407,7 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Circumcised', style: context.textTheme.labelLarge),
+        Text(context.l10n.performers_circumcised, style: context.textTheme.labelLarge),
         Wrap(
           spacing: 4,
           children: values.map((v) => ChoiceChip(

@@ -344,7 +344,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get common_release_date => '公開日';
 
   @override
-  String get common_url => 'URL';
+  String get common_url => 'リンク';
 
   @override
   String get common_no_url => 'URLなし';
@@ -474,6 +474,11 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String details_failed_update_rating(String error) {
     return '評価の更新に失敗しました: $error';
+  }
+
+  @override
+  String details_failed_update_performer(Object error) {
+    return '出演者の更新に失敗しました: $error';
   }
 
   @override
@@ -614,7 +619,76 @@ class AppLocalizationsJa extends AppLocalizations {
   String get performers_gender_intersex => 'インターセックス';
 
   @override
+  String get performers_gender_non_binary => 'ノンバイナリー';
+
+  @override
+  String get performers_circumcised => '包茎';
+
+  @override
+  String get performers_circumcised_cut => '切除';
+
+  @override
+  String get performers_circumcised_uncut => '非切除';
+
+  @override
   String get performers_play_count => '再生回数';
+
+  @override
+  String get performers_field_disambiguation => '識別';
+
+  @override
+  String get performers_field_birthdate => '生年月日';
+
+  @override
+  String get performers_field_deathdate => '死亡日';
+
+  @override
+  String get performers_field_height_cm => '身長 (cm)';
+
+  @override
+  String get performers_field_weight_kg => '体重 (kg)';
+
+  @override
+  String get performers_field_measurements => 'サイズ';
+
+  @override
+  String get performers_field_fake_tits => '豊胸';
+
+  @override
+  String get performers_field_penis_length => 'ペニスの長さ';
+
+  @override
+  String get performers_field_ethnicity => '人種';
+
+  @override
+  String get performers_field_country => '国';
+
+  @override
+  String get performers_field_eye_color => '目の色';
+
+  @override
+  String get performers_field_hair_color => '髪の色';
+
+  @override
+  String get performers_field_career_start => 'キャリア開始';
+
+  @override
+  String get performers_field_career_end => 'キャリア終了';
+
+  @override
+  String get performers_field_tattoos => 'タトゥー';
+
+  @override
+  String get performers_field_piercings => 'ピアス';
+
+  @override
+  String get performers_field_aliases => '別名';
+
+  @override
+  String get common_organized => '整理済み';
+
+  @override
+  String get scenes_duplicated => '重複';
 
   @override
   String get random_studio => 'ランダムなスタジオ';
@@ -630,6 +704,88 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get random_performer => 'ランダムな出演者';
+
+  @override
+  String get filter_modifier => '修飾子';
+
+  @override
+  String get filter_value => '値';
+
+  @override
+  String get filter_equals => '等しい';
+
+  @override
+  String get filter_not_equals => '等しくない';
+
+  @override
+  String get filter_greater_than => 'より大きい';
+
+  @override
+  String get filter_less_than => 'より小さい';
+
+  @override
+  String get filter_is_null => 'ヌルです';
+
+  @override
+  String get filter_not_null => 'ヌルではありません';
+
+  @override
+  String get images_resolution_title => '解像度';
+
+  @override
+  String get resolution_144p => '144p';
+
+  @override
+  String get resolution_240p => '240p';
+
+  @override
+  String get resolution_360p => '360p';
+
+  @override
+  String get resolution_480p => '480p';
+
+  @override
+  String get resolution_540p => '540p';
+
+  @override
+  String get resolution_720p => '720p';
+
+  @override
+  String get resolution_1080p => '1080p';
+
+  @override
+  String get resolution_1440p => '1440p';
+
+  @override
+  String get resolution_1920p => '1920p';
+
+  @override
+  String get resolution_2160p => '4K (2160p)';
+
+  @override
+  String get resolution_4320p => '8K (4320p)';
+
+  @override
+  String get images_orientation_title => '画像の向き';
+
+  @override
+  String get common_or => 'または';
+
+  @override
+  String get scrape_from_url => 'URLからスクレイプ';
+
+  @override
+  String get scenes_phash_started => 'Phash生成を開始しました';
+
+  @override
+  String scenes_phash_failed(Object error) {
+    return 'Phashの生成に失敗しました: $error';
+  }
+
+  @override
+  String details_failed_update_studio(Object error) {
+    return 'スタジオの更新に失敗しました: $error';
+  }
 
   @override
   String get settings_title => '設定';
@@ -1381,7 +1537,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get scenes_field_tags => 'タグ';
 
   @override
-  String get scenes_field_urls => 'URL';
+  String get scenes_field_urls => 'リンク';
 
   @override
   String get scenes_edit_performer => '出演者を編集';

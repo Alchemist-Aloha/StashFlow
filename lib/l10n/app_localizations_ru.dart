@@ -350,7 +350,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get common_release_date => 'дата выхода';
 
   @override
-  String get common_url => 'URL';
+  String get common_url => 'Ссылка';
 
   @override
   String get common_no_url => 'нет URL';
@@ -480,6 +480,11 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String details_failed_update_rating(String error) {
     return 'Не удалось обновить рейтинг: $error';
+  }
+
+  @override
+  String details_failed_update_performer(Object error) {
+    return 'Не удалось обновить исполнителя: $error';
   }
 
   @override
@@ -621,7 +626,76 @@ class AppLocalizationsRu extends AppLocalizations {
   String get performers_gender_intersex => 'Интерсекс';
 
   @override
+  String get performers_gender_non_binary => 'Небинарный';
+
+  @override
+  String get performers_circumcised => 'Обрезан';
+
+  @override
+  String get performers_circumcised_cut => 'Обрезан';
+
+  @override
+  String get performers_circumcised_uncut => 'Необрезан';
+
+  @override
   String get performers_play_count => 'Количество воспроизведений';
+
+  @override
+  String get performers_field_disambiguation => 'Разрешение неоднозначности';
+
+  @override
+  String get performers_field_birthdate => 'Дата рождения';
+
+  @override
+  String get performers_field_deathdate => 'Дата смерти';
+
+  @override
+  String get performers_field_height_cm => 'Рост (см)';
+
+  @override
+  String get performers_field_weight_kg => 'Вес (кг)';
+
+  @override
+  String get performers_field_measurements => 'Замеры';
+
+  @override
+  String get performers_field_fake_tits => 'Искусственная грудь';
+
+  @override
+  String get performers_field_penis_length => 'Длина пениса';
+
+  @override
+  String get performers_field_ethnicity => 'Этничность';
+
+  @override
+  String get performers_field_country => 'Страна';
+
+  @override
+  String get performers_field_eye_color => 'Цвет глаз';
+
+  @override
+  String get performers_field_hair_color => 'Цвет волос';
+
+  @override
+  String get performers_field_career_start => 'Начало карьеры';
+
+  @override
+  String get performers_field_career_end => 'Конец карьеры';
+
+  @override
+  String get performers_field_tattoos => 'Татуировки';
+
+  @override
+  String get performers_field_piercings => 'Пирсинг';
+
+  @override
+  String get performers_field_aliases => 'Псевдонимы';
+
+  @override
+  String get common_organized => 'Организовано';
+
+  @override
+  String get scenes_duplicated => 'Дублировано';
 
   @override
   String get random_studio => 'случайная студия';
@@ -637,6 +711,88 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get random_performer => 'случайный исполнитель';
+
+  @override
+  String get filter_modifier => 'Модификатор';
+
+  @override
+  String get filter_value => 'Значение';
+
+  @override
+  String get filter_equals => 'Равно';
+
+  @override
+  String get filter_not_equals => 'Не равно';
+
+  @override
+  String get filter_greater_than => 'Больше чем';
+
+  @override
+  String get filter_less_than => 'Меньше чем';
+
+  @override
+  String get filter_is_null => 'Null';
+
+  @override
+  String get filter_not_null => 'Не null';
+
+  @override
+  String get images_resolution_title => 'Разрешение';
+
+  @override
+  String get resolution_144p => '144p';
+
+  @override
+  String get resolution_240p => '240p';
+
+  @override
+  String get resolution_360p => '360p';
+
+  @override
+  String get resolution_480p => '480p';
+
+  @override
+  String get resolution_540p => '540p';
+
+  @override
+  String get resolution_720p => '720p';
+
+  @override
+  String get resolution_1080p => '1080p';
+
+  @override
+  String get resolution_1440p => '1440p';
+
+  @override
+  String get resolution_1920p => '1920p';
+
+  @override
+  String get resolution_2160p => '4K (2160p)';
+
+  @override
+  String get resolution_4320p => '8K (4320p)';
+
+  @override
+  String get images_orientation_title => 'Ориентация';
+
+  @override
+  String get common_or => 'ИЛИ';
+
+  @override
+  String get scrape_from_url => 'Собрать с URL';
+
+  @override
+  String get scenes_phash_started => 'Генерация phash начата';
+
+  @override
+  String scenes_phash_failed(Object error) {
+    return 'Не удалось сгенерировать phash: $error';
+  }
+
+  @override
+  String details_failed_update_studio(Object error) {
+    return 'Не удалось обновить студию: $error';
+  }
 
   @override
   String get settings_title => 'Настройки';
@@ -1439,7 +1595,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get scenes_field_tags => 'Теги';
 
   @override
-  String get scenes_field_urls => 'URL';
+  String get scenes_field_urls => 'Ссылки';
 
   @override
   String get scenes_edit_performer => 'Редактировать исполнителя';

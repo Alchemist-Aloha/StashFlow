@@ -281,7 +281,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String common_id(Object id) {
-    return 'ID: $id';
+    return 'ID：$id';
   }
 
   @override
@@ -342,7 +342,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get common_release_date => '发布日期';
 
   @override
-  String get common_url => 'URL';
+  String get common_url => '链接';
 
   @override
   String get common_no_url => '无 URL';
@@ -472,6 +472,11 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String details_failed_update_rating(String error) {
     return '更新评分失败：$error';
+  }
+
+  @override
+  String details_failed_update_performer(Object error) {
+    return '更新演员失败：$error';
   }
 
   @override
@@ -612,7 +617,76 @@ class AppLocalizationsZh extends AppLocalizations {
   String get performers_gender_intersex => '双性人';
 
   @override
+  String get performers_gender_non_binary => '非二元';
+
+  @override
+  String get performers_circumcised => '割礼';
+
+  @override
+  String get performers_circumcised_cut => '已割礼';
+
+  @override
+  String get performers_circumcised_uncut => '未割礼';
+
+  @override
   String get performers_play_count => '播放次数';
+
+  @override
+  String get performers_field_disambiguation => '消歧义';
+
+  @override
+  String get performers_field_birthdate => '出生日期';
+
+  @override
+  String get performers_field_deathdate => '死亡日期';
+
+  @override
+  String get performers_field_height_cm => '身高（cm）';
+
+  @override
+  String get performers_field_weight_kg => '体重（kg）';
+
+  @override
+  String get performers_field_measurements => '三围';
+
+  @override
+  String get performers_field_fake_tits => '假胸';
+
+  @override
+  String get performers_field_penis_length => '阴茎长度';
+
+  @override
+  String get performers_field_ethnicity => '族裔';
+
+  @override
+  String get performers_field_country => '国家';
+
+  @override
+  String get performers_field_eye_color => '眼睛颜色';
+
+  @override
+  String get performers_field_hair_color => '头发颜色';
+
+  @override
+  String get performers_field_career_start => '职业开始';
+
+  @override
+  String get performers_field_career_end => '职业结束';
+
+  @override
+  String get performers_field_tattoos => '纹身';
+
+  @override
+  String get performers_field_piercings => '穿孔';
+
+  @override
+  String get performers_field_aliases => '别名';
+
+  @override
+  String get common_organized => '已整理';
+
+  @override
+  String get scenes_duplicated => '重复';
 
   @override
   String get random_studio => '随机制片商';
@@ -628,6 +702,88 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get random_performer => '随机出演者';
+
+  @override
+  String get filter_modifier => '修饰符';
+
+  @override
+  String get filter_value => '值';
+
+  @override
+  String get filter_equals => '等于';
+
+  @override
+  String get filter_not_equals => '不等于';
+
+  @override
+  String get filter_greater_than => '大于';
+
+  @override
+  String get filter_less_than => '小于';
+
+  @override
+  String get filter_is_null => '为空';
+
+  @override
+  String get filter_not_null => '不为空';
+
+  @override
+  String get images_resolution_title => '分辨率';
+
+  @override
+  String get resolution_144p => '144p';
+
+  @override
+  String get resolution_240p => '240p';
+
+  @override
+  String get resolution_360p => '360p';
+
+  @override
+  String get resolution_480p => '480p';
+
+  @override
+  String get resolution_540p => '540p';
+
+  @override
+  String get resolution_720p => '720p';
+
+  @override
+  String get resolution_1080p => '1080p';
+
+  @override
+  String get resolution_1440p => '1440p';
+
+  @override
+  String get resolution_1920p => '1920p';
+
+  @override
+  String get resolution_2160p => '4K (2160p)';
+
+  @override
+  String get resolution_4320p => '8K (4320p)';
+
+  @override
+  String get images_orientation_title => '方向';
+
+  @override
+  String get common_or => '或';
+
+  @override
+  String get scrape_from_url => '从 URL 抓取';
+
+  @override
+  String get scenes_phash_started => '开始生成 phash';
+
+  @override
+  String scenes_phash_failed(Object error) {
+    return '生成 phash 失败：$error';
+  }
+
+  @override
+  String details_failed_update_studio(Object error) {
+    return '更新工作室失败：$error';
+  }
 
   @override
   String get settings_title => '设置';
@@ -1360,7 +1516,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scenes_field_tags => '标签';
 
   @override
-  String get scenes_field_urls => 'URL';
+  String get scenes_field_urls => '链接';
 
   @override
   String get scenes_edit_performer => '编辑演员';
@@ -1696,7 +1852,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String common_id(Object id) {
-    return 'ID: $id';
+    return 'ID：$id';
   }
 
   @override
@@ -1757,7 +1913,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get common_release_date => '发布日期';
 
   @override
-  String get common_url => 'URL';
+  String get common_url => '链接';
 
   @override
   String get common_no_url => '无 URL';
@@ -1887,6 +2043,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String details_failed_update_rating(String error) {
     return '更新评分失败：$error';
+  }
+
+  @override
+  String details_failed_update_performer(Object error) {
+    return '更新演员失败：$error';
   }
 
   @override
@@ -2027,7 +2188,76 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get performers_gender_intersex => '双性人';
 
   @override
+  String get performers_gender_non_binary => '非二元';
+
+  @override
+  String get performers_circumcised => '割礼';
+
+  @override
+  String get performers_circumcised_cut => '已割礼';
+
+  @override
+  String get performers_circumcised_uncut => '未割礼';
+
+  @override
   String get performers_play_count => '播放次数';
+
+  @override
+  String get performers_field_disambiguation => '消歧义';
+
+  @override
+  String get performers_field_birthdate => '出生日期';
+
+  @override
+  String get performers_field_deathdate => '死亡日期';
+
+  @override
+  String get performers_field_height_cm => '身高（cm）';
+
+  @override
+  String get performers_field_weight_kg => '体重（kg）';
+
+  @override
+  String get performers_field_measurements => '三围';
+
+  @override
+  String get performers_field_fake_tits => '假胸';
+
+  @override
+  String get performers_field_penis_length => '阴茎长度';
+
+  @override
+  String get performers_field_ethnicity => '族裔';
+
+  @override
+  String get performers_field_country => '国家';
+
+  @override
+  String get performers_field_eye_color => '眼睛颜色';
+
+  @override
+  String get performers_field_hair_color => '头发颜色';
+
+  @override
+  String get performers_field_career_start => '职业开始';
+
+  @override
+  String get performers_field_career_end => '职业结束';
+
+  @override
+  String get performers_field_tattoos => '纹身';
+
+  @override
+  String get performers_field_piercings => '穿孔';
+
+  @override
+  String get performers_field_aliases => '别名';
+
+  @override
+  String get common_organized => '已整理';
+
+  @override
+  String get scenes_duplicated => '重复';
 
   @override
   String get random_studio => '随机制片商';
@@ -2043,6 +2273,88 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get random_performer => '随机出演者';
+
+  @override
+  String get filter_modifier => '修饰符';
+
+  @override
+  String get filter_value => '值';
+
+  @override
+  String get filter_equals => '等于';
+
+  @override
+  String get filter_not_equals => '不等于';
+
+  @override
+  String get filter_greater_than => '大于';
+
+  @override
+  String get filter_less_than => '小于';
+
+  @override
+  String get filter_is_null => '为空';
+
+  @override
+  String get filter_not_null => '不为空';
+
+  @override
+  String get images_resolution_title => '分辨率';
+
+  @override
+  String get resolution_144p => '144p';
+
+  @override
+  String get resolution_240p => '240p';
+
+  @override
+  String get resolution_360p => '360p';
+
+  @override
+  String get resolution_480p => '480p';
+
+  @override
+  String get resolution_540p => '540p';
+
+  @override
+  String get resolution_720p => '720p';
+
+  @override
+  String get resolution_1080p => '1080p';
+
+  @override
+  String get resolution_1440p => '1440p';
+
+  @override
+  String get resolution_1920p => '1920p';
+
+  @override
+  String get resolution_2160p => '4K (2160p)';
+
+  @override
+  String get resolution_4320p => '8K (4320p)';
+
+  @override
+  String get images_orientation_title => '方向';
+
+  @override
+  String get common_or => '或';
+
+  @override
+  String get scrape_from_url => '从 URL 抓取';
+
+  @override
+  String get scenes_phash_started => '开始生成 phash';
+
+  @override
+  String scenes_phash_failed(Object error) {
+    return '生成 phash 失败：$error';
+  }
+
+  @override
+  String details_failed_update_studio(Object error) {
+    return '更新工作室失败：$error';
+  }
 
   @override
   String get settings_title => '设置';
@@ -2775,7 +3087,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scenes_field_tags => '标签';
 
   @override
-  String get scenes_field_urls => 'URL';
+  String get scenes_field_urls => '链接';
 
   @override
   String get scenes_edit_performer => '编辑演员';
@@ -3113,7 +3425,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String common_id(Object id) {
-    return 'ID: $id';
+    return 'ID：$id';
   }
 
   @override
@@ -3174,7 +3486,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get common_release_date => '發佈日期';
 
   @override
-  String get common_url => 'URL';
+  String get common_url => '連結';
 
   @override
   String get common_no_url => '無 URL';
@@ -3304,6 +3616,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String details_failed_update_rating(String error) {
     return '更新評分失敗：$error';
+  }
+
+  @override
+  String details_failed_update_performer(Object error) {
+    return '更新演员失败：$error';
   }
 
   @override
@@ -3444,7 +3761,76 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get performers_gender_intersex => '雙性人';
 
   @override
+  String get performers_gender_non_binary => '非二元';
+
+  @override
+  String get performers_circumcised => '割礼';
+
+  @override
+  String get performers_circumcised_cut => '已割禮';
+
+  @override
+  String get performers_circumcised_uncut => '未割禮';
+
+  @override
   String get performers_play_count => '播放次數';
+
+  @override
+  String get performers_field_disambiguation => '消歧义';
+
+  @override
+  String get performers_field_birthdate => '出生日期';
+
+  @override
+  String get performers_field_deathdate => '死亡日期';
+
+  @override
+  String get performers_field_height_cm => '身高（cm）';
+
+  @override
+  String get performers_field_weight_kg => '体重（kg）';
+
+  @override
+  String get performers_field_measurements => '三围';
+
+  @override
+  String get performers_field_fake_tits => '假胸';
+
+  @override
+  String get performers_field_penis_length => '阴茎长度';
+
+  @override
+  String get performers_field_ethnicity => '族裔';
+
+  @override
+  String get performers_field_country => '国家';
+
+  @override
+  String get performers_field_eye_color => '眼睛颜色';
+
+  @override
+  String get performers_field_hair_color => '头发颜色';
+
+  @override
+  String get performers_field_career_start => '职业开始';
+
+  @override
+  String get performers_field_career_end => '职业结束';
+
+  @override
+  String get performers_field_tattoos => '纹身';
+
+  @override
+  String get performers_field_piercings => '穿孔';
+
+  @override
+  String get performers_field_aliases => '别名';
+
+  @override
+  String get common_organized => '已整理';
+
+  @override
+  String get scenes_duplicated => '重复';
 
   @override
   String get random_studio => '隨機製片商';
@@ -3460,6 +3846,88 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get random_performer => '隨機演出者';
+
+  @override
+  String get filter_modifier => '修饰符';
+
+  @override
+  String get filter_value => '值';
+
+  @override
+  String get filter_equals => '等于';
+
+  @override
+  String get filter_not_equals => '不等于';
+
+  @override
+  String get filter_greater_than => '大于';
+
+  @override
+  String get filter_less_than => '小于';
+
+  @override
+  String get filter_is_null => '为空';
+
+  @override
+  String get filter_not_null => '不为空';
+
+  @override
+  String get images_resolution_title => '解析度';
+
+  @override
+  String get resolution_144p => '144p';
+
+  @override
+  String get resolution_240p => '240p';
+
+  @override
+  String get resolution_360p => '360p';
+
+  @override
+  String get resolution_480p => '480p';
+
+  @override
+  String get resolution_540p => '540p';
+
+  @override
+  String get resolution_720p => '720p';
+
+  @override
+  String get resolution_1080p => '1080p';
+
+  @override
+  String get resolution_1440p => '1440p';
+
+  @override
+  String get resolution_1920p => '1920p';
+
+  @override
+  String get resolution_2160p => '4K (2160p)';
+
+  @override
+  String get resolution_4320p => '8K (4320p)';
+
+  @override
+  String get images_orientation_title => '方向';
+
+  @override
+  String get common_or => '或';
+
+  @override
+  String get scrape_from_url => '从 URL 抓取';
+
+  @override
+  String get scenes_phash_started => '开始生成 phash';
+
+  @override
+  String scenes_phash_failed(Object error) {
+    return '生成 phash 失败：$error';
+  }
+
+  @override
+  String details_failed_update_studio(Object error) {
+    return '更新工作室失败：$error';
+  }
 
   @override
   String get settings_title => '設定';
@@ -4194,7 +4662,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scenes_field_tags => '標籤';
 
   @override
-  String get scenes_field_urls => 'URL';
+  String get scenes_field_urls => '連結';
 
   @override
   String get scenes_edit_performer => '編輯演出者';

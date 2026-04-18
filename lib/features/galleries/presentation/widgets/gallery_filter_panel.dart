@@ -311,7 +311,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Organized', style: context.textTheme.labelLarge),
+        Text(context.l10n.common_organized, style: context.textTheme.labelLarge),
         Wrap(
           spacing: 8,
           children: OrganizedFilter.values.map((option) {

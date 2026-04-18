@@ -479,6 +479,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String details_failed_update_performer(Object error) {
+    return 'Failed to update performer: $error';
+  }
+
+  @override
   String details_failed_increment_o_count(String error) {
     return 'Failed to increment O count: $error';
   }
@@ -616,7 +621,76 @@ class AppLocalizationsEn extends AppLocalizations {
   String get performers_gender_intersex => 'Intersex';
 
   @override
+  String get performers_gender_non_binary => 'Non Binary';
+
+  @override
+  String get performers_circumcised => 'Circumcised';
+
+  @override
+  String get performers_circumcised_cut => 'Cut';
+
+  @override
+  String get performers_circumcised_uncut => 'Uncut';
+
+  @override
   String get performers_play_count => 'Play Count';
+
+  @override
+  String get performers_field_disambiguation => 'Disambiguation';
+
+  @override
+  String get performers_field_birthdate => 'Birthdate';
+
+  @override
+  String get performers_field_deathdate => 'Death Date';
+
+  @override
+  String get performers_field_height_cm => 'Height (cm)';
+
+  @override
+  String get performers_field_weight_kg => 'Weight (kg)';
+
+  @override
+  String get performers_field_measurements => 'Measurements';
+
+  @override
+  String get performers_field_fake_tits => 'Fake Tits';
+
+  @override
+  String get performers_field_penis_length => 'Penis Length';
+
+  @override
+  String get performers_field_ethnicity => 'Ethnicity';
+
+  @override
+  String get performers_field_country => 'Country';
+
+  @override
+  String get performers_field_eye_color => 'Eye Color';
+
+  @override
+  String get performers_field_hair_color => 'Hair Color';
+
+  @override
+  String get performers_field_career_start => 'Career Start';
+
+  @override
+  String get performers_field_career_end => 'Career End';
+
+  @override
+  String get performers_field_tattoos => 'Tattoos';
+
+  @override
+  String get performers_field_piercings => 'Piercings';
+
+  @override
+  String get performers_field_aliases => 'Aliases';
+
+  @override
+  String get common_organized => 'Organized';
+
+  @override
+  String get scenes_duplicated => 'Duplicated';
 
   @override
   String get random_studio => 'Random studio';
@@ -632,6 +706,88 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get random_performer => 'Random performer';
+
+  @override
+  String get filter_modifier => 'Modifier';
+
+  @override
+  String get filter_value => 'Value';
+
+  @override
+  String get filter_equals => 'Equals';
+
+  @override
+  String get filter_not_equals => 'Not Equals';
+
+  @override
+  String get filter_greater_than => 'Greater Than';
+
+  @override
+  String get filter_less_than => 'Less Than';
+
+  @override
+  String get filter_is_null => 'Is Null';
+
+  @override
+  String get filter_not_null => 'Not Null';
+
+  @override
+  String get images_resolution_title => 'Resolution';
+
+  @override
+  String get resolution_144p => '144p';
+
+  @override
+  String get resolution_240p => '240p';
+
+  @override
+  String get resolution_360p => '360p';
+
+  @override
+  String get resolution_480p => '480p';
+
+  @override
+  String get resolution_540p => '540p';
+
+  @override
+  String get resolution_720p => '720p';
+
+  @override
+  String get resolution_1080p => '1080p';
+
+  @override
+  String get resolution_1440p => '1440p';
+
+  @override
+  String get resolution_1920p => '1920p';
+
+  @override
+  String get resolution_2160p => '4K (2160p)';
+
+  @override
+  String get resolution_4320p => '8K (4320p)';
+
+  @override
+  String get images_orientation_title => 'Orientation';
+
+  @override
+  String get common_or => 'OR';
+
+  @override
+  String get scrape_from_url => 'Scrape from URL';
+
+  @override
+  String get scenes_phash_started => 'Phash generation started';
+
+  @override
+  String scenes_phash_failed(Object error) {
+    return 'Failed to generate phash: $error';
+  }
+
+  @override
+  String details_failed_update_studio(Object error) {
+    return 'Failed to update studio: $error';
+  }
 
   @override
   String get settings_title => 'Settings';

@@ -85,7 +85,7 @@ class _ScrapeQueryDialogState extends ConsumerState<ScrapeQueryDialog> {
             TextField(
               controller: _urlController,
               decoration: InputDecoration(
-                labelText: 'Scrape from URL',
+                labelText: context.l10n.scrape_from_url,
                 hintText: 'https://...',
                 border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
@@ -101,7 +101,7 @@ class _ScrapeQueryDialogState extends ConsumerState<ScrapeQueryDialog> {
               ),
             ),
             const SizedBox(height: 16),
-            const Center(child: Text('OR')),
+            Center(child: Text(context.l10n.common_or)),
             const SizedBox(height: 16),
             TextField(
               controller: _queryController,
@@ -153,7 +153,7 @@ class _ScrapeQueryDialogState extends ConsumerState<ScrapeQueryDialog> {
                     .toList(),
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, _) => Text('Error: $err'),
+              error: (err, _) => Text(context.l10n.common_error(err.toString())),
             ),
             scrapersAsync.when(
               data: (scrapers) => Column(
@@ -178,7 +178,7 @@ class _ScrapeQueryDialogState extends ConsumerState<ScrapeQueryDialog> {
                     .toList(),
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, _) => Text('Error: $err'),
+              error: (err, _) => Text(context.l10n.common_error(err.toString())),
             ),
           ],
         ),

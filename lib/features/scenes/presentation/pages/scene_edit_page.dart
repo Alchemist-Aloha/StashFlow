@@ -335,14 +335,14 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
       await ref.read(sceneScrapeProvider).generatePhash(widget.scene.id);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Phash generation started')),
+          SnackBar(content: Text(context.l10n.scenes_phash_started)),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Failed to generate phash: $e')));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.scenes_phash_failed(e.toString()))));
       }
     } finally {
       if (mounted) setState(() => _isScraping = false);

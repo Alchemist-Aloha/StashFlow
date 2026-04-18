@@ -284,7 +284,7 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Organized', style: context.textTheme.labelLarge),
+        Text(context.l10n.common_organized, style: context.textTheme.labelLarge),
         Wrap(
           spacing: 8,
           children: OrganizedFilter.values.map((option) {
@@ -318,18 +318,18 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
 
   Widget _buildResolutionFilter() {
     return FilterSection(
-      title: 'Resolution',
+      title: context.l10n.images_resolution_title,
       children: [
         DropdownButtonFormField<CriterionModifier>(
           value: _tempFilter.resolution?.modifier ?? CriterionModifier.equals,
-          decoration: const InputDecoration(labelText: 'Modifier'),
-          items: const [
-            DropdownMenuItem(value: CriterionModifier.equals, child: Text('Equals')),
-            DropdownMenuItem(value: CriterionModifier.notEquals, child: Text('Not Equals')),
-            DropdownMenuItem(value: CriterionModifier.greaterThan, child: Text('Greater Than')),
-            DropdownMenuItem(value: CriterionModifier.lessThan, child: Text('Less Than')),
-            DropdownMenuItem(value: CriterionModifier.isNull, child: Text('Is Null')),
-            DropdownMenuItem(value: CriterionModifier.notNull, child: Text('Not Null')),
+          decoration: InputDecoration(labelText: context.l10n.filter_modifier),
+          items: [
+            DropdownMenuItem(value: CriterionModifier.equals, child: Text(context.l10n.filter_equals)),
+            DropdownMenuItem(value: CriterionModifier.notEquals, child: Text(context.l10n.filter_not_equals)),
+            DropdownMenuItem(value: CriterionModifier.greaterThan, child: Text(context.l10n.filter_greater_than)),
+            DropdownMenuItem(value: CriterionModifier.lessThan, child: Text(context.l10n.filter_less_than)),
+            DropdownMenuItem(value: CriterionModifier.isNull, child: Text(context.l10n.filter_is_null)),
+            DropdownMenuItem(value: CriterionModifier.notNull, child: Text(context.l10n.filter_not_null)),
           ],
           onChanged: (val) {
             if (val != null) {
@@ -351,20 +351,20 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
             _tempFilter.resolution?.modifier != CriterionModifier.notNull)
           DropdownButtonFormField<String>(
             value: _tempFilter.resolution?.value.isNotEmpty == true ? _tempFilter.resolution!.value.first : null,
-            decoration: const InputDecoration(labelText: 'Value'),
-            items: const [
-              DropdownMenuItem(value: '144p', child: Text('144p')),
-              DropdownMenuItem(value: '240p', child: Text('240p')),
-              DropdownMenuItem(value: '360p', child: Text('360p')),
-              DropdownMenuItem(value: '480p', child: Text('480p')),
-              DropdownMenuItem(value: '540p', child: Text('540p')),
-              DropdownMenuItem(value: '720p', child: Text('720p')),
-              DropdownMenuItem(value: '1080p', child: Text('1080p')),
-              DropdownMenuItem(value: '1440p', child: Text('1440p')),
-              DropdownMenuItem(value: '1920p', child: Text('1920p')),
-              DropdownMenuItem(value: '2160p', child: Text('4K (2160p)')),
-              DropdownMenuItem(value: '4320p', child: Text('8K (4320p)')),
-            ],
+            decoration: InputDecoration(labelText: context.l10n.filter_value),
+              items: [
+                DropdownMenuItem(value: '144p', child: Text(context.l10n.resolution_144p)),
+                DropdownMenuItem(value: '240p', child: Text(context.l10n.resolution_240p)),
+                DropdownMenuItem(value: '360p', child: Text(context.l10n.resolution_360p)),
+                DropdownMenuItem(value: '480p', child: Text(context.l10n.resolution_480p)),
+                DropdownMenuItem(value: '540p', child: Text(context.l10n.resolution_540p)),
+                DropdownMenuItem(value: '720p', child: Text(context.l10n.resolution_720p)),
+                DropdownMenuItem(value: '1080p', child: Text(context.l10n.resolution_1080p)),
+                DropdownMenuItem(value: '1440p', child: Text(context.l10n.resolution_1440p)),
+                DropdownMenuItem(value: '1920p', child: Text(context.l10n.resolution_1920p)),
+                DropdownMenuItem(value: '2160p', child: Text(context.l10n.resolution_2160p)),
+                DropdownMenuItem(value: '4320p', child: Text(context.l10n.resolution_4320p)),
+              ],
             onChanged: (val) {
               if (val != null) {
                 setState(() {
@@ -384,15 +384,15 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
 
   Widget _buildOrientationFilter() {
     return FilterSection(
-      title: 'Orientation',
+      title: context.l10n.images_orientation_title,
       children: [
         DropdownButtonFormField<String>(
           value: _tempFilter.orientation?.value.isNotEmpty == true ? _tempFilter.orientation!.value.first : null,
-          decoration: const InputDecoration(labelText: 'Value'),
-          items: const [
-            DropdownMenuItem(value: 'PORTRAIT', child: Text('Portrait')),
-            DropdownMenuItem(value: 'LANDSCAPE', child: Text('Landscape')),
-            DropdownMenuItem(value: 'SQUARE', child: Text('Square')),
+          decoration: InputDecoration(labelText: context.l10n.filter_value),
+          items: [
+            DropdownMenuItem(value: 'PORTRAIT', child: Text(context.l10n.common_portrait)),
+            DropdownMenuItem(value: 'LANDSCAPE', child: Text(context.l10n.common_landscape)),
+            DropdownMenuItem(value: 'SQUARE', child: Text(context.l10n.common_square)),
           ],
           onChanged: (val) {
             setState(() {

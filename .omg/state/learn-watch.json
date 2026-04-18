@@ -1,0 +1,12 @@
+{
+  "last_session_id": "5284c370-aa6b-480f-a4f9-42b966558d4f",
+  "last_event_key": "5284c370-aa6b-480f-a4f9-42b966558d4f:transcript:72185333e79ae59989abf0a4a93fec0ee69e7bf5ee5bcf5e7b25bb8a10f5f45f",
+  "last_prompted_session_id": "",
+  "last_reason": "short-session",
+  "last_prompted_at": "",
+  "last_user_message_count": 3,
+  "last_actionable_message_count": 2,
+  "deep_interview_lock_active": false,
+  "deep_interview_lock_source": "/home/likun/StashFlow/.omg/state/deep-interview.json",
+  "updated_at": "2026-04-18T16:37:01.117Z"
+}

@@ -354,7 +354,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get common_release_date => 'fecha de estreno';
 
   @override
-  String get common_url => 'URL';
+  String get common_url => 'Enlace';
 
   @override
   String get common_no_url => 'sin URL';
@@ -484,6 +484,11 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String details_failed_update_rating(String error) {
     return 'Error al actualizar la calificación: $error';
+  }
+
+  @override
+  String details_failed_update_performer(Object error) {
+    return 'Error al actualizar el intérprete: $error';
   }
 
   @override
@@ -625,7 +630,76 @@ class AppLocalizationsEs extends AppLocalizations {
   String get performers_gender_intersex => 'Intersexual';
 
   @override
+  String get performers_gender_non_binary => 'No binario';
+
+  @override
+  String get performers_circumcised => 'Circuncidado';
+
+  @override
+  String get performers_circumcised_cut => 'Circuncidado';
+
+  @override
+  String get performers_circumcised_uncut => 'No circuncidado';
+
+  @override
   String get performers_play_count => 'Número de reproducciones';
+
+  @override
+  String get performers_field_disambiguation => 'Desambiguación';
+
+  @override
+  String get performers_field_birthdate => 'Fecha de nacimiento';
+
+  @override
+  String get performers_field_deathdate => 'Fecha de fallecimiento';
+
+  @override
+  String get performers_field_height_cm => 'Altura (cm)';
+
+  @override
+  String get performers_field_weight_kg => 'Peso (kg)';
+
+  @override
+  String get performers_field_measurements => 'Medidas';
+
+  @override
+  String get performers_field_fake_tits => 'Pecho(s) falso(s)';
+
+  @override
+  String get performers_field_penis_length => 'Longitud del pene';
+
+  @override
+  String get performers_field_ethnicity => 'Etnia';
+
+  @override
+  String get performers_field_country => 'País';
+
+  @override
+  String get performers_field_eye_color => 'Color de ojos';
+
+  @override
+  String get performers_field_hair_color => 'Color de pelo';
+
+  @override
+  String get performers_field_career_start => 'Inicio de carrera';
+
+  @override
+  String get performers_field_career_end => 'Fin de carrera';
+
+  @override
+  String get performers_field_tattoos => 'Tatuajes';
+
+  @override
+  String get performers_field_piercings => 'Perforaciones';
+
+  @override
+  String get performers_field_aliases => 'Alias';
+
+  @override
+  String get common_organized => 'Organizado';
+
+  @override
+  String get scenes_duplicated => 'Duplicado';
 
   @override
   String get random_studio => 'estudio aleatorio';
@@ -641,6 +715,88 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get random_performer => 'intérprete aleatorio';
+
+  @override
+  String get filter_modifier => 'Modificador';
+
+  @override
+  String get filter_value => 'Valor';
+
+  @override
+  String get filter_equals => 'Igual';
+
+  @override
+  String get filter_not_equals => 'No igual';
+
+  @override
+  String get filter_greater_than => 'Mayor que';
+
+  @override
+  String get filter_less_than => 'Menor que';
+
+  @override
+  String get filter_is_null => 'Es nulo';
+
+  @override
+  String get filter_not_null => 'No es nulo';
+
+  @override
+  String get images_resolution_title => 'Resolución';
+
+  @override
+  String get resolution_144p => '144p';
+
+  @override
+  String get resolution_240p => '240p';
+
+  @override
+  String get resolution_360p => '360p';
+
+  @override
+  String get resolution_480p => '480p';
+
+  @override
+  String get resolution_540p => '540p';
+
+  @override
+  String get resolution_720p => '720p';
+
+  @override
+  String get resolution_1080p => '1080p';
+
+  @override
+  String get resolution_1440p => '1440p';
+
+  @override
+  String get resolution_1920p => '1920p';
+
+  @override
+  String get resolution_2160p => '4K (2160p)';
+
+  @override
+  String get resolution_4320p => '8K (4320p)';
+
+  @override
+  String get images_orientation_title => 'Orientación';
+
+  @override
+  String get common_or => 'O';
+
+  @override
+  String get scrape_from_url => 'Raspar desde URL';
+
+  @override
+  String get scenes_phash_started => 'Generación de phash iniciada';
+
+  @override
+  String scenes_phash_failed(Object error) {
+    return 'Error al generar phash: $error';
+  }
+
+  @override
+  String details_failed_update_studio(Object error) {
+    return 'Error al actualizar el estudio: $error';
+  }
 
   @override
   String get settings_title => 'Ajustes';
@@ -1464,7 +1620,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get scenes_field_tags => 'Etiquetas';
 
   @override
-  String get scenes_field_urls => 'URLs';
+  String get scenes_field_urls => 'Enlaces';
 
   @override
   String get scenes_edit_performer => 'Editar intérprete';

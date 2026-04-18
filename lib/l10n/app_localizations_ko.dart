@@ -342,7 +342,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get common_release_date => '출시일';
 
   @override
-  String get common_url => 'URL';
+  String get common_url => '링크';
 
   @override
   String get common_no_url => 'URL 없음';
@@ -472,6 +472,11 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String details_failed_update_rating(String error) {
     return '평점 업데이트 실패: $error';
+  }
+
+  @override
+  String details_failed_update_performer(Object error) {
+    return '출연자 업데이트에 실패했습니다: $error';
   }
 
   @override
@@ -612,7 +617,76 @@ class AppLocalizationsKo extends AppLocalizations {
   String get performers_gender_intersex => '인터섹스';
 
   @override
+  String get performers_gender_non_binary => '논바이너리';
+
+  @override
+  String get performers_circumcised => '포경';
+
+  @override
+  String get performers_circumcised_cut => '포경';
+
+  @override
+  String get performers_circumcised_uncut => '비포경';
+
+  @override
   String get performers_play_count => '재생 횟수';
+
+  @override
+  String get performers_field_disambiguation => '중복 해소';
+
+  @override
+  String get performers_field_birthdate => '생년월일';
+
+  @override
+  String get performers_field_deathdate => '사망일';
+
+  @override
+  String get performers_field_height_cm => '키 (cm)';
+
+  @override
+  String get performers_field_weight_kg => '체중 (kg)';
+
+  @override
+  String get performers_field_measurements => '치수';
+
+  @override
+  String get performers_field_fake_tits => '가짜 가슴';
+
+  @override
+  String get performers_field_penis_length => '음경 길이';
+
+  @override
+  String get performers_field_ethnicity => '민족';
+
+  @override
+  String get performers_field_country => '국가';
+
+  @override
+  String get performers_field_eye_color => '눈 색깔';
+
+  @override
+  String get performers_field_hair_color => '머리 색깔';
+
+  @override
+  String get performers_field_career_start => '경력 시작';
+
+  @override
+  String get performers_field_career_end => '경력 종료';
+
+  @override
+  String get performers_field_tattoos => '문신';
+
+  @override
+  String get performers_field_piercings => '피어싱';
+
+  @override
+  String get performers_field_aliases => '별명';
+
+  @override
+  String get common_organized => '정리됨';
+
+  @override
+  String get scenes_duplicated => '중복됨';
 
   @override
   String get random_studio => '랜덤 스튜디오';
@@ -628,6 +702,88 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get random_performer => '랜덤 출연자';
+
+  @override
+  String get filter_modifier => '수정자';
+
+  @override
+  String get filter_value => '값';
+
+  @override
+  String get filter_equals => '같음';
+
+  @override
+  String get filter_not_equals => '같지 않음';
+
+  @override
+  String get filter_greater_than => '보다 큼';
+
+  @override
+  String get filter_less_than => '보다 작음';
+
+  @override
+  String get filter_is_null => '널임';
+
+  @override
+  String get filter_not_null => '널 아님';
+
+  @override
+  String get images_resolution_title => '해상도';
+
+  @override
+  String get resolution_144p => '144p';
+
+  @override
+  String get resolution_240p => '240p';
+
+  @override
+  String get resolution_360p => '360p';
+
+  @override
+  String get resolution_480p => '480p';
+
+  @override
+  String get resolution_540p => '540p';
+
+  @override
+  String get resolution_720p => '720p';
+
+  @override
+  String get resolution_1080p => '1080p';
+
+  @override
+  String get resolution_1440p => '1440p';
+
+  @override
+  String get resolution_1920p => '1920p';
+
+  @override
+  String get resolution_2160p => '4K (2160p)';
+
+  @override
+  String get resolution_4320p => '8K (4320p)';
+
+  @override
+  String get images_orientation_title => '방향';
+
+  @override
+  String get common_or => '또는';
+
+  @override
+  String get scrape_from_url => 'URL에서 스크랩';
+
+  @override
+  String get scenes_phash_started => 'Phash 생성 시작됨';
+
+  @override
+  String scenes_phash_failed(Object error) {
+    return 'Phash 생성 실패: $error';
+  }
+
+  @override
+  String details_failed_update_studio(Object error) {
+    return '스튜디오 업데이트 실패: $error';
+  }
 
   @override
   String get settings_title => '설정';
@@ -1380,7 +1536,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get scenes_field_tags => '태그';
 
   @override
-  String get scenes_field_urls => 'URL';
+  String get scenes_field_urls => '링크';
 
   @override
   String get scenes_edit_performer => '출연자 편집';
