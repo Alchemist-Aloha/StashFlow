@@ -21,13 +21,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:stashflow/features/scenes/presentation/pages/scenes_page.dart';
-import 'package:stashflow/core/presentation/theme/app_theme.dart';
-import '../../../../helpers/pump_app.dart'; // Assuming this helper exists for l10n/theme
+import 'package:stash_app_flutter/features/scenes/presentation/pages/scenes_page.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import '../../../../helpers/test_helpers.dart';
 
 void main() {
   testWidgets('Sort panel should have scrollable sort methods and visible buttons', (tester) async {
-    await pumpApp(tester, const ProviderScope(child: ScenesPage()));
+    await pumpTestWidget(tester, child: const ScenesPage());
     
     // Open sort panel
     await tester.tap(find.byIcon(Icons.sort));
@@ -144,7 +144,7 @@ git commit -m "feat(scenes): make sort method section scrollable in sort panel"
     tester.view.devicePixelRatio = 3.0;
     addTearDown(() => tester.view.resetPhysicalSize());
 
-    await pumpApp(tester, const ProviderScope(child: ScenesPage()));
+    await pumpTestWidget(tester, child: const ScenesPage());
     
     await tester.tap(find.byIcon(Icons.sort));
     await tester.pumpAndSettle();

@@ -160,6 +160,16 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
       title: 'General',
       initiallyExpanded: true,
       children: [
+        StringCriterionInput(
+          label: 'Title',
+          value: _tempFilter.title,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(title: val)),
+        ),
+        StringCriterionInput(
+          label: 'Details',
+          value: _tempFilter.details,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(details: val)),
+        ),
         _buildRatingFilter(),
         _buildOrganizedFilter(),
         _buildEntityFilter<Studio>(
@@ -183,6 +193,38 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
           (val) => setState(() => _tempFilter = _tempFilter.copyWith(tags: val as HierarchicalMultiCriterion?)),
           true,
         ),
+        _buildEntityFilter<Tag>(
+          'Performer Tags',
+          'tag',
+          _tempFilter.performerTags,
+          (val) => setState(() => _tempFilter = _tempFilter.copyWith(performerTags: val as HierarchicalMultiCriterion?)),
+          true,
+        ),
+        DateCriterionInput(
+          label: 'Date',
+          value: _tempFilter.date,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(date: val)),
+        ),
+        IntCriterionInput(
+          label: 'Performer Age',
+          value: _tempFilter.performerAge,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(performerAge: val)),
+        ),
+        IntCriterionInput(
+          label: 'Tag Count',
+          value: _tempFilter.tagCount,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(tagCount: val)),
+        ),
+        IntCriterionInput(
+          label: 'Performer Count',
+          value: _tempFilter.performerCount,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(performerCount: val)),
+        ),
+        StringCriterionInput(
+          label: 'URL',
+          value: _tempFilter.url,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(url: val)),
+        ),
       ],
     );
   }
@@ -191,11 +233,43 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
     return FilterSection(
       title: 'System',
       children: [
+        IntCriterionInput(
+          label: 'ID',
+          value: _tempFilter.id,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(id: val)),
+        ),
+        StringCriterionInput(
+          label: 'Path',
+          value: _tempFilter.path,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(path: val)),
+        ),
+        StringCriterionInput(
+          label: 'Checksum',
+          value: _tempFilter.checksum,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(checksum: val)),
+        ),
         _buildBooleanFilter('Is Missing', _tempFilter.isMissing, (val) => setState(() => _tempFilter = _tempFilter.copyWith(isMissing: val))),
+        _buildBooleanFilter('Is Zip', _tempFilter.isZip, (val) => setState(() => _tempFilter = _tempFilter.copyWith(isZip: val))),
+        _buildBooleanFilter('Has Chapters', _tempFilter.hasChapters, (val) => setState(() => _tempFilter = _tempFilter.copyWith(hasChapters: val))),
         IntCriterionInput(
           label: 'Image Count',
           value: _tempFilter.imageCount,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(imageCount: val)),
+        ),
+        IntCriterionInput(
+          label: 'File Count',
+          value: _tempFilter.fileCount,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(fileCount: val)),
+        ),
+        DateCriterionInput(
+          label: 'Created At',
+          value: _tempFilter.createdAt,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(createdAt: val)),
+        ),
+        DateCriterionInput(
+          label: 'Updated At',
+          value: _tempFilter.updatedAt,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(updatedAt: val)),
         ),
       ],
     );

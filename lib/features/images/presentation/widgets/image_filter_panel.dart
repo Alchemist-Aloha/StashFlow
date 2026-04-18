@@ -11,6 +11,8 @@ import '../../../studios/domain/entities/studio.dart';
 import '../../../performers/domain/entities/performer.dart';
 import '../../../tags/domain/entities/tag.dart';
 
+import '../../../galleries/domain/entities/gallery.dart';
+
 class ImageFilterPanel extends ConsumerStatefulWidget {
   const ImageFilterPanel({super.key});
 
@@ -161,6 +163,16 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
       title: 'General',
       initiallyExpanded: true,
       children: [
+        StringCriterionInput(
+          label: 'Title',
+          value: _tempFilter.title,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(title: val)),
+        ),
+        StringCriterionInput(
+          label: 'Details',
+          value: _tempFilter.details,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(details: val)),
+        ),
         _buildRatingFilter(),
         _buildOrganizedFilter(),
         _buildEntityFilter<Studio>(
@@ -184,6 +196,13 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
           (val) => setState(() => _tempFilter = _tempFilter.copyWith(tags: val as HierarchicalMultiCriterion?)),
           true,
         ),
+        _buildEntityFilter<Gallery>(
+          'Galleries',
+          'gallery',
+          _tempFilter.galleries,
+          (val) => setState(() => _tempFilter = _tempFilter.copyWith(galleries: val as MultiCriterion?)),
+          false,
+        ),
       ],
     );
   }
@@ -202,7 +221,24 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
     return FilterSection(
       title: 'System',
       children: [
-        _buildBooleanFilter('Is Missing', _tempFilter.isMissing, (val) => setState(() => _tempFilter = _tempFilter.copyWith(isMissing: val))),
+        StringCriterionInput(
+            label: 'Path',
+            value: _tempFilter.path,
+            onChanged: (val) =>
+                setState(() => _tempFilter = _tempFilter.copyWith(path: val))),
+        StringCriterionInput(
+            label: 'URL',
+            value: _tempFilter.url,
+            onChanged: (val) =>
+                setState(() => _tempFilter = _tempFilter.copyWith(url: val))),
+        _buildBooleanFilter('Is Missing', _tempFilter.isMissing,
+            (val) => setState(() => _tempFilter = _tempFilter.copyWith(isMissing: val))),
+        IntCriterionInput(
+          label: 'File Count',
+          value: _tempFilter.fileCount,
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(fileCount: val)),
+        ),
         IntCriterionInput(
           label: 'O-Counter',
           value: _tempFilter.oCounter,
@@ -261,60 +297,97 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
   }
 
   Widget _buildResolutionFilter() {
-    final resolutions = ['FOUR_K', 'FULL_HD', 'STANDARD_HD', 'STANDARD'];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterSection(
+      title: 'Resolution',
       children: [
-        Text('Resolution'),
-        Wrap(
-          spacing: 4,
-          children: resolutions.map((res) {
-            final isSelected = _tempFilter.resolutions?.value.contains(res) ?? false;
-            return FilterChip(
-              label: Text(res.replaceAll('_', ' ')),
-              selected: isSelected,
-              onSelected: (selected) {
-                setState(() {
-                  final current = List<String>.from(_tempFilter.resolutions?.value ?? []);
-                  if (selected) current.add(res);
-                  else current.remove(res);
+        DropdownButtonFormField<CriterionModifier>(
+          value: _tempFilter.resolution?.modifier ?? CriterionModifier.equals,
+          decoration: const InputDecoration(labelText: 'Modifier'),
+          items: const [
+            DropdownMenuItem(value: CriterionModifier.equals, child: Text('Equals')),
+            DropdownMenuItem(value: CriterionModifier.notEquals, child: Text('Not Equals')),
+            DropdownMenuItem(value: CriterionModifier.greaterThan, child: Text('Greater Than')),
+            DropdownMenuItem(value: CriterionModifier.lessThan, child: Text('Less Than')),
+            DropdownMenuItem(value: CriterionModifier.isNull, child: Text('Is Null')),
+            DropdownMenuItem(value: CriterionModifier.notNull, child: Text('Not Null')),
+          ],
+          onChanged: (val) {
+            if (val != null) {
+              setState(() {
+                if (_tempFilter.resolution != null) {
                   _tempFilter = _tempFilter.copyWith(
-                    resolutions: current.isEmpty ? null : MultiCriterion(value: current),
+                    resolution: MultiCriterion(value: _tempFilter.resolution!.value, modifier: val),
+                  );
+                } else {
+                  _tempFilter = _tempFilter.copyWith(
+                    resolution: MultiCriterion(value: [], modifier: val),
+                  );
+                }
+              });
+            }
+          },
+        ),
+        if (_tempFilter.resolution?.modifier != CriterionModifier.isNull &&
+            _tempFilter.resolution?.modifier != CriterionModifier.notNull)
+          DropdownButtonFormField<String>(
+            value: _tempFilter.resolution?.value.isNotEmpty == true ? _tempFilter.resolution!.value.first : null,
+            decoration: const InputDecoration(labelText: 'Value'),
+            items: const [
+              DropdownMenuItem(value: '144p', child: Text('144p')),
+              DropdownMenuItem(value: '240p', child: Text('240p')),
+              DropdownMenuItem(value: '360p', child: Text('360p')),
+              DropdownMenuItem(value: '480p', child: Text('480p')),
+              DropdownMenuItem(value: '540p', child: Text('540p')),
+              DropdownMenuItem(value: '720p', child: Text('720p')),
+              DropdownMenuItem(value: '1080p', child: Text('1080p')),
+              DropdownMenuItem(value: '1440p', child: Text('1440p')),
+              DropdownMenuItem(value: '1920p', child: Text('1920p')),
+              DropdownMenuItem(value: '2160p', child: Text('4K (2160p)')),
+              DropdownMenuItem(value: '4320p', child: Text('8K (4320p)')),
+            ],
+            onChanged: (val) {
+              if (val != null) {
+                setState(() {
+                  _tempFilter = _tempFilter.copyWith(
+                    resolution: MultiCriterion(
+                      value: [val],
+                      modifier: _tempFilter.resolution?.modifier ?? CriterionModifier.equals,
+                    ),
                   );
                 });
-              },
-            );
-          }).toList(),
-        ),
+              }
+            },
+          ),
       ],
     );
   }
 
   Widget _buildOrientationFilter() {
-    final orientations = ['LANDSCAPE', 'PORTRAIT', 'SQUARE'];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return FilterSection(
+      title: 'Orientation',
       children: [
-        Text('Orientation'),
-        Wrap(
-          spacing: 4,
-          children: orientations.map((ori) {
-            final isSelected = _tempFilter.orientations?.value.contains(ori) ?? false;
-            return FilterChip(
-              label: Text(ori),
-              selected: isSelected,
-              onSelected: (selected) {
-                setState(() {
-                  final current = List<String>.from(_tempFilter.orientations?.value ?? []);
-                  if (selected) current.add(ori);
-                  else current.remove(ori);
-                  _tempFilter = _tempFilter.copyWith(
-                    orientations: current.isEmpty ? null : MultiCriterion(value: current),
-                  );
-                });
-              },
-            );
-          }).toList(),
+        DropdownButtonFormField<String>(
+          value: _tempFilter.orientation?.value.isNotEmpty == true ? _tempFilter.orientation!.value.first : null,
+          decoration: const InputDecoration(labelText: 'Value'),
+          items: const [
+            DropdownMenuItem(value: 'PORTRAIT', child: Text('Portrait')),
+            DropdownMenuItem(value: 'LANDSCAPE', child: Text('Landscape')),
+            DropdownMenuItem(value: 'SQUARE', child: Text('Square')),
+          ],
+          onChanged: (val) {
+            setState(() {
+              if (val != null) {
+                _tempFilter = _tempFilter.copyWith(
+                  orientation: MultiCriterion(
+                    value: [val],
+                    modifier: _tempFilter.orientation?.modifier ?? CriterionModifier.equals,
+                  ),
+                );
+              } else {
+                _tempFilter = _tempFilter.copyWith(orientation: null);
+              }
+            });
+          },
         ),
       ],
     );

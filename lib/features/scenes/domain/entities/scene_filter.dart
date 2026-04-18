@@ -35,6 +35,24 @@ abstract class SceneFilter with _$SceneFilter {
     IntCriterion? playCount,
     DateCriterion? createdAt,
     DateCriterion? updatedAt,
+    // Additions matching GraphQL schema
+    StringCriterion? code,
+    StringCriterion? details,
+    StringCriterion? director,
+    StringCriterion? phashDistance,
+    StringCriterion? path,
+    StringCriterion? url,
+    StringCriterion? captions,
+    IntCriterion? id,
+    IntCriterion? resumeTime,
+    IntCriterion? playDuration,
+    IntCriterion? tagCount,
+    IntCriterion? performerCount,
+    IntCriterion? stashIdCount,
+    HierarchicalMultiCriterion? groups,
+    MultiCriterion? galleries,
+    HierarchicalMultiCriterion? performerTags,
+    MultiCriterion? duplicated,
   }) = _SceneFilter;
 
   factory SceneFilter.empty() => const SceneFilter();

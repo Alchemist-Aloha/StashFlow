@@ -14,6 +14,8 @@ import '../../domain/entities/studio.dart';
 enum _StudioSortOption {
   name,
   sceneCount,
+  imageCount,
+  galleryCount,
   rating,
   lastUpdated,
   createdAt,
@@ -41,6 +43,8 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
         _sortOption = switch (sortConfig.sort) {
           'name' => _StudioSortOption.name,
           'scenes_count' => _StudioSortOption.sceneCount,
+          'image_count' => _StudioSortOption.imageCount,
+          'gallery_count' => _StudioSortOption.galleryCount,
           'performer_count' => _StudioSortOption.name,
           'rating' => _StudioSortOption.rating,
           'updated_at' => _StudioSortOption.lastUpdated,
@@ -62,6 +66,8 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
     final sortKey = switch (option) {
       _StudioSortOption.name => 'name',
       _StudioSortOption.sceneCount => 'scenes_count',
+      _StudioSortOption.imageCount => 'image_count',
+      _StudioSortOption.galleryCount => 'gallery_count',
       _StudioSortOption.rating => 'rating',
       _StudioSortOption.lastUpdated => 'updated_at',
       _StudioSortOption.createdAt => 'created_at',
@@ -79,6 +85,10 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
         return context.l10n.sort_name;
       case _StudioSortOption.sceneCount:
         return context.l10n.sort_scene_count;
+      case _StudioSortOption.imageCount:
+        return 'Image Count';
+      case _StudioSortOption.galleryCount:
+        return 'Gallery Count';
       case _StudioSortOption.rating:
         return context.l10n.sort_rating;
       case _StudioSortOption.lastUpdated:

@@ -30,27 +30,32 @@ class GraphQLImageRepository implements ImageRepository {
     final inputFilter = Input$ImageFilterType(
       title: mapStringCriterion(imageFilter?.title),
       details: mapStringCriterion(imageFilter?.details),
-      url: mapStringCriterion(imageFilter?.url),
-      date: mapDateCriterion(imageFilter?.date),
+      id: mapIntCriterion(imageFilter?.id),
+      checksum: mapStringCriterion(imageFilter?.checksum),
+      path: mapStringCriterion(imageFilter?.path),
+      file_count: mapIntCriterion(imageFilter?.fileCount),
       rating100: mapIntCriterion(imageFilter?.rating100),
+      date: mapDateCriterion(imageFilter?.date),
+      url: mapStringCriterion(imageFilter?.url),
       organized: imageFilter?.organized,
       o_counter: mapIntCriterion(imageFilter?.oCounter),
-      resolution: (imageFilter?.resolutions != null)
-          ? Input$ResolutionCriterionInput(
-              value: fromJson$Enum$ResolutionEnum(
-                imageFilter!.resolutions!.value.first,
-              ),
-              modifier: mapModifier(imageFilter.resolutions!.modifier),
-            )
-          : null,
-      orientation: (imageFilter?.orientations != null)
+      resolution: mapResolutionCriterion(imageFilter?.resolution),
+      orientation: (imageFilter?.orientation != null)
           ? Input$OrientationCriterionInput(
-              value: imageFilter!.orientations!.value
+              value: imageFilter!.orientation!.value
                   .map((o) => fromJson$Enum$OrientationEnum(o))
                   .toList(),
             )
           : null,
-      photographer: mapStringCriterion(imageFilter?.photographer),
+      is_missing: imageFilter?.isMissing?.toString(),
+      studios: mapHierarchicalMultiCriterion(imageFilter?.studios),
+      tags: mapHierarchicalMultiCriterion(imageFilter?.tags),
+      tag_count: mapIntCriterion(imageFilter?.tagCount),
+      performer_tags: mapHierarchicalMultiCriterion(imageFilter?.performerTags),
+      performers: mapMultiCriterion(imageFilter?.performers),
+      performer_count: mapIntCriterion(imageFilter?.performerCount),
+      performer_favorite: imageFilter?.performerFavorite,
+      performer_age: mapIntCriterion(imageFilter?.performerAge),
       galleries: (galleryId != null || imageFilter?.galleries != null)
           ? mapMultiCriterion(
               galleryId != null
@@ -58,11 +63,6 @@ class GraphQLImageRepository implements ImageRepository {
                   : imageFilter?.galleries,
             )
           : null,
-      studios: mapHierarchicalMultiCriterion(imageFilter?.studios),
-      performers: mapMultiCriterion(imageFilter?.performers),
-      tags: mapHierarchicalMultiCriterion(imageFilter?.tags),
-      is_missing: imageFilter?.isMissing?.toString(),
-      file_count: mapIntCriterion(imageFilter?.fileCount),
       created_at: mapTimestampCriterion(imageFilter?.createdAt),
       updated_at: mapTimestampCriterion(imageFilter?.updatedAt),
     );

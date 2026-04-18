@@ -683,9 +683,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 onPressed: () {
                   setState(() => _performersExpanded = !_performersExpanded);
                 },
-                child: Text(_performersExpanded
-                    ? context.l10n.details_show_less
-                    : context.l10n.details_show_more),
+                child: Text(
+                  _performersExpanded
+                      ? context.l10n.details_show_less
+                      : context.l10n.details_show_more,
+                ),
               ),
           ],
         ),

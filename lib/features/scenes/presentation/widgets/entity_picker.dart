@@ -93,9 +93,7 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
               child: listAsync.when(
                 data: (items) {
                   if (items.isEmpty) {
-                    return Center(
-                      child: Text(context.l10n.common_no_items),
-                    );
+                    return Center(child: Text(context.l10n.common_no_items));
                   }
                   return ListView.builder(
                     itemCount: items.length,
@@ -128,9 +126,7 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
                     },
                   );
                 },
-                loading: () => const Center(
-                  child: CircularProgressIndicator(),
-                ),
+                loading: () => const Center(child: CircularProgressIndicator()),
                 error: (err, _) => Center(
                   child: Text(context.l10n.common_error(err.toString())),
                 ),

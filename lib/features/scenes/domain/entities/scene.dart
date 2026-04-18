@@ -66,10 +66,8 @@ abstract class SceneFile with _$SceneFile {
 
 @freezed
 abstract class Fingerprint with _$Fingerprint {
-  const factory Fingerprint({
-    required String type,
-    required String value,
-  }) = _Fingerprint;
+  const factory Fingerprint({required String type, required String value}) =
+      _Fingerprint;
 
   factory Fingerprint.fromJson(Map<String, dynamic> json) =>
       _$FingerprintFromJson(json);

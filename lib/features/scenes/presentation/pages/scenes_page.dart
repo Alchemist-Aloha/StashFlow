@@ -30,6 +30,25 @@ enum _SceneSortField {
   updatedAt,
   createdAt,
   random,
+  fileCount,
+  filesize,
+  resolution,
+  lastPlayedAt,
+  resumeTime,
+  playDuration,
+  interactive,
+  interactiveSpeed,
+  perceptualSimilarity,
+  performerAge,
+  studio,
+  path,
+  fileModTime,
+  tagCount,
+  performerCount,
+  oCounter,
+  lastOAt,
+  groupSceneNumber,
+  code,
 }
 
 /// The main browsing page for scenes.
@@ -76,6 +95,25 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
           'updated_at' => _SceneSortField.updatedAt,
           'created_at' => _SceneSortField.createdAt,
           'random' => _SceneSortField.random,
+          'file_count' => _SceneSortField.fileCount,
+          'filesize' => _SceneSortField.filesize,
+          'resolution' => _SceneSortField.resolution,
+          'last_played_at' => _SceneSortField.lastPlayedAt,
+          'resume_time' => _SceneSortField.resumeTime,
+          'play_duration' => _SceneSortField.playDuration,
+          'interactive' => _SceneSortField.interactive,
+          'interactive_speed' => _SceneSortField.interactiveSpeed,
+          'perceptual_similarity' => _SceneSortField.perceptualSimilarity,
+          'performer_age' => _SceneSortField.performerAge,
+          'studio' => _SceneSortField.studio,
+          'path' => _SceneSortField.path,
+          'file_mod_time' => _SceneSortField.fileModTime,
+          'tag_count' => _SceneSortField.tagCount,
+          'performer_count' => _SceneSortField.performerCount,
+          'o_counter' => _SceneSortField.oCounter,
+          'last_o_at' => _SceneSortField.lastOAt,
+          'group_scene_number' => _SceneSortField.groupSceneNumber,
+          'code' => _SceneSortField.code,
           _ => _SceneSortField.date,
         };
         _sortDescending = sortConfig.descending;
@@ -111,6 +149,25 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       _SceneSortField.updatedAt => 'updated_at',
       _SceneSortField.createdAt => 'created_at',
       _SceneSortField.random => 'random',
+      _SceneSortField.fileCount => 'file_count',
+      _SceneSortField.filesize => 'filesize',
+      _SceneSortField.resolution => 'resolution',
+      _SceneSortField.lastPlayedAt => 'last_played_at',
+      _SceneSortField.resumeTime => 'resume_time',
+      _SceneSortField.playDuration => 'play_duration',
+      _SceneSortField.interactive => 'interactive',
+      _SceneSortField.interactiveSpeed => 'interactive_speed',
+      _SceneSortField.perceptualSimilarity => 'perceptual_similarity',
+      _SceneSortField.performerAge => 'performer_age',
+      _SceneSortField.studio => 'studio',
+      _SceneSortField.path => 'path',
+      _SceneSortField.fileModTime => 'file_mod_time',
+      _SceneSortField.tagCount => 'tag_count',
+      _SceneSortField.performerCount => 'performer_count',
+      _SceneSortField.oCounter => 'o_counter',
+      _SceneSortField.lastOAt => 'last_o_at',
+      _SceneSortField.groupSceneNumber => 'group_scene_number',
+      _SceneSortField.code => 'code',
     };
     ref
         .read(sceneSortProvider.notifier)
@@ -149,6 +206,25 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       _SceneSortField.updatedAt => context.l10n.sort_updated_at,
       _SceneSortField.createdAt => context.l10n.sort_created_at,
       _SceneSortField.random => context.l10n.sort_random,
+      _SceneSortField.fileCount => 'File Count',
+      _SceneSortField.filesize => 'Filesize',
+      _SceneSortField.resolution => 'Resolution',
+      _SceneSortField.lastPlayedAt => 'Last Played At',
+      _SceneSortField.resumeTime => 'Resume Time',
+      _SceneSortField.playDuration => 'Play Duration',
+      _SceneSortField.interactive => 'Interactive',
+      _SceneSortField.interactiveSpeed => 'Interactive Speed',
+      _SceneSortField.perceptualSimilarity => 'Perceptual Similarity',
+      _SceneSortField.performerAge => 'Performer Age',
+      _SceneSortField.studio => 'Studio',
+      _SceneSortField.path => 'Path',
+      _SceneSortField.fileModTime => 'File Mod Time',
+      _SceneSortField.tagCount => 'Tag Count',
+      _SceneSortField.performerCount => 'Performer Count',
+      _SceneSortField.oCounter => 'O-Counter',
+      _SceneSortField.lastOAt => 'Last O At',
+      _SceneSortField.groupSceneNumber => 'Group/Movie Scene Number',
+      _SceneSortField.code => 'Code',
     };
   }
 
@@ -198,23 +274,38 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                       style: context.textTheme.labelLarge,
                     ),
                     const SizedBox(height: AppTheme.spacingSmall),
-                    Wrap(
-                      spacing: AppTheme.spacingSmall,
-                      runSpacing: AppTheme.spacingSmall,
-                      children: _SceneSortField.values
-                          .map(
-                            (field) => ChoiceChip(
-                              label: Text(_sortFieldLabel(field)),
-                              selected: tempField == field,
-                              onSelected: (selected) {
-                                if (!selected) return;
-                                setModalState(() {
-                                  tempField = field;
-                                });
-                              },
+                    Flexible(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height * 0.35,
+                        ),
+                        child: Scrollbar(
+                          thumbVisibility: true,
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: AppTheme.spacingSmall,
                             ),
-                          )
-                          .toList(),
+                            child: Wrap(
+                              spacing: AppTheme.spacingSmall,
+                              runSpacing: AppTheme.spacingSmall,
+                              children: _SceneSortField.values
+                                  .map(
+                                    (field) => ChoiceChip(
+                                      label: Text(_sortFieldLabel(field)),
+                                      selected: tempField == field,
+                                      onSelected: (selected) {
+                                        if (!selected) return;
+                                        setModalState(() {
+                                          tempField = field;
+                                        });
+                                      },
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: AppTheme.spacingMedium),
                     Text(

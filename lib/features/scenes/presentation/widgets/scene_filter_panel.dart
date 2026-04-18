@@ -10,6 +10,8 @@ import 'entity_picker.dart';
 import '../../../studios/domain/entities/studio.dart';
 import '../../../performers/domain/entities/performer.dart';
 import '../../../tags/domain/entities/tag.dart';
+import '../../../groups/domain/entities/group.dart';
+import '../../../galleries/domain/entities/gallery.dart';
 
 class SceneFilterPanel extends ConsumerStatefulWidget {
   const SceneFilterPanel({super.key});
@@ -134,7 +136,9 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(context.l10n.galleries_filter_saved),
+                                content: Text(
+                                  context.l10n.galleries_filter_saved,
+                                ),
                               ),
                             );
                           }
@@ -162,28 +166,121 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
       title: 'General',
       initiallyExpanded: true,
       children: [
+        StringCriterionInput(
+          label: 'Code',
+          value: _tempFilter.code,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(code: val)),
+        ),
+        StringCriterionInput(
+          label: 'Details',
+          value: _tempFilter.details,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(details: val)),
+        ),
+        StringCriterionInput(
+          label: 'Director',
+          value: _tempFilter.director,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(director: val)),
+        ),
         _buildRatingFilter(),
         _buildOrganizedFilter(),
         _buildEntityFilter<Studio>(
           'Studios',
           'studio',
           _tempFilter.studios,
-          (val) => setState(() => _tempFilter = _tempFilter.copyWith(studios: val as HierarchicalMultiCriterion?)),
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(
+              studios: val as HierarchicalMultiCriterion?,
+            ),
+          ),
           true,
         ),
         _buildEntityFilter<Performer>(
           'Performers',
           'performer',
           _tempFilter.performers,
-          (val) => setState(() => _tempFilter = _tempFilter.copyWith(performers: val as MultiCriterion?)),
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(
+              performers: val as MultiCriterion?,
+            ),
+          ),
           false,
         ),
         _buildEntityFilter<Tag>(
           'Tags',
           'tag',
           _tempFilter.tags,
-          (val) => setState(() => _tempFilter = _tempFilter.copyWith(tags: val as HierarchicalMultiCriterion?)),
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(
+              tags: val as HierarchicalMultiCriterion?,
+            ),
+          ),
           true,
+        ),
+        _buildEntityFilter<Group>(
+          'Groups',
+          'group',
+          _tempFilter.groups,
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(
+              groups: val as HierarchicalMultiCriterion?,
+            ),
+          ),
+          true,
+        ),
+        _buildEntityFilter<Gallery>(
+          'Galleries',
+          'gallery',
+          _tempFilter.galleries,
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(
+              galleries: val as MultiCriterion?,
+            ),
+          ),
+          false,
+        ),
+        _buildEntityFilter<Tag>(
+          'Performer Tags',
+          'tag',
+          _tempFilter.performerTags,
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(
+              performerTags: val as HierarchicalMultiCriterion?,
+            ),
+          ),
+          true,
+        ),
+        DateCriterionInput(
+          label: 'Date',
+          value: _tempFilter.date,
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(date: val),
+          ),
+        ),
+        IntCriterionInput(
+          label: 'Performer Age',
+          value: _tempFilter.performerAge,
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(performerAge: val),
+          ),
+        ),
+        IntCriterionInput(
+          label: 'Tag Count',
+          value: _tempFilter.tagCount,
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(tagCount: val)),
+        ),
+        IntCriterionInput(
+          label: 'Performer Count',
+          value: _tempFilter.performerCount,
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(performerCount: val)),
+        ),
+        StringCriterionInput(
+          label: 'URL',
+          value: _tempFilter.url,
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(url: val),
+          ),
         ),
       ],
     );
@@ -195,15 +292,59 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
       children: [
         _buildResolutionFilter(),
         _buildOrientationFilter(),
+        StringCriterionInput(
+          label: 'Path',
+          value: _tempFilter.path,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(path: val)),
+        ),
+        StringCriterionInput(
+          label: 'Captions',
+          value: _tempFilter.captions,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(captions: val)),
+        ),
         IntCriterionInput(
           label: 'Duration (seconds)',
           value: _tempFilter.duration,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(duration: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(duration: val)),
         ),
         IntCriterionInput(
           label: 'Bitrate',
           value: _tempFilter.bitrate,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(bitrate: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(bitrate: val)),
+        ),
+        StringCriterionInput(
+          label: 'Video Codec',
+          value: _tempFilter.videoCodec,
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(videoCodec: val)),
+        ),
+        StringCriterionInput(
+          label: 'Audio Codec',
+          value: _tempFilter.audioCodec,
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(audioCodec: val)),
+        ),
+        IntCriterionInput(
+          label: 'Framerate',
+          value: _tempFilter.framerate,
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(framerate: val)),
+        ),
+        IntCriterionInput(
+          label: 'File Count',
+          value: _tempFilter.fileCount,
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(fileCount: val),
+          ),
+        ),
+        IntCriterionInput(
+          label: 'Resume Time',
+          value: _tempFilter.resumeTime,
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(resumeTime: val),
+          ),
         ),
       ],
     );
@@ -216,12 +357,28 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
         IntCriterionInput(
           label: 'Play Count',
           value: _tempFilter.playCount,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(playCount: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(playCount: val),
+          ),
+        ),
+        IntCriterionInput(
+          label: 'Play Duration',
+          value: _tempFilter.playDuration,
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(playDuration: val),
+          ),
         ),
         IntCriterionInput(
           label: 'O-Counter',
           value: _tempFilter.oCounter,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(oCounter: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(oCounter: val)),
+        ),
+        DateCriterionInput(
+          label: 'Last Played At',
+          value: _tempFilter.lastPlayedAt,
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(lastPlayedAt: val)),
         ),
       ],
     );
@@ -231,8 +388,109 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
     return FilterSection(
       title: 'System',
       children: [
-        _buildBooleanFilter('Has Markers', _tempFilter.hasMarkers, (val) => setState(() => _tempFilter = _tempFilter.copyWith(hasMarkers: val))),
-        _buildBooleanFilter('Is Missing', _tempFilter.isMissing, (val) => setState(() => _tempFilter = _tempFilter.copyWith(isMissing: val))),
+        IntCriterionInput(
+          label: 'ID',
+          value: _tempFilter.id,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(id: val)),
+        ),
+        IntCriterionInput(
+          label: 'Stash ID Count',
+          value: _tempFilter.stashIdCount,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(stashIdCount: val)),
+        ),
+        StringCriterionInput(
+          label: 'Oshash',
+          value: _tempFilter.oshash,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(oshash: val)),
+        ),
+        StringCriterionInput(
+          label: 'Checksum',
+          value: _tempFilter.checksum,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(checksum: val)),
+        ),
+        StringCriterionInput(
+          label: 'Phash',
+          value: _tempFilter.phash,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(phash: val)),
+        ),
+        _buildDuplicatedFilter(),
+        _buildBooleanFilter(
+          'Has Markers',
+          _tempFilter.hasMarkers,
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(hasMarkers: val),
+          ),
+        ),
+        _buildBooleanFilter(
+          'Is Missing',
+          _tempFilter.isMissing,
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(isMissing: val),
+          ),
+        ),
+        _buildBooleanFilter(
+          'Interactive',
+          _tempFilter.interactive,
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(interactive: val),
+          ),
+        ),
+        IntCriterionInput(
+          label: 'Interactive Speed',
+          value: _tempFilter.interactiveSpeed,
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(interactiveSpeed: val),
+          ),
+        ),
+        DateCriterionInput(
+          label: 'Created At',
+          value: _tempFilter.createdAt,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(createdAt: val)),
+        ),
+        DateCriterionInput(
+          label: 'Updated At',
+          value: _tempFilter.updatedAt,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(updatedAt: val)),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDuplicatedFilter() {
+    final options = ['phash', 'oshash'];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Duplicated'),
+        Wrap(
+          spacing: 4,
+          children: options.map((opt) {
+            final isSelected =
+                _tempFilter.duplicated?.value.contains(opt) ?? false;
+            return FilterChip(
+              label: Text(opt.toUpperCase()),
+              selected: isSelected,
+              onSelected: (selected) {
+                setState(() {
+                  final current =
+                      List<String>.from(_tempFilter.duplicated?.value ?? []);
+                  if (selected) {
+                    current.add(opt);
+                  } else {
+                    current.remove(opt);
+                  }
+                  
+                  if (current.isEmpty) {
+                    _tempFilter = _tempFilter.copyWith(duplicated: null);
+                  } else {
+                    _tempFilter = _tempFilter.copyWith(
+                        duplicated: MultiCriterion(value: current));
+                  }
+                });
+              }
+            );
+          }).toList(),
+        ),
       ],
     );
   }
@@ -241,22 +499,31 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(context.l10n.galleries_min_rating, style: context.textTheme.labelLarge),
+        Text(
+          context.l10n.galleries_min_rating,
+          style: context.textTheme.labelLarge,
+        ),
         Wrap(
           spacing: 4,
           children: [
             for (var stars = 0; stars <= 5; stars++)
               ChoiceChip(
                 label: Text(stars == 0 ? 'Any' : '$stars'),
-                selected: (stars == 0 && _tempFilter.rating100 == null) || 
-                          (_tempFilter.rating100?.value == stars * 20 && _tempFilter.rating100?.modifier == CriterionModifier.greaterThan),
+                selected:
+                    (stars == 0 && _tempFilter.rating100 == null) ||
+                    (_tempFilter.rating100?.value == stars * 20 &&
+                        _tempFilter.rating100?.modifier ==
+                            CriterionModifier.greaterThan),
                 onSelected: (_) {
                   setState(() {
                     if (stars == 0) {
                       _tempFilter = _tempFilter.copyWith(rating100: null);
                     } else {
                       _tempFilter = _tempFilter.copyWith(
-                        rating100: IntCriterion(value: stars * 20, modifier: CriterionModifier.greaterThan),
+                        rating100: IntCriterion(
+                          value: stars * 20,
+                          modifier: CriterionModifier.greaterThan,
+                        ),
                       );
                     }
                   });
@@ -269,18 +536,23 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
   }
 
   Widget _buildOrganizedFilter() {
-    return _buildBooleanFilter(context.l10n.galleries_organized_only, _tempOrganizedOnly, (val) => setState(() => _tempOrganizedOnly = val ?? false));
+    return _buildBooleanFilter(
+      context.l10n.galleries_organized_only,
+      _tempOrganizedOnly,
+      (val) => setState(() => _tempOrganizedOnly = val ?? false),
+    );
   }
 
-  Widget _buildBooleanFilter(String label, bool? value, ValueChanged<bool?> onChanged) {
+  Widget _buildBooleanFilter(
+    String label,
+    bool? value,
+    ValueChanged<bool?> onChanged,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label),
-        Switch(
-          value: value ?? false,
-          onChanged: onChanged,
-        ),
+        Switch(value: value ?? false, onChanged: onChanged),
       ],
     );
   }
@@ -294,17 +566,24 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
         Wrap(
           spacing: 4,
           children: resolutions.map((res) {
-            final isSelected = _tempFilter.resolutions?.value.contains(res) ?? false;
+            final isSelected =
+                _tempFilter.resolutions?.value.contains(res) ?? false;
             return FilterChip(
               label: Text(res.replaceAll('_', ' ')),
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {
-                  final current = List<String>.from(_tempFilter.resolutions?.value ?? []);
-                  if (selected) current.add(res);
-                  else current.remove(res);
+                  final current = List<String>.from(
+                    _tempFilter.resolutions?.value ?? [],
+                  );
+                  if (selected)
+                    current.add(res);
+                  else
+                    current.remove(res);
                   _tempFilter = _tempFilter.copyWith(
-                    resolutions: current.isEmpty ? null : MultiCriterion(value: current),
+                    resolutions: current.isEmpty
+                        ? null
+                        : MultiCriterion(value: current),
                   );
                 });
               },
@@ -324,17 +603,24 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
         Wrap(
           spacing: 4,
           children: orientations.map((ori) {
-            final isSelected = _tempFilter.orientations?.value.contains(ori) ?? false;
+            final isSelected =
+                _tempFilter.orientations?.value.contains(ori) ?? false;
             return FilterChip(
               label: Text(ori),
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {
-                  final current = List<String>.from(_tempFilter.orientations?.value ?? []);
-                  if (selected) current.add(ori);
-                  else current.remove(ori);
+                  final current = List<String>.from(
+                    _tempFilter.orientations?.value ?? [],
+                  );
+                  if (selected)
+                    current.add(ori);
+                  else
+                    current.remove(ori);
                   _tempFilter = _tempFilter.copyWith(
-                    orientations: current.isEmpty ? null : MultiCriterion(value: current),
+                    orientations: current.isEmpty
+                        ? null
+                        : MultiCriterion(value: current),
                   );
                 });
               },
@@ -353,7 +639,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
     bool isHierarchical,
   ) {
     final List<String> selectedIds = criterion?.value ?? [];
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
@@ -383,15 +669,21 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                       return '';
                     }).toList();
                     if (isHierarchical) {
-                      onChanged(HierarchicalMultiCriterion(
-                        value: ids,
-                        modifier: criterion?.modifier ?? CriterionModifier.includes,
-                      ));
+                      onChanged(
+                        HierarchicalMultiCriterion(
+                          value: ids,
+                          modifier:
+                              criterion?.modifier ?? CriterionModifier.includes,
+                        ),
+                      );
                     } else {
-                      onChanged(MultiCriterion(
-                        value: ids,
-                        modifier: criterion?.modifier ?? CriterionModifier.includes,
-                      ));
+                      onChanged(
+                        MultiCriterion(
+                          value: ids,
+                          modifier:
+                              criterion?.modifier ?? CriterionModifier.includes,
+                        ),
+                      );
                     }
                   }
                 },
@@ -401,28 +693,38 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
           if (selectedIds.isNotEmpty)
             Wrap(
               spacing: 4,
-              children: selectedIds.map((id) => Chip(
-                label: Text(id), // Ideally show name, but we only have ID here
-                onDeleted: () {
-                  final newList = List<String>.from(selectedIds);
-                  newList.remove(id);
-                  if (newList.isEmpty) {
-                    onChanged(null);
-                  } else {
-                    if (isHierarchical) {
-                      onChanged(HierarchicalMultiCriterion(
-                        value: newList,
-                        modifier: criterion.modifier,
-                      ));
-                    } else {
-                      onChanged(MultiCriterion(
-                        value: newList,
-                        modifier: criterion.modifier,
-                      ));
-                    }
-                  }
-                },
-              )).toList(),
+              children: selectedIds
+                  .map(
+                    (id) => Chip(
+                      label: Text(
+                        id,
+                      ), // Ideally show name, but we only have ID here
+                      onDeleted: () {
+                        final newList = List<String>.from(selectedIds);
+                        newList.remove(id);
+                        if (newList.isEmpty) {
+                          onChanged(null);
+                        } else {
+                          if (isHierarchical) {
+                            onChanged(
+                              HierarchicalMultiCriterion(
+                                value: newList,
+                                modifier: criterion.modifier,
+                              ),
+                            );
+                          } else {
+                            onChanged(
+                              MultiCriterion(
+                                value: newList,
+                                modifier: criterion.modifier,
+                              ),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                  )
+                  .toList(),
             ),
         ],
       ),

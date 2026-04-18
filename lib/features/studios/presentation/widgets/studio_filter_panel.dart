@@ -147,6 +147,21 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
       title: 'General',
       initiallyExpanded: true,
       children: [
+        StringCriterionInput(
+          label: 'Name',
+          value: _tempFilter.name,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(name: val)),
+        ),
+        StringCriterionInput(
+          label: 'Details',
+          value: _tempFilter.details,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(details: val)),
+        ),
+        StringCriterionInput(
+          label: 'Aliases',
+          value: _tempFilter.aliases,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(aliases: val)),
+        ),
         _buildBooleanFilter('Favorite', _tempFilter.favorite, (val) => setState(() => _tempFilter = _tempFilter.copyWith(favorite: val))),
         _buildBooleanFilter('Organized', _tempFilter.organized, (val) => setState(() => _tempFilter = _tempFilter.copyWith(organized: val))),
         _buildEntityFilter<Studio>(
@@ -163,6 +178,16 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
           (val) => setState(() => _tempFilter = _tempFilter.copyWith(tags: val as HierarchicalMultiCriterion?)),
           true,
         ),
+        StringCriterionInput(
+          label: 'URL',
+          value: _tempFilter.url,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(url: val)),
+        ),
+        IntCriterionInput(
+          label: 'Tag Count',
+          value: _tempFilter.tagCount,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(tagCount: val)),
+        ),
         IntCriterionInput(
           label: 'Rating',
           value: _tempFilter.rating100,
@@ -177,15 +202,36 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
       title: 'System',
       children: [
         _buildBooleanFilter('Is Missing', _tempFilter.isMissing, (val) => setState(() => _tempFilter = _tempFilter.copyWith(isMissing: val))),
+        _buildBooleanFilter('Ignore Auto Tag', _tempFilter.ignoreAutoTag, (val) => setState(() => _tempFilter = _tempFilter.copyWith(ignoreAutoTag: val))),
         IntCriterionInput(
           label: 'Scene Count',
           value: _tempFilter.sceneCount,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(sceneCount: val)),
         ),
         IntCriterionInput(
+          label: 'Image Count',
+          value: _tempFilter.imageCount,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(imageCount: val)),
+        ),
+        IntCriterionInput(
+          label: 'Gallery Count',
+          value: _tempFilter.galleryCount,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(galleryCount: val)),
+        ),
+        IntCriterionInput(
           label: 'Sub-studio Count',
           value: _tempFilter.childCount,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(childCount: val)),
+        ),
+        DateCriterionInput(
+          label: 'Created At',
+          value: _tempFilter.createdAt,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(createdAt: val)),
+        ),
+        DateCriterionInput(
+          label: 'Updated At',
+          value: _tempFilter.updatedAt,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(updatedAt: val)),
         ),
       ],
     );

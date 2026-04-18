@@ -70,7 +70,9 @@ class _ScrapeQueryDialogState extends ConsumerState<ScrapeQueryDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final scrapersAsync = ref.watch(availableScrapersProvider([_getEntityTypeString()]));
+    final scrapersAsync = ref.watch(
+      availableScrapersProvider([_getEntityTypeString()]),
+    );
     final stashBoxesAsync = ref.watch(stashBoxEndpointsProvider);
 
     return AlertDialog(
@@ -90,9 +92,9 @@ class _ScrapeQueryDialogState extends ConsumerState<ScrapeQueryDialog> {
                   icon: const Icon(Icons.download),
                   onPressed: () {
                     if (_urlController.text.isNotEmpty) {
-                      Navigator.of(context).pop(ScrapeRequest(
-                        url: _urlController.text,
-                      ));
+                      Navigator.of(
+                        context,
+                      ).pop(ScrapeRequest(url: _urlController.text));
                     }
                   },
                 ),
@@ -132,36 +134,48 @@ class _ScrapeQueryDialogState extends ConsumerState<ScrapeQueryDialog> {
             const Divider(),
             stashBoxesAsync.when(
               data: (endpoints) => Column(
-                children: endpoints.map((e) => RadioListTile<String>(
-                  title: Text(e.name),
-                  subtitle: Text(e.endpoint),
-                  value: e.endpoint,
-                  groupValue: _selectedStashBoxEndpoint ?? _selectedScraperId,
-                  onChanged: (val) {
-                    setState(() {
-                      _selectedStashBoxEndpoint = val;
-                      _selectedScraperId = null;
-                    });
-                  },
-                )).toList(),
+                children: endpoints
+                    .map(
+                      (e) => RadioListTile<String>(
+                        title: Text(e.name),
+                        subtitle: Text(e.endpoint),
+                        value: e.endpoint,
+                        groupValue:
+                            _selectedStashBoxEndpoint ?? _selectedScraperId,
+                        onChanged: (val) {
+                          setState(() {
+                            _selectedStashBoxEndpoint = val;
+                            _selectedScraperId = null;
+                          });
+                        },
+                      ),
+                    )
+                    .toList(),
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (err, _) => Text('Error: $err'),
             ),
             scrapersAsync.when(
               data: (scrapers) => Column(
-                children: scrapers.map((s) => RadioListTile<String>(
-                  title: Text(s.name),
-                  subtitle: s.description != null ? Text(s.description!) : null,
-                  value: s.id,
-                  groupValue: _selectedScraperId ?? _selectedStashBoxEndpoint,
-                  onChanged: (val) {
-                    setState(() {
-                      _selectedScraperId = val;
-                      _selectedStashBoxEndpoint = null;
-                    });
-                  },
-                )).toList(),
+                children: scrapers
+                    .map(
+                      (s) => RadioListTile<String>(
+                        title: Text(s.name),
+                        subtitle: s.description != null
+                            ? Text(s.description!)
+                            : null,
+                        value: s.id,
+                        groupValue:
+                            _selectedScraperId ?? _selectedStashBoxEndpoint,
+                        onChanged: (val) {
+                          setState(() {
+                            _selectedScraperId = val;
+                            _selectedStashBoxEndpoint = null;
+                          });
+                        },
+                      ),
+                    )
+                    .toList(),
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (err, _) => Text('Error: $err'),
@@ -175,15 +189,18 @@ class _ScrapeQueryDialogState extends ConsumerState<ScrapeQueryDialog> {
           child: Text(context.l10n.common_cancel),
         ),
         ElevatedButton(
-          onPressed: (_selectedScraperId == null && _selectedStashBoxEndpoint == null)
+          onPressed:
+              (_selectedScraperId == null && _selectedStashBoxEndpoint == null)
               ? null
               : () {
-                  Navigator.of(context).pop(ScrapeRequest(
-                    scraperId: _selectedScraperId,
-                    stashBoxEndpoint: _selectedStashBoxEndpoint,
-                    query: _queryController.text,
-                    useFingerprints: _useFingerprints,
-                  ));
+                  Navigator.of(context).pop(
+                    ScrapeRequest(
+                      scraperId: _selectedScraperId,
+                      stashBoxEndpoint: _selectedStashBoxEndpoint,
+                      query: _queryController.text,
+                      useFingerprints: _useFingerprints,
+                    ),
+                  );
                 },
           child: Text(context.l10n.common_search),
         ),

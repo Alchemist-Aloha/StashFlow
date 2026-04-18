@@ -188,8 +188,24 @@ class GraphQLSceneRepository implements SceneRepository {
                 : Enum$SortDirectionEnum.ASC,
           ),
           scene_filter: Input$SceneFilterType(
+            id: mapIntCriterion(sceneFilter?.id),
+            code: mapStringCriterion(sceneFilter?.code),
+            details: mapStringCriterion(sceneFilter?.details),
+            director: mapStringCriterion(sceneFilter?.director),
+            path: mapStringCriterion(sceneFilter?.path),
+            url: mapStringCriterion(sceneFilter?.url),
+            captions: mapStringCriterion(sceneFilter?.captions),
             organized: organized ?? sceneFilter?.organized,
             performer_favorite: performerFavorite,
+            galleries: mapMultiCriterion(sceneFilter?.galleries),
+            performer_tags: mapHierarchicalMultiCriterion(sceneFilter?.performerTags),
+            groups: mapHierarchicalMultiCriterion(sceneFilter?.groups),
+            duplicated: sceneFilter?.duplicated != null
+                ? Input$DuplicationCriterionInput(
+                    phash: sceneFilter!.duplicated!.value.contains('phash'),
+                    // oshash: not supported in Input$DuplicationCriterionInput yet?
+                  )
+                : null,
             performers:
                 (performerId != null || sceneFilter?.performers != null)
                 ? mapMultiCriterion(
@@ -230,11 +246,16 @@ class GraphQLSceneRepository implements SceneRepository {
                   )
                 : null,
             duration: mapIntCriterion(sceneFilter?.duration),
+            play_duration: mapIntCriterion(sceneFilter?.playDuration),
+            resume_time: mapIntCriterion(sceneFilter?.resumeTime),
             o_counter: mapIntCriterion(sceneFilter?.oCounter),
             last_played_at: mapTimestampCriterion(sceneFilter?.lastPlayedAt),
             interactive: sceneFilter?.interactive,
             interactive_speed: mapIntCriterion(sceneFilter?.interactiveSpeed),
             performer_age: mapIntCriterion(sceneFilter?.performerAge),
+            performer_count: mapIntCriterion(sceneFilter?.performerCount),
+            tag_count: mapIntCriterion(sceneFilter?.tagCount),
+            stash_id_count: mapIntCriterion(sceneFilter?.stashIdCount),
             bitrate: mapIntCriterion(sceneFilter?.bitrate),
             framerate: mapIntCriterion(sceneFilter?.framerate),
             video_codec: mapStringCriterion(sceneFilter?.videoCodec),

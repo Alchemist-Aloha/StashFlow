@@ -17,7 +17,23 @@ import '../../domain/entities/image.dart' as entity;
 import '../widgets/image_filter_panel.dart';
 import '../../domain/entities/image_filter.dart';
 
-enum _ImageSortOption { date, rating, title, path, random }
+enum _ImageSortOption {
+  title,
+  path,
+  rating,
+  date,
+  random,
+  createdAt,
+  updatedAt,
+  fileCount,
+  fileModTime,
+  filesize,
+  id,
+  oCounter,
+  performerCount,
+  resolution,
+  tagCount,
+}
 
 class ImagesPage extends ConsumerStatefulWidget {
   const ImagesPage({super.key});
@@ -41,10 +57,20 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
       setState(() {
         _sortOption = switch (sortConfig.sort) {
           'date' => _ImageSortOption.date,
-          'rating100' => _ImageSortOption.rating,
+          'rating100' || 'rating' => _ImageSortOption.rating,
           'title' => _ImageSortOption.title,
           'path' => _ImageSortOption.path,
           'random' => _ImageSortOption.random,
+          'created_at' => _ImageSortOption.createdAt,
+          'updated_at' => _ImageSortOption.updatedAt,
+          'file_count' => _ImageSortOption.fileCount,
+          'file_mod_time' => _ImageSortOption.fileModTime,
+          'filesize' => _ImageSortOption.filesize,
+          'id' => _ImageSortOption.id,
+          'o_counter' => _ImageSortOption.oCounter,
+          'performer_count' => _ImageSortOption.performerCount,
+          'resolution' => _ImageSortOption.resolution,
+          'tag_count' => _ImageSortOption.tagCount,
           _ => _ImageSortOption.path,
         };
         _sortDescending = sortConfig.descending;
@@ -63,6 +89,16 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
       _ImageSortOption.title => 'title',
       _ImageSortOption.path => 'path',
       _ImageSortOption.random => 'random',
+      _ImageSortOption.createdAt => 'created_at',
+      _ImageSortOption.updatedAt => 'updated_at',
+      _ImageSortOption.fileCount => 'file_count',
+      _ImageSortOption.fileModTime => 'file_mod_time',
+      _ImageSortOption.filesize => 'filesize',
+      _ImageSortOption.id => 'id',
+      _ImageSortOption.oCounter => 'o_counter',
+      _ImageSortOption.performerCount => 'performer_count',
+      _ImageSortOption.resolution => 'resolution',
+      _ImageSortOption.tagCount => 'tag_count',
     };
     ref
         .read(imageListProvider.notifier)
@@ -76,6 +112,16 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
       _ImageSortOption.title => 'Title',
       _ImageSortOption.path => 'Filepath',
       _ImageSortOption.random => 'Random',
+      _ImageSortOption.createdAt => 'Created At',
+      _ImageSortOption.updatedAt => 'Updated At',
+      _ImageSortOption.fileCount => 'File Count',
+      _ImageSortOption.fileModTime => 'File Mod Time',
+      _ImageSortOption.filesize => 'Filesize',
+      _ImageSortOption.id => 'ID',
+      _ImageSortOption.oCounter => 'O-Counter',
+      _ImageSortOption.performerCount => 'Performer Count',
+      _ImageSortOption.resolution => 'Resolution',
+      _ImageSortOption.tagCount => 'Tag Count',
     };
   }
 

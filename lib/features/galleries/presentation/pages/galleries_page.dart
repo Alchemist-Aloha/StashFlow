@@ -20,7 +20,7 @@ import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 
-enum _GallerySortOption { title, date, rating, imageCount, path, random }
+enum _GallerySortOption { title, date, rating, imageCount, fileCount, path, random, createdAt, updatedAt }
 
 class GalleriesPage extends ConsumerStatefulWidget {
   const GalleriesPage({super.key});
@@ -47,8 +47,11 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
           'date' => _GallerySortOption.date,
           'rating100' => _GallerySortOption.rating,
           'image_count' => _GallerySortOption.imageCount,
+          'file_count' => _GallerySortOption.fileCount,
           'path' => _GallerySortOption.path,
           'random' => _GallerySortOption.random,
+          'created_at' => _GallerySortOption.createdAt,
+          'updated_at' => _GallerySortOption.updatedAt,
           _ => _GallerySortOption.path,
         };
         _sortDescending = sortConfig.descending;
@@ -66,9 +69,12 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
       _GallerySortOption.title => 'title',
       _GallerySortOption.date => 'date',
       _GallerySortOption.rating => 'rating',
-      _GallerySortOption.imageCount => 'images_count',
+      _GallerySortOption.imageCount => 'image_count',
+      _GallerySortOption.fileCount => 'file_count',
       _GallerySortOption.path => 'path',
       _GallerySortOption.random => 'random',
+      _GallerySortOption.createdAt => 'created_at',
+      _GallerySortOption.updatedAt => 'updated_at',
     };
     ref
         .read(galleryListProvider.notifier)
@@ -102,8 +108,11 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
       _GallerySortOption.date => context.l10n.common_date,
       _GallerySortOption.rating => context.l10n.common_rating,
       _GallerySortOption.imageCount => context.l10n.common_image_count,
+      _GallerySortOption.fileCount => 'File Count',
       _GallerySortOption.path => context.l10n.common_filepath,
       _GallerySortOption.random => context.l10n.common_random,
+      _GallerySortOption.createdAt => 'Created At',
+      _GallerySortOption.updatedAt => 'Updated At',
     };
   }
 

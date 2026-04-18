@@ -154,9 +154,9 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
 
   Future<void> _pickTags() async {
     final results = await showDialog<List<Tag>>(
-          context: context,
-          builder: (context) => EntityPicker<Tag>(
-            title: context.l10n.scenes_select_tags,
+      context: context,
+      builder: (context) => EntityPicker<Tag>(
+        title: context.l10n.scenes_select_tags,
         providerType: 'tag',
         multiSelect: true,
         initialSelection: _selectedTagIds,
@@ -174,9 +174,8 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
   Future<void> _scrape() async {
     final scrapeRequest = await showDialog<ScrapeRequest>(
       context: context,
-      builder: (context) => ScrapeQueryDialog(
-        initialQuery: _titleController.text,
-      ),
+      builder: (context) =>
+          ScrapeQueryDialog(initialQuery: _titleController.text),
     );
 
     if (scrapeRequest == null || !mounted) return;
@@ -185,10 +184,14 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
     try {
       List<ScrapedScene> results = [];
       if (scrapeRequest.url != null) {
-        final res = await ref.read(sceneScrapeProvider).scrapeSceneURL(scrapeRequest.url!);
+        final res = await ref
+            .read(sceneScrapeProvider)
+            .scrapeSceneURL(scrapeRequest.url!);
         if (res != null) results = [res];
       } else {
-        results = await ref.read(sceneScrapeProvider).scrapeScene(
+        results = await ref
+            .read(sceneScrapeProvider)
+            .scrapeScene(
               scraperId: scrapeRequest.scraperId,
               stashBoxEndpoint: scrapeRequest.stashBoxEndpoint,
               sceneId: scrapeRequest.useFingerprints ? widget.scene.id : null,
@@ -199,9 +202,9 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
       if (!mounted) return;
 
       if (results.isEmpty) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(context.l10n.scenes_no_results_found)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.scenes_no_results_found)),
+        );
         return;
       }
 
@@ -220,7 +223,11 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                   final r = results[index];
                   return ListTile(
                     title: Text(r.title ?? context.l10n.common_no_title),
-                    subtitle: Text(r.urls.isNotEmpty ? r.urls.first : context.l10n.common_no_url),
+                    subtitle: Text(
+                      r.urls.isNotEmpty
+                          ? r.urls.first
+                          : context.l10n.common_no_url,
+                    ),
                     onTap: () => Navigator.of(context).pop(r),
                   );
                 },
@@ -263,13 +270,18 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
         }
         if (merged.date != null) {
           _selectedDate = merged.date;
-          _dateController.text = _selectedDate!.toIso8601String().split('T').first;
+          _dateController.text = _selectedDate!
+              .toIso8601String()
+              .split('T')
+              .first;
         }
         if (merged.urls.isNotEmpty) {
           for (final controller in _urlControllers) {
             controller.dispose();
           }
-          _urlControllers = merged.urls.map((u) => TextEditingController(text: u)).toList();
+          _urlControllers = merged.urls
+              .map((u) => TextEditingController(text: u))
+              .toList();
         }
         _scrapedImage = merged.image;
 
@@ -296,7 +308,9 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
 
         if (merged.studioId != null) {
           _selectedStudioId = merged.studioId;
-          _selectedStudioName = merged.studio?.name ?? context.l10n.scenes_studio_id_prefix(merged.studioId!);
+          _selectedStudioName =
+              merged.studio?.name ??
+              context.l10n.scenes_studio_id_prefix(merged.studioId!);
         } else if (merged.studio != null) {
           _selectedStudioId = merged.studio!.storedId;
           _selectedStudioName = merged.studio!.name;
@@ -304,9 +318,11 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
       });
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(context.l10n.scenes_scrape_failed(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.scenes_scrape_failed(e.toString())),
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _isScraping = false);
@@ -324,9 +340,9 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to generate phash: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to generate phash: $e')));
       }
     } finally {
       if (mounted) setState(() => _isScraping = false);
@@ -375,9 +391,11 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(context.l10n.scenes_update_failed(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.scenes_update_failed(e.toString())),
+          ),
+        );
       }
     }
   }
@@ -501,7 +519,10 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
             const SizedBox(height: AppTheme.spacingMedium),
 
             // Studio
-            Text(context.l10n.scenes_field_studio, style: Theme.of(context).textTheme.labelLarge),
+            Text(
+              context.l10n.scenes_field_studio,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
             const SizedBox(height: AppTheme.spacingSmall),
             InkWell(
               onTap: _pickStudio,
@@ -515,7 +536,11 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                 ),
                 child: Row(
                   children: [
-                    Expanded(child: Text(_selectedStudioName ?? context.l10n.common_none)),
+                    Expanded(
+                      child: Text(
+                        _selectedStudioName ?? context.l10n.common_none,
+                      ),
+                    ),
                     if (_selectedStudioId != null)
                       IconButton(
                         padding: EdgeInsets.zero,
@@ -571,7 +596,10 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
             // Tags
             Row(
               children: [
-                Text(context.l10n.scenes_field_tags, style: Theme.of(context).textTheme.labelLarge),
+                Text(
+                  context.l10n.scenes_field_tags,
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
                 const Spacer(),
                 IconButton(
                   onPressed: _pickTags,
@@ -599,7 +627,10 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
 
             Row(
               children: [
-                Text(context.l10n.scenes_field_urls, style: Theme.of(context).textTheme.titleMedium),
+                Text(
+                  context.l10n.scenes_field_urls,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
                 const Spacer(),
                 IconButton(
                   onPressed: _addUrlField,

@@ -89,17 +89,33 @@ class _EnhancedScrapeDialogState extends State<EnhancedScrapeDialog> {
           name: _useScraped['name'] == true ? s.name : o.name,
           details: _useScraped['details'] == true ? s.details : o.details,
           gender: _useScraped['gender'] == true ? s.gender : o.gender,
-          birthdate: _useScraped['birthdate'] == true ? s.birthdate : o.birthdate,
-          ethnicity: _useScraped['ethnicity'] == true ? s.ethnicity : o.ethnicity,
+          birthdate: _useScraped['birthdate'] == true
+              ? s.birthdate
+              : o.birthdate,
+          ethnicity: _useScraped['ethnicity'] == true
+              ? s.ethnicity
+              : o.ethnicity,
           country: _useScraped['country'] == true ? s.country : o.country,
-          eye_color: _useScraped['eye_color'] == true ? s.eye_color : o.eye_color,
+          eye_color: _useScraped['eye_color'] == true
+              ? s.eye_color
+              : o.eye_color,
           height: _useScraped['height'] == true ? s.height : o.height,
-          measurements: _useScraped['measurements'] == true ? s.measurements : o.measurements,
-          fake_tits: _useScraped['fake_tits'] == true ? s.fake_tits : o.fake_tits,
-          career_start: _useScraped['career_start'] == true ? s.career_start : o.career_start,
-          career_end: _useScraped['career_end'] == true ? s.career_end : o.career_end,
+          measurements: _useScraped['measurements'] == true
+              ? s.measurements
+              : o.measurements,
+          fake_tits: _useScraped['fake_tits'] == true
+              ? s.fake_tits
+              : o.fake_tits,
+          career_start: _useScraped['career_start'] == true
+              ? s.career_start
+              : o.career_start,
+          career_end: _useScraped['career_end'] == true
+              ? s.career_end
+              : o.career_end,
           tattoos: _useScraped['tattoos'] == true ? s.tattoos : o.tattoos,
-          piercings: _useScraped['piercings'] == true ? s.piercings : o.piercings,
+          piercings: _useScraped['piercings'] == true
+              ? s.piercings
+              : o.piercings,
           aliases: _useScraped['aliases'] == true ? s.aliases : o.aliases,
           urls: s.urls,
           images: _useScraped['image'] == true ? s.images : o.images,
@@ -126,10 +142,7 @@ class _EnhancedScrapeDialogState extends State<EnhancedScrapeDialog> {
     return AlertDialog(
       title: Text(context.l10n.scenes_select_result),
       content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: _buildFields(),
-        ),
+        child: Column(mainAxisSize: MainAxisSize.min, children: _buildFields()),
       ),
       actions: [
         TextButton(
@@ -150,45 +163,100 @@ class _EnhancedScrapeDialogState extends State<EnhancedScrapeDialog> {
       final s = widget.scraped as ScrapedScene;
       return [
         _buildMergeRow('title', context.l10n.common_title, o.title, s.title),
-        _buildMergeRow('details', context.l10n.common_details, o.details, s.details),
-        _buildMergeRow('date', context.l10n.common_release_date, o.date?.toIso8601String().split('T').first, s.date?.toIso8601String().split('T').first),
-        _buildMergeRow('studio', context.l10n.scenes_field_studio, o.studio?.name ?? o.studioId, s.studio?.name ?? s.studioId),
-        _buildMergeRow('image', context.l10n.common_image, o.image != null ? '[Original Image]' : null, s.image != null ? '[Scraped Image]' : null),
+        _buildMergeRow(
+          'details',
+          context.l10n.common_details,
+          o.details,
+          s.details,
+        ),
+        _buildMergeRow(
+          'date',
+          context.l10n.common_release_date,
+          o.date?.toIso8601String().split('T').first,
+          s.date?.toIso8601String().split('T').first,
+        ),
+        _buildMergeRow(
+          'studio',
+          context.l10n.scenes_field_studio,
+          o.studio?.name ?? o.studioId,
+          s.studio?.name ?? s.studioId,
+        ),
+        _buildMergeRow(
+          'image',
+          context.l10n.common_image,
+          o.image != null ? '[Original Image]' : null,
+          s.image != null ? '[Scraped Image]' : null,
+        ),
       ];
     } else if (widget.type == ScrapeEntityType.performer) {
       final o = widget.original as ScrapedPerformer;
       final s = widget.scraped as ScrapedPerformer;
       return [
         _buildMergeRow('name', context.l10n.common_name, o.name, s.name),
-        _buildMergeRow('details', context.l10n.common_details, o.details, s.details),
+        _buildMergeRow(
+          'details',
+          context.l10n.common_details,
+          o.details,
+          s.details,
+        ),
         _buildMergeRow('gender', 'Gender', o.gender, s.gender),
         _buildMergeRow('birthdate', 'Birthdate', o.birthdate, s.birthdate),
         _buildMergeRow('ethnicity', 'Ethnicity', o.ethnicity, s.ethnicity),
         _buildMergeRow('country', 'Country', o.country, s.country),
         _buildMergeRow('eye_color', 'Eye Color', o.eye_color, s.eye_color),
         _buildMergeRow('height', 'Height', o.height, s.height),
-        _buildMergeRow('measurements', 'Measurements', o.measurements, s.measurements),
+        _buildMergeRow(
+          'measurements',
+          'Measurements',
+          o.measurements,
+          s.measurements,
+        ),
         _buildMergeRow('fake_tits', 'Fake Tits', o.fake_tits, s.fake_tits),
-        _buildMergeRow('career_start', 'Career Start', o.career_start, s.career_start),
+        _buildMergeRow(
+          'career_start',
+          'Career Start',
+          o.career_start,
+          s.career_start,
+        ),
         _buildMergeRow('career_end', 'Career End', o.career_end, s.career_end),
         _buildMergeRow('tattoos', 'Tattoos', o.tattoos, s.tattoos),
         _buildMergeRow('piercings', 'Piercings', o.piercings, s.piercings),
         _buildMergeRow('aliases', 'Aliases', o.aliases, s.aliases),
-        _buildMergeRow('image', context.l10n.common_image, (o.images.isNotEmpty || o.image != null) ? '[Original Image]' : null, (s.images.isNotEmpty || s.image != null) ? '[Scraped Image]' : null),
+        _buildMergeRow(
+          'image',
+          context.l10n.common_image,
+          (o.images.isNotEmpty || o.image != null) ? '[Original Image]' : null,
+          (s.images.isNotEmpty || s.image != null) ? '[Scraped Image]' : null,
+        ),
       ];
     } else {
       final o = widget.original as ScrapedStudio;
       final s = widget.scraped as ScrapedStudio;
       return [
         _buildMergeRow('name', context.l10n.common_name, o.name, s.name),
-        _buildMergeRow('details', context.l10n.common_details, o.details, s.details),
+        _buildMergeRow(
+          'details',
+          context.l10n.common_details,
+          o.details,
+          s.details,
+        ),
         _buildMergeRow('url', 'URL', o.url, s.url),
-        _buildMergeRow('image', context.l10n.common_image, o.image != null ? '[Original Image]' : null, s.image != null ? '[Scraped Image]' : null),
+        _buildMergeRow(
+          'image',
+          context.l10n.common_image,
+          o.image != null ? '[Original Image]' : null,
+          s.image != null ? '[Scraped Image]' : null,
+        ),
       ];
     }
   }
 
-  Widget _buildMergeRow(String field, String label, String? original, String? scraped) {
+  Widget _buildMergeRow(
+    String field,
+    String label,
+    String? original,
+    String? scraped,
+  ) {
     if (scraped == null || scraped.isEmpty) return const SizedBox.shrink();
 
     return Padding(
@@ -206,7 +274,11 @@ class _EnhancedScrapeDialogState extends State<EnhancedScrapeDialog> {
                   children: [
                     if (original != null && original.isNotEmpty)
                       RadioListTile<bool>(
-                        title: Text(original, maxLines: 2, overflow: TextOverflow.ellipsis),
+                        title: Text(
+                          original,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                         subtitle: Text(context.l10n.scrape_results_existing),
                         value: false,
                         groupValue: _useScraped[field],
@@ -218,7 +290,11 @@ class _EnhancedScrapeDialogState extends State<EnhancedScrapeDialog> {
                         },
                       ),
                     RadioListTile<bool>(
-                      title: Text(scraped, maxLines: 2, overflow: TextOverflow.ellipsis),
+                      title: Text(
+                        scraped,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       subtitle: Text(context.l10n.scrape_results_scraped),
                       value: true,
                       groupValue: _useScraped[field],

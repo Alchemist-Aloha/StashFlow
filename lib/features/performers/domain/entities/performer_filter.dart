@@ -9,7 +9,7 @@ abstract class PerformerFilter with _$PerformerFilter {
   const factory PerformerFilter({
     String? searchQuery,
     bool? favorite,
-    String? gender,
+    MultiCriterion? gender,
     String? circumcised,
     bool? isMissing,
     HierarchicalMultiCriterion? tags,

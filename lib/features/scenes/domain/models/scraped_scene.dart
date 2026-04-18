@@ -87,9 +87,11 @@ class ScrapedPerformer {
         death_date: json['death_date'] as String?,
         hair_color: json['hair_color'] as String?,
         weight: json['weight'] as String?,
-        tags: (json['tags'] as List<dynamic>?)
-            ?.map((e) => ScrapedTag.fromJson(e as Map<String, dynamic>))
-            .toList() ?? [],
+        tags:
+            (json['tags'] as List<dynamic>?)
+                ?.map((e) => ScrapedTag.fromJson(e as Map<String, dynamic>))
+                .toList() ??
+            [],
       );
 
   Map<String, dynamic> toJson() => {
@@ -150,32 +152,36 @@ class ScrapedStudio {
        tags = tags ?? [];
 
   factory ScrapedStudio.fromJson(Map<String, dynamic> json) => ScrapedStudio(
-        storedId: json['stored_id'] as String?,
-        name: json['name'] as String,
-        remoteSiteId: json['remote_site_id'] as String?,
-        image: json['image'] as String?,
-        url: json['url'] as String?,
-        details: json['details'] as String?,
-        urls: (json['urls'] as List<dynamic>?)?.cast<String>() ?? [],
-        parent: json['parent'] != null ? ScrapedStudio.fromJson(json['parent'] as Map<String, dynamic>) : null,
-        aliases: json['aliases'] as String?,
-        tags: (json['tags'] as List<dynamic>?)
+    storedId: json['stored_id'] as String?,
+    name: json['name'] as String,
+    remoteSiteId: json['remote_site_id'] as String?,
+    image: json['image'] as String?,
+    url: json['url'] as String?,
+    details: json['details'] as String?,
+    urls: (json['urls'] as List<dynamic>?)?.cast<String>() ?? [],
+    parent: json['parent'] != null
+        ? ScrapedStudio.fromJson(json['parent'] as Map<String, dynamic>)
+        : null,
+    aliases: json['aliases'] as String?,
+    tags:
+        (json['tags'] as List<dynamic>?)
             ?.map((e) => ScrapedTag.fromJson(e as Map<String, dynamic>))
-            .toList() ?? [],
-      );
+            .toList() ??
+        [],
+  );
 
   Map<String, dynamic> toJson() => {
-        'stored_id': storedId,
-        'name': name,
-        'remote_site_id': remoteSiteId,
-        'image': image,
-        'url': url,
-        'details': details,
-        'urls': urls,
-        'parent': parent?.toJson(),
-        'aliases': aliases,
-        'tags': tags.map((t) => t.toJson()).toList(),
-      };
+    'stored_id': storedId,
+    'name': name,
+    'remote_site_id': remoteSiteId,
+    'image': image,
+    'url': url,
+    'details': details,
+    'urls': urls,
+    'parent': parent?.toJson(),
+    'aliases': aliases,
+    'tags': tags.map((t) => t.toJson()).toList(),
+  };
 }
 
 class ScrapedTag {
@@ -237,7 +243,9 @@ class ScrapedScene {
         [],
     image: json['image'] as String?,
     studioId: json['studio_id'] as String?,
-    studio: json['studio'] != null ? ScrapedStudio.fromJson(json['studio'] as Map<String, dynamic>) : null,
+    studio: json['studio'] != null
+        ? ScrapedStudio.fromJson(json['studio'] as Map<String, dynamic>)
+        : null,
   );
 
   Map<String, dynamic> toJson() => {
