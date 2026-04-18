@@ -372,6 +372,138 @@ abstract class AppLocalizations {
   /// **'Random'**
   String get sort_random;
 
+  /// No description provided for @sort_height.
+  ///
+  /// In en, this message translates to:
+  /// **'Height'**
+  String get sort_height;
+
+  /// No description provided for @sort_birthdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Birthdate'**
+  String get sort_birthdate;
+
+  /// No description provided for @sort_tag_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag Count'**
+  String get sort_tag_count;
+
+  /// No description provided for @sort_play_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Play Count'**
+  String get sort_play_count;
+
+  /// No description provided for @sort_o_counter.
+  ///
+  /// In en, this message translates to:
+  /// **'O-Counter'**
+  String get sort_o_counter;
+
+  /// No description provided for @sort_last_o_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Last O At'**
+  String get sort_last_o_at;
+
+  /// No description provided for @sort_latest_scene.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest Scene'**
+  String get sort_latest_scene;
+
+  /// No description provided for @sort_career_start.
+  ///
+  /// In en, this message translates to:
+  /// **'Career Start'**
+  String get sort_career_start;
+
+  /// No description provided for @sort_career_end.
+  ///
+  /// In en, this message translates to:
+  /// **'Career End'**
+  String get sort_career_end;
+
+  /// No description provided for @sort_weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get sort_weight;
+
+  /// No description provided for @sort_measurements.
+  ///
+  /// In en, this message translates to:
+  /// **'Measurements'**
+  String get sort_measurements;
+
+  /// No description provided for @sort_scenes_duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Scenes Duration'**
+  String get sort_scenes_duration;
+
+  /// No description provided for @sort_scenes_size.
+  ///
+  /// In en, this message translates to:
+  /// **'Scenes Size'**
+  String get sort_scenes_size;
+
+  /// No description provided for @sort_images_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Image Count'**
+  String get sort_images_count;
+
+  /// No description provided for @sort_galleries_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery Count'**
+  String get sort_galleries_count;
+
+  /// No description provided for @sort_child_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Sub-studio Count'**
+  String get sort_child_count;
+
+  /// No description provided for @sort_performers_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Performer Count'**
+  String get sort_performers_count;
+
+  /// No description provided for @sort_groups_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Count'**
+  String get sort_groups_count;
+
+  /// No description provided for @sort_marker_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Marker Count'**
+  String get sort_marker_count;
+
+  /// No description provided for @sort_studios_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Studio Count'**
+  String get sort_studios_count;
+
+  /// No description provided for @sort_penis_length.
+  ///
+  /// In en, this message translates to:
+  /// **'Penis Length'**
+  String get sort_penis_length;
+
+  /// No description provided for @sort_last_played_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Played At'**
+  String get sort_last_played_at;
+
   /// No description provided for @studios_sort_saved.
   ///
   /// In en, this message translates to:
@@ -395,6 +527,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Filter preferences saved as default'**
   String get tags_filter_saved;
+
+  /// No description provided for @tags_sort_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort Tags'**
+  String get tags_sort_title;
 
   /// No description provided for @tags_sort_saved.
   ///

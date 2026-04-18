@@ -9,7 +9,19 @@ import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../domain/entities/tag.dart';
 
-enum _TagSortOption { name, sceneCount, lastUpdated, createdAt, random }
+enum _TagSortOption {
+  name,
+  random,
+  scenesDuration,
+  scenesSize,
+  galleryCount,
+  imageCount,
+  performerCount,
+  sceneCount,
+  groupCount,
+  markerCount,
+  studioCount,
+}
 
 class TagsPage extends ConsumerStatefulWidget {
   const TagsPage({super.key});
@@ -31,11 +43,16 @@ class _TagsPageState extends ConsumerState<TagsPage> {
       setState(() {
         _sortOption = switch (sortConfig.sort) {
           'name' => _TagSortOption.name,
-          'scenes_count' => _TagSortOption.sceneCount,
-          'parent_count' => _TagSortOption.name,
-          'updated_at' => _TagSortOption.lastUpdated,
-          'created_at' => _TagSortOption.createdAt,
           'random' => _TagSortOption.random,
+          'scenes_duration' => _TagSortOption.scenesDuration,
+          'scenes_size' => _TagSortOption.scenesSize,
+          'gallery_count' => _TagSortOption.galleryCount,
+          'image_count' => _TagSortOption.imageCount,
+          'performer_count' => _TagSortOption.performerCount,
+          'scenes_count' => _TagSortOption.sceneCount,
+          'group_count' => _TagSortOption.groupCount,
+          'marker_count' => _TagSortOption.markerCount,
+          'studio_count' => _TagSortOption.studioCount,
           _ => _TagSortOption.name,
         };
         _sortDescending = sortConfig.descending;
@@ -51,10 +68,16 @@ class _TagsPageState extends ConsumerState<TagsPage> {
   void _applyServerSort(_TagSortOption option) {
     final sortKey = switch (option) {
       _TagSortOption.name => 'name',
-      _TagSortOption.sceneCount => 'scenes_count',
-      _TagSortOption.lastUpdated => 'updated_at',
-      _TagSortOption.createdAt => 'created_at',
       _TagSortOption.random => 'random',
+      _TagSortOption.scenesDuration => 'scenes_duration',
+      _TagSortOption.scenesSize => 'scenes_size',
+      _TagSortOption.galleryCount => 'galleries_count',
+      _TagSortOption.imageCount => 'images_count',
+      _TagSortOption.performerCount => 'performers_count',
+      _TagSortOption.sceneCount => 'scenes_count',
+      _TagSortOption.groupCount => 'groups_count',
+      _TagSortOption.markerCount => 'scene_markers_count',
+      _TagSortOption.studioCount => 'studios_count',
     };
 
     ref
@@ -66,14 +89,26 @@ class _TagsPageState extends ConsumerState<TagsPage> {
     switch (option) {
       case _TagSortOption.name:
         return context.l10n.sort_name;
-      case _TagSortOption.sceneCount:
-        return context.l10n.sort_scene_count;
-      case _TagSortOption.lastUpdated:
-        return context.l10n.sort_updated_at;
-      case _TagSortOption.createdAt:
-        return context.l10n.sort_created_at;
       case _TagSortOption.random:
         return context.l10n.sort_random;
+      case _TagSortOption.scenesDuration:
+        return context.l10n.sort_scenes_duration;
+      case _TagSortOption.scenesSize:
+        return context.l10n.sort_scenes_size;
+      case _TagSortOption.galleryCount:
+        return context.l10n.sort_galleries_count;
+      case _TagSortOption.imageCount:
+        return context.l10n.sort_images_count;
+      case _TagSortOption.performerCount:
+        return context.l10n.sort_performers_count;
+      case _TagSortOption.sceneCount:
+        return context.l10n.sort_scene_count;
+      case _TagSortOption.groupCount:
+        return context.l10n.sort_groups_count;
+      case _TagSortOption.markerCount:
+        return context.l10n.sort_marker_count;
+      case _TagSortOption.studioCount:
+        return context.l10n.sort_studios_count;
     }
   }
 
@@ -103,7 +138,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Sort Tags',
+                      context.l10n.tags_sort_title,
                       style: context.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -125,23 +160,38 @@ class _TagsPageState extends ConsumerState<TagsPage> {
                   style: context.textTheme.labelLarge,
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),
-                Wrap(
-                  spacing: AppTheme.spacingSmall,
-                  runSpacing: AppTheme.spacingSmall,
-                  children: _TagSortOption.values
-                      .map(
-                        (option) => ChoiceChip(
-                          label: Text(_sortLabel(option)),
-                          selected: tempOption == option,
-                          onSelected: (selected) {
-                            if (!selected) return;
-                            setModalState(() {
-                              tempOption = option;
-                            });
-                          },
+                Flexible(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.35,
+                    ),
+                    child: Scrollbar(
+                      thumbVisibility: true,
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppTheme.spacingSmall,
                         ),
-                      )
-                      .toList(),
+                        child: Wrap(
+                          spacing: AppTheme.spacingSmall,
+                          runSpacing: AppTheme.spacingSmall,
+                          children: _TagSortOption.values
+                              .map(
+                                (option) => ChoiceChip(
+                                  label: Text(_sortLabel(option)),
+                                  selected: tempOption == option,
+                                  onSelected: (selected) {
+                                    if (!selected) return;
+                                    setModalState(() {
+                                      tempOption = option;
+                                    });
+                                  },
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),
                 Text(

@@ -190,23 +190,38 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                       style: context.textTheme.labelLarge,
                     ),
                     const SizedBox(height: AppTheme.spacingSmall),
-                    Wrap(
-                      spacing: AppTheme.spacingSmall,
-                      runSpacing: AppTheme.spacingSmall,
-                      children: _ImageSortOption.values
-                          .map(
-                            (option) => ChoiceChip(
-                              label: Text(_sortOptionLabel(option)),
-                              selected: tempOption == option,
-                              onSelected: (selected) {
-                                if (!selected) return;
-                                setModalState(() {
-                                  tempOption = option;
-                                });
-                              },
+                    Flexible(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height * 0.35,
+                        ),
+                        child: Scrollbar(
+                          thumbVisibility: true,
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: AppTheme.spacingSmall,
                             ),
-                          )
-                          .toList(),
+                            child: Wrap(
+                              spacing: AppTheme.spacingSmall,
+                              runSpacing: AppTheme.spacingSmall,
+                              children: _ImageSortOption.values
+                                  .map(
+                                    (option) => ChoiceChip(
+                                      label: Text(_sortOptionLabel(option)),
+                                      selected: tempOption == option,
+                                      onSelected: (selected) {
+                                        if (!selected) return;
+                                        setModalState(() {
+                                          tempOption = option;
+                                        });
+                                      },
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: AppTheme.spacingMedium),
                     Text(

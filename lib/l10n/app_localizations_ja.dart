@@ -166,6 +166,72 @@ class AppLocalizationsJa extends AppLocalizations {
   String get sort_random => 'ランダム';
 
   @override
+  String get sort_height => 'Height';
+
+  @override
+  String get sort_birthdate => 'Birthdate';
+
+  @override
+  String get sort_tag_count => 'Tag Count';
+
+  @override
+  String get sort_play_count => 'Play Count';
+
+  @override
+  String get sort_o_counter => 'O-Counter';
+
+  @override
+  String get sort_last_o_at => 'Last O At';
+
+  @override
+  String get sort_latest_scene => 'Latest Scene';
+
+  @override
+  String get sort_career_start => 'Career Start';
+
+  @override
+  String get sort_career_end => 'Career End';
+
+  @override
+  String get sort_weight => 'Weight';
+
+  @override
+  String get sort_measurements => 'Measurements';
+
+  @override
+  String get sort_scenes_duration => 'Scenes Duration';
+
+  @override
+  String get sort_scenes_size => 'Scenes Size';
+
+  @override
+  String get sort_images_count => 'Image Count';
+
+  @override
+  String get sort_galleries_count => 'Gallery Count';
+
+  @override
+  String get sort_child_count => 'Sub-studio Count';
+
+  @override
+  String get sort_performers_count => 'Performer Count';
+
+  @override
+  String get sort_groups_count => 'Group Count';
+
+  @override
+  String get sort_marker_count => 'Marker Count';
+
+  @override
+  String get sort_studios_count => 'Studio Count';
+
+  @override
+  String get sort_penis_length => 'Penis Length';
+
+  @override
+  String get sort_last_played_at => 'Last Played At';
+
+  @override
   String get studios_sort_saved => '並べ替え設定をデフォルトとして保存しました';
 
   @override
@@ -176,6 +242,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get tags_filter_saved => 'フィルター設定をデフォルトとして保存しました';
+
+  @override
+  String get tags_sort_title => 'Sort Tags';
 
   @override
   String get tags_sort_saved => '並べ替え設定をデフォルトとして保存しました';

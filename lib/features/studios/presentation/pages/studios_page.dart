@@ -13,13 +13,16 @@ import '../../domain/entities/studio.dart';
 
 enum _StudioSortOption {
   name,
-  sceneCount,
-  imageCount,
-  galleryCount,
-  rating,
-  lastUpdated,
-  createdAt,
+  tagCount,
   random,
+  rating,
+  scenesDuration,
+  scenesSize,
+  latestScene,
+  galleryCount,
+  imageCount,
+  sceneCount,
+  childCount,
 }
 
 class StudiosPage extends ConsumerStatefulWidget {
@@ -42,14 +45,16 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
       setState(() {
         _sortOption = switch (sortConfig.sort) {
           'name' => _StudioSortOption.name,
-          'scenes_count' => _StudioSortOption.sceneCount,
-          'image_count' => _StudioSortOption.imageCount,
-          'gallery_count' => _StudioSortOption.galleryCount,
-          'performer_count' => _StudioSortOption.name,
-          'rating' => _StudioSortOption.rating,
-          'updated_at' => _StudioSortOption.lastUpdated,
-          'created_at' => _StudioSortOption.createdAt,
+          'tag_count' => _StudioSortOption.tagCount,
           'random' => _StudioSortOption.random,
+          'rating' => _StudioSortOption.rating,
+          'scenes_duration' => _StudioSortOption.scenesDuration,
+          'scenes_size' => _StudioSortOption.scenesSize,
+          'latest_scene' => _StudioSortOption.latestScene,
+          'gallery_count' => _StudioSortOption.galleryCount,
+          'image_count' => _StudioSortOption.imageCount,
+          'scenes_count' => _StudioSortOption.sceneCount,
+          'child_count' => _StudioSortOption.childCount,
           _ => _StudioSortOption.name,
         };
         _sortDescending = sortConfig.descending;
@@ -65,13 +70,16 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
   void _applyServerSort(_StudioSortOption option) {
     final sortKey = switch (option) {
       _StudioSortOption.name => 'name',
-      _StudioSortOption.sceneCount => 'scenes_count',
-      _StudioSortOption.imageCount => 'image_count',
-      _StudioSortOption.galleryCount => 'gallery_count',
-      _StudioSortOption.rating => 'rating',
-      _StudioSortOption.lastUpdated => 'updated_at',
-      _StudioSortOption.createdAt => 'created_at',
+      _StudioSortOption.tagCount => 'tag_count',
       _StudioSortOption.random => 'random',
+      _StudioSortOption.rating => 'rating',
+      _StudioSortOption.scenesDuration => 'scenes_duration',
+      _StudioSortOption.scenesSize => 'scenes_size',
+      _StudioSortOption.latestScene => 'latest_scene',
+      _StudioSortOption.galleryCount => 'gallery_count',
+      _StudioSortOption.imageCount => 'image_count',
+      _StudioSortOption.sceneCount => 'scenes_count',
+      _StudioSortOption.childCount => 'child_count',
     };
 
     ref
@@ -83,20 +91,26 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
     switch (option) {
       case _StudioSortOption.name:
         return context.l10n.sort_name;
-      case _StudioSortOption.sceneCount:
-        return context.l10n.sort_scene_count;
-      case _StudioSortOption.imageCount:
-        return 'Image Count';
-      case _StudioSortOption.galleryCount:
-        return 'Gallery Count';
-      case _StudioSortOption.rating:
-        return context.l10n.sort_rating;
-      case _StudioSortOption.lastUpdated:
-        return context.l10n.sort_updated_at;
-      case _StudioSortOption.createdAt:
-        return context.l10n.sort_created_at;
+      case _StudioSortOption.tagCount:
+        return context.l10n.sort_tag_count;
       case _StudioSortOption.random:
         return context.l10n.sort_random;
+      case _StudioSortOption.rating:
+        return context.l10n.sort_rating;
+      case _StudioSortOption.scenesDuration:
+        return context.l10n.sort_scenes_duration;
+      case _StudioSortOption.scenesSize:
+        return context.l10n.sort_scenes_size;
+      case _StudioSortOption.latestScene:
+        return context.l10n.sort_latest_scene;
+      case _StudioSortOption.galleryCount:
+        return context.l10n.sort_galleries_count;
+      case _StudioSortOption.imageCount:
+        return context.l10n.sort_images_count;
+      case _StudioSortOption.sceneCount:
+        return context.l10n.sort_scene_count;
+      case _StudioSortOption.childCount:
+        return context.l10n.sort_child_count;
     }
   }
 
@@ -148,23 +162,38 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                   style: context.textTheme.labelLarge,
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),
-                Wrap(
-                  spacing: AppTheme.spacingSmall,
-                  runSpacing: AppTheme.spacingSmall,
-                  children: _StudioSortOption.values
-                      .map(
-                        (option) => ChoiceChip(
-                          label: Text(_sortLabel(option)),
-                          selected: tempOption == option,
-                          onSelected: (selected) {
-                            if (!selected) return;
-                            setModalState(() {
-                              tempOption = option;
-                            });
-                          },
+                Flexible(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.35,
+                    ),
+                    child: Scrollbar(
+                      thumbVisibility: true,
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppTheme.spacingSmall,
                         ),
-                      )
-                      .toList(),
+                        child: Wrap(
+                          spacing: AppTheme.spacingSmall,
+                          runSpacing: AppTheme.spacingSmall,
+                          children: _StudioSortOption.values
+                              .map(
+                                (option) => ChoiceChip(
+                                  label: Text(_sortLabel(option)),
+                                  selected: tempOption == option,
+                                  onSelected: (selected) {
+                                    if (!selected) return;
+                                    setModalState(() {
+                                      tempOption = option;
+                                    });
+                                  },
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),
                 Text(
