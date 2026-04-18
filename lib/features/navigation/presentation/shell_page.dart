@@ -1,9 +1,13 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/utils/responsive.dart';
+import '../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/gestures.dart';
 import '../../../core/presentation/providers/desktop_capabilities_provider.dart';
 import '../../../core/presentation/providers/keybinds_provider.dart';
@@ -18,6 +22,7 @@ import '../../galleries/presentation/providers/gallery_list_provider.dart';
 import '../../scenes/presentation/widgets/tiktok_scenes_view.dart';
 import '../../setup/presentation/providers/navigation_tabs_provider.dart';
 import '../../setup/presentation/providers/gesture_settings_provider.dart';
+import '../../setup/presentation/providers/main_page_orientation_provider.dart';
 import '../../setup/presentation/providers/update_provider.dart';
 import '../../setup/domain/entities/update_info.dart';
 import 'widgets/mini_player.dart';
@@ -34,6 +39,55 @@ class _ShellPageState extends ConsumerState<ShellPage> {
   bool _dialogShown = false;
   DateTime? _lastHorizontalSwipeTime;
   static const _horizontalSwipeThreshold = Duration(milliseconds: 500);
+  bool? _lastAppliedMainPageGravityOrientation;
+  bool _wasVideoFullscreen = false;
+
+  bool get _isDesktopPlatform =>
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.windows ||
+          defaultTargetPlatform == TargetPlatform.linux ||
+          defaultTargetPlatform == TargetPlatform.macOS);
+
+  List<DeviceOrientation> _mainPageOrientations(bool allowGravity) {
+    if (allowGravity) {
+      return [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ];
+    }
+    return [DeviceOrientation.portraitUp];
+  }
+
+  void _syncMainPageOrientations({
+    required bool allowGravity,
+    required bool isVideoFullScreen,
+  }) {
+    if (_isDesktopPlatform || kIsWeb) return;
+
+    if (isVideoFullScreen) {
+      _wasVideoFullscreen = true;
+      return;
+    }
+
+    final shouldApply =
+        _wasVideoFullscreen ||
+        _lastAppliedMainPageGravityOrientation != allowGravity;
+    if (!shouldApply) return;
+
+    _wasVideoFullscreen = false;
+    _lastAppliedMainPageGravityOrientation = allowGravity;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      unawaited(
+        SystemChrome.setPreferredOrientations(
+          _mainPageOrientations(allowGravity),
+        ),
+      );
+    });
+  }
 
   @override
   void initState() {
@@ -48,7 +102,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text('Update Available'),
+        title: Text(context.l10n.common_update_available),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,7 +122,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
               ref.read(startupUpdateCheckProvider.notifier).markChecked();
               Navigator.pop(context);
             },
-            child: const Text('Later'),
+            child: Text(context.l10n.common_later),
           ),
           FilledButton(
             onPressed: () async {
@@ -83,7 +137,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
                 Navigator.pop(context);
               }
             },
-            child: const Text('Update Now'),
+            child: Text(context.l10n.common_update_now),
           ),
         ],
       ),
@@ -98,7 +152,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
-          title: const Text('Setup Required'),
+          title: Text(context.l10n.common_setup_required),
           content: const Text(
             'To get started, you need to configure your Stash server connection details.',
           ),
@@ -108,7 +162,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
                 Navigator.pop(context);
                 context.push('/settings/server');
               },
-              child: const Text('Configure Now'),
+              child: Text(context.l10n.common_configure_now),
             ),
           ],
         ),
@@ -128,6 +182,21 @@ class _ShellPageState extends ConsumerState<ShellPage> {
     return null;
   }
 
+  String _getTabLabel(NavigationTabType type) {
+    switch (type) {
+      case NavigationTabType.scenes:
+        return context.l10n.nav_scenes;
+      case NavigationTabType.performers:
+        return context.l10n.nav_performers;
+      case NavigationTabType.studios:
+        return context.l10n.nav_studios;
+      case NavigationTabType.tags:
+        return context.l10n.nav_tags;
+      case NavigationTabType.galleries:
+        return context.l10n.nav_galleries;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen(startupUpdateCheckProvider, (previous, next) {
@@ -144,6 +213,18 @@ class _ShellPageState extends ConsumerState<ShellPage> {
     final activeSceneId = playerState.activeScene?.id;
     final pathSceneId = _extractSceneIdFromPath(currentPath);
     final isTiktokFullScreen = ref.watch(fullScreenModeProvider);
+    final allowMainPageGravityOrientation = ref.watch(
+      mainPageGravityOrientationProvider,
+    );
+
+    final isVideoFullScreen =
+        playerState.isFullScreen ||
+        isTiktokFullScreen ||
+        currentPath.contains('/fullscreen');
+    _syncMainPageOrientations(
+      allowGravity: allowMainPageGravityOrientation,
+      isVideoFullScreen: isVideoFullScreen,
+    );
 
     // Consider we are in fullscreen if the provider says so, OR if we are on a known fullscreen path.
     // This provides a more immediate UI response during route transitions.
@@ -273,7 +354,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         .map(
           (t) => NavigationDestination(
             icon: Icon(t.type.icon),
-            label: t.type.label,
+            label: _getTabLabel(t.type),
           ),
         )
         .toList();
@@ -282,7 +363,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         .map(
           (t) => NavigationRailDestination(
             icon: Icon(t.type.icon),
-            label: Text(t.type.label),
+            label: Text(_getTabLabel(t.type)),
           ),
         )
         .toList();
@@ -326,8 +407,8 @@ class _ShellPageState extends ConsumerState<ShellPage> {
       ];
       for (int i = 0; i < visibleTabs.length && i < digitKeys.length; i++) {
         final index = i;
-        bindings[SingleActivator(digitKeys[i])] =
-            () => onDestinationSelected(index);
+        bindings[SingleActivator(digitKeys[i])] = () =>
+            onDestinationSelected(index);
       }
 
       // Add back bind

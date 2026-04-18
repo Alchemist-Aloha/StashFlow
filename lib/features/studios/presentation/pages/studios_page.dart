@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/studio_list_provider.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
-import '../../../../core/presentation/providers/layout_settings_provider.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../domain/entities/studio.dart';
 
@@ -74,17 +74,17 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
   String _sortLabel(_StudioSortOption option) {
     switch (option) {
       case _StudioSortOption.name:
-        return 'Name';
+        return context.l10n.sort_name;
       case _StudioSortOption.sceneCount:
-        return 'Scene Count';
+        return context.l10n.sort_scene_count;
       case _StudioSortOption.rating:
-        return 'Rating';
+        return context.l10n.sort_rating;
       case _StudioSortOption.lastUpdated:
-        return 'Updated At';
+        return context.l10n.sort_updated_at;
       case _StudioSortOption.createdAt:
-        return 'Created At';
+        return context.l10n.sort_created_at;
       case _StudioSortOption.random:
-        return 'Random';
+        return context.l10n.sort_random;
     }
   }
 
@@ -114,7 +114,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Sort Studios',
+                      context.l10n.studios_sort_title,
                       style: context.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -126,12 +126,15 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                           tempDescending = false;
                         });
                       },
-                      child: const Text('Reset'),
+                      child: Text(context.l10n.common_reset),
                     ),
                   ],
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),
-                Text('Sort Method', style: context.textTheme.labelLarge),
+                Text(
+                  context.l10n.common_sort_method,
+                  style: context.textTheme.labelLarge,
+                ),
                 const SizedBox(height: AppTheme.spacingSmall),
                 Wrap(
                   spacing: AppTheme.spacingSmall,
@@ -152,21 +155,24 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                       .toList(),
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),
-                Text('Direction', style: context.textTheme.labelLarge),
+                Text(
+                  context.l10n.common_direction,
+                  style: context.textTheme.labelLarge,
+                ),
                 const SizedBox(height: AppTheme.spacingSmall),
                 SizedBox(
                   width: double.infinity,
                   child: SegmentedButton<bool>(
-                    segments: const [
+                    segments: [
                       ButtonSegment(
                         value: true,
-                        label: Text('Descending'),
-                        icon: Icon(Icons.arrow_downward),
+                        label: Text(context.l10n.common_descending),
+                        icon: const Icon(Icons.arrow_downward),
                       ),
                       ButtonSegment(
                         value: false,
-                        label: Text('Ascending'),
-                        icon: Icon(Icons.arrow_upward),
+                        label: Text(context.l10n.common_ascending),
+                        icon: const Icon(Icons.arrow_upward),
                       ),
                     ],
                     selected: {tempDescending},
@@ -193,7 +199,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                         vertical: AppTheme.spacingMedium,
                       ),
                     ),
-                    child: const Text('Apply Sort'),
+                    child: Text(context.l10n.common_apply_sort),
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),
@@ -212,8 +218,8 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                       if (context.mounted) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Sort preferences saved as default'),
+                          SnackBar(
+                            content: Text(context.l10n.studios_sort_saved),
                           ),
                         );
                       }
@@ -223,7 +229,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                         vertical: AppTheme.spacingMedium,
                       ),
                     ),
-                    child: const Text('Save as Default'),
+                    child: Text(context.l10n.common_save_default),
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),
@@ -261,7 +267,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Filter Studios',
+                      context.l10n.studios_filter_title,
                       style: context.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -272,7 +278,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                           tempFavoritesOnly = false;
                         });
                       },
-                      child: const Text('Reset'),
+                      child: Text(context.l10n.common_reset),
                     ),
                   ],
                 ),
@@ -280,7 +286,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                 SwitchListTile.adaptive(
                   value: tempFavoritesOnly,
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Favorites only'),
+                  title: Text(context.l10n.common_favorites_only),
                   onChanged: (value) {
                     setModalState(() => tempFavoritesOnly = value);
                   },
@@ -302,7 +308,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                         vertical: AppTheme.spacingMedium,
                       ),
                     ),
-                    child: const Text('Apply Filters'),
+                    child: Text(context.l10n.common_apply_filters),
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),
@@ -319,10 +325,8 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                       if (context.mounted) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Filter preferences saved as default',
-                            ),
+                          SnackBar(
+                            content: Text(context.l10n.studios_filter_saved),
                           ),
                         );
                       }
@@ -332,7 +336,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                         vertical: AppTheme.spacingMedium,
                       ),
                     ),
-                    child: const Text('Save as Default'),
+                    child: Text(context.l10n.common_save_default),
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),
@@ -354,11 +358,9 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
     if (!mounted) return;
 
     if (randomStudio == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No studios available for random navigation'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.studios_no_random)));
       return;
     }
 
@@ -369,7 +371,6 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
   @override
   Widget build(BuildContext context) {
     final studiosAsync = ref.watch(studioListProvider);
-    final gridColumns = ref.watch(studioGridColumnsProvider);
     final favoritesOnly = ref.watch(studioFavoritesOnlyProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final scrollController = ref.watch(studioScrollControllerProvider);
@@ -377,8 +378,8 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
         _sortOption != _StudioSortOption.name || _sortDescending;
 
     return ListPageScaffold<Studio>(
-      title: 'Studios',
-      searchHint: 'Search studios...',
+      title: context.l10n.studios_title,
+      searchHint: context.l10n.common_search_placeholder,
       onSearchChanged: _onSearchChanged,
       provider: studiosAsync,
       scrollController: scrollController,
@@ -393,7 +394,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
           children: [
             IconButton(
               icon: const Icon(Icons.sort),
-              tooltip: 'Sort options',
+              tooltip: context.l10n.common_sort,
               onPressed: _showSortPanel,
             ),
             if (hasSortOverride)
@@ -415,7 +416,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
           children: [
             IconButton(
               icon: const Icon(Icons.filter_list),
-              tooltip: 'Filter options',
+              tooltip: context.l10n.common_filter,
               onPressed: _showFilterPanel,
             ),
             if (favoritesOnly)
@@ -447,7 +448,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           trailing: Text(
-            '${studio.sceneCount} scenes',
+            context.l10n.nScenes(studio.sceneCount),
             style: context.textTheme.bodySmall,
           ),
         ),
@@ -456,7 +457,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
           ? studiosAsync.maybeWhen(
               data: (studios) => FloatingActionButton.small(
                 onPressed: _openRandomStudio,
-                tooltip: 'Random studio',
+                tooltip: context.l10n.random_studio,
                 child: const Icon(Icons.casino_outlined),
               ),
               orElse: () => null,

@@ -1,50 +1,82 @@
 # Update v1.10.0 (Nightly)
 
-This update focuses on significant interface flexibility, performance optimizations, and enhanced multi-platform support.
+This changelog covers everything merged since **v1.9.0**, with a focus on interface flexibility, playback improvements, localization, performance, and platform reliability.
 
-## 🚀 New Features
+## 🚀 New Features Since v1.9.0
 
-### 📐 Dynamic Grid Customization
-- **Configurable Column Counts:** You can now manually set the number of grid columns for:
-  - **Scenes List**
-  - **Performers List**
-  - **Galleries List**
-  - **Tags & Studios Lists**
-  - **Image Waterfall (Masonry) Layout**
-- **Responsive "Default" Mode:** By default, the app uses a smart responsive layout tailored to your device, but user-defined overrides now take precedence.
-- **Settings Path:** Find these in **Settings > Interface Settings**.
+### 📐 Interface & Layout Customization
+- Added **dynamic grid column settings** for:
+  - Scenes
+  - Performers
+  - Galleries
+  - Tags
+  - Studios
+  - Image waterfall/masonry layout
+- Improved responsive behavior so **Default mode remains adaptive**, while manual column overrides take priority.
+- Added **main-pages gravity orientation setting** for non-fullscreen browsing pages.
+- Added **fullscreen gravity orientation controls** for video playback, including aspect-ratio-aware orientation matching.
 
-### ⚡ Performance & Prefetching
-- **Intelligent Scroll Prefetch:** The app now dynamically calculates how many items to preload based on your grid density. It ensures at least **two full screens** of content are warmed up ahead of your scroll position.
-- **Dynamic Page Sizes:** Data fetching is now synced with your grid configuration. If you set a high-density grid, the app automatically increases the number of items fetched per page to ensure a seamless scrolling experience.
-- **Enhanced Concurrency:** Increased background image prefetching concurrency to handle dense media grids without lag.
+### ⚡ Performance & Scrolling
+- Implemented **dynamic prefetch distance** tuned to active grid density.
+- Added **dynamic page sizing** so data fetch size scales with layout density for smoother continuous scrolling.
+- Increased prefetch efficiency and reduced runtime work by **hoisting expensive layout calculations** out of `itemBuilder` loops (including Images page paths).
+- Improved media-grid smoothness with better high-density loading behavior.
 
-### ⌨️ Advanced Interaction (Desktop & Web)
-- **Keybind Settings Page:** A new dedicated settings page to view and customize keyboard shortcuts.
-- **New Keybind Actions:** Added support for image navigation (Previous/Next) and "Back" functionality via keyboard.
-- **Custom Player Transitions:** Implemented smoother, custom transitions for entering and exiting scene details.
+### 🎬 Video Player & Playback
+- Added **playback speed controls** in player UI.
+- Improved playback controls and overlays, including better scrubbing UX.
+- Added **sprite thumbnail atlas support** for fast seek previews.
+- Added and wired **gravity-controlled fullscreen orientation** behavior with player state support.
+- Refactored `NativeVideoControls` internals for maintainability while preserving behavior.
 
-### 🔐 Authentication & Web Compatibility
-- **Enhanced Web Support:** Significantly improved session management and cookie handling for the Web platform.
-- **Password Authentication:** Refined login logic to prioritize password-based authentication, with improved reliability for persistent sessions.
-- **GraphQL HTTP Factory:** Modernized client factory for better handling of platform-specific IO and Web networking requirements.
+### ⌨️ Keyboard & Desktop Interaction
+- Added a dedicated **Keybind Settings** page.
+- Added new keybind actions for:
+  - Previous image
+  - Next image
+  - Back navigation
+- Improved keybind settings page layout and styling.
 
-### 🎬 Video Player Improvements
-- **Playback Speed Controls:** Directly adjust playback speed within the video player UI.
-- **Enhanced UI Overlays:** Improved scrubbing functionality and clearer overlay feedback during playback.
-- **Sprite Image (Thumbnail Atlas) Support:** Detects and utilizes sprite metadata for ultra-fast seek previews and more compact gallery thumbnails.
+### 🔐 Authentication, Networking & Web Compatibility
+- Introduced a **GraphQL HTTP client factory** for web and IO platform differences.
+- Added and refined **password-based authentication** and made it the default mode.
+- Improved web session handling and cookie behavior across login flows.
+- Improved authentication state management and login reliability.
 
-### 🛠️ Developer & Admin Tools
-- **Developer Settings Page:** Integrated advanced diagnostic tools and logs into the Settings Hub.
-- **Cleaned GraphQL Schema:** Removed deprecated types and unused queries to streamline networking and reduce app bundle size.
+### 🌍 Localization & Language Support
+- Added complete **l10n infrastructure** (`l10n.yaml`, delegates, templates, generated locales).
+- Integrated localization delegates into app startup.
+- Added broad translations across supported locales (including zh-Hans/zh-Hant handling improvements).
+- Localized navigation labels, settings sections, scene editing/status/error strings, subtitle settings, and common UI actions.
+- Added **App Language override** in interface settings.
 
-## 🔧 Fixes & Refinements
-- **UI/UX:** Added missing tooltips to visibility toggle icons in server settings.
-- **Stability:** Handled `DioException` during login more gracefully with better user feedback.
-- **Networking:** Replaced `PersistCookieJar` with a more efficient `CookieJar` implementation.
-- **Android:** Fixed issues with the rolling nightly build pipeline to ensure reliable APK delivery.
-- **Linux:** Optimized performer matching loops in the repository layer for better performance on low-power devices.
-- **Schema:** Massive cleanup of unused GraphQL definitions for a tighter, more robust codebase.
+### 🛠️ Developer & Admin Tooling
+- Added **Developer Settings** page and surfaced advanced diagnostic/log utilities in settings hub.
+- Performed significant **GraphQL schema cleanup**, removing deprecated/unused definitions.
+
+## 🔧 Fixes & Refinements Since v1.9.0
+
+### UI/UX Fixes
+- Added missing tooltips for visibility toggles in server settings.
+- Improved transitions and navigation feel for scene details/player routes.
+- Refined scene details layout decomposition for readability and long-term maintainability.
+
+### Stability & Error Handling
+- Improved login error handling for `DioException` with clearer failure behavior.
+- Resolved analyzer/test issues and cleanup warnings.
+
+### Networking & Session Reliability
+- Replaced `PersistCookieJar` with `CookieJar` for simpler and more reliable cookie management.
+- Removed stale/unused authentication flags and streamlined session flow.
+
+### Build, CI & Release Pipeline
+- Updated nightly workflow artifact handling and simplified release steps.
+- Adjusted build command defaults in `build.ps1` (removed unnecessary release flags for web/platform builds).
+- Fixed/iterated nightly trigger behavior and delivery pipeline reliability.
+
+### Platform-Specific Improvements
+- Linux repository-side loop optimization for performer matching.
+- General web compatibility improvements around auth/session networking.
 
 ---
-*For the latest updates and multi-platform builds, check the [Nightly Release Page](https://github.com/Alchemist-Aloha/StashFlow/releases/tag/nightly).*
+For the latest nightly updates and cross-platform artifacts, see the [Nightly Release Page](https://github.com/Alchemist-Aloha/StashFlow/releases/tag/nightly).

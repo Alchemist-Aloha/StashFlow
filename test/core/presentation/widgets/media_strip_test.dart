@@ -43,7 +43,7 @@ void main() {
     ) async {
       await tester.pumpWidget(buildTestWidget(const MediaStrip(items: [])));
 
-      expect(find.text('No media available.'), findsOneWidget);
+      expect(find.text('No media available'), findsOneWidget);
     });
 
     testWidgets('renders items and handles tap correctly', (

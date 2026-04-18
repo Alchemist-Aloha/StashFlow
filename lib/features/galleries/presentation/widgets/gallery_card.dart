@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/rating_bottom_sheet.dart';
 import '../providers/gallery_list_provider.dart';
@@ -45,7 +46,7 @@ class GalleryCard extends ConsumerWidget {
     await RatingBottomSheet.show(
       context,
       initialRating: gallery.rating100 ?? 0,
-      title: 'Rate ${gallery.displayName}',
+      title: '${context.l10n.common_rate} ${gallery.displayName}',
       onRatingSelected: (rating) async {
         try {
           await ref
@@ -67,7 +68,11 @@ class GalleryCard extends ConsumerWidget {
         } catch (e) {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Failed to update rating: $e')),
+              SnackBar(
+                content: Text(
+                  context.l10n.details_failed_update_rating(e.toString()),
+                ),
+              ),
             );
           }
         }

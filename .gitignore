@@ -1,6 +1,7 @@
 # Miscellaneous
 **/*.g.dart
 **/*.freezed.dart
+AGENT.md
 .hermes/
 *.class
 *.log

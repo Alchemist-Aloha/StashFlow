@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:stash_app_flutter/l10n/app_localizations.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/models/scraped_scene.dart';
@@ -115,8 +117,8 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
   Future<void> _pickStudio() async {
     final result = await showDialog<Studio>(
       context: context,
-      builder: (context) => const EntityPicker<Studio>(
-        title: 'Select Studio',
+      builder: (context) => EntityPicker<Studio>(
+        title: context.l10n.scenes_select_studio,
         providerType: 'studio',
       ),
     );
@@ -133,7 +135,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
     final results = await showDialog<List<Performer>>(
       context: context,
       builder: (context) => EntityPicker<Performer>(
-        title: 'Select Performers',
+        title: context.l10n.scenes_select_performers,
         providerType: 'performer',
         multiSelect: true,
         initialSelection: _selectedPerformerIds,
@@ -150,9 +152,9 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
 
   Future<void> _pickTags() async {
     final results = await showDialog<List<Tag>>(
-      context: context,
-      builder: (context) => EntityPicker<Tag>(
-        title: 'Select Tags',
+          context: context,
+          builder: (context) => EntityPicker<Tag>(
+            title: context.l10n.scenes_select_tags,
         providerType: 'tag',
         multiSelect: true,
         initialSelection: _selectedTagIds,
@@ -177,14 +179,14 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
     if (scrapers.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('No scrapers available')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.scenes_no_scrapers)));
       return;
     }
 
     final scraper = await showDialog<Scraper>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Select Scraper'),
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(context.l10n.scenes_select_scraper),
         content: SizedBox(
           width: double.maxFinite,
           child: ListView.builder(
@@ -216,7 +218,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
       if (results.isEmpty) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('No results found')));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.scenes_no_results_found)));
         return;
       }
 
@@ -225,7 +227,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
         final picked = await showDialog<ScrapedScene>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Select Result'),
+            title: Text(context.l10n.scenes_select_result),
             content: SizedBox(
               width: double.maxFinite,
               child: ListView.builder(
@@ -234,8 +236,8 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                 itemBuilder: (context, index) {
                   final r = results[index];
                   return ListTile(
-                    title: Text(r.title ?? 'No title'),
-                    subtitle: Text(r.urls.isNotEmpty ? r.urls.first : 'No URL'),
+                    title: Text(r.title ?? context.l10n.common_no_title),
+                    subtitle: Text(r.urls.isNotEmpty ? r.urls.first : context.l10n.common_no_url),
                     onTap: () => Navigator.of(context).pop(r),
                   );
                 },
@@ -276,7 +278,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
           final id = p.storedId;
           if (id != null && !_selectedPerformerIds.contains(id)) {
             _selectedPerformerIds.add(id);
-            _selectedPerformerNames.add(p.name ?? 'Unknown');
+            _selectedPerformerNames.add(p.name ?? context.l10n.common_unknown);
           }
         }
 
@@ -294,14 +296,14 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
 
         if (selected.studioId != null && _selectedStudioId == null) {
           _selectedStudioId = selected.studioId;
-          _selectedStudioName = 'Studio ID: ${selected.studioId}';
+          _selectedStudioName = context.l10n.scenes_studio_id_prefix(selected.studioId!);
         }
       });
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Scrape failed: $e')));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.scenes_scrape_failed(e.toString()))));
       }
     } finally {
       if (mounted) setState(() => _isScraping = false);
@@ -343,7 +345,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
         if (mounted) {
           Navigator.of(context).pop(true);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Scene updated successfully')),
+            SnackBar(content: Text(context.l10n.scenes_updated_successfully)),
           );
         }
       }
@@ -352,7 +354,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Failed to update scene: $e')));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.scenes_update_failed(e.toString()))));
       }
     }
   }
@@ -379,7 +381,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Scene'),
+        title: Text(context.l10n.scenes_edit_title),
         actions: [
           if (scrapeEnabled)
             if (_isScraping)
@@ -397,7 +399,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
               IconButton(
                 onPressed: _scrape,
                 icon: const Icon(Icons.search),
-                tooltip: 'Scrape metadata',
+                tooltip: context.l10n.details_scene_scrape,
               ),
           IconButton(
             onPressed: _isSaving ? null : _save,
@@ -411,7 +413,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                     ),
                   )
                 : const Icon(Icons.save),
-            tooltip: 'Save',
+            tooltip: context.l10n.common_save,
           ),
         ],
       ),
@@ -442,8 +444,8 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
               ),
             TextField(
               controller: _titleController,
-              decoration: const InputDecoration(
-                labelText: 'Title',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.common_title,
                 border: OutlineInputBorder(),
               ),
             ),
@@ -451,8 +453,8 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
             TextField(
               controller: _detailsController,
               maxLines: 5,
-              decoration: const InputDecoration(
-                labelText: 'Details',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.common_details,
                 border: OutlineInputBorder(),
               ),
             ),
@@ -461,8 +463,8 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
               controller: _dateController,
               readOnly: true,
               onTap: _pickDate,
-              decoration: const InputDecoration(
-                labelText: 'Release Date',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.common_release_date,
                 border: OutlineInputBorder(),
                 suffixIcon: Icon(Icons.calendar_today),
               ),
@@ -470,12 +472,12 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
             const SizedBox(height: AppTheme.spacingMedium),
 
             // Studio
-            Text('Studio', style: Theme.of(context).textTheme.labelLarge),
+            Text(context.l10n.scenes_field_studio, style: Theme.of(context).textTheme.labelLarge),
             const SizedBox(height: AppTheme.spacingSmall),
             InkWell(
               onTap: _pickStudio,
               child: InputDecorator(
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: 12,
@@ -484,7 +486,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                 ),
                 child: Row(
                   children: [
-                    Expanded(child: Text(_selectedStudioName ?? 'None')),
+                    Expanded(child: Text(_selectedStudioName ?? context.l10n.common_none)),
                     if (_selectedStudioId != null)
                       IconButton(
                         padding: EdgeInsets.zero,
@@ -509,14 +511,14 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
             Row(
               children: [
                 Text(
-                  'Performers',
+                  context.l10n.performers_title,
                   style: Theme.of(context).textTheme.labelLarge,
                 ),
                 const Spacer(),
                 IconButton(
                   onPressed: _pickPerformers,
                   icon: const Icon(Icons.add_circle_outline),
-                  tooltip: 'Add Performer',
+                  tooltip: context.l10n.details_scene_add_performer,
                 ),
               ],
             ),
@@ -540,12 +542,12 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
             // Tags
             Row(
               children: [
-                Text('Tags', style: Theme.of(context).textTheme.labelLarge),
+                Text(context.l10n.scenes_field_tags, style: Theme.of(context).textTheme.labelLarge),
                 const Spacer(),
                 IconButton(
                   onPressed: _pickTags,
                   icon: const Icon(Icons.add_circle_outline),
-                  tooltip: 'Add Tag',
+                  tooltip: context.l10n.details_scene_add_tag,
                 ),
               ],
             ),
@@ -568,12 +570,12 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
 
             Row(
               children: [
-                Text('URLs', style: Theme.of(context).textTheme.titleMedium),
+                Text(context.l10n.scenes_field_urls, style: Theme.of(context).textTheme.titleMedium),
                 const Spacer(),
                 IconButton(
                   onPressed: _addUrlField,
                   icon: const Icon(Icons.add_circle_outline),
-                  tooltip: 'Add URL',
+                  tooltip: context.l10n.details_scene_add_url,
                 ),
               ],
             ),
@@ -587,8 +589,8 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                     Expanded(
                       child: TextField(
                         controller: controller,
-                        decoration: const InputDecoration(
-                          labelText: 'URL',
+                        decoration: InputDecoration(
+                          labelText: AppLocalizations.of(context)!.common_url,
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -596,7 +598,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                     IconButton(
                       onPressed: () => _removeUrlField(index),
                       icon: const Icon(Icons.remove_circle_outline),
-                      tooltip: 'Remove URL',
+                      tooltip: context.l10n.details_scene_remove_url,
                     ),
                   ],
                 ),
@@ -607,7 +609,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Unmatched Scraped Tags',
+                  context.l10n.scenes_unmatched_scraped_tags,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
@@ -635,7 +637,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Unmatched Scraped Performers',
+                  context.l10n.scenes_unmatched_scraped_performers,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
@@ -645,9 +647,9 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                     .map(
                       (p) => ListTile(
                         dense: true,
-                        title: Text(p.name ?? 'Unknown'),
-                        subtitle: const Text(
-                          'No matching performer found in library',
+                        title: Text(p.name ?? context.l10n.common_unknown),
+                        subtitle: Text(
+                          context.l10n.scenes_no_matching_performer_found,
                         ),
                         leading: const Icon(Icons.person_off_outlined),
                       ),

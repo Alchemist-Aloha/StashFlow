@@ -43,9 +43,11 @@ class GridUtils {
 
     if (isGrid && gridDelegate is SliverGridDelegateWithFixedCrossAxisCount) {
       crossAxisCount = gridDelegate.crossAxisCount;
-      final horizontalPadding =
-          padding is EdgeInsets ? padding.horizontal : 0.0;
-      final availableWidth = MediaQuery.sizeOf(context).width - horizontalPadding;
+      final horizontalPadding = padding is EdgeInsets
+          ? padding.horizontal
+          : 0.0;
+      final availableWidth =
+          MediaQuery.sizeOf(context).width - horizontalPadding;
       final itemWidth =
           (availableWidth -
               (gridDelegate.crossAxisSpacing * (crossAxisCount - 1))) /

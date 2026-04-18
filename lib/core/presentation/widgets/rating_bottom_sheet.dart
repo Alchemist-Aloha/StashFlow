@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 
 /// A bottom sheet that allows the user to set a rating (0-5 stars).
@@ -15,7 +16,7 @@ class RatingBottomSheet extends StatelessWidget {
   const RatingBottomSheet({
     required this.initialRating,
     required this.onRatingSelected,
-    this.title = 'Rate',
+    required this.title,
     super.key,
   });
 
@@ -24,8 +25,9 @@ class RatingBottomSheet extends StatelessWidget {
     BuildContext context, {
     required int initialRating,
     required ValueChanged<int> onRatingSelected,
-    String title = 'Rate',
+    String? title,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return showModalBottomSheet(
       context: context,
       backgroundColor: context.colors.surface,
@@ -35,13 +37,14 @@ class RatingBottomSheet extends StatelessWidget {
       builder: (context) => RatingBottomSheet(
         initialRating: initialRating,
         onRatingSelected: onRatingSelected,
-        title: title,
+        title: title ?? l10n.common_rate,
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
@@ -81,7 +84,7 @@ class RatingBottomSheet extends StatelessWidget {
                 onRatingSelected(0);
                 Navigator.pop(context);
               },
-              child: const Text('Clear Rating'),
+              child: Text(l10n.common_clear_rating),
             ),
           ],
         ),

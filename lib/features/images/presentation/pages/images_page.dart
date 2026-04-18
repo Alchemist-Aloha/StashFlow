@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
@@ -120,7 +121,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Sort Images',
+                          context.l10n.images_sort_title,
                           style: context.textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -132,12 +133,15 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                               tempDescending = false;
                             });
                           },
-                          child: const Text('Reset'),
+                          child: Text(context.l10n.common_reset),
                         ),
                       ],
                     ),
                     const SizedBox(height: AppTheme.spacingMedium),
-                    Text('Sort Method', style: context.textTheme.labelLarge),
+                    Text(
+                      context.l10n.common_sort_method,
+                      style: context.textTheme.labelLarge,
+                    ),
                     const SizedBox(height: AppTheme.spacingSmall),
                     Wrap(
                       spacing: AppTheme.spacingSmall,
@@ -158,21 +162,24 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                           .toList(),
                     ),
                     const SizedBox(height: AppTheme.spacingMedium),
-                    Text('Direction', style: context.textTheme.labelLarge),
+                    Text(
+                      context.l10n.common_direction,
+                      style: context.textTheme.labelLarge,
+                    ),
                     const SizedBox(height: AppTheme.spacingSmall),
                     SizedBox(
                       width: double.infinity,
                       child: SegmentedButton<bool>(
-                        segments: const [
+                        segments: [
                           ButtonSegment(
                             value: true,
-                            label: Text('Descending'),
-                            icon: Icon(Icons.arrow_downward),
+                            label: Text(context.l10n.common_descending),
+                            icon: const Icon(Icons.arrow_downward),
                           ),
                           ButtonSegment(
                             value: false,
-                            label: Text('Ascending'),
-                            icon: Icon(Icons.arrow_upward),
+                            label: Text(context.l10n.common_ascending),
+                            icon: const Icon(Icons.arrow_upward),
                           ),
                         ],
                         selected: {tempDescending},
@@ -199,7 +206,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                             vertical: AppTheme.spacingMedium,
                           ),
                         ),
-                        child: const Text('Apply Sort'),
+                        child: Text(context.l10n.common_apply_sort),
                       ),
                     ),
                     const SizedBox(height: AppTheme.spacingSmall),
@@ -218,10 +225,8 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                           if (context.mounted) {
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Sort preferences saved as default',
-                                ),
+                              SnackBar(
+                                content: Text(context.l10n.images_sort_saved),
                               ),
                             );
                           }
@@ -231,7 +236,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                             vertical: AppTheme.spacingMedium,
                           ),
                         ),
-                        child: const Text('Save as Default'),
+                        child: Text(context.l10n.common_save_default),
                       ),
                     ),
                     const SizedBox(height: AppTheme.spacingMedium),
@@ -272,8 +277,13 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
 
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
+    // Hoist invariant layout calculations out of the itemBuilder loop
+    // to prevent O(N) redundant calculations during scroll events.
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final memCacheWidth = (screenWidth / crossAxisCount * 1.5).toInt();
+
     return ListPageScaffold<entity.Image>(
-      title: 'Images',
+      title: context.l10n.images_title,
       imageUrlBuilder: (img) => img.paths.thumbnail,
       // Pass the actual column count to the scaffold so scroll-sensed prefetch works correctly.
       // We use a dummy gridDelegate just to signal to ListPageScaffold that it's a grid.
@@ -286,7 +296,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
           children: [
             IconButton(
               icon: const Icon(Icons.sort),
-              tooltip: 'Sort options',
+              tooltip: context.l10n.scenes_sort_tooltip,
               onPressed: _showSortPanel,
             ),
             if (_sortOption != _ImageSortOption.path || _sortDescending)
@@ -326,7 +336,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
           ],
         ),
       ],
-      searchHint: 'Search images...',
+      searchHint: context.l10n.common_search_placeholder,
       onSearchChanged: _onSearchChanged,
       provider: imagesAsync,
       onRefresh: () => ref.read(imageListProvider.notifier).refresh(),
@@ -338,7 +348,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
           ? FloatingActionButton.small(
               heroTag: 'images_random_fab',
               onPressed: _openRandomGallery,
-              tooltip: 'Random gallery',
+              tooltip: context.l10n.random_gallery,
               child: const Icon(Icons.casino_outlined),
             )
           : null,
@@ -351,7 +361,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
               child: Row(
                 children: [
                   InputChip(
-                    label: const Text('Filtered by Gallery'),
+                    label: Text(context.l10n.images_filtered_by_gallery),
                     onDeleted: () {
                       ref
                           .read(imageFilterStateProvider.notifier)
@@ -374,10 +384,6 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
               itemBuilder: (context, index) {
                 final items = imagesAsync.value ?? [];
                 if (index >= items.length) return const SizedBox.shrink();
-
-                final screenWidth = MediaQuery.sizeOf(context).width;
-                final memCacheWidth = (screenWidth / crossAxisCount * 1.5)
-                    .toInt();
 
                 return RepaintBoundary(
                   child: ImageCard(

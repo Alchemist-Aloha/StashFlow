@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/presentation/providers/keybinds_provider.dart';
+import 'package:stash_app_flutter/l10n/app_localizations.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import '../../../../../core/presentation/theme/app_theme.dart';
 import '../../widgets/settings_page_shell.dart';
 
@@ -13,7 +15,7 @@ class KeybindSettingsPage extends ConsumerWidget {
     final keybinds = ref.watch(keybindsProvider);
 
     return SettingsPageShell(
-      title: 'Keyboard Shortcuts',
+      title: context.l10n.settings_keyboard_title,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -21,9 +23,9 @@ class KeybindSettingsPage extends ConsumerWidget {
             padding: const EdgeInsets.all(AppTheme.spacingMedium),
             child: Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Customize your keyboard shortcuts.',
+                    context.l10n.settings_keyboard_subtitle,
                     style: TextStyle(fontSize: 16),
                   ),
                 ),
@@ -31,7 +33,7 @@ class KeybindSettingsPage extends ConsumerWidget {
                   onPressed: () =>
                       ref.read(keybindsProvider.notifier).resetToDefaults(),
                   icon: const Icon(Icons.restore),
-                  label: const Text('Reset to Defaults'),
+                  label: Text(context.l10n.settings_keyboard_reset_defaults),
                 ),
               ],
             ),
@@ -52,7 +54,7 @@ class KeybindSettingsPage extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                     ),
                     onPressed: () => _showCaptureDialog(context, ref, action),
-                    child: Text(bind?.label ?? 'Not bound'),
+                    child: Text(bind?.label ?? context.l10n.settings_keyboard_not_bound),
                   ),
                 );
               },
@@ -179,11 +181,11 @@ class _KeyCaptureDialogState extends State<_KeyCaptureDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Assign Shortcut'),
+      title: Text(context.l10n.settings_keybind_assign_shortcut),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Press any key combination...'),
+          Text(context.l10n.settings_keybind_press_any),
           const SizedBox(height: 24),
           Focus(
             autofocus: true,
@@ -222,7 +224,7 @@ class _KeyCaptureDialogState extends State<_KeyCaptureDialog> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                _captured?.label ?? '---',
+                _captured?.label ?? context.l10n.settings_keyboard_not_bound,
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -235,13 +237,13 @@ class _KeyCaptureDialogState extends State<_KeyCaptureDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(context.l10n.common_cancel),
         ),
         FilledButton(
           onPressed: _captured != null
               ? () => Navigator.pop(context, _captured)
               : null,
-          child: const Text('Save'),
+          child: Text(context.l10n.common_save),
         ),
       ],
     );

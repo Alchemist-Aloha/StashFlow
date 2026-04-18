@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/data/graphql/graphql_client.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 
 class SettingsPageShell extends ConsumerWidget {
   const SettingsPageShell({
@@ -29,7 +30,7 @@ class SettingsPageShell extends ConsumerWidget {
     if (!canPop && canGoToLibrary) {
       leading = IconButton(
         icon: const Icon(Icons.close_rounded),
-        tooltip: 'Close Settings',
+        tooltip: context.l10n.common_close,
         onPressed: () => context.go('/scenes'),
       );
     }

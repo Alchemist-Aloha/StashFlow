@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
+import 'package:stash_app_flutter/l10n/app_localizations.dart';
 
 import '../../widgets/settings_page_shell.dart';
 
@@ -45,21 +46,20 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SettingsPageShell(
-      title: 'Develop',
+      title: l10n.settings_develop_title,
       child: ListView(
         padding: const EdgeInsets.all(AppTheme.spacingMedium),
         children: [
           SettingsSectionCard(
-            title: 'Diagnostic Tools',
-            subtitle: 'Troubleshooting and performance',
+            title: l10n.settings_develop_diagnostics,
+            subtitle: l10n.settings_develop_diagnostics_subtitle,
             child: Column(
               children: [
                 SwitchListTile(
-                  title: const Text('Show Video Debug Info'),
-                  subtitle: const Text(
-                    'Display technical playback details as an overlay on the video player.',
-                  ),
+                  title: Text(l10n.settings_develop_video_debug),
+                  subtitle: Text(l10n.settings_develop_video_debug_subtitle),
                   value: _showVideoDebugInfo,
                   onChanged: (value) {
                     setState(() => _showVideoDebugInfo = value);
@@ -72,8 +72,8 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
                 const Divider(height: 1),
                 SettingsActionCard(
                   icon: Icons.bug_report_outlined,
-                  title: 'Debug Log Viewer',
-                  subtitle: 'Open a live view of in-app logs.',
+                  title: l10n.settings_develop_log_viewer,
+                  subtitle: l10n.settings_develop_log_viewer_subtitle,
                   onTap: () => context.push('/settings/logs'),
                 ),
               ],
@@ -82,13 +82,11 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
           if (kIsWeb) ...[
             const SizedBox(height: AppTheme.spacingLarge),
             SettingsSectionCard(
-              title: 'Web Overrides',
-              subtitle: 'Advanced flags for web platform',
+              title: l10n.settings_develop_web_overrides,
+              subtitle: l10n.settings_develop_web_overrides_subtitle,
               child: SwitchListTile(
-                title: const Text('Allow Password Login on Web'),
-                subtitle: const Text(
-                  'Overrides the native-only restriction and forces the Username + Password auth method to be visible on Flutter Web.',
-                ),
+                title: Text(l10n.settings_develop_web_auth),
+                subtitle: Text(l10n.settings_develop_web_auth_subtitle),
                 value: _allowWebPasswordLogin,
                 onChanged: (value) {
                   setState(() => _allowWebPasswordLogin = value);

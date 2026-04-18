@@ -8,6 +8,7 @@ import 'package:stash_app_flutter/core/data/graphql/graphql_client.dart';
 import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart';
 import 'package:stash_app_flutter/core/data/preferences/secure_storage_provider.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
+import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_details_provider.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_list_provider.dart';
@@ -197,12 +198,9 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
         final resolved = await _resolveHostOnlyEndpoint(rawUrl);
         if (resolved == null) {
           if (!mounted) return;
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Could not resolve server URL. Check host, port, and credentials.',
-              ),
-            ),
+            SnackBar(content: Text(l10n.settings_server_resolve_error)),
           );
           return;
         }
@@ -211,9 +209,10 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
 
       if (_baseUrlController.text.trim().isNotEmpty && normalizedUrl.isEmpty) {
         if (!mounted) return;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Invalid server URL')));
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.settings_server_invalid_url)),
+        );
         return;
       }
 
@@ -240,7 +239,10 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
       if (_selectedAuthMode == AuthMode.password && attemptPasswordLogin) {
         final loggedIn = await authNotifier.login();
         if (!loggedIn && mounted) {
-          final error = ref.read(authProvider).errorMessage ?? 'Login failed';
+          final l10n = AppLocalizations.of(context)!;
+          final error =
+              ref.read(authProvider).errorMessage ??
+              l10n.settings_server_login_failed;
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(error)));
@@ -332,8 +334,10 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
 
+    final l10n = AppLocalizations.of(context)!;
+
     return SettingsPageShell(
-      title: 'Server Settings',
+      title: '${l10n.settings_server} ${l10n.settings_title}',
       child: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -342,25 +346,24 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SettingsSectionCard(
-                    title: 'Connection Status',
-                    subtitle: 'Live connectivity against the configured server',
+                    title: l10n.settings_server_status,
+                    subtitle: l10n.settings_server_status_subtitle,
                     child: _buildConnectionStatusBody(),
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
-                    title: 'Server Details',
-                    subtitle: 'Configure endpoint and authentication method',
+                    title: l10n.settings_server_details,
+                    subtitle: l10n.settings_server_details_subtitle,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         TextField(
                           controller: _baseUrlController,
                           focusNode: _baseUrlFocusNode,
-                          decoration: const InputDecoration(
-                            labelText: 'GraphQL server URL',
-                            hintText: 'http://192.168.1.100:9999/graphql',
-                            helperText:
-                                'Example format: http(s)://host:port/graphql.',
+                          decoration: InputDecoration(
+                            labelText: l10n.settings_server_url,
+                            hintText: l10n.settings_server_url_example,
+                            helperText: l10n.settings_server_url_helper,
                           ),
                           keyboardType: TextInputType.url,
                           textInputAction: TextInputAction.done,
@@ -371,22 +374,22 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                         ),
                         const SizedBox(height: AppTheme.spacingMedium),
                         Text(
-                          'Authentication Method',
+                          l10n.settings_server_auth_method,
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
                         const SizedBox(height: AppTheme.spacingSmall),
                         SegmentedButton<AuthMode>(
                           segments: [
-                            const ButtonSegment<AuthMode>(
+                            ButtonSegment<AuthMode>(
                               value: AuthMode.apiKey,
-                              label: Text('API Key'),
-                              icon: Icon(Icons.vpn_key_rounded),
+                              label: Text(l10n.settings_server_auth_apikey),
+                              icon: const Icon(Icons.vpn_key_rounded),
                             ),
                             if (!kIsWeb || _allowWebPasswordLogin)
-                              const ButtonSegment<AuthMode>(
+                              ButtonSegment<AuthMode>(
                                 value: AuthMode.password,
-                                label: Text('Username + Password'),
-                                icon: Icon(Icons.password_rounded),
+                                label: Text(l10n.settings_server_auth_password),
+                                icon: const Icon(Icons.password_rounded),
                               ),
                           ],
                           selected: <AuthMode>{_selectedAuthMode},
@@ -399,8 +402,8 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                         const SizedBox(height: AppTheme.spacingSmall),
                         Text(
                           _selectedAuthMode == AuthMode.password
-                              ? 'Recommended: use your Stash username/password session.'
-                              : 'Use API key for static-token authentication.',
+                              ? l10n.settings_server_auth_password_desc
+                              : l10n.settings_server_auth_apikey_desc,
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         const SizedBox(height: AppTheme.spacingMedium),
@@ -409,12 +412,12 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                             controller: _apiKeyController,
                             focusNode: _apiKeyFocusNode,
                             decoration: InputDecoration(
-                              labelText: 'API key',
-                              hintText: 'Paste ApiKey header value',
+                              labelText: l10n.settings_server_auth_apikey,
+                              hintText: l10n.settings_server_auth_apikey_desc,
                               suffixIcon: IconButton(
                                 tooltip: _obscureApiKey
-                                    ? 'Show API key'
-                                    : 'Hide API key',
+                                    ? l10n.common_show
+                                    : l10n.common_hide,
                                 icon: Icon(
                                   _obscureApiKey
                                       ? Icons.visibility_off
@@ -440,8 +443,8 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                           TextField(
                             controller: _usernameController,
                             focusNode: _usernameFocusNode,
-                            decoration: const InputDecoration(
-                              labelText: 'Username',
+                            decoration: InputDecoration(
+                              labelText: l10n.settings_server_username,
                             ),
                             autocorrect: false,
                             enableSuggestions: false,
@@ -452,11 +455,11 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                             controller: _passwordController,
                             focusNode: _passwordFocusNode,
                             decoration: InputDecoration(
-                              labelText: 'Password',
+                              labelText: l10n.settings_server_password,
                               suffixIcon: IconButton(
                                 tooltip: _obscurePassword
-                                    ? 'Show password'
-                                    : 'Hide password',
+                                    ? l10n.common_show
+                                    : l10n.common_hide,
                                 icon: Icon(
                                   _obscurePassword
                                       ? Icons.visibility_off
@@ -502,8 +505,8 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                               icon: const Icon(Icons.sync_rounded),
                               label: Text(
                                 _selectedAuthMode == AuthMode.password
-                                    ? 'Login & Test'
-                                    : 'Test Connection',
+                                    ? l10n.settings_server_login_test
+                                    : l10n.settings_server_test,
                               ),
                             ),
                             if (_selectedAuthMode == AuthMode.password)
@@ -511,16 +514,16 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                                 onPressed: _isSaving
                                     ? null
                                     : () async {
+                                        final messenger = ScaffoldMessenger.of(
+                                          context,
+                                        );
                                         await ref
                                             .read(authProvider.notifier)
                                             .logout();
-                                        if (!mounted) return;
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          const SnackBar(
+                                        messenger.showSnackBar(
+                                          SnackBar(
                                             content: Text(
-                                              'Logged out and cookies cleared.',
+                                              l10n.settings_server_logout_confirm,
                                             ),
                                           ),
                                         );
@@ -529,7 +532,7 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                                         );
                                       },
                                 icon: const Icon(Icons.logout_rounded),
-                                label: const Text('Logout'),
+                                label: Text(l10n.settings_server_logout),
                               ),
                             OutlinedButton.icon(
                               onPressed: _isSaving
@@ -545,7 +548,7 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                                       await _saveServerSettings();
                                     },
                               icon: const Icon(Icons.clear_all_rounded),
-                              label: const Text('Clear Settings'),
+                              label: Text(l10n.settings_server_clear),
                             ),
                           ],
                         ),
@@ -559,20 +562,22 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
   }
 
   String _buildAuthStatusLabel(AuthState authState) {
+    final l10n = AppLocalizations.of(context)!;
     switch (authState.loginStatus) {
       case AuthLoginStatus.loggingIn:
-        return 'Authentication status: logging in...';
+        return l10n.settings_server_auth_status_logging_in;
       case AuthLoginStatus.loggedIn:
-        return 'Authentication status: logged in';
+        return l10n.settings_server_auth_status_logged_in;
       case AuthLoginStatus.error:
-        return 'Authentication status: ${authState.errorMessage ?? 'error'}';
+        return l10n.settings_server_failed(authState.errorMessage ?? 'error');
       case AuthLoginStatus.loggedOut:
-        return 'Authentication status: logged out';
+        return l10n.settings_server_auth_status_logged_out;
     }
   }
 
   Widget _buildConnectionStatusBody() {
     final statusInfo = ref.watch(connectionStatusProvider);
+    final l10n = AppLocalizations.of(context)!;
     return statusInfo.when(
       data: (version) => Row(
         children: [
@@ -583,7 +588,7 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Connected (Stash $version)',
+              l10n.settings_server_connected(version),
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
@@ -592,15 +597,15 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
           ),
         ],
       ),
-      loading: () => const Row(
+      loading: () => Row(
         children: [
-          SizedBox(
+          const SizedBox(
             width: 18,
             height: 18,
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
-          SizedBox(width: 12),
-          Expanded(child: Text('Checking connection...')),
+          const SizedBox(width: 12),
+          Expanded(child: Text(l10n.settings_server_checking)),
         ],
       ),
       error: (error, stack) => Row(
@@ -609,7 +614,7 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Failed: $error',
+              l10n.settings_server_failed(error.toString()),
               style: TextStyle(
                 color: Theme.of(context).colorScheme.error,
                 fontWeight: FontWeight.w600,

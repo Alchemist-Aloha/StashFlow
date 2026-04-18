@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../../core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
@@ -19,6 +20,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   static const _useDoubleTapSeekKey = 'video_use_double_tap_seek';
   static const _enableBackgroundPlaybackKey = 'video_background_playback';
   static const _enableNativePipKey = 'video_native_pip';
+  static const _videoGravityOrientationKey = 'video_gravity_orientation';
   static const _defaultSubtitleLanguageKey = 'default_subtitle_language';
   static const _subtitleFontSizeKey = 'subtitle_font_size';
   static const _subtitlePositionBottomRatioKey =
@@ -30,6 +32,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   bool _useDoubleTapSeek = true;
   bool _enableBackgroundPlayback = false;
   bool _enableNativePip = false;
+  bool _videoGravityOrientation = true;
   String _defaultSubtitleLanguage = 'none';
   double _subtitleFontSize = 18.0;
   double _subtitlePositionBottomRatio = 0.15;
@@ -50,6 +53,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     _enableBackgroundPlayback =
         prefs.getBool(_enableBackgroundPlaybackKey) ?? false;
     _enableNativePip = prefs.getBool(_enableNativePipKey) ?? false;
+    _videoGravityOrientation =
+        prefs.getBool(_videoGravityOrientationKey) ?? true;
     _defaultSubtitleLanguage =
         prefs.getString(_defaultSubtitleLanguageKey) ?? 'none';
     _subtitleFontSize = prefs.getDouble(_subtitleFontSizeKey) ?? 18.0;
@@ -71,6 +76,10 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
       _enableBackgroundPlayback,
     );
     await prefs.setBool(_enableNativePipKey, _enableNativePip);
+    await prefs.setBool(
+      _videoGravityOrientationKey,
+      _videoGravityOrientation,
+    );
     await prefs.setString(
       _defaultSubtitleLanguageKey,
       _defaultSubtitleLanguage,
@@ -87,6 +96,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     playerStateNotifier.setUseDoubleTapSeek(_useDoubleTapSeek);
     playerStateNotifier.setEnableBackgroundPlayback(_enableBackgroundPlayback);
     playerStateNotifier.setEnableNativePip(_enableNativePip);
+    playerStateNotifier.setVideoGravityOrientation(_videoGravityOrientation);
     playerStateNotifier.setDefaultSubtitleLanguage(_defaultSubtitleLanguage);
     playerStateNotifier.setSubtitleFontSize(_subtitleFontSize);
     playerStateNotifier.setSubtitlePositionBottomRatio(
@@ -98,7 +108,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return SettingsPageShell(
-      title: 'Playback Settings',
+      title: context.l10n.settings_playback_title,
       child: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -107,15 +117,19 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SettingsSectionCard(
-                    title: 'Playback behavior',
-                    subtitle: 'Default playback and background handling',
+                    title: context.l10n.settings_playback_behavior,
+                    subtitle: context.l10n.settings_playback_behavior_subtitle,
                     child: Column(
                       children: [
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text('Prefer sceneStreams first'),
-                          subtitle: const Text(
-                            'When off, playback directly uses paths.stream',
+                          title: Text(
+                            context.l10n.settings_playback_prefer_streams,
+                          ),
+                          subtitle: Text(
+                            context
+                                .l10n
+                                .settings_playback_prefer_streams_subtitle,
                           ),
                           value: _preferSceneStreams,
                           onChanged: (value) async {
@@ -126,9 +140,9 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                         const Divider(height: AppTheme.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text('Autoplay Next Scene'),
-                          subtitle: const Text(
-                            'Automatically play the next scene when current playback ends',
+                          title: Text(context.l10n.settings_playback_autoplay),
+                          subtitle: Text(
+                            context.l10n.settings_playback_autoplay_subtitle,
                           ),
                           value: _autoplayNext,
                           onChanged: (value) async {
@@ -139,9 +153,11 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                         const Divider(height: AppTheme.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text('Background Playback'),
-                          subtitle: const Text(
-                            'Keep video audio playing when app is backgrounded',
+                          title: Text(
+                            context.l10n.settings_playback_background,
+                          ),
+                          subtitle: Text(
+                            context.l10n.settings_playback_background_subtitle,
                           ),
                           value: _enableBackgroundPlayback,
                           onChanged: (value) async {
@@ -152,13 +168,30 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                         const Divider(height: AppTheme.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text('Native Picture-in-Picture'),
-                          subtitle: const Text(
-                            'Enable Android PiP button and auto-enter on background',
+                          title: Text(context.l10n.settings_playback_pip),
+                          subtitle: Text(
+                            context.l10n.settings_playback_pip_subtitle,
                           ),
                           value: _enableNativePip,
                           onChanged: (value) async {
                             setState(() => _enableNativePip = value);
+                            await _saveToggleSettings();
+                          },
+                        ),
+                        const Divider(height: AppTheme.spacingLarge),
+                        SwitchListTile.adaptive(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(
+                            context.l10n.settings_playback_gravity_orientation,
+                          ),
+                          subtitle: Text(
+                            context
+                                .l10n
+                                .settings_playback_gravity_orientation_subtitle,
+                          ),
+                          value: _videoGravityOrientation,
+                          onChanged: (value) async {
+                            setState(() => _videoGravityOrientation = value);
                             await _saveToggleSettings();
                           },
                         ),
@@ -167,8 +200,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
-                    title: 'Subtitle settings',
-                    subtitle: 'Automatic loading and appearance',
+                    title: context.l10n.settings_playback_subtitles,
+                    subtitle: context.l10n.settings_playback_subtitles_subtitle,
                     child: Column(
                       children: [
                         _buildDefaultSubtitleSelector(),
@@ -183,8 +216,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
-                    title: 'Seek interaction',
-                    subtitle: 'Choose how scrubbing works during playback',
+                    title: context.l10n.settings_playback_seek,
+                    subtitle: context.l10n.settings_playback_seek_subtitle,
                     child: _buildSeekInteractionSelector(),
                   ),
                 ],
@@ -195,22 +228,22 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
 
   Widget _buildDefaultSubtitleSelector() {
     final languages = [
-      ('none', 'None (Disabled)'),
-      ('auto', 'Auto (If only one)'),
-      ('en', 'English'),
-      ('zh', 'Chinese'),
-      ('de', 'German'),
-      ('fr', 'French'),
-      ('es', 'Spanish'),
-      ('it', 'Italian'),
-      ('ja', 'Japanese'),
-      ('ko', 'Korean'),
+      ('none', context.l10n.settings_playback_subtitle_lang_none_disabled),
+      ('auto', context.l10n.settings_playback_subtitle_lang_auto_if_only_one),
+      ('en', context.l10n.settings_playback_subtitle_lang_english),
+      ('zh', context.l10n.settings_playback_subtitle_lang_chinese),
+      ('de', context.l10n.settings_playback_subtitle_lang_german),
+      ('fr', context.l10n.settings_playback_subtitle_lang_french),
+      ('es', context.l10n.settings_playback_subtitle_lang_spanish),
+      ('it', context.l10n.settings_playback_subtitle_lang_italian),
+      ('ja', context.l10n.settings_playback_subtitle_lang_japanese),
+      ('ko', context.l10n.settings_playback_subtitle_lang_korean),
     ];
 
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      title: const Text('Default Subtitle Language'),
-      subtitle: const Text('Auto-load if available'),
+      title: Text(context.l10n.settings_playback_subtitle_lang),
+      subtitle: Text(context.l10n.settings_playback_subtitle_lang_subtitle),
       trailing: DropdownButton<String>(
         value: _defaultSubtitleLanguage,
         onChanged: (value) async {
@@ -233,7 +266,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Subtitle Font Size'),
+            Text(context.l10n.settings_playback_subtitle_size),
             Text(
               '${_subtitleFontSize.round()} px',
               style: const TextStyle(fontWeight: FontWeight.bold),
@@ -263,9 +296,11 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Subtitle Vertical Position'),
+            Text(context.l10n.settings_playback_subtitle_pos),
             Text(
-              '${(_subtitlePositionBottomRatio * 100).round()}% from bottom',
+              context.l10n.settings_playback_subtitle_pos_desc(
+                (_subtitlePositionBottomRatio * 100).round().toString(),
+              ),
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ],
@@ -288,15 +323,15 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
 
   Widget _buildSubtitleAlignmentSelector() {
     final alignments = [
-      ('left', 'Left'),
-      ('center', 'Center'),
-      ('right', 'Right'),
+      ('left', context.l10n.settings_playback_subtitle_align_left),
+      ('center', context.l10n.settings_playback_subtitle_align_center),
+      ('right', context.l10n.settings_playback_subtitle_align_right),
     ];
 
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      title: const Text('Subtitle Text Alignment'),
-      subtitle: const Text('Alignment for multiline subtitles'),
+      title: Text(context.l10n.settings_playback_subtitle_align),
+      subtitle: Text(context.l10n.settings_playback_subtitle_align_subtitle),
       trailing: DropdownButton<String>(
         value: _subtitleTextAlignment,
         onChanged: (value) async {
@@ -318,8 +353,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
         final isNarrow = constraints.maxWidth < 450;
         final subtitleWidget = Text(
           _useDoubleTapSeek
-              ? 'Double-tap left/right to seek 10s'
-              : 'Drag the timeline to seek',
+              ? context.l10n.settings_playback_seek_double_tap
+              : context.l10n.settings_playback_seek_drag,
           style: TextStyle(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
@@ -330,16 +365,16 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
             visualDensity: VisualDensity.compact,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
-          segments: const [
+          segments: [
             ButtonSegment<bool>(
               value: false,
-              icon: Icon(Icons.drag_indicator),
-              label: Text('Drag'),
+              icon: const Icon(Icons.drag_indicator),
+              label: Text(context.l10n.settings_playback_seek_drag_label),
             ),
             ButtonSegment<bool>(
               value: true,
-              icon: Icon(Icons.touch_app_outlined),
-              label: Text('Double-tap'),
+              icon: const Icon(Icons.touch_app_outlined),
+              label: Text(context.l10n.settings_playback_seek_double_tap_label),
             ),
           ],
           selected: {_useDoubleTapSeek},

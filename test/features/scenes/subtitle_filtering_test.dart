@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:video_player/video_player.dart';
 
-// Since _filterSubtitleContent is private in PlayerState, 
+// Since _filterSubtitleContent is private in PlayerState,
 // we'll implement a standalone test of the logic itself to verify it.
 String filterSubtitleContent(String content) {
   if (!content.contains('#xywh')) return content;
@@ -33,12 +33,12 @@ Another thumbnail: sprite.jpg#xywh=160,0,160,90
 ''';
 
       final filtered = filterSubtitleContent(vttContent);
-      
+
       expect(filtered, contains('WEBVTT'));
       expect(filtered, contains('Actual subtitle text'));
       expect(filtered, isNot(contains('sprite.jpg#xywh=0,0,160,90')));
       expect(filtered, isNot(contains('Another thumbnail')));
-      
+
       // Verify parsing of the filtered content
       final captionFile = WebVTTCaptionFile(filtered);
       expect(captionFile.captions.length, 1);

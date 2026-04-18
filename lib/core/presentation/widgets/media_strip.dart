@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../utils/l10n_extensions.dart';
 import '../theme/app_theme.dart';
 import 'stash_image.dart';
 
@@ -33,9 +34,9 @@ class MediaStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (items.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium),
-        child: Text('No media available.'),
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium),
+        child: Text(context.l10n.common_no_media),
       );
     }
 

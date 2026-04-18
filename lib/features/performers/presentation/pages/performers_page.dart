@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../domain/entities/performer.dart';
@@ -80,21 +81,21 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
   String _sortLabel(_PerformerSortOption option) {
     switch (option) {
       case _PerformerSortOption.name:
-        return 'Name';
+        return context.l10n.sort_name;
       case _PerformerSortOption.sceneCount:
-        return 'Scene Count';
+        return context.l10n.sort_scene_count;
       case _PerformerSortOption.playCount:
-        return 'Play Count';
+        return context.l10n.performers_play_count;
       case _PerformerSortOption.oCounter:
         return 'O-Counter';
       case _PerformerSortOption.rating:
-        return 'Rating';
+        return context.l10n.sort_rating;
       case _PerformerSortOption.lastUpdated:
-        return 'Updated At';
+        return context.l10n.sort_updated_at;
       case _PerformerSortOption.createdAt:
-        return 'Created At';
+        return context.l10n.sort_created_at;
       case _PerformerSortOption.random:
-        return 'Random';
+        return context.l10n.sort_random;
     }
   }
 
@@ -106,9 +107,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
 
     if (random == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No performers available for random navigation'),
-        ),
+        SnackBar(content: Text(context.l10n.performers_no_random)),
       );
       return;
     }
@@ -143,7 +142,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Sort Performers',
+                      context.l10n.performers_sort_title,
                       style: context.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -155,12 +154,15 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                           tempDescending = false;
                         });
                       },
-                      child: const Text('Reset'),
+                      child: Text(context.l10n.common_reset),
                     ),
                   ],
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),
-                Text('Sort Method', style: context.textTheme.labelLarge),
+                Text(
+                  context.l10n.common_sort_method,
+                  style: context.textTheme.labelLarge,
+                ),
                 const SizedBox(height: AppTheme.spacingSmall),
                 Wrap(
                   spacing: AppTheme.spacingSmall,
@@ -181,21 +183,24 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                       .toList(),
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),
-                Text('Direction', style: context.textTheme.labelLarge),
+                Text(
+                  context.l10n.common_direction,
+                  style: context.textTheme.labelLarge,
+                ),
                 const SizedBox(height: AppTheme.spacingSmall),
                 SizedBox(
                   width: double.infinity,
                   child: SegmentedButton<bool>(
-                    segments: const [
+                    segments: [
                       ButtonSegment(
                         value: true,
-                        label: Text('Descending'),
-                        icon: Icon(Icons.arrow_downward),
+                        label: Text(context.l10n.common_descending),
+                        icon: const Icon(Icons.arrow_downward),
                       ),
                       ButtonSegment(
                         value: false,
-                        label: Text('Ascending'),
-                        icon: Icon(Icons.arrow_upward),
+                        label: Text(context.l10n.common_ascending),
+                        icon: const Icon(Icons.arrow_upward),
                       ),
                     ],
                     selected: {tempDescending},
@@ -222,7 +227,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                         vertical: AppTheme.spacingMedium,
                       ),
                     ),
-                    child: const Text('Apply Sort'),
+                    child: Text(context.l10n.common_apply_sort),
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),
@@ -241,9 +246,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                       if (context.mounted) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Sort preferences saved as default'),
-                          ),
+                          SnackBar(content: Text(context.l10n.tags_sort_saved)),
                         );
                       }
                     },
@@ -252,7 +255,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                         vertical: AppTheme.spacingMedium,
                       ),
                     ),
-                    child: const Text('Save as Default'),
+                    child: Text(context.l10n.common_save_default),
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),
@@ -291,7 +294,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Filter Performers',
+                      context.l10n.performers_filter_title,
                       style: context.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -303,7 +306,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                           tempGenders.clear();
                         });
                       },
-                      child: const Text('Reset'),
+                      child: Text(context.l10n.common_reset),
                     ),
                   ],
                 ),
@@ -311,31 +314,40 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                 SwitchListTile.adaptive(
                   value: tempFavoritesOnly,
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Favorites only'),
+                  title: Text(context.l10n.common_favorites_only),
                   onChanged: (value) {
                     setModalState(() => tempFavoritesOnly = value);
                   },
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),
-                Text('Gender', style: context.textTheme.labelLarge),
+                Text(
+                  context.l10n.performers_gender,
+                  style: context.textTheme.labelLarge,
+                ),
                 const SizedBox(height: AppTheme.spacingSmall),
                 Wrap(
                   spacing: AppTheme.spacingSmall,
                   runSpacing: AppTheme.spacingSmall,
                   children: [
                     ChoiceChip(
-                      label: const Text('Any'),
+                      label: Text(context.l10n.performers_gender_any),
                       selected: tempGenders.isEmpty,
                       onSelected: (_) =>
                           setModalState(() => tempGenders.clear()),
                     ),
-                    for (final option in const [
-                      ('FEMALE', 'Female'),
-                      ('MALE', 'Male'),
-                      ('TRANSGENDER_FEMALE', 'Trans Female'),
-                      ('TRANSGENDER_MALE', 'Trans Male'),
+                    for (final option in [
+                      ('FEMALE', context.l10n.performers_gender_female),
+                      ('MALE', context.l10n.performers_gender_male),
+                      (
+                        'TRANSGENDER_FEMALE',
+                        context.l10n.performers_gender_trans_female,
+                      ),
+                      (
+                        'TRANSGENDER_MALE',
+                        context.l10n.performers_gender_trans_male,
+                      ),
                       ('NON_BINARY', 'Non-binary'),
-                      ('INTERSEX', 'Intersex'),
+                      ('INTERSEX', context.l10n.performers_gender_intersex),
                     ])
                       ChoiceChip(
                         label: Text(option.$2),
@@ -373,7 +385,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                         vertical: AppTheme.spacingMedium,
                       ),
                     ),
-                    child: const Text('Apply Filters'),
+                    child: Text(context.l10n.common_apply_filters),
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),
@@ -394,10 +406,8 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                       if (context.mounted) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Filter preferences saved as default',
-                            ),
+                          SnackBar(
+                            content: Text(context.l10n.performers_filter_saved),
                           ),
                         );
                       }
@@ -407,7 +417,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                         vertical: AppTheme.spacingMedium,
                       ),
                     ),
-                    child: const Text('Save as Default'),
+                    child: Text(context.l10n.common_save_default),
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),
@@ -430,8 +440,8 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
         _sortOption != _PerformerSortOption.name || _sortDescending;
 
     return ListPageScaffold<Performer>(
-      title: 'Performers',
-      searchHint: 'Search performers...',
+      title: context.l10n.performers_title,
+      searchHint: context.l10n.common_search_placeholder,
       onSearchChanged: _onSearchChanged,
       provider: performersAsync,
       scrollController: scrollController,
@@ -446,7 +456,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
           children: [
             IconButton(
               icon: const Icon(Icons.sort),
-              tooltip: 'Sort options',
+              tooltip: context.l10n.common_sort,
               onPressed: _showSortPanel,
             ),
             if (hasSortOverride)
@@ -468,7 +478,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
           children: [
             IconButton(
               icon: const Icon(Icons.filter_list),
-              tooltip: 'Filter options',
+              tooltip: context.l10n.common_filter,
               onPressed: _showFilterPanel,
             ),
             if (filterState.hasActiveFilters)
@@ -507,7 +517,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
           ? performersAsync.maybeWhen(
               data: (performers) => FloatingActionButton.small(
                 onPressed: _openRandomPerformer,
-                tooltip: 'Random performer',
+                tooltip: context.l10n.random_performer,
                 child: const Icon(Icons.casino_outlined),
               ),
               orElse: () => null,

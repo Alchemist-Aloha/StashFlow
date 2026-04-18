@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/navigation_tabs_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/widgets/settings_page_shell.dart';
 
@@ -12,7 +13,7 @@ class NavigationCustomizationPage extends ConsumerWidget {
     final tabs = ref.watch(navigationTabsProvider);
 
     return SettingsPageShell(
-      title: 'Customize Navigation',
+      title: context.l10n.settings_interface_customize_tabs,
       child: ReorderableListView(
         padding: const EdgeInsets.all(AppTheme.spacingMedium),
         onReorder: (oldIndex, newIndex) {

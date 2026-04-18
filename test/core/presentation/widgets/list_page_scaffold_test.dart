@@ -4,25 +4,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/list_page_scaffold.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/error_state_view.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import '../../../helpers/test_helpers.dart';
 
 void main() {
-  Widget buildTestApp(Widget child) {
-    return ProviderScope(
-      child: MaterialApp(theme: AppTheme.lightTheme, home: child),
-    );
-  }
-
   group('ListPageScaffold', () {
     testWidgets('shows loading state correctly', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        buildTestApp(
-          ListPageScaffold<String>(
-            title: 'Test Title',
-            searchHint: 'Search...',
-            onSearchChanged: (_) {},
-            provider: const AsyncValue.loading(),
-            itemBuilder: (context, item, mw, mh) => Text(item),
-          ),
+      await pumpTestWidget(
+        tester,
+        child: ListPageScaffold<String>(
+          title: 'Test Title',
+          searchHint: 'Search...',
+          onSearchChanged: (_) {},
+          provider: const AsyncValue.loading(),
+          itemBuilder: (context, item, mw, mh) => Text(item),
         ),
       );
 
@@ -32,16 +26,15 @@ void main() {
 
     testWidgets('shows empty state correctly', (WidgetTester tester) async {
       const emptyMessage = 'Nothing here';
-      await tester.pumpWidget(
-        buildTestApp(
-          ListPageScaffold<String>(
-            title: 'Test Title',
-            searchHint: 'Search...',
-            onSearchChanged: (_) {},
-            provider: const AsyncValue.data([]),
-            emptyMessage: emptyMessage,
-            itemBuilder: (context, item, mw, mh) => Text(item),
-          ),
+      await pumpTestWidget(
+        tester,
+        child: ListPageScaffold<String>(
+          title: 'Test Title',
+          searchHint: 'Search...',
+          onSearchChanged: (_) {},
+          provider: const AsyncValue.data([]),
+          emptyMessage: emptyMessage,
+          itemBuilder: (context, item, mw, mh) => Text(item),
         ),
       );
 
@@ -49,15 +42,14 @@ void main() {
     });
 
     testWidgets('shows error state correctly', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        buildTestApp(
-          ListPageScaffold<String>(
-            title: 'Test Title',
-            searchHint: 'Search...',
-            onSearchChanged: (_) {},
-            provider: AsyncValue.error('An error occurred', StackTrace.empty),
-            itemBuilder: (context, item, mw, mh) => Text(item),
-          ),
+      await pumpTestWidget(
+        tester,
+        child: ListPageScaffold<String>(
+          title: 'Test Title',
+          searchHint: 'Search...',
+          onSearchChanged: (_) {},
+          provider: AsyncValue.error('An error occurred', StackTrace.empty),
+          itemBuilder: (context, item, mw, mh) => Text(item),
         ),
       );
 
@@ -69,15 +61,14 @@ void main() {
       WidgetTester tester,
     ) async {
       final items = ['Item 1', 'Item 2', 'Item 3'];
-      await tester.pumpWidget(
-        buildTestApp(
-          ListPageScaffold<String>(
-            title: 'Test Title',
-            searchHint: 'Search...',
-            onSearchChanged: (_) {},
-            provider: AsyncValue.data(items),
-            itemBuilder: (context, item, mw, mh) => ListTile(title: Text(item)),
-          ),
+      await pumpTestWidget(
+        tester,
+        child: ListPageScaffold<String>(
+          title: 'Test Title',
+          searchHint: 'Search...',
+          onSearchChanged: (_) {},
+          provider: AsyncValue.data(items),
+          itemBuilder: (context, item, mw, mh) => ListTile(title: Text(item)),
         ),
       );
 
@@ -91,19 +82,18 @@ void main() {
       WidgetTester tester,
     ) async {
       final items = ['Item 1', 'Item 2', 'Item 3'];
-      await tester.pumpWidget(
-        buildTestApp(
-          ListPageScaffold<String>(
-            title: 'Test Title',
-            searchHint: 'Search...',
-            onSearchChanged: (_) {},
-            provider: AsyncValue.data(items),
-            useResponsiveGrid: false,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-            ),
-            itemBuilder: (context, item, mw, mh) => GridTile(child: Text(item)),
+      await pumpTestWidget(
+        tester,
+        child: ListPageScaffold<String>(
+          title: 'Test Title',
+          searchHint: 'Search...',
+          onSearchChanged: (_) {},
+          provider: AsyncValue.data(items),
+          useResponsiveGrid: false,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
           ),
+          itemBuilder: (context, item, mw, mh) => GridTile(child: Text(item)),
         ),
       );
 
@@ -117,15 +107,14 @@ void main() {
       WidgetTester tester,
     ) async {
       String searchQuery = '';
-      await tester.pumpWidget(
-        buildTestApp(
-          ListPageScaffold<String>(
-            title: 'Test Title',
-            searchHint: 'Search hint...',
-            onSearchChanged: (val) => searchQuery = val,
-            provider: const AsyncValue.loading(),
-            itemBuilder: (context, item, mw, mh) => Text(item),
-          ),
+      await pumpTestWidget(
+        tester,
+        child: ListPageScaffold<String>(
+          title: 'Test Title',
+          searchHint: 'Search hint...',
+          onSearchChanged: (val) => searchQuery = val,
+          provider: const AsyncValue.loading(),
+          itemBuilder: (context, item, mw, mh) => Text(item),
         ),
       );
 
@@ -162,16 +151,15 @@ void main() {
     });
 
     testWidgets('displays custom sortBar', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        buildTestApp(
-          ListPageScaffold<String>(
-            title: 'Test Title',
-            searchHint: 'Search...',
-            onSearchChanged: (_) {},
-            provider: const AsyncValue.loading(),
-            sortBar: const Text('Custom Sort Bar'),
-            itemBuilder: (context, item, mw, mh) => Text(item),
-          ),
+      await pumpTestWidget(
+        tester,
+        child: ListPageScaffold<String>(
+          title: 'Test Title',
+          searchHint: 'Search...',
+          onSearchChanged: (_) {},
+          provider: const AsyncValue.loading(),
+          sortBar: const Text('Custom Sort Bar'),
+          itemBuilder: (context, item, mw, mh) => Text(item),
         ),
       );
 
@@ -181,19 +169,18 @@ void main() {
     testWidgets('displays custom floatingActionButton', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(
-        buildTestApp(
-          ListPageScaffold<String>(
-            title: 'Test Title',
-            searchHint: 'Search...',
-            onSearchChanged: (_) {},
-            provider: const AsyncValue.loading(),
-            floatingActionButton: const FloatingActionButton(
-              onPressed: null,
-              child: Icon(Icons.add),
-            ),
-            itemBuilder: (context, item, mw, mh) => Text(item),
+      await pumpTestWidget(
+        tester,
+        child: ListPageScaffold<String>(
+          title: 'Test Title',
+          searchHint: 'Search...',
+          onSearchChanged: (_) {},
+          provider: const AsyncValue.loading(),
+          floatingActionButton: const FloatingActionButton(
+            onPressed: null,
+            child: Icon(Icons.add),
           ),
+          itemBuilder: (context, item, mw, mh) => Text(item),
         ),
       );
 

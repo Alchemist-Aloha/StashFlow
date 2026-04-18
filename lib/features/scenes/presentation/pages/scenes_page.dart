@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:math';
@@ -138,16 +139,16 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
   /// Formats a [_SceneSortField] enum value for display in the UI.
   String _sortFieldLabel(_SceneSortField field) {
     return switch (field) {
-      _SceneSortField.date => 'Date',
-      _SceneSortField.rating => 'Rating',
-      _SceneSortField.playCount => 'Play Count',
-      _SceneSortField.title => 'Title',
-      _SceneSortField.duration => 'Duration',
-      _SceneSortField.bitrate => 'Bitrate',
-      _SceneSortField.framerate => 'Framerate',
-      _SceneSortField.updatedAt => 'Updated At',
-      _SceneSortField.createdAt => 'Created At',
-      _SceneSortField.random => 'Random',
+      _SceneSortField.date => context.l10n.common_date,
+      _SceneSortField.rating => context.l10n.common_rating,
+      _SceneSortField.playCount => context.l10n.performers_play_count,
+      _SceneSortField.title => context.l10n.common_title,
+      _SceneSortField.duration => context.l10n.scenes_sort_duration,
+      _SceneSortField.bitrate => context.l10n.scenes_sort_bitrate,
+      _SceneSortField.framerate => context.l10n.scenes_sort_framerate,
+      _SceneSortField.updatedAt => context.l10n.sort_updated_at,
+      _SceneSortField.createdAt => context.l10n.sort_created_at,
+      _SceneSortField.random => context.l10n.sort_random,
     };
   }
 
@@ -187,12 +188,15 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                               tempDescending = true;
                             });
                           },
-                          child: const Text('Reset'),
+                          child: Text(context.l10n.common_reset),
                         ),
                       ],
                     ),
                     const SizedBox(height: AppTheme.spacingMedium),
-                    Text('Sort Method', style: context.textTheme.labelLarge),
+                    Text(
+                      context.l10n.common_sort_method,
+                      style: context.textTheme.labelLarge,
+                    ),
                     const SizedBox(height: AppTheme.spacingSmall),
                     Wrap(
                       spacing: AppTheme.spacingSmall,
@@ -213,20 +217,23 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                           .toList(),
                     ),
                     const SizedBox(height: AppTheme.spacingMedium),
-                    Text('Direction', style: context.textTheme.labelLarge),
+                    Text(
+                      context.l10n.common_direction,
+                      style: context.textTheme.labelLarge,
+                    ),
                     const SizedBox(height: AppTheme.spacingSmall),
                     SizedBox(
                       width: double.infinity,
                       child: SegmentedButton<bool>(
-                        segments: const [
+                        segments: [
                           ButtonSegment(
                             value: true,
-                            label: Text('Descending'),
+                            label: Text(context.l10n.common_descending),
                             icon: Icon(Icons.arrow_downward),
                           ),
                           ButtonSegment(
                             value: false,
-                            label: Text('Ascending'),
+                            label: Text(context.l10n.common_ascending),
                             icon: Icon(Icons.arrow_upward),
                           ),
                         ],
@@ -254,7 +261,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                             vertical: AppTheme.spacingMedium,
                           ),
                         ),
-                        child: const Text('Apply Sort'),
+                        child: Text(context.l10n.common_apply_sort),
                       ),
                     ),
                     const SizedBox(height: AppTheme.spacingSmall),
@@ -273,9 +280,9 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                           if (context.mounted) {
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                              SnackBar(
                                 content: Text(
-                                  'Sort preferences saved as default',
+                                  context.l10n.scenes_sort_saved_default,
                                 ),
                               ),
                             );
@@ -286,7 +293,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                             vertical: AppTheme.spacingMedium,
                           ),
                         ),
-                        child: const Text('Save as Default'),
+                        child: Text(context.l10n.common_save_default),
                       ),
                     ),
                     const SizedBox(height: AppTheme.spacingMedium),
@@ -333,8 +340,8 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     final hasActiveFilters = filterActive || organizedOnly;
 
     return ListPageScaffold<Scene>(
-      title: 'StashFlow',
-      searchHint: 'Search scenes...',
+      title: context.l10n.appTitle,
+      searchHint: context.l10n.scenes_search_hint,
       onSearchChanged: _onSearchChanged,
       provider: scenesAsync,
       imageUrlBuilder: (scene) => scene.paths.screenshot,
@@ -361,7 +368,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
           children: [
             IconButton(
               icon: const Icon(Icons.sort),
-              tooltip: 'Sort options',
+              tooltip: context.l10n.scenes_sort_tooltip,
               onPressed: _showSortPanel,
             ),
             if (_sortField != _SceneSortField.date || !_sortDescending)
@@ -429,7 +436,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
               data: (scenes) => FloatingActionButton.small(
                 heroTag: 'scenes_random_fab',
                 onPressed: _openRandomScene,
-                tooltip: 'Random scene',
+                tooltip: context.l10n.random_scene,
                 child: const Icon(Icons.casino_outlined),
               ),
               orElse: () => null,

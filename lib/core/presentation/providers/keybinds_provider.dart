@@ -42,12 +42,12 @@ class Keybind {
   });
 
   Map<String, dynamic> toJson() => {
-        'keyId': key.keyId,
-        'control': control,
-        'shift': shift,
-        'alt': alt,
-        'meta': meta,
-      };
+    'keyId': key.keyId,
+    'control': control,
+    'shift': shift,
+    'alt': alt,
+    'meta': meta,
+  };
 
   factory Keybind.fromJson(Map<String, dynamic> json) {
     return Keybind(
@@ -60,12 +60,12 @@ class Keybind {
   }
 
   SingleActivator toActivator() => SingleActivator(
-        key,
-        control: control,
-        shift: shift,
-        alt: alt,
-        meta: meta,
-      );
+    key,
+    control: control,
+    shift: shift,
+    alt: alt,
+    meta: meta,
+  );
 
   String get label {
     final List<String> parts = [];
@@ -93,26 +93,26 @@ class Keybinds {
   Keybinds(this.binds);
 
   static Map<KeybindAction, Keybind> get defaultBinds => {
-        KeybindAction.playPause: const Keybind(LogicalKeyboardKey.space),
-        KeybindAction.seekForward: const Keybind(LogicalKeyboardKey.arrowRight),
-        KeybindAction.seekBackward: const Keybind(LogicalKeyboardKey.arrowLeft),
-        KeybindAction.seekForwardLarge: const Keybind(LogicalKeyboardKey.keyL),
-        KeybindAction.seekBackwardLarge: const Keybind(LogicalKeyboardKey.keyJ),
-        KeybindAction.volumeUp: const Keybind(LogicalKeyboardKey.arrowUp),
-        KeybindAction.volumeDown: const Keybind(LogicalKeyboardKey.arrowDown),
-        KeybindAction.toggleMute: const Keybind(LogicalKeyboardKey.keyM),
-        KeybindAction.toggleFullscreen: const Keybind(LogicalKeyboardKey.keyF),
-        KeybindAction.togglePip: const Keybind(LogicalKeyboardKey.keyP),
-        KeybindAction.nextScene: const Keybind(LogicalKeyboardKey.keyN),
-        KeybindAction.previousScene: const Keybind(LogicalKeyboardKey.keyB),
-        KeybindAction.speedUp: const Keybind(LogicalKeyboardKey.bracketRight),
-        KeybindAction.speedDown: const Keybind(LogicalKeyboardKey.bracketLeft),
-        KeybindAction.resetSpeed: const Keybind(LogicalKeyboardKey.backspace),
-        KeybindAction.closePlayer: const Keybind(LogicalKeyboardKey.escape),
-        KeybindAction.nextImage: const Keybind(LogicalKeyboardKey.arrowRight),
-        KeybindAction.previousImage: const Keybind(LogicalKeyboardKey.arrowLeft),
-        KeybindAction.back: const Keybind(LogicalKeyboardKey.escape),
-      };
+    KeybindAction.playPause: const Keybind(LogicalKeyboardKey.space),
+    KeybindAction.seekForward: const Keybind(LogicalKeyboardKey.arrowRight),
+    KeybindAction.seekBackward: const Keybind(LogicalKeyboardKey.arrowLeft),
+    KeybindAction.seekForwardLarge: const Keybind(LogicalKeyboardKey.keyL),
+    KeybindAction.seekBackwardLarge: const Keybind(LogicalKeyboardKey.keyJ),
+    KeybindAction.volumeUp: const Keybind(LogicalKeyboardKey.arrowUp),
+    KeybindAction.volumeDown: const Keybind(LogicalKeyboardKey.arrowDown),
+    KeybindAction.toggleMute: const Keybind(LogicalKeyboardKey.keyM),
+    KeybindAction.toggleFullscreen: const Keybind(LogicalKeyboardKey.keyF),
+    KeybindAction.togglePip: const Keybind(LogicalKeyboardKey.keyP),
+    KeybindAction.nextScene: const Keybind(LogicalKeyboardKey.keyN),
+    KeybindAction.previousScene: const Keybind(LogicalKeyboardKey.keyB),
+    KeybindAction.speedUp: const Keybind(LogicalKeyboardKey.bracketRight),
+    KeybindAction.speedDown: const Keybind(LogicalKeyboardKey.bracketLeft),
+    KeybindAction.resetSpeed: const Keybind(LogicalKeyboardKey.backspace),
+    KeybindAction.closePlayer: const Keybind(LogicalKeyboardKey.escape),
+    KeybindAction.nextImage: const Keybind(LogicalKeyboardKey.arrowRight),
+    KeybindAction.previousImage: const Keybind(LogicalKeyboardKey.arrowLeft),
+    KeybindAction.back: const Keybind(LogicalKeyboardKey.escape),
+  };
 
   Map<String, dynamic> toJson() {
     return binds.map((key, value) => MapEntry(key.name, value.toJson()));

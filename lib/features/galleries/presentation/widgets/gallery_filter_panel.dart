@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/gallery_filter.dart';
 import '../providers/gallery_list_provider.dart';
@@ -50,7 +51,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Filter Galleries',
+                      context.l10n.galleries_filter_title,
                       style: context.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -62,19 +63,22 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                           _tempOrganizedOnly = false;
                         });
                       },
-                      child: const Text('Reset'),
+                      child: Text(context.l10n.common_reset),
                     ),
                   ],
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),
-                Text('Minimum Rating', style: context.textTheme.labelLarge),
+                Text(
+                  context.l10n.galleries_min_rating,
+                  style: context.textTheme.labelLarge,
+                ),
                 const SizedBox(height: AppTheme.spacingSmall),
                 Wrap(
                   spacing: 4,
                   runSpacing: 4,
                   children: [
                     ChoiceChip(
-                      label: const Text('Any'),
+                      label: Text(context.l10n.common_any),
                       selected: _tempFilter.minRating == null,
                       onSelected: (_) {
                         setState(
@@ -99,7 +103,10 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                   ],
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),
-                Text('Image Count', style: context.textTheme.labelLarge),
+                Text(
+                  context.l10n.galleries_image_count,
+                  style: context.textTheme.labelLarge,
+                ),
                 const SizedBox(height: AppTheme.spacingSmall),
                 Wrap(
                   spacing: AppTheme.spacingSmall,
@@ -111,10 +118,13 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                   ],
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),
-                Text('Organization', style: context.textTheme.labelLarge),
+                Text(
+                  context.l10n.galleries_organization,
+                  style: context.textTheme.labelLarge,
+                ),
                 const SizedBox(height: AppTheme.spacingSmall),
                 FilterChip(
-                  label: const Text('Organized only'),
+                  label: Text(context.l10n.galleries_organized_only),
                   selected: _tempOrganizedOnly,
                   onSelected: (selected) {
                     setState(() => _tempOrganizedOnly = selected);
@@ -140,7 +150,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                         vertical: AppTheme.spacingMedium,
                       ),
                     ),
-                    child: const Text('Apply Filters'),
+                    child: Text(context.l10n.common_apply_filters),
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),
@@ -163,10 +173,8 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                       if (context.mounted) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Filter preferences saved as default',
-                            ),
+                          SnackBar(
+                            content: Text(context.l10n.galleries_filter_saved),
                           ),
                         );
                       }
@@ -176,7 +184,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                         vertical: AppTheme.spacingMedium,
                       ),
                     ),
-                    child: const Text('Save as Default'),
+                    child: Text(context.l10n.common_save_default),
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),

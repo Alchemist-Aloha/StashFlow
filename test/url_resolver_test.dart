@@ -40,16 +40,23 @@ void main() {
   });
 
   test('preserves userInfo and queryParameters from endpoint', () {
-    final ssoEndpoint = Uri.parse('https://user:pass@stash.host.tld/graphql?token=secret');
+    final ssoEndpoint = Uri.parse(
+      'https://user:pass@stash.host.tld/graphql?token=secret',
+    );
     final result = resolveGraphqlMediaUrl(
       rawUrl: '/image/abc.jpg',
       graphqlEndpoint: ssoEndpoint,
     );
-    expect(result, 'https://user:pass@stash.host.tld/image/abc.jpg?token=secret');
+    expect(
+      result,
+      'https://user:pass@stash.host.tld/image/abc.jpg?token=secret',
+    );
   });
 
   test('merges endpoint queryParameters with relative path parameters', () {
-    final ssoEndpoint = Uri.parse('https://stash.host.tld/graphql?token=secret');
+    final ssoEndpoint = Uri.parse(
+      'https://stash.host.tld/graphql?token=secret',
+    );
     final result = resolveGraphqlMediaUrl(
       rawUrl: '/image/abc.jpg?id=123',
       graphqlEndpoint: ssoEndpoint,

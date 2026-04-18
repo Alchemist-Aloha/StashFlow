@@ -47,5 +47,5 @@ class DesktopSettingsNotifier extends Notifier<DesktopSettings> {
 
 final desktopSettingsProvider =
     NotifierProvider<DesktopSettingsNotifier, DesktopSettings>(() {
-  return DesktopSettingsNotifier();
-});
+      return DesktopSettingsNotifier();
+    });

@@ -24,8 +24,9 @@ String resolveGraphqlMediaUrl({
   final resolved = base.resolve(value);
 
   if (graphqlEndpoint.queryParameters.isNotEmpty) {
-    final mergedParams = Map<String, dynamic>.from(graphqlEndpoint.queryParameters)
-      ..addAll(resolved.queryParameters);
+    final mergedParams = Map<String, dynamic>.from(
+      graphqlEndpoint.queryParameters,
+    )..addAll(resolved.queryParameters);
     return resolved.replace(queryParameters: mergedParams).toString();
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 
 class SectionHeader extends StatelessWidget {
@@ -31,7 +32,10 @@ class SectionHeader extends StatelessWidget {
           ),
           const Spacer(),
           if (onViewAll != null)
-            TextButton(onPressed: onViewAll, child: const Text('View all')),
+            TextButton(
+              onPressed: onViewAll,
+              child: Text(AppLocalizations.of(context)!.common_view_all),
+            ),
         ],
       ),
     );

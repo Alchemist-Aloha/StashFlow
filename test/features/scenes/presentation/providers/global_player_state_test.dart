@@ -50,6 +50,7 @@ void main() {
       expect(state.useDoubleTapSeek, isTrue);
       expect(state.enableBackgroundPlayback, isFalse);
       expect(state.enableNativePip, isFalse);
+      expect(state.videoGravityOrientation, isTrue);
       expect(state.subtitleTextAlignment, equals('center'));
     });
 
@@ -72,6 +73,7 @@ void main() {
         useDoubleTapSeek: false,
         enableBackgroundPlayback: true,
         enableNativePip: true,
+        videoGravityOrientation: false,
       );
 
       expect(state.activeScene, equals(scene));
@@ -90,6 +92,7 @@ void main() {
       expect(state.useDoubleTapSeek, isFalse);
       expect(state.enableBackgroundPlayback, isTrue);
       expect(state.enableNativePip, isTrue);
+      expect(state.videoGravityOrientation, isFalse);
     });
 
     group('copyWith', () {

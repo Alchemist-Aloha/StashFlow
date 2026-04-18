@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
@@ -48,7 +49,7 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
   }
 
   Widget _buildSortBar() {
-    const options = [(_GroupSortOption.name, 'Name')];
+    final options = [(_GroupSortOption.name, context.l10n.common_name)];
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -80,8 +81,8 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
     final groupsAsync = ref.watch(groupListProvider);
 
     return ListPageScaffold<Group>(
-      title: 'Groups',
-      searchHint: 'Search groups...',
+      title: context.l10n.groups_title,
+      searchHint: context.l10n.common_search_placeholder,
       onSearchChanged: _onSearchChanged,
       provider: groupsAsync,
       onRefresh: () => ref.read(groupListProvider.notifier).refresh(),
@@ -96,10 +97,10 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
         child: ListTile(
           leading: const Icon(Icons.group_work),
           title: Text(
-            group.name.isEmpty ? 'Unnamed group' : group.name,
+            group.name.isEmpty ? context.l10n.groups_unnamed : group.name,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle: Text('ID: ${group.id}'),
+          subtitle: Text(context.l10n.common_id(group.id.toString())),
           onTap: () => context.push('/group/${group.id}'),
         ),
       ),

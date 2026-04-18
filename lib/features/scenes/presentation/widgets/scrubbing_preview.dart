@@ -44,7 +44,10 @@ class _ScrubbingPreviewState extends ConsumerState<ScrubbingPreview> {
 
   void _fetch() {
     final vttService = ref.read(vttServiceProvider);
-    _spriteInfoFuture = vttService.fetchSpriteInfo(widget.vttUrl, widget.headers);
+    _spriteInfoFuture = vttService.fetchSpriteInfo(
+      widget.vttUrl,
+      widget.headers,
+    );
   }
 
   @override
@@ -61,7 +64,8 @@ class _ScrubbingPreviewState extends ConsumerState<ScrubbingPreview> {
 
         // Find the sprite for the current time
         for (final sprite in sprites) {
-          if (widget.timeInSeconds >= sprite.start && widget.timeInSeconds < sprite.end) {
+          if (widget.timeInSeconds >= sprite.start &&
+              widget.timeInSeconds < sprite.end) {
             activeSprite = sprite;
             break;
           }
@@ -73,8 +77,12 @@ class _ScrubbingPreviewState extends ConsumerState<ScrubbingPreview> {
 
         return LayoutBuilder(
           builder: (context, constraints) {
-            final double targetW = widget.width.isFinite ? widget.width : constraints.maxWidth;
-            final double targetH = widget.height.isFinite ? widget.height : constraints.maxHeight;
+            final double targetW = widget.width.isFinite
+                ? widget.width
+                : constraints.maxWidth;
+            final double targetH = widget.height.isFinite
+                ? widget.height
+                : constraints.maxHeight;
 
             return Container(
               width: targetW,
@@ -122,7 +130,7 @@ class _SpriteImage extends StatelessWidget {
       imageBuilder: (context, imageProvider) {
         final scaleX = targetWidth / sprite.w;
         final scaleY = targetHeight / sprite.h;
-        
+
         return ClipRect(
           child: OverflowBox(
             maxWidth: double.infinity,
@@ -152,7 +160,10 @@ class _SpriteImage extends StatelessWidget {
         ),
       ),
       errorWidget: (context, url, error) {
-        AppLogStore.instance.add('Error loading sprite sheet: $url, error: $error', source: 'SpriteImage');
+        AppLogStore.instance.add(
+          'Error loading sprite sheet: $url, error: $error',
+          source: 'SpriteImage',
+        );
         return const Icon(Icons.error);
       },
     );

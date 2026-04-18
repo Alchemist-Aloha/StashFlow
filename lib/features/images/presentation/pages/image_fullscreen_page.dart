@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -215,7 +216,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     if (itemCount <= 1) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Need at least 2 images for slideshow.')),
+        SnackBar(content: Text(context.l10n.images_slideshow_need_two)),
       );
       return;
     }
@@ -231,46 +232,56 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: const Text('Start Slideshow'),
+              title: Text(context.l10n.images_slideshow_start_title),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Interval: ${intervalSeconds.toStringAsFixed(1)}s'),
+                    Text(
+                      context.l10n.images_slideshow_interval(intervalSeconds),
+                    ),
                     Slider(
                       value: intervalSeconds,
                       min: 1,
                       max: 15,
                       divisions: 28,
-                      label: '${intervalSeconds.toStringAsFixed(1)}s',
+                      label: context.l10n.images_slideshow_interval(
+                        intervalSeconds,
+                      ),
                       onChanged: (v) {
                         setDialogState(() => intervalSeconds = v);
                       },
                     ),
                     const SizedBox(height: 8),
-                    Text('Transition: ${transitionMs.round()}ms'),
+                    Text(
+                      context.l10n.images_slideshow_transition_ms(
+                        transitionMs.round(),
+                      ),
+                    ),
                     Slider(
                       value: transitionMs,
                       min: 120,
                       max: 1400,
                       divisions: 32,
-                      label: '${transitionMs.round()}ms',
+                      label: context.l10n.images_slideshow_transition_ms(
+                        transitionMs.round(),
+                      ),
                       onChanged: (v) {
                         setDialogState(() => transitionMs = v);
                       },
                     ),
                     const SizedBox(height: 8),
                     SegmentedButton<_SlideshowDirection>(
-                      segments: const [
+                      segments: [
                         ButtonSegment<_SlideshowDirection>(
                           value: _SlideshowDirection.forward,
-                          label: Text('Forward'),
+                          label: Text(context.l10n.common_forward),
                           icon: Icon(Icons.arrow_downward_rounded),
                         ),
                         ButtonSegment<_SlideshowDirection>(
                           value: _SlideshowDirection.backward,
-                          label: Text('Backward'),
+                          label: Text(context.l10n.common_backward),
                           icon: Icon(Icons.arrow_upward_rounded),
                         ),
                       ],
@@ -282,7 +293,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                     const SizedBox(height: 8),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('Loop slideshow'),
+                      title: Text(context.l10n.images_slideshow_loop_title),
                       value: loop,
                       onChanged: (v) {
                         setDialogState(() => loop = v);
@@ -294,12 +305,12 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(dialogContext).pop(false),
-                  child: const Text('Cancel'),
+                  child: Text(context.l10n.common_cancel),
                 ),
                 FilledButton.icon(
                   onPressed: () => Navigator.of(dialogContext).pop(true),
                   icon: const Icon(Icons.play_arrow_rounded),
-                  label: const Text('Start'),
+                  label: Text(context.l10n.common_start),
                 ),
               ],
             );
@@ -353,7 +364,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: const Text('Rate'),
+              title: Text(context.l10n.common_rate),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -361,15 +372,15 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                   SegmentedButton<_RatingTarget>(
                     showSelectedIcon: false,
                     segments: [
-                      const ButtonSegment<_RatingTarget>(
+                      ButtonSegment<_RatingTarget>(
                         value: _RatingTarget.image,
                         icon: Icon(Icons.image_outlined),
-                        label: Text('Image'),
+                        label: Text(context.l10n.common_image),
                       ),
                       ButtonSegment<_RatingTarget>(
                         value: _RatingTarget.gallery,
                         icon: const Icon(Icons.photo_library_outlined),
-                        label: const Text('Gallery'),
+                        label: Text(context.l10n.common_gallery),
                         enabled: canRateGallery,
                       ),
                     ],
@@ -400,12 +411,16 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                   if (!canRateGallery) ...[
                     const SizedBox(height: 8),
                     Text(
-                      'Gallery rating is only available when browsing a gallery.',
+                      context.l10n.images_gallery_rating_unavailable,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
                   const SizedBox(height: 16),
-                  Text('Rating: ${(rating / 20).toStringAsFixed(1)} / 5'),
+                  Text(
+                    context.l10n.images_rating(
+                      (rating / 20).toStringAsFixed(1),
+                    ),
+                  ),
                   Slider(
                     value: rating.toDouble(),
                     min: 0,
@@ -421,13 +436,13 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(dialogContext).pop(),
-                  child: const Text('Cancel'),
+                  child: Text(context.l10n.common_cancel),
                 ),
                 FilledButton(
                   onPressed: () {
                     Navigator.of(dialogContext).pop((target, rating));
                   },
-                  child: const Text('Apply'),
+                  child: Text(context.l10n.common_apply),
                 ),
               ],
             );
@@ -467,16 +482,20 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
         SnackBar(
           content: Text(
             selectedTarget == _RatingTarget.image
-                ? 'Image rating updated.'
-                : 'Gallery rating updated.',
+                ? context.l10n.image_rating_updated
+                : context.l10n.gallery_rating_updated,
           ),
         ),
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to update rating: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            context.l10n.details_failed_update_rating(e.toString()),
+          ),
+        ),
+      );
     }
   }
 
@@ -576,7 +595,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                           IconButton.filledTonal(
                             icon: const Icon(Icons.arrow_back_rounded),
                             onPressed: () => context.pop(),
-                            tooltip: 'Back',
+                            tooltip: context.l10n.common_back,
                           ),
                           const SizedBox(width: 10),
                           Expanded(
@@ -641,7 +660,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                             onPressed: currentImage == null
                                 ? null
                                 : () => _showRatingDialog(currentImage),
-                            tooltip: 'Rate',
+                            tooltip: context.l10n.common_rate,
                           ),
                           const SizedBox(width: 8),
                           IconButton.filled(
@@ -652,8 +671,8 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                             ),
                             onPressed: () => _toggleSlideshow(loadedItemCount),
                             tooltip: _isSlideshowPlaying
-                                ? 'Stop slideshow'
-                                : 'Start slideshow',
+                                ? context.l10n.common_pause
+                                : context.l10n.images_slideshow_start_title,
                           ),
                         ],
                       ),
@@ -720,7 +739,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                         children: [
                           IconButton.filledTonal(
                             icon: const Icon(Icons.chevron_left_rounded),
-                            tooltip: 'Previous image',
+                            tooltip: context.l10n.common_previous,
                             onPressed: canGoPrevious
                                 ? _goToPreviousImage
                                 : null,
@@ -736,7 +755,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                           const SizedBox(width: 10),
                           IconButton.filledTonal(
                             icon: const Icon(Icons.chevron_right_rounded),
-                            tooltip: 'Next image',
+                            tooltip: context.l10n.common_next,
                             onPressed: canGoNext
                                 ? () => _goToNextImage(loadedItemCount)
                                 : null,
@@ -776,7 +795,12 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
       ),
       error: (e, s) => Scaffold(
         backgroundColor: Colors.black,
-        body: Center(child: Text('Error: $e', style: const TextStyle(color: Colors.white))),
+        body: Center(
+          child: Text(
+            context.l10n.common_error(e.toString()),
+            style: const TextStyle(color: Colors.white),
+          ),
+        ),
       ),
       data: (items) {
         final Map<ShortcutActivator, VoidCallback> bindings = {};
@@ -808,9 +832,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
           _currentIndex = items.indexWhere((i) => i.id == widget.imageId);
           if (_currentIndex == -1) _currentIndex = 0;
           _pageController.dispose();
-          _pageController = ExtendedPageController(
-            initialPage: _currentIndex,
-          );
+          _pageController = ExtendedPageController(initialPage: _currentIndex);
           _initialPageSet = true;
 
           // Prefetch initial adjacent images
@@ -823,9 +845,9 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
         final displayTitle = _getDisplayTitle(currentImage);
         final totalItemCount =
             galleryDetailsAsync?.maybeWhen(
-                  data: (gallery) => gallery.imageCount ?? items.length,
-                  orElse: () => items.length,
-                ) ??
+              data: (gallery) => gallery.imageCount ?? items.length,
+              orElse: () => items.length,
+            ) ??
             items.length;
 
         return Scaffold(
@@ -838,9 +860,12 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                 builder: (context, constraints) {
                   final isWideLayout =
                       constraints.maxWidth >= Responsive.tabletBreakpoint;
-                  final scrollDirection =
-                      useVerticalSwipe ? Axis.vertical : Axis.horizontal;
-                  final maxOverlayWidth = isWideLayout ? 720.0 : constraints.maxWidth;
+                  final scrollDirection = useVerticalSwipe
+                      ? Axis.vertical
+                      : Axis.horizontal;
+                  final maxOverlayWidth = isWideLayout
+                      ? 720.0
+                      : constraints.maxWidth;
                   final horizontalPadding = isWideLayout ? 24.0 : 8.0;
 
                   return Listener(
@@ -895,7 +920,8 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                 onDoubleTap: (ExtendedImageGestureState state) {
                                   final pointerDownPosition =
                                       state.pointerDownPosition;
-                                  final begin = state.gestureDetails!.totalScale;
+                                  final begin =
+                                      state.gestureDetails!.totalScale;
                                   final end = begin == 1.0 ? 3.0 : 1.0;
 
                                   state.handleDoubleTap(

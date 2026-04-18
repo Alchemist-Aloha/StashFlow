@@ -13,14 +13,17 @@ void main() {
     );
   });
 
-  test('resolves root-relative urls and preserves queryParameters (Fails current impl)', () {
-    final endpoint = Uri.parse('https://host/graphql?token=abc');
-    expect(
-      resolveGraphqlMediaUrl(
-        rawUrl: '/image/abc.jpg',
-        graphqlEndpoint: endpoint,
-      ),
-      'https://host/image/abc.jpg?token=abc',
-    );
-  });
+  test(
+    'resolves root-relative urls and preserves queryParameters (Fails current impl)',
+    () {
+      final endpoint = Uri.parse('https://host/graphql?token=abc');
+      expect(
+        resolveGraphqlMediaUrl(
+          rawUrl: '/image/abc.jpg',
+          graphqlEndpoint: endpoint,
+        ),
+        'https://host/image/abc.jpg?token=abc',
+      );
+    },
+  );
 }

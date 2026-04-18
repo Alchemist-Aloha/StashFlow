@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart';
 import '../../domain/entities/scene.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 
 class SceneInfoPage extends ConsumerWidget {
   const SceneInfoPage({required this.scene, super.key});
@@ -17,7 +18,7 @@ class SceneInfoPage extends ConsumerWidget {
     final mediaHeaders = ref.watch(mediaHeadersProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Scene Info')),
+      appBar: AppBar(title: Text(context.l10n.details_scene)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -25,7 +26,7 @@ class SceneInfoPage extends ConsumerWidget {
           children: [
             if (scene.details != null && scene.details!.isNotEmpty) ...[
               Text(
-                'Details',
+                context.l10n.common_details,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -36,7 +37,7 @@ class SceneInfoPage extends ConsumerWidget {
             ],
             if (scene.performerNames.isNotEmpty) ...[
               Text(
-                'Performers',
+                context.l10n.performers_title,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -79,8 +80,8 @@ class SceneInfoPage extends ConsumerWidget {
                         : const CircleAvatar(child: Icon(Icons.person)),
                     title: Text(
                       performerName.isNotEmpty
-                          ? performerName
-                          : 'Unknown Performer',
+                            ? performerName
+                              : context.l10n.common_unknown,
                       style: theme.textTheme.bodyLarge,
                     ),
                     trailing: const Icon(Icons.chevron_right),

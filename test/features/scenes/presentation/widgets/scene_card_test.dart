@@ -170,7 +170,7 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('Unknown Studio • 2023'), findsOneWidget);
+    expect(find.text('Unknown • 2023'), findsOneWidget);
   });
 
   testWidgets('SceneCard handles missing studio gracefully in grid mode', (
@@ -205,7 +205,7 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('Unknown Studio'), findsOneWidget);
+    expect(find.text('Unknown'), findsOneWidget);
   });
 
   testWidgets('SceneCard triggers onTap when tapped', (tester) async {

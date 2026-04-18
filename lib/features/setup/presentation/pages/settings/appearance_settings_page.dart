@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/presentation/theme/theme_mode_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/theme_color_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/true_black_provider.dart';
@@ -88,8 +89,10 @@ class _AppearanceSettingsPageState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SettingsPageShell(
-      title: 'Appearance Settings',
+      title: l10n.settings_appearance_title,
       child: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -98,8 +101,8 @@ class _AppearanceSettingsPageState
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SettingsSectionCard(
-                    title: 'Theme Mode',
-                    subtitle: 'Choose how the app follows brightness changes',
+                    title: l10n.settings_appearance_theme_mode,
+                    subtitle: l10n.settings_appearance_theme_mode_subtitle,
                     child: SizedBox(
                       width: double.infinity,
                       child: SegmentedButton<ThemeMode>(
@@ -107,21 +110,21 @@ class _AppearanceSettingsPageState
                         style: const ButtonStyle(
                           visualDensity: VisualDensity.compact,
                         ),
-                        segments: const [
+                        segments: [
                           ButtonSegment<ThemeMode>(
                             value: ThemeMode.system,
                             icon: Icon(Icons.brightness_auto_outlined),
-                            label: Text('System'),
+                            label: Text(l10n.settings_appearance_theme_system),
                           ),
                           ButtonSegment<ThemeMode>(
                             value: ThemeMode.light,
                             icon: Icon(Icons.light_mode_outlined),
-                            label: Text('Light'),
+                            label: Text(l10n.settings_appearance_theme_light),
                           ),
                           ButtonSegment<ThemeMode>(
                             value: ThemeMode.dark,
                             icon: Icon(Icons.dark_mode_outlined),
-                            label: Text('Dark'),
+                            label: Text(l10n.settings_appearance_theme_dark),
                           ),
                         ],
                         selected: {_themeMode},
@@ -133,21 +136,22 @@ class _AppearanceSettingsPageState
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
-                    title: 'Primary Color',
-                    subtitle: 'Pick a seed color for the Material 3 palette',
+                    title: l10n.settings_appearance_primary_color,
+                    subtitle: l10n.settings_appearance_primary_color_subtitle,
                     child: _buildColorSelector(),
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
                   SettingsSectionCard(
-                    title: 'Advanced Theming',
-                    subtitle: 'Optimizations for specific screen types',
+                    title: l10n.settings_appearance_advanced_theming,
+                    subtitle:
+                        l10n.settings_appearance_advanced_theming_subtitle,
                     child: Column(
                       children: [
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text('True Black (AMOLED)'),
-                          subtitle: const Text(
-                            'Use pure black backgrounds in dark mode to save battery on OLED screens',
+                          title: Text(l10n.settings_appearance_true_black),
+                          subtitle: Text(
+                            l10n.settings_appearance_true_black_subtitle,
                           ),
                           value: ref.watch(trueBlackEnabledProvider),
                           onChanged: (value) {
@@ -167,6 +171,7 @@ class _AppearanceSettingsPageState
 
   Widget _buildColorSelector() {
     final isCustom = _forceShowCustom || !_presetColors.contains(_seedColor);
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,11 +189,11 @@ class _AppearanceSettingsPageState
           TextField(
             controller: _customHexController,
             focusNode: _customHexFocusNode,
-            decoration: const InputDecoration(
-              labelText: 'Custom Hex Color',
+            decoration: InputDecoration(
+              labelText: l10n.settings_appearance_custom_hex,
               hintText: 'FF0F766E',
               prefixText: '#',
-              helperText: 'Enter an 8-digit ARGB hex code',
+              helperText: l10n.settings_appearance_custom_hex_helper,
             ),
             maxLength: 8,
             onChanged: (value) {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import '../../widgets/settings_page_shell.dart';
 import '../../providers/update_provider.dart';
@@ -10,20 +12,21 @@ class SupportSettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     return SettingsPageShell(
-      title: 'Support',
+      title: l10n.settings_support_title,
       child: ListView(
         padding: const EdgeInsets.all(AppTheme.spacingMedium),
         children: [
           Text(
-            'Diagnostics and project info',
+            l10n.settings_support_diagnostics,
             style: Theme.of(
               context,
             ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 4),
           Text(
-            'Open runtime logs or jump to the repository when you need help.',
+            l10n.settings_support_diagnostics_subtitle,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
@@ -40,13 +43,15 @@ class SupportSettingsPage extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SettingsSectionCard(
-                          title: 'Update Available',
-                          subtitle: 'A newer version is available on GitHub',
+                          title: l10n.settings_support_update_available,
+                          subtitle:
+                              l10n.settings_support_update_available_subtitle,
                           child: SettingsActionCard(
                             icon: Icons.system_update_rounded,
-                            title: 'Update to ${updateInfo.latestVersion}',
-                            subtitle:
-                                'New features and improvements are waiting for you.',
+                            title: l10n.settings_support_update_to(
+                              updateInfo.latestVersion,
+                            ),
+                            subtitle: l10n.settings_support_update_to_subtitle,
                             trailing: const Icon(
                               Icons.open_in_new_rounded,
                               size: 18,
@@ -75,8 +80,8 @@ class SupportSettingsPage extends ConsumerWidget {
               ),
 
           SettingsSectionCard(
-            title: 'About',
-            subtitle: 'Project and source information',
+            title: l10n.settings_support_about,
+            subtitle: l10n.settings_support_about_subtitle,
             child: Column(
               children: [
                 ref
@@ -84,28 +89,28 @@ class SupportSettingsPage extends ConsumerWidget {
                     .when(
                       data: (version) => SettingsActionCard(
                         icon: Icons.info_outline_rounded,
-                        title: 'Version',
-                        subtitle: 'StashFlow $version',
+                        title: l10n.settings_support_version,
+                        subtitle: '${l10n.appTitle} $version',
                         onTap: () {},
                       ),
                       loading: () => SettingsActionCard(
                         icon: Icons.info_outline_rounded,
-                        title: 'Version',
-                        subtitle: 'Loading version info...',
+                        title: l10n.settings_support_version,
+                        subtitle: l10n.settings_support_version_loading,
                         onTap: () {},
                       ),
                       error: (err, stack) => SettingsActionCard(
                         icon: Icons.info_outline_rounded,
-                        title: 'Version',
-                        subtitle: 'Version info unavailable',
+                        title: l10n.settings_support_version,
+                        subtitle: l10n.settings_support_version_unavailable,
                         onTap: () {},
                       ),
                     ),
                 const SizedBox(height: AppTheme.spacingSmall),
                 SettingsActionCard(
                   icon: Icons.code_rounded,
-                  title: 'GitHub Repository',
-                  subtitle: 'View source code and report issues',
+                  title: l10n.settings_support_github,
+                  subtitle: l10n.settings_support_github_subtitle,
                   trailing: const Icon(Icons.open_in_new_rounded, size: 18),
                   onTap: () async {
                     final url = Uri.parse(
@@ -120,17 +125,21 @@ class SupportSettingsPage extends ConsumerWidget {
                       } else {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Could not open GitHub link'),
+                            SnackBar(
+                              content: Text(l10n.settings_support_github_error),
                             ),
                           );
                         }
                       }
                     } catch (e) {
                       if (context.mounted) {
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              context.l10n.common_error(e.toString()),
+                            ),
+                          ),
+                        );
                       }
                     }
                   },

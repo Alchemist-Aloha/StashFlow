@@ -16,7 +16,10 @@ class VttService {
   final String? apiKey;
   final Map<String, List<SpriteInfo>> _cache = {};
 
-  Future<List<SpriteInfo>?> fetchSpriteInfo(String vttUrl, Map<String, String>? headers) async {
+  Future<List<SpriteInfo>?> fetchSpriteInfo(
+    String vttUrl,
+    Map<String, String>? headers,
+  ) async {
     var effectiveUrl = vttUrl;
     if (apiKey != null && apiKey!.isNotEmpty) {
       effectiveUrl = appendApiKey(vttUrl, apiKey!);
@@ -26,17 +29,29 @@ class VttService {
       return _cache[effectiveUrl];
     }
 
-    AppLogStore.instance.add('Fetching VTT: $effectiveUrl', source: 'VttService');
+    AppLogStore.instance.add(
+      'Fetching VTT: $effectiveUrl',
+      source: 'VttService',
+    );
 
     try {
-      final response = await http.get(Uri.parse(effectiveUrl), headers: headers);
+      final response = await http.get(
+        Uri.parse(effectiveUrl),
+        headers: headers,
+      );
       if (response.statusCode != 200) {
-        AppLogStore.instance.add('Failed to fetch VTT: ${response.statusCode}', source: 'VttService');
+        AppLogStore.instance.add(
+          'Failed to fetch VTT: ${response.statusCode}',
+          source: 'VttService',
+        );
         return null;
       }
 
       final spriteInfoList = _parseVtt(response.body, effectiveUrl);
-      AppLogStore.instance.add('Parsed ${spriteInfoList.length} sprites from VTT', source: 'VttService');
+      AppLogStore.instance.add(
+        'Parsed ${spriteInfoList.length} sprites from VTT',
+        source: 'VttService',
+      );
       _cache[effectiveUrl] = spriteInfoList;
       return spriteInfoList;
     } catch (e) {
@@ -48,7 +63,7 @@ class VttService {
   List<SpriteInfo> _parseVtt(String vttBody, String vttUrl) {
     final List<SpriteInfo> sprites = [];
     final lines = vttBody.split('\n');
-    
+
     // Robust VTT parser for Stash sprite format
     for (int i = 0; i < lines.length; i++) {
       final line = lines[i].trim();
@@ -57,7 +72,7 @@ class VttService {
         if (times.length == 2) {
           final start = _parseTimestamp(times[0].trim());
           final end = _parseTimestamp(times[1].trim());
-          
+
           // Look for the next non-empty line
           String? spriteLine;
           for (int j = i + 1; j < lines.length; j++) {
@@ -79,30 +94,32 @@ class VttService {
               final y = double.parse(match.group(3)!);
               final w = double.parse(match.group(4)!);
               final h = double.parse(match.group(5)!);
-              
+
               // Resolve relative sprite URL
               final vttUri = Uri.parse(vttUrl);
               var spriteUrl = vttUri.resolve(spriteFile).toString();
-              
+
               if (apiKey != null && apiKey!.isNotEmpty) {
                 spriteUrl = appendApiKey(spriteUrl, apiKey!);
               }
 
-              sprites.add(SpriteInfo(
-                url: spriteUrl,
-                start: start,
-                end: end,
-                x: x,
-                y: y,
-                w: w,
-                h: h,
-              ));
+              sprites.add(
+                SpriteInfo(
+                  url: spriteUrl,
+                  start: start,
+                  end: end,
+                  x: x,
+                  y: y,
+                  w: w,
+                  h: h,
+                ),
+              );
             }
           }
         }
       }
     }
-    
+
     return sprites;
   }
 

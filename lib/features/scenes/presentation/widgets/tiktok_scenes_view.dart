@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
@@ -11,6 +12,7 @@ import '../../domain/entities/scene.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/video_player_provider.dart';
 import '../providers/playback_queue_provider.dart';
+import '../../../setup/presentation/providers/main_page_orientation_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
@@ -87,13 +89,20 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
     _controllers.clear();
     WakelockPlus.disable();
 
+    final allowMainPageGravityOrientation = ref.read(
+      mainPageGravityOrientationProvider,
+    );
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
+    SystemChrome.setPreferredOrientations(
+      allowMainPageGravityOrientation
+          ? [
+              DeviceOrientation.portraitUp,
+              DeviceOrientation.portraitDown,
+              DeviceOrientation.landscapeLeft,
+              DeviceOrientation.landscapeRight,
+            ]
+          : [DeviceOrientation.portraitUp],
+    );
     super.dispose();
   }
 
@@ -272,7 +281,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
     return scenesAsync.when(
       data: (scenes) {
         if (scenes.isEmpty) {
-          return const Center(child: Text('No scenes found'));
+          return Center(child: Text(context.l10n.common_no_items));
         }
 
         // Initialize first batch if needed
@@ -304,7 +313,8 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
         );
       },
       loading: () => const Center(child: CircularProgressContext()),
-      error: (e, st) => Center(child: Text('Error: $e')),
+      error: (e, st) =>
+          Center(child: Text(context.l10n.common_error(e.toString()))),
     );
   }
 }
@@ -410,7 +420,10 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Rate Scene', style: context.textTheme.titleLarge),
+              Text(
+                context.l10n.common_rate,
+                style: context.textTheme.titleLarge,
+              ),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -454,7 +467,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                     Navigator.pop(context);
                   }
                 },
-                child: const Text('Clear Rating'),
+                child: Text(context.l10n.common_clear_rating),
               ),
               const SizedBox(height: AppTheme.spacingMedium),
             ],
@@ -755,13 +768,13 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                         const SizedBox(height: 16),
                         _OverlayButton(
                           icon: Icons.fullscreen,
-                          tooltip: 'Toggle Fullscreen',
+                          tooltip: context.l10n.common_toggle_fullscreen,
                           onTap: _toggleFullScreen,
                         ),
                         const SizedBox(height: 16),
                         _OverlayButton(
                           icon: Icons.info_outline,
-                          tooltip: 'Scene Details',
+                          tooltip: context.l10n.details_scene,
                           onTap: () async {
                             await _handoffToGlobalPlayer();
                             if (context.mounted) {

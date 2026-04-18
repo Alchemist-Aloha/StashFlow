@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import '../../../../../core/presentation/providers/desktop_capabilities_provider.dart';
 
@@ -13,79 +14,80 @@ class SettingsHubPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final isDesktop = ref.watch(desktopCapabilitiesProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return SettingsPageShell(
-      title: 'Settings',
+      title: l10n.settings_title,
       child: ListView(
         padding: const EdgeInsets.all(AppTheme.spacingMedium),
         children: [
           Text(
-            'Customize StashFlow',
+            l10n.settings_customize,
             style: Theme.of(
               context,
             ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 4),
           Text(
-            'Tune playback, appearance, layout, and support tools from one place.',
+            l10n.settings_customize_subtitle,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: AppTheme.spacingLarge),
           SettingsSectionCard(
-            title: 'Core settings',
-            subtitle: 'Most-used configuration pages',
+            title: l10n.settings_core_section,
+            subtitle: l10n.settings_core_subtitle,
             child: Column(
               children: [
                 SettingsActionCard(
                   icon: Icons.dns_rounded,
-                  title: 'Server',
-                  subtitle: 'Connection and API configuration',
+                  title: l10n.settings_server,
+                  subtitle: l10n.settings_server_subtitle,
                   onTap: () => context.push('/settings/server'),
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),
                 SettingsActionCard(
                   icon: Icons.play_circle_fill_rounded,
-                  title: 'Playback',
-                  subtitle: 'Player behavior and interactions',
+                  title: l10n.settings_playback,
+                  subtitle: l10n.settings_playback_subtitle,
                   onTap: () => context.push('/settings/playback'),
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),
                 if (isDesktop) ...[
                   SettingsActionCard(
                     icon: Icons.keyboard_rounded,
-                    title: 'Keyboard',
-                    subtitle: 'Customizable shortcuts and hotkeys',
+                    title: l10n.settings_keyboard,
+                    subtitle: l10n.settings_keyboard_subtitle,
                     onTap: () => context.push('/settings/keybinds'),
                   ),
                   const SizedBox(height: AppTheme.spacingSmall),
                 ],
                 SettingsActionCard(
                   icon: Icons.palette_rounded,
-                  title: 'Appearance',
-                  subtitle: 'Theme and colors',
+                  title: l10n.settings_appearance,
+                  subtitle: l10n.settings_appearance_subtitle,
                   onTap: () => context.push('/settings/appearance'),
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),
                 SettingsActionCard(
                   icon: Icons.dashboard_customize_rounded,
-                  title: 'Interface',
-                  subtitle: 'Navigation and layout defaults',
+                  title: l10n.settings_interface,
+                  subtitle: l10n.settings_interface_subtitle,
                   onTap: () => context.push('/settings/interface'),
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),
                 SettingsActionCard(
                   icon: Icons.help_outline_rounded,
-                  title: 'Support',
-                  subtitle: 'Diagnostics and about',
+                  title: l10n.settings_support,
+                  subtitle: l10n.settings_support_subtitle,
                   onTap: () => context.push('/settings/support'),
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),
                 SettingsActionCard(
                   icon: Icons.developer_mode_rounded,
-                  title: 'Develop',
-                  subtitle: 'Advanced tools and overrides',
+                  title: l10n.settings_develop,
+                  subtitle: l10n.settings_develop_subtitle,
                   onTap: () => context.push('/settings/develop'),
                 ),
               ],

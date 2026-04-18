@@ -9,6 +9,7 @@ import 'package:stash_app_flutter/features/studios/presentation/pages/studios_pa
 import 'package:stash_app_flutter/features/studios/presentation/providers/studio_list_provider.dart';
 import 'package:stash_app_flutter/features/tags/presentation/pages/tags_page.dart';
 import 'package:stash_app_flutter/features/tags/presentation/providers/tag_list_provider.dart';
+import 'package:stash_app_flutter/l10n/app_localizations.dart';
 
 import 'helpers/test_helpers.dart';
 
@@ -31,7 +32,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('No items found'), findsOneWidget);
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(ScenesPage)),
+      )!;
+      expect(find.text(l10n.common_no_items), findsOneWidget);
     });
 
     testWidgets('Performers page shows empty message', (tester) async {
@@ -44,7 +48,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('No items found'), findsOneWidget);
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(PerformersPage)),
+      )!;
+      expect(find.text(l10n.common_no_items), findsOneWidget);
     });
 
     testWidgets('Studios page shows empty message', (tester) async {
@@ -57,7 +64,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('No items found'), findsOneWidget);
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(StudiosPage)),
+      )!;
+      expect(find.text(l10n.common_no_items), findsOneWidget);
     });
 
     testWidgets('Tags page shows empty message', (tester) async {
@@ -70,7 +80,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('No items found'), findsOneWidget);
+      final l10n = AppLocalizations.of(tester.element(find.byType(TagsPage)))!;
+      expect(find.text(l10n.common_no_items), findsOneWidget);
     });
   });
 
@@ -93,8 +104,11 @@ void main() {
       await tester.tap(find.retryButton());
       await tester.pumpAndSettle();
 
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(ScenesPage)),
+      )!;
       expect(find.errorView(), findsNothing);
-      expect(find.text('No items found'), findsOneWidget);
+      expect(find.text(l10n.common_no_items), findsOneWidget);
     });
 
     testWidgets('Performers page shows error and retries', (tester) async {
@@ -117,7 +131,10 @@ void main() {
       await tester.tap(find.retryButton());
       await tester.pumpAndSettle();
 
-      expect(find.text('No items found'), findsOneWidget);
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(PerformersPage)),
+      )!;
+      expect(find.text(l10n.common_no_items), findsOneWidget);
     });
   });
 }

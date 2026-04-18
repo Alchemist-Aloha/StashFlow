@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide Image;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
@@ -280,7 +281,12 @@ Future<void> pumpTestWidget(
         ...overrides,
       ],
       child: wrapWithApp
-          ? MaterialApp(theme: AppTheme.darkTheme, home: child)
+          ? MaterialApp(
+              theme: AppTheme.darkTheme,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: child,
+            )
           : child,
     ),
   );

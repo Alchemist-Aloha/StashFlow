@@ -1,34 +1,22 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/pages/settings/settings_hub_page.dart';
-import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/l10n/app_localizations.dart';
+import 'helpers/test_helpers.dart';
 
 void main() {
   testWidgets('Settings page shows category tiles', (
     WidgetTester tester,
   ) async {
-    SharedPreferences.setMockInitialValues(<String, Object>{});
-    final sharedPreferences = await SharedPreferences.getInstance();
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
-        ],
-        child: MaterialApp(
-          theme: AppTheme.lightTheme,
-          home: const SettingsHubPage(),
-        ),
-      ),
-    );
+    await pumpTestWidget(tester, child: const SettingsHubPage());
     await tester.pumpAndSettle();
 
-    expect(find.text('Server'), findsOneWidget);
-    expect(find.text('Playback'), findsOneWidget);
-    expect(find.text('Settings'), findsOneWidget);
+    final l10n = AppLocalizations.of(
+      tester.element(find.byType(SettingsHubPage)),
+    )!;
+
+    expect(find.text(l10n.settings_server), findsOneWidget);
+    expect(find.text(l10n.settings_playback), findsOneWidget);
+    expect(find.text(l10n.settings_interface), findsOneWidget);
   });
 }

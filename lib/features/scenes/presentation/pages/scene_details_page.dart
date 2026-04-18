@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -92,11 +93,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     if (!context.mounted) return;
 
     if (randomScene == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No scenes available for random navigation'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.scenes_no_random)));
       return;
     }
 
@@ -190,12 +189,12 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     final scrapeEnabled = ref.watch(scrapeEnabledProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Scene Details')),
+      appBar: AppBar(title: Text(context.l10n.details_scene)),
       floatingActionButton: randomNavigationEnabled
           ? sceneAsync.maybeWhen(
               data: (_) => FloatingActionButton.small(
                 onPressed: () => _openRandomScene(context),
-                tooltip: 'Random scene',
+                tooltip: context.l10n.random_scene,
                 child: const Icon(Icons.casino_outlined),
               ),
               orElse: () => null,
@@ -300,7 +299,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => ErrorStateView(
-          message: 'Failed to load scene details.\n$err',
+          message: context.l10n.common_error(err.toString()),
           onRetry: () => ref.refresh(sceneDetailsProvider(widget.sceneId)),
         ),
       ),
@@ -442,7 +441,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to update rating: $e')),
+                    SnackBar(
+                      content: Text(
+                        context.l10n.details_failed_update_rating(e.toString()),
+                      ),
+                    ),
                   );
                 }
               }
@@ -470,13 +473,21 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               _invalidateSceneListUnlessRandom();
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('O count incremented')),
+                  SnackBar(
+                    content: Text(context.l10n.details_o_count_incremented),
+                  ),
                 );
               }
             } catch (e) {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Failed to increment O count: $e')),
+                  SnackBar(
+                    content: Text(
+                      context.l10n.details_failed_increment_o_count(
+                        e.toString(),
+                      ),
+                    ),
+                  ),
                 );
               }
             }
@@ -506,7 +517,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             ),
             icon: const Icon(Icons.edit_outlined),
-            label: const Text('Edit'),
+            label: Text(context.l10n.common_edit),
           ),
       ],
     );
@@ -525,7 +536,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         Row(
           children: [
             Text(
-              'Details',
+              context.l10n.common_details,
               style: context.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
@@ -536,7 +547,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 onPressed: () {
                   setState(() => _detailsExpanded = !_detailsExpanded);
                 },
-                child: Text(_detailsExpanded ? 'Show less' : 'Show more'),
+                child: Text(
+                  _detailsExpanded
+                      ? context.l10n.details_show_less
+                      : context.l10n.details_show_more,
+                ),
               ),
           ],
         ),
@@ -575,7 +590,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         Row(
           children: [
             Text(
-              'Tags',
+              context.l10n.details_tags,
               style: context.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
@@ -586,7 +601,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 onPressed: () {
                   setState(() => _tagsExpanded = !_tagsExpanded);
                 },
-                child: Text(_tagsExpanded ? 'Show less' : 'Show more'),
+                child: Text(
+                  _tagsExpanded
+                      ? context.l10n.details_show_less
+                      : context.l10n.details_show_more,
+                ),
               ),
           ],
         ),
@@ -652,7 +671,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         Row(
           children: [
             Text(
-              'Performers',
+              context.l10n.performers_title,
               style: context.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: context.colors.onSurface,
@@ -664,7 +683,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 onPressed: () {
                   setState(() => _performersExpanded = !_performersExpanded);
                 },
-                child: Text(_performersExpanded ? 'Show less' : 'Show more'),
+                child: Text(_performersExpanded
+                    ? context.l10n.details_show_less
+                    : context.l10n.details_show_more),
               ),
           ],
         ),
@@ -747,7 +768,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SectionHeader(
-              title: 'More From Studio',
+              title: context.l10n.details_more_from_studio,
               onViewAll: canOpenStudio
                   ? () =>
                         context.push('/studios/studio/${scene.studioId}/media')

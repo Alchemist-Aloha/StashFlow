@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/tag_list_provider.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
-import '../../../../core/presentation/providers/layout_settings_provider.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../domain/entities/tag.dart';
 
@@ -65,15 +65,15 @@ class _TagsPageState extends ConsumerState<TagsPage> {
   String _sortLabel(_TagSortOption option) {
     switch (option) {
       case _TagSortOption.name:
-        return 'Name';
+        return context.l10n.sort_name;
       case _TagSortOption.sceneCount:
-        return 'Scene Count';
+        return context.l10n.sort_scene_count;
       case _TagSortOption.lastUpdated:
-        return 'Updated At';
+        return context.l10n.sort_updated_at;
       case _TagSortOption.createdAt:
-        return 'Created At';
+        return context.l10n.sort_created_at;
       case _TagSortOption.random:
-        return 'Random';
+        return context.l10n.sort_random;
     }
   }
 
@@ -115,12 +115,15 @@ class _TagsPageState extends ConsumerState<TagsPage> {
                           tempDescending = false;
                         });
                       },
-                      child: const Text('Reset'),
+                      child: Text(context.l10n.common_reset),
                     ),
                   ],
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),
-                Text('Sort Method', style: context.textTheme.labelLarge),
+                Text(
+                  context.l10n.common_sort_method,
+                  style: context.textTheme.labelLarge,
+                ),
                 const SizedBox(height: AppTheme.spacingSmall),
                 Wrap(
                   spacing: AppTheme.spacingSmall,
@@ -141,21 +144,24 @@ class _TagsPageState extends ConsumerState<TagsPage> {
                       .toList(),
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),
-                Text('Direction', style: context.textTheme.labelLarge),
+                Text(
+                  context.l10n.common_direction,
+                  style: context.textTheme.labelLarge,
+                ),
                 const SizedBox(height: AppTheme.spacingSmall),
                 SizedBox(
                   width: double.infinity,
                   child: SegmentedButton<bool>(
-                    segments: const [
+                    segments: [
                       ButtonSegment(
                         value: true,
-                        label: Text('Descending'),
-                        icon: Icon(Icons.arrow_downward),
+                        label: Text(context.l10n.common_descending),
+                        icon: const Icon(Icons.arrow_downward),
                       ),
                       ButtonSegment(
                         value: false,
-                        label: Text('Ascending'),
-                        icon: Icon(Icons.arrow_upward),
+                        label: Text(context.l10n.common_ascending),
+                        icon: const Icon(Icons.arrow_upward),
                       ),
                     ],
                     selected: {tempDescending},
@@ -182,7 +188,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
                         vertical: AppTheme.spacingMedium,
                       ),
                     ),
-                    child: const Text('Apply Sort'),
+                    child: Text(context.l10n.common_apply_sort),
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),
@@ -199,9 +205,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
                       if (context.mounted) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Sort preferences saved as default'),
-                          ),
+                          SnackBar(content: Text(context.l10n.tags_sort_saved)),
                         );
                       }
                     },
@@ -210,7 +214,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
                         vertical: AppTheme.spacingMedium,
                       ),
                     ),
-                    child: const Text('Save as Default'),
+                    child: Text(context.l10n.common_save_default),
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),
@@ -248,7 +252,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Filter Tags',
+                      context.l10n.tags_filter_title,
                       style: context.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -259,7 +263,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
                           tempFavoritesOnly = false;
                         });
                       },
-                      child: const Text('Reset'),
+                      child: Text(context.l10n.common_reset),
                     ),
                   ],
                 ),
@@ -267,7 +271,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
                 SwitchListTile.adaptive(
                   value: tempFavoritesOnly,
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Favorites only'),
+                  title: Text(context.l10n.common_favorites_only),
                   onChanged: (value) {
                     setModalState(() => tempFavoritesOnly = value);
                   },
@@ -289,7 +293,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
                         vertical: AppTheme.spacingMedium,
                       ),
                     ),
-                    child: const Text('Apply Filters'),
+                    child: Text(context.l10n.common_apply_filters),
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),
@@ -306,10 +310,8 @@ class _TagsPageState extends ConsumerState<TagsPage> {
                       if (context.mounted) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Filter preferences saved as default',
-                            ),
+                          SnackBar(
+                            content: Text(context.l10n.tags_filter_saved),
                           ),
                         );
                       }
@@ -319,7 +321,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
                         vertical: AppTheme.spacingMedium,
                       ),
                     ),
-                    child: const Text('Save as Default'),
+                    child: Text(context.l10n.common_save_default),
                   ),
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),
@@ -338,11 +340,9 @@ class _TagsPageState extends ConsumerState<TagsPage> {
     if (!mounted) return;
 
     if (randomTag == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No tags available for random navigation'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.tags_no_random)));
       return;
     }
 
@@ -353,7 +353,6 @@ class _TagsPageState extends ConsumerState<TagsPage> {
   @override
   Widget build(BuildContext context) {
     final tagsAsync = ref.watch(tagListProvider);
-    final gridColumns = ref.watch(tagGridColumnsProvider);
     final favoritesOnly = ref.watch(tagFavoritesOnlyProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final scrollController = ref.watch(tagScrollControllerProvider);
@@ -361,24 +360,22 @@ class _TagsPageState extends ConsumerState<TagsPage> {
         _sortOption != _TagSortOption.name || _sortDescending;
 
     return ListPageScaffold<Tag>(
-      title: 'Tags',
-      searchHint: 'Search tags...',
+      title: context.l10n.nav_tags,
+      searchHint: context.l10n.tags_search_hint,
       onSearchChanged: _onSearchChanged,
       provider: tagsAsync,
       scrollController: scrollController,
       imageUrlBuilder: (tag) => tag.imagePath,
       onRefresh: () => ref.read(tagListProvider.notifier).refresh(),
-      onFetchNextPage: () =>
-          ref.read(tagListProvider.notifier).fetchNextPage(),
+      onFetchNextPage: () => ref.read(tagListProvider.notifier).fetchNextPage(),
       onPageSizeChanged: (pageSize) =>
           ref.read(tagListProvider.notifier).setPerPage(pageSize),
       actions: [
-
         Stack(
           children: [
             IconButton(
               icon: const Icon(Icons.sort),
-              tooltip: 'Sort options',
+              tooltip: context.l10n.tags_sort_tooltip,
               onPressed: _showSortPanel,
             ),
             if (hasSortOverride)
@@ -400,7 +397,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
           children: [
             IconButton(
               icon: const Icon(Icons.filter_list),
-              tooltip: 'Filter options',
+              tooltip: context.l10n.tags_filter_tooltip,
               onPressed: _showFilterPanel,
             ),
             if (favoritesOnly)
@@ -432,7 +429,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           trailing: Text(
-            '${tag.sceneCount} scenes',
+            context.l10n.nScenes(tag.sceneCount),
             style: context.textTheme.bodySmall,
           ),
         ),
@@ -441,7 +438,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
           ? tagsAsync.maybeWhen(
               data: (tags) => FloatingActionButton.small(
                 onPressed: _openRandomTag,
-                tooltip: 'Random tag',
+                tooltip: context.l10n.random_tag,
                 child: const Icon(Icons.casino_outlined),
               ),
               orElse: () => null,

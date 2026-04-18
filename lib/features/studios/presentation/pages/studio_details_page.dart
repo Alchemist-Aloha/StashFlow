@@ -11,6 +11,7 @@ import '../providers/studio_galleries_provider.dart';
 import '../../../images/presentation/providers/image_list_provider.dart';
 
 import '../../../../core/presentation/widgets/section_header.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/widgets/media_strip.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
@@ -28,11 +29,9 @@ class StudioDetailsPage extends ConsumerWidget {
     if (!context.mounted) return;
 
     if (randomStudio == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No studios available for random navigation'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.studios_no_random)));
       return;
     }
 
@@ -48,11 +47,11 @@ class StudioDetailsPage extends ConsumerWidget {
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Studio Details')),
+      appBar: AppBar(title: Text(context.l10n.details_studio)),
       floatingActionButton: randomNavigationEnabled
           ? FloatingActionButton.small(
               onPressed: () => _openRandomStudio(context, ref),
-              tooltip: 'Random studio',
+              tooltip: context.l10n.random_studio,
               child: const Icon(Icons.casino_outlined),
             )
           : null,
@@ -118,7 +117,7 @@ class StudioDetailsPage extends ConsumerWidget {
                         ],
                         const Divider(height: 32, color: Colors.grey),
                         SectionHeader(
-                          title: 'Media',
+                          title: context.l10n.details_media,
                           onViewAll: () => context.push(
                             '/studios/studio/${studio.id}/media',
                           ),
@@ -131,7 +130,7 @@ class StudioDetailsPage extends ConsumerWidget {
                                   top: AppTheme.spacingSmall,
                                 ),
                                 child: Text(
-                                  'No media found',
+                                  context.l10n.common_no_media_found,
                                   style: context.textTheme.bodySmall?.copyWith(
                                     color: context.colors.onSurfaceVariant,
                                   ),
@@ -161,7 +160,7 @@ class StudioDetailsPage extends ConsumerWidget {
                             child: Center(child: CircularProgressIndicator()),
                           ),
                           error: (err, stack) => Text(
-                            'Failed to load media: $err',
+                            context.l10n.common_error(err.toString()),
                             style: TextStyle(
                               color: context.colors.onSurface.withValues(
                                 alpha: 0.7,
@@ -179,7 +178,7 @@ class StudioDetailsPage extends ConsumerWidget {
                               children: [
                                 const SizedBox(height: AppTheme.spacingMedium),
                                 SectionHeader(
-                                  title: 'Galleries',
+                                  title: context.l10n.details_galleries,
                                   onViewAll: () => context.push(
                                     '/studios/studio/${studio.id}/galleries',
                                   ),
@@ -213,7 +212,7 @@ class StudioDetailsPage extends ConsumerWidget {
                             child: Center(child: CircularProgressIndicator()),
                           ),
                           error: (err, stack) => Text(
-                            'Failed to load galleries: $err',
+                            context.l10n.common_error(err.toString()),
                             style: TextStyle(
                               color: context.colors.onSurface.withValues(
                                 alpha: 0.7,
@@ -230,7 +229,8 @@ class StudioDetailsPage extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+        error: (err, stack) =>
+            Center(child: Text(context.l10n.common_error(err.toString()))),
       ),
     );
   }
