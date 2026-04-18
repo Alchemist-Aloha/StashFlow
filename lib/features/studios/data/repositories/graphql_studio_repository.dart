@@ -2,6 +2,7 @@ import 'package:graphql/client.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../graphql/studios.graphql.dart';
+import '../../../scenes/domain/models/scraped_scene.dart';
 import '../../domain/entities/studio.dart';
 import '../../domain/repositories/studio_repository.dart';
 
@@ -182,5 +183,34 @@ class GraphQLStudioRepository implements StudioRepository {
     );
 
     if (result.hasException) throw result.exception!;
+  }
+
+  @override
+  Future<List<ScrapedStudio>> scrapeStudio({
+    String? scraperId,
+    String? stashBoxEndpoint,
+    String? studioId,
+    String? query,
+  }) async {
+    final result = await client.query$ScrapeSingleStudio(
+      Options$Query$ScrapeSingleStudio(
+        variables: Variables$Query$ScrapeSingleStudio(
+          source: Input$ScraperSourceInput(
+            scraper_id: scraperId,
+            stash_box_endpoint: stashBoxEndpoint,
+          ),
+          input: Input$ScrapeSingleStudioInput(
+            query: query,
+          ),
+        ),
+      ),
+    );
+
+    if (result.hasException) throw result.exception!;
+
+    final List<Query$ScrapeSingleStudio$scrapeSingleStudio> raw =
+        result.parsedData?.scrapeSingleStudio ?? [];
+
+    return raw.map((e) => ScrapedStudio.fromJson(e.toJson())).toList();
   }
 }

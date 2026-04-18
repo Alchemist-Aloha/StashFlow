@@ -2,6 +2,7 @@ import 'package:graphql/client.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../graphql/performers.graphql.dart';
+import '../../../scenes/domain/models/scraped_scene.dart';
 import '../../domain/entities/performer.dart';
 import '../../domain/repositories/performer_repository.dart';
 
@@ -244,5 +245,35 @@ class GraphQLPerformerRepository implements PerformerRepository {
     );
 
     if (result.hasException) throw result.exception!;
+  }
+
+  @override
+  Future<List<ScrapedPerformer>> scrapePerformer({
+    String? scraperId,
+    String? stashBoxEndpoint,
+    String? performerId,
+    String? query,
+  }) async {
+    final result = await client.query$ScrapeSinglePerformer(
+      Options$Query$ScrapeSinglePerformer(
+        variables: Variables$Query$ScrapeSinglePerformer(
+          source: Input$ScraperSourceInput(
+            scraper_id: scraperId,
+            stash_box_endpoint: stashBoxEndpoint,
+          ),
+          input: Input$ScrapeSinglePerformerInput(
+            performer_id: performerId,
+            query: query,
+          ),
+        ),
+      ),
+    );
+
+    if (result.hasException) throw result.exception!;
+
+    final List<Query$ScrapeSinglePerformer$scrapeSinglePerformer> raw =
+        result.parsedData?.scrapeSinglePerformer ?? [];
+
+    return raw.map((e) => ScrapedPerformer.fromJson(e.toJson())).toList();
   }
 }

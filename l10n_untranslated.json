@@ -1,1 +1,71 @@
-{}
+{
+  "de": [
+    "details_scene_fingerprint_query",
+    "scenes_available_scrapers",
+    "scrape_results_existing",
+    "scrape_results_scraped"
+  ],
+
+  "es": [
+    "details_scene_fingerprint_query",
+    "scenes_available_scrapers",
+    "scrape_results_existing",
+    "scrape_results_scraped"
+  ],
+
+  "fr": [
+    "details_scene_fingerprint_query",
+    "scenes_available_scrapers",
+    "scrape_results_existing",
+    "scrape_results_scraped"
+  ],
+
+  "it": [
+    "details_scene_fingerprint_query",
+    "scenes_available_scrapers",
+    "scrape_results_existing",
+    "scrape_results_scraped"
+  ],
+
+  "ja": [
+    "details_scene_fingerprint_query",
+    "scenes_available_scrapers",
+    "scrape_results_existing",
+    "scrape_results_scraped"
+  ],
+
+  "ko": [
+    "details_scene_fingerprint_query",
+    "scenes_available_scrapers",
+    "scrape_results_existing",
+    "scrape_results_scraped"
+  ],
+
+  "ru": [
+    "details_scene_fingerprint_query",
+    "scenes_available_scrapers",
+    "scrape_results_existing",
+    "scrape_results_scraped"
+  ],
+
+  "zh": [
+    "details_scene_fingerprint_query",
+    "scenes_available_scrapers",
+    "scrape_results_existing",
+    "scrape_results_scraped"
+  ],
+
+  "zh_Hans": [
+    "details_scene_fingerprint_query",
+    "scenes_available_scrapers",
+    "scrape_results_existing",
+    "scrape_results_scraped"
+  ],
+
+  "zh_Hant": [
+    "details_scene_fingerprint_query",
+    "scenes_available_scrapers",
+    "scrape_results_existing",
+    "scrape_results_scraped"
+  ]
+}

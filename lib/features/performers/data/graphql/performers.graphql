@@ -61,3 +61,34 @@ mutation CreatePerformer($input: PerformerCreateInput!) {
     id
   }
 }
+
+query ScrapeSinglePerformer($source: ScraperSourceInput!, $input: ScrapeSinglePerformerInput!) {
+  scrapeSinglePerformer(source: $source, input: $input) {
+    name
+    disambiguation
+    gender
+    birthdate
+    ethnicity
+    country
+    eye_color
+    height
+    measurements
+    fake_tits
+    penis_length
+    circumcised
+    career_start
+    career_end
+    tattoos
+    piercings
+    aliases
+    image
+    details
+    death_date
+    hair_color
+    weight
+    remote_site_id
+    urls
+    images
+    stored_id
+  }
+}

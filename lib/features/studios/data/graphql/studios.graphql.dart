@@ -2071,3 +2071,763 @@ class _CopyWithStubImpl$Mutation$UpdateStudioFavorite$studioUpdate<TRes>
 
   call({String? id, bool? favorite, String? $__typename}) => _res;
 }
+
+class Variables$Query$ScrapeSingleStudio {
+  factory Variables$Query$ScrapeSingleStudio({
+    required Input$ScraperSourceInput source,
+    required Input$ScrapeSingleStudioInput input,
+  }) => Variables$Query$ScrapeSingleStudio._({
+    r'source': source,
+    r'input': input,
+  });
+
+  Variables$Query$ScrapeSingleStudio._(this._$data);
+
+  factory Variables$Query$ScrapeSingleStudio.fromJson(
+    Map<String, dynamic> data,
+  ) {
+    final result$data = <String, dynamic>{};
+    final l$source = data['source'];
+    result$data['source'] = Input$ScraperSourceInput.fromJson(
+      (l$source as Map<String, dynamic>),
+    );
+    final l$input = data['input'];
+    result$data['input'] = Input$ScrapeSingleStudioInput.fromJson(
+      (l$input as Map<String, dynamic>),
+    );
+    return Variables$Query$ScrapeSingleStudio._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  Input$ScraperSourceInput get source =>
+      (_$data['source'] as Input$ScraperSourceInput);
+
+  Input$ScrapeSingleStudioInput get input =>
+      (_$data['input'] as Input$ScrapeSingleStudioInput);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$source = source;
+    result$data['source'] = l$source.toJson();
+    final l$input = input;
+    result$data['input'] = l$input.toJson();
+    return result$data;
+  }
+
+  CopyWith$Variables$Query$ScrapeSingleStudio<
+    Variables$Query$ScrapeSingleStudio
+  >
+  get copyWith => CopyWith$Variables$Query$ScrapeSingleStudio(this, (i) => i);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Query$ScrapeSingleStudio ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$source = source;
+    final lOther$source = other.source;
+    if (l$source != lOther$source) {
+      return false;
+    }
+    final l$input = input;
+    final lOther$input = other.input;
+    if (l$input != lOther$input) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$source = source;
+    final l$input = input;
+    return Object.hashAll([l$source, l$input]);
+  }
+}
+
+abstract class CopyWith$Variables$Query$ScrapeSingleStudio<TRes> {
+  factory CopyWith$Variables$Query$ScrapeSingleStudio(
+    Variables$Query$ScrapeSingleStudio instance,
+    TRes Function(Variables$Query$ScrapeSingleStudio) then,
+  ) = _CopyWithImpl$Variables$Query$ScrapeSingleStudio;
+
+  factory CopyWith$Variables$Query$ScrapeSingleStudio.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Query$ScrapeSingleStudio;
+
+  TRes call({
+    Input$ScraperSourceInput? source,
+    Input$ScrapeSingleStudioInput? input,
+  });
+}
+
+class _CopyWithImpl$Variables$Query$ScrapeSingleStudio<TRes>
+    implements CopyWith$Variables$Query$ScrapeSingleStudio<TRes> {
+  _CopyWithImpl$Variables$Query$ScrapeSingleStudio(this._instance, this._then);
+
+  final Variables$Query$ScrapeSingleStudio _instance;
+
+  final TRes Function(Variables$Query$ScrapeSingleStudio) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? source = _undefined, Object? input = _undefined}) => _then(
+    Variables$Query$ScrapeSingleStudio._({
+      ..._instance._$data,
+      if (source != _undefined && source != null)
+        'source': (source as Input$ScraperSourceInput),
+      if (input != _undefined && input != null)
+        'input': (input as Input$ScrapeSingleStudioInput),
+    }),
+  );
+}
+
+class _CopyWithStubImpl$Variables$Query$ScrapeSingleStudio<TRes>
+    implements CopyWith$Variables$Query$ScrapeSingleStudio<TRes> {
+  _CopyWithStubImpl$Variables$Query$ScrapeSingleStudio(this._res);
+
+  TRes _res;
+
+  call({
+    Input$ScraperSourceInput? source,
+    Input$ScrapeSingleStudioInput? input,
+  }) => _res;
+}
+
+class Query$ScrapeSingleStudio {
+  Query$ScrapeSingleStudio({
+    required this.scrapeSingleStudio,
+    this.$__typename = 'Query',
+  });
+
+  factory Query$ScrapeSingleStudio.fromJson(Map<String, dynamic> json) {
+    final l$scrapeSingleStudio = json['scrapeSingleStudio'];
+    final l$$__typename = json['__typename'];
+    return Query$ScrapeSingleStudio(
+      scrapeSingleStudio: (l$scrapeSingleStudio as List<dynamic>)
+          .map(
+            (e) => Query$ScrapeSingleStudio$scrapeSingleStudio.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final List<Query$ScrapeSingleStudio$scrapeSingleStudio> scrapeSingleStudio;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$scrapeSingleStudio = scrapeSingleStudio;
+    _resultData['scrapeSingleStudio'] = l$scrapeSingleStudio
+        .map((e) => e.toJson())
+        .toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$scrapeSingleStudio = scrapeSingleStudio;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      Object.hashAll(l$scrapeSingleStudio.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$ScrapeSingleStudio ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$scrapeSingleStudio = scrapeSingleStudio;
+    final lOther$scrapeSingleStudio = other.scrapeSingleStudio;
+    if (l$scrapeSingleStudio.length != lOther$scrapeSingleStudio.length) {
+      return false;
+    }
+    for (int i = 0; i < l$scrapeSingleStudio.length; i++) {
+      final l$scrapeSingleStudio$entry = l$scrapeSingleStudio[i];
+      final lOther$scrapeSingleStudio$entry = lOther$scrapeSingleStudio[i];
+      if (l$scrapeSingleStudio$entry != lOther$scrapeSingleStudio$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$ScrapeSingleStudio
+    on Query$ScrapeSingleStudio {
+  CopyWith$Query$ScrapeSingleStudio<Query$ScrapeSingleStudio> get copyWith =>
+      CopyWith$Query$ScrapeSingleStudio(this, (i) => i);
+}
+
+abstract class CopyWith$Query$ScrapeSingleStudio<TRes> {
+  factory CopyWith$Query$ScrapeSingleStudio(
+    Query$ScrapeSingleStudio instance,
+    TRes Function(Query$ScrapeSingleStudio) then,
+  ) = _CopyWithImpl$Query$ScrapeSingleStudio;
+
+  factory CopyWith$Query$ScrapeSingleStudio.stub(TRes res) =
+      _CopyWithStubImpl$Query$ScrapeSingleStudio;
+
+  TRes call({
+    List<Query$ScrapeSingleStudio$scrapeSingleStudio>? scrapeSingleStudio,
+    String? $__typename,
+  });
+  TRes scrapeSingleStudio(
+    Iterable<Query$ScrapeSingleStudio$scrapeSingleStudio> Function(
+      Iterable<
+        CopyWith$Query$ScrapeSingleStudio$scrapeSingleStudio<
+          Query$ScrapeSingleStudio$scrapeSingleStudio
+        >
+      >,
+    )
+    _fn,
+  );
+}
+
+class _CopyWithImpl$Query$ScrapeSingleStudio<TRes>
+    implements CopyWith$Query$ScrapeSingleStudio<TRes> {
+  _CopyWithImpl$Query$ScrapeSingleStudio(this._instance, this._then);
+
+  final Query$ScrapeSingleStudio _instance;
+
+  final TRes Function(Query$ScrapeSingleStudio) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? scrapeSingleStudio = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$ScrapeSingleStudio(
+      scrapeSingleStudio:
+          scrapeSingleStudio == _undefined || scrapeSingleStudio == null
+          ? _instance.scrapeSingleStudio
+          : (scrapeSingleStudio
+                as List<Query$ScrapeSingleStudio$scrapeSingleStudio>),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+
+  TRes scrapeSingleStudio(
+    Iterable<Query$ScrapeSingleStudio$scrapeSingleStudio> Function(
+      Iterable<
+        CopyWith$Query$ScrapeSingleStudio$scrapeSingleStudio<
+          Query$ScrapeSingleStudio$scrapeSingleStudio
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    scrapeSingleStudio: _fn(
+      _instance.scrapeSingleStudio.map(
+        (e) =>
+            CopyWith$Query$ScrapeSingleStudio$scrapeSingleStudio(e, (i) => i),
+      ),
+    ).toList(),
+  );
+}
+
+class _CopyWithStubImpl$Query$ScrapeSingleStudio<TRes>
+    implements CopyWith$Query$ScrapeSingleStudio<TRes> {
+  _CopyWithStubImpl$Query$ScrapeSingleStudio(this._res);
+
+  TRes _res;
+
+  call({
+    List<Query$ScrapeSingleStudio$scrapeSingleStudio>? scrapeSingleStudio,
+    String? $__typename,
+  }) => _res;
+
+  scrapeSingleStudio(_fn) => _res;
+}
+
+const documentNodeQueryScrapeSingleStudio = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.query,
+      name: NameNode(value: 'ScrapeSingleStudio'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'source')),
+          type: NamedTypeNode(
+            name: NameNode(value: 'ScraperSourceInput'),
+            isNonNull: true,
+          ),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'input')),
+          type: NamedTypeNode(
+            name: NameNode(value: 'ScrapeSingleStudioInput'),
+            isNonNull: true,
+          ),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'scrapeSingleStudio'),
+            alias: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'source'),
+                value: VariableNode(name: NameNode(value: 'source')),
+              ),
+              ArgumentNode(
+                name: NameNode(value: 'input'),
+                value: VariableNode(name: NameNode(value: 'input')),
+              ),
+            ],
+            directives: [],
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: 'name'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'url'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'image'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'remote_site_id'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'details'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'stored_id'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ],
+      ),
+    ),
+  ],
+);
+Query$ScrapeSingleStudio _parserFn$Query$ScrapeSingleStudio(
+  Map<String, dynamic> data,
+) => Query$ScrapeSingleStudio.fromJson(data);
+typedef OnQueryComplete$Query$ScrapeSingleStudio =
+    FutureOr<void> Function(Map<String, dynamic>?, Query$ScrapeSingleStudio?);
+
+class Options$Query$ScrapeSingleStudio
+    extends graphql.QueryOptions<Query$ScrapeSingleStudio> {
+  Options$Query$ScrapeSingleStudio({
+    String? operationName,
+    required Variables$Query$ScrapeSingleStudio variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$ScrapeSingleStudio? typedOptimisticResult,
+    Duration? pollInterval,
+    graphql.Context? context,
+    OnQueryComplete$Query$ScrapeSingleStudio? onComplete,
+    graphql.OnQueryError? onError,
+  }) : onCompleteWithParsed = onComplete,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         pollInterval: pollInterval,
+         context: context,
+         onComplete: onComplete == null
+             ? null
+             : (data) => onComplete(
+                 data,
+                 data == null ? null : _parserFn$Query$ScrapeSingleStudio(data),
+               ),
+         onError: onError,
+         document: documentNodeQueryScrapeSingleStudio,
+         parserFn: _parserFn$Query$ScrapeSingleStudio,
+       );
+
+  final OnQueryComplete$Query$ScrapeSingleStudio? onCompleteWithParsed;
+
+  @override
+  List<Object?> get properties => [
+    ...super.onComplete == null
+        ? super.properties
+        : super.properties.where((property) => property != onComplete),
+    onCompleteWithParsed,
+  ];
+}
+
+class WatchOptions$Query$ScrapeSingleStudio
+    extends graphql.WatchQueryOptions<Query$ScrapeSingleStudio> {
+  WatchOptions$Query$ScrapeSingleStudio({
+    String? operationName,
+    required Variables$Query$ScrapeSingleStudio variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$ScrapeSingleStudio? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeQueryScrapeSingleStudio,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Query$ScrapeSingleStudio,
+       );
+}
+
+class FetchMoreOptions$Query$ScrapeSingleStudio
+    extends graphql.FetchMoreOptions {
+  FetchMoreOptions$Query$ScrapeSingleStudio({
+    required graphql.UpdateQuery updateQuery,
+    required Variables$Query$ScrapeSingleStudio variables,
+  }) : super(
+         updateQuery: updateQuery,
+         variables: variables.toJson(),
+         document: documentNodeQueryScrapeSingleStudio,
+       );
+}
+
+extension ClientExtension$Query$ScrapeSingleStudio on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Query$ScrapeSingleStudio>>
+  query$ScrapeSingleStudio(Options$Query$ScrapeSingleStudio options) async =>
+      await this.query(options);
+
+  graphql.ObservableQuery<Query$ScrapeSingleStudio>
+  watchQuery$ScrapeSingleStudio(
+    WatchOptions$Query$ScrapeSingleStudio options,
+  ) => this.watchQuery(options);
+
+  void writeQuery$ScrapeSingleStudio({
+    required Query$ScrapeSingleStudio data,
+    required Variables$Query$ScrapeSingleStudio variables,
+    bool broadcast = true,
+  }) => this.writeQuery(
+    graphql.Request(
+      operation: graphql.Operation(
+        document: documentNodeQueryScrapeSingleStudio,
+      ),
+      variables: variables.toJson(),
+    ),
+    data: data.toJson(),
+    broadcast: broadcast,
+  );
+
+  Query$ScrapeSingleStudio? readQuery$ScrapeSingleStudio({
+    required Variables$Query$ScrapeSingleStudio variables,
+    bool optimistic = true,
+  }) {
+    final result = this.readQuery(
+      graphql.Request(
+        operation: graphql.Operation(
+          document: documentNodeQueryScrapeSingleStudio,
+        ),
+        variables: variables.toJson(),
+      ),
+      optimistic: optimistic,
+    );
+    return result == null ? null : Query$ScrapeSingleStudio.fromJson(result);
+  }
+}
+
+class Query$ScrapeSingleStudio$scrapeSingleStudio {
+  Query$ScrapeSingleStudio$scrapeSingleStudio({
+    required this.name,
+    this.url,
+    this.image,
+    this.remote_site_id,
+    this.details,
+    this.stored_id,
+    this.$__typename = 'ScrapedStudio',
+  });
+
+  factory Query$ScrapeSingleStudio$scrapeSingleStudio.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$name = json['name'];
+    final l$url = json['url'];
+    final l$image = json['image'];
+    final l$remote_site_id = json['remote_site_id'];
+    final l$details = json['details'];
+    final l$stored_id = json['stored_id'];
+    final l$$__typename = json['__typename'];
+    return Query$ScrapeSingleStudio$scrapeSingleStudio(
+      name: (l$name as String),
+      url: (l$url as String?),
+      image: (l$image as String?),
+      remote_site_id: (l$remote_site_id as String?),
+      details: (l$details as String?),
+      stored_id: (l$stored_id as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String name;
+
+  @Deprecated('use urls')
+  final String? url;
+
+  final String? image;
+
+  final String? remote_site_id;
+
+  final String? details;
+
+  final String? stored_id;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$url = url;
+    _resultData['url'] = l$url;
+    final l$image = image;
+    _resultData['image'] = l$image;
+    final l$remote_site_id = remote_site_id;
+    _resultData['remote_site_id'] = l$remote_site_id;
+    final l$details = details;
+    _resultData['details'] = l$details;
+    final l$stored_id = stored_id;
+    _resultData['stored_id'] = l$stored_id;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$name = name;
+    final l$url = url;
+    final l$image = image;
+    final l$remote_site_id = remote_site_id;
+    final l$details = details;
+    final l$stored_id = stored_id;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$name,
+      l$url,
+      l$image,
+      l$remote_site_id,
+      l$details,
+      l$stored_id,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$ScrapeSingleStudio$scrapeSingleStudio ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$url = url;
+    final lOther$url = other.url;
+    if (l$url != lOther$url) {
+      return false;
+    }
+    final l$image = image;
+    final lOther$image = other.image;
+    if (l$image != lOther$image) {
+      return false;
+    }
+    final l$remote_site_id = remote_site_id;
+    final lOther$remote_site_id = other.remote_site_id;
+    if (l$remote_site_id != lOther$remote_site_id) {
+      return false;
+    }
+    final l$details = details;
+    final lOther$details = other.details;
+    if (l$details != lOther$details) {
+      return false;
+    }
+    final l$stored_id = stored_id;
+    final lOther$stored_id = other.stored_id;
+    if (l$stored_id != lOther$stored_id) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$ScrapeSingleStudio$scrapeSingleStudio
+    on Query$ScrapeSingleStudio$scrapeSingleStudio {
+  CopyWith$Query$ScrapeSingleStudio$scrapeSingleStudio<
+    Query$ScrapeSingleStudio$scrapeSingleStudio
+  >
+  get copyWith =>
+      CopyWith$Query$ScrapeSingleStudio$scrapeSingleStudio(this, (i) => i);
+}
+
+abstract class CopyWith$Query$ScrapeSingleStudio$scrapeSingleStudio<TRes> {
+  factory CopyWith$Query$ScrapeSingleStudio$scrapeSingleStudio(
+    Query$ScrapeSingleStudio$scrapeSingleStudio instance,
+    TRes Function(Query$ScrapeSingleStudio$scrapeSingleStudio) then,
+  ) = _CopyWithImpl$Query$ScrapeSingleStudio$scrapeSingleStudio;
+
+  factory CopyWith$Query$ScrapeSingleStudio$scrapeSingleStudio.stub(TRes res) =
+      _CopyWithStubImpl$Query$ScrapeSingleStudio$scrapeSingleStudio;
+
+  TRes call({
+    String? name,
+    String? url,
+    String? image,
+    String? remote_site_id,
+    String? details,
+    String? stored_id,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$ScrapeSingleStudio$scrapeSingleStudio<TRes>
+    implements CopyWith$Query$ScrapeSingleStudio$scrapeSingleStudio<TRes> {
+  _CopyWithImpl$Query$ScrapeSingleStudio$scrapeSingleStudio(
+    this._instance,
+    this._then,
+  );
+
+  final Query$ScrapeSingleStudio$scrapeSingleStudio _instance;
+
+  final TRes Function(Query$ScrapeSingleStudio$scrapeSingleStudio) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? name = _undefined,
+    Object? url = _undefined,
+    Object? image = _undefined,
+    Object? remote_site_id = _undefined,
+    Object? details = _undefined,
+    Object? stored_id = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$ScrapeSingleStudio$scrapeSingleStudio(
+      name: name == _undefined || name == null
+          ? _instance.name
+          : (name as String),
+      url: url == _undefined ? _instance.url : (url as String?),
+      image: image == _undefined ? _instance.image : (image as String?),
+      remote_site_id: remote_site_id == _undefined
+          ? _instance.remote_site_id
+          : (remote_site_id as String?),
+      details: details == _undefined ? _instance.details : (details as String?),
+      stored_id: stored_id == _undefined
+          ? _instance.stored_id
+          : (stored_id as String?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Query$ScrapeSingleStudio$scrapeSingleStudio<TRes>
+    implements CopyWith$Query$ScrapeSingleStudio$scrapeSingleStudio<TRes> {
+  _CopyWithStubImpl$Query$ScrapeSingleStudio$scrapeSingleStudio(this._res);
+
+  TRes _res;
+
+  call({
+    String? name,
+    String? url,
+    String? image,
+    String? remote_site_id,
+    String? details,
+    String? stored_id,
+    String? $__typename,
+  }) => _res;
+}

@@ -512,5 +512,10 @@
   "tags_search_placeholder": "Search tags...",
   "scenes_duration_short": "< 5m",
   "scenes_duration_medium": "5-20m",
-  "scenes_duration_long": "> 20m"
+  "scenes_duration_long": "> 20m",
+  "details_scene_fingerprint_query": "Query by Fingerprint",
+  "scenes_available_scrapers": "Available Scrapers",
+  "scrape_results_existing": "Existing",
+  "scrape_results_scraped": "Scraped",
+  "common_apply": "Apply"
 }

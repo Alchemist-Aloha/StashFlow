@@ -710,6 +710,37 @@ const fragmentDefinitionSlimSceneData = FragmentDefinitionNode(
               selectionSet: null,
             ),
             FieldNode(
+              name: NameNode(value: 'fingerprints'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: SelectionSetNode(
+                selections: [
+                  FieldNode(
+                    name: NameNode(value: 'type'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'value'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: '__typename'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                ],
+              ),
+            ),
+            FieldNode(
               name: NameNode(value: '__typename'),
               alias: null,
               arguments: [],
@@ -969,16 +1000,25 @@ class Fragment$SlimSceneData$files {
   Fragment$SlimSceneData$files({
     required this.path,
     required this.duration,
+    required this.fingerprints,
     this.$__typename = 'VideoFile',
   });
 
   factory Fragment$SlimSceneData$files.fromJson(Map<String, dynamic> json) {
     final l$path = json['path'];
     final l$duration = json['duration'];
+    final l$fingerprints = json['fingerprints'];
     final l$$__typename = json['__typename'];
     return Fragment$SlimSceneData$files(
       path: (l$path as String),
       duration: (l$duration as num).toDouble(),
+      fingerprints: (l$fingerprints as List<dynamic>)
+          .map(
+            (e) => Fragment$SlimSceneData$files$fingerprints.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
       $__typename: (l$$__typename as String),
     );
   }
@@ -986,6 +1026,8 @@ class Fragment$SlimSceneData$files {
   final String path;
 
   final double duration;
+
+  final List<Fragment$SlimSceneData$files$fingerprints> fingerprints;
 
   final String $__typename;
 
@@ -995,6 +1037,10 @@ class Fragment$SlimSceneData$files {
     _resultData['path'] = l$path;
     final l$duration = duration;
     _resultData['duration'] = l$duration;
+    final l$fingerprints = fingerprints;
+    _resultData['fingerprints'] = l$fingerprints
+        .map((e) => e.toJson())
+        .toList();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -1004,8 +1050,14 @@ class Fragment$SlimSceneData$files {
   int get hashCode {
     final l$path = path;
     final l$duration = duration;
+    final l$fingerprints = fingerprints;
     final l$$__typename = $__typename;
-    return Object.hashAll([l$path, l$duration, l$$__typename]);
+    return Object.hashAll([
+      l$path,
+      l$duration,
+      Object.hashAll(l$fingerprints.map((v) => v)),
+      l$$__typename,
+    ]);
   }
 
   @override
@@ -1026,6 +1078,18 @@ class Fragment$SlimSceneData$files {
     final lOther$duration = other.duration;
     if (l$duration != lOther$duration) {
       return false;
+    }
+    final l$fingerprints = fingerprints;
+    final lOther$fingerprints = other.fingerprints;
+    if (l$fingerprints.length != lOther$fingerprints.length) {
+      return false;
+    }
+    for (int i = 0; i < l$fingerprints.length; i++) {
+      final l$fingerprints$entry = l$fingerprints[i];
+      final lOther$fingerprints$entry = lOther$fingerprints[i];
+      if (l$fingerprints$entry != lOther$fingerprints$entry) {
+        return false;
+      }
     }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
@@ -1051,7 +1115,22 @@ abstract class CopyWith$Fragment$SlimSceneData$files<TRes> {
   factory CopyWith$Fragment$SlimSceneData$files.stub(TRes res) =
       _CopyWithStubImpl$Fragment$SlimSceneData$files;
 
-  TRes call({String? path, double? duration, String? $__typename});
+  TRes call({
+    String? path,
+    double? duration,
+    List<Fragment$SlimSceneData$files$fingerprints>? fingerprints,
+    String? $__typename,
+  });
+  TRes fingerprints(
+    Iterable<Fragment$SlimSceneData$files$fingerprints> Function(
+      Iterable<
+        CopyWith$Fragment$SlimSceneData$files$fingerprints<
+          Fragment$SlimSceneData$files$fingerprints
+        >
+      >,
+    )
+    _fn,
+  );
 }
 
 class _CopyWithImpl$Fragment$SlimSceneData$files<TRes>
@@ -1067,6 +1146,7 @@ class _CopyWithImpl$Fragment$SlimSceneData$files<TRes>
   TRes call({
     Object? path = _undefined,
     Object? duration = _undefined,
+    Object? fingerprints = _undefined,
     Object? $__typename = _undefined,
   }) => _then(
     Fragment$SlimSceneData$files(
@@ -1076,10 +1156,30 @@ class _CopyWithImpl$Fragment$SlimSceneData$files<TRes>
       duration: duration == _undefined || duration == null
           ? _instance.duration
           : (duration as double),
+      fingerprints: fingerprints == _undefined || fingerprints == null
+          ? _instance.fingerprints
+          : (fingerprints as List<Fragment$SlimSceneData$files$fingerprints>),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
     ),
+  );
+
+  TRes fingerprints(
+    Iterable<Fragment$SlimSceneData$files$fingerprints> Function(
+      Iterable<
+        CopyWith$Fragment$SlimSceneData$files$fingerprints<
+          Fragment$SlimSceneData$files$fingerprints
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    fingerprints: _fn(
+      _instance.fingerprints.map(
+        (e) => CopyWith$Fragment$SlimSceneData$files$fingerprints(e, (i) => i),
+      ),
+    ).toList(),
   );
 }
 
@@ -1089,7 +1189,149 @@ class _CopyWithStubImpl$Fragment$SlimSceneData$files<TRes>
 
   TRes _res;
 
-  call({String? path, double? duration, String? $__typename}) => _res;
+  call({
+    String? path,
+    double? duration,
+    List<Fragment$SlimSceneData$files$fingerprints>? fingerprints,
+    String? $__typename,
+  }) => _res;
+
+  fingerprints(_fn) => _res;
+}
+
+class Fragment$SlimSceneData$files$fingerprints {
+  Fragment$SlimSceneData$files$fingerprints({
+    required this.type,
+    required this.value,
+    this.$__typename = 'Fingerprint',
+  });
+
+  factory Fragment$SlimSceneData$files$fingerprints.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$type = json['type'];
+    final l$value = json['value'];
+    final l$$__typename = json['__typename'];
+    return Fragment$SlimSceneData$files$fingerprints(
+      type: (l$type as String),
+      value: (l$value as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String type;
+
+  final String value;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$type = type;
+    _resultData['type'] = l$type;
+    final l$value = value;
+    _resultData['value'] = l$value;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$type = type;
+    final l$value = value;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$type, l$value, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$SlimSceneData$files$fingerprints ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$type = type;
+    final lOther$type = other.type;
+    if (l$type != lOther$type) {
+      return false;
+    }
+    final l$value = value;
+    final lOther$value = other.value;
+    if (l$value != lOther$value) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$SlimSceneData$files$fingerprints
+    on Fragment$SlimSceneData$files$fingerprints {
+  CopyWith$Fragment$SlimSceneData$files$fingerprints<
+    Fragment$SlimSceneData$files$fingerprints
+  >
+  get copyWith =>
+      CopyWith$Fragment$SlimSceneData$files$fingerprints(this, (i) => i);
+}
+
+abstract class CopyWith$Fragment$SlimSceneData$files$fingerprints<TRes> {
+  factory CopyWith$Fragment$SlimSceneData$files$fingerprints(
+    Fragment$SlimSceneData$files$fingerprints instance,
+    TRes Function(Fragment$SlimSceneData$files$fingerprints) then,
+  ) = _CopyWithImpl$Fragment$SlimSceneData$files$fingerprints;
+
+  factory CopyWith$Fragment$SlimSceneData$files$fingerprints.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$SlimSceneData$files$fingerprints;
+
+  TRes call({String? type, String? value, String? $__typename});
+}
+
+class _CopyWithImpl$Fragment$SlimSceneData$files$fingerprints<TRes>
+    implements CopyWith$Fragment$SlimSceneData$files$fingerprints<TRes> {
+  _CopyWithImpl$Fragment$SlimSceneData$files$fingerprints(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$SlimSceneData$files$fingerprints _instance;
+
+  final TRes Function(Fragment$SlimSceneData$files$fingerprints) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? type = _undefined,
+    Object? value = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Fragment$SlimSceneData$files$fingerprints(
+      type: type == _undefined || type == null
+          ? _instance.type
+          : (type as String),
+      value: value == _undefined || value == null
+          ? _instance.value
+          : (value as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Fragment$SlimSceneData$files$fingerprints<TRes>
+    implements CopyWith$Fragment$SlimSceneData$files$fingerprints<TRes> {
+  _CopyWithStubImpl$Fragment$SlimSceneData$files$fingerprints(this._res);
+
+  TRes _res;
+
+  call({String? type, String? value, String? $__typename}) => _res;
 }
 
 class Fragment$SlimSceneData$paths {
@@ -2577,6 +2819,37 @@ const fragmentDefinitionSceneData = FragmentDefinitionNode(
               selectionSet: null,
             ),
             FieldNode(
+              name: NameNode(value: 'fingerprints'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: SelectionSetNode(
+                selections: [
+                  FieldNode(
+                    name: NameNode(value: 'type'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'value'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: '__typename'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                ],
+              ),
+            ),
+            FieldNode(
               name: NameNode(value: '__typename'),
               alias: null,
               arguments: [],
@@ -2670,6 +2943,7 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
   Fragment$SceneData$files({
     required this.path,
     required this.duration,
+    required this.fingerprints,
     this.$__typename = 'VideoFile',
     required this.basename,
     required this.format,
@@ -2684,6 +2958,7 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
   factory Fragment$SceneData$files.fromJson(Map<String, dynamic> json) {
     final l$path = json['path'];
     final l$duration = json['duration'];
+    final l$fingerprints = json['fingerprints'];
     final l$$__typename = json['__typename'];
     final l$basename = json['basename'];
     final l$format = json['format'];
@@ -2696,6 +2971,13 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
     return Fragment$SceneData$files(
       path: (l$path as String),
       duration: (l$duration as num).toDouble(),
+      fingerprints: (l$fingerprints as List<dynamic>)
+          .map(
+            (e) => Fragment$SceneData$files$fingerprints.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
       $__typename: (l$$__typename as String),
       basename: (l$basename as String),
       format: (l$format as String),
@@ -2711,6 +2993,8 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
   final String path;
 
   final double duration;
+
+  final List<Fragment$SceneData$files$fingerprints> fingerprints;
 
   final String $__typename;
 
@@ -2736,6 +3020,10 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
     _resultData['path'] = l$path;
     final l$duration = duration;
     _resultData['duration'] = l$duration;
+    final l$fingerprints = fingerprints;
+    _resultData['fingerprints'] = l$fingerprints
+        .map((e) => e.toJson())
+        .toList();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     final l$basename = basename;
@@ -2761,6 +3049,7 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
   int get hashCode {
     final l$path = path;
     final l$duration = duration;
+    final l$fingerprints = fingerprints;
     final l$$__typename = $__typename;
     final l$basename = basename;
     final l$format = format;
@@ -2773,6 +3062,7 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
     return Object.hashAll([
       l$path,
       l$duration,
+      Object.hashAll(l$fingerprints.map((v) => v)),
       l$$__typename,
       l$basename,
       l$format,
@@ -2803,6 +3093,18 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
     final lOther$duration = other.duration;
     if (l$duration != lOther$duration) {
       return false;
+    }
+    final l$fingerprints = fingerprints;
+    final lOther$fingerprints = other.fingerprints;
+    if (l$fingerprints.length != lOther$fingerprints.length) {
+      return false;
+    }
+    for (int i = 0; i < l$fingerprints.length; i++) {
+      final l$fingerprints$entry = l$fingerprints[i];
+      final lOther$fingerprints$entry = lOther$fingerprints[i];
+      if (l$fingerprints$entry != lOther$fingerprints$entry) {
+        return false;
+      }
     }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
@@ -2871,6 +3173,7 @@ abstract class CopyWith$Fragment$SceneData$files<TRes> {
   TRes call({
     String? path,
     double? duration,
+    List<Fragment$SceneData$files$fingerprints>? fingerprints,
     String? $__typename,
     String? basename,
     String? format,
@@ -2881,6 +3184,16 @@ abstract class CopyWith$Fragment$SceneData$files<TRes> {
     int? bit_rate,
     double? frame_rate,
   });
+  TRes fingerprints(
+    Iterable<Fragment$SceneData$files$fingerprints> Function(
+      Iterable<
+        CopyWith$Fragment$SceneData$files$fingerprints<
+          Fragment$SceneData$files$fingerprints
+        >
+      >,
+    )
+    _fn,
+  );
 }
 
 class _CopyWithImpl$Fragment$SceneData$files<TRes>
@@ -2896,6 +3209,7 @@ class _CopyWithImpl$Fragment$SceneData$files<TRes>
   TRes call({
     Object? path = _undefined,
     Object? duration = _undefined,
+    Object? fingerprints = _undefined,
     Object? $__typename = _undefined,
     Object? basename = _undefined,
     Object? format = _undefined,
@@ -2913,6 +3227,9 @@ class _CopyWithImpl$Fragment$SceneData$files<TRes>
       duration: duration == _undefined || duration == null
           ? _instance.duration
           : (duration as double),
+      fingerprints: fingerprints == _undefined || fingerprints == null
+          ? _instance.fingerprints
+          : (fingerprints as List<Fragment$SceneData$files$fingerprints>),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
@@ -2942,6 +3259,23 @@ class _CopyWithImpl$Fragment$SceneData$files<TRes>
           : (frame_rate as double),
     ),
   );
+
+  TRes fingerprints(
+    Iterable<Fragment$SceneData$files$fingerprints> Function(
+      Iterable<
+        CopyWith$Fragment$SceneData$files$fingerprints<
+          Fragment$SceneData$files$fingerprints
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    fingerprints: _fn(
+      _instance.fingerprints.map(
+        (e) => CopyWith$Fragment$SceneData$files$fingerprints(e, (i) => i),
+      ),
+    ).toList(),
+  );
 }
 
 class _CopyWithStubImpl$Fragment$SceneData$files<TRes>
@@ -2953,6 +3287,7 @@ class _CopyWithStubImpl$Fragment$SceneData$files<TRes>
   call({
     String? path,
     double? duration,
+    List<Fragment$SceneData$files$fingerprints>? fingerprints,
     String? $__typename,
     String? basename,
     String? format,
@@ -2963,6 +3298,144 @@ class _CopyWithStubImpl$Fragment$SceneData$files<TRes>
     int? bit_rate,
     double? frame_rate,
   }) => _res;
+
+  fingerprints(_fn) => _res;
+}
+
+class Fragment$SceneData$files$fingerprints
+    implements Fragment$SlimSceneData$files$fingerprints {
+  Fragment$SceneData$files$fingerprints({
+    required this.type,
+    required this.value,
+    this.$__typename = 'Fingerprint',
+  });
+
+  factory Fragment$SceneData$files$fingerprints.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$type = json['type'];
+    final l$value = json['value'];
+    final l$$__typename = json['__typename'];
+    return Fragment$SceneData$files$fingerprints(
+      type: (l$type as String),
+      value: (l$value as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String type;
+
+  final String value;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$type = type;
+    _resultData['type'] = l$type;
+    final l$value = value;
+    _resultData['value'] = l$value;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$type = type;
+    final l$value = value;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$type, l$value, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$SceneData$files$fingerprints ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$type = type;
+    final lOther$type = other.type;
+    if (l$type != lOther$type) {
+      return false;
+    }
+    final l$value = value;
+    final lOther$value = other.value;
+    if (l$value != lOther$value) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$SceneData$files$fingerprints
+    on Fragment$SceneData$files$fingerprints {
+  CopyWith$Fragment$SceneData$files$fingerprints<
+    Fragment$SceneData$files$fingerprints
+  >
+  get copyWith =>
+      CopyWith$Fragment$SceneData$files$fingerprints(this, (i) => i);
+}
+
+abstract class CopyWith$Fragment$SceneData$files$fingerprints<TRes> {
+  factory CopyWith$Fragment$SceneData$files$fingerprints(
+    Fragment$SceneData$files$fingerprints instance,
+    TRes Function(Fragment$SceneData$files$fingerprints) then,
+  ) = _CopyWithImpl$Fragment$SceneData$files$fingerprints;
+
+  factory CopyWith$Fragment$SceneData$files$fingerprints.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$SceneData$files$fingerprints;
+
+  TRes call({String? type, String? value, String? $__typename});
+}
+
+class _CopyWithImpl$Fragment$SceneData$files$fingerprints<TRes>
+    implements CopyWith$Fragment$SceneData$files$fingerprints<TRes> {
+  _CopyWithImpl$Fragment$SceneData$files$fingerprints(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$SceneData$files$fingerprints _instance;
+
+  final TRes Function(Fragment$SceneData$files$fingerprints) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? type = _undefined,
+    Object? value = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Fragment$SceneData$files$fingerprints(
+      type: type == _undefined || type == null
+          ? _instance.type
+          : (type as String),
+      value: value == _undefined || value == null
+          ? _instance.value
+          : (value as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Fragment$SceneData$files$fingerprints<TRes>
+    implements CopyWith$Fragment$SceneData$files$fingerprints<TRes> {
+  _CopyWithStubImpl$Fragment$SceneData$files$fingerprints(this._res);
+
+  TRes _res;
+
+  call({String? type, String? value, String? $__typename}) => _res;
 }
 
 class Fragment$SceneData$paths implements Fragment$SlimSceneData$paths {
@@ -7591,6 +8064,356 @@ class _CopyWithStubImpl$Query$ListScrapers$listScrapers<TRes>
   TRes _res;
 
   call({String? id, String? name, String? $__typename}) => _res;
+}
+
+class Variables$Mutation$MetadataGenerate {
+  factory Variables$Mutation$MetadataGenerate({
+    required Input$GenerateMetadataInput input,
+  }) => Variables$Mutation$MetadataGenerate._({r'input': input});
+
+  Variables$Mutation$MetadataGenerate._(this._$data);
+
+  factory Variables$Mutation$MetadataGenerate.fromJson(
+    Map<String, dynamic> data,
+  ) {
+    final result$data = <String, dynamic>{};
+    final l$input = data['input'];
+    result$data['input'] = Input$GenerateMetadataInput.fromJson(
+      (l$input as Map<String, dynamic>),
+    );
+    return Variables$Mutation$MetadataGenerate._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  Input$GenerateMetadataInput get input =>
+      (_$data['input'] as Input$GenerateMetadataInput);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$input = input;
+    result$data['input'] = l$input.toJson();
+    return result$data;
+  }
+
+  CopyWith$Variables$Mutation$MetadataGenerate<
+    Variables$Mutation$MetadataGenerate
+  >
+  get copyWith => CopyWith$Variables$Mutation$MetadataGenerate(this, (i) => i);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Mutation$MetadataGenerate ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$input = input;
+    final lOther$input = other.input;
+    if (l$input != lOther$input) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$input = input;
+    return Object.hashAll([l$input]);
+  }
+}
+
+abstract class CopyWith$Variables$Mutation$MetadataGenerate<TRes> {
+  factory CopyWith$Variables$Mutation$MetadataGenerate(
+    Variables$Mutation$MetadataGenerate instance,
+    TRes Function(Variables$Mutation$MetadataGenerate) then,
+  ) = _CopyWithImpl$Variables$Mutation$MetadataGenerate;
+
+  factory CopyWith$Variables$Mutation$MetadataGenerate.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Mutation$MetadataGenerate;
+
+  TRes call({Input$GenerateMetadataInput? input});
+}
+
+class _CopyWithImpl$Variables$Mutation$MetadataGenerate<TRes>
+    implements CopyWith$Variables$Mutation$MetadataGenerate<TRes> {
+  _CopyWithImpl$Variables$Mutation$MetadataGenerate(this._instance, this._then);
+
+  final Variables$Mutation$MetadataGenerate _instance;
+
+  final TRes Function(Variables$Mutation$MetadataGenerate) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? input = _undefined}) => _then(
+    Variables$Mutation$MetadataGenerate._({
+      ..._instance._$data,
+      if (input != _undefined && input != null)
+        'input': (input as Input$GenerateMetadataInput),
+    }),
+  );
+}
+
+class _CopyWithStubImpl$Variables$Mutation$MetadataGenerate<TRes>
+    implements CopyWith$Variables$Mutation$MetadataGenerate<TRes> {
+  _CopyWithStubImpl$Variables$Mutation$MetadataGenerate(this._res);
+
+  TRes _res;
+
+  call({Input$GenerateMetadataInput? input}) => _res;
+}
+
+class Mutation$MetadataGenerate {
+  Mutation$MetadataGenerate({
+    required this.metadataGenerate,
+    this.$__typename = 'Mutation',
+  });
+
+  factory Mutation$MetadataGenerate.fromJson(Map<String, dynamic> json) {
+    final l$metadataGenerate = json['metadataGenerate'];
+    final l$$__typename = json['__typename'];
+    return Mutation$MetadataGenerate(
+      metadataGenerate: (l$metadataGenerate as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String metadataGenerate;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$metadataGenerate = metadataGenerate;
+    _resultData['metadataGenerate'] = l$metadataGenerate;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$metadataGenerate = metadataGenerate;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$metadataGenerate, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$MetadataGenerate ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$metadataGenerate = metadataGenerate;
+    final lOther$metadataGenerate = other.metadataGenerate;
+    if (l$metadataGenerate != lOther$metadataGenerate) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$MetadataGenerate
+    on Mutation$MetadataGenerate {
+  CopyWith$Mutation$MetadataGenerate<Mutation$MetadataGenerate> get copyWith =>
+      CopyWith$Mutation$MetadataGenerate(this, (i) => i);
+}
+
+abstract class CopyWith$Mutation$MetadataGenerate<TRes> {
+  factory CopyWith$Mutation$MetadataGenerate(
+    Mutation$MetadataGenerate instance,
+    TRes Function(Mutation$MetadataGenerate) then,
+  ) = _CopyWithImpl$Mutation$MetadataGenerate;
+
+  factory CopyWith$Mutation$MetadataGenerate.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$MetadataGenerate;
+
+  TRes call({String? metadataGenerate, String? $__typename});
+}
+
+class _CopyWithImpl$Mutation$MetadataGenerate<TRes>
+    implements CopyWith$Mutation$MetadataGenerate<TRes> {
+  _CopyWithImpl$Mutation$MetadataGenerate(this._instance, this._then);
+
+  final Mutation$MetadataGenerate _instance;
+
+  final TRes Function(Mutation$MetadataGenerate) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? metadataGenerate = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Mutation$MetadataGenerate(
+      metadataGenerate:
+          metadataGenerate == _undefined || metadataGenerate == null
+          ? _instance.metadataGenerate
+          : (metadataGenerate as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Mutation$MetadataGenerate<TRes>
+    implements CopyWith$Mutation$MetadataGenerate<TRes> {
+  _CopyWithStubImpl$Mutation$MetadataGenerate(this._res);
+
+  TRes _res;
+
+  call({String? metadataGenerate, String? $__typename}) => _res;
+}
+
+const documentNodeMutationMetadataGenerate = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.mutation,
+      name: NameNode(value: 'MetadataGenerate'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'input')),
+          type: NamedTypeNode(
+            name: NameNode(value: 'GenerateMetadataInput'),
+            isNonNull: true,
+          ),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'metadataGenerate'),
+            alias: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'input'),
+                value: VariableNode(name: NameNode(value: 'input')),
+              ),
+            ],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ],
+      ),
+    ),
+  ],
+);
+Mutation$MetadataGenerate _parserFn$Mutation$MetadataGenerate(
+  Map<String, dynamic> data,
+) => Mutation$MetadataGenerate.fromJson(data);
+typedef OnMutationCompleted$Mutation$MetadataGenerate =
+    FutureOr<void> Function(Map<String, dynamic>?, Mutation$MetadataGenerate?);
+
+class Options$Mutation$MetadataGenerate
+    extends graphql.MutationOptions<Mutation$MetadataGenerate> {
+  Options$Mutation$MetadataGenerate({
+    String? operationName,
+    required Variables$Mutation$MetadataGenerate variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$MetadataGenerate? typedOptimisticResult,
+    graphql.Context? context,
+    OnMutationCompleted$Mutation$MetadataGenerate? onCompleted,
+    graphql.OnMutationUpdate<Mutation$MetadataGenerate>? update,
+    graphql.OnError? onError,
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Mutation$MetadataGenerate(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationMetadataGenerate,
+         parserFn: _parserFn$Mutation$MetadataGenerate,
+       );
+
+  final OnMutationCompleted$Mutation$MetadataGenerate? onCompletedWithParsed;
+
+  @override
+  List<Object?> get properties => [
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
+}
+
+class WatchOptions$Mutation$MetadataGenerate
+    extends graphql.WatchQueryOptions<Mutation$MetadataGenerate> {
+  WatchOptions$Mutation$MetadataGenerate({
+    String? operationName,
+    required Variables$Mutation$MetadataGenerate variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$MetadataGenerate? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeMutationMetadataGenerate,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Mutation$MetadataGenerate,
+       );
+}
+
+extension ClientExtension$Mutation$MetadataGenerate on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Mutation$MetadataGenerate>>
+  mutate$MetadataGenerate(Options$Mutation$MetadataGenerate options) async =>
+      await this.mutate(options);
+
+  graphql.ObservableQuery<Mutation$MetadataGenerate>
+  watchMutation$MetadataGenerate(
+    WatchOptions$Mutation$MetadataGenerate options,
+  ) => this.watchMutation(options);
 }
 
 class Variables$Query$ScrapeSingleScene {

@@ -11,6 +11,10 @@ fragment SlimSceneData on Scene {
   files {
     path
     duration
+    fingerprints {
+      type
+      value
+    }
   }
   paths {
     screenshot
@@ -56,6 +60,10 @@ fragment SceneData on Scene {
     bit_rate
     duration
     frame_rate
+    fingerprints {
+      type
+      value
+    }
   }
   tags {
     id
@@ -112,6 +120,10 @@ query ListScrapers($types: [ScrapeContentType!]!) {
     id
     name
   }
+}
+
+mutation MetadataGenerate($input: GenerateMetadataInput!) {
+  metadataGenerate(input: $input)
 }
 
 query ScrapeSingleScene($source: ScraperSourceInput!, $input: ScrapeSingleSceneInput!) {

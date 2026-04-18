@@ -3323,3 +3323,1336 @@ class _CopyWithStubImpl$Mutation$CreatePerformer$performerCreate<TRes>
 
   call({String? id, String? $__typename}) => _res;
 }
+
+class Variables$Query$ScrapeSinglePerformer {
+  factory Variables$Query$ScrapeSinglePerformer({
+    required Input$ScraperSourceInput source,
+    required Input$ScrapeSinglePerformerInput input,
+  }) => Variables$Query$ScrapeSinglePerformer._({
+    r'source': source,
+    r'input': input,
+  });
+
+  Variables$Query$ScrapeSinglePerformer._(this._$data);
+
+  factory Variables$Query$ScrapeSinglePerformer.fromJson(
+    Map<String, dynamic> data,
+  ) {
+    final result$data = <String, dynamic>{};
+    final l$source = data['source'];
+    result$data['source'] = Input$ScraperSourceInput.fromJson(
+      (l$source as Map<String, dynamic>),
+    );
+    final l$input = data['input'];
+    result$data['input'] = Input$ScrapeSinglePerformerInput.fromJson(
+      (l$input as Map<String, dynamic>),
+    );
+    return Variables$Query$ScrapeSinglePerformer._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  Input$ScraperSourceInput get source =>
+      (_$data['source'] as Input$ScraperSourceInput);
+
+  Input$ScrapeSinglePerformerInput get input =>
+      (_$data['input'] as Input$ScrapeSinglePerformerInput);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$source = source;
+    result$data['source'] = l$source.toJson();
+    final l$input = input;
+    result$data['input'] = l$input.toJson();
+    return result$data;
+  }
+
+  CopyWith$Variables$Query$ScrapeSinglePerformer<
+    Variables$Query$ScrapeSinglePerformer
+  >
+  get copyWith =>
+      CopyWith$Variables$Query$ScrapeSinglePerformer(this, (i) => i);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Query$ScrapeSinglePerformer ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$source = source;
+    final lOther$source = other.source;
+    if (l$source != lOther$source) {
+      return false;
+    }
+    final l$input = input;
+    final lOther$input = other.input;
+    if (l$input != lOther$input) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$source = source;
+    final l$input = input;
+    return Object.hashAll([l$source, l$input]);
+  }
+}
+
+abstract class CopyWith$Variables$Query$ScrapeSinglePerformer<TRes> {
+  factory CopyWith$Variables$Query$ScrapeSinglePerformer(
+    Variables$Query$ScrapeSinglePerformer instance,
+    TRes Function(Variables$Query$ScrapeSinglePerformer) then,
+  ) = _CopyWithImpl$Variables$Query$ScrapeSinglePerformer;
+
+  factory CopyWith$Variables$Query$ScrapeSinglePerformer.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Query$ScrapeSinglePerformer;
+
+  TRes call({
+    Input$ScraperSourceInput? source,
+    Input$ScrapeSinglePerformerInput? input,
+  });
+}
+
+class _CopyWithImpl$Variables$Query$ScrapeSinglePerformer<TRes>
+    implements CopyWith$Variables$Query$ScrapeSinglePerformer<TRes> {
+  _CopyWithImpl$Variables$Query$ScrapeSinglePerformer(
+    this._instance,
+    this._then,
+  );
+
+  final Variables$Query$ScrapeSinglePerformer _instance;
+
+  final TRes Function(Variables$Query$ScrapeSinglePerformer) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? source = _undefined, Object? input = _undefined}) => _then(
+    Variables$Query$ScrapeSinglePerformer._({
+      ..._instance._$data,
+      if (source != _undefined && source != null)
+        'source': (source as Input$ScraperSourceInput),
+      if (input != _undefined && input != null)
+        'input': (input as Input$ScrapeSinglePerformerInput),
+    }),
+  );
+}
+
+class _CopyWithStubImpl$Variables$Query$ScrapeSinglePerformer<TRes>
+    implements CopyWith$Variables$Query$ScrapeSinglePerformer<TRes> {
+  _CopyWithStubImpl$Variables$Query$ScrapeSinglePerformer(this._res);
+
+  TRes _res;
+
+  call({
+    Input$ScraperSourceInput? source,
+    Input$ScrapeSinglePerformerInput? input,
+  }) => _res;
+}
+
+class Query$ScrapeSinglePerformer {
+  Query$ScrapeSinglePerformer({
+    required this.scrapeSinglePerformer,
+    this.$__typename = 'Query',
+  });
+
+  factory Query$ScrapeSinglePerformer.fromJson(Map<String, dynamic> json) {
+    final l$scrapeSinglePerformer = json['scrapeSinglePerformer'];
+    final l$$__typename = json['__typename'];
+    return Query$ScrapeSinglePerformer(
+      scrapeSinglePerformer: (l$scrapeSinglePerformer as List<dynamic>)
+          .map(
+            (e) => Query$ScrapeSinglePerformer$scrapeSinglePerformer.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final List<Query$ScrapeSinglePerformer$scrapeSinglePerformer>
+  scrapeSinglePerformer;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$scrapeSinglePerformer = scrapeSinglePerformer;
+    _resultData['scrapeSinglePerformer'] = l$scrapeSinglePerformer
+        .map((e) => e.toJson())
+        .toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$scrapeSinglePerformer = scrapeSinglePerformer;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      Object.hashAll(l$scrapeSinglePerformer.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$ScrapeSinglePerformer ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$scrapeSinglePerformer = scrapeSinglePerformer;
+    final lOther$scrapeSinglePerformer = other.scrapeSinglePerformer;
+    if (l$scrapeSinglePerformer.length != lOther$scrapeSinglePerformer.length) {
+      return false;
+    }
+    for (int i = 0; i < l$scrapeSinglePerformer.length; i++) {
+      final l$scrapeSinglePerformer$entry = l$scrapeSinglePerformer[i];
+      final lOther$scrapeSinglePerformer$entry =
+          lOther$scrapeSinglePerformer[i];
+      if (l$scrapeSinglePerformer$entry != lOther$scrapeSinglePerformer$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$ScrapeSinglePerformer
+    on Query$ScrapeSinglePerformer {
+  CopyWith$Query$ScrapeSinglePerformer<Query$ScrapeSinglePerformer>
+  get copyWith => CopyWith$Query$ScrapeSinglePerformer(this, (i) => i);
+}
+
+abstract class CopyWith$Query$ScrapeSinglePerformer<TRes> {
+  factory CopyWith$Query$ScrapeSinglePerformer(
+    Query$ScrapeSinglePerformer instance,
+    TRes Function(Query$ScrapeSinglePerformer) then,
+  ) = _CopyWithImpl$Query$ScrapeSinglePerformer;
+
+  factory CopyWith$Query$ScrapeSinglePerformer.stub(TRes res) =
+      _CopyWithStubImpl$Query$ScrapeSinglePerformer;
+
+  TRes call({
+    List<Query$ScrapeSinglePerformer$scrapeSinglePerformer>?
+    scrapeSinglePerformer,
+    String? $__typename,
+  });
+  TRes scrapeSinglePerformer(
+    Iterable<Query$ScrapeSinglePerformer$scrapeSinglePerformer> Function(
+      Iterable<
+        CopyWith$Query$ScrapeSinglePerformer$scrapeSinglePerformer<
+          Query$ScrapeSinglePerformer$scrapeSinglePerformer
+        >
+      >,
+    )
+    _fn,
+  );
+}
+
+class _CopyWithImpl$Query$ScrapeSinglePerformer<TRes>
+    implements CopyWith$Query$ScrapeSinglePerformer<TRes> {
+  _CopyWithImpl$Query$ScrapeSinglePerformer(this._instance, this._then);
+
+  final Query$ScrapeSinglePerformer _instance;
+
+  final TRes Function(Query$ScrapeSinglePerformer) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? scrapeSinglePerformer = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$ScrapeSinglePerformer(
+      scrapeSinglePerformer:
+          scrapeSinglePerformer == _undefined || scrapeSinglePerformer == null
+          ? _instance.scrapeSinglePerformer
+          : (scrapeSinglePerformer
+                as List<Query$ScrapeSinglePerformer$scrapeSinglePerformer>),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+
+  TRes scrapeSinglePerformer(
+    Iterable<Query$ScrapeSinglePerformer$scrapeSinglePerformer> Function(
+      Iterable<
+        CopyWith$Query$ScrapeSinglePerformer$scrapeSinglePerformer<
+          Query$ScrapeSinglePerformer$scrapeSinglePerformer
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    scrapeSinglePerformer: _fn(
+      _instance.scrapeSinglePerformer.map(
+        (e) => CopyWith$Query$ScrapeSinglePerformer$scrapeSinglePerformer(
+          e,
+          (i) => i,
+        ),
+      ),
+    ).toList(),
+  );
+}
+
+class _CopyWithStubImpl$Query$ScrapeSinglePerformer<TRes>
+    implements CopyWith$Query$ScrapeSinglePerformer<TRes> {
+  _CopyWithStubImpl$Query$ScrapeSinglePerformer(this._res);
+
+  TRes _res;
+
+  call({
+    List<Query$ScrapeSinglePerformer$scrapeSinglePerformer>?
+    scrapeSinglePerformer,
+    String? $__typename,
+  }) => _res;
+
+  scrapeSinglePerformer(_fn) => _res;
+}
+
+const documentNodeQueryScrapeSinglePerformer = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.query,
+      name: NameNode(value: 'ScrapeSinglePerformer'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'source')),
+          type: NamedTypeNode(
+            name: NameNode(value: 'ScraperSourceInput'),
+            isNonNull: true,
+          ),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'input')),
+          type: NamedTypeNode(
+            name: NameNode(value: 'ScrapeSinglePerformerInput'),
+            isNonNull: true,
+          ),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'scrapeSinglePerformer'),
+            alias: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'source'),
+                value: VariableNode(name: NameNode(value: 'source')),
+              ),
+              ArgumentNode(
+                name: NameNode(value: 'input'),
+                value: VariableNode(name: NameNode(value: 'input')),
+              ),
+            ],
+            directives: [],
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: 'name'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'disambiguation'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'gender'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'birthdate'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'ethnicity'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'country'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'eye_color'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'height'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'measurements'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'fake_tits'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'penis_length'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'circumcised'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'career_start'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'career_end'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'tattoos'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'piercings'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'aliases'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'image'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'details'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'death_date'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'hair_color'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'weight'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'remote_site_id'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'urls'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'images'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'stored_id'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ],
+      ),
+    ),
+  ],
+);
+Query$ScrapeSinglePerformer _parserFn$Query$ScrapeSinglePerformer(
+  Map<String, dynamic> data,
+) => Query$ScrapeSinglePerformer.fromJson(data);
+typedef OnQueryComplete$Query$ScrapeSinglePerformer =
+    FutureOr<void> Function(
+      Map<String, dynamic>?,
+      Query$ScrapeSinglePerformer?,
+    );
+
+class Options$Query$ScrapeSinglePerformer
+    extends graphql.QueryOptions<Query$ScrapeSinglePerformer> {
+  Options$Query$ScrapeSinglePerformer({
+    String? operationName,
+    required Variables$Query$ScrapeSinglePerformer variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$ScrapeSinglePerformer? typedOptimisticResult,
+    Duration? pollInterval,
+    graphql.Context? context,
+    OnQueryComplete$Query$ScrapeSinglePerformer? onComplete,
+    graphql.OnQueryError? onError,
+  }) : onCompleteWithParsed = onComplete,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         pollInterval: pollInterval,
+         context: context,
+         onComplete: onComplete == null
+             ? null
+             : (data) => onComplete(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Query$ScrapeSinglePerformer(data),
+               ),
+         onError: onError,
+         document: documentNodeQueryScrapeSinglePerformer,
+         parserFn: _parserFn$Query$ScrapeSinglePerformer,
+       );
+
+  final OnQueryComplete$Query$ScrapeSinglePerformer? onCompleteWithParsed;
+
+  @override
+  List<Object?> get properties => [
+    ...super.onComplete == null
+        ? super.properties
+        : super.properties.where((property) => property != onComplete),
+    onCompleteWithParsed,
+  ];
+}
+
+class WatchOptions$Query$ScrapeSinglePerformer
+    extends graphql.WatchQueryOptions<Query$ScrapeSinglePerformer> {
+  WatchOptions$Query$ScrapeSinglePerformer({
+    String? operationName,
+    required Variables$Query$ScrapeSinglePerformer variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$ScrapeSinglePerformer? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeQueryScrapeSinglePerformer,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Query$ScrapeSinglePerformer,
+       );
+}
+
+class FetchMoreOptions$Query$ScrapeSinglePerformer
+    extends graphql.FetchMoreOptions {
+  FetchMoreOptions$Query$ScrapeSinglePerformer({
+    required graphql.UpdateQuery updateQuery,
+    required Variables$Query$ScrapeSinglePerformer variables,
+  }) : super(
+         updateQuery: updateQuery,
+         variables: variables.toJson(),
+         document: documentNodeQueryScrapeSinglePerformer,
+       );
+}
+
+extension ClientExtension$Query$ScrapeSinglePerformer on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Query$ScrapeSinglePerformer>>
+  query$ScrapeSinglePerformer(
+    Options$Query$ScrapeSinglePerformer options,
+  ) async => await this.query(options);
+
+  graphql.ObservableQuery<Query$ScrapeSinglePerformer>
+  watchQuery$ScrapeSinglePerformer(
+    WatchOptions$Query$ScrapeSinglePerformer options,
+  ) => this.watchQuery(options);
+
+  void writeQuery$ScrapeSinglePerformer({
+    required Query$ScrapeSinglePerformer data,
+    required Variables$Query$ScrapeSinglePerformer variables,
+    bool broadcast = true,
+  }) => this.writeQuery(
+    graphql.Request(
+      operation: graphql.Operation(
+        document: documentNodeQueryScrapeSinglePerformer,
+      ),
+      variables: variables.toJson(),
+    ),
+    data: data.toJson(),
+    broadcast: broadcast,
+  );
+
+  Query$ScrapeSinglePerformer? readQuery$ScrapeSinglePerformer({
+    required Variables$Query$ScrapeSinglePerformer variables,
+    bool optimistic = true,
+  }) {
+    final result = this.readQuery(
+      graphql.Request(
+        operation: graphql.Operation(
+          document: documentNodeQueryScrapeSinglePerformer,
+        ),
+        variables: variables.toJson(),
+      ),
+      optimistic: optimistic,
+    );
+    return result == null ? null : Query$ScrapeSinglePerformer.fromJson(result);
+  }
+}
+
+class Query$ScrapeSinglePerformer$scrapeSinglePerformer {
+  Query$ScrapeSinglePerformer$scrapeSinglePerformer({
+    this.name,
+    this.disambiguation,
+    this.gender,
+    this.birthdate,
+    this.ethnicity,
+    this.country,
+    this.eye_color,
+    this.height,
+    this.measurements,
+    this.fake_tits,
+    this.penis_length,
+    this.circumcised,
+    this.career_start,
+    this.career_end,
+    this.tattoos,
+    this.piercings,
+    this.aliases,
+    this.image,
+    this.details,
+    this.death_date,
+    this.hair_color,
+    this.weight,
+    this.remote_site_id,
+    this.urls,
+    this.images,
+    this.stored_id,
+    this.$__typename = 'ScrapedPerformer',
+  });
+
+  factory Query$ScrapeSinglePerformer$scrapeSinglePerformer.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$name = json['name'];
+    final l$disambiguation = json['disambiguation'];
+    final l$gender = json['gender'];
+    final l$birthdate = json['birthdate'];
+    final l$ethnicity = json['ethnicity'];
+    final l$country = json['country'];
+    final l$eye_color = json['eye_color'];
+    final l$height = json['height'];
+    final l$measurements = json['measurements'];
+    final l$fake_tits = json['fake_tits'];
+    final l$penis_length = json['penis_length'];
+    final l$circumcised = json['circumcised'];
+    final l$career_start = json['career_start'];
+    final l$career_end = json['career_end'];
+    final l$tattoos = json['tattoos'];
+    final l$piercings = json['piercings'];
+    final l$aliases = json['aliases'];
+    final l$image = json['image'];
+    final l$details = json['details'];
+    final l$death_date = json['death_date'];
+    final l$hair_color = json['hair_color'];
+    final l$weight = json['weight'];
+    final l$remote_site_id = json['remote_site_id'];
+    final l$urls = json['urls'];
+    final l$images = json['images'];
+    final l$stored_id = json['stored_id'];
+    final l$$__typename = json['__typename'];
+    return Query$ScrapeSinglePerformer$scrapeSinglePerformer(
+      name: (l$name as String?),
+      disambiguation: (l$disambiguation as String?),
+      gender: (l$gender as String?),
+      birthdate: (l$birthdate as String?),
+      ethnicity: (l$ethnicity as String?),
+      country: (l$country as String?),
+      eye_color: (l$eye_color as String?),
+      height: (l$height as String?),
+      measurements: (l$measurements as String?),
+      fake_tits: (l$fake_tits as String?),
+      penis_length: (l$penis_length as String?),
+      circumcised: (l$circumcised as String?),
+      career_start: (l$career_start as String?),
+      career_end: (l$career_end as String?),
+      tattoos: (l$tattoos as String?),
+      piercings: (l$piercings as String?),
+      aliases: (l$aliases as String?),
+      image: (l$image as String?),
+      details: (l$details as String?),
+      death_date: (l$death_date as String?),
+      hair_color: (l$hair_color as String?),
+      weight: (l$weight as String?),
+      remote_site_id: (l$remote_site_id as String?),
+      urls: (l$urls as List<dynamic>?)?.map((e) => (e as String)).toList(),
+      images: (l$images as List<dynamic>?)?.map((e) => (e as String)).toList(),
+      stored_id: (l$stored_id as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String? name;
+
+  final String? disambiguation;
+
+  final String? gender;
+
+  final String? birthdate;
+
+  final String? ethnicity;
+
+  final String? country;
+
+  final String? eye_color;
+
+  final String? height;
+
+  final String? measurements;
+
+  final String? fake_tits;
+
+  final String? penis_length;
+
+  final String? circumcised;
+
+  final String? career_start;
+
+  final String? career_end;
+
+  final String? tattoos;
+
+  final String? piercings;
+
+  final String? aliases;
+
+  @Deprecated('use images instead')
+  final String? image;
+
+  final String? details;
+
+  final String? death_date;
+
+  final String? hair_color;
+
+  final String? weight;
+
+  final String? remote_site_id;
+
+  final List<String>? urls;
+
+  final List<String>? images;
+
+  final String? stored_id;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$disambiguation = disambiguation;
+    _resultData['disambiguation'] = l$disambiguation;
+    final l$gender = gender;
+    _resultData['gender'] = l$gender;
+    final l$birthdate = birthdate;
+    _resultData['birthdate'] = l$birthdate;
+    final l$ethnicity = ethnicity;
+    _resultData['ethnicity'] = l$ethnicity;
+    final l$country = country;
+    _resultData['country'] = l$country;
+    final l$eye_color = eye_color;
+    _resultData['eye_color'] = l$eye_color;
+    final l$height = height;
+    _resultData['height'] = l$height;
+    final l$measurements = measurements;
+    _resultData['measurements'] = l$measurements;
+    final l$fake_tits = fake_tits;
+    _resultData['fake_tits'] = l$fake_tits;
+    final l$penis_length = penis_length;
+    _resultData['penis_length'] = l$penis_length;
+    final l$circumcised = circumcised;
+    _resultData['circumcised'] = l$circumcised;
+    final l$career_start = career_start;
+    _resultData['career_start'] = l$career_start;
+    final l$career_end = career_end;
+    _resultData['career_end'] = l$career_end;
+    final l$tattoos = tattoos;
+    _resultData['tattoos'] = l$tattoos;
+    final l$piercings = piercings;
+    _resultData['piercings'] = l$piercings;
+    final l$aliases = aliases;
+    _resultData['aliases'] = l$aliases;
+    final l$image = image;
+    _resultData['image'] = l$image;
+    final l$details = details;
+    _resultData['details'] = l$details;
+    final l$death_date = death_date;
+    _resultData['death_date'] = l$death_date;
+    final l$hair_color = hair_color;
+    _resultData['hair_color'] = l$hair_color;
+    final l$weight = weight;
+    _resultData['weight'] = l$weight;
+    final l$remote_site_id = remote_site_id;
+    _resultData['remote_site_id'] = l$remote_site_id;
+    final l$urls = urls;
+    _resultData['urls'] = l$urls?.map((e) => e).toList();
+    final l$images = images;
+    _resultData['images'] = l$images?.map((e) => e).toList();
+    final l$stored_id = stored_id;
+    _resultData['stored_id'] = l$stored_id;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$name = name;
+    final l$disambiguation = disambiguation;
+    final l$gender = gender;
+    final l$birthdate = birthdate;
+    final l$ethnicity = ethnicity;
+    final l$country = country;
+    final l$eye_color = eye_color;
+    final l$height = height;
+    final l$measurements = measurements;
+    final l$fake_tits = fake_tits;
+    final l$penis_length = penis_length;
+    final l$circumcised = circumcised;
+    final l$career_start = career_start;
+    final l$career_end = career_end;
+    final l$tattoos = tattoos;
+    final l$piercings = piercings;
+    final l$aliases = aliases;
+    final l$image = image;
+    final l$details = details;
+    final l$death_date = death_date;
+    final l$hair_color = hair_color;
+    final l$weight = weight;
+    final l$remote_site_id = remote_site_id;
+    final l$urls = urls;
+    final l$images = images;
+    final l$stored_id = stored_id;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$name,
+      l$disambiguation,
+      l$gender,
+      l$birthdate,
+      l$ethnicity,
+      l$country,
+      l$eye_color,
+      l$height,
+      l$measurements,
+      l$fake_tits,
+      l$penis_length,
+      l$circumcised,
+      l$career_start,
+      l$career_end,
+      l$tattoos,
+      l$piercings,
+      l$aliases,
+      l$image,
+      l$details,
+      l$death_date,
+      l$hair_color,
+      l$weight,
+      l$remote_site_id,
+      l$urls == null ? null : Object.hashAll(l$urls.map((v) => v)),
+      l$images == null ? null : Object.hashAll(l$images.map((v) => v)),
+      l$stored_id,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$ScrapeSinglePerformer$scrapeSinglePerformer ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$disambiguation = disambiguation;
+    final lOther$disambiguation = other.disambiguation;
+    if (l$disambiguation != lOther$disambiguation) {
+      return false;
+    }
+    final l$gender = gender;
+    final lOther$gender = other.gender;
+    if (l$gender != lOther$gender) {
+      return false;
+    }
+    final l$birthdate = birthdate;
+    final lOther$birthdate = other.birthdate;
+    if (l$birthdate != lOther$birthdate) {
+      return false;
+    }
+    final l$ethnicity = ethnicity;
+    final lOther$ethnicity = other.ethnicity;
+    if (l$ethnicity != lOther$ethnicity) {
+      return false;
+    }
+    final l$country = country;
+    final lOther$country = other.country;
+    if (l$country != lOther$country) {
+      return false;
+    }
+    final l$eye_color = eye_color;
+    final lOther$eye_color = other.eye_color;
+    if (l$eye_color != lOther$eye_color) {
+      return false;
+    }
+    final l$height = height;
+    final lOther$height = other.height;
+    if (l$height != lOther$height) {
+      return false;
+    }
+    final l$measurements = measurements;
+    final lOther$measurements = other.measurements;
+    if (l$measurements != lOther$measurements) {
+      return false;
+    }
+    final l$fake_tits = fake_tits;
+    final lOther$fake_tits = other.fake_tits;
+    if (l$fake_tits != lOther$fake_tits) {
+      return false;
+    }
+    final l$penis_length = penis_length;
+    final lOther$penis_length = other.penis_length;
+    if (l$penis_length != lOther$penis_length) {
+      return false;
+    }
+    final l$circumcised = circumcised;
+    final lOther$circumcised = other.circumcised;
+    if (l$circumcised != lOther$circumcised) {
+      return false;
+    }
+    final l$career_start = career_start;
+    final lOther$career_start = other.career_start;
+    if (l$career_start != lOther$career_start) {
+      return false;
+    }
+    final l$career_end = career_end;
+    final lOther$career_end = other.career_end;
+    if (l$career_end != lOther$career_end) {
+      return false;
+    }
+    final l$tattoos = tattoos;
+    final lOther$tattoos = other.tattoos;
+    if (l$tattoos != lOther$tattoos) {
+      return false;
+    }
+    final l$piercings = piercings;
+    final lOther$piercings = other.piercings;
+    if (l$piercings != lOther$piercings) {
+      return false;
+    }
+    final l$aliases = aliases;
+    final lOther$aliases = other.aliases;
+    if (l$aliases != lOther$aliases) {
+      return false;
+    }
+    final l$image = image;
+    final lOther$image = other.image;
+    if (l$image != lOther$image) {
+      return false;
+    }
+    final l$details = details;
+    final lOther$details = other.details;
+    if (l$details != lOther$details) {
+      return false;
+    }
+    final l$death_date = death_date;
+    final lOther$death_date = other.death_date;
+    if (l$death_date != lOther$death_date) {
+      return false;
+    }
+    final l$hair_color = hair_color;
+    final lOther$hair_color = other.hair_color;
+    if (l$hair_color != lOther$hair_color) {
+      return false;
+    }
+    final l$weight = weight;
+    final lOther$weight = other.weight;
+    if (l$weight != lOther$weight) {
+      return false;
+    }
+    final l$remote_site_id = remote_site_id;
+    final lOther$remote_site_id = other.remote_site_id;
+    if (l$remote_site_id != lOther$remote_site_id) {
+      return false;
+    }
+    final l$urls = urls;
+    final lOther$urls = other.urls;
+    if (l$urls != null && lOther$urls != null) {
+      if (l$urls.length != lOther$urls.length) {
+        return false;
+      }
+      for (int i = 0; i < l$urls.length; i++) {
+        final l$urls$entry = l$urls[i];
+        final lOther$urls$entry = lOther$urls[i];
+        if (l$urls$entry != lOther$urls$entry) {
+          return false;
+        }
+      }
+    } else if (l$urls != lOther$urls) {
+      return false;
+    }
+    final l$images = images;
+    final lOther$images = other.images;
+    if (l$images != null && lOther$images != null) {
+      if (l$images.length != lOther$images.length) {
+        return false;
+      }
+      for (int i = 0; i < l$images.length; i++) {
+        final l$images$entry = l$images[i];
+        final lOther$images$entry = lOther$images[i];
+        if (l$images$entry != lOther$images$entry) {
+          return false;
+        }
+      }
+    } else if (l$images != lOther$images) {
+      return false;
+    }
+    final l$stored_id = stored_id;
+    final lOther$stored_id = other.stored_id;
+    if (l$stored_id != lOther$stored_id) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$ScrapeSinglePerformer$scrapeSinglePerformer
+    on Query$ScrapeSinglePerformer$scrapeSinglePerformer {
+  CopyWith$Query$ScrapeSinglePerformer$scrapeSinglePerformer<
+    Query$ScrapeSinglePerformer$scrapeSinglePerformer
+  >
+  get copyWith => CopyWith$Query$ScrapeSinglePerformer$scrapeSinglePerformer(
+    this,
+    (i) => i,
+  );
+}
+
+abstract class CopyWith$Query$ScrapeSinglePerformer$scrapeSinglePerformer<
+  TRes
+> {
+  factory CopyWith$Query$ScrapeSinglePerformer$scrapeSinglePerformer(
+    Query$ScrapeSinglePerformer$scrapeSinglePerformer instance,
+    TRes Function(Query$ScrapeSinglePerformer$scrapeSinglePerformer) then,
+  ) = _CopyWithImpl$Query$ScrapeSinglePerformer$scrapeSinglePerformer;
+
+  factory CopyWith$Query$ScrapeSinglePerformer$scrapeSinglePerformer.stub(
+    TRes res,
+  ) = _CopyWithStubImpl$Query$ScrapeSinglePerformer$scrapeSinglePerformer;
+
+  TRes call({
+    String? name,
+    String? disambiguation,
+    String? gender,
+    String? birthdate,
+    String? ethnicity,
+    String? country,
+    String? eye_color,
+    String? height,
+    String? measurements,
+    String? fake_tits,
+    String? penis_length,
+    String? circumcised,
+    String? career_start,
+    String? career_end,
+    String? tattoos,
+    String? piercings,
+    String? aliases,
+    String? image,
+    String? details,
+    String? death_date,
+    String? hair_color,
+    String? weight,
+    String? remote_site_id,
+    List<String>? urls,
+    List<String>? images,
+    String? stored_id,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$ScrapeSinglePerformer$scrapeSinglePerformer<TRes>
+    implements
+        CopyWith$Query$ScrapeSinglePerformer$scrapeSinglePerformer<TRes> {
+  _CopyWithImpl$Query$ScrapeSinglePerformer$scrapeSinglePerformer(
+    this._instance,
+    this._then,
+  );
+
+  final Query$ScrapeSinglePerformer$scrapeSinglePerformer _instance;
+
+  final TRes Function(Query$ScrapeSinglePerformer$scrapeSinglePerformer) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? name = _undefined,
+    Object? disambiguation = _undefined,
+    Object? gender = _undefined,
+    Object? birthdate = _undefined,
+    Object? ethnicity = _undefined,
+    Object? country = _undefined,
+    Object? eye_color = _undefined,
+    Object? height = _undefined,
+    Object? measurements = _undefined,
+    Object? fake_tits = _undefined,
+    Object? penis_length = _undefined,
+    Object? circumcised = _undefined,
+    Object? career_start = _undefined,
+    Object? career_end = _undefined,
+    Object? tattoos = _undefined,
+    Object? piercings = _undefined,
+    Object? aliases = _undefined,
+    Object? image = _undefined,
+    Object? details = _undefined,
+    Object? death_date = _undefined,
+    Object? hair_color = _undefined,
+    Object? weight = _undefined,
+    Object? remote_site_id = _undefined,
+    Object? urls = _undefined,
+    Object? images = _undefined,
+    Object? stored_id = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$ScrapeSinglePerformer$scrapeSinglePerformer(
+      name: name == _undefined ? _instance.name : (name as String?),
+      disambiguation: disambiguation == _undefined
+          ? _instance.disambiguation
+          : (disambiguation as String?),
+      gender: gender == _undefined ? _instance.gender : (gender as String?),
+      birthdate: birthdate == _undefined
+          ? _instance.birthdate
+          : (birthdate as String?),
+      ethnicity: ethnicity == _undefined
+          ? _instance.ethnicity
+          : (ethnicity as String?),
+      country: country == _undefined ? _instance.country : (country as String?),
+      eye_color: eye_color == _undefined
+          ? _instance.eye_color
+          : (eye_color as String?),
+      height: height == _undefined ? _instance.height : (height as String?),
+      measurements: measurements == _undefined
+          ? _instance.measurements
+          : (measurements as String?),
+      fake_tits: fake_tits == _undefined
+          ? _instance.fake_tits
+          : (fake_tits as String?),
+      penis_length: penis_length == _undefined
+          ? _instance.penis_length
+          : (penis_length as String?),
+      circumcised: circumcised == _undefined
+          ? _instance.circumcised
+          : (circumcised as String?),
+      career_start: career_start == _undefined
+          ? _instance.career_start
+          : (career_start as String?),
+      career_end: career_end == _undefined
+          ? _instance.career_end
+          : (career_end as String?),
+      tattoos: tattoos == _undefined ? _instance.tattoos : (tattoos as String?),
+      piercings: piercings == _undefined
+          ? _instance.piercings
+          : (piercings as String?),
+      aliases: aliases == _undefined ? _instance.aliases : (aliases as String?),
+      image: image == _undefined ? _instance.image : (image as String?),
+      details: details == _undefined ? _instance.details : (details as String?),
+      death_date: death_date == _undefined
+          ? _instance.death_date
+          : (death_date as String?),
+      hair_color: hair_color == _undefined
+          ? _instance.hair_color
+          : (hair_color as String?),
+      weight: weight == _undefined ? _instance.weight : (weight as String?),
+      remote_site_id: remote_site_id == _undefined
+          ? _instance.remote_site_id
+          : (remote_site_id as String?),
+      urls: urls == _undefined ? _instance.urls : (urls as List<String>?),
+      images: images == _undefined
+          ? _instance.images
+          : (images as List<String>?),
+      stored_id: stored_id == _undefined
+          ? _instance.stored_id
+          : (stored_id as String?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Query$ScrapeSinglePerformer$scrapeSinglePerformer<TRes>
+    implements
+        CopyWith$Query$ScrapeSinglePerformer$scrapeSinglePerformer<TRes> {
+  _CopyWithStubImpl$Query$ScrapeSinglePerformer$scrapeSinglePerformer(
+    this._res,
+  );
+
+  TRes _res;
+
+  call({
+    String? name,
+    String? disambiguation,
+    String? gender,
+    String? birthdate,
+    String? ethnicity,
+    String? country,
+    String? eye_color,
+    String? height,
+    String? measurements,
+    String? fake_tits,
+    String? penis_length,
+    String? circumcised,
+    String? career_start,
+    String? career_end,
+    String? tattoos,
+    String? piercings,
+    String? aliases,
+    String? image,
+    String? details,
+    String? death_date,
+    String? hair_color,
+    String? weight,
+    String? remote_site_id,
+    List<String>? urls,
+    List<String>? images,
+    String? stored_id,
+    String? $__typename,
+  }) => _res;
+}

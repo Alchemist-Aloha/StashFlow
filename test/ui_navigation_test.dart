@@ -93,9 +93,14 @@ class MockSceneRepository implements SceneRepository {
 
   @override
   Future<List<ScrapedScene>> scrapeSingleScene({
-    required String scraperId,
-    required String sceneId,
+    String? scraperId,
+    String? stashBoxEndpoint,
+    String? sceneId,
+    String? query,
   }) async => [];
+
+  @override
+  Future<void> generatePhash(String sceneId) async {}
 
   @override
   Future<void> saveScrapedScene({
@@ -158,6 +163,14 @@ class MockPerformerRepository implements PerformerRepository {
 
   @override
   Future<void> setPerformerFavorite(String id, bool favorite) async {}
+
+  @override
+  Future<List<ScrapedPerformer>> scrapePerformer({
+    String? scraperId,
+    String? stashBoxEndpoint,
+    String? performerId,
+    String? query,
+  }) async => [];
 }
 
 class MockStudioRepository implements StudioRepository {
@@ -187,6 +200,14 @@ class MockStudioRepository implements StudioRepository {
 
   @override
   Future<void> setStudioFavorite(String id, bool favorite) async {}
+
+  @override
+  Future<List<ScrapedStudio>> scrapeStudio({
+    String? scraperId,
+    String? stashBoxEndpoint,
+    String? studioId,
+    String? query,
+  }) async => [];
 }
 
 class MockTagRepository implements TagRepository {

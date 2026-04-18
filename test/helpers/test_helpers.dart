@@ -112,11 +112,18 @@ class MockSceneRepository extends MockRepositoryState<Scene>
 
   @override
   Future<List<ScrapedScene>> scrapeSingleScene({
-    required String scraperId,
-    required String sceneId,
+    String? scraperId,
+    String? stashBoxEndpoint,
+    String? sceneId,
+    String? query,
   }) async {
     if (shouldThrow) throw Exception(errorMessage);
     return [];
+  }
+
+  @override
+  Future<void> generatePhash(String sceneId) async {
+    if (shouldThrow) throw Exception(errorMessage);
   }
 
   @override
@@ -172,6 +179,17 @@ class MockPerformerRepository extends MockRepositoryState<Performer>
   Future<void> setPerformerFavorite(String id, bool favorite) async {
     if (shouldThrow) throw Exception(errorMessage);
   }
+
+  @override
+  Future<List<ScrapedPerformer>> scrapePerformer({
+    String? scraperId,
+    String? stashBoxEndpoint,
+    String? performerId,
+    String? query,
+  }) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    return [];
+  }
 }
 
 class MockStudioRepository extends MockRepositoryState<Studio>
@@ -198,6 +216,17 @@ class MockStudioRepository extends MockRepositoryState<Studio>
   @override
   Future<void> setStudioFavorite(String id, bool favorite) async {
     if (shouldThrow) throw Exception(errorMessage);
+  }
+
+  @override
+  Future<List<ScrapedStudio>> scrapeStudio({
+    String? scraperId,
+    String? stashBoxEndpoint,
+    String? studioId,
+    String? query,
+  }) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    return [];
   }
 }
 

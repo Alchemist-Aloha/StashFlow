@@ -15,6 +15,8 @@ import '../../../studios/domain/entities/studio.dart';
 import '../../../performers/domain/entities/performer.dart';
 import '../../../tags/domain/entities/tag.dart';
 import '../widgets/entity_picker.dart';
+import '../widgets/scrape_query_dialog.dart';
+import '../widgets/enhanced_scrape_dialog.dart';
 
 /// A page for editing scene metadata.
 class SceneEditPage extends ConsumerStatefulWidget {
@@ -170,48 +172,23 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
   }
 
   Future<void> _scrape() async {
-    final scrapers = await ref
-        .read(sceneScrapeProvider)
-        .listAvailableScrapers(types: ['SCENE']);
-
-    if (!mounted) return;
-
-    if (scrapers.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.scenes_no_scrapers)));
-      return;
-    }
-
-    final scraper = await showDialog<Scraper>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(context.l10n.scenes_select_scraper),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: scrapers.length,
-            itemBuilder: (context, index) {
-              final s = scrapers[index];
-              return ListTile(
-                title: Text(s.name),
-                subtitle: s.description != null ? Text(s.description!) : null,
-                onTap: () => Navigator.of(context).pop(s),
-              );
-            },
-          ),
-        ),
+    final scrapeRequest = await showDialog<ScrapeRequest>(
+      context: context,
+      builder: (context) => ScrapeQueryDialog(
+        initialQuery: _titleController.text,
       ),
     );
 
-    if (scraper == null || !mounted) return;
+    if (scrapeRequest == null || !mounted) return;
 
     setState(() => _isScraping = true);
     try {
-      final results = await ref
-          .read(sceneScrapeProvider)
-          .scrapeScene(scraperId: scraper.id, sceneId: widget.scene.id);
+      final results = await ref.read(sceneScrapeProvider).scrapeScene(
+            scraperId: scrapeRequest.scraperId,
+            stashBoxEndpoint: scrapeRequest.stashBoxEndpoint,
+            sceneId: scrapeRequest.useFingerprints ? widget.scene.id : null,
+            query: scrapeRequest.query,
+          );
 
       if (!mounted) return;
 
@@ -251,30 +228,46 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
         selected = results.first;
       }
 
+      // Enhanced merge dialog
+      final original = ScrapedScene(
+        title: _titleController.text,
+        details: _detailsController.text,
+        date: _selectedDate,
+        studioId: _selectedStudioId,
+        image: _scrapedImage,
+      );
+
+      if (!mounted) return;
+
+      final merged = await showDialog<ScrapedScene>(
+        context: context,
+        builder: (context) => EnhancedScrapeDialog(
+          original: original,
+          scraped: selected,
+        ),
+      );
+
+      if (merged == null || !mounted) return;
+
       setState(() {
-        if (selected.title != null) _titleController.text = selected.title!;
-        if (selected.details != null) {
-          _detailsController.text = selected.details!;
+        if (merged.title != null) _titleController.text = merged.title!;
+        if (merged.details != null) {
+          _detailsController.text = merged.details!;
         }
-        if (selected.date != null) {
-          _selectedDate = selected.date;
-          _dateController.text = _selectedDate!
-              .toIso8601String()
-              .split('T')
-              .first;
+        if (merged.date != null) {
+          _selectedDate = merged.date;
+          _dateController.text = _selectedDate!.toIso8601String().split('T').first;
         }
-        if (selected.urls.isNotEmpty) {
+        if (merged.urls.isNotEmpty) {
           for (final controller in _urlControllers) {
             controller.dispose();
           }
-          _urlControllers = selected.urls
-              .map((u) => TextEditingController(text: u))
-              .toList();
+          _urlControllers = merged.urls.map((u) => TextEditingController(text: u)).toList();
         }
-        _scrapedImage = selected.image;
+        _scrapedImage = merged.image;
 
         // Merge Performers that exist in library
-        for (final p in selected.performers) {
+        for (final p in merged.performers) {
           final id = p.storedId;
           if (id != null && !_selectedPerformerIds.contains(id)) {
             _selectedPerformerIds.add(id);
@@ -283,7 +276,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
         }
 
         // Merge Tags that exist in library
-        for (final t in selected.tags) {
+        for (final t in merged.tags) {
           final id = t.storedId;
           if (id != null && !_selectedTagIds.contains(id)) {
             _selectedTagIds.add(id);
@@ -291,12 +284,15 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
           }
         }
 
-        _scrapedTags = selected.tags;
-        _scrapedPerformers = selected.performers;
+        _scrapedTags = merged.tags;
+        _scrapedPerformers = merged.performers;
 
-        if (selected.studioId != null && _selectedStudioId == null) {
-          _selectedStudioId = selected.studioId;
-          _selectedStudioName = context.l10n.scenes_studio_id_prefix(selected.studioId!);
+        if (merged.studioId != null) {
+          _selectedStudioId = merged.studioId;
+          _selectedStudioName = merged.studio?.name ?? context.l10n.scenes_studio_id_prefix(merged.studioId!);
+        } else if (merged.studio != null) {
+          _selectedStudioId = merged.studio!.storedId;
+          _selectedStudioName = merged.studio!.name;
         }
       });
     } catch (e) {
@@ -304,6 +300,26 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(context.l10n.scenes_scrape_failed(e.toString()))));
+      }
+    } finally {
+      if (mounted) setState(() => _isScraping = false);
+    }
+  }
+
+  Future<void> _generatePhash() async {
+    setState(() => _isScraping = true);
+    try {
+      await ref.read(sceneScrapeProvider).generatePhash(widget.scene.id);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Phash generation started')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to generate phash: $e')),
+        );
       }
     } finally {
       if (mounted) setState(() => _isScraping = false);
@@ -395,12 +411,18 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                   ),
                 ),
               )
-            else
+            else ...[
+              IconButton(
+                onPressed: _generatePhash,
+                icon: const Icon(Icons.fingerprint),
+                tooltip: context.l10n.details_scene_fingerprint_query,
+              ),
               IconButton(
                 onPressed: _scrape,
                 icon: const Icon(Icons.search),
                 tooltip: context.l10n.details_scene_scrape,
               ),
+            ],
           IconButton(
             onPressed: _isSaving ? null : _save,
             icon: _isSaving

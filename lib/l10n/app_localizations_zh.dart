@@ -1318,6 +1318,18 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get scenes_duration_long => '> 20分钟';
+
+  @override
+  String get details_scene_fingerprint_query => 'Query by Fingerprint';
+
+  @override
+  String get scenes_available_scrapers => 'Available Scrapers';
+
+  @override
+  String get scrape_results_existing => 'Existing';
+
+  @override
+  String get scrape_results_scraped => 'Scraped';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).

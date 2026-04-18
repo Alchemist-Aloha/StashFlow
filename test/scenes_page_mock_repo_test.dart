@@ -56,9 +56,14 @@ class FakeSceneRepository implements SceneRepository {
 
   @override
   Future<List<ScrapedScene>> scrapeSingleScene({
-    required String scraperId,
-    required String sceneId,
+    String? scraperId,
+    String? stashBoxEndpoint,
+    String? sceneId,
+    String? query,
   }) async => [];
+
+  @override
+  Future<void> generatePhash(String sceneId) async {}
 
   @override
   Future<void> saveScrapedScene({

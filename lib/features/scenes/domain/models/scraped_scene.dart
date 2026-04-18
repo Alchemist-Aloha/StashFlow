@@ -32,6 +32,38 @@ class ScrapedPerformer {
   };
 }
 
+class ScrapedStudio {
+  final String? storedId;
+  final String name;
+  final String? remoteSiteId;
+  final String? image;
+  final String? url;
+
+  ScrapedStudio({
+    this.storedId,
+    required this.name,
+    this.remoteSiteId,
+    this.image,
+    this.url,
+  });
+
+  factory ScrapedStudio.fromJson(Map<String, dynamic> json) => ScrapedStudio(
+        storedId: json['stored_id'] as String?,
+        name: json['name'] as String,
+        remoteSiteId: json['remote_site_id'] as String?,
+        image: json['image'] as String?,
+        url: json['url'] as String?,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'stored_id': storedId,
+        'name': name,
+        'remote_site_id': remoteSiteId,
+        'image': image,
+        'url': url,
+      };
+}
+
 class ScrapedTag {
   final String? storedId;
   final String name;
@@ -56,6 +88,7 @@ class ScrapedScene {
   final List<ScrapedPerformer> performers;
   final String? image; // base64 encoded image data
   final String? studioId;
+  final ScrapedStudio? studio;
 
   ScrapedScene({
     this.remoteSiteId,
@@ -67,6 +100,7 @@ class ScrapedScene {
     List<ScrapedPerformer>? performers,
     this.image,
     this.studioId,
+    this.studio,
   }) : urls = urls ?? [],
        tags = tags ?? [],
        performers = performers ?? [];
@@ -89,6 +123,7 @@ class ScrapedScene {
         [],
     image: json['image'] as String?,
     studioId: json['studio_id'] as String?,
+    studio: json['studio'] != null ? ScrapedStudio.fromJson(json['studio'] as Map<String, dynamic>) : null,
   );
 
   Map<String, dynamic> toJson() => {
@@ -101,5 +136,6 @@ class ScrapedScene {
     'performers': performers.map((p) => p.toJson()).toList(),
     'image': image,
     'studio_id': studioId,
+    'studio': studio?.toJson(),
   };
 }

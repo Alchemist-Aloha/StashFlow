@@ -1,3 +1,4 @@
+import '../../../scenes/domain/models/scraped_scene.dart';
 import '../../domain/entities/studio.dart';
 
 abstract class StudioRepository {
@@ -11,4 +12,10 @@ abstract class StudioRepository {
   });
   Future<Studio> getStudioById(String id, {bool refresh = false});
   Future<void> setStudioFavorite(String id, bool favorite);
+  Future<List<ScrapedStudio>> scrapeStudio({
+    String? scraperId,
+    String? stashBoxEndpoint,
+    String? studioId,
+    String? query,
+  });
 }

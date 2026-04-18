@@ -94,6 +94,12 @@ class GraphQLSceneRepository implements SceneRepository {
                     bitRate: null,
                     duration: f.duration,
                     frameRate: null,
+                    fingerprints: f.fingerprints
+                        .map((fp) => Fingerprint(
+                              type: fp.type,
+                              value: fp.value,
+                            ))
+                        .toList(),
                   ),
                 )
                 .toList(),
@@ -317,6 +323,12 @@ class GraphQLSceneRepository implements SceneRepository {
               bitRate: f.bit_rate,
               duration: f.duration,
               frameRate: f.frame_rate,
+              fingerprints: f.fingerprints
+                  .map((fp) => Fingerprint(
+                        type: fp.type,
+                        value: fp.value,
+                      ))
+                  .toList(),
             ),
           )
           .toList(),
@@ -476,14 +488,22 @@ class GraphQLSceneRepository implements SceneRepository {
 
   @override
   Future<List<ScrapedScene>> scrapeSingleScene({
-    required String scraperId,
-    required String sceneId,
+    String? scraperId,
+    String? stashBoxEndpoint,
+    String? sceneId,
+    String? query,
   }) async {
     final result = await client.query$ScrapeSingleScene(
       Options$Query$ScrapeSingleScene(
         variables: Variables$Query$ScrapeSingleScene(
-          source: Input$ScraperSourceInput(scraper_id: scraperId),
-          input: Input$ScrapeSingleSceneInput(scene_id: sceneId),
+          source: Input$ScraperSourceInput(
+            scraper_id: scraperId,
+            stash_box_endpoint: stashBoxEndpoint,
+          ),
+          input: Input$ScrapeSingleSceneInput(
+            scene_id: sceneId,
+            query: query,
+          ),
         ),
       ),
     );
@@ -494,6 +514,22 @@ class GraphQLSceneRepository implements SceneRepository {
         result.parsedData?.scrapeSingleScene ?? [];
 
     return raw.map((e) => ScrapedScene.fromJson(e.toJson())).toList();
+  }
+
+  @override
+  Future<void> generatePhash(String sceneId) async {
+    final result = await client.mutate$MetadataGenerate(
+      Options$Mutation$MetadataGenerate(
+        variables: Variables$Mutation$MetadataGenerate(
+          input: Input$GenerateMetadataInput(
+            phashes: true,
+            sceneIDs: [sceneId],
+          ),
+        ),
+      ),
+    );
+
+    if (result.hasException) throw result.exception!;
   }
 
   @override

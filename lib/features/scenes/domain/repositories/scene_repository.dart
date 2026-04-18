@@ -20,9 +20,12 @@ abstract class SceneRepository {
   Future<Scene> getSceneById(String id, {bool refresh = false});
   Future<List<Scraper>> listScrapers({required List<String> types});
   Future<List<ScrapedScene>> scrapeSingleScene({
-    required String scraperId,
-    required String sceneId,
+    String? scraperId,
+    String? stashBoxEndpoint,
+    String? sceneId,
+    String? query,
   });
+  Future<void> generatePhash(String sceneId);
   Future<void> saveScrapedScene({
     required String sceneId,
     required ScrapedScene scraped,

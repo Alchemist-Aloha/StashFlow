@@ -2609,6 +2609,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'> 20m'**
   String get scenes_duration_long;
+
+  /// No description provided for @details_scene_fingerprint_query.
+  ///
+  /// In en, this message translates to:
+  /// **'Query by Fingerprint'**
+  String get details_scene_fingerprint_query;
+
+  /// No description provided for @scenes_available_scrapers.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Scrapers'**
+  String get scenes_available_scrapers;
+
+  /// No description provided for @scrape_results_existing.
+  ///
+  /// In en, this message translates to:
+  /// **'Existing'**
+  String get scrape_results_existing;
+
+  /// No description provided for @scrape_results_scraped.
+  ///
+  /// In en, this message translates to:
+  /// **'Scraped'**
+  String get scrape_results_scraped;
 }
 
 class _AppLocalizationsDelegate
