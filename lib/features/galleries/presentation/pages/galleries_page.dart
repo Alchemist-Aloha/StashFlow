@@ -21,7 +21,20 @@ import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 
-enum _GallerySortOption { title, date, rating, imageCount, fileCount, path, random, createdAt, updatedAt }
+enum _GallerySortOption {
+  date,
+  title,
+  path,
+  rating,
+  fileModTime,
+  tagCount,
+  performerCount,
+  random,
+  imageCount,
+  fileCount,
+  createdAt,
+  updatedAt,
+}
 
 class GalleriesPage extends ConsumerStatefulWidget {
   const GalleriesPage({super.key});
@@ -44,13 +57,16 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
       final sortConfig = ref.read(gallerySortProvider);
       setState(() {
         _sortOption = switch (sortConfig.sort) {
-          'title' => _GallerySortOption.title,
           'date' => _GallerySortOption.date,
-          'rating100' => _GallerySortOption.rating,
-          'image_count' => _GallerySortOption.imageCount,
-          'file_count' => _GallerySortOption.fileCount,
+          'title' => _GallerySortOption.title,
           'path' => _GallerySortOption.path,
+          'rating100' || 'rating' => _GallerySortOption.rating,
+          'file_mod_time' => _GallerySortOption.fileModTime,
+          'tag_count' => _GallerySortOption.tagCount,
+          'performer_count' => _GallerySortOption.performerCount,
           'random' => _GallerySortOption.random,
+          'images_count' || 'image_count' => _GallerySortOption.imageCount,
+          'zip_file_count' || 'file_count' => _GallerySortOption.fileCount,
           'created_at' => _GallerySortOption.createdAt,
           'updated_at' => _GallerySortOption.updatedAt,
           _ => _GallerySortOption.path,
@@ -67,13 +83,16 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
 
   void _applyServerSort() {
     final sortKey = switch (_sortOption) {
-      _GallerySortOption.title => 'title',
       _GallerySortOption.date => 'date',
-      _GallerySortOption.rating => 'rating',
-      _GallerySortOption.imageCount => 'image_count',
-      _GallerySortOption.fileCount => 'file_count',
+      _GallerySortOption.title => 'title',
       _GallerySortOption.path => 'path',
+      _GallerySortOption.rating => 'rating',
+      _GallerySortOption.fileModTime => 'file_mod_time',
+      _GallerySortOption.tagCount => 'tag_count',
+      _GallerySortOption.performerCount => 'performer_count',
       _GallerySortOption.random => 'random',
+      _GallerySortOption.imageCount => 'images_count',
+      _GallerySortOption.fileCount => 'zip_file_count',
       _GallerySortOption.createdAt => 'created_at',
       _GallerySortOption.updatedAt => 'updated_at',
     };
@@ -105,15 +124,18 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
 
   String _sortOptionLabel(_GallerySortOption option) {
     return switch (option) {
-      _GallerySortOption.title => context.l10n.common_title,
       _GallerySortOption.date => context.l10n.common_date,
-      _GallerySortOption.rating => context.l10n.common_rating,
-      _GallerySortOption.imageCount => context.l10n.common_image_count,
-      _GallerySortOption.fileCount => 'File Count',
+      _GallerySortOption.title => context.l10n.common_title,
       _GallerySortOption.path => context.l10n.common_filepath,
+      _GallerySortOption.rating => context.l10n.common_rating,
+      _GallerySortOption.fileModTime => context.l10n.sort_file_mod_time,
+      _GallerySortOption.tagCount => context.l10n.sort_tag_count,
+      _GallerySortOption.performerCount => context.l10n.sort_performers_count,
       _GallerySortOption.random => context.l10n.common_random,
-      _GallerySortOption.createdAt => 'Created At',
-      _GallerySortOption.updatedAt => 'Updated At',
+      _GallerySortOption.imageCount => context.l10n.common_image_count,
+      _GallerySortOption.fileCount => context.l10n.sort_zip_file_count,
+      _GallerySortOption.createdAt => context.l10n.sort_created_at,
+      _GallerySortOption.updatedAt => context.l10n.sort_updated_at,
     };
   }
 

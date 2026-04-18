@@ -164,70 +164,82 @@ class AppLocalizationsKo extends AppLocalizations {
   String get sort_random => '랜덤';
 
   @override
-  String get sort_height => 'Height';
+  String get sort_file_mod_time => '파일 수정 시간';
 
   @override
-  String get sort_birthdate => 'Birthdate';
+  String get sort_filesize => '파일 크기';
 
   @override
-  String get sort_tag_count => 'Tag Count';
+  String get sort_o_count => 'O 카운터';
 
   @override
-  String get sort_play_count => 'Play Count';
+  String get sort_height => '키';
 
   @override
-  String get sort_o_counter => 'O-Counter';
+  String get sort_birthdate => '생년월일';
 
   @override
-  String get sort_last_o_at => 'Last O At';
+  String get sort_tag_count => '태그 수';
 
   @override
-  String get sort_latest_scene => 'Latest Scene';
+  String get sort_play_count => '재생 수';
 
   @override
-  String get sort_career_start => 'Career Start';
+  String get sort_o_counter => 'O 카운터';
 
   @override
-  String get sort_career_end => 'Career End';
+  String get sort_zip_file_count => 'ZIP 파일 수';
 
   @override
-  String get sort_weight => 'Weight';
+  String get sort_last_o_at => '마지막 O';
 
   @override
-  String get sort_measurements => 'Measurements';
+  String get sort_latest_scene => '최신 씬';
 
   @override
-  String get sort_scenes_duration => 'Scenes Duration';
+  String get sort_career_start => '경력 시작';
 
   @override
-  String get sort_scenes_size => 'Scenes Size';
+  String get sort_career_end => '경력 종료';
 
   @override
-  String get sort_images_count => 'Image Count';
+  String get sort_weight => '체중';
 
   @override
-  String get sort_galleries_count => 'Gallery Count';
+  String get sort_measurements => '치수';
 
   @override
-  String get sort_child_count => 'Sub-studio Count';
+  String get sort_scenes_duration => '씬 길이';
 
   @override
-  String get sort_performers_count => 'Performer Count';
+  String get sort_scenes_size => '씬 크기';
 
   @override
-  String get sort_groups_count => 'Group Count';
+  String get sort_images_count => '이미지 수';
 
   @override
-  String get sort_marker_count => 'Marker Count';
+  String get sort_galleries_count => '갤러리 수';
 
   @override
-  String get sort_studios_count => 'Studio Count';
+  String get sort_child_count => '하위 스튜디오 수';
 
   @override
-  String get sort_penis_length => 'Penis Length';
+  String get sort_performers_count => '출연자 수';
 
   @override
-  String get sort_last_played_at => 'Last Played At';
+  String get sort_groups_count => '그룹 수';
+
+  @override
+  String get sort_marker_count => '마커 수';
+
+  @override
+  String get sort_studios_count => '스튜디오 수';
+
+  @override
+  String get sort_penis_length => '음경 길이';
+
+  @override
+  String get sort_last_played_at => '마지막 재생';
 
   @override
   String get studios_sort_saved => '정렬 설정이 기본값으로 저장되었습니다';
@@ -242,7 +254,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get tags_filter_saved => '필터 설정이 기본값으로 저장되었습니다';
 
   @override
-  String get tags_sort_title => 'Sort Tags';
+  String get tags_sort_title => '태그 정렬';
 
   @override
   String get tags_sort_saved => '정렬 설정이 기본값으로 저장되었습니다';
@@ -1371,10 +1383,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get scenes_field_urls => 'URL';
 
   @override
-  String get scenes_edit_performer => 'Edit Performer';
+  String get scenes_edit_performer => '출연자 편집';
 
   @override
-  String get scenes_edit_studio => 'Edit Studio';
+  String get scenes_edit_studio => '스튜디오 편집';
 
   @override
   String get common_no_title => '제목 없음';
@@ -1416,14 +1428,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get scenes_duration_long => '> 20분';
 
   @override
-  String get details_scene_fingerprint_query => 'Query by Fingerprint';
+  String get details_scene_fingerprint_query => '씬 지문 쿼리';
 
   @override
-  String get scenes_available_scrapers => 'Available Scrapers';
+  String get scenes_available_scrapers => '사용 가능한 스크레이퍼';
 
   @override
-  String get scrape_results_existing => 'Existing';
+  String get scrape_results_existing => '기존 결과';
 
   @override
-  String get scrape_results_scraped => 'Scraped';
+  String get scrape_results_scraped => '스크랩된 결과';
 }

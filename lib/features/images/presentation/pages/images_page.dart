@@ -19,21 +19,20 @@ import '../../domain/entities/image_filter.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 
 enum _ImageSortOption {
+  filesize,
+  fileCount,
+  date,
+  resolution,
   title,
   path,
   rating,
-  date,
+  fileModTime,
+  tagCount,
+  performerCount,
   random,
+  oCounter,
   createdAt,
   updatedAt,
-  fileCount,
-  fileModTime,
-  filesize,
-  id,
-  oCounter,
-  performerCount,
-  resolution,
-  tagCount,
 }
 
 class ImagesPage extends ConsumerStatefulWidget {
@@ -57,21 +56,20 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
       final sortConfig = ref.read(imageSortProvider);
       setState(() {
         _sortOption = switch (sortConfig.sort) {
+          'filesize' => _ImageSortOption.filesize,
+          'file_count' => _ImageSortOption.fileCount,
           'date' => _ImageSortOption.date,
-          'rating100' || 'rating' => _ImageSortOption.rating,
+          'resolution' => _ImageSortOption.resolution,
           'title' => _ImageSortOption.title,
           'path' => _ImageSortOption.path,
+          'rating100' || 'rating' => _ImageSortOption.rating,
+          'file_mod_time' => _ImageSortOption.fileModTime,
+          'tag_count' => _ImageSortOption.tagCount,
+          'performer_count' => _ImageSortOption.performerCount,
           'random' => _ImageSortOption.random,
+          'o_counter' => _ImageSortOption.oCounter,
           'created_at' => _ImageSortOption.createdAt,
           'updated_at' => _ImageSortOption.updatedAt,
-          'file_count' => _ImageSortOption.fileCount,
-          'file_mod_time' => _ImageSortOption.fileModTime,
-          'filesize' => _ImageSortOption.filesize,
-          'id' => _ImageSortOption.id,
-          'o_counter' => _ImageSortOption.oCounter,
-          'performer_count' => _ImageSortOption.performerCount,
-          'resolution' => _ImageSortOption.resolution,
-          'tag_count' => _ImageSortOption.tagCount,
           _ => _ImageSortOption.path,
         };
         _sortDescending = sortConfig.descending;
@@ -85,21 +83,20 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
 
   void _applyServerSort() {
     final sortKey = switch (_sortOption) {
+      _ImageSortOption.filesize => 'filesize',
+      _ImageSortOption.fileCount => 'file_count',
       _ImageSortOption.date => 'date',
-      _ImageSortOption.rating => 'rating',
+      _ImageSortOption.resolution => 'resolution',
       _ImageSortOption.title => 'title',
       _ImageSortOption.path => 'path',
+      _ImageSortOption.rating => 'rating',
+      _ImageSortOption.fileModTime => 'file_mod_time',
+      _ImageSortOption.tagCount => 'tag_count',
+      _ImageSortOption.performerCount => 'performer_count',
       _ImageSortOption.random => 'random',
+      _ImageSortOption.oCounter => 'o_counter',
       _ImageSortOption.createdAt => 'created_at',
       _ImageSortOption.updatedAt => 'updated_at',
-      _ImageSortOption.fileCount => 'file_count',
-      _ImageSortOption.fileModTime => 'file_mod_time',
-      _ImageSortOption.filesize => 'filesize',
-      _ImageSortOption.id => 'id',
-      _ImageSortOption.oCounter => 'o_counter',
-      _ImageSortOption.performerCount => 'performer_count',
-      _ImageSortOption.resolution => 'resolution',
-      _ImageSortOption.tagCount => 'tag_count',
     };
     ref
         .read(imageListProvider.notifier)
@@ -108,21 +105,20 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
 
   String _sortOptionLabel(_ImageSortOption option) {
     return switch (option) {
-      _ImageSortOption.date => 'Date',
-      _ImageSortOption.rating => 'Rating',
-      _ImageSortOption.title => 'Title',
-      _ImageSortOption.path => 'Filepath',
-      _ImageSortOption.random => 'Random',
-      _ImageSortOption.createdAt => 'Created At',
-      _ImageSortOption.updatedAt => 'Updated At',
-      _ImageSortOption.fileCount => 'File Count',
-      _ImageSortOption.fileModTime => 'File Mod Time',
-      _ImageSortOption.filesize => 'Filesize',
-      _ImageSortOption.id => 'ID',
-      _ImageSortOption.oCounter => 'O-Counter',
-      _ImageSortOption.performerCount => 'Performer Count',
-      _ImageSortOption.resolution => 'Resolution',
-      _ImageSortOption.tagCount => 'Tag Count',
+      _ImageSortOption.filesize => context.l10n.sort_filesize,
+      _ImageSortOption.fileCount => context.l10n.common_image_count,
+      _ImageSortOption.date => context.l10n.common_date,
+      _ImageSortOption.resolution => context.l10n.common_resolution,
+      _ImageSortOption.title => context.l10n.common_title,
+      _ImageSortOption.path => context.l10n.common_filepath,
+      _ImageSortOption.rating => context.l10n.common_rating,
+      _ImageSortOption.fileModTime => context.l10n.sort_file_mod_time,
+      _ImageSortOption.tagCount => context.l10n.sort_tag_count,
+      _ImageSortOption.performerCount => context.l10n.sort_performers_count,
+      _ImageSortOption.random => context.l10n.common_random,
+      _ImageSortOption.oCounter => context.l10n.sort_o_count,
+      _ImageSortOption.createdAt => context.l10n.sort_created_at,
+      _ImageSortOption.updatedAt => context.l10n.sort_updated_at,
     };
   }
 

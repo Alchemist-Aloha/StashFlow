@@ -168,70 +168,82 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sort_random => 'Zufällig';
 
   @override
-  String get sort_height => 'Height';
+  String get sort_file_mod_time => 'Dateiänderungszeit';
 
   @override
-  String get sort_birthdate => 'Birthdate';
+  String get sort_filesize => 'Dateigröße';
 
   @override
-  String get sort_tag_count => 'Tag Count';
+  String get sort_o_count => 'O-Zähler';
 
   @override
-  String get sort_play_count => 'Play Count';
+  String get sort_height => 'Größe';
 
   @override
-  String get sort_o_counter => 'O-Counter';
+  String get sort_birthdate => 'Geburtsdatum';
 
   @override
-  String get sort_last_o_at => 'Last O At';
+  String get sort_tag_count => 'Anzahl Tags';
 
   @override
-  String get sort_latest_scene => 'Latest Scene';
+  String get sort_play_count => 'Wiedergabeanzahl';
 
   @override
-  String get sort_career_start => 'Career Start';
+  String get sort_o_counter => 'O-Zähler';
 
   @override
-  String get sort_career_end => 'Career End';
+  String get sort_zip_file_count => 'Anzahl von ZIP-Dateien';
 
   @override
-  String get sort_weight => 'Weight';
+  String get sort_last_o_at => 'Letzte O-Zeit';
 
   @override
-  String get sort_measurements => 'Measurements';
+  String get sort_latest_scene => 'Neueste Szene';
 
   @override
-  String get sort_scenes_duration => 'Scenes Duration';
+  String get sort_career_start => 'Karrierebeginn';
 
   @override
-  String get sort_scenes_size => 'Scenes Size';
+  String get sort_career_end => 'Karriereende';
 
   @override
-  String get sort_images_count => 'Image Count';
+  String get sort_weight => 'Gewicht';
 
   @override
-  String get sort_galleries_count => 'Gallery Count';
+  String get sort_measurements => 'Maße';
 
   @override
-  String get sort_child_count => 'Sub-studio Count';
+  String get sort_scenes_duration => 'Szenen-Dauer';
 
   @override
-  String get sort_performers_count => 'Performer Count';
+  String get sort_scenes_size => 'Szenengröße';
 
   @override
-  String get sort_groups_count => 'Group Count';
+  String get sort_images_count => 'Bilderanzahl';
 
   @override
-  String get sort_marker_count => 'Marker Count';
+  String get sort_galleries_count => 'Galerienanzahl';
 
   @override
-  String get sort_studios_count => 'Studio Count';
+  String get sort_child_count => 'Anzahl Unterstudios';
 
   @override
-  String get sort_penis_length => 'Penis Length';
+  String get sort_performers_count => 'Darstelleranzahl';
 
   @override
-  String get sort_last_played_at => 'Last Played At';
+  String get sort_groups_count => 'Gruppenanzahl';
+
+  @override
+  String get sort_marker_count => 'Marker-Anzahl';
+
+  @override
+  String get sort_studios_count => 'Studiosanzahl';
+
+  @override
+  String get sort_penis_length => 'Penislänge';
+
+  @override
+  String get sort_last_played_at => 'Zuletzt abgespielt am';
 
   @override
   String get studios_sort_saved =>
@@ -249,7 +261,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Filtereinstellungen als Standard gespeichert';
 
   @override
-  String get tags_sort_title => 'Sort Tags';
+  String get tags_sort_title => 'Tags sortieren';
 
   @override
   String get tags_sort_saved => 'Sortiereinstellungen als Standard gespeichert';
@@ -1436,10 +1448,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scenes_field_urls => 'URLs';
 
   @override
-  String get scenes_edit_performer => 'Edit Performer';
+  String get scenes_edit_performer => 'Darsteller bearbeiten';
 
   @override
-  String get scenes_edit_studio => 'Edit Studio';
+  String get scenes_edit_studio => 'Studio bearbeiten';
 
   @override
   String get common_no_title => 'Kein Titel';
@@ -1483,14 +1495,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scenes_duration_long => '> 20 Min.';
 
   @override
-  String get details_scene_fingerprint_query => 'Query by Fingerprint';
+  String get details_scene_fingerprint_query => 'Szenen-Fingerprint-Abfrage';
 
   @override
-  String get scenes_available_scrapers => 'Available Scrapers';
+  String get scenes_available_scrapers => 'Verfügbare Scraper';
 
   @override
-  String get scrape_results_existing => 'Existing';
+  String get scrape_results_existing => 'Bereits vorhanden';
 
   @override
-  String get scrape_results_scraped => 'Scraped';
+  String get scrape_results_scraped => 'Erfasste Ergebnisse';
 }

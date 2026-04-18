@@ -166,6 +166,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sort_random => 'Random';
 
   @override
+  String get sort_file_mod_time => 'File Mod Time';
+
+  @override
+  String get sort_filesize => 'Filesize';
+
+  @override
+  String get sort_o_count => 'O-Counter';
+
+  @override
   String get sort_height => 'Height';
 
   @override
@@ -179,6 +188,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sort_o_counter => 'O-Counter';
+
+  @override
+  String get sort_zip_file_count => 'Zip File Count';
 
   @override
   String get sort_last_o_at => 'Last O At';

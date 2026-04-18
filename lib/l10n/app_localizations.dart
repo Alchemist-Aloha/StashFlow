@@ -372,6 +372,24 @@ abstract class AppLocalizations {
   /// **'Random'**
   String get sort_random;
 
+  /// No description provided for @sort_file_mod_time.
+  ///
+  /// In en, this message translates to:
+  /// **'File Mod Time'**
+  String get sort_file_mod_time;
+
+  /// No description provided for @sort_filesize.
+  ///
+  /// In en, this message translates to:
+  /// **'Filesize'**
+  String get sort_filesize;
+
+  /// No description provided for @sort_o_count.
+  ///
+  /// In en, this message translates to:
+  /// **'O-Counter'**
+  String get sort_o_count;
+
   /// No description provided for @sort_height.
   ///
   /// In en, this message translates to:
@@ -401,6 +419,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'O-Counter'**
   String get sort_o_counter;
+
+  /// No description provided for @sort_zip_file_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Zip File Count'**
+  String get sort_zip_file_count;
 
   /// No description provided for @sort_last_o_at.
   ///

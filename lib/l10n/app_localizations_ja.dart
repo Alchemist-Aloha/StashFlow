@@ -166,70 +166,82 @@ class AppLocalizationsJa extends AppLocalizations {
   String get sort_random => 'ランダム';
 
   @override
-  String get sort_height => 'Height';
+  String get sort_file_mod_time => 'ファイル更新日時';
 
   @override
-  String get sort_birthdate => 'Birthdate';
+  String get sort_filesize => 'ファイルサイズ';
 
   @override
-  String get sort_tag_count => 'Tag Count';
+  String get sort_o_count => 'Oカウンター';
 
   @override
-  String get sort_play_count => 'Play Count';
+  String get sort_height => '身長';
 
   @override
-  String get sort_o_counter => 'O-Counter';
+  String get sort_birthdate => '生年月日';
 
   @override
-  String get sort_last_o_at => 'Last O At';
+  String get sort_tag_count => 'タグ数';
 
   @override
-  String get sort_latest_scene => 'Latest Scene';
+  String get sort_play_count => '再生回数';
 
   @override
-  String get sort_career_start => 'Career Start';
+  String get sort_o_counter => 'Oカウンター';
 
   @override
-  String get sort_career_end => 'Career End';
+  String get sort_zip_file_count => 'ZIPファイル数';
 
   @override
-  String get sort_weight => 'Weight';
+  String get sort_last_o_at => '最終O日時';
 
   @override
-  String get sort_measurements => 'Measurements';
+  String get sort_latest_scene => '最新シーン';
 
   @override
-  String get sort_scenes_duration => 'Scenes Duration';
+  String get sort_career_start => 'キャリア開始';
 
   @override
-  String get sort_scenes_size => 'Scenes Size';
+  String get sort_career_end => 'キャリア終了';
 
   @override
-  String get sort_images_count => 'Image Count';
+  String get sort_weight => '体重';
 
   @override
-  String get sort_galleries_count => 'Gallery Count';
+  String get sort_measurements => 'スリーサイズ';
 
   @override
-  String get sort_child_count => 'Sub-studio Count';
+  String get sort_scenes_duration => 'シーンの合計時間';
 
   @override
-  String get sort_performers_count => 'Performer Count';
+  String get sort_scenes_size => 'シーンのサイズ';
 
   @override
-  String get sort_groups_count => 'Group Count';
+  String get sort_images_count => '画像数';
 
   @override
-  String get sort_marker_count => 'Marker Count';
+  String get sort_galleries_count => 'ギャラリー数';
 
   @override
-  String get sort_studios_count => 'Studio Count';
+  String get sort_child_count => 'サブスタジオ数';
 
   @override
-  String get sort_penis_length => 'Penis Length';
+  String get sort_performers_count => '出演者数';
 
   @override
-  String get sort_last_played_at => 'Last Played At';
+  String get sort_groups_count => 'グループ数';
+
+  @override
+  String get sort_marker_count => 'マーカー数';
+
+  @override
+  String get sort_studios_count => 'スタジオ数';
+
+  @override
+  String get sort_penis_length => 'ペニスの長さ';
+
+  @override
+  String get sort_last_played_at => '最終再生日時';
 
   @override
   String get studios_sort_saved => '並べ替え設定をデフォルトとして保存しました';
@@ -244,7 +256,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tags_filter_saved => 'フィルター設定をデフォルトとして保存しました';
 
   @override
-  String get tags_sort_title => 'Sort Tags';
+  String get tags_sort_title => 'タグを並べ替え';
 
   @override
   String get tags_sort_saved => '並べ替え設定をデフォルトとして保存しました';
@@ -1372,10 +1384,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get scenes_field_urls => 'URL';
 
   @override
-  String get scenes_edit_performer => 'Edit Performer';
+  String get scenes_edit_performer => '出演者を編集';
 
   @override
-  String get scenes_edit_studio => 'Edit Studio';
+  String get scenes_edit_studio => 'スタジオを編集';
 
   @override
   String get common_no_title => 'タイトルなし';
@@ -1416,14 +1428,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get scenes_duration_long => '> 20分';
 
   @override
-  String get details_scene_fingerprint_query => 'Query by Fingerprint';
+  String get details_scene_fingerprint_query => 'シーンのフィンガープリントクエリ';
 
   @override
-  String get scenes_available_scrapers => 'Available Scrapers';
+  String get scenes_available_scrapers => '使用可能なスクレイパー';
 
   @override
-  String get scrape_results_existing => 'Existing';
+  String get scrape_results_existing => '既存の結果';
 
   @override
-  String get scrape_results_scraped => 'Scraped';
+  String get scrape_results_scraped => '取得済み結果';
 }

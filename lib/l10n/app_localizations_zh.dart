@@ -164,70 +164,82 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sort_random => '随机';
 
   @override
-  String get sort_height => 'Height';
+  String get sort_file_mod_time => '文件修改时间';
 
   @override
-  String get sort_birthdate => 'Birthdate';
+  String get sort_filesize => '文件大小';
 
   @override
-  String get sort_tag_count => 'Tag Count';
+  String get sort_o_count => 'O 计数器';
 
   @override
-  String get sort_play_count => 'Play Count';
+  String get sort_height => '身高';
 
   @override
-  String get sort_o_counter => 'O-Counter';
+  String get sort_birthdate => '出生日期';
 
   @override
-  String get sort_last_o_at => 'Last O At';
+  String get sort_tag_count => '标签数量';
 
   @override
-  String get sort_latest_scene => 'Latest Scene';
+  String get sort_play_count => '播放次数';
 
   @override
-  String get sort_career_start => 'Career Start';
+  String get sort_o_counter => 'O 计数';
 
   @override
-  String get sort_career_end => 'Career End';
+  String get sort_zip_file_count => 'ZIP 文件数';
 
   @override
-  String get sort_weight => 'Weight';
+  String get sort_last_o_at => '上次 O 时间';
 
   @override
-  String get sort_measurements => 'Measurements';
+  String get sort_latest_scene => '最新场景';
 
   @override
-  String get sort_scenes_duration => 'Scenes Duration';
+  String get sort_career_start => '职业开始';
 
   @override
-  String get sort_scenes_size => 'Scenes Size';
+  String get sort_career_end => '职业结束';
 
   @override
-  String get sort_images_count => 'Image Count';
+  String get sort_weight => '体重';
 
   @override
-  String get sort_galleries_count => 'Gallery Count';
+  String get sort_measurements => '三围';
 
   @override
-  String get sort_child_count => 'Sub-studio Count';
+  String get sort_scenes_duration => '场景时长';
 
   @override
-  String get sort_performers_count => 'Performer Count';
+  String get sort_scenes_size => '场景大小';
 
   @override
-  String get sort_groups_count => 'Group Count';
+  String get sort_images_count => '图片数量';
 
   @override
-  String get sort_marker_count => 'Marker Count';
+  String get sort_galleries_count => '画廊数量';
 
   @override
-  String get sort_studios_count => 'Studio Count';
+  String get sort_child_count => '子工作室数量';
 
   @override
-  String get sort_penis_length => 'Penis Length';
+  String get sort_performers_count => '演员数量';
 
   @override
-  String get sort_last_played_at => 'Last Played At';
+  String get sort_groups_count => '分组数量';
+
+  @override
+  String get sort_marker_count => '标记数量';
+
+  @override
+  String get sort_studios_count => '工作室数量';
+
+  @override
+  String get sort_penis_length => '阴茎长度';
+
+  @override
+  String get sort_last_played_at => '上次播放时间';
 
   @override
   String get studios_sort_saved => '排序偏好已保存为默认';
@@ -242,7 +254,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tags_filter_saved => '筛选偏好已保存为默认';
 
   @override
-  String get tags_sort_title => 'Sort Tags';
+  String get tags_sort_title => '排序标签';
 
   @override
   String get tags_sort_saved => '排序偏好已保存为默认';
@@ -1351,10 +1363,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scenes_field_urls => 'URL';
 
   @override
-  String get scenes_edit_performer => 'Edit Performer';
+  String get scenes_edit_performer => '编辑演员';
 
   @override
-  String get scenes_edit_studio => 'Edit Studio';
+  String get scenes_edit_studio => '编辑工作室';
 
   @override
   String get common_no_title => '无标题';
@@ -1395,16 +1407,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scenes_duration_long => '> 20分钟';
 
   @override
-  String get details_scene_fingerprint_query => 'Query by Fingerprint';
+  String get details_scene_fingerprint_query => '场景指纹查询';
 
   @override
-  String get scenes_available_scrapers => 'Available Scrapers';
+  String get scenes_available_scrapers => '可用抓取器';
 
   @override
-  String get scrape_results_existing => 'Existing';
+  String get scrape_results_existing => '已存在';
 
   @override
-  String get scrape_results_scraped => 'Scraped';
+  String get scrape_results_scraped => '已抓取';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -1567,6 +1579,84 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get sort_random => '随机';
 
   @override
+  String get sort_file_mod_time => '文件修改时间';
+
+  @override
+  String get sort_filesize => '文件大小';
+
+  @override
+  String get sort_o_count => 'O 计数器';
+
+  @override
+  String get sort_height => '身高';
+
+  @override
+  String get sort_birthdate => '出生日期';
+
+  @override
+  String get sort_tag_count => '标签数量';
+
+  @override
+  String get sort_play_count => '播放次数';
+
+  @override
+  String get sort_o_counter => 'O 计数';
+
+  @override
+  String get sort_zip_file_count => 'ZIP 文件数';
+
+  @override
+  String get sort_last_o_at => '上次 O 时间';
+
+  @override
+  String get sort_latest_scene => '最新场景';
+
+  @override
+  String get sort_career_start => '职业开始';
+
+  @override
+  String get sort_career_end => '职业结束';
+
+  @override
+  String get sort_weight => '体重';
+
+  @override
+  String get sort_measurements => '三围';
+
+  @override
+  String get sort_scenes_duration => '场景时长';
+
+  @override
+  String get sort_scenes_size => '场景大小';
+
+  @override
+  String get sort_images_count => '图片数量';
+
+  @override
+  String get sort_galleries_count => '画廊数量';
+
+  @override
+  String get sort_child_count => '子工作室数量';
+
+  @override
+  String get sort_performers_count => '演员数量';
+
+  @override
+  String get sort_groups_count => '分组数量';
+
+  @override
+  String get sort_marker_count => '标记数量';
+
+  @override
+  String get sort_studios_count => '工作室数量';
+
+  @override
+  String get sort_penis_length => '阴茎长度';
+
+  @override
+  String get sort_last_played_at => '上次播放时间';
+
+  @override
   String get studios_sort_saved => '排序偏好已保存为默认';
 
   @override
@@ -1577,6 +1667,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get tags_filter_saved => '筛选偏好已保存为默认';
+
+  @override
+  String get tags_sort_title => '排序标签';
 
   @override
   String get tags_sort_saved => '排序偏好已保存为默认';
@@ -2685,6 +2778,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scenes_field_urls => 'URL';
 
   @override
+  String get scenes_edit_performer => '编辑演员';
+
+  @override
+  String get scenes_edit_studio => '编辑工作室';
+
+  @override
   String get common_no_title => '无标题';
 
   @override
@@ -2721,6 +2820,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get scenes_duration_long => '> 20分钟';
+
+  @override
+  String get details_scene_fingerprint_query => '场景指纹查询';
+
+  @override
+  String get scenes_available_scrapers => '可用抓取器';
+
+  @override
+  String get scrape_results_existing => '已存在';
+
+  @override
+  String get scrape_results_scraped => '已抓取';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -2885,6 +2996,84 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get sort_random => '隨機';
 
   @override
+  String get sort_file_mod_time => '檔案修改時間';
+
+  @override
+  String get sort_filesize => '檔案大小';
+
+  @override
+  String get sort_o_count => 'O 計數器';
+
+  @override
+  String get sort_height => '身高';
+
+  @override
+  String get sort_birthdate => '出生日期';
+
+  @override
+  String get sort_tag_count => '標籤數';
+
+  @override
+  String get sort_play_count => '播放次數';
+
+  @override
+  String get sort_o_counter => 'O 計數器';
+
+  @override
+  String get sort_zip_file_count => 'ZIP 檔案數';
+
+  @override
+  String get sort_last_o_at => '上次 O 時間';
+
+  @override
+  String get sort_latest_scene => '最新場景';
+
+  @override
+  String get sort_career_start => '職業開始';
+
+  @override
+  String get sort_career_end => '職業結束';
+
+  @override
+  String get sort_weight => '體重';
+
+  @override
+  String get sort_measurements => '三圍';
+
+  @override
+  String get sort_scenes_duration => '場景時長';
+
+  @override
+  String get sort_scenes_size => '場景大小';
+
+  @override
+  String get sort_images_count => '圖片數';
+
+  @override
+  String get sort_galleries_count => '畫廊數';
+
+  @override
+  String get sort_child_count => '子工作室數';
+
+  @override
+  String get sort_performers_count => '演出者數';
+
+  @override
+  String get sort_groups_count => '分組數';
+
+  @override
+  String get sort_marker_count => '標記數';
+
+  @override
+  String get sort_studios_count => '工作室數';
+
+  @override
+  String get sort_penis_length => '陰莖長度';
+
+  @override
+  String get sort_last_played_at => '上次播放時間';
+
+  @override
   String get studios_sort_saved => '排序偏好已儲存為預設';
 
   @override
@@ -2895,6 +3084,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get tags_filter_saved => '篩選偏好已儲存為預設';
+
+  @override
+  String get tags_sort_title => '排序標籤';
 
   @override
   String get tags_sort_saved => '排序偏好已儲存為預設';
@@ -4005,6 +4197,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scenes_field_urls => 'URL';
 
   @override
+  String get scenes_edit_performer => '編輯演出者';
+
+  @override
+  String get scenes_edit_studio => '編輯工作室';
+
+  @override
   String get common_no_title => '無標題';
 
   @override
@@ -4041,4 +4239,16 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get scenes_duration_long => '> 20分鐘';
+
+  @override
+  String get details_scene_fingerprint_query => '場景指紋查詢';
+
+  @override
+  String get scenes_available_scrapers => '可用的抓取器';
+
+  @override
+  String get scrape_results_existing => '已存在';
+
+  @override
+  String get scrape_results_scraped => '已抓取';
 }
