@@ -22,6 +22,7 @@ import 'package:stash_app_flutter/features/studios/domain/entities/studio_filter
 import 'package:stash_app_flutter/features/images/domain/entities/image_filter.dart';
 import 'package:stash_app_flutter/features/scenes/domain/models/scraped_scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/models/scraper.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 
 abstract class MockRepositoryState<T> {
   List<T> data = [];
@@ -329,6 +330,8 @@ Future<void> pumpTestWidget(
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
         home: child,
       ),
     ),
