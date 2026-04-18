@@ -12,6 +12,7 @@ import '../../../performers/domain/entities/performer.dart';
 import '../../../tags/domain/entities/tag.dart';
 import '../../../groups/domain/entities/group.dart';
 import '../../../galleries/domain/entities/gallery.dart';
+import '../../../../core/domain/entities/filter_options.dart';
 
 class SceneFilterPanel extends ConsumerStatefulWidget {
   const SceneFilterPanel({super.key});
@@ -22,13 +23,13 @@ class SceneFilterPanel extends ConsumerStatefulWidget {
 
 class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
   late SceneFilter _tempFilter;
-  late bool _tempOrganizedOnly;
+  late OrganizedFilter _tempOrganized;
 
   @override
   void initState() {
     super.initState();
     _tempFilter = ref.read(sceneFilterStateProvider);
-    _tempOrganizedOnly = ref.read(sceneOrganizedOnlyProvider);
+    _tempOrganized = ref.read(sceneOrganizedOnlyProvider);
   }
 
   @override
@@ -64,7 +65,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                       onPressed: () {
                         setState(() {
                           _tempFilter = SceneFilter.empty();
-                          _tempOrganizedOnly = false;
+                          _tempOrganized = OrganizedFilter.all;
                         });
                       },
                       child: Text(context.l10n.common_reset),
@@ -81,8 +82,11 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                   child: Column(
                     children: [
                       _buildGeneralSection(),
+                      _buildPerformerSection(),
+                      _buildLibrarySection(),
+                      _buildMetadataSection(),
                       _buildMediaInfoSection(),
-                      _buildPerformanceSection(),
+                      _buildUsageSection(),
                       _buildSystemSection(),
                     ],
                   ),
@@ -102,7 +106,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                               .update(_tempFilter);
                           ref
                               .read(sceneOrganizedOnlyProvider.notifier)
-                              .set(_tempOrganizedOnly);
+                              .set(_tempOrganized);
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
@@ -125,7 +129,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                               .update(_tempFilter);
                           ref
                               .read(sceneOrganizedOnlyProvider.notifier)
-                              .set(_tempOrganizedOnly);
+                              .set(_tempOrganized);
                           await ref
                               .read(sceneFilterStateProvider.notifier)
                               .saveAsDefault();
@@ -166,34 +170,16 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
       title: 'General',
       initiallyExpanded: true,
       children: [
-        StringCriterionInput(
-          label: 'Code',
-          value: _tempFilter.code,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(code: val)),
-        ),
-        StringCriterionInput(
-          label: 'Details',
-          value: _tempFilter.details,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(details: val)),
-        ),
-        StringCriterionInput(
-          label: 'Director',
-          value: _tempFilter.director,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(director: val)),
-        ),
         _buildRatingFilter(),
         _buildOrganizedFilter(),
-        _buildEntityFilter<Studio>(
-          'Studios',
-          'studio',
-          _tempFilter.studios,
-          (val) => setState(
-            () => _tempFilter = _tempFilter.copyWith(
-              studios: val as HierarchicalMultiCriterion?,
-            ),
-          ),
-          true,
-        ),
+      ],
+    );
+  }
+
+  Widget _buildPerformerSection() {
+    return FilterSection(
+      title: 'Performer',
+      children: [
         _buildEntityFilter<Performer>(
           'Performers',
           'performer',
@@ -206,12 +192,44 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
           false,
         ),
         _buildEntityFilter<Tag>(
-          'Tags',
+          'Performer Tags',
           'tag',
-          _tempFilter.tags,
+          _tempFilter.performerTags,
           (val) => setState(
             () => _tempFilter = _tempFilter.copyWith(
-              tags: val as HierarchicalMultiCriterion?,
+              performerTags: val as HierarchicalMultiCriterion?,
+            ),
+          ),
+          true,
+        ),
+        IntCriterionInput(
+          label: 'Performer Age',
+          value: _tempFilter.performerAge,
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(performerAge: val),
+          ),
+        ),
+        IntCriterionInput(
+          label: 'Performer Count',
+          value: _tempFilter.performerCount,
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(performerCount: val)),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLibrarySection() {
+    return FilterSection(
+      title: 'Library',
+      children: [
+        _buildEntityFilter<Studio>(
+          'Studios',
+          'studio',
+          _tempFilter.studios,
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(
+              studios: val as HierarchicalMultiCriterion?,
             ),
           ),
           true,
@@ -239,15 +257,51 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
           false,
         ),
         _buildEntityFilter<Tag>(
-          'Performer Tags',
+          'Tags',
           'tag',
-          _tempFilter.performerTags,
+          _tempFilter.tags,
           (val) => setState(
             () => _tempFilter = _tempFilter.copyWith(
-              performerTags: val as HierarchicalMultiCriterion?,
+              tags: val as HierarchicalMultiCriterion?,
             ),
           ),
           true,
+        ),
+        IntCriterionInput(
+          label: 'Tag Count',
+          value: _tempFilter.tagCount,
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(tagCount: val)),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMetadataSection() {
+    return FilterSection(
+      title: 'Metadata',
+      children: [
+        StringCriterionInput(
+          label: 'Code',
+          value: _tempFilter.code,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(code: val)),
+        ),
+        StringCriterionInput(
+          label: 'Details',
+          value: _tempFilter.details,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(details: val)),
+        ),
+        StringCriterionInput(
+          label: 'Director',
+          value: _tempFilter.director,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(director: val)),
+        ),
+        StringCriterionInput(
+          label: 'URL',
+          value: _tempFilter.url,
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(url: val),
+          ),
         ),
         DateCriterionInput(
           label: 'Date',
@@ -256,31 +310,15 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
             () => _tempFilter = _tempFilter.copyWith(date: val),
           ),
         ),
-        IntCriterionInput(
-          label: 'Performer Age',
-          value: _tempFilter.performerAge,
-          onChanged: (val) => setState(
-            () => _tempFilter = _tempFilter.copyWith(performerAge: val),
-          ),
-        ),
-        IntCriterionInput(
-          label: 'Tag Count',
-          value: _tempFilter.tagCount,
-          onChanged: (val) =>
-              setState(() => _tempFilter = _tempFilter.copyWith(tagCount: val)),
-        ),
-        IntCriterionInput(
-          label: 'Performer Count',
-          value: _tempFilter.performerCount,
-          onChanged: (val) =>
-              setState(() => _tempFilter = _tempFilter.copyWith(performerCount: val)),
+        StringCriterionInput(
+          label: 'Path',
+          value: _tempFilter.path,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(path: val)),
         ),
         StringCriterionInput(
-          label: 'URL',
-          value: _tempFilter.url,
-          onChanged: (val) => setState(
-            () => _tempFilter = _tempFilter.copyWith(url: val),
-          ),
+          label: 'Captions',
+          value: _tempFilter.captions,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(captions: val)),
         ),
       ],
     );
@@ -292,16 +330,6 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
       children: [
         _buildResolutionFilter(),
         _buildOrientationFilter(),
-        StringCriterionInput(
-          label: 'Path',
-          value: _tempFilter.path,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(path: val)),
-        ),
-        StringCriterionInput(
-          label: 'Captions',
-          value: _tempFilter.captions,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(captions: val)),
-        ),
         IntCriterionInput(
           label: 'Duration (seconds)',
           value: _tempFilter.duration,
@@ -339,20 +367,13 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
             () => _tempFilter = _tempFilter.copyWith(fileCount: val),
           ),
         ),
-        IntCriterionInput(
-          label: 'Resume Time',
-          value: _tempFilter.resumeTime,
-          onChanged: (val) => setState(
-            () => _tempFilter = _tempFilter.copyWith(resumeTime: val),
-          ),
-        ),
       ],
     );
   }
 
-  Widget _buildPerformanceSection() {
+  Widget _buildUsageSection() {
     return FilterSection(
-      title: 'Performance',
+      title: 'Usage',
       children: [
         IntCriterionInput(
           label: 'Play Count',
@@ -379,6 +400,27 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
           value: _tempFilter.lastPlayedAt,
           onChanged: (val) =>
               setState(() => _tempFilter = _tempFilter.copyWith(lastPlayedAt: val)),
+        ),
+        IntCriterionInput(
+          label: 'Resume Time',
+          value: _tempFilter.resumeTime,
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(resumeTime: val),
+          ),
+        ),
+        _buildBooleanFilter(
+          'Interactive',
+          _tempFilter.interactive,
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(interactive: val),
+          ),
+        ),
+        IntCriterionInput(
+          label: 'Interactive Speed',
+          value: _tempFilter.interactiveSpeed,
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(interactiveSpeed: val),
+          ),
         ),
       ],
     );
@@ -428,20 +470,6 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
             () => _tempFilter = _tempFilter.copyWith(isMissing: val),
           ),
         ),
-        _buildBooleanFilter(
-          'Interactive',
-          _tempFilter.interactive,
-          (val) => setState(
-            () => _tempFilter = _tempFilter.copyWith(interactive: val),
-          ),
-        ),
-        IntCriterionInput(
-          label: 'Interactive Speed',
-          value: _tempFilter.interactiveSpeed,
-          onChanged: (val) => setState(
-            () => _tempFilter = _tempFilter.copyWith(interactiveSpeed: val),
-          ),
-        ),
         DateCriterionInput(
           label: 'Created At',
           value: _tempFilter.createdAt,
@@ -461,7 +489,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Duplicated'),
+        Text('Duplicated', style: context.textTheme.labelLarge),
         Wrap(
           spacing: 4,
           children: options.map((opt) {
@@ -536,10 +564,25 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
   }
 
   Widget _buildOrganizedFilter() {
-    return _buildBooleanFilter(
-      context.l10n.galleries_organized_only,
-      _tempOrganizedOnly,
-      (val) => setState(() => _tempOrganizedOnly = val ?? false),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Organized', style: context.textTheme.labelLarge),
+        Wrap(
+          spacing: 8,
+          children: OrganizedFilter.values.map((option) {
+            return ChoiceChip(
+              label: Text(option.name.toUpperCase()),
+              selected: _tempOrganized == option,
+              onSelected: (selected) {
+                if (selected) {
+                  setState(() => _tempOrganized = option);
+                }
+              },
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 
@@ -562,7 +605,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Resolution'),
+        Text('Resolution', style: context.textTheme.labelLarge),
         Wrap(
           spacing: 4,
           children: resolutions.map((res) {
@@ -599,7 +642,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Orientation'),
+        Text('Orientation', style: context.textTheme.labelLarge),
         Wrap(
           spacing: 4,
           children: orientations.map((ori) {
