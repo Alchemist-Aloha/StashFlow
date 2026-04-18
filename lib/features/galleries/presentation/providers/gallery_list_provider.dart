@@ -1,15 +1,15 @@
 import 'dart:math';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/gallery.dart';
+import '../../domain/entities/gallery_filter.dart';
 import '../../domain/repositories/gallery_repository.dart';
 import '../../data/repositories/graphql_gallery_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/pagination.dart';
-
-import '../../domain/entities/gallery_filter.dart';
 
 part 'gallery_list_provider.g.dart';
 
@@ -94,17 +94,20 @@ class GalleryFilterState extends _$GalleryFilterState {
     final jsonStr = prefs.getString(_filterKey);
     if (jsonStr != null) {
       try {
-        // We'll skip complex persistence for now if needed,
-        // but let's provide the structure.
-      } catch (_) {}
+        return GalleryFilter.fromJson(jsonDecode(jsonStr));
+      } catch (_) {
+        return GalleryFilter.empty();
+      }
     }
     return GalleryFilter.empty();
   }
 
   void update(GalleryFilter filter) => state = filter;
+  void clear() => state = GalleryFilter.empty();
 
   Future<void> saveAsDefault() async {
-    // Implementation for saving filter as default if desired.
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setString(_filterKey, jsonEncode(state.toJson()));
   }
 }
 

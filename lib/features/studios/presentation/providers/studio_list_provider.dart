@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'dart:math';
+import 'dart:convert';
 import '../../domain/entities/studio.dart';
+import '../../domain/entities/studio_filter.dart' as domain;
 import '../../domain/repositories/studio_repository.dart';
 import '../../data/repositories/graphql_studio_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
@@ -87,18 +89,29 @@ class StudioSearchQuery extends _$StudioSearchQuery {
 }
 
 @Riverpod(keepAlive: true)
-class StudioFavoritesOnly extends _$StudioFavoritesOnly {
-  static const _storageKey = 'studio_favorites_only';
+class StudioFilterState extends _$StudioFilterState {
+  static const _storageKey = 'studio_filter_state';
 
   @override
-  bool build() {
+  domain.StudioFilter build() {
     final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(_storageKey) ?? false;
+    final jsonString = prefs.getString(_storageKey);
+    if (jsonString != null) {
+      try {
+        return domain.StudioFilter.fromJson(jsonDecode(jsonString));
+      } catch (_) {
+        return domain.StudioFilter.empty();
+      }
+    }
+    return domain.StudioFilter.empty();
   }
+
+  void update(domain.StudioFilter filter) => state = filter;
+  void clear() => state = domain.StudioFilter.empty();
 
   Future<void> saveAsDefault() async {
     final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_storageKey, state);
+    await prefs.setString(_storageKey, jsonEncode(state.toJson()));
   }
 }
 
@@ -116,7 +129,7 @@ class StudioList extends _$StudioList {
     _isLoadingMore = false;
     final query = ref.watch(studioSearchQueryProvider);
     final sortConfig = ref.watch(studioSortProvider);
-    final favoritesOnly = ref.watch(studioFavoritesOnlyProvider);
+    final filterState = ref.watch(studioFilterStateProvider);
     final repository = ref.read(studioRepositoryProvider);
 
     String? effectiveSort = sortConfig.sort;
@@ -130,7 +143,7 @@ class StudioList extends _$StudioList {
       filter: query.isEmpty ? null : query,
       sort: effectiveSort,
       descending: sortConfig.descending,
-      favoritesOnly: favoritesOnly,
+      studioFilter: filterState,
     );
   }
 
@@ -155,7 +168,10 @@ class StudioList extends _$StudioList {
   }
 
   void setFavoritesOnly(bool enabled) {
-    ref.read(studioFavoritesOnlyProvider.notifier).state = enabled;
+    final currentFilter = ref.read(studioFilterStateProvider);
+    ref.read(studioFilterStateProvider.notifier).update(
+          currentFilter.copyWith(favorite: enabled),
+        );
     _currentPage = 1;
     _hasMore = true;
     _isLoadingMore = false;
@@ -178,7 +194,7 @@ class StudioList extends _$StudioList {
     final repository = ref.read(studioRepositoryProvider);
     final query = ref.read(studioSearchQueryProvider);
     final sortConfig = ref.read(studioSortProvider);
-    final favoritesOnly = ref.read(studioFavoritesOnlyProvider);
+    final filterState = ref.read(studioFilterStateProvider);
 
     String? effectiveSort = sortConfig.sort;
     if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
@@ -193,7 +209,7 @@ class StudioList extends _$StudioList {
         filter: query.isEmpty ? null : query,
         sort: effectiveSort,
         descending: sortConfig.descending,
-        favoritesOnly: favoritesOnly,
+        studioFilter: filterState,
       );
 
       if (nextStudios.isEmpty) {
@@ -216,9 +232,9 @@ class StudioList extends _$StudioList {
   }) async {
     final repository = ref.read(studioRepositoryProvider);
     final query = useCurrentFilter ? ref.read(studioSearchQueryProvider) : '';
-    final favoritesOnly = useCurrentFilter
-        ? ref.read(studioFavoritesOnlyProvider)
-        : false;
+    final filterState = useCurrentFilter
+        ? ref.read(studioFilterStateProvider)
+        : domain.StudioFilter.empty();
 
     final attempts = excludeStudioId == null ? 1 : 3;
     for (var i = 0; i < attempts; i++) {
@@ -228,7 +244,7 @@ class StudioList extends _$StudioList {
         filter: query.isEmpty ? null : query,
         sort: 'random',
         descending: true,
-        favoritesOnly: favoritesOnly,
+        studioFilter: filterState,
       );
       if (randomPage.isEmpty) continue;
       final candidate = randomPage.first;

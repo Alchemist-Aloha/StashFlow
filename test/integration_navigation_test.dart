@@ -2,6 +2,8 @@ import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/performers/presentation/providers/performer_list_provider.dart';
 import 'package:stash_app_flutter/features/performers/domain/entities/performer.dart';
@@ -130,7 +132,7 @@ class LocalMockSceneRepository implements SceneRepository {
 
   @override
   Future<Map<String, List<Map<String, dynamic>>>> findPerformerCandidates(
-    List<String> queries,
+    List<String> performers,
   ) async => {};
 
   @override
@@ -154,8 +156,14 @@ class MockSceneGridLayoutTrue extends SceneGridLayout {
   @override
   bool build() => true;
 }
-
 void main() {
+  late SharedPreferences prefs;
+
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    prefs = await SharedPreferences.getInstance();
+  });
+
   final testScenes = [
     createTestScene(id: '1', title: 'Apple Scene', organized: true),
     createTestScene(id: '2', title: 'Zebra Scene', organized: false),
@@ -172,7 +180,7 @@ void main() {
 
     await pumpTestWidget(
       tester,
-      wrapWithApp: false,
+      prefs: prefs,
       overrides: [
         sceneRepositoryProvider.overrideWithValue(mockRepo),
         sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
@@ -284,7 +292,7 @@ void main() {
 
     await pumpTestWidget(
       tester,
-      wrapWithApp: false,
+      prefs: prefs,
       overrides: [
         sceneRepositoryProvider.overrideWithValue(mockRepo),
         sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
@@ -333,7 +341,7 @@ void main() {
     Future<void> pumpApp() async {
       await pumpTestWidget(
         tester,
-        wrapWithApp: false,
+        prefs: prefs,
         overrides: [
           sceneRepositoryProvider.overrideWithValue(mockRepo),
           sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
@@ -387,7 +395,7 @@ void main() {
     Future<void> pumpApp() async {
       await pumpTestWidget(
         tester,
-        wrapWithApp: false,
+        prefs: prefs,
         overrides: [
           sceneRepositoryProvider.overrideWithValue(mockRepo),
           sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
@@ -460,7 +468,8 @@ void main() {
       Future<void> pumpApp() async {
         await pumpTestWidget(
           tester,
-          wrapWithApp: false,
+          prefs: prefs,
+
           overrides: [
             sceneRepositoryProvider.overrideWithValue(mockRepo),
             performerRepositoryProvider.overrideWithValue(mockPerformerRepo),

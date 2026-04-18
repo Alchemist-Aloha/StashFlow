@@ -1,10 +1,13 @@
 import 'package:graphql/client.dart';
+import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
-import '../graphql/performers.graphql.dart';
 import '../../../scenes/domain/models/scraped_scene.dart';
+import 'package:stash_app_flutter/core/domain/entities/criterion.dart' as domain;
 import '../../domain/entities/performer.dart';
+import '../../domain/entities/performer_filter.dart';
 import '../../domain/repositories/performer_repository.dart';
+import '../graphql/performers.graphql.dart';
 
 class GraphQLPerformerRepository implements PerformerRepository {
   final GraphQLClient client;
@@ -21,8 +24,9 @@ class GraphQLPerformerRepository implements PerformerRepository {
     String? filter,
     String? sort,
     bool descending = true,
-    bool favoritesOnly = false,
-    List<String>? genders,
+    PerformerFilter? performerFilter,
+    @Deprecated('Use performerFilter instead') bool favoritesOnly = false,
+    @Deprecated('Use performerFilter instead') List<String>? genders,
   }) async {
     QueryResult<Query$FindPerformers>? result;
     String? effectiveSort = sort == 'scene_count' ? 'scenes_count' : sort;
@@ -35,6 +39,7 @@ class GraphQLPerformerRepository implements PerformerRepository {
       descending: descending,
       favoritesOnly: favoritesOnly,
       genders: genders,
+      performerFilter: performerFilter,
     );
 
     // Some servers may still use scene_count; retry if scenes_count is rejected.
@@ -135,22 +140,62 @@ class GraphQLPerformerRepository implements PerformerRepository {
     required bool descending,
     bool favoritesOnly = false,
     List<String>? genders,
+    PerformerFilter? performerFilter,
   }) {
     final genderEnums = (genders ?? const <String>[])
         .map(fromJson$Enum$GenderEnum)
         .toList();
 
-    final performerFilter = (favoritesOnly || genderEnums.isNotEmpty)
-        ? Input$PerformerFilterType(
-            filter_favorites: favoritesOnly ? true : null,
-            gender: genderEnums.isEmpty
-                ? null
-                : Input$GenderCriterionInput(
-                    value_list: genderEnums,
-                    modifier: Enum$CriterionModifier.INCLUDES,
-                  ),
-          )
-        : null;
+    final inputFilter = Input$PerformerFilterType(
+      filter_favorites:
+          (favoritesOnly || performerFilter?.favorite == true) ? true : null,
+      gender: performerFilter?.gender != null
+          ? mapGenderCriterion(performerFilter!.gender)
+          : genderEnums.isNotEmpty
+              ? Input$GenderCriterionInput(
+                  value_list: genderEnums,
+                  modifier: Enum$CriterionModifier.INCLUDES,
+                )
+              : null,
+      circumcised: mapCircumcisionCriterion(performerFilter?.circumcised),
+      tags: mapHierarchicalMultiCriterion(performerFilter?.tags),
+      groups: mapHierarchicalMultiCriterion(performerFilter?.groups),
+      studios: mapHierarchicalMultiCriterion(performerFilter?.studios),
+      url: mapStringCriterion(performerFilter?.url),
+      rating100: mapIntCriterion(performerFilter?.rating100),
+      tag_count: mapIntCriterion(performerFilter?.tagCount),
+      scene_count: mapIntCriterion(performerFilter?.sceneCount),
+      image_count: mapIntCriterion(performerFilter?.imageCount),
+      gallery_count: mapIntCriterion(performerFilter?.galleryCount),
+      play_count: mapIntCriterion(performerFilter?.playCount),
+      o_counter: mapIntCriterion(performerFilter?.oCounter),
+      ignore_auto_tag: performerFilter?.ignoreAutoTag,
+      country: mapStringCriterion(performerFilter?.country),
+      height_cm: mapIntCriterion(performerFilter?.heightCm),
+      birth_year: mapIntCriterion(performerFilter?.birthYear),
+      death_year: mapIntCriterion(performerFilter?.deathYear),
+      age: mapIntCriterion(performerFilter?.age),
+      weight: mapIntCriterion(performerFilter?.weight),
+      penis_length: mapFloatCriterion(performerFilter?.penisLength),
+      name: mapStringCriterion(performerFilter?.name),
+      disambiguation: mapStringCriterion(performerFilter?.disambiguation),
+      details: mapStringCriterion(performerFilter?.details),
+      ethnicity: mapStringCriterion(performerFilter?.ethnicity),
+      hair_color: mapStringCriterion(performerFilter?.hairColor),
+      eye_color: mapStringCriterion(performerFilter?.eyeColor),
+      measurements: mapStringCriterion(performerFilter?.measurements),
+      fake_tits: mapStringCriterion(performerFilter?.fakeTits),
+      tattoos: mapStringCriterion(performerFilter?.tattoos),
+      piercings: mapStringCriterion(performerFilter?.piercings),
+      aliases: mapStringCriterion(performerFilter?.aliases),
+      birthdate: mapDateCriterion(performerFilter?.birthdate),
+      death_date: mapDateCriterion(performerFilter?.deathDate),
+      career_start: mapDateCriterion(performerFilter?.careerStart),
+      career_end: mapDateCriterion(performerFilter?.careerEnd),
+      is_missing: performerFilter?.isMissing?.toString(),
+      created_at: mapTimestampCriterion(performerFilter?.createdAt),
+      updated_at: mapTimestampCriterion(performerFilter?.updatedAt),
+    );
 
     return client.query$FindPerformers(
       Options$Query$FindPerformers(
@@ -159,7 +204,7 @@ class GraphQLPerformerRepository implements PerformerRepository {
             : FetchPolicy.cacheAndNetwork,
         variables: Variables$Query$FindPerformers(
           filter: Input$FindFilterType(
-            q: filter,
+            q: filter ?? performerFilter?.searchQuery,
             page: page,
             per_page: perPage,
             sort: sort,
@@ -167,7 +212,7 @@ class GraphQLPerformerRepository implements PerformerRepository {
                 ? Enum$SortDirectionEnum.DESC
                 : Enum$SortDirectionEnum.ASC,
           ),
-          performer_filter: performerFilter,
+          performer_filter: inputFilter,
         ),
       ),
     );

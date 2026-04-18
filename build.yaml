@@ -11,6 +11,8 @@ targets:
         enabled: true
       json_serializable:
         enabled: true
+        options:
+          explicit_to_json: true
       graphql_codegen:
         options:
           clients:

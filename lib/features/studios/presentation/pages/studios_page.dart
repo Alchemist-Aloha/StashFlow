@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../domain/entities/studio_filter.dart';
 import '../providers/studio_list_provider.dart';
+import '../widgets/studio_filter_panel.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
@@ -242,109 +244,11 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
   }
 
   void _showFilterPanel() {
-    final currentFavoritesOnly = ref.read(studioFavoritesOnlyProvider);
-    var tempFavoritesOnly = currentFavoritesOnly;
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) {
-          return Container(
-            padding: const EdgeInsets.all(AppTheme.spacingMedium),
-            decoration: BoxDecoration(
-              color: context.colors.surface,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(AppTheme.radiusExtraLarge),
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      context.l10n.studios_filter_title,
-                      style: context.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setModalState(() {
-                          tempFavoritesOnly = false;
-                        });
-                      },
-                      child: Text(context.l10n.common_reset),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppTheme.spacingSmall),
-                SwitchListTile.adaptive(
-                  value: tempFavoritesOnly,
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(context.l10n.common_favorites_only),
-                  onChanged: (value) {
-                    setModalState(() => tempFavoritesOnly = value);
-                  },
-                ),
-                const SizedBox(height: AppTheme.spacingMedium),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      ref
-                          .read(studioListProvider.notifier)
-                          .setFavoritesOnly(tempFavoritesOnly);
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: context.colors.primary,
-                      foregroundColor: context.colors.onPrimary,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppTheme.spacingMedium,
-                      ),
-                    ),
-                    child: Text(context.l10n.common_apply_filters),
-                  ),
-                ),
-                const SizedBox(height: AppTheme.spacingSmall),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () async {
-                      ref
-                          .read(studioListProvider.notifier)
-                          .setFavoritesOnly(tempFavoritesOnly);
-                      await ref
-                          .read(studioFavoritesOnlyProvider.notifier)
-                          .saveAsDefault();
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(context.l10n.studios_filter_saved),
-                          ),
-                        );
-                      }
-                    },
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppTheme.spacingMedium,
-                      ),
-                    ),
-                    child: Text(context.l10n.common_save_default),
-                  ),
-                ),
-                const SizedBox(height: AppTheme.spacingMedium),
-              ],
-            ),
-          );
-        },
-      ),
+      builder: (context) => const StudioFilterPanel(),
     );
   }
 
@@ -371,8 +275,9 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
   @override
   Widget build(BuildContext context) {
     final studiosAsync = ref.watch(studioListProvider);
-    final favoritesOnly = ref.watch(studioFavoritesOnlyProvider);
+    final filterState = ref.watch(studioFilterStateProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
+
     final scrollController = ref.watch(studioScrollControllerProvider);
     final hasSortOverride =
         _sortOption != _StudioSortOption.name || _sortDescending;
@@ -419,7 +324,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
               tooltip: context.l10n.common_filter,
               onPressed: _showFilterPanel,
             ),
-            if (favoritesOnly)
+            if (filterState != StudioFilter.empty())
               Positioned(
                 right: 8,
                 top: 8,
@@ -432,6 +337,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                   constraints: const BoxConstraints(minWidth: 8, minHeight: 8),
                 ),
               ),
+
           ],
         ),
       ],

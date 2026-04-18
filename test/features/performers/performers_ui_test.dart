@@ -7,6 +7,7 @@ import 'package:stash_app_flutter/features/performers/presentation/pages/perform
 import 'package:stash_app_flutter/features/performers/presentation/providers/performer_list_provider.dart';
 import 'package:stash_app_flutter/features/performers/presentation/widgets/performer_card.dart';
 
+import 'package:stash_app_flutter/features/performers/domain/entities/performer_filter.dart' as domain;
 import '../../helpers/test_helpers.dart';
 
 class MockPerformerSort extends PerformerSort {
@@ -18,6 +19,11 @@ class MockPerformerSort extends PerformerSort {
 class MockPerformerSearchQuery extends PerformerSearchQuery {
   @override
   String build() => '';
+}
+
+class MockPerformerFilterState extends PerformerFilterState {
+  @override
+  domain.PerformerFilter build() => domain.PerformerFilter.empty();
 }
 
 void main() {
@@ -79,7 +85,7 @@ void main() {
         performerRepositoryProvider.overrideWithValue(mockRepo),
         performerSortProvider.overrideWith(MockPerformerSort.new),
         performerSearchQueryProvider.overrideWith(MockPerformerSearchQuery.new),
-        performerFilterProvider.overrideWith(PerformerFilter.new),
+        performerFilterStateProvider.overrideWith(MockPerformerFilterState.new),
       ],
       child: const PerformersPage(),
     );
@@ -105,7 +111,7 @@ void main() {
         performerRepositoryProvider.overrideWithValue(mockRepo),
         performerSortProvider.overrideWith(MockPerformerSort.new),
         performerSearchQueryProvider.overrideWith(MockPerformerSearchQuery.new),
-        performerFilterProvider.overrideWith(PerformerFilter.new),
+        performerFilterStateProvider.overrideWith(MockPerformerFilterState.new),
       ],
       child: const PerformersPage(),
     );
@@ -154,7 +160,7 @@ void main() {
         performerRepositoryProvider.overrideWithValue(mockRepo),
         performerSortProvider.overrideWith(MockPerformerSort.new),
         performerSearchQueryProvider.overrideWith(MockPerformerSearchQuery.new),
-        performerFilterProvider.overrideWith(PerformerFilter.new),
+        performerFilterStateProvider.overrideWith(MockPerformerFilterState.new),
       ],
       child: const PerformersPage(),
     );

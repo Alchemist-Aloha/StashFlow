@@ -85,6 +85,11 @@ class MockSceneRepository implements SceneRepository {
   ) async => {};
 }
 
+class MockStreamResolver extends StreamResolver {
+  @override
+  Future<String?> resolveStreamUrl(String rawUrl) async => rawUrl;
+}
+
 void main() {
   testWidgets('Video Playback Startup Test', (tester) async {
     // Set a larger window size to avoid hit test issues

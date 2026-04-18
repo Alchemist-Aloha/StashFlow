@@ -1,32 +1,29 @@
 import 'package:flutter/material.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../domain/entities/gallery_filter.dart';
+import '../../domain/entities/studio_filter.dart';
 import '../../../../core/domain/entities/criterion.dart';
-import '../providers/gallery_list_provider.dart';
+import '../providers/studio_list_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/filter_widgets.dart';
 import '../../../scenes/presentation/widgets/entity_picker.dart';
-import '../../../studios/domain/entities/studio.dart';
-import '../../../performers/domain/entities/performer.dart';
+import '../../domain/entities/studio.dart';
 import '../../../tags/domain/entities/tag.dart';
 
-class GalleryFilterPanel extends ConsumerStatefulWidget {
-  const GalleryFilterPanel({super.key});
+class StudioFilterPanel extends ConsumerStatefulWidget {
+  const StudioFilterPanel({super.key});
 
   @override
-  ConsumerState<GalleryFilterPanel> createState() => _GalleryFilterPanelState();
+  ConsumerState<StudioFilterPanel> createState() => _StudioFilterPanelState();
 }
 
-class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
-  late GalleryFilter _tempFilter;
-  late bool _tempOrganizedOnly;
+class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
+  late StudioFilter _tempFilter;
 
   @override
   void initState() {
     super.initState();
-    _tempFilter = ref.read(galleryFilterStateProvider);
-    _tempOrganizedOnly = ref.read(galleryOrganizedOnlyProvider);
+    _tempFilter = ref.read(studioFilterStateProvider);
   }
 
   @override
@@ -53,7 +50,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      context.l10n.galleries_filter_title,
+                      'Studio Filters',
                       style: context.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -61,8 +58,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                     TextButton(
                       onPressed: () {
                         setState(() {
-                          _tempFilter = GalleryFilter.empty();
-                          _tempOrganizedOnly = false;
+                          _tempFilter = StudioFilter.empty();
                         });
                       },
                       child: Text(context.l10n.common_reset),
@@ -94,11 +90,8 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                       child: ElevatedButton(
                         onPressed: () {
                           ref
-                              .read(galleryFilterStateProvider.notifier)
+                              .read(studioFilterStateProvider.notifier)
                               .update(_tempFilter);
-                          ref
-                              .read(galleryOrganizedOnlyProvider.notifier)
-                              .set(_tempOrganizedOnly);
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
@@ -117,16 +110,10 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                       child: OutlinedButton(
                         onPressed: () async {
                           ref
-                              .read(galleryFilterStateProvider.notifier)
+                              .read(studioFilterStateProvider.notifier)
                               .update(_tempFilter);
-                          ref
-                              .read(galleryOrganizedOnlyProvider.notifier)
-                              .set(_tempOrganizedOnly);
                           await ref
-                              .read(galleryFilterStateProvider.notifier)
-                              .saveAsDefault();
-                          await ref
-                              .read(galleryOrganizedOnlyProvider.notifier)
+                              .read(studioFilterStateProvider.notifier)
                               .saveAsDefault();
                           if (context.mounted) {
                             Navigator.pop(context);
@@ -160,21 +147,14 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
       title: 'General',
       initiallyExpanded: true,
       children: [
-        _buildRatingFilter(),
-        _buildOrganizedFilter(),
+        _buildBooleanFilter('Favorite', _tempFilter.favorite, (val) => setState(() => _tempFilter = _tempFilter.copyWith(favorite: val))),
+        _buildBooleanFilter('Organized', _tempFilter.organized, (val) => setState(() => _tempFilter = _tempFilter.copyWith(organized: val))),
         _buildEntityFilter<Studio>(
-          'Studios',
+          'Parent Studios',
           'studio',
-          _tempFilter.studios,
-          (val) => setState(() => _tempFilter = _tempFilter.copyWith(studios: val as HierarchicalMultiCriterion?)),
+          _tempFilter.parentStudios,
+          (val) => setState(() => _tempFilter = _tempFilter.copyWith(parentStudios: val as HierarchicalMultiCriterion?)),
           true,
-        ),
-        _buildEntityFilter<Performer>(
-          'Performers',
-          'performer',
-          _tempFilter.performers,
-          (val) => setState(() => _tempFilter = _tempFilter.copyWith(performers: val as MultiCriterion?)),
-          false,
         ),
         _buildEntityFilter<Tag>(
           'Tags',
@@ -182,6 +162,11 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
           _tempFilter.tags,
           (val) => setState(() => _tempFilter = _tempFilter.copyWith(tags: val as HierarchicalMultiCriterion?)),
           true,
+        ),
+        IntCriterionInput(
+          label: 'Rating',
+          value: _tempFilter.rating100,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(rating100: val)),
         ),
       ],
     );
@@ -193,47 +178,17 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
       children: [
         _buildBooleanFilter('Is Missing', _tempFilter.isMissing, (val) => setState(() => _tempFilter = _tempFilter.copyWith(isMissing: val))),
         IntCriterionInput(
-          label: 'Image Count',
-          value: _tempFilter.imageCount,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(imageCount: val)),
+          label: 'Scene Count',
+          value: _tempFilter.sceneCount,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(sceneCount: val)),
+        ),
+        IntCriterionInput(
+          label: 'Sub-studio Count',
+          value: _tempFilter.childCount,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(childCount: val)),
         ),
       ],
     );
-  }
-
-  Widget _buildRatingFilter() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(context.l10n.galleries_min_rating, style: context.textTheme.labelLarge),
-        Wrap(
-          spacing: 4,
-          children: [
-            for (var stars = 0; stars <= 5; stars++)
-              ChoiceChip(
-                label: Text(stars == 0 ? 'Any' : '$stars'),
-                selected: (stars == 0 && _tempFilter.rating100 == null) || 
-                          (_tempFilter.rating100?.value == stars * 20 && _tempFilter.rating100?.modifier == CriterionModifier.greaterThan),
-                onSelected: (_) {
-                  setState(() {
-                    if (stars == 0) {
-                      _tempFilter = _tempFilter.copyWith(rating100: null);
-                    } else {
-                      _tempFilter = _tempFilter.copyWith(
-                        rating100: IntCriterion(value: stars * 20, modifier: CriterionModifier.greaterThan),
-                      );
-                    }
-                  });
-                },
-              ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildOrganizedFilter() {
-    return _buildBooleanFilter(context.l10n.galleries_organized_only, _tempOrganizedOnly, (val) => setState(() => _tempOrganizedOnly = val ?? false));
   }
 
   Widget _buildBooleanFilter(String label, bool? value, ValueChanged<bool?> onChanged) {
@@ -282,7 +237,6 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                   if (result != null) {
                     final ids = result.map((e) {
                       if (e is Studio) return e.id;
-                      if (e is Performer) return e.id;
                       if (e is Tag) return e.id;
                       return '';
                     }).toList();

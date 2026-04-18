@@ -317,7 +317,7 @@ class SceneList extends _$SceneList {
   }) async {
     final repository = ref.read(sceneRepositoryProvider);
     final query = useCurrentFilter ? ref.read(sceneSearchQueryProvider) : '';
-    final filter = useCurrentFilter ? ref.read(sceneFilterStateProvider) : null;
+    final filter = useCurrentFilter ? ref.read(sceneFilterStateProvider) : SceneFilter.empty();
     final organizedOnly = useCurrentFilter
         ? ref.read(sceneOrganizedOnlyProvider)
         : false;

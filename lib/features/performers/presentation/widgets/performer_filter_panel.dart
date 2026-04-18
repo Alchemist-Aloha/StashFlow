@@ -1,32 +1,30 @@
 import 'package:flutter/material.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../domain/entities/gallery_filter.dart';
+import '../../domain/entities/performer_filter.dart';
 import '../../../../core/domain/entities/criterion.dart';
-import '../providers/gallery_list_provider.dart';
+import '../providers/performer_list_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/filter_widgets.dart';
 import '../../../scenes/presentation/widgets/entity_picker.dart';
+import '../../domain/entities/performer.dart';
 import '../../../studios/domain/entities/studio.dart';
-import '../../../performers/domain/entities/performer.dart';
 import '../../../tags/domain/entities/tag.dart';
 
-class GalleryFilterPanel extends ConsumerStatefulWidget {
-  const GalleryFilterPanel({super.key});
+class PerformerFilterPanel extends ConsumerStatefulWidget {
+  const PerformerFilterPanel({super.key});
 
   @override
-  ConsumerState<GalleryFilterPanel> createState() => _GalleryFilterPanelState();
+  ConsumerState<PerformerFilterPanel> createState() => _PerformerFilterPanelState();
 }
 
-class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
-  late GalleryFilter _tempFilter;
-  late bool _tempOrganizedOnly;
+class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
+  late PerformerFilter _tempFilter;
 
   @override
   void initState() {
     super.initState();
-    _tempFilter = ref.read(galleryFilterStateProvider);
-    _tempOrganizedOnly = ref.read(galleryOrganizedOnlyProvider);
+    _tempFilter = ref.read(performerFilterStateProvider);
   }
 
   @override
@@ -53,7 +51,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      context.l10n.galleries_filter_title,
+                      'Performer Filters',
                       style: context.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -61,8 +59,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                     TextButton(
                       onPressed: () {
                         setState(() {
-                          _tempFilter = GalleryFilter.empty();
-                          _tempOrganizedOnly = false;
+                          _tempFilter = PerformerFilter.empty();
                         });
                       },
                       child: Text(context.l10n.common_reset),
@@ -79,6 +76,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                   child: Column(
                     children: [
                       _buildGeneralSection(),
+                      _buildPhysicalSection(),
                       _buildSystemSection(),
                     ],
                   ),
@@ -94,11 +92,8 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                       child: ElevatedButton(
                         onPressed: () {
                           ref
-                              .read(galleryFilterStateProvider.notifier)
+                              .read(performerFilterStateProvider.notifier)
                               .update(_tempFilter);
-                          ref
-                              .read(galleryOrganizedOnlyProvider.notifier)
-                              .set(_tempOrganizedOnly);
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
@@ -117,16 +112,10 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                       child: OutlinedButton(
                         onPressed: () async {
                           ref
-                              .read(galleryFilterStateProvider.notifier)
+                              .read(performerFilterStateProvider.notifier)
                               .update(_tempFilter);
-                          ref
-                              .read(galleryOrganizedOnlyProvider.notifier)
-                              .set(_tempOrganizedOnly);
                           await ref
-                              .read(galleryFilterStateProvider.notifier)
-                              .saveAsDefault();
-                          await ref
-                              .read(galleryOrganizedOnlyProvider.notifier)
+                              .read(performerFilterStateProvider.notifier)
                               .saveAsDefault();
                           if (context.mounted) {
                             Navigator.pop(context);
@@ -160,8 +149,8 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
       title: 'General',
       initiallyExpanded: true,
       children: [
-        _buildRatingFilter(),
-        _buildOrganizedFilter(),
+        _buildBooleanFilter('Favorite', _tempFilter.favorite, (val) => setState(() => _tempFilter = _tempFilter.copyWith(favorite: val))),
+        _buildGenderFilter(),
         _buildEntityFilter<Studio>(
           'Studios',
           'studio',
@@ -169,19 +158,41 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
           (val) => setState(() => _tempFilter = _tempFilter.copyWith(studios: val as HierarchicalMultiCriterion?)),
           true,
         ),
-        _buildEntityFilter<Performer>(
-          'Performers',
-          'performer',
-          _tempFilter.performers,
-          (val) => setState(() => _tempFilter = _tempFilter.copyWith(performers: val as MultiCriterion?)),
-          false,
-        ),
         _buildEntityFilter<Tag>(
           'Tags',
           'tag',
           _tempFilter.tags,
           (val) => setState(() => _tempFilter = _tempFilter.copyWith(tags: val as HierarchicalMultiCriterion?)),
           true,
+        ),
+        IntCriterionInput(
+          label: 'Rating',
+          value: _tempFilter.rating100,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(rating100: val)),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPhysicalSection() {
+    return FilterSection(
+      title: 'Physical',
+      children: [
+        IntCriterionInput(
+          label: 'Age',
+          value: _tempFilter.age,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(age: val)),
+        ),
+        IntCriterionInput(
+          label: 'Height (cm)',
+          value: _tempFilter.heightCm,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(heightCm: val)),
+        ),
+        _buildCircumcisedFilter(),
+        StringCriterionInput(
+          label: 'Ethnicity',
+          value: _tempFilter.ethnicity,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(ethnicity: val)),
         ),
       ],
     );
@@ -193,47 +204,12 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
       children: [
         _buildBooleanFilter('Is Missing', _tempFilter.isMissing, (val) => setState(() => _tempFilter = _tempFilter.copyWith(isMissing: val))),
         IntCriterionInput(
-          label: 'Image Count',
-          value: _tempFilter.imageCount,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(imageCount: val)),
+          label: 'Scene Count',
+          value: _tempFilter.sceneCount,
+          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(sceneCount: val)),
         ),
       ],
     );
-  }
-
-  Widget _buildRatingFilter() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(context.l10n.galleries_min_rating, style: context.textTheme.labelLarge),
-        Wrap(
-          spacing: 4,
-          children: [
-            for (var stars = 0; stars <= 5; stars++)
-              ChoiceChip(
-                label: Text(stars == 0 ? 'Any' : '$stars'),
-                selected: (stars == 0 && _tempFilter.rating100 == null) || 
-                          (_tempFilter.rating100?.value == stars * 20 && _tempFilter.rating100?.modifier == CriterionModifier.greaterThan),
-                onSelected: (_) {
-                  setState(() {
-                    if (stars == 0) {
-                      _tempFilter = _tempFilter.copyWith(rating100: null);
-                    } else {
-                      _tempFilter = _tempFilter.copyWith(
-                        rating100: IntCriterion(value: stars * 20, modifier: CriterionModifier.greaterThan),
-                      );
-                    }
-                  });
-                },
-              ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildOrganizedFilter() {
-    return _buildBooleanFilter(context.l10n.galleries_organized_only, _tempOrganizedOnly, (val) => setState(() => _tempOrganizedOnly = val ?? false));
   }
 
   Widget _buildBooleanFilter(String label, bool? value, ValueChanged<bool?> onChanged) {
@@ -244,6 +220,46 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
         Switch(
           value: value ?? false,
           onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGenderFilter() {
+    final genders = ['MALE', 'FEMALE', 'TRANSGENDER_MALE', 'TRANSGENDER_FEMALE', 'INTERSEX', 'NON_BINARY'];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Gender', style: context.textTheme.labelLarge),
+        Wrap(
+          spacing: 4,
+          children: genders.map((g) => ChoiceChip(
+            label: Text(g.replaceAll('_', ' ')),
+            selected: _tempFilter.gender == g,
+            onSelected: (selected) {
+              setState(() => _tempFilter = _tempFilter.copyWith(gender: selected ? g : null));
+            },
+          )).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCircumcisedFilter() {
+    final values = ['CUT', 'UNCUT'];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Circumcised', style: context.textTheme.labelLarge),
+        Wrap(
+          spacing: 4,
+          children: values.map((v) => ChoiceChip(
+            label: Text(v),
+            selected: _tempFilter.circumcised == v,
+            onSelected: (selected) {
+              setState(() => _tempFilter = _tempFilter.copyWith(circumcised: selected ? v : null));
+            },
+          )).toList(),
         ),
       ],
     );
@@ -282,7 +298,6 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                   if (result != null) {
                     final ids = result.map((e) {
                       if (e is Studio) return e.id;
-                      if (e is Performer) return e.id;
                       if (e is Tag) return e.id;
                       return '';
                     }).toList();
@@ -328,6 +343,47 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                 },
               )).toList(),
             ),
+        ],
+      ),
+    );
+  }
+}
+
+class StringCriterionInput extends StatelessWidget {
+  final String label;
+  final StringCriterion? value;
+  final ValueChanged<StringCriterion?> onChanged;
+
+  const StringCriterionInput({
+    required this.label,
+    this.value,
+    required this.onChanged,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingSmall),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: Theme.of(context).textTheme.labelLarge),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  decoration: InputDecoration(hintText: label),
+                  onChanged: (val) {
+                    onChanged(StringCriterion(
+                      value: val,
+                      modifier: value?.modifier ?? CriterionModifier.equals,
+                    ));
+                  },
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

@@ -3,7 +3,9 @@ import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../domain/entities/performer.dart';
+import '../../domain/entities/performer_filter.dart';
 import '../providers/performer_list_provider.dart';
+import '../widgets/performer_filter_panel.dart';
 import '../widgets/performer_card.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
@@ -268,164 +270,11 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
   }
 
   void _showFilterPanel() {
-    final currentFilter = ref.read(performerFilterProvider);
-    bool tempFavoritesOnly = currentFilter.favoritesOnly;
-    final tempGenders = <String>[...currentFilter.genders];
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) {
-          return Container(
-            padding: const EdgeInsets.all(AppTheme.spacingMedium),
-            decoration: BoxDecoration(
-              color: context.colors.surface,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(AppTheme.radiusExtraLarge),
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      context.l10n.performers_filter_title,
-                      style: context.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setModalState(() {
-                          tempFavoritesOnly = false;
-                          tempGenders.clear();
-                        });
-                      },
-                      child: Text(context.l10n.common_reset),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppTheme.spacingSmall),
-                SwitchListTile.adaptive(
-                  value: tempFavoritesOnly,
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(context.l10n.common_favorites_only),
-                  onChanged: (value) {
-                    setModalState(() => tempFavoritesOnly = value);
-                  },
-                ),
-                const SizedBox(height: AppTheme.spacingMedium),
-                Text(
-                  context.l10n.performers_gender,
-                  style: context.textTheme.labelLarge,
-                ),
-                const SizedBox(height: AppTheme.spacingSmall),
-                Wrap(
-                  spacing: AppTheme.spacingSmall,
-                  runSpacing: AppTheme.spacingSmall,
-                  children: [
-                    ChoiceChip(
-                      label: Text(context.l10n.performers_gender_any),
-                      selected: tempGenders.isEmpty,
-                      onSelected: (_) =>
-                          setModalState(() => tempGenders.clear()),
-                    ),
-                    for (final option in [
-                      ('FEMALE', context.l10n.performers_gender_female),
-                      ('MALE', context.l10n.performers_gender_male),
-                      (
-                        'TRANSGENDER_FEMALE',
-                        context.l10n.performers_gender_trans_female,
-                      ),
-                      (
-                        'TRANSGENDER_MALE',
-                        context.l10n.performers_gender_trans_male,
-                      ),
-                      ('NON_BINARY', 'Non-binary'),
-                      ('INTERSEX', context.l10n.performers_gender_intersex),
-                    ])
-                      ChoiceChip(
-                        label: Text(option.$2),
-                        selected: tempGenders.contains(option.$1),
-                        onSelected: (selected) => setModalState(() {
-                          if (selected) {
-                            if (!tempGenders.contains(option.$1)) {
-                              tempGenders.add(option.$1);
-                            }
-                          } else {
-                            tempGenders.remove(option.$1);
-                          }
-                        }),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: AppTheme.spacingMedium),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      ref
-                          .read(performerFilterProvider.notifier)
-                          .set(
-                            favoritesOnly: tempFavoritesOnly,
-                            genders: tempGenders,
-                          );
-                      ref.invalidate(performerListProvider);
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: context.colors.primary,
-                      foregroundColor: context.colors.onPrimary,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppTheme.spacingMedium,
-                      ),
-                    ),
-                    child: Text(context.l10n.common_apply_filters),
-                  ),
-                ),
-                const SizedBox(height: AppTheme.spacingSmall),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () async {
-                      ref
-                          .read(performerFilterProvider.notifier)
-                          .set(
-                            favoritesOnly: tempFavoritesOnly,
-                            genders: tempGenders,
-                          );
-                      await ref
-                          .read(performerFilterProvider.notifier)
-                          .saveAsDefault();
-                      ref.invalidate(performerListProvider);
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(context.l10n.performers_filter_saved),
-                          ),
-                        );
-                      }
-                    },
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppTheme.spacingMedium,
-                      ),
-                    ),
-                    child: Text(context.l10n.common_save_default),
-                  ),
-                ),
-                const SizedBox(height: AppTheme.spacingMedium),
-              ],
-            ),
-          );
-        },
-      ),
+      builder: (context) => const PerformerFilterPanel(),
     );
   }
 
@@ -433,7 +282,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
   Widget build(BuildContext context) {
     final performersAsync = ref.watch(performerListProvider);
     final gridColumns = ref.watch(performerGridColumnsProvider);
-    final filterState = ref.watch(performerFilterProvider);
+    final filterState = ref.watch(performerFilterStateProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final scrollController = ref.watch(performerScrollControllerProvider);
     final hasSortOverride =
@@ -481,7 +330,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
               tooltip: context.l10n.common_filter,
               onPressed: _showFilterPanel,
             ),
-            if (filterState.hasActiveFilters)
+            if (filterState != PerformerFilter.empty())
               Positioned(
                 right: 8,
                 top: 8,
@@ -494,6 +343,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                   constraints: const BoxConstraints(minWidth: 8, minHeight: 8),
                 ),
               ),
+
           ],
         ),
       ],
