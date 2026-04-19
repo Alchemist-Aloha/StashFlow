@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../auth/auth_mode.dart';
@@ -14,6 +15,22 @@ final mediaHeadersProvider = Provider<Map<String, String>>((ref) {
   }
 
   final apiKey = ref.watch(serverApiKeyProvider);
+
+  if (authState.mode == AuthMode.basic) {
+    final user = authState.username.trim();
+    final pass = authState.password;
+    if (user.isNotEmpty || pass.isNotEmpty) {
+      final bytes = utf8.encode('$user:$pass');
+      final base64 = base64Encode(bytes);
+      return <String, String>{'Authorization': 'Basic $base64'};
+    }
+  }
+
+  if (authState.mode == AuthMode.bearer) {
+    if (apiKey.isNotEmpty) {
+      return <String, String>{'Authorization': 'Bearer $apiKey'};
+    }
+  }
 
   if (apiKey.isEmpty) {
     return const <String, String>{};
@@ -32,6 +49,23 @@ final mediaPlaybackHeadersProvider = Provider<Map<String, String>>((ref) {
   }
 
   final apiKey = ref.watch(serverApiKeyProvider);
+
+  if (authState.mode == AuthMode.basic) {
+    final user = authState.username.trim();
+    final pass = authState.password;
+    if (user.isNotEmpty || pass.isNotEmpty) {
+      final bytes = utf8.encode('$user:$pass');
+      final base64 = base64Encode(bytes);
+      return <String, String>{'Authorization': 'Basic $base64'};
+    }
+  }
+
+  if (authState.mode == AuthMode.bearer) {
+    if (apiKey.isNotEmpty) {
+      return <String, String>{'Authorization': 'Bearer $apiKey'};
+    }
+  }
+
   if (apiKey.isEmpty) {
     return const <String, String>{};
   }

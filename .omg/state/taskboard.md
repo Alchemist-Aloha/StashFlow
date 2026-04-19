@@ -1,24 +1,51 @@
-# StashFlow Taskboard - Filter Reorganization Refinement
+## Stage
+- team-verify
 
-## Current Status
-- Stage: team-exec
-- Active Lane: Implementation
+## Goal / Non-goals
+### Goals
+- Implement `AuthMode.basic` (Basic Auth) and `AuthMode.bearer` (Bearer Token). [VERIFIED]
+- Add a developer setting to enable/disable these "Proxy Auth" modes. [VERIFIED]
+- Inject appropriate `Authorization` headers into all Stash backend communications (GraphQL and Media). [VERIFIED]
+- Ensure credentials are saved securely using existing secure storage infrastructure. [VERIFIED]
+- Update `ServerSettingsPage` to support configuration of these new modes. [VERIFIED]
+- Add unit tests for `AuthProvider`, `GraphqlClient`, and `MediaHeadersProvider`. [VERIFIED]
+
+### Non-goals
+- Change existing `password` or `apiKey` logic.
+- Implement any backend-side auth logic (it's handled by a proxy).
+- Support cookies for these new modes.
 
 ## Task Graph
 | Task ID | Priority | Task | Owner | Dependency | Path Type | Worktree | Baseline | Lane Notes | Validation |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| T1 | p1 | Refine PerformerFilterPanel | omg-executor | None | critical | isolated | HEAD | Limit General to Favorite, Rating, Gender. Create Metadata & Library sections. | Verified: General minimized |
-| T2 | p1 | Refine StudioFilterPanel | omg-executor | None | sequential | isolated | HEAD | Limit General to Favorite, Rating. Create Metadata & Library sections. | Verified: General minimized |
-| T3 | p1 | Refine ImageFilterPanel | omg-executor | None | sidecar | isolated | HEAD | Limit General to Rating. Create Metadata & Library sections. | Verified: General minimized |
-| T4 | p1 | Refine GalleryFilterPanel | omg-executor | None | sidecar | isolated | HEAD | Limit General to Rating. Create Metadata & Library sections. | Verified: General minimized |
-| V1 | p0 | Verify minimal General sections | omg-verifier | T1, T2, T3, T4 | sequential | shared | HEAD | Ensure General sections match strict constraints | Manual smoke test of all filters |
+| T1 | p1 | Update `AuthMode` enum to include `basic` and `bearer` | omg-executor | - | sequential | - | HEAD | - | VERIFIED |
+| T2 | p1 | Add `enable_proxy_auth_modes` to `SharedPreferences` and UI in `DeveloperSettingsPage` | omg-executor | - | sidecar | - | HEAD | - | VERIFIED |
+| T3 | p1 | Add localization strings for new auth modes and dev setting | omg-executor | - | sidecar | - | HEAD | - | VERIFIED |
+| T4 | p1 | Update `GraphqlClient` to inject `Authorization` headers for `basic` and `bearer` modes | omg-executor | T1 | sequential | - | HEAD | - | VERIFIED |
+| T5 | p1 | Update `mediaHeadersProvider` and `mediaPlaybackHeadersProvider` to inject `Authorization` headers | omg-executor | T1 | sequential | - | HEAD | - | VERIFIED |
+| T6 | p1 | Update `ServerSettingsPage` to display and configure new auth modes | omg-executor | T1, T2, T3 | sequential | - | HEAD | - | VERIFIED |
+| T7 | p1 | Add `AuthProvider` tests for basic/bearer hydration and mode setting | omg-executor | - | sidecar | - | HEAD | - | VERIFIED |
+| T8 | p1 | Add `GraphqlClient` tests for `Authorization` header injection | omg-executor | - | sidecar | - | HEAD | - | VERIFIED |
+| T9 | p1 | Create `media_headers_provider_test.dart` and add tests for header injection | omg-executor | - | sidecar | - | HEAD | - | VERIFIED |
 
-## Phase 1: Implementation (T1-T4)
-- [x] Refactor `lib/features/performers/presentation/widgets/performer_filter_panel.dart` (Verified)
-- [x] Refactor `lib/features/studios/presentation/widgets/studio_filter_panel.dart` (Verified)
-- [x] Refactor `lib/features/images/presentation/widgets/image_filter_panel.dart` (Verified)
-- [x] Refactor `lib/features/galleries/presentation/widgets/gallery_filter_panel.dart` (Verified)
+## Critical Files
+- `lib/core/data/auth/auth_mode.dart`
+- `lib/core/data/graphql/graphql_client.dart`
+- `lib/core/data/graphql/media_headers_provider.dart`
+- `lib/features/setup/presentation/pages/settings/developer_settings_page.dart`
+- `lib/features/setup/presentation/pages/settings/server_settings_page.dart`
+- `lib/l10n/app_en.arb`
+- `test/core/data/auth/auth_provider_test.dart`
+- `test/core/data/graphql/graphql_client_test.dart`
+- `test/core/data/graphql/media_headers_provider_test.dart`
 
-## Phase 2: Verification (V1)
-- [x] Cross-check all panels for minimal General sections (Verified)
-- [x] Fix and verify star rating logic and boolean tri-state filters (Verified)
+## Risks
+- **Header conflicts:** Ensure `Authorization` header doesn't conflict with other potential headers. [MITIGATED]
+- **Web limitations:** Basic auth headers might be restricted in some browser environments if not handled carefully. [OBSERVED]
+- **Media headers:** Some video players or image loading libraries might need special handling for custom headers. [IMPLEMENTED]
+
+## Taskboard Sync
+- Verification completed for implementation and unit tests. All criteria met.
+
+## Ready For team-prd
+- Yes.

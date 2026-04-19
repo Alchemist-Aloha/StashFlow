@@ -615,5 +615,14 @@
   "scrape_from_url": "从 URL 抓取",
   "scenes_phash_started": "开始生成 phash",
   "scenes_phash_failed": "生成 phash 失败：{error}",
-  "details_failed_update_studio": "更新工作室失败：{error}"
+  "details_failed_update_studio": "更新工作室失败：{error}",
+  "scenes_filter_saved": "筛选偏好已保存为默认设置",
+  "settings_develop_proxy_auth": "启用代理认证模式",
+  "settings_develop_proxy_auth_subtitle": "启用高级 Basic Auth 和 Bearer Token 方法，以便在 Authentik 等代理背后的无认证后端中使用。",
+  "settings_server_auth_basic": "基础认证",
+  "settings_server_auth_bearer": "Bearer 令牌",
+  "settings_server_auth_basic_desc": "发送 'Authorization: Basic <base64(user:pass)>' 请求头。",
+  "settings_server_auth_bearer_desc": "发送 'Authorization: Bearer <token>' 请求头。",
+  "images_filter_title": "过滤图片",
+  "images_filter_saved": "筛选偏好已保存为默认设置"
 }

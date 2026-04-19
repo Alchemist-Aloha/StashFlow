@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import '../auth/auth_mode.dart';
@@ -74,6 +76,12 @@ class ServerApiKey extends _$ServerApiKey {
   }
 }
 
+final proxyAuthModesEnabledProvider = Provider<bool>((ref) {
+  ref.watch(sharedPreferencesTriggerProvider);
+  final prefs = ref.watch(sharedPreferencesProvider);
+  return prefs.getBool('enable_proxy_auth_modes') ?? false;
+});
+
 @riverpod
 class GraphqlClient extends _$GraphqlClient {
   @override
@@ -100,6 +108,18 @@ class GraphqlClient extends _$GraphqlClient {
       // on credentials-enabled requests instead of manually setting Cookie.
       if (!kIsWeb && authState.cookieHeader.isNotEmpty) {
         headers['Cookie'] = authState.cookieHeader;
+      }
+    } else if (authState.mode == AuthMode.basic) {
+      final user = authState.username.trim();
+      final pass = authState.password;
+      if (user.isNotEmpty || pass.isNotEmpty) {
+        final bytes = utf8.encode('$user:$pass');
+        final base64 = base64Encode(bytes);
+        headers['Authorization'] = 'Basic $base64';
+      }
+    } else if (authState.mode == AuthMode.bearer) {
+      if (apiKey.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $apiKey';
       }
     } else if (apiKey.isNotEmpty) {
       headers['ApiKey'] = apiKey;

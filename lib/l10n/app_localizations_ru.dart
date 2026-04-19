@@ -553,7 +553,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get scenes_filter_title => 'Фильтровать сцены';
 
   @override
-  String get scenes_filter_saved => 'Filter preferences saved as default';
+  String get scenes_filter_saved => 'Настройки фильтра сохранены по умолчанию';
 
   @override
   String get scenes_watched => 'Просмотрено';
@@ -1464,6 +1464,28 @@ class AppLocalizationsRu extends AppLocalizations {
       'Переопределяет ограничение «только для нативных приложений» и делает видимым метод аутентификации по имени пользователя и паролю во Flutter Web.';
 
   @override
+  String get settings_develop_proxy_auth =>
+      'Включить режимы аутентификации через прокси';
+
+  @override
+  String get settings_develop_proxy_auth_subtitle =>
+      'Включите расширенные методы Basic Auth и Bearer Token для использования с бэкендами без аутентификации за прокси-серверами, такими как Authentik.';
+
+  @override
+  String get settings_server_auth_basic => 'Базовая аутентификация';
+
+  @override
+  String get settings_server_auth_bearer => 'Токен носителя';
+
+  @override
+  String get settings_server_auth_basic_desc =>
+      'Отправляет заголовок \'Authorization: Basic <base64(user:pass)>\'.';
+
+  @override
+  String get settings_server_auth_bearer_desc =>
+      'Отправляет заголовок \'Authorization: Bearer <token>\'.';
+
+  @override
   String get common_edit => 'Редактировать';
 
   @override
@@ -1489,10 +1511,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get images_title => 'Изображения';
 
   @override
-  String get images_filter_title => 'Filter Images';
+  String get images_filter_title => 'Фильтровать изображения';
 
   @override
-  String get images_filter_saved => 'Filter preferences saved as default';
+  String get images_filter_saved => 'Настройки фильтра сохранены по умолчанию';
 
   @override
   String get images_sort_title => 'Сортировать изображения';

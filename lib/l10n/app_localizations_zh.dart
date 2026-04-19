@@ -545,7 +545,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scenes_filter_title => '筛选场景';
 
   @override
-  String get scenes_filter_saved => 'Filter preferences saved as default';
+  String get scenes_filter_saved => '筛选偏好已保存为默认设置';
 
   @override
   String get scenes_watched => '已看';
@@ -1389,6 +1389,27 @@ class AppLocalizationsZh extends AppLocalizations {
       '覆盖仅限原生的限制，并强制用户名 + 密码身份验证方式在 Flutter Web 上可见。';
 
   @override
+  String get settings_develop_proxy_auth => '启用代理认证模式';
+
+  @override
+  String get settings_develop_proxy_auth_subtitle =>
+      '启用高级 Basic Auth 和 Bearer Token 方法，以便在 Authentik 等代理背后的无认证后端中使用。';
+
+  @override
+  String get settings_server_auth_basic => '基础认证';
+
+  @override
+  String get settings_server_auth_bearer => 'Bearer 令牌';
+
+  @override
+  String get settings_server_auth_basic_desc =>
+      '发送 \'Authorization: Basic <base64(user:pass)>\' 请求头。';
+
+  @override
+  String get settings_server_auth_bearer_desc =>
+      '发送 \'Authorization: Bearer <token>\' 请求头。';
+
+  @override
   String get common_edit => '编辑';
 
   @override
@@ -1413,10 +1434,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get images_title => '图片';
 
   @override
-  String get images_filter_title => 'Filter Images';
+  String get images_filter_title => '过滤图片';
 
   @override
-  String get images_filter_saved => 'Filter preferences saved as default';
+  String get images_filter_saved => '筛选偏好已保存为默认设置';
 
   @override
   String get images_sort_title => '对图片排序';
@@ -2125,6 +2146,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scenes_filter_title => '筛选场景';
 
   @override
+  String get scenes_filter_saved => '筛选偏好已保存为默认设置';
+
+  @override
   String get scenes_watched => '已看';
 
   @override
@@ -2966,6 +2990,27 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
       '覆盖仅限原生的限制，并强制用户名 + 密码身份验证方式在 Flutter Web 上可见。';
 
   @override
+  String get settings_develop_proxy_auth => '启用代理认证模式';
+
+  @override
+  String get settings_develop_proxy_auth_subtitle =>
+      '启用高级 Basic Auth 和 Bearer Token 方法，以便在 Authentik 等代理背后的无认证后端中使用。';
+
+  @override
+  String get settings_server_auth_basic => '基础认证';
+
+  @override
+  String get settings_server_auth_bearer => 'Bearer 令牌';
+
+  @override
+  String get settings_server_auth_basic_desc =>
+      '发送 \'Authorization: Basic <base64(user:pass)>\' 请求头。';
+
+  @override
+  String get settings_server_auth_bearer_desc =>
+      '发送 \'Authorization: Bearer <token>\' 请求头。';
+
+  @override
   String get common_edit => '编辑';
 
   @override
@@ -2988,6 +3033,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get images_title => '图片';
+
+  @override
+  String get images_filter_title => '过滤图片';
+
+  @override
+  String get images_filter_saved => '筛选偏好已保存为默认设置';
 
   @override
   String get images_sort_title => '对图片排序';
@@ -3696,6 +3747,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get scenes_filter_title => '篩選場景';
+
+  @override
+  String get scenes_filter_saved => '篩選偏好已儲存為預設設定';
 
   @override
   String get scenes_watched => '已看';
@@ -4541,6 +4595,27 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       '覆寫僅限原生的限制，並強制「使用者名稱 + 密碼」驗證方式在 Flutter Web 上可見。';
 
   @override
+  String get settings_develop_proxy_auth => '啟用代理認證模式';
+
+  @override
+  String get settings_develop_proxy_auth_subtitle =>
+      '啟用進階 Basic Auth 和 Bearer Token 方法，以便在 Authentik 等代理背後的無認證後端中使用。';
+
+  @override
+  String get settings_server_auth_basic => '基礎認證';
+
+  @override
+  String get settings_server_auth_bearer => 'Bearer 權杖';
+
+  @override
+  String get settings_server_auth_basic_desc =>
+      '發送 \'Authorization: Basic <base64(user:pass)>\' 請求頭。';
+
+  @override
+  String get settings_server_auth_bearer_desc =>
+      '發送 \'Authorization: Bearer <token>\' 請求頭。';
+
+  @override
   String get common_edit => '編輯';
 
   @override
@@ -4563,6 +4638,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get images_title => '圖片';
+
+  @override
+  String get images_filter_title => '過濾圖片';
+
+  @override
+  String get images_filter_saved => '篩選偏好已儲存為預設設定';
 
   @override
   String get images_sort_title => '排序圖片';

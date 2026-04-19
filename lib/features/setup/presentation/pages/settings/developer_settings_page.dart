@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:stash_app_flutter/core/data/graphql/graphql_client.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
@@ -20,9 +21,11 @@ class DeveloperSettingsPage extends ConsumerStatefulWidget {
 class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
   static const _showVideoDebugInfoKey = 'show_video_debug_info';
   static const _allowWebPasswordLoginKey = 'allow_web_password_login';
+  static const _enableProxyAuthModesKey = 'enable_proxy_auth_modes';
 
   bool _showVideoDebugInfo = false;
   bool _allowWebPasswordLogin = false;
+  bool _enableProxyAuthModes = false;
 
   @override
   void initState() {
@@ -36,6 +39,7 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
       _showVideoDebugInfo = prefs.getBool(_showVideoDebugInfoKey) ?? false;
       _allowWebPasswordLogin =
           prefs.getBool(_allowWebPasswordLoginKey) ?? false;
+      _enableProxyAuthModes = prefs.getBool(_enableProxyAuthModesKey) ?? false;
     });
   }
 
@@ -67,6 +71,19 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
                     ref
                         .read(playerStateProvider.notifier)
                         .setShowVideoDebugInfo(value);
+                  },
+                ),
+                const Divider(height: 1),
+                SwitchListTile(
+                  title: Text(l10n.settings_develop_proxy_auth),
+                  subtitle: Text(l10n.settings_develop_proxy_auth_subtitle),
+                  value: _enableProxyAuthModes,
+                  onChanged: (value) {
+                    setState(() => _enableProxyAuthModes = value);
+                    _saveSetting(_enableProxyAuthModesKey, value);
+                    ref
+                        .read(sharedPreferencesTriggerProvider.notifier)
+                        .trigger();
                   },
                 ),
                 const Divider(height: 1),

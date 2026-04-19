@@ -476,6 +476,12 @@
   "settings_develop_web_overrides_subtitle": "Advanced flags for web platform",
   "settings_develop_web_auth": "Allow Password Login on Web",
   "settings_develop_web_auth_subtitle": "Overrides the native-only restriction and forces the Username + Password auth method to be visible on Flutter Web.",
+  "settings_develop_proxy_auth": "Enable Proxy Auth Modes",
+  "settings_develop_proxy_auth_subtitle": "Enable advanced Basic Auth and Bearer Token methods for use with auth-free backends behind proxies like Authentik.",
+  "settings_server_auth_basic": "Basic Auth",
+  "settings_server_auth_bearer": "Bearer Token",
+  "settings_server_auth_basic_desc": "Sends 'Authorization: Basic <base64(user:pass)>' header.",
+  "settings_server_auth_bearer_desc": "Sends 'Authorization: Bearer <token>' header.",
   "@settings_support_update_to": {
     "placeholders": {
       "version": {

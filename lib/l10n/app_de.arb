@@ -636,5 +636,14 @@
         "type": "Object"
       }
     }
-  }
+  },
+  "scenes_filter_saved": "Filtereinstellungen als Standard gespeichert",
+  "settings_develop_proxy_auth": "Proxy-Authentifizierungsmodi aktivieren",
+  "settings_develop_proxy_auth_subtitle": "Aktivieren Sie erweiterte Basic-Auth- und Bearer-Token-Methoden für die Verwendung mit authentifizierungsfreien Backends hinter Proxys wie Authentik.",
+  "settings_server_auth_basic": "Basic Auth",
+  "settings_server_auth_bearer": "Bearer-Token",
+  "settings_server_auth_basic_desc": "Sendet den Header 'Authorization: Basic <base64(user:pass)>'.",
+  "settings_server_auth_bearer_desc": "Sendet den Header 'Authorization: Bearer <token>'.",
+  "images_filter_title": "Bilder filtern",
+  "images_filter_saved": "Filtereinstellungen als Standard gespeichert"
 }

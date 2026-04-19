@@ -557,7 +557,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get scenes_filter_title => 'Filtra scene';
 
   @override
-  String get scenes_filter_saved => 'Filter preferences saved as default';
+  String get scenes_filter_saved =>
+      'Preferenze del filtro salvate come predefinite';
 
   @override
   String get scenes_watched => 'Guardato';
@@ -1478,6 +1479,28 @@ class AppLocalizationsIt extends AppLocalizations {
       'Ignora la restrizione solo-nativa e forza la visibilità del metodo di autenticazione Nome utente + Password su Flutter Web.';
 
   @override
+  String get settings_develop_proxy_auth =>
+      'Abilita modalità di autenticazione proxy';
+
+  @override
+  String get settings_develop_proxy_auth_subtitle =>
+      'Abilita i metodi avanzati Basic Auth e Bearer Token per l\'uso con backend senza autenticazione dietro proxy come Authentik.';
+
+  @override
+  String get settings_server_auth_basic => 'Autenticazione di base';
+
+  @override
+  String get settings_server_auth_bearer => 'Token Bearer';
+
+  @override
+  String get settings_server_auth_basic_desc =>
+      'Invia l\'header \'Authorization: Basic <base64(user:pass)>\'.';
+
+  @override
+  String get settings_server_auth_bearer_desc =>
+      'Invia l\'header \'Authorization: Bearer <token>\'.';
+
+  @override
   String get common_edit => 'Modifica';
 
   @override
@@ -1503,10 +1526,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get images_title => 'Immagini';
 
   @override
-  String get images_filter_title => 'Filter Images';
+  String get images_filter_title => 'Filtra immagini';
 
   @override
-  String get images_filter_saved => 'Filter preferences saved as default';
+  String get images_filter_saved =>
+      'Preferenze del filtro salvate come predefinite';
 
   @override
   String get images_sort_title => 'Ordina immagini';

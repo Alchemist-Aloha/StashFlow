@@ -1,20 +1,20 @@
 {
-  "turn_count": 10,
-  "last_session_id": "9a8ef66a-1d65-4c24-9fa7-098d7b3917b1",
-  "last_event_key": "9a8ef66a-1d65-4c24-9fa7-098d7b3917b1:transcript:09e1efa5eafc16ed809ed79a35988720c474d2ae14a68e78862dbb16de35a02a",
-  "last_transcript_hash": "09e1efa5eafc16ed809ed79a35988720c474d2ae14a68e78862dbb16de35a02a",
+  "turn_count": 12,
+  "last_session_id": "59b26b16-7ac0-43d0-8425-e0aeacc439b9",
+  "last_event_key": "59b26b16-7ac0-43d0-8425-e0aeacc439b9:transcript:0fbd9848cd9f38d0e8b6ec149c9052cd002b490eed52ac1111ad6cb533354a60",
+  "last_transcript_hash": "0fbd9848cd9f38d0e8b6ec149c9052cd002b490eed52ac1111ad6cb533354a60",
   "last_model": "gemini-3-flash-preview",
   "last_provider": "gemini",
-  "last_turn_total_tokens": 122598,
-  "last_session_total_tokens": 7457648,
+  "last_turn_total_tokens": 133277,
+  "last_session_total_tokens": 8601956,
   "session_totals_by_model": {
-    "gemini-3-flash-preview": 6551078,
-    "gemini-3.1-pro-preview": 906570
+    "gemini-3-flash-preview": 7346064,
+    "gemini-3.1-pro-preview": 1255892
   },
   "session_totals_by_provider": {
-    "gemini": 7457648
+    "gemini": 8601956
   },
   "cwd_mode": "parent-leaf",
   "last_cwd_label": "likun/StashFlow",
-  "updated_at": "2026-04-19T00:33:11.284Z"
+  "updated_at": "2026-04-19T02:01:14.636Z"
 }

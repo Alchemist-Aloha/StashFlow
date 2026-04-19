@@ -615,5 +615,14 @@
   "scrape_from_url": "URL에서 스크랩",
   "scenes_phash_started": "Phash 생성 시작됨",
   "scenes_phash_failed": "Phash 생성 실패: {error}",
-  "details_failed_update_studio": "스튜디오 업데이트 실패: {error}"
+  "details_failed_update_studio": "스튜디오 업데이트 실패: {error}",
+  "scenes_filter_saved": "필터 설정이 기본값으로 저장되었습니다",
+  "settings_develop_proxy_auth": "프록시 인증 모드 활성화",
+  "settings_develop_proxy_auth_subtitle": "Authentik과 같은 프록시 뒤의 인증 없는 백엔드에서 사용하기 위해 고급 Basic Auth 및 Bearer Token 방식을 활성화합니다.",
+  "settings_server_auth_basic": "기본 인증",
+  "settings_server_auth_bearer": "전달자 토큰",
+  "settings_server_auth_basic_desc": "'Authorization: Basic <base64(user:pass)>' 헤더를 전송합니다.",
+  "settings_server_auth_bearer_desc": "'Authorization: Bearer <token>' 헤더를 전송합니다.",
+  "images_filter_title": "이미지 필터링",
+  "images_filter_saved": "필터 설정이 기본값으로 저장되었습니다"
 }

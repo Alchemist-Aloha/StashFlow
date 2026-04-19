@@ -615,5 +615,14 @@
   "scrape_from_url": "Собрать с URL",
   "scenes_phash_started": "Генерация phash начата",
   "scenes_phash_failed": "Не удалось сгенерировать phash: {error}",
-  "details_failed_update_studio": "Не удалось обновить студию: {error}"
+  "details_failed_update_studio": "Не удалось обновить студию: {error}",
+  "scenes_filter_saved": "Настройки фильтра сохранены по умолчанию",
+  "settings_develop_proxy_auth": "Включить режимы аутентификации через прокси",
+  "settings_develop_proxy_auth_subtitle": "Включите расширенные методы Basic Auth и Bearer Token для использования с бэкендами без аутентификации за прокси-серверами, такими как Authentik.",
+  "settings_server_auth_basic": "Базовая аутентификация",
+  "settings_server_auth_bearer": "Токен носителя",
+  "settings_server_auth_basic_desc": "Отправляет заголовок 'Authorization: Basic <base64(user:pass)>'.",
+  "settings_server_auth_bearer_desc": "Отправляет заголовок 'Authorization: Bearer <token>'.",
+  "images_filter_title": "Фильтровать изображения",
+  "images_filter_saved": "Настройки фильтра сохранены по умолчанию"
 }

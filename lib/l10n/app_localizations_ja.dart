@@ -547,7 +547,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get scenes_filter_title => 'シーンをフィルター';
 
   @override
-  String get scenes_filter_saved => 'Filter preferences saved as default';
+  String get scenes_filter_saved => 'フィルター設定をデフォルトとして保存しました';
 
   @override
   String get scenes_watched => '視聴済み';
@@ -1409,6 +1409,27 @@ class AppLocalizationsJa extends AppLocalizations {
       'ネイティブ限定の制限を上書きし、Flutter Webでユーザー名 + パスワード認証を強制表示します。';
 
   @override
+  String get settings_develop_proxy_auth => 'プロキシ認証モードを有効にする';
+
+  @override
+  String get settings_develop_proxy_auth_subtitle =>
+      'Authentikなどのプロキシの背後にある認証不要のバックエンドで使用するために、高度なBasic認証およびBearerトークン方式を有効にします。';
+
+  @override
+  String get settings_server_auth_basic => 'Basic認証';
+
+  @override
+  String get settings_server_auth_bearer => 'Bearerトークン';
+
+  @override
+  String get settings_server_auth_basic_desc =>
+      '\'Authorization: Basic <base64(user:pass)>\' ヘッダーを送信します。';
+
+  @override
+  String get settings_server_auth_bearer_desc =>
+      '\'Authorization: Bearer <token>\' ヘッダーを送信します。';
+
+  @override
   String get common_edit => '編集';
 
   @override
@@ -1433,10 +1454,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get images_title => '画像';
 
   @override
-  String get images_filter_title => 'Filter Images';
+  String get images_filter_title => '画像をフィルター';
 
   @override
-  String get images_filter_saved => 'Filter preferences saved as default';
+  String get images_filter_saved => 'フィルター設定をデフォルトとして保存しました';
 
   @override
   String get images_sort_title => '画像を並べ替え';

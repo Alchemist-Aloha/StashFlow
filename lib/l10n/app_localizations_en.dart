@@ -1449,6 +1449,27 @@ class AppLocalizationsEn extends AppLocalizations {
       'Overrides the native-only restriction and forces the Username + Password auth method to be visible on Flutter Web.';
 
   @override
+  String get settings_develop_proxy_auth => 'Enable Proxy Auth Modes';
+
+  @override
+  String get settings_develop_proxy_auth_subtitle =>
+      'Enable advanced Basic Auth and Bearer Token methods for use with auth-free backends behind proxies like Authentik.';
+
+  @override
+  String get settings_server_auth_basic => 'Basic Auth';
+
+  @override
+  String get settings_server_auth_bearer => 'Bearer Token';
+
+  @override
+  String get settings_server_auth_basic_desc =>
+      'Sends \'Authorization: Basic <base64(user:pass)>\' header.';
+
+  @override
+  String get settings_server_auth_bearer_desc =>
+      'Sends \'Authorization: Bearer <token>\' header.';
+
+  @override
   String get common_edit => 'Edit';
 
   @override

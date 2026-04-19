@@ -545,7 +545,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get scenes_filter_title => '장면 필터';
 
   @override
-  String get scenes_filter_saved => 'Filter preferences saved as default';
+  String get scenes_filter_saved => '필터 설정이 기본값으로 저장되었습니다';
 
   @override
   String get scenes_watched => '본 항목';
@@ -1408,6 +1408,27 @@ class AppLocalizationsKo extends AppLocalizations {
       '네이티브 전용 제한을 무시하고 Flutter 웹에서 사용자 이름 + 비밀번호 인증 방식을 강제로 표시합니다.';
 
   @override
+  String get settings_develop_proxy_auth => '프록시 인증 모드 활성화';
+
+  @override
+  String get settings_develop_proxy_auth_subtitle =>
+      'Authentik과 같은 프록시 뒤의 인증 없는 백엔드에서 사용하기 위해 고급 Basic Auth 및 Bearer Token 방식을 활성화합니다.';
+
+  @override
+  String get settings_server_auth_basic => '기본 인증';
+
+  @override
+  String get settings_server_auth_bearer => '전달자 토큰';
+
+  @override
+  String get settings_server_auth_basic_desc =>
+      '\'Authorization: Basic <base64(user:pass)>\' 헤더를 전송합니다.';
+
+  @override
+  String get settings_server_auth_bearer_desc =>
+      '\'Authorization: Bearer <token>\' 헤더를 전송합니다.';
+
+  @override
   String get common_edit => '편집';
 
   @override
@@ -1432,10 +1453,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get images_title => '이미지';
 
   @override
-  String get images_filter_title => 'Filter Images';
+  String get images_filter_title => '이미지 필터링';
 
   @override
-  String get images_filter_saved => 'Filter preferences saved as default';
+  String get images_filter_saved => '필터 설정이 기본값으로 저장되었습니다';
 
   @override
   String get images_sort_title => '이미지 정렬';

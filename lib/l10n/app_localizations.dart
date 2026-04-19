@@ -2760,6 +2760,42 @@ abstract class AppLocalizations {
   /// **'Overrides the native-only restriction and forces the Username + Password auth method to be visible on Flutter Web.'**
   String get settings_develop_web_auth_subtitle;
 
+  /// No description provided for @settings_develop_proxy_auth.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Proxy Auth Modes'**
+  String get settings_develop_proxy_auth;
+
+  /// No description provided for @settings_develop_proxy_auth_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable advanced Basic Auth and Bearer Token methods for use with auth-free backends behind proxies like Authentik.'**
+  String get settings_develop_proxy_auth_subtitle;
+
+  /// No description provided for @settings_server_auth_basic.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic Auth'**
+  String get settings_server_auth_basic;
+
+  /// No description provided for @settings_server_auth_bearer.
+  ///
+  /// In en, this message translates to:
+  /// **'Bearer Token'**
+  String get settings_server_auth_bearer;
+
+  /// No description provided for @settings_server_auth_basic_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sends \'Authorization: Basic <base64(user:pass)>\' header.'**
+  String get settings_server_auth_basic_desc;
+
+  /// No description provided for @settings_server_auth_bearer_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sends \'Authorization: Bearer <token>\' header.'**
+  String get settings_server_auth_bearer_desc;
+
   /// No description provided for @common_edit.
   ///
   /// In en, this message translates to:

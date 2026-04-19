@@ -615,5 +615,14 @@
   "scrape_from_url": "Raspar desde URL",
   "scenes_phash_started": "Generación de phash iniciada",
   "scenes_phash_failed": "Error al generar phash: {error}",
-  "details_failed_update_studio": "Error al actualizar el estudio: {error}"
+  "details_failed_update_studio": "Error al actualizar el estudio: {error}",
+  "scenes_filter_saved": "Preferencias de filtro guardadas como predeterminadas",
+  "settings_develop_proxy_auth": "Habilitar modos de autenticación de proxy",
+  "settings_develop_proxy_auth_subtitle": "Habilite los métodos avanzados de Basic Auth y Bearer Token para su uso con backends sin autenticación detrás de proxies como Authentik.",
+  "settings_server_auth_basic": "Autenticación básica",
+  "settings_server_auth_bearer": "Token de portador",
+  "settings_server_auth_basic_desc": "Envía el encabezado 'Authorization: Basic <base64(user:pass)>'.",
+  "settings_server_auth_bearer_desc": "Envía el encabezado 'Authorization: Bearer <token>'.",
+  "images_filter_title": "Filtrar imágenes",
+  "images_filter_saved": "Preferencias de filtro guardadas como predeterminadas"
 }

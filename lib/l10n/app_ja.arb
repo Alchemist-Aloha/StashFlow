@@ -615,5 +615,14 @@
   "scrape_from_url": "URLからスクレイプ",
   "scenes_phash_started": "Phash生成を開始しました",
   "scenes_phash_failed": "Phashの生成に失敗しました: {error}",
-  "details_failed_update_studio": "スタジオの更新に失敗しました: {error}"
+  "details_failed_update_studio": "スタジオの更新に失敗しました: {error}",
+  "scenes_filter_saved": "フィルター設定をデフォルトとして保存しました",
+  "settings_develop_proxy_auth": "プロキシ認証モードを有効にする",
+  "settings_develop_proxy_auth_subtitle": "Authentikなどのプロキシの背後にある認証不要のバックエンドで使用するために、高度なBasic認証およびBearerトークン方式を有効にします。",
+  "settings_server_auth_basic": "Basic認証",
+  "settings_server_auth_bearer": "Bearerトークン",
+  "settings_server_auth_basic_desc": "'Authorization: Basic <base64(user:pass)>' ヘッダーを送信します。",
+  "settings_server_auth_bearer_desc": "'Authorization: Bearer <token>' ヘッダーを送信します。",
+  "images_filter_title": "画像をフィルター",
+  "images_filter_saved": "フィルター設定をデフォルトとして保存しました"
 }
