@@ -375,7 +375,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
         Stack(
           children: [
             IconButton(
-              tooltip: 'Filter List',
+              tooltip: context.l10n.common_filter,
               icon: const Icon(Icons.filter_list),
               onPressed: _showFilterPanel,
             ),
