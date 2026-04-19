@@ -91,7 +91,17 @@ class SupportSettingsPage extends ConsumerWidget {
                         icon: Icons.info_outline_rounded,
                         title: l10n.settings_support_version,
                         subtitle: '${l10n.appTitle} $version',
-                        onTap: () {},
+                        onTap: () async {
+                          final url = Uri.parse('https://github.com/Alchemist-Aloha/StashFlow/releases');
+                          try {
+                            if (await canLaunchUrl(url)) {
+                              await launchUrl(
+                                url,
+                                mode: LaunchMode.externalApplication,
+                              );
+                            }
+                          } catch (_) {}
+                        },
                       ),
                       loading: () => SettingsActionCard(
                         icon: Icons.info_outline_rounded,

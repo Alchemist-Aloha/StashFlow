@@ -91,7 +91,7 @@ class _ScrapeQueryDialogState extends ConsumerState<ScrapeQueryDialog> {
   @override
   Widget build(BuildContext context) {
     final scrapersAsync = ref.watch(
-      availableScrapersProvider([_getEntityTypeString()]),
+      availableScrapersProvider(_getEntityTypeString()),
     );
     final stashBoxesAsync = ref.watch(stashBoxEndpointsProvider);
 

@@ -77,6 +77,6 @@ final sceneScrapeProvider = Provider<SceneScrapeNotifier>((ref) {
 });
 
 final availableScrapersProvider =
-    FutureProvider.family<List<Scraper>, List<String>>((ref, types) async {
-      return ref.read(sceneScrapeProvider).listAvailableScrapers(types: types);
+    FutureProvider.family<List<Scraper>, String>((ref, type) async {
+      return ref.read(sceneScrapeProvider).listAvailableScrapers(types: [type]);
     });
