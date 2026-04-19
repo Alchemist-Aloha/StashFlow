@@ -3,25 +3,24 @@
 
 ## Goal / Non-goals
 ### Goals
-- Improve UX/UI for `AuthMode` selection in `ServerSettingsPage`.
-- Replace `SegmentedButton` with `DropdownButtonFormField`.
-- Ensure consistent styling with other form fields.
+- Move the "edit button" in the `SceneDetailsPage` from the actions row below the technical metadata to the top `AppBar`, matching the layout of `PerformerDetailsPage`. [DONE]
+- Add a new nested `edit` route (`/scenes/scene/:id/edit`) to `router.dart` for handling scene editing via `context.push`. [DONE]
+- Update `SceneDetailsPage` to use `context.push` for navigation to the edit page, passing the `Scene` object as `extra`. [DONE]
 
 ### Non-goals
-- Changing any underlying auth logic or providers.
+- Changing the functionality of the `SceneEditPage`.
+- Modifying other action buttons in the `SceneDetailsPage`.
 
 ## Task Graph
 | Task ID | Priority | Task | Owner | Dependency | Path Type | Worktree | Baseline | Lane Notes | Validation |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| R1 | p1 | Replace `SegmentedButton` with `DropdownButtonFormField` | omg-executor | - | critical | - | HEAD | - | Check UI layout |
-| R2 | p1 | Align `DropdownButtonFormField` decoration with existing fields | omg-executor | R1 | sequential | - | HEAD | - | Visual check |
-| R3 | p1 | Verify selection logic and settings persistence | omg-executor | R1 | sequential | - | HEAD | - | Manual testing |
+| M1 | p1 | Add `edit` route to `router.dart` under `/scenes/scene/:id` | omg-executor | - | critical | - | 823cdf4 | - | VERIFIED |
+| M2 | p1 | Move edit `IconButton` to `AppBar` in `SceneDetailsPage` | omg-executor | M1 | sequential | - | 823cdf4 | - | VERIFIED |
+| M3 | p1 | Remove old `FilledButton.tonalIcon` from `_buildActions` | omg-executor | M2 | sequential | - | 823cdf4 | - | VERIFIED |
 
 ## Critical Files
-- `lib/features/setup/presentation/pages/settings/server_settings_page.dart`
-
-## Taskboard Sync
-- Initialization complete.
+- `lib/features/scenes/presentation/pages/scene_details_page.dart`
+- `lib/features/navigation/presentation/router.dart`
 
 ## Ready For team-prd
 - Yes.

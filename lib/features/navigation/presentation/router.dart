@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/data/graphql/graphql_client.dart';
+import '../../scenes/domain/entities/scene.dart';
 import '../../scenes/presentation/pages/scenes_page.dart';
 import '../../scenes/presentation/pages/scene_details_page.dart';
+import '../../scenes/presentation/pages/scene_edit_page.dart';
 import '../../performers/domain/entities/performer.dart';
 import '../../performers/presentation/pages/performers_page.dart';
 import '../../performers/presentation/pages/performer_details_page.dart';
@@ -100,6 +102,18 @@ GoRouter router(Ref ref) {
                                   ),
                           transitionDuration: const Duration(milliseconds: 200),
                         ),
+                      ),
+                      GoRoute(
+                        path: 'edit',
+                        builder: (context, state) {
+                          final scene = state.extra as Scene?;
+                          if (scene != null) {
+                            return SceneEditPage(scene: scene);
+                          }
+                          return SceneDetailsPage(
+                            sceneId: state.pathParameters['id']!,
+                          );
+                        },
                       ),
                     ],
                   ),

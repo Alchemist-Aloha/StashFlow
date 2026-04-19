@@ -71,7 +71,11 @@ class SettingsSectionCard extends StatelessWidget {
 
     return Card(
       clipBehavior: Clip.antiAlias,
-      surfaceTintColor: colorScheme.surfaceTint,
+      elevation: 0,
+      color: colorScheme.surfaceContainerHigh,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+      ),
       child: Padding(
         padding: padding,
         child: Column(
@@ -80,9 +84,10 @@ class SettingsSectionCard extends StatelessWidget {
             if (title != null) ...[
               Text(
                 title!,
-                style: textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: colorScheme.onSurface,
+                style: textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.primary,
+                  letterSpacing: 0.5,
                 ),
               ),
             ],
@@ -128,24 +133,35 @@ class SettingsActionCard extends StatelessWidget {
 
     return Card(
       clipBehavior: Clip.antiAlias,
-      surfaceTintColor: colorScheme.surfaceTint,
+      elevation: 0,
+      color: colorScheme.surfaceContainerHigh,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+      ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppTheme.spacingMedium,
           vertical: AppTheme.spacingSmall,
         ),
-        leading: CircleAvatar(
-          backgroundColor: colorScheme.primaryContainer,
-          foregroundColor: colorScheme.onPrimaryContainer,
-          child: Icon(icon),
+        leading: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: colorScheme.primaryContainer.withValues(alpha: 0.4),
+            borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+          ),
+          child: Icon(icon, color: colorScheme.primary, size: 20),
         ),
         title: Text(
           title,
-          style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+          style: textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: colorScheme.onSurface,
+          ),
         ),
         subtitle: Text(
           subtitle,
-          style: textTheme.bodyMedium?.copyWith(
+          style: textTheme.bodySmall?.copyWith(
             color: colorScheme.onSurfaceVariant,
           ),
         ),
@@ -153,8 +169,8 @@ class SettingsActionCard extends StatelessWidget {
             trailing ??
             Icon(
               Icons.arrow_forward_ios_rounded,
-              size: 16,
-              color: colorScheme.onSurfaceVariant,
+              size: 14,
+              color: colorScheme.outline,
             ),
         onTap: onTap,
       ),

@@ -189,7 +189,22 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     final scrapeEnabled = ref.watch(scrapeEnabledProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.details_scene)),
+      appBar: AppBar(
+        title: Text(context.l10n.details_scene),
+        actions: [
+          if (scrapeEnabled)
+            sceneAsync.maybeWhen(
+              data: (scene) => IconButton(
+                icon: const Icon(Icons.edit_outlined),
+                onPressed: () => context.push(
+                  '/scenes/scene/${scene.id}/edit',
+                  extra: scene,
+                ),
+              ),
+              orElse: () => const SizedBox.shrink(),
+            ),
+        ],
+      ),
       floatingActionButton: randomNavigationEnabled
           ? sceneAsync.maybeWhen(
               data: (_) => FloatingActionButton.small(
@@ -501,24 +516,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           icon: const Icon(Icons.water_drop_outlined),
           label: Text('${scene.oCounter}'),
         ),
-        if (scrapeEnabled)
-          FilledButton.tonalIcon(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => SceneEditPage(scene: scene),
-                ),
-              );
-            },
-            style: FilledButton.styleFrom(
-              visualDensity: VisualDensity.compact,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              minimumSize: const Size(0, 32),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            ),
-            icon: const Icon(Icons.edit_outlined),
-            label: Text(context.l10n.common_edit),
-          ),
       ],
     );
   }
