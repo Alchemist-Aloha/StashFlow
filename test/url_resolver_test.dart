@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:stash_app_flutter/core/data/auth/auth_mode.dart';
 import 'package:stash_app_flutter/core/data/graphql/url_resolver.dart';
 
 void main() {
@@ -90,6 +91,63 @@ void main() {
       final url = 'not-a-url';
       final result = appendApiKey(url, 'key');
       expect(result, 'not-a-url?apikey=key');
+    });
+  });
+
+  group('applyWebMediaAuthFallback', () {
+    final endpoint = Uri.parse('https://stash.host.tld/graphql');
+
+    test('keeps url unchanged for password mode', () {
+      const url = 'https://stash.host.tld/image/1/thumbnail?t=123';
+      final result = applyWebMediaAuthFallback(
+        url: url,
+        authMode: AuthMode.password,
+        apiKey: '',
+        username: 'user',
+        password: 'pass',
+        graphqlEndpoint: endpoint,
+      );
+      expect(result, url);
+    });
+
+    test('appends apikey for basic mode when apikey exists', () {
+      const url = 'https://stash.host.tld/scene/5/stream.mp4?resolution=ORIGINAL';
+      final result = applyWebMediaAuthFallback(
+        url: url,
+        authMode: AuthMode.basic,
+        apiKey: 'key123',
+        username: 'user',
+        password: 'pass',
+        graphqlEndpoint: endpoint,
+      );
+      expect(result, contains('apikey=key123'));
+      expect(result, contains('resolution=ORIGINAL'));
+    });
+
+    test('injects basic userInfo for same-origin url when no apikey', () {
+      const url = 'https://stash.host.tld/gallery/11/cover?t=1';
+      final result = applyWebMediaAuthFallback(
+        url: url,
+        authMode: AuthMode.basic,
+        apiKey: '',
+        username: 'alice',
+        password: 'secret',
+        graphqlEndpoint: endpoint,
+      );
+      expect(result, 'https://alice:secret@stash.host.tld/gallery/11/cover?t=1');
+    });
+
+    test('does not inject userInfo for cross-origin url', () {
+      const url = 'https://cdn.host.tld/gallery/11/cover?t=1';
+      final result = applyWebMediaAuthFallback(
+        url: url,
+        authMode: AuthMode.basic,
+        apiKey: '',
+        username: 'alice',
+        password: 'secret',
+        graphqlEndpoint: endpoint,
+      );
+      expect(result, url);
     });
   });
 }

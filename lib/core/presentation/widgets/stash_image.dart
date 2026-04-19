@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import '../../data/auth/dio_file_service.dart';
-import '../../data/auth/auth_mode.dart';
 import '../../data/auth/auth_provider.dart';
 import '../../data/graphql/media_headers_provider.dart';
 import '../../data/graphql/url_resolver.dart';
@@ -262,14 +261,19 @@ class StashImage extends ConsumerWidget {
 
     final headers = ref.watch(mediaHeadersProvider);
     final apiKey = ref.watch(serverApiKeyProvider);
+    final serverUrl = ref.watch(serverUrlProvider);
     final authState = ref.watch(authProvider);
 
     if (kIsWeb) {
-      // For password mode on web, rely on browser cookie session.
-      // For API key mode, keep apikey query param to avoid custom-header CORS issues.
-      final webUrl = authState.mode == AuthMode.password
-          ? imageUrl!
-          : appendApiKey(imageUrl!, apiKey);
+      final graphqlEndpoint = Uri.tryParse(serverUrl);
+      final webUrl = applyWebMediaAuthFallback(
+        url: imageUrl!,
+        authMode: authState.mode,
+        apiKey: apiKey,
+        username: authState.username,
+        password: authState.password,
+        graphqlEndpoint: graphqlEndpoint,
+      );
       return Image.network(
         webUrl,
         // Avoid custom headers on web; browser manages credentials/cookies.

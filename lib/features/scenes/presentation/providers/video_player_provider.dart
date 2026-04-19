@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:video_player/video_player.dart';
@@ -11,6 +12,7 @@ import 'playback_queue_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../../../core/utils/pip_mode.dart';
 import '../../../../main.dart'; // To access mediaHandler
+import '../../../../core/data/auth/auth_provider.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
@@ -572,8 +574,23 @@ class PlayerState extends _$PlayerState {
       );
     }
 
+    var effectiveStreamUrl = streamUrl;
+    if (kIsWeb) {
+      final authState = ref.read(authProvider);
+      final apiKey = ref.read(serverApiKeyProvider);
+      final serverUrl = ref.read(serverUrlProvider);
+      effectiveStreamUrl = applyWebMediaAuthFallback(
+        url: streamUrl,
+        authMode: authState.mode,
+        apiKey: apiKey,
+        username: authState.username,
+        password: authState.password,
+        graphqlEndpoint: Uri.tryParse(serverUrl),
+      );
+    }
+
     final videoController = VideoPlayerController.networkUrl(
-      Uri.parse(streamUrl),
+      Uri.parse(effectiveStreamUrl),
       httpHeaders: httpHeaders ?? const <String, String>{},
       videoPlayerOptions: VideoPlayerOptions(
         allowBackgroundPlayback: allowBackgroundPlayback,
