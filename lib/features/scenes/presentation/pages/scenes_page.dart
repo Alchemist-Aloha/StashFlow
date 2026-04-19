@@ -431,6 +431,13 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
 
     final hasActiveFilters = filterActive || organizedFilter != OrganizedFilter.all;
 
+    // ⚡ Bolt: Hoist scene lookup map out of the itemBuilder loop.
+    // Why: Previously, every item built during scrolling performed an O(N) indexWhere lookup,
+    // causing O(N^2) complexity and potential frame drops.
+    // Impact: Reduces lookup from O(N) to O(1), significantly improving scrolling performance.
+    final scenes = scenesAsync.value ?? [];
+    final sceneIndexMap = {for (var i = 0; i < scenes.length; i++) scenes[i].id: i};
+
     return ListPageScaffold<Scene>(
       title: context.l10n.appTitle,
       searchHint: context.l10n.scenes_search_hint,
@@ -508,8 +515,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
           : null,
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, scene, memCacheWidth, memCacheHeight) {
-        final scenes = scenesAsync.value ?? [];
-        final index = scenes.indexWhere((s) => s.id == scene.id);
+        final index = sceneIndexMap[scene.id] ?? -1;
 
         return SceneCard(
           scene: scene,
