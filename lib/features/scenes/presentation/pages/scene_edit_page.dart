@@ -547,6 +547,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                     ),
                     if (_selectedStudioId != null)
                       IconButton(
+                        tooltip: 'Clear',
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                         icon: const Icon(Icons.clear, size: 18),

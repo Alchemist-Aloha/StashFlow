@@ -375,6 +375,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
         Stack(
           children: [
             IconButton(
+              tooltip: 'Filter List',
               icon: const Icon(Icons.filter_list),
               onPressed: _showFilterPanel,
             ),

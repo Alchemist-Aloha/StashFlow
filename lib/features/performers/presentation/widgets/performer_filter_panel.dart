@@ -532,6 +532,7 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
             children: [
               Text(label, style: context.textTheme.labelLarge),
               IconButton(
+                tooltip: 'Add',
                 icon: const Icon(Icons.add_circle_outline),
                 onPressed: () async {
                   final result = await showDialog<List<T>>(

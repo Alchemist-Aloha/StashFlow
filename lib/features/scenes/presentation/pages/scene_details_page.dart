@@ -194,6 +194,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           if (scrapeEnabled)
             sceneAsync.maybeWhen(
               data: (scene) => IconButton(
+                tooltip: 'Editd',
                 icon: const Icon(Icons.edit_outlined),
                 onPressed: () => context.push(
                   '/scenes/scene/${scene.id}/edit',

@@ -437,12 +437,12 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(children: [Text(label, style: Theme.of(context).textTheme.titleMedium), const Spacer(), IconButton(onPressed: onAdd, icon: const Icon(Icons.add_circle_outline))]),
+        Row(children: [Text(label, style: Theme.of(context).textTheme.titleMedium), const Spacer(), IconButton(tooltip: 'Add', onPressed: onAdd, icon: const Icon(Icons.add_circle_outline))]),
         ...controllers.asMap().entries.map((e) => Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: Row(children: [
             Expanded(child: TextField(controller: e.value, decoration: InputDecoration(labelText: label, border: const OutlineInputBorder()))),
-            IconButton(onPressed: () => onRemove(e.key), icon: const Icon(Icons.remove_circle_outline)),
+            IconButton(tooltip: 'Remove', onPressed: () => onRemove(e.key), icon: const Icon(Icons.remove_circle_outline)),
           ]),
         )),
       ],

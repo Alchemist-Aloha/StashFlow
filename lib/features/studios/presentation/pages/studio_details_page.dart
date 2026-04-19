@@ -55,6 +55,7 @@ class StudioDetailsPage extends ConsumerWidget {
           if (scrapeEnabled)
             studioAsync.maybeWhen(
               data: (studio) => IconButton(
+                tooltip: 'Editd',
                 icon: const Icon(Icons.edit_outlined),
                 onPressed: () => context.push(
                   '/studios/studio/${studio.id}/edit',

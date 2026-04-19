@@ -216,6 +216,7 @@ class GalleryCard extends ConsumerWidget {
                   ),
                 ),
                 IconButton(
+                  tooltip: 'More',
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                   onPressed: () => _showRating(context, ref),

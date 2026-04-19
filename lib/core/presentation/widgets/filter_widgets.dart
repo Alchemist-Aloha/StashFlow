@@ -147,6 +147,7 @@ class MultiCriterionInput<T> extends StatelessWidget {
                   spacing: 4,
                   children: [
                     IconButton(
+                      tooltip: 'Add',
                       icon: const Icon(Icons.add_circle_outline),
                       onPressed: () async {
                         // Show picker and update

@@ -75,6 +75,7 @@ class PerformerDetailsPage extends ConsumerWidget {
           if (scrapeEnabled)
             performerAsync.maybeWhen(
               data: (performer) => IconButton(
+                tooltip: 'Editd',
                 icon: const Icon(Icons.edit_outlined),
                 onPressed: () => context.push(
                   '/performers/performer/${performer.id}/edit',
