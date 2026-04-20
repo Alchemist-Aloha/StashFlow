@@ -1,24 +1,26 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image_filter.dart';
+import 'package:stash_app_flutter/core/domain/entities/criterion.dart';
 
 void main() {
   group('ImageFilter Entity', () {
     test('should parse from full JSON', () {
       final json = {
         'searchQuery': 'test search',
-        'minRating': 4,
+        'rating100': {'value': 80, 'modifier': 'EQUALS'},
         'organized': true,
-        'resolutions': ['1080p', '4k'],
-        'orientations': ['landscape'],
+        'resolution': {'value': ['1080p', '4k'], 'modifier': 'INCLUDES'},
+        'orientation': {'value': ['LANDSCAPE'], 'modifier': 'INCLUDES'},
       };
 
       final filter = ImageFilter.fromJson(json);
 
       expect(filter.searchQuery, 'test search');
-      expect(filter.minRating, 4);
+      expect(filter.rating100?.value, 80);
+      expect(filter.rating100?.modifier, CriterionModifier.equals);
       expect(filter.organized, true);
-      expect(filter.resolutions, ['1080p', '4k']);
-      expect(filter.orientations, ['landscape']);
+      expect(filter.resolution?.value, ['1080p', '4k']);
+      expect(filter.orientation?.value, ['LANDSCAPE']);
     });
 
     test('should parse from empty JSON', () {
@@ -27,54 +29,30 @@ void main() {
       final filter = ImageFilter.fromJson(json);
 
       expect(filter.searchQuery, isNull);
-      expect(filter.minRating, isNull);
+      expect(filter.rating100, isNull);
       expect(filter.organized, isNull);
-      expect(filter.resolutions, isNull);
-      expect(filter.orientations, isNull);
-    });
-
-    test('should handle explicit nulls in JSON', () {
-      final json = {
-        'searchQuery': null,
-        'minRating': null,
-        'organized': null,
-        'resolutions': null,
-        'orientations': null,
-      };
-
-      final filter = ImageFilter.fromJson(json);
-
-      expect(filter.searchQuery, isNull);
-      expect(filter.minRating, isNull);
-      expect(filter.organized, isNull);
-      expect(filter.resolutions, isNull);
-      expect(filter.orientations, isNull);
+      expect(filter.resolution, isNull);
+      expect(filter.orientation, isNull);
     });
 
     test('ImageFilter.empty() should create an empty filter', () {
       final filter = ImageFilter.empty();
 
       expect(filter.searchQuery, isNull);
-      expect(filter.minRating, isNull);
+      expect(filter.rating100, isNull);
       expect(filter.organized, isNull);
-      expect(filter.resolutions, isNull);
-      expect(filter.orientations, isNull);
     });
 
     test('should support value equality', () {
       final filter1 = ImageFilter(
         searchQuery: 'query',
-        minRating: 3,
+        rating100: const IntCriterion(value: 60, modifier: CriterionModifier.equals),
         organized: false,
-        resolutions: const ['720p'],
-        orientations: const ['portrait'],
       );
       final filter2 = ImageFilter(
         searchQuery: 'query',
-        minRating: 3,
+        rating100: const IntCriterion(value: 60, modifier: CriterionModifier.equals),
         organized: false,
-        resolutions: const ['720p'],
-        orientations: const ['portrait'],
       );
       final filter3 = ImageFilter(
         searchQuery: 'different',
@@ -88,19 +66,17 @@ void main() {
     test('should convert to JSON correctly', () {
       final filter = ImageFilter(
         searchQuery: 'test',
-        minRating: 5,
+        rating100: const IntCriterion(value: 100, modifier: CriterionModifier.equals),
         organized: true,
-        resolutions: const ['1080p'],
-        orientations: const ['square'],
+        resolution: const MultiCriterion(value: ['1080p']),
       );
 
       final json = filter.toJson();
 
       expect(json['searchQuery'], 'test');
-      expect(json['minRating'], 5);
+      expect(json['rating100']['value'], 100);
       expect(json['organized'], true);
-      expect(json['resolutions'], ['1080p']);
-      expect(json['orientations'], ['square']);
+      expect(json['resolution']['value'], ['1080p']);
     });
   });
 }
