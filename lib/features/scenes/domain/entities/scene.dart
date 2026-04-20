@@ -57,10 +57,20 @@ abstract class SceneFile with _$SceneFile {
     @JsonKey(name: 'bit_rate') required int? bitRate,
     required double? duration,
     @JsonKey(name: 'frame_rate') required double? frameRate,
+    @Default([]) List<Fingerprint> fingerprints,
   }) = _SceneFile;
 
   factory SceneFile.fromJson(Map<String, dynamic> json) =>
       _$SceneFileFromJson(json);
+}
+
+@freezed
+abstract class Fingerprint with _$Fingerprint {
+  const factory Fingerprint({required String type, required String value}) =
+      _Fingerprint;
+
+  factory Fingerprint.fromJson(Map<String, dynamic> json) =>
+      _$FingerprintFromJson(json);
 }
 
 @freezed

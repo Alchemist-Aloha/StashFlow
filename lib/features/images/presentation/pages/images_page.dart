@@ -16,8 +16,24 @@ import '../../domain/entities/image.dart' as entity;
 
 import '../widgets/image_filter_panel.dart';
 import '../../domain/entities/image_filter.dart';
+import '../../../../core/domain/entities/filter_options.dart';
 
-enum _ImageSortOption { date, rating, title, path, random }
+enum _ImageSortOption {
+  filesize,
+  fileCount,
+  date,
+  resolution,
+  title,
+  path,
+  rating,
+  fileModTime,
+  tagCount,
+  performerCount,
+  random,
+  oCounter,
+  createdAt,
+  updatedAt,
+}
 
 class ImagesPage extends ConsumerStatefulWidget {
   const ImagesPage({super.key});
@@ -40,11 +56,20 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
       final sortConfig = ref.read(imageSortProvider);
       setState(() {
         _sortOption = switch (sortConfig.sort) {
+          'filesize' => _ImageSortOption.filesize,
+          'file_count' => _ImageSortOption.fileCount,
           'date' => _ImageSortOption.date,
-          'rating100' => _ImageSortOption.rating,
+          'resolution' => _ImageSortOption.resolution,
           'title' => _ImageSortOption.title,
           'path' => _ImageSortOption.path,
+          'rating100' || 'rating' => _ImageSortOption.rating,
+          'file_mod_time' => _ImageSortOption.fileModTime,
+          'tag_count' => _ImageSortOption.tagCount,
+          'performer_count' => _ImageSortOption.performerCount,
           'random' => _ImageSortOption.random,
+          'o_counter' => _ImageSortOption.oCounter,
+          'created_at' => _ImageSortOption.createdAt,
+          'updated_at' => _ImageSortOption.updatedAt,
           _ => _ImageSortOption.path,
         };
         _sortDescending = sortConfig.descending;
@@ -58,11 +83,20 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
 
   void _applyServerSort() {
     final sortKey = switch (_sortOption) {
+      _ImageSortOption.filesize => 'filesize',
+      _ImageSortOption.fileCount => 'file_count',
       _ImageSortOption.date => 'date',
-      _ImageSortOption.rating => 'rating',
+      _ImageSortOption.resolution => 'resolution',
       _ImageSortOption.title => 'title',
       _ImageSortOption.path => 'path',
+      _ImageSortOption.rating => 'rating',
+      _ImageSortOption.fileModTime => 'file_mod_time',
+      _ImageSortOption.tagCount => 'tag_count',
+      _ImageSortOption.performerCount => 'performer_count',
       _ImageSortOption.random => 'random',
+      _ImageSortOption.oCounter => 'o_counter',
+      _ImageSortOption.createdAt => 'created_at',
+      _ImageSortOption.updatedAt => 'updated_at',
     };
     ref
         .read(imageListProvider.notifier)
@@ -71,11 +105,20 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
 
   String _sortOptionLabel(_ImageSortOption option) {
     return switch (option) {
-      _ImageSortOption.date => 'Date',
-      _ImageSortOption.rating => 'Rating',
-      _ImageSortOption.title => 'Title',
-      _ImageSortOption.path => 'Filepath',
-      _ImageSortOption.random => 'Random',
+      _ImageSortOption.filesize => context.l10n.sort_filesize,
+      _ImageSortOption.fileCount => context.l10n.common_image_count,
+      _ImageSortOption.date => context.l10n.common_date,
+      _ImageSortOption.resolution => context.l10n.common_resolution,
+      _ImageSortOption.title => context.l10n.common_title,
+      _ImageSortOption.path => context.l10n.common_filepath,
+      _ImageSortOption.rating => context.l10n.common_rating,
+      _ImageSortOption.fileModTime => context.l10n.sort_file_mod_time,
+      _ImageSortOption.tagCount => context.l10n.sort_tag_count,
+      _ImageSortOption.performerCount => context.l10n.sort_performers_count,
+      _ImageSortOption.random => context.l10n.common_random,
+      _ImageSortOption.oCounter => context.l10n.sort_o_count,
+      _ImageSortOption.createdAt => context.l10n.sort_created_at,
+      _ImageSortOption.updatedAt => context.l10n.sort_updated_at,
     };
   }
 
@@ -143,23 +186,38 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                       style: context.textTheme.labelLarge,
                     ),
                     const SizedBox(height: AppTheme.spacingSmall),
-                    Wrap(
-                      spacing: AppTheme.spacingSmall,
-                      runSpacing: AppTheme.spacingSmall,
-                      children: _ImageSortOption.values
-                          .map(
-                            (option) => ChoiceChip(
-                              label: Text(_sortOptionLabel(option)),
-                              selected: tempOption == option,
-                              onSelected: (selected) {
-                                if (!selected) return;
-                                setModalState(() {
-                                  tempOption = option;
-                                });
-                              },
+                    Flexible(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height * 0.35,
+                        ),
+                        child: Scrollbar(
+                          thumbVisibility: true,
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: AppTheme.spacingSmall,
                             ),
-                          )
-                          .toList(),
+                            child: Wrap(
+                              spacing: AppTheme.spacingSmall,
+                              runSpacing: AppTheme.spacingSmall,
+                              children: _ImageSortOption.values
+                                  .map(
+                                    (option) => ChoiceChip(
+                                      label: Text(_sortOptionLabel(option)),
+                                      selected: tempOption == option,
+                                      onSelected: (selected) {
+                                        if (!selected) return;
+                                        setModalState(() {
+                                          tempOption = option;
+                                        });
+                                      },
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: AppTheme.spacingMedium),
                     Text(
@@ -212,7 +270,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                     const SizedBox(height: AppTheme.spacingSmall),
                     SizedBox(
                       width: double.infinity,
-                      child: OutlinedButton(
+                      child: TextButton(
                         onPressed: () async {
                           setState(() {
                             _sortOption = tempOption;
@@ -231,7 +289,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                             );
                           }
                         },
-                        style: OutlinedButton.styleFrom(
+                        style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                             vertical: AppTheme.spacingMedium,
                           ),
@@ -270,8 +328,8 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
     final filterActive = ref.watch(
       imageFilterStateProvider.select((s) => s.filter != const ImageFilter()),
     );
-    final organizedOnly = ref.watch(imageOrganizedOnlyProvider);
-    final hasActiveFilters = filterActive || organizedOnly;
+    final organizedFilter = ref.watch(imageOrganizedOnlyProvider);
+    final hasActiveFilters = filterActive || organizedFilter != OrganizedFilter.all;
 
     int crossAxisCount = gridColumns ?? (isTablet ? 3 : (isMobile ? 2 : 5));
 
@@ -317,6 +375,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
         Stack(
           children: [
             IconButton(
+              tooltip: context.l10n.common_filter,
               icon: const Icon(Icons.filter_list),
               onPressed: _showFilterPanel,
             ),

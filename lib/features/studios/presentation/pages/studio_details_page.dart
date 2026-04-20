@@ -17,6 +17,7 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../providers/studio_list_provider.dart';
+import '../../../setup/presentation/providers/scrape_customization_provider.dart';
 
 class StudioDetailsPage extends ConsumerWidget {
   final String studioId;
@@ -45,9 +46,26 @@ class StudioDetailsPage extends ConsumerWidget {
     final galleriesAsync = ref.watch(studioGalleriesProvider(studioId));
     final mediaHeaders = ref.watch(mediaHeadersProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
+    final scrapeEnabled = ref.watch(scrapeEnabledProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.details_studio)),
+      appBar: AppBar(
+        title: Text(context.l10n.details_studio),
+        actions: [
+          if (scrapeEnabled)
+            studioAsync.maybeWhen(
+              data: (studio) => IconButton(
+                tooltip: context.l10n.common_edit,
+                icon: const Icon(Icons.edit_outlined),
+                onPressed: () => context.push(
+                  '/studios/studio/${studio.id}/edit',
+                  extra: studio,
+                ),
+              ),
+              orElse: () => const SizedBox.shrink(),
+            ),
+        ],
+      ),
       floatingActionButton: randomNavigationEnabled
           ? FloatingActionButton.small(
               onPressed: () => _openRandomStudio(context, ref),

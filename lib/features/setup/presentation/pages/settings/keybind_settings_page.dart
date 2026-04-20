@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/presentation/providers/keybinds_provider.dart';
-import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import '../../../../../core/presentation/theme/app_theme.dart';
 import '../../widgets/settings_page_shell.dart';

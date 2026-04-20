@@ -175,5 +175,64 @@ void main() {
       expect(state.cookieHeader, contains('session=provider-cookie'));
       expect(await secureStorage.read(key: 'server_cookie_header'), isNotEmpty);
     });
+
+    test('hydrates basic mode and sets loggedIn status', () async {
+      SharedPreferences.setMockInitialValues({
+        'server_base_url': 'http://localhost:9999/graphql',
+        'auth_mode': 'basic',
+      });
+      final prefs = await SharedPreferences.getInstance();
+
+      final secureStorage = FakeSecureStorage({
+        'server_username': 'alice',
+        'server_password': 'secret',
+      });
+
+      final container = ProviderContainer(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          secureStorageProvider.overrideWithValue(secureStorage),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      container.read(authProvider);
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      final state = container.read(authProvider);
+      expect(state.mode, AuthMode.basic);
+      expect(state.username, 'alice');
+      expect(state.password, 'secret');
+      expect(state.loginStatus, AuthLoginStatus.loggedIn);
+    });
+
+    test('hydrates bearer mode and sets loggedIn status', () async {
+      SharedPreferences.setMockInitialValues({
+        'server_base_url': 'http://localhost:9999/graphql',
+        'auth_mode': 'bearer',
+      });
+      final prefs = await SharedPreferences.getInstance();
+
+      final secureStorage = FakeSecureStorage({
+        'server_api_key': 'some-token',
+      });
+
+      final container = ProviderContainer(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          secureStorageProvider.overrideWithValue(secureStorage),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      container.read(authProvider);
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      final state = container.read(authProvider);
+      expect(state.mode, AuthMode.bearer);
+      expect(state.loginStatus, AuthLoginStatus.loggedIn);
+    });
   });
 }

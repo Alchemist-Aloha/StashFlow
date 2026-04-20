@@ -710,6 +710,37 @@ const fragmentDefinitionSlimSceneData = FragmentDefinitionNode(
               selectionSet: null,
             ),
             FieldNode(
+              name: NameNode(value: 'fingerprints'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: SelectionSetNode(
+                selections: [
+                  FieldNode(
+                    name: NameNode(value: 'type'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'value'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: '__typename'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                ],
+              ),
+            ),
+            FieldNode(
               name: NameNode(value: '__typename'),
               alias: null,
               arguments: [],
@@ -969,16 +1000,25 @@ class Fragment$SlimSceneData$files {
   Fragment$SlimSceneData$files({
     required this.path,
     required this.duration,
+    required this.fingerprints,
     this.$__typename = 'VideoFile',
   });
 
   factory Fragment$SlimSceneData$files.fromJson(Map<String, dynamic> json) {
     final l$path = json['path'];
     final l$duration = json['duration'];
+    final l$fingerprints = json['fingerprints'];
     final l$$__typename = json['__typename'];
     return Fragment$SlimSceneData$files(
       path: (l$path as String),
       duration: (l$duration as num).toDouble(),
+      fingerprints: (l$fingerprints as List<dynamic>)
+          .map(
+            (e) => Fragment$SlimSceneData$files$fingerprints.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
       $__typename: (l$$__typename as String),
     );
   }
@@ -986,6 +1026,8 @@ class Fragment$SlimSceneData$files {
   final String path;
 
   final double duration;
+
+  final List<Fragment$SlimSceneData$files$fingerprints> fingerprints;
 
   final String $__typename;
 
@@ -995,6 +1037,10 @@ class Fragment$SlimSceneData$files {
     _resultData['path'] = l$path;
     final l$duration = duration;
     _resultData['duration'] = l$duration;
+    final l$fingerprints = fingerprints;
+    _resultData['fingerprints'] = l$fingerprints
+        .map((e) => e.toJson())
+        .toList();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -1004,8 +1050,14 @@ class Fragment$SlimSceneData$files {
   int get hashCode {
     final l$path = path;
     final l$duration = duration;
+    final l$fingerprints = fingerprints;
     final l$$__typename = $__typename;
-    return Object.hashAll([l$path, l$duration, l$$__typename]);
+    return Object.hashAll([
+      l$path,
+      l$duration,
+      Object.hashAll(l$fingerprints.map((v) => v)),
+      l$$__typename,
+    ]);
   }
 
   @override
@@ -1026,6 +1078,18 @@ class Fragment$SlimSceneData$files {
     final lOther$duration = other.duration;
     if (l$duration != lOther$duration) {
       return false;
+    }
+    final l$fingerprints = fingerprints;
+    final lOther$fingerprints = other.fingerprints;
+    if (l$fingerprints.length != lOther$fingerprints.length) {
+      return false;
+    }
+    for (int i = 0; i < l$fingerprints.length; i++) {
+      final l$fingerprints$entry = l$fingerprints[i];
+      final lOther$fingerprints$entry = lOther$fingerprints[i];
+      if (l$fingerprints$entry != lOther$fingerprints$entry) {
+        return false;
+      }
     }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
@@ -1051,7 +1115,22 @@ abstract class CopyWith$Fragment$SlimSceneData$files<TRes> {
   factory CopyWith$Fragment$SlimSceneData$files.stub(TRes res) =
       _CopyWithStubImpl$Fragment$SlimSceneData$files;
 
-  TRes call({String? path, double? duration, String? $__typename});
+  TRes call({
+    String? path,
+    double? duration,
+    List<Fragment$SlimSceneData$files$fingerprints>? fingerprints,
+    String? $__typename,
+  });
+  TRes fingerprints(
+    Iterable<Fragment$SlimSceneData$files$fingerprints> Function(
+      Iterable<
+        CopyWith$Fragment$SlimSceneData$files$fingerprints<
+          Fragment$SlimSceneData$files$fingerprints
+        >
+      >,
+    )
+    _fn,
+  );
 }
 
 class _CopyWithImpl$Fragment$SlimSceneData$files<TRes>
@@ -1067,6 +1146,7 @@ class _CopyWithImpl$Fragment$SlimSceneData$files<TRes>
   TRes call({
     Object? path = _undefined,
     Object? duration = _undefined,
+    Object? fingerprints = _undefined,
     Object? $__typename = _undefined,
   }) => _then(
     Fragment$SlimSceneData$files(
@@ -1076,10 +1156,30 @@ class _CopyWithImpl$Fragment$SlimSceneData$files<TRes>
       duration: duration == _undefined || duration == null
           ? _instance.duration
           : (duration as double),
+      fingerprints: fingerprints == _undefined || fingerprints == null
+          ? _instance.fingerprints
+          : (fingerprints as List<Fragment$SlimSceneData$files$fingerprints>),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
     ),
+  );
+
+  TRes fingerprints(
+    Iterable<Fragment$SlimSceneData$files$fingerprints> Function(
+      Iterable<
+        CopyWith$Fragment$SlimSceneData$files$fingerprints<
+          Fragment$SlimSceneData$files$fingerprints
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    fingerprints: _fn(
+      _instance.fingerprints.map(
+        (e) => CopyWith$Fragment$SlimSceneData$files$fingerprints(e, (i) => i),
+      ),
+    ).toList(),
   );
 }
 
@@ -1089,7 +1189,149 @@ class _CopyWithStubImpl$Fragment$SlimSceneData$files<TRes>
 
   TRes _res;
 
-  call({String? path, double? duration, String? $__typename}) => _res;
+  call({
+    String? path,
+    double? duration,
+    List<Fragment$SlimSceneData$files$fingerprints>? fingerprints,
+    String? $__typename,
+  }) => _res;
+
+  fingerprints(_fn) => _res;
+}
+
+class Fragment$SlimSceneData$files$fingerprints {
+  Fragment$SlimSceneData$files$fingerprints({
+    required this.type,
+    required this.value,
+    this.$__typename = 'Fingerprint',
+  });
+
+  factory Fragment$SlimSceneData$files$fingerprints.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$type = json['type'];
+    final l$value = json['value'];
+    final l$$__typename = json['__typename'];
+    return Fragment$SlimSceneData$files$fingerprints(
+      type: (l$type as String),
+      value: (l$value as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String type;
+
+  final String value;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$type = type;
+    _resultData['type'] = l$type;
+    final l$value = value;
+    _resultData['value'] = l$value;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$type = type;
+    final l$value = value;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$type, l$value, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$SlimSceneData$files$fingerprints ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$type = type;
+    final lOther$type = other.type;
+    if (l$type != lOther$type) {
+      return false;
+    }
+    final l$value = value;
+    final lOther$value = other.value;
+    if (l$value != lOther$value) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$SlimSceneData$files$fingerprints
+    on Fragment$SlimSceneData$files$fingerprints {
+  CopyWith$Fragment$SlimSceneData$files$fingerprints<
+    Fragment$SlimSceneData$files$fingerprints
+  >
+  get copyWith =>
+      CopyWith$Fragment$SlimSceneData$files$fingerprints(this, (i) => i);
+}
+
+abstract class CopyWith$Fragment$SlimSceneData$files$fingerprints<TRes> {
+  factory CopyWith$Fragment$SlimSceneData$files$fingerprints(
+    Fragment$SlimSceneData$files$fingerprints instance,
+    TRes Function(Fragment$SlimSceneData$files$fingerprints) then,
+  ) = _CopyWithImpl$Fragment$SlimSceneData$files$fingerprints;
+
+  factory CopyWith$Fragment$SlimSceneData$files$fingerprints.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$SlimSceneData$files$fingerprints;
+
+  TRes call({String? type, String? value, String? $__typename});
+}
+
+class _CopyWithImpl$Fragment$SlimSceneData$files$fingerprints<TRes>
+    implements CopyWith$Fragment$SlimSceneData$files$fingerprints<TRes> {
+  _CopyWithImpl$Fragment$SlimSceneData$files$fingerprints(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$SlimSceneData$files$fingerprints _instance;
+
+  final TRes Function(Fragment$SlimSceneData$files$fingerprints) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? type = _undefined,
+    Object? value = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Fragment$SlimSceneData$files$fingerprints(
+      type: type == _undefined || type == null
+          ? _instance.type
+          : (type as String),
+      value: value == _undefined || value == null
+          ? _instance.value
+          : (value as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Fragment$SlimSceneData$files$fingerprints<TRes>
+    implements CopyWith$Fragment$SlimSceneData$files$fingerprints<TRes> {
+  _CopyWithStubImpl$Fragment$SlimSceneData$files$fingerprints(this._res);
+
+  TRes _res;
+
+  call({String? type, String? value, String? $__typename}) => _res;
 }
 
 class Fragment$SlimSceneData$paths {
@@ -2577,6 +2819,37 @@ const fragmentDefinitionSceneData = FragmentDefinitionNode(
               selectionSet: null,
             ),
             FieldNode(
+              name: NameNode(value: 'fingerprints'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: SelectionSetNode(
+                selections: [
+                  FieldNode(
+                    name: NameNode(value: 'type'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'value'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: '__typename'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                ],
+              ),
+            ),
+            FieldNode(
               name: NameNode(value: '__typename'),
               alias: null,
               arguments: [],
@@ -2670,6 +2943,7 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
   Fragment$SceneData$files({
     required this.path,
     required this.duration,
+    required this.fingerprints,
     this.$__typename = 'VideoFile',
     required this.basename,
     required this.format,
@@ -2684,6 +2958,7 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
   factory Fragment$SceneData$files.fromJson(Map<String, dynamic> json) {
     final l$path = json['path'];
     final l$duration = json['duration'];
+    final l$fingerprints = json['fingerprints'];
     final l$$__typename = json['__typename'];
     final l$basename = json['basename'];
     final l$format = json['format'];
@@ -2696,6 +2971,13 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
     return Fragment$SceneData$files(
       path: (l$path as String),
       duration: (l$duration as num).toDouble(),
+      fingerprints: (l$fingerprints as List<dynamic>)
+          .map(
+            (e) => Fragment$SceneData$files$fingerprints.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
       $__typename: (l$$__typename as String),
       basename: (l$basename as String),
       format: (l$format as String),
@@ -2711,6 +2993,8 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
   final String path;
 
   final double duration;
+
+  final List<Fragment$SceneData$files$fingerprints> fingerprints;
 
   final String $__typename;
 
@@ -2736,6 +3020,10 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
     _resultData['path'] = l$path;
     final l$duration = duration;
     _resultData['duration'] = l$duration;
+    final l$fingerprints = fingerprints;
+    _resultData['fingerprints'] = l$fingerprints
+        .map((e) => e.toJson())
+        .toList();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     final l$basename = basename;
@@ -2761,6 +3049,7 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
   int get hashCode {
     final l$path = path;
     final l$duration = duration;
+    final l$fingerprints = fingerprints;
     final l$$__typename = $__typename;
     final l$basename = basename;
     final l$format = format;
@@ -2773,6 +3062,7 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
     return Object.hashAll([
       l$path,
       l$duration,
+      Object.hashAll(l$fingerprints.map((v) => v)),
       l$$__typename,
       l$basename,
       l$format,
@@ -2803,6 +3093,18 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
     final lOther$duration = other.duration;
     if (l$duration != lOther$duration) {
       return false;
+    }
+    final l$fingerprints = fingerprints;
+    final lOther$fingerprints = other.fingerprints;
+    if (l$fingerprints.length != lOther$fingerprints.length) {
+      return false;
+    }
+    for (int i = 0; i < l$fingerprints.length; i++) {
+      final l$fingerprints$entry = l$fingerprints[i];
+      final lOther$fingerprints$entry = lOther$fingerprints[i];
+      if (l$fingerprints$entry != lOther$fingerprints$entry) {
+        return false;
+      }
     }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
@@ -2871,6 +3173,7 @@ abstract class CopyWith$Fragment$SceneData$files<TRes> {
   TRes call({
     String? path,
     double? duration,
+    List<Fragment$SceneData$files$fingerprints>? fingerprints,
     String? $__typename,
     String? basename,
     String? format,
@@ -2881,6 +3184,16 @@ abstract class CopyWith$Fragment$SceneData$files<TRes> {
     int? bit_rate,
     double? frame_rate,
   });
+  TRes fingerprints(
+    Iterable<Fragment$SceneData$files$fingerprints> Function(
+      Iterable<
+        CopyWith$Fragment$SceneData$files$fingerprints<
+          Fragment$SceneData$files$fingerprints
+        >
+      >,
+    )
+    _fn,
+  );
 }
 
 class _CopyWithImpl$Fragment$SceneData$files<TRes>
@@ -2896,6 +3209,7 @@ class _CopyWithImpl$Fragment$SceneData$files<TRes>
   TRes call({
     Object? path = _undefined,
     Object? duration = _undefined,
+    Object? fingerprints = _undefined,
     Object? $__typename = _undefined,
     Object? basename = _undefined,
     Object? format = _undefined,
@@ -2913,6 +3227,9 @@ class _CopyWithImpl$Fragment$SceneData$files<TRes>
       duration: duration == _undefined || duration == null
           ? _instance.duration
           : (duration as double),
+      fingerprints: fingerprints == _undefined || fingerprints == null
+          ? _instance.fingerprints
+          : (fingerprints as List<Fragment$SceneData$files$fingerprints>),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
@@ -2942,6 +3259,23 @@ class _CopyWithImpl$Fragment$SceneData$files<TRes>
           : (frame_rate as double),
     ),
   );
+
+  TRes fingerprints(
+    Iterable<Fragment$SceneData$files$fingerprints> Function(
+      Iterable<
+        CopyWith$Fragment$SceneData$files$fingerprints<
+          Fragment$SceneData$files$fingerprints
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    fingerprints: _fn(
+      _instance.fingerprints.map(
+        (e) => CopyWith$Fragment$SceneData$files$fingerprints(e, (i) => i),
+      ),
+    ).toList(),
+  );
 }
 
 class _CopyWithStubImpl$Fragment$SceneData$files<TRes>
@@ -2953,6 +3287,7 @@ class _CopyWithStubImpl$Fragment$SceneData$files<TRes>
   call({
     String? path,
     double? duration,
+    List<Fragment$SceneData$files$fingerprints>? fingerprints,
     String? $__typename,
     String? basename,
     String? format,
@@ -2963,6 +3298,144 @@ class _CopyWithStubImpl$Fragment$SceneData$files<TRes>
     int? bit_rate,
     double? frame_rate,
   }) => _res;
+
+  fingerprints(_fn) => _res;
+}
+
+class Fragment$SceneData$files$fingerprints
+    implements Fragment$SlimSceneData$files$fingerprints {
+  Fragment$SceneData$files$fingerprints({
+    required this.type,
+    required this.value,
+    this.$__typename = 'Fingerprint',
+  });
+
+  factory Fragment$SceneData$files$fingerprints.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$type = json['type'];
+    final l$value = json['value'];
+    final l$$__typename = json['__typename'];
+    return Fragment$SceneData$files$fingerprints(
+      type: (l$type as String),
+      value: (l$value as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String type;
+
+  final String value;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$type = type;
+    _resultData['type'] = l$type;
+    final l$value = value;
+    _resultData['value'] = l$value;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$type = type;
+    final l$value = value;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$type, l$value, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$SceneData$files$fingerprints ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$type = type;
+    final lOther$type = other.type;
+    if (l$type != lOther$type) {
+      return false;
+    }
+    final l$value = value;
+    final lOther$value = other.value;
+    if (l$value != lOther$value) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$SceneData$files$fingerprints
+    on Fragment$SceneData$files$fingerprints {
+  CopyWith$Fragment$SceneData$files$fingerprints<
+    Fragment$SceneData$files$fingerprints
+  >
+  get copyWith =>
+      CopyWith$Fragment$SceneData$files$fingerprints(this, (i) => i);
+}
+
+abstract class CopyWith$Fragment$SceneData$files$fingerprints<TRes> {
+  factory CopyWith$Fragment$SceneData$files$fingerprints(
+    Fragment$SceneData$files$fingerprints instance,
+    TRes Function(Fragment$SceneData$files$fingerprints) then,
+  ) = _CopyWithImpl$Fragment$SceneData$files$fingerprints;
+
+  factory CopyWith$Fragment$SceneData$files$fingerprints.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$SceneData$files$fingerprints;
+
+  TRes call({String? type, String? value, String? $__typename});
+}
+
+class _CopyWithImpl$Fragment$SceneData$files$fingerprints<TRes>
+    implements CopyWith$Fragment$SceneData$files$fingerprints<TRes> {
+  _CopyWithImpl$Fragment$SceneData$files$fingerprints(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$SceneData$files$fingerprints _instance;
+
+  final TRes Function(Fragment$SceneData$files$fingerprints) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? type = _undefined,
+    Object? value = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Fragment$SceneData$files$fingerprints(
+      type: type == _undefined || type == null
+          ? _instance.type
+          : (type as String),
+      value: value == _undefined || value == null
+          ? _instance.value
+          : (value as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Fragment$SceneData$files$fingerprints<TRes>
+    implements CopyWith$Fragment$SceneData$files$fingerprints<TRes> {
+  _CopyWithStubImpl$Fragment$SceneData$files$fingerprints(this._res);
+
+  TRes _res;
+
+  call({String? type, String? value, String? $__typename}) => _res;
 }
 
 class Fragment$SceneData$paths implements Fragment$SlimSceneData$paths {
@@ -7316,6 +7789,130 @@ const documentNodeQueryListScrapers = DocumentNode(
                   selectionSet: null,
                 ),
                 FieldNode(
+                  name: NameNode(value: 'scene'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
+                      FieldNode(
+                        name: NameNode(value: 'urls'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'supported_scrapes'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ],
+                  ),
+                ),
+                FieldNode(
+                  name: NameNode(value: 'performer'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
+                      FieldNode(
+                        name: NameNode(value: 'urls'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'supported_scrapes'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ],
+                  ),
+                ),
+                FieldNode(
+                  name: NameNode(value: 'gallery'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
+                      FieldNode(
+                        name: NameNode(value: 'urls'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'supported_scrapes'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ],
+                  ),
+                ),
+                FieldNode(
+                  name: NameNode(value: 'image'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
+                      FieldNode(
+                        name: NameNode(value: 'urls'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'supported_scrapes'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ],
+                  ),
+                ),
+                FieldNode(
                   name: NameNode(value: '__typename'),
                   alias: null,
                   arguments: [],
@@ -7472,16 +8069,44 @@ class Query$ListScrapers$listScrapers {
   Query$ListScrapers$listScrapers({
     required this.id,
     required this.name,
+    this.scene,
+    this.performer,
+    this.gallery,
+    this.image,
     this.$__typename = 'Scraper',
   });
 
   factory Query$ListScrapers$listScrapers.fromJson(Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
+    final l$scene = json['scene'];
+    final l$performer = json['performer'];
+    final l$gallery = json['gallery'];
+    final l$image = json['image'];
     final l$$__typename = json['__typename'];
     return Query$ListScrapers$listScrapers(
       id: (l$id as String),
       name: (l$name as String),
+      scene: l$scene == null
+          ? null
+          : Query$ListScrapers$listScrapers$scene.fromJson(
+              (l$scene as Map<String, dynamic>),
+            ),
+      performer: l$performer == null
+          ? null
+          : Query$ListScrapers$listScrapers$performer.fromJson(
+              (l$performer as Map<String, dynamic>),
+            ),
+      gallery: l$gallery == null
+          ? null
+          : Query$ListScrapers$listScrapers$gallery.fromJson(
+              (l$gallery as Map<String, dynamic>),
+            ),
+      image: l$image == null
+          ? null
+          : Query$ListScrapers$listScrapers$image.fromJson(
+              (l$image as Map<String, dynamic>),
+            ),
       $__typename: (l$$__typename as String),
     );
   }
@@ -7489,6 +8114,14 @@ class Query$ListScrapers$listScrapers {
   final String id;
 
   final String name;
+
+  final Query$ListScrapers$listScrapers$scene? scene;
+
+  final Query$ListScrapers$listScrapers$performer? performer;
+
+  final Query$ListScrapers$listScrapers$gallery? gallery;
+
+  final Query$ListScrapers$listScrapers$image? image;
 
   final String $__typename;
 
@@ -7498,6 +8131,14 @@ class Query$ListScrapers$listScrapers {
     _resultData['id'] = l$id;
     final l$name = name;
     _resultData['name'] = l$name;
+    final l$scene = scene;
+    _resultData['scene'] = l$scene?.toJson();
+    final l$performer = performer;
+    _resultData['performer'] = l$performer?.toJson();
+    final l$gallery = gallery;
+    _resultData['gallery'] = l$gallery?.toJson();
+    final l$image = image;
+    _resultData['image'] = l$image?.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -7507,8 +8148,20 @@ class Query$ListScrapers$listScrapers {
   int get hashCode {
     final l$id = id;
     final l$name = name;
+    final l$scene = scene;
+    final l$performer = performer;
+    final l$gallery = gallery;
+    final l$image = image;
     final l$$__typename = $__typename;
-    return Object.hashAll([l$id, l$name, l$$__typename]);
+    return Object.hashAll([
+      l$id,
+      l$name,
+      l$scene,
+      l$performer,
+      l$gallery,
+      l$image,
+      l$$__typename,
+    ]);
   }
 
   @override
@@ -7528,6 +8181,26 @@ class Query$ListScrapers$listScrapers {
     final l$name = name;
     final lOther$name = other.name;
     if (l$name != lOther$name) {
+      return false;
+    }
+    final l$scene = scene;
+    final lOther$scene = other.scene;
+    if (l$scene != lOther$scene) {
+      return false;
+    }
+    final l$performer = performer;
+    final lOther$performer = other.performer;
+    if (l$performer != lOther$performer) {
+      return false;
+    }
+    final l$gallery = gallery;
+    final lOther$gallery = other.gallery;
+    if (l$gallery != lOther$gallery) {
+      return false;
+    }
+    final l$image = image;
+    final lOther$image = other.image;
+    if (l$image != lOther$image) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -7554,7 +8227,19 @@ abstract class CopyWith$Query$ListScrapers$listScrapers<TRes> {
   factory CopyWith$Query$ListScrapers$listScrapers.stub(TRes res) =
       _CopyWithStubImpl$Query$ListScrapers$listScrapers;
 
-  TRes call({String? id, String? name, String? $__typename});
+  TRes call({
+    String? id,
+    String? name,
+    Query$ListScrapers$listScrapers$scene? scene,
+    Query$ListScrapers$listScrapers$performer? performer,
+    Query$ListScrapers$listScrapers$gallery? gallery,
+    Query$ListScrapers$listScrapers$image? image,
+    String? $__typename,
+  });
+  CopyWith$Query$ListScrapers$listScrapers$scene<TRes> get scene;
+  CopyWith$Query$ListScrapers$listScrapers$performer<TRes> get performer;
+  CopyWith$Query$ListScrapers$listScrapers$gallery<TRes> get gallery;
+  CopyWith$Query$ListScrapers$listScrapers$image<TRes> get image;
 }
 
 class _CopyWithImpl$Query$ListScrapers$listScrapers<TRes>
@@ -7570,6 +8255,10 @@ class _CopyWithImpl$Query$ListScrapers$listScrapers<TRes>
   TRes call({
     Object? id = _undefined,
     Object? name = _undefined,
+    Object? scene = _undefined,
+    Object? performer = _undefined,
+    Object? gallery = _undefined,
+    Object? image = _undefined,
     Object? $__typename = _undefined,
   }) => _then(
     Query$ListScrapers$listScrapers(
@@ -7577,11 +8266,67 @@ class _CopyWithImpl$Query$ListScrapers$listScrapers<TRes>
       name: name == _undefined || name == null
           ? _instance.name
           : (name as String),
+      scene: scene == _undefined
+          ? _instance.scene
+          : (scene as Query$ListScrapers$listScrapers$scene?),
+      performer: performer == _undefined
+          ? _instance.performer
+          : (performer as Query$ListScrapers$listScrapers$performer?),
+      gallery: gallery == _undefined
+          ? _instance.gallery
+          : (gallery as Query$ListScrapers$listScrapers$gallery?),
+      image: image == _undefined
+          ? _instance.image
+          : (image as Query$ListScrapers$listScrapers$image?),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
     ),
   );
+
+  CopyWith$Query$ListScrapers$listScrapers$scene<TRes> get scene {
+    final local$scene = _instance.scene;
+    return local$scene == null
+        ? CopyWith$Query$ListScrapers$listScrapers$scene.stub(_then(_instance))
+        : CopyWith$Query$ListScrapers$listScrapers$scene(
+            local$scene,
+            (e) => call(scene: e),
+          );
+  }
+
+  CopyWith$Query$ListScrapers$listScrapers$performer<TRes> get performer {
+    final local$performer = _instance.performer;
+    return local$performer == null
+        ? CopyWith$Query$ListScrapers$listScrapers$performer.stub(
+            _then(_instance),
+          )
+        : CopyWith$Query$ListScrapers$listScrapers$performer(
+            local$performer,
+            (e) => call(performer: e),
+          );
+  }
+
+  CopyWith$Query$ListScrapers$listScrapers$gallery<TRes> get gallery {
+    final local$gallery = _instance.gallery;
+    return local$gallery == null
+        ? CopyWith$Query$ListScrapers$listScrapers$gallery.stub(
+            _then(_instance),
+          )
+        : CopyWith$Query$ListScrapers$listScrapers$gallery(
+            local$gallery,
+            (e) => call(gallery: e),
+          );
+  }
+
+  CopyWith$Query$ListScrapers$listScrapers$image<TRes> get image {
+    final local$image = _instance.image;
+    return local$image == null
+        ? CopyWith$Query$ListScrapers$listScrapers$image.stub(_then(_instance))
+        : CopyWith$Query$ListScrapers$listScrapers$image(
+            local$image,
+            (e) => call(image: e),
+          );
+  }
 }
 
 class _CopyWithStubImpl$Query$ListScrapers$listScrapers<TRes>
@@ -7590,7 +8335,1049 @@ class _CopyWithStubImpl$Query$ListScrapers$listScrapers<TRes>
 
   TRes _res;
 
-  call({String? id, String? name, String? $__typename}) => _res;
+  call({
+    String? id,
+    String? name,
+    Query$ListScrapers$listScrapers$scene? scene,
+    Query$ListScrapers$listScrapers$performer? performer,
+    Query$ListScrapers$listScrapers$gallery? gallery,
+    Query$ListScrapers$listScrapers$image? image,
+    String? $__typename,
+  }) => _res;
+
+  CopyWith$Query$ListScrapers$listScrapers$scene<TRes> get scene =>
+      CopyWith$Query$ListScrapers$listScrapers$scene.stub(_res);
+
+  CopyWith$Query$ListScrapers$listScrapers$performer<TRes> get performer =>
+      CopyWith$Query$ListScrapers$listScrapers$performer.stub(_res);
+
+  CopyWith$Query$ListScrapers$listScrapers$gallery<TRes> get gallery =>
+      CopyWith$Query$ListScrapers$listScrapers$gallery.stub(_res);
+
+  CopyWith$Query$ListScrapers$listScrapers$image<TRes> get image =>
+      CopyWith$Query$ListScrapers$listScrapers$image.stub(_res);
+}
+
+class Query$ListScrapers$listScrapers$scene {
+  Query$ListScrapers$listScrapers$scene({
+    this.urls,
+    required this.supported_scrapes,
+    this.$__typename = 'ScraperSpec',
+  });
+
+  factory Query$ListScrapers$listScrapers$scene.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$urls = json['urls'];
+    final l$supported_scrapes = json['supported_scrapes'];
+    final l$$__typename = json['__typename'];
+    return Query$ListScrapers$listScrapers$scene(
+      urls: (l$urls as List<dynamic>?)?.map((e) => (e as String)).toList(),
+      supported_scrapes: (l$supported_scrapes as List<dynamic>)
+          .map((e) => fromJson$Enum$ScrapeType((e as String)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final List<String>? urls;
+
+  final List<Enum$ScrapeType> supported_scrapes;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$urls = urls;
+    _resultData['urls'] = l$urls?.map((e) => e).toList();
+    final l$supported_scrapes = supported_scrapes;
+    _resultData['supported_scrapes'] = l$supported_scrapes
+        .map((e) => toJson$Enum$ScrapeType(e))
+        .toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$urls = urls;
+    final l$supported_scrapes = supported_scrapes;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$urls == null ? null : Object.hashAll(l$urls.map((v) => v)),
+      Object.hashAll(l$supported_scrapes.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$ListScrapers$listScrapers$scene ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$urls = urls;
+    final lOther$urls = other.urls;
+    if (l$urls != null && lOther$urls != null) {
+      if (l$urls.length != lOther$urls.length) {
+        return false;
+      }
+      for (int i = 0; i < l$urls.length; i++) {
+        final l$urls$entry = l$urls[i];
+        final lOther$urls$entry = lOther$urls[i];
+        if (l$urls$entry != lOther$urls$entry) {
+          return false;
+        }
+      }
+    } else if (l$urls != lOther$urls) {
+      return false;
+    }
+    final l$supported_scrapes = supported_scrapes;
+    final lOther$supported_scrapes = other.supported_scrapes;
+    if (l$supported_scrapes.length != lOther$supported_scrapes.length) {
+      return false;
+    }
+    for (int i = 0; i < l$supported_scrapes.length; i++) {
+      final l$supported_scrapes$entry = l$supported_scrapes[i];
+      final lOther$supported_scrapes$entry = lOther$supported_scrapes[i];
+      if (l$supported_scrapes$entry != lOther$supported_scrapes$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$ListScrapers$listScrapers$scene
+    on Query$ListScrapers$listScrapers$scene {
+  CopyWith$Query$ListScrapers$listScrapers$scene<
+    Query$ListScrapers$listScrapers$scene
+  >
+  get copyWith =>
+      CopyWith$Query$ListScrapers$listScrapers$scene(this, (i) => i);
+}
+
+abstract class CopyWith$Query$ListScrapers$listScrapers$scene<TRes> {
+  factory CopyWith$Query$ListScrapers$listScrapers$scene(
+    Query$ListScrapers$listScrapers$scene instance,
+    TRes Function(Query$ListScrapers$listScrapers$scene) then,
+  ) = _CopyWithImpl$Query$ListScrapers$listScrapers$scene;
+
+  factory CopyWith$Query$ListScrapers$listScrapers$scene.stub(TRes res) =
+      _CopyWithStubImpl$Query$ListScrapers$listScrapers$scene;
+
+  TRes call({
+    List<String>? urls,
+    List<Enum$ScrapeType>? supported_scrapes,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$ListScrapers$listScrapers$scene<TRes>
+    implements CopyWith$Query$ListScrapers$listScrapers$scene<TRes> {
+  _CopyWithImpl$Query$ListScrapers$listScrapers$scene(
+    this._instance,
+    this._then,
+  );
+
+  final Query$ListScrapers$listScrapers$scene _instance;
+
+  final TRes Function(Query$ListScrapers$listScrapers$scene) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? urls = _undefined,
+    Object? supported_scrapes = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$ListScrapers$listScrapers$scene(
+      urls: urls == _undefined ? _instance.urls : (urls as List<String>?),
+      supported_scrapes:
+          supported_scrapes == _undefined || supported_scrapes == null
+          ? _instance.supported_scrapes
+          : (supported_scrapes as List<Enum$ScrapeType>),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Query$ListScrapers$listScrapers$scene<TRes>
+    implements CopyWith$Query$ListScrapers$listScrapers$scene<TRes> {
+  _CopyWithStubImpl$Query$ListScrapers$listScrapers$scene(this._res);
+
+  TRes _res;
+
+  call({
+    List<String>? urls,
+    List<Enum$ScrapeType>? supported_scrapes,
+    String? $__typename,
+  }) => _res;
+}
+
+class Query$ListScrapers$listScrapers$performer {
+  Query$ListScrapers$listScrapers$performer({
+    this.urls,
+    required this.supported_scrapes,
+    this.$__typename = 'ScraperSpec',
+  });
+
+  factory Query$ListScrapers$listScrapers$performer.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$urls = json['urls'];
+    final l$supported_scrapes = json['supported_scrapes'];
+    final l$$__typename = json['__typename'];
+    return Query$ListScrapers$listScrapers$performer(
+      urls: (l$urls as List<dynamic>?)?.map((e) => (e as String)).toList(),
+      supported_scrapes: (l$supported_scrapes as List<dynamic>)
+          .map((e) => fromJson$Enum$ScrapeType((e as String)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final List<String>? urls;
+
+  final List<Enum$ScrapeType> supported_scrapes;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$urls = urls;
+    _resultData['urls'] = l$urls?.map((e) => e).toList();
+    final l$supported_scrapes = supported_scrapes;
+    _resultData['supported_scrapes'] = l$supported_scrapes
+        .map((e) => toJson$Enum$ScrapeType(e))
+        .toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$urls = urls;
+    final l$supported_scrapes = supported_scrapes;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$urls == null ? null : Object.hashAll(l$urls.map((v) => v)),
+      Object.hashAll(l$supported_scrapes.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$ListScrapers$listScrapers$performer ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$urls = urls;
+    final lOther$urls = other.urls;
+    if (l$urls != null && lOther$urls != null) {
+      if (l$urls.length != lOther$urls.length) {
+        return false;
+      }
+      for (int i = 0; i < l$urls.length; i++) {
+        final l$urls$entry = l$urls[i];
+        final lOther$urls$entry = lOther$urls[i];
+        if (l$urls$entry != lOther$urls$entry) {
+          return false;
+        }
+      }
+    } else if (l$urls != lOther$urls) {
+      return false;
+    }
+    final l$supported_scrapes = supported_scrapes;
+    final lOther$supported_scrapes = other.supported_scrapes;
+    if (l$supported_scrapes.length != lOther$supported_scrapes.length) {
+      return false;
+    }
+    for (int i = 0; i < l$supported_scrapes.length; i++) {
+      final l$supported_scrapes$entry = l$supported_scrapes[i];
+      final lOther$supported_scrapes$entry = lOther$supported_scrapes[i];
+      if (l$supported_scrapes$entry != lOther$supported_scrapes$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$ListScrapers$listScrapers$performer
+    on Query$ListScrapers$listScrapers$performer {
+  CopyWith$Query$ListScrapers$listScrapers$performer<
+    Query$ListScrapers$listScrapers$performer
+  >
+  get copyWith =>
+      CopyWith$Query$ListScrapers$listScrapers$performer(this, (i) => i);
+}
+
+abstract class CopyWith$Query$ListScrapers$listScrapers$performer<TRes> {
+  factory CopyWith$Query$ListScrapers$listScrapers$performer(
+    Query$ListScrapers$listScrapers$performer instance,
+    TRes Function(Query$ListScrapers$listScrapers$performer) then,
+  ) = _CopyWithImpl$Query$ListScrapers$listScrapers$performer;
+
+  factory CopyWith$Query$ListScrapers$listScrapers$performer.stub(TRes res) =
+      _CopyWithStubImpl$Query$ListScrapers$listScrapers$performer;
+
+  TRes call({
+    List<String>? urls,
+    List<Enum$ScrapeType>? supported_scrapes,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$ListScrapers$listScrapers$performer<TRes>
+    implements CopyWith$Query$ListScrapers$listScrapers$performer<TRes> {
+  _CopyWithImpl$Query$ListScrapers$listScrapers$performer(
+    this._instance,
+    this._then,
+  );
+
+  final Query$ListScrapers$listScrapers$performer _instance;
+
+  final TRes Function(Query$ListScrapers$listScrapers$performer) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? urls = _undefined,
+    Object? supported_scrapes = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$ListScrapers$listScrapers$performer(
+      urls: urls == _undefined ? _instance.urls : (urls as List<String>?),
+      supported_scrapes:
+          supported_scrapes == _undefined || supported_scrapes == null
+          ? _instance.supported_scrapes
+          : (supported_scrapes as List<Enum$ScrapeType>),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Query$ListScrapers$listScrapers$performer<TRes>
+    implements CopyWith$Query$ListScrapers$listScrapers$performer<TRes> {
+  _CopyWithStubImpl$Query$ListScrapers$listScrapers$performer(this._res);
+
+  TRes _res;
+
+  call({
+    List<String>? urls,
+    List<Enum$ScrapeType>? supported_scrapes,
+    String? $__typename,
+  }) => _res;
+}
+
+class Query$ListScrapers$listScrapers$gallery {
+  Query$ListScrapers$listScrapers$gallery({
+    this.urls,
+    required this.supported_scrapes,
+    this.$__typename = 'ScraperSpec',
+  });
+
+  factory Query$ListScrapers$listScrapers$gallery.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$urls = json['urls'];
+    final l$supported_scrapes = json['supported_scrapes'];
+    final l$$__typename = json['__typename'];
+    return Query$ListScrapers$listScrapers$gallery(
+      urls: (l$urls as List<dynamic>?)?.map((e) => (e as String)).toList(),
+      supported_scrapes: (l$supported_scrapes as List<dynamic>)
+          .map((e) => fromJson$Enum$ScrapeType((e as String)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final List<String>? urls;
+
+  final List<Enum$ScrapeType> supported_scrapes;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$urls = urls;
+    _resultData['urls'] = l$urls?.map((e) => e).toList();
+    final l$supported_scrapes = supported_scrapes;
+    _resultData['supported_scrapes'] = l$supported_scrapes
+        .map((e) => toJson$Enum$ScrapeType(e))
+        .toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$urls = urls;
+    final l$supported_scrapes = supported_scrapes;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$urls == null ? null : Object.hashAll(l$urls.map((v) => v)),
+      Object.hashAll(l$supported_scrapes.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$ListScrapers$listScrapers$gallery ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$urls = urls;
+    final lOther$urls = other.urls;
+    if (l$urls != null && lOther$urls != null) {
+      if (l$urls.length != lOther$urls.length) {
+        return false;
+      }
+      for (int i = 0; i < l$urls.length; i++) {
+        final l$urls$entry = l$urls[i];
+        final lOther$urls$entry = lOther$urls[i];
+        if (l$urls$entry != lOther$urls$entry) {
+          return false;
+        }
+      }
+    } else if (l$urls != lOther$urls) {
+      return false;
+    }
+    final l$supported_scrapes = supported_scrapes;
+    final lOther$supported_scrapes = other.supported_scrapes;
+    if (l$supported_scrapes.length != lOther$supported_scrapes.length) {
+      return false;
+    }
+    for (int i = 0; i < l$supported_scrapes.length; i++) {
+      final l$supported_scrapes$entry = l$supported_scrapes[i];
+      final lOther$supported_scrapes$entry = lOther$supported_scrapes[i];
+      if (l$supported_scrapes$entry != lOther$supported_scrapes$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$ListScrapers$listScrapers$gallery
+    on Query$ListScrapers$listScrapers$gallery {
+  CopyWith$Query$ListScrapers$listScrapers$gallery<
+    Query$ListScrapers$listScrapers$gallery
+  >
+  get copyWith =>
+      CopyWith$Query$ListScrapers$listScrapers$gallery(this, (i) => i);
+}
+
+abstract class CopyWith$Query$ListScrapers$listScrapers$gallery<TRes> {
+  factory CopyWith$Query$ListScrapers$listScrapers$gallery(
+    Query$ListScrapers$listScrapers$gallery instance,
+    TRes Function(Query$ListScrapers$listScrapers$gallery) then,
+  ) = _CopyWithImpl$Query$ListScrapers$listScrapers$gallery;
+
+  factory CopyWith$Query$ListScrapers$listScrapers$gallery.stub(TRes res) =
+      _CopyWithStubImpl$Query$ListScrapers$listScrapers$gallery;
+
+  TRes call({
+    List<String>? urls,
+    List<Enum$ScrapeType>? supported_scrapes,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$ListScrapers$listScrapers$gallery<TRes>
+    implements CopyWith$Query$ListScrapers$listScrapers$gallery<TRes> {
+  _CopyWithImpl$Query$ListScrapers$listScrapers$gallery(
+    this._instance,
+    this._then,
+  );
+
+  final Query$ListScrapers$listScrapers$gallery _instance;
+
+  final TRes Function(Query$ListScrapers$listScrapers$gallery) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? urls = _undefined,
+    Object? supported_scrapes = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$ListScrapers$listScrapers$gallery(
+      urls: urls == _undefined ? _instance.urls : (urls as List<String>?),
+      supported_scrapes:
+          supported_scrapes == _undefined || supported_scrapes == null
+          ? _instance.supported_scrapes
+          : (supported_scrapes as List<Enum$ScrapeType>),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Query$ListScrapers$listScrapers$gallery<TRes>
+    implements CopyWith$Query$ListScrapers$listScrapers$gallery<TRes> {
+  _CopyWithStubImpl$Query$ListScrapers$listScrapers$gallery(this._res);
+
+  TRes _res;
+
+  call({
+    List<String>? urls,
+    List<Enum$ScrapeType>? supported_scrapes,
+    String? $__typename,
+  }) => _res;
+}
+
+class Query$ListScrapers$listScrapers$image {
+  Query$ListScrapers$listScrapers$image({
+    this.urls,
+    required this.supported_scrapes,
+    this.$__typename = 'ScraperSpec',
+  });
+
+  factory Query$ListScrapers$listScrapers$image.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$urls = json['urls'];
+    final l$supported_scrapes = json['supported_scrapes'];
+    final l$$__typename = json['__typename'];
+    return Query$ListScrapers$listScrapers$image(
+      urls: (l$urls as List<dynamic>?)?.map((e) => (e as String)).toList(),
+      supported_scrapes: (l$supported_scrapes as List<dynamic>)
+          .map((e) => fromJson$Enum$ScrapeType((e as String)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final List<String>? urls;
+
+  final List<Enum$ScrapeType> supported_scrapes;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$urls = urls;
+    _resultData['urls'] = l$urls?.map((e) => e).toList();
+    final l$supported_scrapes = supported_scrapes;
+    _resultData['supported_scrapes'] = l$supported_scrapes
+        .map((e) => toJson$Enum$ScrapeType(e))
+        .toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$urls = urls;
+    final l$supported_scrapes = supported_scrapes;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$urls == null ? null : Object.hashAll(l$urls.map((v) => v)),
+      Object.hashAll(l$supported_scrapes.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$ListScrapers$listScrapers$image ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$urls = urls;
+    final lOther$urls = other.urls;
+    if (l$urls != null && lOther$urls != null) {
+      if (l$urls.length != lOther$urls.length) {
+        return false;
+      }
+      for (int i = 0; i < l$urls.length; i++) {
+        final l$urls$entry = l$urls[i];
+        final lOther$urls$entry = lOther$urls[i];
+        if (l$urls$entry != lOther$urls$entry) {
+          return false;
+        }
+      }
+    } else if (l$urls != lOther$urls) {
+      return false;
+    }
+    final l$supported_scrapes = supported_scrapes;
+    final lOther$supported_scrapes = other.supported_scrapes;
+    if (l$supported_scrapes.length != lOther$supported_scrapes.length) {
+      return false;
+    }
+    for (int i = 0; i < l$supported_scrapes.length; i++) {
+      final l$supported_scrapes$entry = l$supported_scrapes[i];
+      final lOther$supported_scrapes$entry = lOther$supported_scrapes[i];
+      if (l$supported_scrapes$entry != lOther$supported_scrapes$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$ListScrapers$listScrapers$image
+    on Query$ListScrapers$listScrapers$image {
+  CopyWith$Query$ListScrapers$listScrapers$image<
+    Query$ListScrapers$listScrapers$image
+  >
+  get copyWith =>
+      CopyWith$Query$ListScrapers$listScrapers$image(this, (i) => i);
+}
+
+abstract class CopyWith$Query$ListScrapers$listScrapers$image<TRes> {
+  factory CopyWith$Query$ListScrapers$listScrapers$image(
+    Query$ListScrapers$listScrapers$image instance,
+    TRes Function(Query$ListScrapers$listScrapers$image) then,
+  ) = _CopyWithImpl$Query$ListScrapers$listScrapers$image;
+
+  factory CopyWith$Query$ListScrapers$listScrapers$image.stub(TRes res) =
+      _CopyWithStubImpl$Query$ListScrapers$listScrapers$image;
+
+  TRes call({
+    List<String>? urls,
+    List<Enum$ScrapeType>? supported_scrapes,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$ListScrapers$listScrapers$image<TRes>
+    implements CopyWith$Query$ListScrapers$listScrapers$image<TRes> {
+  _CopyWithImpl$Query$ListScrapers$listScrapers$image(
+    this._instance,
+    this._then,
+  );
+
+  final Query$ListScrapers$listScrapers$image _instance;
+
+  final TRes Function(Query$ListScrapers$listScrapers$image) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? urls = _undefined,
+    Object? supported_scrapes = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$ListScrapers$listScrapers$image(
+      urls: urls == _undefined ? _instance.urls : (urls as List<String>?),
+      supported_scrapes:
+          supported_scrapes == _undefined || supported_scrapes == null
+          ? _instance.supported_scrapes
+          : (supported_scrapes as List<Enum$ScrapeType>),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Query$ListScrapers$listScrapers$image<TRes>
+    implements CopyWith$Query$ListScrapers$listScrapers$image<TRes> {
+  _CopyWithStubImpl$Query$ListScrapers$listScrapers$image(this._res);
+
+  TRes _res;
+
+  call({
+    List<String>? urls,
+    List<Enum$ScrapeType>? supported_scrapes,
+    String? $__typename,
+  }) => _res;
+}
+
+class Variables$Mutation$MetadataGenerate {
+  factory Variables$Mutation$MetadataGenerate({
+    required Input$GenerateMetadataInput input,
+  }) => Variables$Mutation$MetadataGenerate._({r'input': input});
+
+  Variables$Mutation$MetadataGenerate._(this._$data);
+
+  factory Variables$Mutation$MetadataGenerate.fromJson(
+    Map<String, dynamic> data,
+  ) {
+    final result$data = <String, dynamic>{};
+    final l$input = data['input'];
+    result$data['input'] = Input$GenerateMetadataInput.fromJson(
+      (l$input as Map<String, dynamic>),
+    );
+    return Variables$Mutation$MetadataGenerate._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  Input$GenerateMetadataInput get input =>
+      (_$data['input'] as Input$GenerateMetadataInput);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$input = input;
+    result$data['input'] = l$input.toJson();
+    return result$data;
+  }
+
+  CopyWith$Variables$Mutation$MetadataGenerate<
+    Variables$Mutation$MetadataGenerate
+  >
+  get copyWith => CopyWith$Variables$Mutation$MetadataGenerate(this, (i) => i);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Mutation$MetadataGenerate ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$input = input;
+    final lOther$input = other.input;
+    if (l$input != lOther$input) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$input = input;
+    return Object.hashAll([l$input]);
+  }
+}
+
+abstract class CopyWith$Variables$Mutation$MetadataGenerate<TRes> {
+  factory CopyWith$Variables$Mutation$MetadataGenerate(
+    Variables$Mutation$MetadataGenerate instance,
+    TRes Function(Variables$Mutation$MetadataGenerate) then,
+  ) = _CopyWithImpl$Variables$Mutation$MetadataGenerate;
+
+  factory CopyWith$Variables$Mutation$MetadataGenerate.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Mutation$MetadataGenerate;
+
+  TRes call({Input$GenerateMetadataInput? input});
+}
+
+class _CopyWithImpl$Variables$Mutation$MetadataGenerate<TRes>
+    implements CopyWith$Variables$Mutation$MetadataGenerate<TRes> {
+  _CopyWithImpl$Variables$Mutation$MetadataGenerate(this._instance, this._then);
+
+  final Variables$Mutation$MetadataGenerate _instance;
+
+  final TRes Function(Variables$Mutation$MetadataGenerate) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? input = _undefined}) => _then(
+    Variables$Mutation$MetadataGenerate._({
+      ..._instance._$data,
+      if (input != _undefined && input != null)
+        'input': (input as Input$GenerateMetadataInput),
+    }),
+  );
+}
+
+class _CopyWithStubImpl$Variables$Mutation$MetadataGenerate<TRes>
+    implements CopyWith$Variables$Mutation$MetadataGenerate<TRes> {
+  _CopyWithStubImpl$Variables$Mutation$MetadataGenerate(this._res);
+
+  TRes _res;
+
+  call({Input$GenerateMetadataInput? input}) => _res;
+}
+
+class Mutation$MetadataGenerate {
+  Mutation$MetadataGenerate({
+    required this.metadataGenerate,
+    this.$__typename = 'Mutation',
+  });
+
+  factory Mutation$MetadataGenerate.fromJson(Map<String, dynamic> json) {
+    final l$metadataGenerate = json['metadataGenerate'];
+    final l$$__typename = json['__typename'];
+    return Mutation$MetadataGenerate(
+      metadataGenerate: (l$metadataGenerate as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String metadataGenerate;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$metadataGenerate = metadataGenerate;
+    _resultData['metadataGenerate'] = l$metadataGenerate;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$metadataGenerate = metadataGenerate;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$metadataGenerate, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$MetadataGenerate ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$metadataGenerate = metadataGenerate;
+    final lOther$metadataGenerate = other.metadataGenerate;
+    if (l$metadataGenerate != lOther$metadataGenerate) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$MetadataGenerate
+    on Mutation$MetadataGenerate {
+  CopyWith$Mutation$MetadataGenerate<Mutation$MetadataGenerate> get copyWith =>
+      CopyWith$Mutation$MetadataGenerate(this, (i) => i);
+}
+
+abstract class CopyWith$Mutation$MetadataGenerate<TRes> {
+  factory CopyWith$Mutation$MetadataGenerate(
+    Mutation$MetadataGenerate instance,
+    TRes Function(Mutation$MetadataGenerate) then,
+  ) = _CopyWithImpl$Mutation$MetadataGenerate;
+
+  factory CopyWith$Mutation$MetadataGenerate.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$MetadataGenerate;
+
+  TRes call({String? metadataGenerate, String? $__typename});
+}
+
+class _CopyWithImpl$Mutation$MetadataGenerate<TRes>
+    implements CopyWith$Mutation$MetadataGenerate<TRes> {
+  _CopyWithImpl$Mutation$MetadataGenerate(this._instance, this._then);
+
+  final Mutation$MetadataGenerate _instance;
+
+  final TRes Function(Mutation$MetadataGenerate) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? metadataGenerate = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Mutation$MetadataGenerate(
+      metadataGenerate:
+          metadataGenerate == _undefined || metadataGenerate == null
+          ? _instance.metadataGenerate
+          : (metadataGenerate as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Mutation$MetadataGenerate<TRes>
+    implements CopyWith$Mutation$MetadataGenerate<TRes> {
+  _CopyWithStubImpl$Mutation$MetadataGenerate(this._res);
+
+  TRes _res;
+
+  call({String? metadataGenerate, String? $__typename}) => _res;
+}
+
+const documentNodeMutationMetadataGenerate = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.mutation,
+      name: NameNode(value: 'MetadataGenerate'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'input')),
+          type: NamedTypeNode(
+            name: NameNode(value: 'GenerateMetadataInput'),
+            isNonNull: true,
+          ),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'metadataGenerate'),
+            alias: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'input'),
+                value: VariableNode(name: NameNode(value: 'input')),
+              ),
+            ],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ],
+      ),
+    ),
+  ],
+);
+Mutation$MetadataGenerate _parserFn$Mutation$MetadataGenerate(
+  Map<String, dynamic> data,
+) => Mutation$MetadataGenerate.fromJson(data);
+typedef OnMutationCompleted$Mutation$MetadataGenerate =
+    FutureOr<void> Function(Map<String, dynamic>?, Mutation$MetadataGenerate?);
+
+class Options$Mutation$MetadataGenerate
+    extends graphql.MutationOptions<Mutation$MetadataGenerate> {
+  Options$Mutation$MetadataGenerate({
+    String? operationName,
+    required Variables$Mutation$MetadataGenerate variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$MetadataGenerate? typedOptimisticResult,
+    graphql.Context? context,
+    OnMutationCompleted$Mutation$MetadataGenerate? onCompleted,
+    graphql.OnMutationUpdate<Mutation$MetadataGenerate>? update,
+    graphql.OnError? onError,
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Mutation$MetadataGenerate(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationMetadataGenerate,
+         parserFn: _parserFn$Mutation$MetadataGenerate,
+       );
+
+  final OnMutationCompleted$Mutation$MetadataGenerate? onCompletedWithParsed;
+
+  @override
+  List<Object?> get properties => [
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
+}
+
+class WatchOptions$Mutation$MetadataGenerate
+    extends graphql.WatchQueryOptions<Mutation$MetadataGenerate> {
+  WatchOptions$Mutation$MetadataGenerate({
+    String? operationName,
+    required Variables$Mutation$MetadataGenerate variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$MetadataGenerate? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeMutationMetadataGenerate,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Mutation$MetadataGenerate,
+       );
+}
+
+extension ClientExtension$Mutation$MetadataGenerate on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Mutation$MetadataGenerate>>
+  mutate$MetadataGenerate(Options$Mutation$MetadataGenerate options) async =>
+      await this.mutate(options);
+
+  graphql.ObservableQuery<Mutation$MetadataGenerate>
+  watchMutation$MetadataGenerate(
+    WatchOptions$Mutation$MetadataGenerate options,
+  ) => this.watchMutation(options);
 }
 
 class Variables$Query$ScrapeSingleScene {
@@ -9193,6 +10980,1511 @@ class _CopyWithStubImpl$Query$ScrapeSingleScene$scrapeSingleScene$performers<
   _CopyWithStubImpl$Query$ScrapeSingleScene$scrapeSingleScene$performers(
     this._res,
   );
+
+  TRes _res;
+
+  call({
+    String? name,
+    String? remote_site_id,
+    List<String>? urls,
+    List<String>? images,
+    String? stored_id,
+    String? $__typename,
+  }) => _res;
+}
+
+class Variables$Query$ScrapeSceneURL {
+  factory Variables$Query$ScrapeSceneURL({required String url}) =>
+      Variables$Query$ScrapeSceneURL._({r'url': url});
+
+  Variables$Query$ScrapeSceneURL._(this._$data);
+
+  factory Variables$Query$ScrapeSceneURL.fromJson(Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    final l$url = data['url'];
+    result$data['url'] = (l$url as String);
+    return Variables$Query$ScrapeSceneURL._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get url => (_$data['url'] as String);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$url = url;
+    result$data['url'] = l$url;
+    return result$data;
+  }
+
+  CopyWith$Variables$Query$ScrapeSceneURL<Variables$Query$ScrapeSceneURL>
+  get copyWith => CopyWith$Variables$Query$ScrapeSceneURL(this, (i) => i);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Query$ScrapeSceneURL ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$url = url;
+    final lOther$url = other.url;
+    if (l$url != lOther$url) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$url = url;
+    return Object.hashAll([l$url]);
+  }
+}
+
+abstract class CopyWith$Variables$Query$ScrapeSceneURL<TRes> {
+  factory CopyWith$Variables$Query$ScrapeSceneURL(
+    Variables$Query$ScrapeSceneURL instance,
+    TRes Function(Variables$Query$ScrapeSceneURL) then,
+  ) = _CopyWithImpl$Variables$Query$ScrapeSceneURL;
+
+  factory CopyWith$Variables$Query$ScrapeSceneURL.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Query$ScrapeSceneURL;
+
+  TRes call({String? url});
+}
+
+class _CopyWithImpl$Variables$Query$ScrapeSceneURL<TRes>
+    implements CopyWith$Variables$Query$ScrapeSceneURL<TRes> {
+  _CopyWithImpl$Variables$Query$ScrapeSceneURL(this._instance, this._then);
+
+  final Variables$Query$ScrapeSceneURL _instance;
+
+  final TRes Function(Variables$Query$ScrapeSceneURL) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? url = _undefined}) => _then(
+    Variables$Query$ScrapeSceneURL._({
+      ..._instance._$data,
+      if (url != _undefined && url != null) 'url': (url as String),
+    }),
+  );
+}
+
+class _CopyWithStubImpl$Variables$Query$ScrapeSceneURL<TRes>
+    implements CopyWith$Variables$Query$ScrapeSceneURL<TRes> {
+  _CopyWithStubImpl$Variables$Query$ScrapeSceneURL(this._res);
+
+  TRes _res;
+
+  call({String? url}) => _res;
+}
+
+class Query$ScrapeSceneURL {
+  Query$ScrapeSceneURL({this.scrapeSceneURL, this.$__typename = 'Query'});
+
+  factory Query$ScrapeSceneURL.fromJson(Map<String, dynamic> json) {
+    final l$scrapeSceneURL = json['scrapeSceneURL'];
+    final l$$__typename = json['__typename'];
+    return Query$ScrapeSceneURL(
+      scrapeSceneURL: l$scrapeSceneURL == null
+          ? null
+          : Query$ScrapeSceneURL$scrapeSceneURL.fromJson(
+              (l$scrapeSceneURL as Map<String, dynamic>),
+            ),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Query$ScrapeSceneURL$scrapeSceneURL? scrapeSceneURL;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$scrapeSceneURL = scrapeSceneURL;
+    _resultData['scrapeSceneURL'] = l$scrapeSceneURL?.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$scrapeSceneURL = scrapeSceneURL;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$scrapeSceneURL, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$ScrapeSceneURL || runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$scrapeSceneURL = scrapeSceneURL;
+    final lOther$scrapeSceneURL = other.scrapeSceneURL;
+    if (l$scrapeSceneURL != lOther$scrapeSceneURL) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$ScrapeSceneURL on Query$ScrapeSceneURL {
+  CopyWith$Query$ScrapeSceneURL<Query$ScrapeSceneURL> get copyWith =>
+      CopyWith$Query$ScrapeSceneURL(this, (i) => i);
+}
+
+abstract class CopyWith$Query$ScrapeSceneURL<TRes> {
+  factory CopyWith$Query$ScrapeSceneURL(
+    Query$ScrapeSceneURL instance,
+    TRes Function(Query$ScrapeSceneURL) then,
+  ) = _CopyWithImpl$Query$ScrapeSceneURL;
+
+  factory CopyWith$Query$ScrapeSceneURL.stub(TRes res) =
+      _CopyWithStubImpl$Query$ScrapeSceneURL;
+
+  TRes call({
+    Query$ScrapeSceneURL$scrapeSceneURL? scrapeSceneURL,
+    String? $__typename,
+  });
+  CopyWith$Query$ScrapeSceneURL$scrapeSceneURL<TRes> get scrapeSceneURL;
+}
+
+class _CopyWithImpl$Query$ScrapeSceneURL<TRes>
+    implements CopyWith$Query$ScrapeSceneURL<TRes> {
+  _CopyWithImpl$Query$ScrapeSceneURL(this._instance, this._then);
+
+  final Query$ScrapeSceneURL _instance;
+
+  final TRes Function(Query$ScrapeSceneURL) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? scrapeSceneURL = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$ScrapeSceneURL(
+      scrapeSceneURL: scrapeSceneURL == _undefined
+          ? _instance.scrapeSceneURL
+          : (scrapeSceneURL as Query$ScrapeSceneURL$scrapeSceneURL?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+
+  CopyWith$Query$ScrapeSceneURL$scrapeSceneURL<TRes> get scrapeSceneURL {
+    final local$scrapeSceneURL = _instance.scrapeSceneURL;
+    return local$scrapeSceneURL == null
+        ? CopyWith$Query$ScrapeSceneURL$scrapeSceneURL.stub(_then(_instance))
+        : CopyWith$Query$ScrapeSceneURL$scrapeSceneURL(
+            local$scrapeSceneURL,
+            (e) => call(scrapeSceneURL: e),
+          );
+  }
+}
+
+class _CopyWithStubImpl$Query$ScrapeSceneURL<TRes>
+    implements CopyWith$Query$ScrapeSceneURL<TRes> {
+  _CopyWithStubImpl$Query$ScrapeSceneURL(this._res);
+
+  TRes _res;
+
+  call({
+    Query$ScrapeSceneURL$scrapeSceneURL? scrapeSceneURL,
+    String? $__typename,
+  }) => _res;
+
+  CopyWith$Query$ScrapeSceneURL$scrapeSceneURL<TRes> get scrapeSceneURL =>
+      CopyWith$Query$ScrapeSceneURL$scrapeSceneURL.stub(_res);
+}
+
+const documentNodeQueryScrapeSceneURL = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.query,
+      name: NameNode(value: 'ScrapeSceneURL'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'url')),
+          type: NamedTypeNode(name: NameNode(value: 'String'), isNonNull: true),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'scrapeSceneURL'),
+            alias: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'url'),
+                value: VariableNode(name: NameNode(value: 'url')),
+              ),
+            ],
+            directives: [],
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: 'title'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'code'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'details'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'director'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'urls'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'date'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'image'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'remote_site_id'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'studio'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
+                      FieldNode(
+                        name: NameNode(value: 'name'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'stored_id'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ],
+                  ),
+                ),
+                FieldNode(
+                  name: NameNode(value: 'tags'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
+                      FieldNode(
+                        name: NameNode(value: 'name'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'stored_id'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ],
+                  ),
+                ),
+                FieldNode(
+                  name: NameNode(value: 'performers'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
+                      FieldNode(
+                        name: NameNode(value: 'name'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'remote_site_id'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'urls'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'images'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'stored_id'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ],
+                  ),
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ],
+      ),
+    ),
+  ],
+);
+Query$ScrapeSceneURL _parserFn$Query$ScrapeSceneURL(
+  Map<String, dynamic> data,
+) => Query$ScrapeSceneURL.fromJson(data);
+typedef OnQueryComplete$Query$ScrapeSceneURL =
+    FutureOr<void> Function(Map<String, dynamic>?, Query$ScrapeSceneURL?);
+
+class Options$Query$ScrapeSceneURL
+    extends graphql.QueryOptions<Query$ScrapeSceneURL> {
+  Options$Query$ScrapeSceneURL({
+    String? operationName,
+    required Variables$Query$ScrapeSceneURL variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$ScrapeSceneURL? typedOptimisticResult,
+    Duration? pollInterval,
+    graphql.Context? context,
+    OnQueryComplete$Query$ScrapeSceneURL? onComplete,
+    graphql.OnQueryError? onError,
+  }) : onCompleteWithParsed = onComplete,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         pollInterval: pollInterval,
+         context: context,
+         onComplete: onComplete == null
+             ? null
+             : (data) => onComplete(
+                 data,
+                 data == null ? null : _parserFn$Query$ScrapeSceneURL(data),
+               ),
+         onError: onError,
+         document: documentNodeQueryScrapeSceneURL,
+         parserFn: _parserFn$Query$ScrapeSceneURL,
+       );
+
+  final OnQueryComplete$Query$ScrapeSceneURL? onCompleteWithParsed;
+
+  @override
+  List<Object?> get properties => [
+    ...super.onComplete == null
+        ? super.properties
+        : super.properties.where((property) => property != onComplete),
+    onCompleteWithParsed,
+  ];
+}
+
+class WatchOptions$Query$ScrapeSceneURL
+    extends graphql.WatchQueryOptions<Query$ScrapeSceneURL> {
+  WatchOptions$Query$ScrapeSceneURL({
+    String? operationName,
+    required Variables$Query$ScrapeSceneURL variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$ScrapeSceneURL? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeQueryScrapeSceneURL,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Query$ScrapeSceneURL,
+       );
+}
+
+class FetchMoreOptions$Query$ScrapeSceneURL extends graphql.FetchMoreOptions {
+  FetchMoreOptions$Query$ScrapeSceneURL({
+    required graphql.UpdateQuery updateQuery,
+    required Variables$Query$ScrapeSceneURL variables,
+  }) : super(
+         updateQuery: updateQuery,
+         variables: variables.toJson(),
+         document: documentNodeQueryScrapeSceneURL,
+       );
+}
+
+extension ClientExtension$Query$ScrapeSceneURL on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Query$ScrapeSceneURL>> query$ScrapeSceneURL(
+    Options$Query$ScrapeSceneURL options,
+  ) async => await this.query(options);
+
+  graphql.ObservableQuery<Query$ScrapeSceneURL> watchQuery$ScrapeSceneURL(
+    WatchOptions$Query$ScrapeSceneURL options,
+  ) => this.watchQuery(options);
+
+  void writeQuery$ScrapeSceneURL({
+    required Query$ScrapeSceneURL data,
+    required Variables$Query$ScrapeSceneURL variables,
+    bool broadcast = true,
+  }) => this.writeQuery(
+    graphql.Request(
+      operation: graphql.Operation(document: documentNodeQueryScrapeSceneURL),
+      variables: variables.toJson(),
+    ),
+    data: data.toJson(),
+    broadcast: broadcast,
+  );
+
+  Query$ScrapeSceneURL? readQuery$ScrapeSceneURL({
+    required Variables$Query$ScrapeSceneURL variables,
+    bool optimistic = true,
+  }) {
+    final result = this.readQuery(
+      graphql.Request(
+        operation: graphql.Operation(document: documentNodeQueryScrapeSceneURL),
+        variables: variables.toJson(),
+      ),
+      optimistic: optimistic,
+    );
+    return result == null ? null : Query$ScrapeSceneURL.fromJson(result);
+  }
+}
+
+class Query$ScrapeSceneURL$scrapeSceneURL {
+  Query$ScrapeSceneURL$scrapeSceneURL({
+    this.title,
+    this.code,
+    this.details,
+    this.director,
+    this.urls,
+    this.date,
+    this.image,
+    this.remote_site_id,
+    this.studio,
+    this.tags,
+    this.performers,
+    this.$__typename = 'ScrapedScene',
+  });
+
+  factory Query$ScrapeSceneURL$scrapeSceneURL.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$title = json['title'];
+    final l$code = json['code'];
+    final l$details = json['details'];
+    final l$director = json['director'];
+    final l$urls = json['urls'];
+    final l$date = json['date'];
+    final l$image = json['image'];
+    final l$remote_site_id = json['remote_site_id'];
+    final l$studio = json['studio'];
+    final l$tags = json['tags'];
+    final l$performers = json['performers'];
+    final l$$__typename = json['__typename'];
+    return Query$ScrapeSceneURL$scrapeSceneURL(
+      title: (l$title as String?),
+      code: (l$code as String?),
+      details: (l$details as String?),
+      director: (l$director as String?),
+      urls: (l$urls as List<dynamic>?)?.map((e) => (e as String)).toList(),
+      date: (l$date as String?),
+      image: (l$image as String?),
+      remote_site_id: (l$remote_site_id as String?),
+      studio: l$studio == null
+          ? null
+          : Query$ScrapeSceneURL$scrapeSceneURL$studio.fromJson(
+              (l$studio as Map<String, dynamic>),
+            ),
+      tags: (l$tags as List<dynamic>?)
+          ?.map(
+            (e) => Query$ScrapeSceneURL$scrapeSceneURL$tags.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
+      performers: (l$performers as List<dynamic>?)
+          ?.map(
+            (e) => Query$ScrapeSceneURL$scrapeSceneURL$performers.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String? title;
+
+  final String? code;
+
+  final String? details;
+
+  final String? director;
+
+  final List<String>? urls;
+
+  final String? date;
+
+  final String? image;
+
+  final String? remote_site_id;
+
+  final Query$ScrapeSceneURL$scrapeSceneURL$studio? studio;
+
+  final List<Query$ScrapeSceneURL$scrapeSceneURL$tags>? tags;
+
+  final List<Query$ScrapeSceneURL$scrapeSceneURL$performers>? performers;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$title = title;
+    _resultData['title'] = l$title;
+    final l$code = code;
+    _resultData['code'] = l$code;
+    final l$details = details;
+    _resultData['details'] = l$details;
+    final l$director = director;
+    _resultData['director'] = l$director;
+    final l$urls = urls;
+    _resultData['urls'] = l$urls?.map((e) => e).toList();
+    final l$date = date;
+    _resultData['date'] = l$date;
+    final l$image = image;
+    _resultData['image'] = l$image;
+    final l$remote_site_id = remote_site_id;
+    _resultData['remote_site_id'] = l$remote_site_id;
+    final l$studio = studio;
+    _resultData['studio'] = l$studio?.toJson();
+    final l$tags = tags;
+    _resultData['tags'] = l$tags?.map((e) => e.toJson()).toList();
+    final l$performers = performers;
+    _resultData['performers'] = l$performers?.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$title = title;
+    final l$code = code;
+    final l$details = details;
+    final l$director = director;
+    final l$urls = urls;
+    final l$date = date;
+    final l$image = image;
+    final l$remote_site_id = remote_site_id;
+    final l$studio = studio;
+    final l$tags = tags;
+    final l$performers = performers;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$title,
+      l$code,
+      l$details,
+      l$director,
+      l$urls == null ? null : Object.hashAll(l$urls.map((v) => v)),
+      l$date,
+      l$image,
+      l$remote_site_id,
+      l$studio,
+      l$tags == null ? null : Object.hashAll(l$tags.map((v) => v)),
+      l$performers == null ? null : Object.hashAll(l$performers.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$ScrapeSceneURL$scrapeSceneURL ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$title = title;
+    final lOther$title = other.title;
+    if (l$title != lOther$title) {
+      return false;
+    }
+    final l$code = code;
+    final lOther$code = other.code;
+    if (l$code != lOther$code) {
+      return false;
+    }
+    final l$details = details;
+    final lOther$details = other.details;
+    if (l$details != lOther$details) {
+      return false;
+    }
+    final l$director = director;
+    final lOther$director = other.director;
+    if (l$director != lOther$director) {
+      return false;
+    }
+    final l$urls = urls;
+    final lOther$urls = other.urls;
+    if (l$urls != null && lOther$urls != null) {
+      if (l$urls.length != lOther$urls.length) {
+        return false;
+      }
+      for (int i = 0; i < l$urls.length; i++) {
+        final l$urls$entry = l$urls[i];
+        final lOther$urls$entry = lOther$urls[i];
+        if (l$urls$entry != lOther$urls$entry) {
+          return false;
+        }
+      }
+    } else if (l$urls != lOther$urls) {
+      return false;
+    }
+    final l$date = date;
+    final lOther$date = other.date;
+    if (l$date != lOther$date) {
+      return false;
+    }
+    final l$image = image;
+    final lOther$image = other.image;
+    if (l$image != lOther$image) {
+      return false;
+    }
+    final l$remote_site_id = remote_site_id;
+    final lOther$remote_site_id = other.remote_site_id;
+    if (l$remote_site_id != lOther$remote_site_id) {
+      return false;
+    }
+    final l$studio = studio;
+    final lOther$studio = other.studio;
+    if (l$studio != lOther$studio) {
+      return false;
+    }
+    final l$tags = tags;
+    final lOther$tags = other.tags;
+    if (l$tags != null && lOther$tags != null) {
+      if (l$tags.length != lOther$tags.length) {
+        return false;
+      }
+      for (int i = 0; i < l$tags.length; i++) {
+        final l$tags$entry = l$tags[i];
+        final lOther$tags$entry = lOther$tags[i];
+        if (l$tags$entry != lOther$tags$entry) {
+          return false;
+        }
+      }
+    } else if (l$tags != lOther$tags) {
+      return false;
+    }
+    final l$performers = performers;
+    final lOther$performers = other.performers;
+    if (l$performers != null && lOther$performers != null) {
+      if (l$performers.length != lOther$performers.length) {
+        return false;
+      }
+      for (int i = 0; i < l$performers.length; i++) {
+        final l$performers$entry = l$performers[i];
+        final lOther$performers$entry = lOther$performers[i];
+        if (l$performers$entry != lOther$performers$entry) {
+          return false;
+        }
+      }
+    } else if (l$performers != lOther$performers) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$ScrapeSceneURL$scrapeSceneURL
+    on Query$ScrapeSceneURL$scrapeSceneURL {
+  CopyWith$Query$ScrapeSceneURL$scrapeSceneURL<
+    Query$ScrapeSceneURL$scrapeSceneURL
+  >
+  get copyWith => CopyWith$Query$ScrapeSceneURL$scrapeSceneURL(this, (i) => i);
+}
+
+abstract class CopyWith$Query$ScrapeSceneURL$scrapeSceneURL<TRes> {
+  factory CopyWith$Query$ScrapeSceneURL$scrapeSceneURL(
+    Query$ScrapeSceneURL$scrapeSceneURL instance,
+    TRes Function(Query$ScrapeSceneURL$scrapeSceneURL) then,
+  ) = _CopyWithImpl$Query$ScrapeSceneURL$scrapeSceneURL;
+
+  factory CopyWith$Query$ScrapeSceneURL$scrapeSceneURL.stub(TRes res) =
+      _CopyWithStubImpl$Query$ScrapeSceneURL$scrapeSceneURL;
+
+  TRes call({
+    String? title,
+    String? code,
+    String? details,
+    String? director,
+    List<String>? urls,
+    String? date,
+    String? image,
+    String? remote_site_id,
+    Query$ScrapeSceneURL$scrapeSceneURL$studio? studio,
+    List<Query$ScrapeSceneURL$scrapeSceneURL$tags>? tags,
+    List<Query$ScrapeSceneURL$scrapeSceneURL$performers>? performers,
+    String? $__typename,
+  });
+  CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$studio<TRes> get studio;
+  TRes tags(
+    Iterable<Query$ScrapeSceneURL$scrapeSceneURL$tags>? Function(
+      Iterable<
+        CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$tags<
+          Query$ScrapeSceneURL$scrapeSceneURL$tags
+        >
+      >?,
+    )
+    _fn,
+  );
+  TRes performers(
+    Iterable<Query$ScrapeSceneURL$scrapeSceneURL$performers>? Function(
+      Iterable<
+        CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$performers<
+          Query$ScrapeSceneURL$scrapeSceneURL$performers
+        >
+      >?,
+    )
+    _fn,
+  );
+}
+
+class _CopyWithImpl$Query$ScrapeSceneURL$scrapeSceneURL<TRes>
+    implements CopyWith$Query$ScrapeSceneURL$scrapeSceneURL<TRes> {
+  _CopyWithImpl$Query$ScrapeSceneURL$scrapeSceneURL(this._instance, this._then);
+
+  final Query$ScrapeSceneURL$scrapeSceneURL _instance;
+
+  final TRes Function(Query$ScrapeSceneURL$scrapeSceneURL) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? title = _undefined,
+    Object? code = _undefined,
+    Object? details = _undefined,
+    Object? director = _undefined,
+    Object? urls = _undefined,
+    Object? date = _undefined,
+    Object? image = _undefined,
+    Object? remote_site_id = _undefined,
+    Object? studio = _undefined,
+    Object? tags = _undefined,
+    Object? performers = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$ScrapeSceneURL$scrapeSceneURL(
+      title: title == _undefined ? _instance.title : (title as String?),
+      code: code == _undefined ? _instance.code : (code as String?),
+      details: details == _undefined ? _instance.details : (details as String?),
+      director: director == _undefined
+          ? _instance.director
+          : (director as String?),
+      urls: urls == _undefined ? _instance.urls : (urls as List<String>?),
+      date: date == _undefined ? _instance.date : (date as String?),
+      image: image == _undefined ? _instance.image : (image as String?),
+      remote_site_id: remote_site_id == _undefined
+          ? _instance.remote_site_id
+          : (remote_site_id as String?),
+      studio: studio == _undefined
+          ? _instance.studio
+          : (studio as Query$ScrapeSceneURL$scrapeSceneURL$studio?),
+      tags: tags == _undefined
+          ? _instance.tags
+          : (tags as List<Query$ScrapeSceneURL$scrapeSceneURL$tags>?),
+      performers: performers == _undefined
+          ? _instance.performers
+          : (performers
+                as List<Query$ScrapeSceneURL$scrapeSceneURL$performers>?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+
+  CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$studio<TRes> get studio {
+    final local$studio = _instance.studio;
+    return local$studio == null
+        ? CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$studio.stub(
+            _then(_instance),
+          )
+        : CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$studio(
+            local$studio,
+            (e) => call(studio: e),
+          );
+  }
+
+  TRes tags(
+    Iterable<Query$ScrapeSceneURL$scrapeSceneURL$tags>? Function(
+      Iterable<
+        CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$tags<
+          Query$ScrapeSceneURL$scrapeSceneURL$tags
+        >
+      >?,
+    )
+    _fn,
+  ) => call(
+    tags: _fn(
+      _instance.tags?.map(
+        (e) => CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$tags(e, (i) => i),
+      ),
+    )?.toList(),
+  );
+
+  TRes performers(
+    Iterable<Query$ScrapeSceneURL$scrapeSceneURL$performers>? Function(
+      Iterable<
+        CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$performers<
+          Query$ScrapeSceneURL$scrapeSceneURL$performers
+        >
+      >?,
+    )
+    _fn,
+  ) => call(
+    performers: _fn(
+      _instance.performers?.map(
+        (e) => CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$performers(
+          e,
+          (i) => i,
+        ),
+      ),
+    )?.toList(),
+  );
+}
+
+class _CopyWithStubImpl$Query$ScrapeSceneURL$scrapeSceneURL<TRes>
+    implements CopyWith$Query$ScrapeSceneURL$scrapeSceneURL<TRes> {
+  _CopyWithStubImpl$Query$ScrapeSceneURL$scrapeSceneURL(this._res);
+
+  TRes _res;
+
+  call({
+    String? title,
+    String? code,
+    String? details,
+    String? director,
+    List<String>? urls,
+    String? date,
+    String? image,
+    String? remote_site_id,
+    Query$ScrapeSceneURL$scrapeSceneURL$studio? studio,
+    List<Query$ScrapeSceneURL$scrapeSceneURL$tags>? tags,
+    List<Query$ScrapeSceneURL$scrapeSceneURL$performers>? performers,
+    String? $__typename,
+  }) => _res;
+
+  CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$studio<TRes> get studio =>
+      CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$studio.stub(_res);
+
+  tags(_fn) => _res;
+
+  performers(_fn) => _res;
+}
+
+class Query$ScrapeSceneURL$scrapeSceneURL$studio {
+  Query$ScrapeSceneURL$scrapeSceneURL$studio({
+    required this.name,
+    this.stored_id,
+    this.$__typename = 'ScrapedStudio',
+  });
+
+  factory Query$ScrapeSceneURL$scrapeSceneURL$studio.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$name = json['name'];
+    final l$stored_id = json['stored_id'];
+    final l$$__typename = json['__typename'];
+    return Query$ScrapeSceneURL$scrapeSceneURL$studio(
+      name: (l$name as String),
+      stored_id: (l$stored_id as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String name;
+
+  final String? stored_id;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$stored_id = stored_id;
+    _resultData['stored_id'] = l$stored_id;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$name = name;
+    final l$stored_id = stored_id;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$name, l$stored_id, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$ScrapeSceneURL$scrapeSceneURL$studio ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$stored_id = stored_id;
+    final lOther$stored_id = other.stored_id;
+    if (l$stored_id != lOther$stored_id) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$ScrapeSceneURL$scrapeSceneURL$studio
+    on Query$ScrapeSceneURL$scrapeSceneURL$studio {
+  CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$studio<
+    Query$ScrapeSceneURL$scrapeSceneURL$studio
+  >
+  get copyWith =>
+      CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$studio(this, (i) => i);
+}
+
+abstract class CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$studio<TRes> {
+  factory CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$studio(
+    Query$ScrapeSceneURL$scrapeSceneURL$studio instance,
+    TRes Function(Query$ScrapeSceneURL$scrapeSceneURL$studio) then,
+  ) = _CopyWithImpl$Query$ScrapeSceneURL$scrapeSceneURL$studio;
+
+  factory CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$studio.stub(TRes res) =
+      _CopyWithStubImpl$Query$ScrapeSceneURL$scrapeSceneURL$studio;
+
+  TRes call({String? name, String? stored_id, String? $__typename});
+}
+
+class _CopyWithImpl$Query$ScrapeSceneURL$scrapeSceneURL$studio<TRes>
+    implements CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$studio<TRes> {
+  _CopyWithImpl$Query$ScrapeSceneURL$scrapeSceneURL$studio(
+    this._instance,
+    this._then,
+  );
+
+  final Query$ScrapeSceneURL$scrapeSceneURL$studio _instance;
+
+  final TRes Function(Query$ScrapeSceneURL$scrapeSceneURL$studio) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? name = _undefined,
+    Object? stored_id = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$ScrapeSceneURL$scrapeSceneURL$studio(
+      name: name == _undefined || name == null
+          ? _instance.name
+          : (name as String),
+      stored_id: stored_id == _undefined
+          ? _instance.stored_id
+          : (stored_id as String?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Query$ScrapeSceneURL$scrapeSceneURL$studio<TRes>
+    implements CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$studio<TRes> {
+  _CopyWithStubImpl$Query$ScrapeSceneURL$scrapeSceneURL$studio(this._res);
+
+  TRes _res;
+
+  call({String? name, String? stored_id, String? $__typename}) => _res;
+}
+
+class Query$ScrapeSceneURL$scrapeSceneURL$tags {
+  Query$ScrapeSceneURL$scrapeSceneURL$tags({
+    required this.name,
+    this.stored_id,
+    this.$__typename = 'ScrapedTag',
+  });
+
+  factory Query$ScrapeSceneURL$scrapeSceneURL$tags.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$name = json['name'];
+    final l$stored_id = json['stored_id'];
+    final l$$__typename = json['__typename'];
+    return Query$ScrapeSceneURL$scrapeSceneURL$tags(
+      name: (l$name as String),
+      stored_id: (l$stored_id as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String name;
+
+  final String? stored_id;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$stored_id = stored_id;
+    _resultData['stored_id'] = l$stored_id;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$name = name;
+    final l$stored_id = stored_id;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$name, l$stored_id, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$ScrapeSceneURL$scrapeSceneURL$tags ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$stored_id = stored_id;
+    final lOther$stored_id = other.stored_id;
+    if (l$stored_id != lOther$stored_id) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$ScrapeSceneURL$scrapeSceneURL$tags
+    on Query$ScrapeSceneURL$scrapeSceneURL$tags {
+  CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$tags<
+    Query$ScrapeSceneURL$scrapeSceneURL$tags
+  >
+  get copyWith =>
+      CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$tags(this, (i) => i);
+}
+
+abstract class CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$tags<TRes> {
+  factory CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$tags(
+    Query$ScrapeSceneURL$scrapeSceneURL$tags instance,
+    TRes Function(Query$ScrapeSceneURL$scrapeSceneURL$tags) then,
+  ) = _CopyWithImpl$Query$ScrapeSceneURL$scrapeSceneURL$tags;
+
+  factory CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$tags.stub(TRes res) =
+      _CopyWithStubImpl$Query$ScrapeSceneURL$scrapeSceneURL$tags;
+
+  TRes call({String? name, String? stored_id, String? $__typename});
+}
+
+class _CopyWithImpl$Query$ScrapeSceneURL$scrapeSceneURL$tags<TRes>
+    implements CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$tags<TRes> {
+  _CopyWithImpl$Query$ScrapeSceneURL$scrapeSceneURL$tags(
+    this._instance,
+    this._then,
+  );
+
+  final Query$ScrapeSceneURL$scrapeSceneURL$tags _instance;
+
+  final TRes Function(Query$ScrapeSceneURL$scrapeSceneURL$tags) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? name = _undefined,
+    Object? stored_id = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$ScrapeSceneURL$scrapeSceneURL$tags(
+      name: name == _undefined || name == null
+          ? _instance.name
+          : (name as String),
+      stored_id: stored_id == _undefined
+          ? _instance.stored_id
+          : (stored_id as String?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Query$ScrapeSceneURL$scrapeSceneURL$tags<TRes>
+    implements CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$tags<TRes> {
+  _CopyWithStubImpl$Query$ScrapeSceneURL$scrapeSceneURL$tags(this._res);
+
+  TRes _res;
+
+  call({String? name, String? stored_id, String? $__typename}) => _res;
+}
+
+class Query$ScrapeSceneURL$scrapeSceneURL$performers {
+  Query$ScrapeSceneURL$scrapeSceneURL$performers({
+    this.name,
+    this.remote_site_id,
+    this.urls,
+    this.images,
+    this.stored_id,
+    this.$__typename = 'ScrapedPerformer',
+  });
+
+  factory Query$ScrapeSceneURL$scrapeSceneURL$performers.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$name = json['name'];
+    final l$remote_site_id = json['remote_site_id'];
+    final l$urls = json['urls'];
+    final l$images = json['images'];
+    final l$stored_id = json['stored_id'];
+    final l$$__typename = json['__typename'];
+    return Query$ScrapeSceneURL$scrapeSceneURL$performers(
+      name: (l$name as String?),
+      remote_site_id: (l$remote_site_id as String?),
+      urls: (l$urls as List<dynamic>?)?.map((e) => (e as String)).toList(),
+      images: (l$images as List<dynamic>?)?.map((e) => (e as String)).toList(),
+      stored_id: (l$stored_id as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String? name;
+
+  final String? remote_site_id;
+
+  final List<String>? urls;
+
+  final List<String>? images;
+
+  final String? stored_id;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$remote_site_id = remote_site_id;
+    _resultData['remote_site_id'] = l$remote_site_id;
+    final l$urls = urls;
+    _resultData['urls'] = l$urls?.map((e) => e).toList();
+    final l$images = images;
+    _resultData['images'] = l$images?.map((e) => e).toList();
+    final l$stored_id = stored_id;
+    _resultData['stored_id'] = l$stored_id;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$name = name;
+    final l$remote_site_id = remote_site_id;
+    final l$urls = urls;
+    final l$images = images;
+    final l$stored_id = stored_id;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$name,
+      l$remote_site_id,
+      l$urls == null ? null : Object.hashAll(l$urls.map((v) => v)),
+      l$images == null ? null : Object.hashAll(l$images.map((v) => v)),
+      l$stored_id,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$ScrapeSceneURL$scrapeSceneURL$performers ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$remote_site_id = remote_site_id;
+    final lOther$remote_site_id = other.remote_site_id;
+    if (l$remote_site_id != lOther$remote_site_id) {
+      return false;
+    }
+    final l$urls = urls;
+    final lOther$urls = other.urls;
+    if (l$urls != null && lOther$urls != null) {
+      if (l$urls.length != lOther$urls.length) {
+        return false;
+      }
+      for (int i = 0; i < l$urls.length; i++) {
+        final l$urls$entry = l$urls[i];
+        final lOther$urls$entry = lOther$urls[i];
+        if (l$urls$entry != lOther$urls$entry) {
+          return false;
+        }
+      }
+    } else if (l$urls != lOther$urls) {
+      return false;
+    }
+    final l$images = images;
+    final lOther$images = other.images;
+    if (l$images != null && lOther$images != null) {
+      if (l$images.length != lOther$images.length) {
+        return false;
+      }
+      for (int i = 0; i < l$images.length; i++) {
+        final l$images$entry = l$images[i];
+        final lOther$images$entry = lOther$images[i];
+        if (l$images$entry != lOther$images$entry) {
+          return false;
+        }
+      }
+    } else if (l$images != lOther$images) {
+      return false;
+    }
+    final l$stored_id = stored_id;
+    final lOther$stored_id = other.stored_id;
+    if (l$stored_id != lOther$stored_id) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$ScrapeSceneURL$scrapeSceneURL$performers
+    on Query$ScrapeSceneURL$scrapeSceneURL$performers {
+  CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$performers<
+    Query$ScrapeSceneURL$scrapeSceneURL$performers
+  >
+  get copyWith =>
+      CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$performers(this, (i) => i);
+}
+
+abstract class CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$performers<TRes> {
+  factory CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$performers(
+    Query$ScrapeSceneURL$scrapeSceneURL$performers instance,
+    TRes Function(Query$ScrapeSceneURL$scrapeSceneURL$performers) then,
+  ) = _CopyWithImpl$Query$ScrapeSceneURL$scrapeSceneURL$performers;
+
+  factory CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$performers.stub(
+    TRes res,
+  ) = _CopyWithStubImpl$Query$ScrapeSceneURL$scrapeSceneURL$performers;
+
+  TRes call({
+    String? name,
+    String? remote_site_id,
+    List<String>? urls,
+    List<String>? images,
+    String? stored_id,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$ScrapeSceneURL$scrapeSceneURL$performers<TRes>
+    implements CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$performers<TRes> {
+  _CopyWithImpl$Query$ScrapeSceneURL$scrapeSceneURL$performers(
+    this._instance,
+    this._then,
+  );
+
+  final Query$ScrapeSceneURL$scrapeSceneURL$performers _instance;
+
+  final TRes Function(Query$ScrapeSceneURL$scrapeSceneURL$performers) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? name = _undefined,
+    Object? remote_site_id = _undefined,
+    Object? urls = _undefined,
+    Object? images = _undefined,
+    Object? stored_id = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$ScrapeSceneURL$scrapeSceneURL$performers(
+      name: name == _undefined ? _instance.name : (name as String?),
+      remote_site_id: remote_site_id == _undefined
+          ? _instance.remote_site_id
+          : (remote_site_id as String?),
+      urls: urls == _undefined ? _instance.urls : (urls as List<String>?),
+      images: images == _undefined
+          ? _instance.images
+          : (images as List<String>?),
+      stored_id: stored_id == _undefined
+          ? _instance.stored_id
+          : (stored_id as String?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Query$ScrapeSceneURL$scrapeSceneURL$performers<TRes>
+    implements CopyWith$Query$ScrapeSceneURL$scrapeSceneURL$performers<TRes> {
+  _CopyWithStubImpl$Query$ScrapeSceneURL$scrapeSceneURL$performers(this._res);
 
   TRes _res;
 

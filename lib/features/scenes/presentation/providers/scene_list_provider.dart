@@ -12,6 +12,7 @@ import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/pagination.dart';
 import '../../../../core/utils/app_log_store.dart';
 import 'playback_queue_provider.dart';
+import '../../../../core/domain/entities/filter_options.dart';
 
 part 'scene_list_provider.g.dart';
 
@@ -120,19 +121,28 @@ class SceneFilterState extends _$SceneFilterState {
 
 @Riverpod(keepAlive: true)
 class SceneOrganizedOnly extends _$SceneOrganizedOnly {
-  static const _organizedKey = 'scene_organized_only';
+  static const _organizedKey = 'scene_organized_only_v2';
 
   @override
-  bool build() {
+  OrganizedFilter build() {
     final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(_organizedKey) ?? false;
+    final val = prefs.getString(_organizedKey);
+    return OrganizedFilter.values.firstWhere(
+      (e) => e.name == val,
+      orElse: () {
+        // Fallback for migration
+        final oldVal = prefs.getBool('scene_organized_only');
+        if (oldVal == true) return OrganizedFilter.organized;
+        return OrganizedFilter.all;
+      },
+    );
   }
 
-  void set(bool value) => state = value;
+  void set(OrganizedFilter value) => state = value;
 
   Future<void> saveAsDefault() async {
     final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_organizedKey, state);
+    await prefs.setString(_organizedKey, state.name);
   }
 }
 
@@ -198,7 +208,7 @@ class SceneList extends _$SceneList {
     final query = ref.watch(sceneSearchQueryProvider);
     final sortConfig = ref.watch(sceneSortProvider);
     final filter = ref.watch(sceneFilterStateProvider);
-    final organizedOnly = ref.watch(sceneOrganizedOnlyProvider);
+    final organizedFilter = ref.watch(sceneOrganizedOnlyProvider);
     final repository = ref.read(sceneRepositoryProvider);
 
     String? effectiveSort = sortConfig.sort;
@@ -212,7 +222,7 @@ class SceneList extends _$SceneList {
       filter: query.isEmpty ? null : query,
       sort: effectiveSort,
       descending: sortConfig.descending,
-      organized: organizedOnly ? true : null,
+      organized: organizedFilter.toBool(),
       sceneFilter: filter,
     );
 
@@ -267,7 +277,7 @@ class SceneList extends _$SceneList {
     final query = ref.read(sceneSearchQueryProvider);
     final sortConfig = ref.read(sceneSortProvider);
     final filter = ref.read(sceneFilterStateProvider);
-    final organizedOnly = ref.read(sceneOrganizedOnlyProvider);
+    final organizedFilter = ref.read(sceneOrganizedOnlyProvider);
 
     String? effectiveSort = sortConfig.sort;
     if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
@@ -282,7 +292,7 @@ class SceneList extends _$SceneList {
         filter: query.isEmpty ? null : query,
         sort: effectiveSort,
         descending: sortConfig.descending,
-        organized: organizedOnly ? true : null,
+        organized: organizedFilter.toBool(),
         sceneFilter: filter,
       );
 
@@ -317,10 +327,12 @@ class SceneList extends _$SceneList {
   }) async {
     final repository = ref.read(sceneRepositoryProvider);
     final query = useCurrentFilter ? ref.read(sceneSearchQueryProvider) : '';
-    final filter = useCurrentFilter ? ref.read(sceneFilterStateProvider) : null;
-    final organizedOnly = useCurrentFilter
+    final filter = useCurrentFilter
+        ? ref.read(sceneFilterStateProvider)
+        : SceneFilter.empty();
+    final organizedFilter = useCurrentFilter
         ? ref.read(sceneOrganizedOnlyProvider)
-        : false;
+        : OrganizedFilter.all;
 
     // Ask backend for random ordering; if needed, retry to avoid returning same id.
     final attempts = excludeSceneId == null ? 1 : 3;
@@ -331,7 +343,8 @@ class SceneList extends _$SceneList {
         filter: query.isEmpty ? null : query,
         sort: 'random',
         descending: true,
-        organized: organizedOnly ? true : null,
+        organized: organizedFilter.toBool(),
+
         performerId: performerId,
         studioId: studioId,
         tagId: tagId,

@@ -68,6 +68,7 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
       contentPadding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       content: SizedBox(
         width: double.maxFinite,
+        height: MediaQuery.of(context).size.height * 0.6,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -77,6 +78,7 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
                 hintText: context.l10n.common_search_placeholder,
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: IconButton(
+                  tooltip: 'Clear',
                   icon: const Icon(Icons.clear),
                   onPressed: () {
                     _searchController.clear();
@@ -88,17 +90,13 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
               onChanged: _updateQuery,
             ),
             const SizedBox(height: 16),
-            Flexible(
+            Expanded(
               child: listAsync.when(
                 data: (items) {
                   if (items.isEmpty) {
-                    return Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(context.l10n.common_no_items),
-                    );
+                    return Center(child: Text(context.l10n.common_no_items));
                   }
                   return ListView.builder(
-                    shrinkWrap: true,
                     itemCount: items.length,
                     itemBuilder: (context, index) {
                       final item = items[index];
@@ -106,54 +104,31 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
                       final String name = _getName(item);
                       final isSelected = _selectedIds.contains(id);
 
-                      return ListTile(
+                      return CheckboxListTile(
                         title: Text(name),
-                        selected: isSelected,
-                        trailing: widget.multiSelect
-                            ? Checkbox(
-                                value: isSelected,
-                                onChanged: (val) {
-                                  setState(() {
-                                    if (val == true) {
-                                      _selectedIds.add(id);
-                                      _selectedEntities.add(item as T);
-                                    } else {
-                                      _selectedIds.remove(id);
-                                      _selectedEntities.removeWhere(
-                                        (e) => _getId(e) == id,
-                                      );
-                                    }
-                                  });
-                                },
-                              )
-                            : null,
-                        onTap: () {
-                          if (widget.multiSelect) {
-                            setState(() {
-                              if (isSelected) {
-                                _selectedIds.remove(id);
-                                _selectedEntities.removeWhere(
-                                  (e) => _getId(e) == id,
-                                );
-                              } else {
-                                _selectedIds.add(id);
-                                _selectedEntities.add(item as T);
-                              }
-                            });
-                          } else {
-                            Navigator.of(context).pop(item);
+                        value: isSelected,
+                        onChanged: (val) {
+                          setState(() {
+                            if (val == true) {
+                              _selectedIds.add(id);
+                              _selectedEntities.add(item as T);
+                            } else {
+                              _selectedIds.remove(id);
+                              _selectedEntities.removeWhere(
+                                (e) => _getId(e) == id,
+                              );
+                            }
+                          });
+                          if (!widget.multiSelect && val == true) {
+                            Navigator.of(context).pop([item as T]);
                           }
                         },
                       );
                     },
                   );
                 },
-                loading: () => const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: CircularProgressIndicator(),
-                ),
-                error: (err, _) => Padding(
-                  padding: const EdgeInsets.all(16.0),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, _) => Center(
                   child: Text(context.l10n.common_error(err.toString())),
                 ),
               ),

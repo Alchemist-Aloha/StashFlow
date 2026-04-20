@@ -1,10 +1,14 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import '../auth/auth_headers.dart';
 import '../auth/auth_mode.dart';
 import '../auth/auth_provider.dart';
 import 'http_client_factory.dart';
 import '../preferences/shared_preferences_provider.dart';
+import '../../utils/environment.dart' as env;
 
 part 'graphql_client.g.dart';
 
@@ -73,12 +77,25 @@ class ServerApiKey extends _$ServerApiKey {
   }
 }
 
+final proxyAuthModesEnabledProvider = Provider<bool>((ref) {
+  ref.watch(sharedPreferencesTriggerProvider);
+  final prefs = ref.watch(sharedPreferencesProvider);
+  return prefs.getBool('enable_proxy_auth_modes') ?? false;
+});
+
 @riverpod
 class GraphqlClient extends _$GraphqlClient {
   @override
   GraphQLClient build() {
     final url = ref.watch(serverUrlProvider);
     if (url.isEmpty) {
+      if (env.isTestMode) {
+        // Return a dummy client for tests if URL is not configured
+        return GraphQLClient(
+          link: HttpLink('http://localhost'),
+          cache: GraphQLCache(),
+        );
+      }
       throw Exception('Server URL not configured');
     }
 
@@ -86,16 +103,7 @@ class GraphqlClient extends _$GraphqlClient {
     final authState = ref.watch(authProvider);
     final isPasswordMode = authState.mode == AuthMode.password;
 
-    final headers = <String, String>{};
-    if (isPasswordMode) {
-      // Browsers treat Cookie as a forbidden request header. For web we rely
-      // on credentials-enabled requests instead of manually setting Cookie.
-      if (!kIsWeb && authState.cookieHeader.isNotEmpty) {
-        headers['Cookie'] = authState.cookieHeader;
-      }
-    } else if (apiKey.isNotEmpty) {
-      headers['ApiKey'] = apiKey;
-    }
+    final headers = getAuthHeaders(authState: authState, apiKey: apiKey);
 
     final httpClient = createGraphqlHttpClient(withCredentials: isPasswordMode);
 
@@ -105,14 +113,9 @@ class GraphqlClient extends _$GraphqlClient {
       httpClient: httpClient,
     );
 
-    const bool isTestMode = bool.fromEnvironment(
-      'FLUTTER_TEST',
-      defaultValue: false,
-    );
-
     return GraphQLClient(
       link: httpLink,
-      cache: isTestMode ? GraphQLCache() : GraphQLCache(store: HiveStore()),
+      cache: env.isTestMode ? GraphQLCache() : GraphQLCache(store: HiveStore()),
     );
   }
 }

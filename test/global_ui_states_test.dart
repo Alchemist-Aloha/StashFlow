@@ -102,6 +102,9 @@ void main() {
       // Change mock to success
       mockRepo.withData([]);
       await tester.tap(find.retryButton());
+      // Use pump instead of pumpAndSettle to avoid timeout with loading indicator
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
       await tester.pumpAndSettle();
 
       final l10n = AppLocalizations.of(
@@ -129,6 +132,9 @@ void main() {
 
       mockRepo.withData([]);
       await tester.tap(find.retryButton());
+      // Use pump instead of pumpAndSettle to avoid timeout with loading indicator
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
       await tester.pumpAndSettle();
 
       final l10n = AppLocalizations.of(

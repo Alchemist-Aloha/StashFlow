@@ -81,14 +81,15 @@ class GridCard extends StatelessWidget {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: context.colors.primary.withValues(alpha: 0.8),
-                          borderRadius: BorderRadius.circular(10),
+                          color: context.colors.primary.withValues(alpha: 0.9),
+                          borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           badge!,
                           style: context.textTheme.labelSmall?.copyWith(
                             color: context.colors.onPrimary,
                             fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
                           ),
                         ),
                       ),
@@ -104,9 +105,8 @@ class GridCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
+                  style: context.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    fontSize: 12,
                     color: context.colors.onSurface,
                   ),
                   maxLines: 2,
@@ -116,9 +116,8 @@ class GridCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     subtitle!,
-                    style: TextStyle(
-                      color: context.colors.onSurface.withValues(alpha: 0.75),
-                      fontSize: 10,
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: context.colors.onSurfaceVariant,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -162,14 +161,15 @@ class GridCard extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: context.colors.primary.withValues(alpha: 0.8),
-                          borderRadius: BorderRadius.circular(12),
+                          color: context.colors.primary.withValues(alpha: 0.9),
+                          borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           badge!,
                           style: context.textTheme.labelMedium?.copyWith(
                             color: context.colors.onPrimary,
                             fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
                           ),
                         ),
                       ),
@@ -185,7 +185,7 @@ class GridCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  style: context.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                   maxLines: 1,
@@ -194,7 +194,9 @@ class GridCard extends StatelessWidget {
                 if (subtitle != null)
                   Text(
                     subtitle!,
-                    style: Theme.of(context).textTheme.bodySmall,
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

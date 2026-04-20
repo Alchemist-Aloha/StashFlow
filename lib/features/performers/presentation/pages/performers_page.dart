@@ -3,7 +3,9 @@ import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../domain/entities/performer.dart';
+import '../../domain/entities/performer_filter.dart';
 import '../providers/performer_list_provider.dart';
+import '../widgets/performer_filter_panel.dart';
 import '../widgets/performer_card.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
@@ -13,13 +15,26 @@ import '../../../../core/presentation/theme/app_theme.dart';
 
 enum _PerformerSortOption {
   name,
-  sceneCount,
-  playCount,
-  oCounter,
-  rating,
-  lastUpdated,
-  createdAt,
+  height,
+  birthdate,
+  tagCount,
   random,
+  rating,
+  penisLength,
+  playCount,
+  lastPlayedAt,
+  latestScene,
+  careerStart,
+  careerEnd,
+  weight,
+  measurements,
+  scenesDuration,
+  scenesSize,
+  sceneCount,
+  imageCount,
+  galleryCount,
+  oCounter,
+  lastOAt,
 }
 
 class PerformersPage extends ConsumerStatefulWidget {
@@ -42,13 +57,26 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
       setState(() {
         _sortOption = switch (sortConfig.sort) {
           'name' => _PerformerSortOption.name,
-          'scenes_count' => _PerformerSortOption.sceneCount,
-          'play_count' => _PerformerSortOption.playCount,
-          'o_counter' => _PerformerSortOption.oCounter,
-          'rating' => _PerformerSortOption.rating,
-          'updated_at' => _PerformerSortOption.lastUpdated,
-          'created_at' => _PerformerSortOption.createdAt,
+          'height' => _PerformerSortOption.height,
+          'birthdate' => _PerformerSortOption.birthdate,
+          'tag_count' => _PerformerSortOption.tagCount,
           'random' => _PerformerSortOption.random,
+          'rating' => _PerformerSortOption.rating,
+          'penis_length' => _PerformerSortOption.penisLength,
+          'play_count' => _PerformerSortOption.playCount,
+          'last_played_at' => _PerformerSortOption.lastPlayedAt,
+          'latest_scene' => _PerformerSortOption.latestScene,
+          'career_start' => _PerformerSortOption.careerStart,
+          'career_end' => _PerformerSortOption.careerEnd,
+          'weight' => _PerformerSortOption.weight,
+          'measurements' => _PerformerSortOption.measurements,
+          'scenes_duration' => _PerformerSortOption.scenesDuration,
+          'scenes_size' => _PerformerSortOption.scenesSize,
+          'scenes_count' => _PerformerSortOption.sceneCount,
+          'images_count' => _PerformerSortOption.imageCount,
+          'galleries_count' => _PerformerSortOption.galleryCount,
+          'o_counter' => _PerformerSortOption.oCounter,
+          'last_o_at' => _PerformerSortOption.lastOAt,
           _ => _PerformerSortOption.name,
         };
         _sortDescending = sortConfig.descending;
@@ -64,13 +92,26 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
   void _applyServerSort(_PerformerSortOption option) {
     final sortKey = switch (option) {
       _PerformerSortOption.name => 'name',
-      _PerformerSortOption.sceneCount => 'scenes_count',
-      _PerformerSortOption.playCount => 'play_count',
-      _PerformerSortOption.oCounter => 'o_counter',
-      _PerformerSortOption.rating => 'rating',
-      _PerformerSortOption.lastUpdated => 'updated_at',
-      _PerformerSortOption.createdAt => 'created_at',
+      _PerformerSortOption.height => 'height',
+      _PerformerSortOption.birthdate => 'birthdate',
+      _PerformerSortOption.tagCount => 'tag_count',
       _PerformerSortOption.random => 'random',
+      _PerformerSortOption.rating => 'rating',
+      _PerformerSortOption.penisLength => 'penis_length',
+      _PerformerSortOption.playCount => 'play_count',
+      _PerformerSortOption.lastPlayedAt => 'last_played_at',
+      _PerformerSortOption.latestScene => 'latest_scene',
+      _PerformerSortOption.careerStart => 'career_start',
+      _PerformerSortOption.careerEnd => 'career_end',
+      _PerformerSortOption.weight => 'weight',
+      _PerformerSortOption.measurements => 'measurements',
+      _PerformerSortOption.scenesDuration => 'scenes_duration',
+      _PerformerSortOption.scenesSize => 'scenes_size',
+      _PerformerSortOption.sceneCount => 'scenes_count',
+      _PerformerSortOption.imageCount => 'images_count',
+      _PerformerSortOption.galleryCount => 'galleries_count',
+      _PerformerSortOption.oCounter => 'o_counter',
+      _PerformerSortOption.lastOAt => 'last_o_at',
     };
 
     ref
@@ -82,20 +123,46 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
     switch (option) {
       case _PerformerSortOption.name:
         return context.l10n.sort_name;
-      case _PerformerSortOption.sceneCount:
-        return context.l10n.sort_scene_count;
-      case _PerformerSortOption.playCount:
-        return context.l10n.performers_play_count;
-      case _PerformerSortOption.oCounter:
-        return 'O-Counter';
-      case _PerformerSortOption.rating:
-        return context.l10n.sort_rating;
-      case _PerformerSortOption.lastUpdated:
-        return context.l10n.sort_updated_at;
-      case _PerformerSortOption.createdAt:
-        return context.l10n.sort_created_at;
+      case _PerformerSortOption.height:
+        return context.l10n.sort_height;
+      case _PerformerSortOption.birthdate:
+        return context.l10n.sort_birthdate;
+      case _PerformerSortOption.tagCount:
+        return context.l10n.sort_tag_count;
       case _PerformerSortOption.random:
         return context.l10n.sort_random;
+      case _PerformerSortOption.rating:
+        return context.l10n.sort_rating;
+      case _PerformerSortOption.penisLength:
+        return context.l10n.sort_penis_length;
+      case _PerformerSortOption.playCount:
+        return context.l10n.sort_play_count;
+      case _PerformerSortOption.lastPlayedAt:
+        return context.l10n.sort_last_played_at;
+      case _PerformerSortOption.latestScene:
+        return context.l10n.sort_latest_scene;
+      case _PerformerSortOption.careerStart:
+        return context.l10n.sort_career_start;
+      case _PerformerSortOption.careerEnd:
+        return context.l10n.sort_career_end;
+      case _PerformerSortOption.weight:
+        return context.l10n.sort_weight;
+      case _PerformerSortOption.measurements:
+        return context.l10n.sort_measurements;
+      case _PerformerSortOption.scenesDuration:
+        return context.l10n.sort_scenes_duration;
+      case _PerformerSortOption.scenesSize:
+        return context.l10n.sort_scenes_size;
+      case _PerformerSortOption.sceneCount:
+        return context.l10n.sort_scene_count;
+      case _PerformerSortOption.imageCount:
+        return context.l10n.sort_images_count;
+      case _PerformerSortOption.galleryCount:
+        return context.l10n.sort_galleries_count;
+      case _PerformerSortOption.oCounter:
+        return context.l10n.sort_o_counter;
+      case _PerformerSortOption.lastOAt:
+        return context.l10n.sort_last_o_at;
     }
   }
 
@@ -164,23 +231,38 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                   style: context.textTheme.labelLarge,
                 ),
                 const SizedBox(height: AppTheme.spacingSmall),
-                Wrap(
-                  spacing: AppTheme.spacingSmall,
-                  runSpacing: AppTheme.spacingSmall,
-                  children: _PerformerSortOption.values
-                      .map(
-                        (option) => ChoiceChip(
-                          label: Text(_sortLabel(option)),
-                          selected: tempOption == option,
-                          onSelected: (selected) {
-                            if (!selected) return;
-                            setModalState(() {
-                              tempOption = option;
-                            });
-                          },
+                Flexible(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.35,
+                    ),
+                    child: Scrollbar(
+                      thumbVisibility: true,
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppTheme.spacingSmall,
                         ),
-                      )
-                      .toList(),
+                        child: Wrap(
+                          spacing: AppTheme.spacingSmall,
+                          runSpacing: AppTheme.spacingSmall,
+                          children: _PerformerSortOption.values
+                              .map(
+                                (option) => ChoiceChip(
+                                  label: Text(_sortLabel(option)),
+                                  selected: tempOption == option,
+                                  onSelected: (selected) {
+                                    if (!selected) return;
+                                    setModalState(() {
+                                      tempOption = option;
+                                    });
+                                  },
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: AppTheme.spacingMedium),
                 Text(
@@ -233,7 +315,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                 const SizedBox(height: AppTheme.spacingSmall),
                 SizedBox(
                   width: double.infinity,
-                  child: OutlinedButton(
+                  child: TextButton(
                     onPressed: () async {
                       setState(() {
                         _sortOption = tempOption;
@@ -250,7 +332,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                         );
                       }
                     },
-                    style: OutlinedButton.styleFrom(
+                    style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         vertical: AppTheme.spacingMedium,
                       ),
@@ -268,164 +350,11 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
   }
 
   void _showFilterPanel() {
-    final currentFilter = ref.read(performerFilterProvider);
-    bool tempFavoritesOnly = currentFilter.favoritesOnly;
-    final tempGenders = <String>[...currentFilter.genders];
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) {
-          return Container(
-            padding: const EdgeInsets.all(AppTheme.spacingMedium),
-            decoration: BoxDecoration(
-              color: context.colors.surface,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(AppTheme.radiusExtraLarge),
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      context.l10n.performers_filter_title,
-                      style: context.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setModalState(() {
-                          tempFavoritesOnly = false;
-                          tempGenders.clear();
-                        });
-                      },
-                      child: Text(context.l10n.common_reset),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppTheme.spacingSmall),
-                SwitchListTile.adaptive(
-                  value: tempFavoritesOnly,
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(context.l10n.common_favorites_only),
-                  onChanged: (value) {
-                    setModalState(() => tempFavoritesOnly = value);
-                  },
-                ),
-                const SizedBox(height: AppTheme.spacingMedium),
-                Text(
-                  context.l10n.performers_gender,
-                  style: context.textTheme.labelLarge,
-                ),
-                const SizedBox(height: AppTheme.spacingSmall),
-                Wrap(
-                  spacing: AppTheme.spacingSmall,
-                  runSpacing: AppTheme.spacingSmall,
-                  children: [
-                    ChoiceChip(
-                      label: Text(context.l10n.performers_gender_any),
-                      selected: tempGenders.isEmpty,
-                      onSelected: (_) =>
-                          setModalState(() => tempGenders.clear()),
-                    ),
-                    for (final option in [
-                      ('FEMALE', context.l10n.performers_gender_female),
-                      ('MALE', context.l10n.performers_gender_male),
-                      (
-                        'TRANSGENDER_FEMALE',
-                        context.l10n.performers_gender_trans_female,
-                      ),
-                      (
-                        'TRANSGENDER_MALE',
-                        context.l10n.performers_gender_trans_male,
-                      ),
-                      ('NON_BINARY', 'Non-binary'),
-                      ('INTERSEX', context.l10n.performers_gender_intersex),
-                    ])
-                      ChoiceChip(
-                        label: Text(option.$2),
-                        selected: tempGenders.contains(option.$1),
-                        onSelected: (selected) => setModalState(() {
-                          if (selected) {
-                            if (!tempGenders.contains(option.$1)) {
-                              tempGenders.add(option.$1);
-                            }
-                          } else {
-                            tempGenders.remove(option.$1);
-                          }
-                        }),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: AppTheme.spacingMedium),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      ref
-                          .read(performerFilterProvider.notifier)
-                          .set(
-                            favoritesOnly: tempFavoritesOnly,
-                            genders: tempGenders,
-                          );
-                      ref.invalidate(performerListProvider);
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: context.colors.primary,
-                      foregroundColor: context.colors.onPrimary,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppTheme.spacingMedium,
-                      ),
-                    ),
-                    child: Text(context.l10n.common_apply_filters),
-                  ),
-                ),
-                const SizedBox(height: AppTheme.spacingSmall),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () async {
-                      ref
-                          .read(performerFilterProvider.notifier)
-                          .set(
-                            favoritesOnly: tempFavoritesOnly,
-                            genders: tempGenders,
-                          );
-                      await ref
-                          .read(performerFilterProvider.notifier)
-                          .saveAsDefault();
-                      ref.invalidate(performerListProvider);
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(context.l10n.performers_filter_saved),
-                          ),
-                        );
-                      }
-                    },
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppTheme.spacingMedium,
-                      ),
-                    ),
-                    child: Text(context.l10n.common_save_default),
-                  ),
-                ),
-                const SizedBox(height: AppTheme.spacingMedium),
-              ],
-            ),
-          );
-        },
-      ),
+      builder: (context) => const PerformerFilterPanel(),
     );
   }
 
@@ -433,7 +362,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
   Widget build(BuildContext context) {
     final performersAsync = ref.watch(performerListProvider);
     final gridColumns = ref.watch(performerGridColumnsProvider);
-    final filterState = ref.watch(performerFilterProvider);
+    final filterState = ref.watch(performerFilterStateProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final scrollController = ref.watch(performerScrollControllerProvider);
     final hasSortOverride =
@@ -481,7 +410,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
               tooltip: context.l10n.common_filter,
               onPressed: _showFilterPanel,
             ),
-            if (filterState.hasActiveFilters)
+            if (filterState != PerformerFilter.empty())
               Positioned(
                 right: 8,
                 top: 8,
@@ -494,6 +423,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                   constraints: const BoxConstraints(minWidth: 8, minHeight: 8),
                 ),
               ),
+
           ],
         ),
       ],

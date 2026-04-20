@@ -1,9 +1,13 @@
 import 'package:graphql/client.dart';
+import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
-import '../graphql/studios.graphql.dart';
+import '../../../scenes/domain/models/scraped_scene.dart';
+import 'package:stash_app_flutter/core/domain/entities/criterion.dart' as domain;
 import '../../domain/entities/studio.dart';
+import '../../domain/entities/studio_filter.dart';
 import '../../domain/repositories/studio_repository.dart';
+import '../graphql/studios.graphql.dart';
 
 class GraphQLStudioRepository implements StudioRepository {
   final GraphQLClient client;
@@ -20,7 +24,8 @@ class GraphQLStudioRepository implements StudioRepository {
     String? filter,
     String? sort,
     bool? descending,
-    bool favoritesOnly = false,
+    StudioFilter? studioFilter,
+    @Deprecated('Use studioFilter instead') bool favoritesOnly = false,
   }) async {
     QueryResult<Query$FindStudios> result;
     String? effectiveSort = sort == 'scene_count' ? 'scenes_count' : sort;
@@ -32,6 +37,7 @@ class GraphQLStudioRepository implements StudioRepository {
       sort: effectiveSort,
       descending: descending,
       favoritesOnly: favoritesOnly,
+      studioFilter: studioFilter,
     );
 
     // Some servers may still use scene_count; retry if scenes_count is rejected.
@@ -107,7 +113,33 @@ class GraphQLStudioRepository implements StudioRepository {
     String? sort,
     bool? descending,
     required bool favoritesOnly,
+    StudioFilter? studioFilter,
   }) {
+    final inputFilter = Input$StudioFilterType(
+      favorite: (favoritesOnly || studioFilter?.favorite == true) ? true : null,
+      name: mapStringCriterion(studioFilter?.name),
+      details: mapStringCriterion(studioFilter?.details),
+      parents: mapMultiCriterion(studioFilter?.parentStudios != null 
+          ? domain.MultiCriterion(
+              value: studioFilter!.parentStudios!.value,
+              modifier: studioFilter.parentStudios!.modifier,
+            )
+          : null),
+      tags: mapHierarchicalMultiCriterion(studioFilter?.tags),
+      rating100: mapIntCriterion(studioFilter?.rating100),
+      ignore_auto_tag: studioFilter?.ignoreAutoTag,
+      organized: studioFilter?.organized,
+      tag_count: mapIntCriterion(studioFilter?.tagCount),
+      scene_count: mapIntCriterion(studioFilter?.sceneCount),
+      image_count: mapIntCriterion(studioFilter?.imageCount),
+      gallery_count: mapIntCriterion(studioFilter?.galleryCount),
+      url: mapStringCriterion(studioFilter?.url),
+      aliases: mapStringCriterion(studioFilter?.aliases),
+      child_count: mapIntCriterion(studioFilter?.childCount),
+      created_at: mapTimestampCriterion(studioFilter?.createdAt),
+      updated_at: mapTimestampCriterion(studioFilter?.updatedAt),
+    );
+
     return client.query$FindStudios(
       Options$Query$FindStudios(
         fetchPolicy: sort == 'random'
@@ -115,7 +147,7 @@ class GraphQLStudioRepository implements StudioRepository {
             : FetchPolicy.cacheAndNetwork,
         variables: Variables$Query$FindStudios(
           filter: Input$FindFilterType(
-            q: filter,
+            q: filter ?? studioFilter?.searchQuery,
             page: page,
             per_page: perPage,
             sort: sort,
@@ -123,9 +155,7 @@ class GraphQLStudioRepository implements StudioRepository {
                 ? Enum$SortDirectionEnum.DESC
                 : Enum$SortDirectionEnum.ASC,
           ),
-          studio_filter: favoritesOnly
-              ? Input$StudioFilterType(favorite: true)
-              : null,
+          studio_filter: inputFilter,
         ),
       ),
     );
@@ -177,6 +207,57 @@ class GraphQLStudioRepository implements StudioRepository {
         variables: Variables$Mutation$UpdateStudioFavorite(
           id: id,
           favorite: favorite,
+        ),
+      ),
+    );
+
+    if (result.hasException) throw result.exception!;
+  }
+
+  @override
+  Future<List<ScrapedStudio>> scrapeStudio({
+    String? scraperId,
+    String? stashBoxEndpoint,
+    String? studioId,
+    String? query,
+  }) async {
+    final result = await client.query$ScrapeSingleStudio(
+      Options$Query$ScrapeSingleStudio(
+        variables: Variables$Query$ScrapeSingleStudio(
+          source: Input$ScraperSourceInput(
+            scraper_id: scraperId,
+            stash_box_endpoint: stashBoxEndpoint,
+          ),
+          input: Input$ScrapeSingleStudioInput(
+            query: query,
+          ),
+        ),
+      ),
+    );
+
+    if (result.hasException) throw result.exception!;
+
+    final List<Query$ScrapeSingleStudio$scrapeSingleStudio> raw =
+        result.parsedData?.scrapeSingleStudio ?? [];
+
+    return raw.map((e) => ScrapedStudio.fromJson(e.toJson())).toList();
+  }
+
+  @override
+  Future<ScrapedStudio?> scrapeStudioURL(String url) async {
+    final results = await scrapeStudio(query: url);
+    return results.isNotEmpty ? results.first : null;
+  }
+
+  @override
+  Future<void> updateStudio({
+    required String id,
+    required Map<String, dynamic> input,
+  }) async {
+    final result = await client.mutate$StudioUpdate(
+      Options$Mutation$StudioUpdate(
+        variables: Variables$Mutation$StudioUpdate(
+          input: Input$StudioUpdateInput.fromJson({...input, 'id': id}),
         ),
       ),
     );

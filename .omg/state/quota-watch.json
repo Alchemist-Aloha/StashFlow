@@ -1,0 +1,20 @@
+{
+  "turn_count": 14,
+  "last_session_id": "d1f23443-608e-481c-b883-c8198eac115b",
+  "last_event_key": "d1f23443-608e-481c-b883-c8198eac115b:transcript:a889d6ece57429d05335e6be5c78824123d73a4d3895ab07e89373a5c0e043bb",
+  "last_transcript_hash": "a889d6ece57429d05335e6be5c78824123d73a4d3895ab07e89373a5c0e043bb",
+  "last_model": "gemini-3.1-flash-lite-preview",
+  "last_provider": "gemini",
+  "last_turn_total_tokens": 65654,
+  "last_session_total_tokens": 2018309,
+  "session_totals_by_model": {
+    "gemini-3.1-pro-preview": 480315,
+    "gemini-3.1-flash-lite-preview": 1537994
+  },
+  "session_totals_by_provider": {
+    "gemini": 2018309
+  },
+  "cwd_mode": "parent-leaf",
+  "last_cwd_label": "likun/StashFlow",
+  "updated_at": "2026-04-19T04:20:39.787Z"
+}

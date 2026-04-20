@@ -82,9 +82,10 @@ class AuthProvider extends Notifier<AuthState> {
     final secureStorage = ref.read(secureStorageProvider);
 
     final modeRaw = prefs.getString(_authModePrefKey);
-    final mode = modeRaw == AuthMode.password.name
-        ? AuthMode.password
-        : AuthMode.apiKey;
+    final mode = AuthMode.values.firstWhere(
+      (e) => e.name == modeRaw,
+      orElse: () => AuthMode.apiKey,
+    );
 
     final username = await secureStorage.read(key: _usernameKey) ?? '';
     final password = await secureStorage.read(key: _passwordKey) ?? '';
@@ -101,6 +102,8 @@ class AuthProvider extends Notifier<AuthState> {
       loginStatus = cookieHeader.isNotEmpty
           ? AuthLoginStatus.loggedIn
           : AuthLoginStatus.loggedOut;
+    } else if (mode == AuthMode.basic || mode == AuthMode.bearer) {
+      loginStatus = AuthLoginStatus.loggedIn;
     }
 
     state = state.copyWith(
@@ -118,11 +121,16 @@ class AuthProvider extends Notifier<AuthState> {
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setString(_authModePrefKey, mode.name);
 
+    AuthLoginStatus loginStatus = state.loginStatus;
+    if (mode == AuthMode.apiKey) {
+      loginStatus = AuthLoginStatus.loggedOut;
+    } else if (mode == AuthMode.basic || mode == AuthMode.bearer) {
+      loginStatus = AuthLoginStatus.loggedIn;
+    }
+
     state = state.copyWith(
       mode: mode,
-      loginStatus: mode == AuthMode.apiKey
-          ? AuthLoginStatus.loggedOut
-          : state.loginStatus,
+      loginStatus: loginStatus,
       clearError: true,
     );
   }

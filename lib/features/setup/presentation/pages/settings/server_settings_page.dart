@@ -88,6 +88,7 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
     final modeRaw = prefs.getString('auth_mode') ?? AuthMode.password.name;
 
     _allowWebPasswordLogin = prefs.getBool('allow_web_password_login') ?? false;
+    final proxyAuthEnabled = prefs.getBool('enable_proxy_auth_modes') ?? false;
 
     _baseUrlController.text = url;
     _apiKeyController.text = apiKey;
@@ -95,9 +96,22 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
     _passwordController.text = password;
 
     final canUsePassword = !kIsWeb || _allowWebPasswordLogin;
-    _selectedAuthMode = modeRaw == AuthMode.password.name && canUsePassword
-        ? AuthMode.password
-        : AuthMode.apiKey;
+    final AuthMode storedMode = AuthMode.values.firstWhere(
+      (e) => e.name == modeRaw,
+      orElse: () => AuthMode.password,
+    );
+
+    if (storedMode == AuthMode.password && canUsePassword) {
+      _selectedAuthMode = AuthMode.password;
+    } else if (storedMode == AuthMode.basic && proxyAuthEnabled) {
+      _selectedAuthMode = AuthMode.basic;
+    } else if (storedMode == AuthMode.bearer && proxyAuthEnabled) {
+      _selectedAuthMode = AuthMode.bearer;
+    } else if (storedMode == AuthMode.apiKey) {
+      _selectedAuthMode = AuthMode.apiKey;
+    } else {
+      _selectedAuthMode = AuthMode.apiKey;
+    }
 
     setState(() => _loading = false);
   }
@@ -335,6 +349,7 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
     final authState = ref.watch(authProvider);
 
     final l10n = AppLocalizations.of(context)!;
+    final proxyAuthEnabled = ref.watch(proxyAuthModesEnabledProvider);
 
     return SettingsPageShell(
       title: '${l10n.settings_server} ${l10n.settings_title}',
@@ -373,47 +388,81 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                           },
                         ),
                         const SizedBox(height: AppTheme.spacingMedium),
-                        Text(
-                          l10n.settings_server_auth_method,
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                        const SizedBox(height: AppTheme.spacingSmall),
-                        SegmentedButton<AuthMode>(
-                          segments: [
-                            ButtonSegment<AuthMode>(
+                        DropdownButtonFormField<AuthMode>(
+                          initialValue: _selectedAuthMode,
+                          decoration: InputDecoration(
+                            labelText: l10n.settings_server_auth_method,
+                          ),
+                          items: [
+                            DropdownMenuItem<AuthMode>(
                               value: AuthMode.apiKey,
-                              label: Text(l10n.settings_server_auth_apikey),
-                              icon: const Icon(Icons.vpn_key_rounded),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.vpn_key_rounded),
+                                  const SizedBox(width: AppTheme.spacingSmall),
+                                  Text(l10n.settings_server_auth_apikey),
+                                ],
+                              ),
                             ),
                             if (!kIsWeb || _allowWebPasswordLogin)
-                              ButtonSegment<AuthMode>(
+                              DropdownMenuItem<AuthMode>(
                                 value: AuthMode.password,
-                                label: Text(l10n.settings_server_auth_password),
-                                icon: const Icon(Icons.password_rounded),
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.password_rounded),
+                                    const SizedBox(width: AppTheme.spacingSmall),
+                                    Text(l10n.settings_server_auth_password),
+                                  ],
+                                ),
                               ),
+                            if (proxyAuthEnabled) ...[
+                              DropdownMenuItem<AuthMode>(
+                                value: AuthMode.basic,
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.badge_rounded),
+                                    const SizedBox(width: AppTheme.spacingSmall),
+                                    Text(l10n.settings_server_auth_basic),
+                                  ],
+                                ),
+                              ),
+                              DropdownMenuItem<AuthMode>(
+                                value: AuthMode.bearer,
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.generating_tokens_rounded),
+                                    const SizedBox(width: AppTheme.spacingSmall),
+                                    Text(l10n.settings_server_auth_bearer),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ],
-                          selected: <AuthMode>{_selectedAuthMode},
-                          onSelectionChanged: (selection) async {
-                            final selected = selection.first;
-                            setState(() => _selectedAuthMode = selected);
-                            await _saveServerSettings();
+                          onChanged: (selected) async {
+                            if (selected != null) {
+                              setState(() => _selectedAuthMode = selected);
+                              await _saveServerSettings();
+                            }
                           },
                         ),
                         const SizedBox(height: AppTheme.spacingSmall),
                         Text(
-                          _selectedAuthMode == AuthMode.password
-                              ? l10n.settings_server_auth_password_desc
-                              : l10n.settings_server_auth_apikey_desc,
+                          _buildAuthMethodDescription(l10n),
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         const SizedBox(height: AppTheme.spacingMedium),
-                        if (_selectedAuthMode == AuthMode.apiKey)
+                        if (_selectedAuthMode == AuthMode.apiKey ||
+                            _selectedAuthMode == AuthMode.bearer)
                           TextField(
                             controller: _apiKeyController,
                             focusNode: _apiKeyFocusNode,
                             decoration: InputDecoration(
-                              labelText: l10n.settings_server_auth_apikey,
-                              hintText: l10n.settings_server_auth_apikey_desc,
+                              labelText: _selectedAuthMode == AuthMode.bearer
+                                  ? l10n.settings_server_auth_bearer
+                                  : l10n.settings_server_auth_apikey,
+                              hintText: _selectedAuthMode == AuthMode.bearer
+                                  ? l10n.settings_server_auth_bearer_desc
+                                  : l10n.settings_server_auth_apikey_desc,
                               suffixIcon: IconButton(
                                 tooltip: _obscureApiKey
                                     ? l10n.common_show
@@ -439,7 +488,8 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                               _saveServerSettings();
                             },
                           ),
-                        if (_selectedAuthMode == AuthMode.password) ...[
+                        if (_selectedAuthMode == AuthMode.password ||
+                            _selectedAuthMode == AuthMode.basic) ...[
                           TextField(
                             controller: _usernameController,
                             focusNode: _usernameFocusNode,
@@ -481,11 +531,13 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
                               _saveServerSettings();
                             },
                           ),
-                          const SizedBox(height: AppTheme.spacingSmall),
-                          Text(
-                            _buildAuthStatusLabel(authState),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
+                          if (_selectedAuthMode == AuthMode.password) ...[
+                            const SizedBox(height: AppTheme.spacingSmall),
+                            Text(
+                              _buildAuthStatusLabel(authState),
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ],
                         ],
                         const SizedBox(height: AppTheme.spacingMedium),
                         Wrap(
@@ -559,6 +611,19 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
               ),
             ),
     );
+  }
+
+  String _buildAuthMethodDescription(AppLocalizations l10n) {
+    switch (_selectedAuthMode) {
+      case AuthMode.apiKey:
+        return l10n.settings_server_auth_apikey_desc;
+      case AuthMode.password:
+        return l10n.settings_server_auth_password_desc;
+      case AuthMode.basic:
+        return l10n.settings_server_auth_basic_desc;
+      case AuthMode.bearer:
+        return l10n.settings_server_auth_bearer_desc;
+    }
   }
 
   String _buildAuthStatusLabel(AuthState authState) {

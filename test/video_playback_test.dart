@@ -13,7 +13,6 @@ import 'package:stash_app_flutter/main.dart';
 import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart';
 import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
 import 'package:stash_app_flutter/features/studios/presentation/providers/studio_media_provider.dart';
-import 'helpers/test_helpers.dart';
 
 class MockSceneRepository implements SceneRepository {
   final List<Scene> scenes;
@@ -52,9 +51,17 @@ class MockSceneRepository implements SceneRepository {
 
   @override
   Future<List<ScrapedScene>> scrapeSingleScene({
-    required String scraperId,
-    required String sceneId,
+    String? scraperId,
+    String? stashBoxEndpoint,
+    String? sceneId,
+    String? query,
   }) async => [];
+
+  @override
+  Future<ScrapedScene?> scrapeSceneURL(String url) async => null;
+
+  @override
+  Future<void> generatePhash(String sceneId) async {}
 
   @override
   Future<void> saveScrapedScene({
@@ -75,6 +82,19 @@ class MockSceneRepository implements SceneRepository {
   Future<Map<String, List<Map<String, dynamic>>>> findTagCandidates(
     List<String> tags,
   ) async => {};
+}
+
+class MockStreamResolver extends StreamResolver {
+  @override
+  void build() {}
+
+  @override
+  Future<StreamChoice?> resolvePreferredStream(Scene scene) async {
+    return StreamChoice(
+      url: scene.paths.stream ?? '',
+      mimeType: 'video/mp4',
+    );
+  }
 }
 
 void main() {

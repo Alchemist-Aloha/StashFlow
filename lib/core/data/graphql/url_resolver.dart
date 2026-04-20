@@ -1,3 +1,5 @@
+import '../auth/auth_mode.dart';
+
 String resolveGraphqlMediaUrl({
   required String? rawUrl,
   required Uri graphqlEndpoint,
@@ -49,4 +51,30 @@ String appendApiKey(String url, String apiKey) {
   newParams['apikey'] = trimmedApiKey;
 
   return uri.replace(queryParameters: newParams).toString();
+}
+
+/// Applies a web-specific media auth fallback when custom headers are unavailable.
+///
+/// Priority:
+/// 1) If an API key exists, append it as `apikey` query param.
+/// 2) Password and Basic auth rely on browser session/headers or apikey fallback.
+///    Username and password are NO LONGER injected into the URL for security.
+String applyWebMediaAuthFallback({
+  required String url,
+  required AuthMode authMode,
+  required String apiKey,
+  Uri? graphqlEndpoint,
+}) {
+  final trimmedUrl = url.trim();
+  if (trimmedUrl.isEmpty) return trimmedUrl;
+
+  // Priority: If we have an API key, it's our best fallback for the URL itself.
+  // Note: We primarily rely on custom headers now (XHR on Web), but this
+  // remains for environments that don't support custom headers or as a backup.
+  final trimmedApiKey = apiKey.trim();
+  if (trimmedApiKey.isNotEmpty) {
+    return appendApiKey(trimmedUrl, trimmedApiKey);
+  }
+
+  return trimmedUrl;
 }

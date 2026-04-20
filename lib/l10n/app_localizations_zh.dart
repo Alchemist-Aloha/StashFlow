@@ -164,6 +164,84 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sort_random => '随机';
 
   @override
+  String get sort_file_mod_time => '文件修改时间';
+
+  @override
+  String get sort_filesize => '文件大小';
+
+  @override
+  String get sort_o_count => 'O 计数器';
+
+  @override
+  String get sort_height => '身高';
+
+  @override
+  String get sort_birthdate => '出生日期';
+
+  @override
+  String get sort_tag_count => '标签数量';
+
+  @override
+  String get sort_play_count => '播放次数';
+
+  @override
+  String get sort_o_counter => 'O 计数';
+
+  @override
+  String get sort_zip_file_count => 'ZIP 文件数';
+
+  @override
+  String get sort_last_o_at => '上次 O 时间';
+
+  @override
+  String get sort_latest_scene => '最新场景';
+
+  @override
+  String get sort_career_start => '职业开始';
+
+  @override
+  String get sort_career_end => '职业结束';
+
+  @override
+  String get sort_weight => '体重';
+
+  @override
+  String get sort_measurements => '三围';
+
+  @override
+  String get sort_scenes_duration => '场景时长';
+
+  @override
+  String get sort_scenes_size => '场景大小';
+
+  @override
+  String get sort_images_count => '图片数量';
+
+  @override
+  String get sort_galleries_count => '画廊数量';
+
+  @override
+  String get sort_child_count => '子工作室数量';
+
+  @override
+  String get sort_performers_count => '演员数量';
+
+  @override
+  String get sort_groups_count => '分组数量';
+
+  @override
+  String get sort_marker_count => '标记数量';
+
+  @override
+  String get sort_studios_count => '工作室数量';
+
+  @override
+  String get sort_penis_length => '阴茎长度';
+
+  @override
+  String get sort_last_played_at => '上次播放时间';
+
+  @override
   String get studios_sort_saved => '排序偏好已保存为默认';
 
   @override
@@ -174,6 +252,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get tags_filter_saved => '筛选偏好已保存为默认';
+
+  @override
+  String get tags_sort_title => '排序标签';
 
   @override
   String get tags_sort_saved => '排序偏好已保存为默认';
@@ -200,7 +281,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String common_id(Object id) {
-    return 'ID: $id';
+    return 'ID：$id';
   }
 
   @override
@@ -261,7 +342,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get common_release_date => '发布日期';
 
   @override
-  String get common_url => 'URL';
+  String get common_url => '链接';
 
   @override
   String get common_no_url => '无 URL';
@@ -394,6 +475,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String details_failed_update_performer(Object error) {
+    return '更新演员失败：$error';
+  }
+
+  @override
   String details_failed_increment_o_count(String error) {
     return '增加 O 计数失败：$error';
   }
@@ -457,6 +543,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get scenes_filter_title => '筛选场景';
+
+  @override
+  String get scenes_filter_saved => '筛选偏好已保存为默认设置';
 
   @override
   String get scenes_watched => '已看';
@@ -531,7 +620,76 @@ class AppLocalizationsZh extends AppLocalizations {
   String get performers_gender_intersex => '双性人';
 
   @override
+  String get performers_gender_non_binary => '非二元';
+
+  @override
+  String get performers_circumcised => '割礼';
+
+  @override
+  String get performers_circumcised_cut => '已割礼';
+
+  @override
+  String get performers_circumcised_uncut => '未割礼';
+
+  @override
   String get performers_play_count => '播放次数';
+
+  @override
+  String get performers_field_disambiguation => '消歧义';
+
+  @override
+  String get performers_field_birthdate => '出生日期';
+
+  @override
+  String get performers_field_deathdate => '死亡日期';
+
+  @override
+  String get performers_field_height_cm => '身高（cm）';
+
+  @override
+  String get performers_field_weight_kg => '体重（kg）';
+
+  @override
+  String get performers_field_measurements => '三围';
+
+  @override
+  String get performers_field_fake_tits => '假胸';
+
+  @override
+  String get performers_field_penis_length => '阴茎长度';
+
+  @override
+  String get performers_field_ethnicity => '族裔';
+
+  @override
+  String get performers_field_country => '国家';
+
+  @override
+  String get performers_field_eye_color => '眼睛颜色';
+
+  @override
+  String get performers_field_hair_color => '头发颜色';
+
+  @override
+  String get performers_field_career_start => '职业开始';
+
+  @override
+  String get performers_field_career_end => '职业结束';
+
+  @override
+  String get performers_field_tattoos => '纹身';
+
+  @override
+  String get performers_field_piercings => '穿孔';
+
+  @override
+  String get performers_field_aliases => '别名';
+
+  @override
+  String get common_organized => '已整理';
+
+  @override
+  String get scenes_duplicated => '重复';
 
   @override
   String get random_studio => '随机制片商';
@@ -547,6 +705,88 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get random_performer => '随机出演者';
+
+  @override
+  String get filter_modifier => '修饰符';
+
+  @override
+  String get filter_value => '值';
+
+  @override
+  String get filter_equals => '等于';
+
+  @override
+  String get filter_not_equals => '不等于';
+
+  @override
+  String get filter_greater_than => '大于';
+
+  @override
+  String get filter_less_than => '小于';
+
+  @override
+  String get filter_is_null => '为空';
+
+  @override
+  String get filter_not_null => '不为空';
+
+  @override
+  String get images_resolution_title => '分辨率';
+
+  @override
+  String get resolution_144p => '144p';
+
+  @override
+  String get resolution_240p => '240p';
+
+  @override
+  String get resolution_360p => '360p';
+
+  @override
+  String get resolution_480p => '480p';
+
+  @override
+  String get resolution_540p => '540p';
+
+  @override
+  String get resolution_720p => '720p';
+
+  @override
+  String get resolution_1080p => '1080p';
+
+  @override
+  String get resolution_1440p => '1440p';
+
+  @override
+  String get resolution_1920p => '1920p';
+
+  @override
+  String get resolution_2160p => '4K (2160p)';
+
+  @override
+  String get resolution_4320p => '8K (4320p)';
+
+  @override
+  String get images_orientation_title => '方向';
+
+  @override
+  String get common_or => '或';
+
+  @override
+  String get scrape_from_url => '从 URL 抓取';
+
+  @override
+  String get scenes_phash_started => '开始生成 phash';
+
+  @override
+  String scenes_phash_failed(Object error) {
+    return '生成 phash 失败：$error';
+  }
+
+  @override
+  String details_failed_update_studio(Object error) {
+    return '更新工作室失败：$error';
+  }
 
   @override
   String get settings_title => '设置';
@@ -1149,6 +1389,27 @@ class AppLocalizationsZh extends AppLocalizations {
       '覆盖仅限原生的限制，并强制用户名 + 密码身份验证方式在 Flutter Web 上可见。';
 
   @override
+  String get settings_develop_proxy_auth => '启用代理认证模式';
+
+  @override
+  String get settings_develop_proxy_auth_subtitle =>
+      '启用高级 Basic Auth 和 Bearer Token 方法，以便在 Authentik 等代理背后的无认证后端中使用。';
+
+  @override
+  String get settings_server_auth_basic => '基础认证';
+
+  @override
+  String get settings_server_auth_bearer => 'Bearer 令牌';
+
+  @override
+  String get settings_server_auth_basic_desc =>
+      '发送 \'Authorization: Basic <base64(user:pass)>\' 请求头。';
+
+  @override
+  String get settings_server_auth_bearer_desc =>
+      '发送 \'Authorization: Bearer <token>\' 请求头。';
+
+  @override
   String get common_edit => '编辑';
 
   @override
@@ -1171,6 +1432,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get images_title => '图片';
+
+  @override
+  String get images_filter_title => '过滤图片';
+
+  @override
+  String get images_filter_saved => '筛选偏好已保存为默认设置';
 
   @override
   String get images_sort_title => '对图片排序';
@@ -1279,7 +1546,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scenes_field_tags => '标签';
 
   @override
-  String get scenes_field_urls => 'URL';
+  String get scenes_field_urls => '链接';
+
+  @override
+  String get scenes_edit_performer => '编辑演员';
+
+  @override
+  String get scenes_edit_studio => '编辑工作室';
 
   @override
   String get common_no_title => '无标题';
@@ -1318,6 +1591,18 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get scenes_duration_long => '> 20分钟';
+
+  @override
+  String get details_scene_fingerprint_query => '场景指纹查询';
+
+  @override
+  String get scenes_available_scrapers => '可用抓取器';
+
+  @override
+  String get scrape_results_existing => '已存在';
+
+  @override
+  String get scrape_results_scraped => '已抓取';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -1480,6 +1765,84 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get sort_random => '随机';
 
   @override
+  String get sort_file_mod_time => '文件修改时间';
+
+  @override
+  String get sort_filesize => '文件大小';
+
+  @override
+  String get sort_o_count => 'O 计数器';
+
+  @override
+  String get sort_height => '身高';
+
+  @override
+  String get sort_birthdate => '出生日期';
+
+  @override
+  String get sort_tag_count => '标签数量';
+
+  @override
+  String get sort_play_count => '播放次数';
+
+  @override
+  String get sort_o_counter => 'O 计数';
+
+  @override
+  String get sort_zip_file_count => 'ZIP 文件数';
+
+  @override
+  String get sort_last_o_at => '上次 O 时间';
+
+  @override
+  String get sort_latest_scene => '最新场景';
+
+  @override
+  String get sort_career_start => '职业开始';
+
+  @override
+  String get sort_career_end => '职业结束';
+
+  @override
+  String get sort_weight => '体重';
+
+  @override
+  String get sort_measurements => '三围';
+
+  @override
+  String get sort_scenes_duration => '场景时长';
+
+  @override
+  String get sort_scenes_size => '场景大小';
+
+  @override
+  String get sort_images_count => '图片数量';
+
+  @override
+  String get sort_galleries_count => '画廊数量';
+
+  @override
+  String get sort_child_count => '子工作室数量';
+
+  @override
+  String get sort_performers_count => '演员数量';
+
+  @override
+  String get sort_groups_count => '分组数量';
+
+  @override
+  String get sort_marker_count => '标记数量';
+
+  @override
+  String get sort_studios_count => '工作室数量';
+
+  @override
+  String get sort_penis_length => '阴茎长度';
+
+  @override
+  String get sort_last_played_at => '上次播放时间';
+
+  @override
   String get studios_sort_saved => '排序偏好已保存为默认';
 
   @override
@@ -1490,6 +1853,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get tags_filter_saved => '筛选偏好已保存为默认';
+
+  @override
+  String get tags_sort_title => '排序标签';
 
   @override
   String get tags_sort_saved => '排序偏好已保存为默认';
@@ -1516,7 +1882,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String common_id(Object id) {
-    return 'ID: $id';
+    return 'ID：$id';
   }
 
   @override
@@ -1577,7 +1943,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get common_release_date => '发布日期';
 
   @override
-  String get common_url => 'URL';
+  String get common_url => '链接';
 
   @override
   String get common_no_url => '无 URL';
@@ -1710,6 +2076,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
+  String details_failed_update_performer(Object error) {
+    return '更新演员失败：$error';
+  }
+
+  @override
   String details_failed_increment_o_count(String error) {
     return '增加 O 计数失败：$error';
   }
@@ -1773,6 +2144,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get scenes_filter_title => '筛选场景';
+
+  @override
+  String get scenes_filter_saved => '筛选偏好已保存为默认设置';
 
   @override
   String get scenes_watched => '已看';
@@ -1847,7 +2221,76 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get performers_gender_intersex => '双性人';
 
   @override
+  String get performers_gender_non_binary => '非二元';
+
+  @override
+  String get performers_circumcised => '割礼';
+
+  @override
+  String get performers_circumcised_cut => '已割礼';
+
+  @override
+  String get performers_circumcised_uncut => '未割礼';
+
+  @override
   String get performers_play_count => '播放次数';
+
+  @override
+  String get performers_field_disambiguation => '消歧义';
+
+  @override
+  String get performers_field_birthdate => '出生日期';
+
+  @override
+  String get performers_field_deathdate => '死亡日期';
+
+  @override
+  String get performers_field_height_cm => '身高（cm）';
+
+  @override
+  String get performers_field_weight_kg => '体重（kg）';
+
+  @override
+  String get performers_field_measurements => '三围';
+
+  @override
+  String get performers_field_fake_tits => '假胸';
+
+  @override
+  String get performers_field_penis_length => '阴茎长度';
+
+  @override
+  String get performers_field_ethnicity => '族裔';
+
+  @override
+  String get performers_field_country => '国家';
+
+  @override
+  String get performers_field_eye_color => '眼睛颜色';
+
+  @override
+  String get performers_field_hair_color => '头发颜色';
+
+  @override
+  String get performers_field_career_start => '职业开始';
+
+  @override
+  String get performers_field_career_end => '职业结束';
+
+  @override
+  String get performers_field_tattoos => '纹身';
+
+  @override
+  String get performers_field_piercings => '穿孔';
+
+  @override
+  String get performers_field_aliases => '别名';
+
+  @override
+  String get common_organized => '已整理';
+
+  @override
+  String get scenes_duplicated => '重复';
 
   @override
   String get random_studio => '随机制片商';
@@ -1863,6 +2306,88 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get random_performer => '随机出演者';
+
+  @override
+  String get filter_modifier => '修饰符';
+
+  @override
+  String get filter_value => '值';
+
+  @override
+  String get filter_equals => '等于';
+
+  @override
+  String get filter_not_equals => '不等于';
+
+  @override
+  String get filter_greater_than => '大于';
+
+  @override
+  String get filter_less_than => '小于';
+
+  @override
+  String get filter_is_null => '为空';
+
+  @override
+  String get filter_not_null => '不为空';
+
+  @override
+  String get images_resolution_title => '分辨率';
+
+  @override
+  String get resolution_144p => '144p';
+
+  @override
+  String get resolution_240p => '240p';
+
+  @override
+  String get resolution_360p => '360p';
+
+  @override
+  String get resolution_480p => '480p';
+
+  @override
+  String get resolution_540p => '540p';
+
+  @override
+  String get resolution_720p => '720p';
+
+  @override
+  String get resolution_1080p => '1080p';
+
+  @override
+  String get resolution_1440p => '1440p';
+
+  @override
+  String get resolution_1920p => '1920p';
+
+  @override
+  String get resolution_2160p => '4K (2160p)';
+
+  @override
+  String get resolution_4320p => '8K (4320p)';
+
+  @override
+  String get images_orientation_title => '方向';
+
+  @override
+  String get common_or => '或';
+
+  @override
+  String get scrape_from_url => '从 URL 抓取';
+
+  @override
+  String get scenes_phash_started => '开始生成 phash';
+
+  @override
+  String scenes_phash_failed(Object error) {
+    return '生成 phash 失败：$error';
+  }
+
+  @override
+  String details_failed_update_studio(Object error) {
+    return '更新工作室失败：$error';
+  }
 
   @override
   String get settings_title => '设置';
@@ -2465,6 +2990,27 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
       '覆盖仅限原生的限制，并强制用户名 + 密码身份验证方式在 Flutter Web 上可见。';
 
   @override
+  String get settings_develop_proxy_auth => '启用代理认证模式';
+
+  @override
+  String get settings_develop_proxy_auth_subtitle =>
+      '启用高级 Basic Auth 和 Bearer Token 方法，以便在 Authentik 等代理背后的无认证后端中使用。';
+
+  @override
+  String get settings_server_auth_basic => '基础认证';
+
+  @override
+  String get settings_server_auth_bearer => 'Bearer 令牌';
+
+  @override
+  String get settings_server_auth_basic_desc =>
+      '发送 \'Authorization: Basic <base64(user:pass)>\' 请求头。';
+
+  @override
+  String get settings_server_auth_bearer_desc =>
+      '发送 \'Authorization: Bearer <token>\' 请求头。';
+
+  @override
   String get common_edit => '编辑';
 
   @override
@@ -2487,6 +3033,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get images_title => '图片';
+
+  @override
+  String get images_filter_title => '过滤图片';
+
+  @override
+  String get images_filter_saved => '筛选偏好已保存为默认设置';
 
   @override
   String get images_sort_title => '对图片排序';
@@ -2595,7 +3147,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scenes_field_tags => '标签';
 
   @override
-  String get scenes_field_urls => 'URL';
+  String get scenes_field_urls => '链接';
+
+  @override
+  String get scenes_edit_performer => '编辑演员';
+
+  @override
+  String get scenes_edit_studio => '编辑工作室';
 
   @override
   String get common_no_title => '无标题';
@@ -2634,6 +3192,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get scenes_duration_long => '> 20分钟';
+
+  @override
+  String get details_scene_fingerprint_query => '场景指纹查询';
+
+  @override
+  String get scenes_available_scrapers => '可用抓取器';
+
+  @override
+  String get scrape_results_existing => '已存在';
+
+  @override
+  String get scrape_results_scraped => '已抓取';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -2798,6 +3368,84 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get sort_random => '隨機';
 
   @override
+  String get sort_file_mod_time => '檔案修改時間';
+
+  @override
+  String get sort_filesize => '檔案大小';
+
+  @override
+  String get sort_o_count => 'O 計數器';
+
+  @override
+  String get sort_height => '身高';
+
+  @override
+  String get sort_birthdate => '出生日期';
+
+  @override
+  String get sort_tag_count => '標籤數';
+
+  @override
+  String get sort_play_count => '播放次數';
+
+  @override
+  String get sort_o_counter => 'O 計數器';
+
+  @override
+  String get sort_zip_file_count => 'ZIP 檔案數';
+
+  @override
+  String get sort_last_o_at => '上次 O 時間';
+
+  @override
+  String get sort_latest_scene => '最新場景';
+
+  @override
+  String get sort_career_start => '職業開始';
+
+  @override
+  String get sort_career_end => '職業結束';
+
+  @override
+  String get sort_weight => '體重';
+
+  @override
+  String get sort_measurements => '三圍';
+
+  @override
+  String get sort_scenes_duration => '場景時長';
+
+  @override
+  String get sort_scenes_size => '場景大小';
+
+  @override
+  String get sort_images_count => '圖片數';
+
+  @override
+  String get sort_galleries_count => '畫廊數';
+
+  @override
+  String get sort_child_count => '子工作室數';
+
+  @override
+  String get sort_performers_count => '演出者數';
+
+  @override
+  String get sort_groups_count => '分組數';
+
+  @override
+  String get sort_marker_count => '標記數';
+
+  @override
+  String get sort_studios_count => '工作室數';
+
+  @override
+  String get sort_penis_length => '陰莖長度';
+
+  @override
+  String get sort_last_played_at => '上次播放時間';
+
+  @override
   String get studios_sort_saved => '排序偏好已儲存為預設';
 
   @override
@@ -2808,6 +3456,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get tags_filter_saved => '篩選偏好已儲存為預設';
+
+  @override
+  String get tags_sort_title => '排序標籤';
 
   @override
   String get tags_sort_saved => '排序偏好已儲存為預設';
@@ -2834,7 +3485,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String common_id(Object id) {
-    return 'ID: $id';
+    return 'ID：$id';
   }
 
   @override
@@ -2895,7 +3546,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get common_release_date => '發佈日期';
 
   @override
-  String get common_url => 'URL';
+  String get common_url => '連結';
 
   @override
   String get common_no_url => '無 URL';
@@ -3028,6 +3679,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
+  String details_failed_update_performer(Object error) {
+    return '更新演员失败：$error';
+  }
+
+  @override
   String details_failed_increment_o_count(String error) {
     return '增加 O 計數失敗：$error';
   }
@@ -3091,6 +3747,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get scenes_filter_title => '篩選場景';
+
+  @override
+  String get scenes_filter_saved => '篩選偏好已儲存為預設設定';
 
   @override
   String get scenes_watched => '已看';
@@ -3165,7 +3824,76 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get performers_gender_intersex => '雙性人';
 
   @override
+  String get performers_gender_non_binary => '非二元';
+
+  @override
+  String get performers_circumcised => '割礼';
+
+  @override
+  String get performers_circumcised_cut => '已割禮';
+
+  @override
+  String get performers_circumcised_uncut => '未割禮';
+
+  @override
   String get performers_play_count => '播放次數';
+
+  @override
+  String get performers_field_disambiguation => '消歧义';
+
+  @override
+  String get performers_field_birthdate => '出生日期';
+
+  @override
+  String get performers_field_deathdate => '死亡日期';
+
+  @override
+  String get performers_field_height_cm => '身高（cm）';
+
+  @override
+  String get performers_field_weight_kg => '体重（kg）';
+
+  @override
+  String get performers_field_measurements => '三围';
+
+  @override
+  String get performers_field_fake_tits => '假胸';
+
+  @override
+  String get performers_field_penis_length => '阴茎长度';
+
+  @override
+  String get performers_field_ethnicity => '族裔';
+
+  @override
+  String get performers_field_country => '国家';
+
+  @override
+  String get performers_field_eye_color => '眼睛颜色';
+
+  @override
+  String get performers_field_hair_color => '头发颜色';
+
+  @override
+  String get performers_field_career_start => '职业开始';
+
+  @override
+  String get performers_field_career_end => '职业结束';
+
+  @override
+  String get performers_field_tattoos => '纹身';
+
+  @override
+  String get performers_field_piercings => '穿孔';
+
+  @override
+  String get performers_field_aliases => '别名';
+
+  @override
+  String get common_organized => '已整理';
+
+  @override
+  String get scenes_duplicated => '重复';
 
   @override
   String get random_studio => '隨機製片商';
@@ -3181,6 +3909,88 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get random_performer => '隨機演出者';
+
+  @override
+  String get filter_modifier => '修饰符';
+
+  @override
+  String get filter_value => '值';
+
+  @override
+  String get filter_equals => '等于';
+
+  @override
+  String get filter_not_equals => '不等于';
+
+  @override
+  String get filter_greater_than => '大于';
+
+  @override
+  String get filter_less_than => '小于';
+
+  @override
+  String get filter_is_null => '为空';
+
+  @override
+  String get filter_not_null => '不为空';
+
+  @override
+  String get images_resolution_title => '解析度';
+
+  @override
+  String get resolution_144p => '144p';
+
+  @override
+  String get resolution_240p => '240p';
+
+  @override
+  String get resolution_360p => '360p';
+
+  @override
+  String get resolution_480p => '480p';
+
+  @override
+  String get resolution_540p => '540p';
+
+  @override
+  String get resolution_720p => '720p';
+
+  @override
+  String get resolution_1080p => '1080p';
+
+  @override
+  String get resolution_1440p => '1440p';
+
+  @override
+  String get resolution_1920p => '1920p';
+
+  @override
+  String get resolution_2160p => '4K (2160p)';
+
+  @override
+  String get resolution_4320p => '8K (4320p)';
+
+  @override
+  String get images_orientation_title => '方向';
+
+  @override
+  String get common_or => '或';
+
+  @override
+  String get scrape_from_url => '从 URL 抓取';
+
+  @override
+  String get scenes_phash_started => '开始生成 phash';
+
+  @override
+  String scenes_phash_failed(Object error) {
+    return '生成 phash 失败：$error';
+  }
+
+  @override
+  String details_failed_update_studio(Object error) {
+    return '更新工作室失败：$error';
+  }
 
   @override
   String get settings_title => '設定';
@@ -3785,6 +4595,27 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       '覆寫僅限原生的限制，並強制「使用者名稱 + 密碼」驗證方式在 Flutter Web 上可見。';
 
   @override
+  String get settings_develop_proxy_auth => '啟用代理認證模式';
+
+  @override
+  String get settings_develop_proxy_auth_subtitle =>
+      '啟用進階 Basic Auth 和 Bearer Token 方法，以便在 Authentik 等代理背後的無認證後端中使用。';
+
+  @override
+  String get settings_server_auth_basic => '基礎認證';
+
+  @override
+  String get settings_server_auth_bearer => 'Bearer 權杖';
+
+  @override
+  String get settings_server_auth_basic_desc =>
+      '發送 \'Authorization: Basic <base64(user:pass)>\' 請求頭。';
+
+  @override
+  String get settings_server_auth_bearer_desc =>
+      '發送 \'Authorization: Bearer <token>\' 請求頭。';
+
+  @override
   String get common_edit => '編輯';
 
   @override
@@ -3807,6 +4638,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get images_title => '圖片';
+
+  @override
+  String get images_filter_title => '過濾圖片';
+
+  @override
+  String get images_filter_saved => '篩選偏好已儲存為預設設定';
 
   @override
   String get images_sort_title => '排序圖片';
@@ -3915,7 +4752,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scenes_field_tags => '標籤';
 
   @override
-  String get scenes_field_urls => 'URL';
+  String get scenes_field_urls => '連結';
+
+  @override
+  String get scenes_edit_performer => '編輯演出者';
+
+  @override
+  String get scenes_edit_studio => '編輯工作室';
 
   @override
   String get common_no_title => '無標題';
@@ -3954,4 +4797,16 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get scenes_duration_long => '> 20分鐘';
+
+  @override
+  String get details_scene_fingerprint_query => '場景指紋查詢';
+
+  @override
+  String get scenes_available_scrapers => '可用的抓取器';
+
+  @override
+  String get scrape_results_existing => '已存在';
+
+  @override
+  String get scrape_results_scraped => '已抓取';
 }

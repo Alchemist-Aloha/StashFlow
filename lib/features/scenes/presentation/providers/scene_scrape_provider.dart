@@ -15,11 +15,28 @@ class SceneScrapeNotifier {
   }
 
   Future<List<ScrapedScene>> scrapeScene({
-    required String scraperId,
-    required String sceneId,
+    String? scraperId,
+    String? stashBoxEndpoint,
+    String? sceneId,
+    String? query,
   }) async {
     final repo = ref.read(sceneRepositoryProvider);
-    return repo.scrapeSingleScene(scraperId: scraperId, sceneId: sceneId);
+    return repo.scrapeSingleScene(
+      scraperId: scraperId,
+      stashBoxEndpoint: stashBoxEndpoint,
+      sceneId: sceneId,
+      query: query,
+    );
+  }
+
+  Future<ScrapedScene?> scrapeSceneURL(String url) async {
+    final repo = ref.read(sceneRepositoryProvider);
+    return repo.scrapeSceneURL(url);
+  }
+
+  Future<void> generatePhash(String sceneId) async {
+    final repo = ref.read(sceneRepositoryProvider);
+    await repo.generatePhash(sceneId);
   }
 
   Future<void> saveScraped({
@@ -58,3 +75,8 @@ class SceneScrapeNotifier {
 final sceneScrapeProvider = Provider<SceneScrapeNotifier>((ref) {
   return SceneScrapeNotifier(ref);
 });
+
+final availableScrapersProvider =
+    FutureProvider.family<List<Scraper>, String>((ref, type) async {
+      return ref.read(sceneScrapeProvider).listAvailableScrapers(types: [type]);
+    });

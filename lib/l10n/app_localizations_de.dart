@@ -168,6 +168,84 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sort_random => 'Zufällig';
 
   @override
+  String get sort_file_mod_time => 'Dateiänderungszeit';
+
+  @override
+  String get sort_filesize => 'Dateigröße';
+
+  @override
+  String get sort_o_count => 'O-Zähler';
+
+  @override
+  String get sort_height => 'Größe';
+
+  @override
+  String get sort_birthdate => 'Geburtsdatum';
+
+  @override
+  String get sort_tag_count => 'Anzahl Tags';
+
+  @override
+  String get sort_play_count => 'Wiedergabeanzahl';
+
+  @override
+  String get sort_o_counter => 'O-Zähler';
+
+  @override
+  String get sort_zip_file_count => 'Anzahl von ZIP-Dateien';
+
+  @override
+  String get sort_last_o_at => 'Letzte O-Zeit';
+
+  @override
+  String get sort_latest_scene => 'Neueste Szene';
+
+  @override
+  String get sort_career_start => 'Karrierebeginn';
+
+  @override
+  String get sort_career_end => 'Karriereende';
+
+  @override
+  String get sort_weight => 'Gewicht';
+
+  @override
+  String get sort_measurements => 'Maße';
+
+  @override
+  String get sort_scenes_duration => 'Szenen-Dauer';
+
+  @override
+  String get sort_scenes_size => 'Szenengröße';
+
+  @override
+  String get sort_images_count => 'Bilderanzahl';
+
+  @override
+  String get sort_galleries_count => 'Galerienanzahl';
+
+  @override
+  String get sort_child_count => 'Anzahl Unterstudios';
+
+  @override
+  String get sort_performers_count => 'Darstelleranzahl';
+
+  @override
+  String get sort_groups_count => 'Gruppenanzahl';
+
+  @override
+  String get sort_marker_count => 'Marker-Anzahl';
+
+  @override
+  String get sort_studios_count => 'Studiosanzahl';
+
+  @override
+  String get sort_penis_length => 'Penislänge';
+
+  @override
+  String get sort_last_played_at => 'Zuletzt abgespielt am';
+
+  @override
   String get studios_sort_saved =>
       'Sortiereinstellungen als Standard gespeichert';
 
@@ -181,6 +259,9 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get tags_filter_saved =>
       'Filtereinstellungen als Standard gespeichert';
+
+  @override
+  String get tags_sort_title => 'Tags sortieren';
 
   @override
   String get tags_sort_saved => 'Sortiereinstellungen als Standard gespeichert';
@@ -404,6 +485,11 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String details_failed_update_performer(Object error) {
+    return 'Aktualisierung des Darstellers fehlgeschlagen: $error';
+  }
+
+  @override
   String details_failed_increment_o_count(String error) {
     return 'Fehler beim Erhöhen des O-Zählers: $error';
   }
@@ -467,6 +553,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get scenes_filter_title => 'Szenen filtern';
+
+  @override
+  String get scenes_filter_saved =>
+      'Filtereinstellungen als Standard gespeichert';
 
   @override
   String get scenes_watched => 'Gesehen';
@@ -542,7 +632,76 @@ class AppLocalizationsDe extends AppLocalizations {
   String get performers_gender_intersex => 'Intersexuell';
 
   @override
+  String get performers_gender_non_binary => 'Nicht-binär';
+
+  @override
+  String get performers_circumcised => 'Beschneidung';
+
+  @override
+  String get performers_circumcised_cut => 'Beschnitten';
+
+  @override
+  String get performers_circumcised_uncut => 'Unbeschnitten';
+
+  @override
   String get performers_play_count => 'Wiedergabeanzahl';
+
+  @override
+  String get performers_field_disambiguation => 'Disambiguierung';
+
+  @override
+  String get performers_field_birthdate => 'Geburtsdatum';
+
+  @override
+  String get performers_field_deathdate => 'Todesdatum';
+
+  @override
+  String get performers_field_height_cm => 'Größe (cm)';
+
+  @override
+  String get performers_field_weight_kg => 'Gewicht (kg)';
+
+  @override
+  String get performers_field_measurements => 'Maße';
+
+  @override
+  String get performers_field_fake_tits => 'Künstliche Brüste';
+
+  @override
+  String get performers_field_penis_length => 'Penislänge';
+
+  @override
+  String get performers_field_ethnicity => 'Ethnie';
+
+  @override
+  String get performers_field_country => 'Land';
+
+  @override
+  String get performers_field_eye_color => 'Augenfarbe';
+
+  @override
+  String get performers_field_hair_color => 'Haarfarbe';
+
+  @override
+  String get performers_field_career_start => 'Karrierebeginn';
+
+  @override
+  String get performers_field_career_end => 'Karriereende';
+
+  @override
+  String get performers_field_tattoos => 'Tätowierungen';
+
+  @override
+  String get performers_field_piercings => 'Piercings';
+
+  @override
+  String get performers_field_aliases => 'Aliase';
+
+  @override
+  String get common_organized => 'Organisiert';
+
+  @override
+  String get scenes_duplicated => 'Dupliziert';
 
   @override
   String get random_studio => 'Zufälliges Studio';
@@ -558,6 +717,88 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get random_performer => 'Zufälliger Darsteller';
+
+  @override
+  String get filter_modifier => 'Modifikator';
+
+  @override
+  String get filter_value => 'Wert';
+
+  @override
+  String get filter_equals => 'Gleich';
+
+  @override
+  String get filter_not_equals => 'Nicht gleich';
+
+  @override
+  String get filter_greater_than => 'Größer als';
+
+  @override
+  String get filter_less_than => 'Kleiner als';
+
+  @override
+  String get filter_is_null => 'Ist null';
+
+  @override
+  String get filter_not_null => 'Ist nicht null';
+
+  @override
+  String get images_resolution_title => 'Auflösung';
+
+  @override
+  String get resolution_144p => '144p';
+
+  @override
+  String get resolution_240p => '240p';
+
+  @override
+  String get resolution_360p => '360p';
+
+  @override
+  String get resolution_480p => '480p';
+
+  @override
+  String get resolution_540p => '540p';
+
+  @override
+  String get resolution_720p => '720p';
+
+  @override
+  String get resolution_1080p => '1080p';
+
+  @override
+  String get resolution_1440p => '1440p';
+
+  @override
+  String get resolution_1920p => '1920p';
+
+  @override
+  String get resolution_2160p => '4K (2160p)';
+
+  @override
+  String get resolution_4320p => '8K (4320p)';
+
+  @override
+  String get images_orientation_title => 'Ausrichtung';
+
+  @override
+  String get common_or => 'ODER';
+
+  @override
+  String get scrape_from_url => 'Von URL scrapen';
+
+  @override
+  String get scenes_phash_started => 'Phash-Generierung gestartet';
+
+  @override
+  String scenes_phash_failed(Object error) {
+    return 'Phash-Generierung fehlgeschlagen: $error';
+  }
+
+  @override
+  String details_failed_update_studio(Object error) {
+    return 'Aktualisierung des Studios fehlgeschlagen: $error';
+  }
 
   @override
   String get settings_title => 'Einstellungen';
@@ -1229,6 +1470,28 @@ class AppLocalizationsDe extends AppLocalizations {
       'Hebt die Native-only-Beschränkung auf und erzwingt die Sichtbarkeit der Benutzername + Passwort-Authentifizierungsmethode in Flutter Web.';
 
   @override
+  String get settings_develop_proxy_auth =>
+      'Proxy-Authentifizierungsmodi aktivieren';
+
+  @override
+  String get settings_develop_proxy_auth_subtitle =>
+      'Aktivieren Sie erweiterte Basic-Auth- und Bearer-Token-Methoden für die Verwendung mit authentifizierungsfreien Backends hinter Proxys wie Authentik.';
+
+  @override
+  String get settings_server_auth_basic => 'Basic Auth';
+
+  @override
+  String get settings_server_auth_bearer => 'Bearer-Token';
+
+  @override
+  String get settings_server_auth_basic_desc =>
+      'Sendet den Header \'Authorization: Basic <base64(user:pass)>\'.';
+
+  @override
+  String get settings_server_auth_bearer_desc =>
+      'Sendet den Header \'Authorization: Bearer <token>\'.';
+
+  @override
   String get common_edit => 'Bearbeiten';
 
   @override
@@ -1252,6 +1515,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get images_title => 'Bilder';
+
+  @override
+  String get images_filter_title => 'Bilder filtern';
+
+  @override
+  String get images_filter_saved =>
+      'Filtereinstellungen als Standard gespeichert';
 
   @override
   String get images_sort_title => 'Bilder sortieren';
@@ -1367,6 +1637,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scenes_field_urls => 'URLs';
 
   @override
+  String get scenes_edit_performer => 'Darsteller bearbeiten';
+
+  @override
+  String get scenes_edit_studio => 'Studio bearbeiten';
+
+  @override
   String get common_no_title => 'Kein Titel';
 
   @override
@@ -1406,4 +1682,16 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get scenes_duration_long => '> 20 Min.';
+
+  @override
+  String get details_scene_fingerprint_query => 'Szenen-Fingerprint-Abfrage';
+
+  @override
+  String get scenes_available_scrapers => 'Verfügbare Scraper';
+
+  @override
+  String get scrape_results_existing => 'Bereits vorhanden';
+
+  @override
+  String get scrape_results_scraped => 'Erfasste Ergebnisse';
 }

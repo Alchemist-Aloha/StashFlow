@@ -56,8 +56,76 @@ mutation UpdatePerformerFavorite($id: ID!, $favorite: Boolean!) {
   }
 }
 
+mutation PerformerUpdate($input: PerformerUpdateInput!) {
+  performerUpdate(input: $input) {
+    id
+  }
+}
+
 mutation CreatePerformer($input: PerformerCreateInput!) {
   performerCreate(input: $input) {
     id
+  }
+}
+
+query ScrapeSinglePerformer($source: ScraperSourceInput!, $input: ScrapeSinglePerformerInput!) {
+  scrapeSinglePerformer(source: $source, input: $input) {
+    name
+    disambiguation
+    gender
+    birthdate
+    ethnicity
+    country
+    eye_color
+    height
+    measurements
+    fake_tits
+    penis_length
+    circumcised
+    career_start
+    career_end
+    tattoos
+    piercings
+    aliases
+    image
+    details
+    death_date
+    hair_color
+    weight
+    remote_site_id
+    urls
+    images
+    stored_id
+  }
+}
+
+query ScrapePerformerURL($url: String!) {
+  scrapePerformerURL(url: $url) {
+    name
+    disambiguation
+    gender
+    birthdate
+    ethnicity
+    country
+    eye_color
+    height
+    measurements
+    fake_tits
+    penis_length
+    circumcised
+    career_start
+    career_end
+    tattoos
+    piercings
+    aliases
+    image
+    details
+    death_date
+    hair_color
+    weight
+    remote_site_id
+    urls
+    images
+    stored_id
   }
 }

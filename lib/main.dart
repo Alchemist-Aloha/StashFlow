@@ -22,10 +22,9 @@ import 'core/presentation/theme/theme_mode_provider.dart';
 import 'core/presentation/theme/theme_color_provider.dart';
 import 'core/presentation/theme/true_black_provider.dart';
 
-const bool isTestMode = bool.fromEnvironment(
-  'FLUTTER_TEST',
-  defaultValue: false,
-);
+import 'core/utils/environment.dart' as env;
+
+final bool isTestMode = env.isTestMode;
 
 StashMediaHandler? mediaHandler;
 

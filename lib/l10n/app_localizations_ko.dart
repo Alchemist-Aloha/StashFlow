@@ -164,6 +164,84 @@ class AppLocalizationsKo extends AppLocalizations {
   String get sort_random => '랜덤';
 
   @override
+  String get sort_file_mod_time => '파일 수정 시간';
+
+  @override
+  String get sort_filesize => '파일 크기';
+
+  @override
+  String get sort_o_count => 'O 카운터';
+
+  @override
+  String get sort_height => '키';
+
+  @override
+  String get sort_birthdate => '생년월일';
+
+  @override
+  String get sort_tag_count => '태그 수';
+
+  @override
+  String get sort_play_count => '재생 수';
+
+  @override
+  String get sort_o_counter => 'O 카운터';
+
+  @override
+  String get sort_zip_file_count => 'ZIP 파일 수';
+
+  @override
+  String get sort_last_o_at => '마지막 O';
+
+  @override
+  String get sort_latest_scene => '최신 씬';
+
+  @override
+  String get sort_career_start => '경력 시작';
+
+  @override
+  String get sort_career_end => '경력 종료';
+
+  @override
+  String get sort_weight => '체중';
+
+  @override
+  String get sort_measurements => '치수';
+
+  @override
+  String get sort_scenes_duration => '씬 길이';
+
+  @override
+  String get sort_scenes_size => '씬 크기';
+
+  @override
+  String get sort_images_count => '이미지 수';
+
+  @override
+  String get sort_galleries_count => '갤러리 수';
+
+  @override
+  String get sort_child_count => '하위 스튜디오 수';
+
+  @override
+  String get sort_performers_count => '출연자 수';
+
+  @override
+  String get sort_groups_count => '그룹 수';
+
+  @override
+  String get sort_marker_count => '마커 수';
+
+  @override
+  String get sort_studios_count => '스튜디오 수';
+
+  @override
+  String get sort_penis_length => '음경 길이';
+
+  @override
+  String get sort_last_played_at => '마지막 재생';
+
+  @override
   String get studios_sort_saved => '정렬 설정이 기본값으로 저장되었습니다';
 
   @override
@@ -174,6 +252,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get tags_filter_saved => '필터 설정이 기본값으로 저장되었습니다';
+
+  @override
+  String get tags_sort_title => '태그 정렬';
 
   @override
   String get tags_sort_saved => '정렬 설정이 기본값으로 저장되었습니다';
@@ -261,7 +342,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get common_release_date => '출시일';
 
   @override
-  String get common_url => 'URL';
+  String get common_url => '링크';
 
   @override
   String get common_no_url => 'URL 없음';
@@ -394,6 +475,11 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String details_failed_update_performer(Object error) {
+    return '출연자 업데이트에 실패했습니다: $error';
+  }
+
+  @override
   String details_failed_increment_o_count(String error) {
     return 'O 수 증가 실패: $error';
   }
@@ -457,6 +543,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get scenes_filter_title => '장면 필터';
+
+  @override
+  String get scenes_filter_saved => '필터 설정이 기본값으로 저장되었습니다';
 
   @override
   String get scenes_watched => '본 항목';
@@ -531,7 +620,76 @@ class AppLocalizationsKo extends AppLocalizations {
   String get performers_gender_intersex => '인터섹스';
 
   @override
+  String get performers_gender_non_binary => '논바이너리';
+
+  @override
+  String get performers_circumcised => '포경';
+
+  @override
+  String get performers_circumcised_cut => '포경';
+
+  @override
+  String get performers_circumcised_uncut => '비포경';
+
+  @override
   String get performers_play_count => '재생 횟수';
+
+  @override
+  String get performers_field_disambiguation => '중복 해소';
+
+  @override
+  String get performers_field_birthdate => '생년월일';
+
+  @override
+  String get performers_field_deathdate => '사망일';
+
+  @override
+  String get performers_field_height_cm => '키 (cm)';
+
+  @override
+  String get performers_field_weight_kg => '체중 (kg)';
+
+  @override
+  String get performers_field_measurements => '치수';
+
+  @override
+  String get performers_field_fake_tits => '가짜 가슴';
+
+  @override
+  String get performers_field_penis_length => '음경 길이';
+
+  @override
+  String get performers_field_ethnicity => '민족';
+
+  @override
+  String get performers_field_country => '국가';
+
+  @override
+  String get performers_field_eye_color => '눈 색깔';
+
+  @override
+  String get performers_field_hair_color => '머리 색깔';
+
+  @override
+  String get performers_field_career_start => '경력 시작';
+
+  @override
+  String get performers_field_career_end => '경력 종료';
+
+  @override
+  String get performers_field_tattoos => '문신';
+
+  @override
+  String get performers_field_piercings => '피어싱';
+
+  @override
+  String get performers_field_aliases => '별명';
+
+  @override
+  String get common_organized => '정리됨';
+
+  @override
+  String get scenes_duplicated => '중복됨';
 
   @override
   String get random_studio => '랜덤 스튜디오';
@@ -547,6 +705,88 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get random_performer => '랜덤 출연자';
+
+  @override
+  String get filter_modifier => '수정자';
+
+  @override
+  String get filter_value => '값';
+
+  @override
+  String get filter_equals => '같음';
+
+  @override
+  String get filter_not_equals => '같지 않음';
+
+  @override
+  String get filter_greater_than => '보다 큼';
+
+  @override
+  String get filter_less_than => '보다 작음';
+
+  @override
+  String get filter_is_null => '널임';
+
+  @override
+  String get filter_not_null => '널 아님';
+
+  @override
+  String get images_resolution_title => '해상도';
+
+  @override
+  String get resolution_144p => '144p';
+
+  @override
+  String get resolution_240p => '240p';
+
+  @override
+  String get resolution_360p => '360p';
+
+  @override
+  String get resolution_480p => '480p';
+
+  @override
+  String get resolution_540p => '540p';
+
+  @override
+  String get resolution_720p => '720p';
+
+  @override
+  String get resolution_1080p => '1080p';
+
+  @override
+  String get resolution_1440p => '1440p';
+
+  @override
+  String get resolution_1920p => '1920p';
+
+  @override
+  String get resolution_2160p => '4K (2160p)';
+
+  @override
+  String get resolution_4320p => '8K (4320p)';
+
+  @override
+  String get images_orientation_title => '방향';
+
+  @override
+  String get common_or => '또는';
+
+  @override
+  String get scrape_from_url => 'URL에서 스크랩';
+
+  @override
+  String get scenes_phash_started => 'Phash 생성 시작됨';
+
+  @override
+  String scenes_phash_failed(Object error) {
+    return 'Phash 생성 실패: $error';
+  }
+
+  @override
+  String details_failed_update_studio(Object error) {
+    return '스튜디오 업데이트 실패: $error';
+  }
 
   @override
   String get settings_title => '설정';
@@ -1168,6 +1408,27 @@ class AppLocalizationsKo extends AppLocalizations {
       '네이티브 전용 제한을 무시하고 Flutter 웹에서 사용자 이름 + 비밀번호 인증 방식을 강제로 표시합니다.';
 
   @override
+  String get settings_develop_proxy_auth => '프록시 인증 모드 활성화';
+
+  @override
+  String get settings_develop_proxy_auth_subtitle =>
+      'Authentik과 같은 프록시 뒤의 인증 없는 백엔드에서 사용하기 위해 고급 Basic Auth 및 Bearer Token 방식을 활성화합니다.';
+
+  @override
+  String get settings_server_auth_basic => '기본 인증';
+
+  @override
+  String get settings_server_auth_bearer => '전달자 토큰';
+
+  @override
+  String get settings_server_auth_basic_desc =>
+      '\'Authorization: Basic <base64(user:pass)>\' 헤더를 전송합니다.';
+
+  @override
+  String get settings_server_auth_bearer_desc =>
+      '\'Authorization: Bearer <token>\' 헤더를 전송합니다.';
+
+  @override
   String get common_edit => '편집';
 
   @override
@@ -1190,6 +1451,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get images_title => '이미지';
+
+  @override
+  String get images_filter_title => '이미지 필터링';
+
+  @override
+  String get images_filter_saved => '필터 설정이 기본값으로 저장되었습니다';
 
   @override
   String get images_sort_title => '이미지 정렬';
@@ -1299,7 +1566,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get scenes_field_tags => '태그';
 
   @override
-  String get scenes_field_urls => 'URL';
+  String get scenes_field_urls => '링크';
+
+  @override
+  String get scenes_edit_performer => '출연자 편집';
+
+  @override
+  String get scenes_edit_studio => '스튜디오 편집';
 
   @override
   String get common_no_title => '제목 없음';
@@ -1339,4 +1612,16 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get scenes_duration_long => '> 20분';
+
+  @override
+  String get details_scene_fingerprint_query => '씬 지문 쿼리';
+
+  @override
+  String get scenes_available_scrapers => '사용 가능한 스크레이퍼';
+
+  @override
+  String get scrape_results_existing => '기존 결과';
+
+  @override
+  String get scrape_results_scraped => '스크랩된 결과';
 }

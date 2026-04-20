@@ -18,6 +18,7 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../providers/performer_list_provider.dart';
+import '../../../setup/presentation/providers/scrape_customization_provider.dart';
 
 class PerformerDetailsPage extends ConsumerWidget {
   final String performerId;
@@ -65,9 +66,26 @@ class PerformerDetailsPage extends ConsumerWidget {
     final galleriesAsync = ref.watch(performerGalleriesProvider(performerId));
     final mediaHeaders = ref.watch(mediaHeadersProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
+    final scrapeEnabled = ref.watch(scrapeEnabledProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.details_performer)),
+      appBar: AppBar(
+        title: Text(context.l10n.details_performer),
+        actions: [
+          if (scrapeEnabled)
+            performerAsync.maybeWhen(
+              data: (performer) => IconButton(
+                tooltip: context.l10n.common_edit,
+                icon: const Icon(Icons.edit_outlined),
+                onPressed: () => context.push(
+                  '/performers/performer/${performer.id}/edit',
+                  extra: performer,
+                ),
+              ),
+              orElse: () => const SizedBox.shrink(),
+            ),
+        ],
+      ),
       floatingActionButton: randomNavigationEnabled
           ? FloatingActionButton.small(
               onPressed: () => _openRandomPerformer(context, ref),

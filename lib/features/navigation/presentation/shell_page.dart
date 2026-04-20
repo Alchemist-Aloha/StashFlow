@@ -6,8 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../core/presentation/theme/app_theme.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../core/utils/l10n_extensions.dart';
+import '../../../core/utils/environment.dart' as env;
 import 'package:flutter/gestures.dart';
 import '../../../core/presentation/providers/desktop_capabilities_provider.dart';
 import '../../../core/presentation/providers/keybinds_provider.dart';
@@ -145,6 +147,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
   }
 
   void _checkServerConfiguration() {
+    if (env.isTestMode) return;
     final serverUrl = ref.read(serverUrlProvider);
     if (serverUrl.isEmpty && !_dialogShown && mounted) {
       _dialogShown = true;
@@ -381,7 +384,12 @@ class _ShellPageState extends ConsumerState<ShellPage> {
           NavigationRail(
             selectedIndex: currentUiIndex,
             onDestinationSelected: onDestinationSelected,
-            labelType: NavigationRailLabelType.all,
+            labelType: NavigationRailLabelType.selected,
+            useIndicator: true,
+            indicatorColor: Theme.of(context).colorScheme.secondaryContainer,
+            indicatorShape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+            ),
             destinations: navigationRailDestinations,
           ),
           const VerticalDivider(thickness: 1, width: 1),
@@ -469,6 +477,9 @@ class _ShellPageState extends ConsumerState<ShellPage> {
                           selectedIndex: currentUiIndex,
                           destinations: navigationDestinations,
                           onDestinationSelected: onDestinationSelected,
+                          labelBehavior: NavigationDestinationLabelBehavior
+                              .alwaysShow,
+                          height: 72,
                         ),
                       ),
                     ],

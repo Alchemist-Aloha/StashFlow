@@ -372,6 +372,162 @@ abstract class AppLocalizations {
   /// **'Random'**
   String get sort_random;
 
+  /// No description provided for @sort_file_mod_time.
+  ///
+  /// In en, this message translates to:
+  /// **'File Mod Time'**
+  String get sort_file_mod_time;
+
+  /// No description provided for @sort_filesize.
+  ///
+  /// In en, this message translates to:
+  /// **'Filesize'**
+  String get sort_filesize;
+
+  /// No description provided for @sort_o_count.
+  ///
+  /// In en, this message translates to:
+  /// **'O-Counter'**
+  String get sort_o_count;
+
+  /// No description provided for @sort_height.
+  ///
+  /// In en, this message translates to:
+  /// **'Height'**
+  String get sort_height;
+
+  /// No description provided for @sort_birthdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Birthdate'**
+  String get sort_birthdate;
+
+  /// No description provided for @sort_tag_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag Count'**
+  String get sort_tag_count;
+
+  /// No description provided for @sort_play_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Play Count'**
+  String get sort_play_count;
+
+  /// No description provided for @sort_o_counter.
+  ///
+  /// In en, this message translates to:
+  /// **'O-Counter'**
+  String get sort_o_counter;
+
+  /// No description provided for @sort_zip_file_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Zip File Count'**
+  String get sort_zip_file_count;
+
+  /// No description provided for @sort_last_o_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Last O At'**
+  String get sort_last_o_at;
+
+  /// No description provided for @sort_latest_scene.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest Scene'**
+  String get sort_latest_scene;
+
+  /// No description provided for @sort_career_start.
+  ///
+  /// In en, this message translates to:
+  /// **'Career Start'**
+  String get sort_career_start;
+
+  /// No description provided for @sort_career_end.
+  ///
+  /// In en, this message translates to:
+  /// **'Career End'**
+  String get sort_career_end;
+
+  /// No description provided for @sort_weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get sort_weight;
+
+  /// No description provided for @sort_measurements.
+  ///
+  /// In en, this message translates to:
+  /// **'Measurements'**
+  String get sort_measurements;
+
+  /// No description provided for @sort_scenes_duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Scenes Duration'**
+  String get sort_scenes_duration;
+
+  /// No description provided for @sort_scenes_size.
+  ///
+  /// In en, this message translates to:
+  /// **'Scenes Size'**
+  String get sort_scenes_size;
+
+  /// No description provided for @sort_images_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Image Count'**
+  String get sort_images_count;
+
+  /// No description provided for @sort_galleries_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery Count'**
+  String get sort_galleries_count;
+
+  /// No description provided for @sort_child_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Sub-studio Count'**
+  String get sort_child_count;
+
+  /// No description provided for @sort_performers_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Performer Count'**
+  String get sort_performers_count;
+
+  /// No description provided for @sort_groups_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Count'**
+  String get sort_groups_count;
+
+  /// No description provided for @sort_marker_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Marker Count'**
+  String get sort_marker_count;
+
+  /// No description provided for @sort_studios_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Studio Count'**
+  String get sort_studios_count;
+
+  /// No description provided for @sort_penis_length.
+  ///
+  /// In en, this message translates to:
+  /// **'Penis Length'**
+  String get sort_penis_length;
+
+  /// No description provided for @sort_last_played_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Played At'**
+  String get sort_last_played_at;
+
   /// No description provided for @studios_sort_saved.
   ///
   /// In en, this message translates to:
@@ -395,6 +551,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Filter preferences saved as default'**
   String get tags_filter_saved;
+
+  /// No description provided for @tags_sort_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort Tags'**
+  String get tags_sort_title;
 
   /// No description provided for @tags_sort_saved.
   ///
@@ -816,6 +978,12 @@ abstract class AppLocalizations {
   /// **'Failed to update rating: {error}'**
   String details_failed_update_rating(String error);
 
+  /// No description provided for @details_failed_update_performer.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update performer: {error}'**
+  String details_failed_update_performer(Object error);
+
   /// No description provided for @details_failed_increment_o_count.
   ///
   /// In en, this message translates to:
@@ -941,6 +1109,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Filter Scenes'**
   String get scenes_filter_title;
+
+  /// No description provided for @scenes_filter_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter preferences saved as default'**
+  String get scenes_filter_saved;
 
   /// No description provided for @scenes_watched.
   ///
@@ -1086,11 +1260,149 @@ abstract class AppLocalizations {
   /// **'Intersex'**
   String get performers_gender_intersex;
 
+  /// No description provided for @performers_gender_non_binary.
+  ///
+  /// In en, this message translates to:
+  /// **'Non Binary'**
+  String get performers_gender_non_binary;
+
+  /// No description provided for @performers_circumcised.
+  ///
+  /// In en, this message translates to:
+  /// **'Circumcised'**
+  String get performers_circumcised;
+
+  /// No description provided for @performers_circumcised_cut.
+  ///
+  /// In en, this message translates to:
+  /// **'Cut'**
+  String get performers_circumcised_cut;
+
+  /// No description provided for @performers_circumcised_uncut.
+  ///
+  /// In en, this message translates to:
+  /// **'Uncut'**
+  String get performers_circumcised_uncut;
+
   /// No description provided for @performers_play_count.
   ///
   /// In en, this message translates to:
   /// **'Play Count'**
   String get performers_play_count;
+
+  /// No description provided for @performers_field_disambiguation.
+  ///
+  /// In en, this message translates to:
+  /// **'Disambiguation'**
+  String get performers_field_disambiguation;
+
+  /// No description provided for @performers_field_birthdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Birthdate'**
+  String get performers_field_birthdate;
+
+  /// No description provided for @performers_field_deathdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Death Date'**
+  String get performers_field_deathdate;
+
+  /// No description provided for @performers_field_height_cm.
+  ///
+  /// In en, this message translates to:
+  /// **'Height (cm)'**
+  String get performers_field_height_cm;
+
+  /// No description provided for @performers_field_weight_kg.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight (kg)'**
+  String get performers_field_weight_kg;
+
+  /// No description provided for @performers_field_measurements.
+  ///
+  /// In en, this message translates to:
+  /// **'Measurements'**
+  String get performers_field_measurements;
+
+  /// No description provided for @performers_field_fake_tits.
+  ///
+  /// In en, this message translates to:
+  /// **'Fake Tits'**
+  String get performers_field_fake_tits;
+
+  /// No description provided for @performers_field_penis_length.
+  ///
+  /// In en, this message translates to:
+  /// **'Penis Length'**
+  String get performers_field_penis_length;
+
+  /// No description provided for @performers_field_ethnicity.
+  ///
+  /// In en, this message translates to:
+  /// **'Ethnicity'**
+  String get performers_field_ethnicity;
+
+  /// No description provided for @performers_field_country.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get performers_field_country;
+
+  /// No description provided for @performers_field_eye_color.
+  ///
+  /// In en, this message translates to:
+  /// **'Eye Color'**
+  String get performers_field_eye_color;
+
+  /// No description provided for @performers_field_hair_color.
+  ///
+  /// In en, this message translates to:
+  /// **'Hair Color'**
+  String get performers_field_hair_color;
+
+  /// No description provided for @performers_field_career_start.
+  ///
+  /// In en, this message translates to:
+  /// **'Career Start'**
+  String get performers_field_career_start;
+
+  /// No description provided for @performers_field_career_end.
+  ///
+  /// In en, this message translates to:
+  /// **'Career End'**
+  String get performers_field_career_end;
+
+  /// No description provided for @performers_field_tattoos.
+  ///
+  /// In en, this message translates to:
+  /// **'Tattoos'**
+  String get performers_field_tattoos;
+
+  /// No description provided for @performers_field_piercings.
+  ///
+  /// In en, this message translates to:
+  /// **'Piercings'**
+  String get performers_field_piercings;
+
+  /// No description provided for @performers_field_aliases.
+  ///
+  /// In en, this message translates to:
+  /// **'Aliases'**
+  String get performers_field_aliases;
+
+  /// No description provided for @common_organized.
+  ///
+  /// In en, this message translates to:
+  /// **'Organized'**
+  String get common_organized;
+
+  /// No description provided for @scenes_duplicated.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicated'**
+  String get scenes_duplicated;
 
   /// No description provided for @random_studio.
   ///
@@ -1121,6 +1433,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Random performer'**
   String get random_performer;
+
+  /// No description provided for @filter_modifier.
+  ///
+  /// In en, this message translates to:
+  /// **'Modifier'**
+  String get filter_modifier;
+
+  /// No description provided for @filter_value.
+  ///
+  /// In en, this message translates to:
+  /// **'Value'**
+  String get filter_value;
+
+  /// No description provided for @filter_equals.
+  ///
+  /// In en, this message translates to:
+  /// **'Equals'**
+  String get filter_equals;
+
+  /// No description provided for @filter_not_equals.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Equals'**
+  String get filter_not_equals;
+
+  /// No description provided for @filter_greater_than.
+  ///
+  /// In en, this message translates to:
+  /// **'Greater Than'**
+  String get filter_greater_than;
+
+  /// No description provided for @filter_less_than.
+  ///
+  /// In en, this message translates to:
+  /// **'Less Than'**
+  String get filter_less_than;
+
+  /// No description provided for @filter_is_null.
+  ///
+  /// In en, this message translates to:
+  /// **'Is Null'**
+  String get filter_is_null;
+
+  /// No description provided for @filter_not_null.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Null'**
+  String get filter_not_null;
+
+  /// No description provided for @images_resolution_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution'**
+  String get images_resolution_title;
+
+  /// No description provided for @resolution_144p.
+  ///
+  /// In en, this message translates to:
+  /// **'144p'**
+  String get resolution_144p;
+
+  /// No description provided for @resolution_240p.
+  ///
+  /// In en, this message translates to:
+  /// **'240p'**
+  String get resolution_240p;
+
+  /// No description provided for @resolution_360p.
+  ///
+  /// In en, this message translates to:
+  /// **'360p'**
+  String get resolution_360p;
+
+  /// No description provided for @resolution_480p.
+  ///
+  /// In en, this message translates to:
+  /// **'480p'**
+  String get resolution_480p;
+
+  /// No description provided for @resolution_540p.
+  ///
+  /// In en, this message translates to:
+  /// **'540p'**
+  String get resolution_540p;
+
+  /// No description provided for @resolution_720p.
+  ///
+  /// In en, this message translates to:
+  /// **'720p'**
+  String get resolution_720p;
+
+  /// No description provided for @resolution_1080p.
+  ///
+  /// In en, this message translates to:
+  /// **'1080p'**
+  String get resolution_1080p;
+
+  /// No description provided for @resolution_1440p.
+  ///
+  /// In en, this message translates to:
+  /// **'1440p'**
+  String get resolution_1440p;
+
+  /// No description provided for @resolution_1920p.
+  ///
+  /// In en, this message translates to:
+  /// **'1920p'**
+  String get resolution_1920p;
+
+  /// No description provided for @resolution_2160p.
+  ///
+  /// In en, this message translates to:
+  /// **'4K (2160p)'**
+  String get resolution_2160p;
+
+  /// No description provided for @resolution_4320p.
+  ///
+  /// In en, this message translates to:
+  /// **'8K (4320p)'**
+  String get resolution_4320p;
+
+  /// No description provided for @images_orientation_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Orientation'**
+  String get images_orientation_title;
+
+  /// No description provided for @common_or.
+  ///
+  /// In en, this message translates to:
+  /// **'OR'**
+  String get common_or;
+
+  /// No description provided for @scrape_from_url.
+  ///
+  /// In en, this message translates to:
+  /// **'Scrape from URL'**
+  String get scrape_from_url;
+
+  /// No description provided for @scenes_phash_started.
+  ///
+  /// In en, this message translates to:
+  /// **'Phash generation started'**
+  String get scenes_phash_started;
+
+  /// No description provided for @scenes_phash_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to generate phash: {error}'**
+  String scenes_phash_failed(Object error);
+
+  /// No description provided for @details_failed_update_studio.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update studio: {error}'**
+  String details_failed_update_studio(Object error);
 
   /// No description provided for @settings_title.
   ///
@@ -2292,6 +2760,42 @@ abstract class AppLocalizations {
   /// **'Overrides the native-only restriction and forces the Username + Password auth method to be visible on Flutter Web.'**
   String get settings_develop_web_auth_subtitle;
 
+  /// No description provided for @settings_develop_proxy_auth.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Proxy Auth Modes'**
+  String get settings_develop_proxy_auth;
+
+  /// No description provided for @settings_develop_proxy_auth_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable advanced Basic Auth and Bearer Token methods for use with auth-free backends behind proxies like Authentik.'**
+  String get settings_develop_proxy_auth_subtitle;
+
+  /// No description provided for @settings_server_auth_basic.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic Auth'**
+  String get settings_server_auth_basic;
+
+  /// No description provided for @settings_server_auth_bearer.
+  ///
+  /// In en, this message translates to:
+  /// **'Bearer Token'**
+  String get settings_server_auth_bearer;
+
+  /// No description provided for @settings_server_auth_basic_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sends \'Authorization: Basic <base64(user:pass)>\' header.'**
+  String get settings_server_auth_basic_desc;
+
+  /// No description provided for @settings_server_auth_bearer_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sends \'Authorization: Bearer <token>\' header.'**
+  String get settings_server_auth_bearer_desc;
+
   /// No description provided for @common_edit.
   ///
   /// In en, this message translates to:
@@ -2339,6 +2843,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Images'**
   String get images_title;
+
+  /// No description provided for @images_filter_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Images'**
+  String get images_filter_title;
+
+  /// No description provided for @images_filter_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter preferences saved as default'**
+  String get images_filter_saved;
 
   /// No description provided for @images_sort_title.
   ///
@@ -2538,6 +3054,18 @@ abstract class AppLocalizations {
   /// **'URLs'**
   String get scenes_field_urls;
 
+  /// No description provided for @scenes_edit_performer.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Performer'**
+  String get scenes_edit_performer;
+
+  /// No description provided for @scenes_edit_studio.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Studio'**
+  String get scenes_edit_studio;
+
   /// No description provided for @common_no_title.
   ///
   /// In en, this message translates to:
@@ -2609,6 +3137,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'> 20m'**
   String get scenes_duration_long;
+
+  /// No description provided for @details_scene_fingerprint_query.
+  ///
+  /// In en, this message translates to:
+  /// **'Query by Fingerprint'**
+  String get details_scene_fingerprint_query;
+
+  /// No description provided for @scenes_available_scrapers.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Scrapers'**
+  String get scenes_available_scrapers;
+
+  /// No description provided for @scrape_results_existing.
+  ///
+  /// In en, this message translates to:
+  /// **'Existing'**
+  String get scrape_results_existing;
+
+  /// No description provided for @scrape_results_scraped.
+  ///
+  /// In en, this message translates to:
+  /// **'Scraped'**
+  String get scrape_results_scraped;
 }
 
 class _AppLocalizationsDelegate

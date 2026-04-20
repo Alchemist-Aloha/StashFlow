@@ -1,15 +1,16 @@
 import 'dart:math';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/gallery.dart';
+import '../../domain/entities/gallery_filter.dart';
 import '../../domain/repositories/gallery_repository.dart';
 import '../../data/repositories/graphql_gallery_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/pagination.dart';
-
-import '../../domain/entities/gallery_filter.dart';
+import '../../../../core/domain/entities/filter_options.dart';
 
 part 'gallery_list_provider.g.dart';
 
@@ -94,35 +95,47 @@ class GalleryFilterState extends _$GalleryFilterState {
     final jsonStr = prefs.getString(_filterKey);
     if (jsonStr != null) {
       try {
-        // We'll skip complex persistence for now if needed,
-        // but let's provide the structure.
-      } catch (_) {}
+        return GalleryFilter.fromJson(jsonDecode(jsonStr));
+      } catch (_) {
+        return GalleryFilter.empty();
+      }
     }
     return GalleryFilter.empty();
   }
 
   void update(GalleryFilter filter) => state = filter;
+  void clear() => state = GalleryFilter.empty();
 
   Future<void> saveAsDefault() async {
-    // Implementation for saving filter as default if desired.
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setString(_filterKey, jsonEncode(state.toJson()));
   }
 }
 
 @riverpod
 class GalleryOrganizedOnly extends _$GalleryOrganizedOnly {
-  static const _organizedKey = 'gallery_organized_only';
+  static const _organizedKey = 'gallery_organized_only_v2';
 
   @override
-  bool build() {
+  OrganizedFilter build() {
     final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(_organizedKey) ?? false;
+    final val = prefs.getString(_organizedKey);
+    return OrganizedFilter.values.firstWhere(
+      (e) => e.name == val,
+      orElse: () {
+        // Fallback for migration
+        final oldVal = prefs.getBool('gallery_organized_only');
+        if (oldVal == true) return OrganizedFilter.organized;
+        return OrganizedFilter.all;
+      },
+    );
   }
 
-  void set(bool value) => state = value;
+  void set(OrganizedFilter value) => state = value;
 
   Future<void> saveAsDefault() async {
     final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_organizedKey, state);
+    await prefs.setString(_organizedKey, state.name);
   }
 }
 
@@ -159,7 +172,7 @@ class GalleryList extends _$GalleryList {
     final query = ref.watch(gallerySearchQueryProvider);
     final sortConfig = ref.watch(gallerySortProvider);
     final filter = ref.watch(galleryFilterStateProvider);
-    final organizedOnly = ref.watch(galleryOrganizedOnlyProvider);
+    final organizedFilter = ref.watch(galleryOrganizedOnlyProvider);
     final repository = ref.watch(galleryRepositoryProvider);
 
     String? effectiveSort = sortConfig.sort;
@@ -174,7 +187,7 @@ class GalleryList extends _$GalleryList {
       sort: effectiveSort,
       descending: sortConfig.descending,
       galleryFilter: filter.copyWith(
-        organized: organizedOnly ? true : filter.organized,
+        organized: organizedFilter.toBool() ?? filter.organized,
       ),
     );
   }
@@ -216,7 +229,7 @@ class GalleryList extends _$GalleryList {
     final query = ref.read(gallerySearchQueryProvider);
     final sortConfig = ref.read(gallerySortProvider);
     final filter = ref.read(galleryFilterStateProvider);
-    final organizedOnly = ref.read(galleryOrganizedOnlyProvider);
+    final organizedFilter = ref.read(galleryOrganizedOnlyProvider);
 
     String? effectiveSort = sortConfig.sort;
     if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
@@ -232,7 +245,7 @@ class GalleryList extends _$GalleryList {
         sort: effectiveSort,
         descending: sortConfig.descending,
         galleryFilter: filter.copyWith(
-          organized: organizedOnly ? true : filter.organized,
+          organized: organizedFilter.toBool() ?? filter.organized,
         ),
       );
 
@@ -275,9 +288,9 @@ class GalleryList extends _$GalleryList {
     final filter = useCurrentFilter
         ? ref.read(galleryFilterStateProvider)
         : GalleryFilter.empty();
-    final organizedOnly = useCurrentFilter
+    final organizedFilter = useCurrentFilter
         ? ref.read(galleryOrganizedOnlyProvider)
-        : false;
+        : OrganizedFilter.all;
 
     // Ask backend for random ordering; if needed, retry to avoid returning same id.
     final attempts = excludeGalleryId == null ? 1 : 3;
@@ -289,8 +302,9 @@ class GalleryList extends _$GalleryList {
         sort: 'random',
         descending: true,
         galleryFilter: filter.copyWith(
-          organized: organizedOnly ? true : filter.organized,
+          organized: organizedFilter.toBool() ?? filter.organized,
         ),
+
         performerId: performerId,
         studioId: studioId,
         tagId: tagId,

@@ -9,6 +9,7 @@ import '../../data/repositories/graphql_image_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/pagination.dart';
+import '../../../../core/domain/entities/filter_options.dart';
 
 part 'image_list_provider.g.dart';
 
@@ -104,19 +105,28 @@ class ImageFilterState extends _$ImageFilterState {
 
 @Riverpod(keepAlive: true)
 class ImageOrganizedOnly extends _$ImageOrganizedOnly {
-  static const _organizedKey = 'image_organized_only';
+  static const _organizedKey = 'image_organized_only_v2';
 
   @override
-  bool build() {
+  OrganizedFilter build() {
     final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(_organizedKey) ?? false;
+    final val = prefs.getString(_organizedKey);
+    return OrganizedFilter.values.firstWhere(
+      (e) => e.name == val,
+      orElse: () {
+        // Fallback for migration
+        final oldVal = prefs.getBool('image_organized_only');
+        if (oldVal == true) return OrganizedFilter.organized;
+        return OrganizedFilter.all;
+      },
+    );
   }
 
-  void set(bool value) => state = value;
+  void set(OrganizedFilter value) => state = value;
 
   Future<void> saveAsDefault() async {
     final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_organizedKey, state);
+    await prefs.setString(_organizedKey, state.name);
   }
 }
 
@@ -136,7 +146,7 @@ class ImageList extends _$ImageList {
     final query = ref.watch(imageSearchQueryProvider);
     final sortConfig = ref.watch(imageSortProvider);
     final filterState = ref.watch(imageFilterStateProvider);
-    final organizedOnly = ref.watch(imageOrganizedOnlyProvider);
+    final organizedFilter = ref.watch(imageOrganizedOnlyProvider);
     final repository = ref.read(imageRepositoryProvider);
 
     String? effectiveSort = sortConfig.sort;
@@ -152,7 +162,7 @@ class ImageList extends _$ImageList {
       descending: sortConfig.descending,
       galleryId: filterState.galleryId,
       imageFilter: filterState.filter.copyWith(
-        organized: organizedOnly ? true : filterState.filter.organized,
+        organized: organizedFilter.toBool() ?? filterState.filter.organized,
       ),
     );
   }
@@ -194,7 +204,7 @@ class ImageList extends _$ImageList {
     final query = ref.read(imageSearchQueryProvider);
     final sortConfig = ref.read(imageSortProvider);
     final filterState = ref.read(imageFilterStateProvider);
-    final organizedOnly = ref.read(imageOrganizedOnlyProvider);
+    final organizedFilter = ref.read(imageOrganizedOnlyProvider);
 
     String? effectiveSort = sortConfig.sort;
     if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
@@ -211,7 +221,7 @@ class ImageList extends _$ImageList {
         descending: sortConfig.descending,
         galleryId: filterState.galleryId,
         imageFilter: filterState.filter.copyWith(
-          organized: organizedOnly ? true : filterState.filter.organized,
+          organized: organizedFilter.toBool() ?? filterState.filter.organized,
         ),
       );
 

@@ -255,6 +255,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                   ),
                 ),
                 IconButton(
+                  tooltip: 'More',
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                   onPressed: () => _showMenu(context, ref),
@@ -326,6 +327,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                   ),
                 ),
                 IconButton(
+                  tooltip: 'More',
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                   onPressed: () => _showMenu(context, ref),

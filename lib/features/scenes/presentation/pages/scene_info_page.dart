@@ -80,8 +80,8 @@ class SceneInfoPage extends ConsumerWidget {
                         : const CircleAvatar(child: Icon(Icons.person)),
                     title: Text(
                       performerName.isNotEmpty
-                            ? performerName
-                              : context.l10n.common_unknown,
+                          ? performerName
+                          : context.l10n.common_unknown,
                       style: theme.textTheme.bodyLarge,
                     ),
                     trailing: const Icon(Icons.chevron_right),

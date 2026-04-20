@@ -18,11 +18,11 @@ String buildSceneDisplayTitle({
   final trimmed = title?.trim() ?? '';
   if (trimmed.isNotEmpty) return trimmed;
 
-  final fromPath = _nameFromPath(filePath) ?? _nameFromPath(streamPath);
+  final fromPath = getFilestem(filePath) ?? getFilestem(streamPath);
   return (fromPath == null || fromPath.isEmpty) ? fallback : fromPath;
 }
 
-String? _nameFromPath(String? rawPath) {
+String? getFilestem(String? rawPath) {
   if (rawPath == null || rawPath.trim().isEmpty) return null;
 
   final normalized = rawPath.replaceAll('\\', '/');

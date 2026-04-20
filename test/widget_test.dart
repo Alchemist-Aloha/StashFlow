@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/features/setup/presentation/pages/settings/settings_hub_page.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';

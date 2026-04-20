@@ -1,11 +1,12 @@
 import 'package:graphql/client.dart';
+import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
+import 'package:stash_app_flutter/core/domain/entities/criterion.dart' as domain;
 import '../../domain/entities/image.dart';
+import '../../domain/entities/image_filter.dart';
 import '../../domain/repositories/image_repository.dart';
 import '../graphql/images.graphql.dart';
-
-import '../../domain/entities/image_filter.dart';
 
 class GraphQLImageRepository implements ImageRepository {
   final GraphQLClient client;
@@ -26,6 +27,46 @@ class GraphQLImageRepository implements ImageRepository {
     String? galleryId,
     ImageFilter? imageFilter,
   }) async {
+    final inputFilter = Input$ImageFilterType(
+      title: mapStringCriterion(imageFilter?.title),
+      details: mapStringCriterion(imageFilter?.details),
+      id: mapIntCriterion(imageFilter?.id),
+      checksum: mapStringCriterion(imageFilter?.checksum),
+      path: mapStringCriterion(imageFilter?.path),
+      file_count: mapIntCriterion(imageFilter?.fileCount),
+      rating100: mapIntCriterion(imageFilter?.rating100),
+      date: mapDateCriterion(imageFilter?.date),
+      url: mapStringCriterion(imageFilter?.url),
+      organized: imageFilter?.organized,
+      o_counter: mapIntCriterion(imageFilter?.oCounter),
+      resolution: mapResolutionCriterion(imageFilter?.resolution),
+      orientation: (imageFilter?.orientation != null)
+          ? Input$OrientationCriterionInput(
+              value: imageFilter!.orientation!.value
+                  .map((o) => fromJson$Enum$OrientationEnum(o))
+                  .toList(),
+            )
+          : null,
+      is_missing: imageFilter?.isMissing?.toString(),
+      studios: mapHierarchicalMultiCriterion(imageFilter?.studios),
+      tags: mapHierarchicalMultiCriterion(imageFilter?.tags),
+      tag_count: mapIntCriterion(imageFilter?.tagCount),
+      performer_tags: mapHierarchicalMultiCriterion(imageFilter?.performerTags),
+      performers: mapMultiCriterion(imageFilter?.performers),
+      performer_count: mapIntCriterion(imageFilter?.performerCount),
+      performer_favorite: imageFilter?.performerFavorite,
+      performer_age: mapIntCriterion(imageFilter?.performerAge),
+      galleries: (galleryId != null || imageFilter?.galleries != null)
+          ? mapMultiCriterion(
+              galleryId != null
+                  ? domain.MultiCriterion(value: [galleryId])
+                  : imageFilter?.galleries,
+            )
+          : null,
+      created_at: mapTimestampCriterion(imageFilter?.createdAt),
+      updated_at: mapTimestampCriterion(imageFilter?.updatedAt),
+    );
+
     final result = await client.query$FindImages(
       Options$Query$FindImages(
         fetchPolicy: sort == 'random'
@@ -33,7 +74,7 @@ class GraphQLImageRepository implements ImageRepository {
             : FetchPolicy.cacheAndNetwork,
         variables: Variables$Query$FindImages(
           filter: Input$FindFilterType(
-            q: filter,
+            q: filter ?? imageFilter?.searchQuery,
             page: page,
             per_page: perPage,
             sort: sort,
@@ -41,36 +82,7 @@ class GraphQLImageRepository implements ImageRepository {
                 ? Enum$SortDirectionEnum.DESC
                 : Enum$SortDirectionEnum.ASC,
           ),
-          image_filter: Input$ImageFilterType(
-            galleries: galleryId != null
-                ? Input$MultiCriterionInput(
-                    value: [galleryId],
-                    modifier: Enum$CriterionModifier.INCLUDES,
-                  )
-                : null,
-            rating100: imageFilter?.minRating != null
-                ? Input$IntCriterionInput(
-                    value: imageFilter!.minRating!,
-                    modifier: Enum$CriterionModifier.GREATER_THAN,
-                  )
-                : null,
-            organized: imageFilter?.organized,
-            resolution: (imageFilter?.resolutions?.isNotEmpty ?? false)
-                ? Input$ResolutionCriterionInput(
-                    value: fromJson$Enum$ResolutionEnum(
-                      imageFilter!.resolutions!.first,
-                    ),
-                    modifier: Enum$CriterionModifier.EQUALS,
-                  )
-                : null,
-            orientation: (imageFilter?.orientations?.isNotEmpty ?? false)
-                ? Input$OrientationCriterionInput(
-                    value: imageFilter!.orientations!
-                        .map((o) => fromJson$Enum$OrientationEnum(o))
-                        .toList(),
-                  )
-                : null,
-          ),
+          image_filter: inputFilter,
         ),
       ),
     );

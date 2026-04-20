@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/features/setup/presentation/pages/settings/playback_settings_page.dart';
-import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../helpers/test_helpers.dart';
 
@@ -32,7 +30,6 @@ void main() {
     expect(find.text('Gravity-controlled orientation'), findsOneWidget);
     expect(find.textContaining('Allow rotating between matching orientations'), findsOneWidget);
 
-    final switchFinder = find.byType(Switch);
     // Find the switch that is part of the gravity orientation ListTile
     // We can use descendant search
     final gravitySwitch = find.descendant(

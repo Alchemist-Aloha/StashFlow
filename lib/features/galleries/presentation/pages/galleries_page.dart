@@ -14,13 +14,27 @@ import '../../../../core/presentation/widgets/grid_utils.dart';
 
 import '../widgets/gallery_filter_panel.dart';
 import '../../domain/entities/gallery_filter.dart';
+import '../../../../core/domain/entities/filter_options.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 
-enum _GallerySortOption { title, date, rating, imageCount, path, random }
+enum _GallerySortOption {
+  date,
+  title,
+  path,
+  rating,
+  fileModTime,
+  tagCount,
+  performerCount,
+  random,
+  imageCount,
+  fileCount,
+  createdAt,
+  updatedAt,
+}
 
 class GalleriesPage extends ConsumerStatefulWidget {
   const GalleriesPage({super.key});
@@ -43,12 +57,18 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
       final sortConfig = ref.read(gallerySortProvider);
       setState(() {
         _sortOption = switch (sortConfig.sort) {
-          'title' => _GallerySortOption.title,
           'date' => _GallerySortOption.date,
-          'rating100' => _GallerySortOption.rating,
-          'image_count' => _GallerySortOption.imageCount,
+          'title' => _GallerySortOption.title,
           'path' => _GallerySortOption.path,
+          'rating100' || 'rating' => _GallerySortOption.rating,
+          'file_mod_time' => _GallerySortOption.fileModTime,
+          'tag_count' => _GallerySortOption.tagCount,
+          'performer_count' => _GallerySortOption.performerCount,
           'random' => _GallerySortOption.random,
+          'images_count' || 'image_count' => _GallerySortOption.imageCount,
+          'zip_file_count' || 'file_count' => _GallerySortOption.fileCount,
+          'created_at' => _GallerySortOption.createdAt,
+          'updated_at' => _GallerySortOption.updatedAt,
           _ => _GallerySortOption.path,
         };
         _sortDescending = sortConfig.descending;
@@ -63,12 +83,18 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
 
   void _applyServerSort() {
     final sortKey = switch (_sortOption) {
-      _GallerySortOption.title => 'title',
       _GallerySortOption.date => 'date',
-      _GallerySortOption.rating => 'rating',
-      _GallerySortOption.imageCount => 'images_count',
+      _GallerySortOption.title => 'title',
       _GallerySortOption.path => 'path',
+      _GallerySortOption.rating => 'rating',
+      _GallerySortOption.fileModTime => 'file_mod_time',
+      _GallerySortOption.tagCount => 'tag_count',
+      _GallerySortOption.performerCount => 'performer_count',
       _GallerySortOption.random => 'random',
+      _GallerySortOption.imageCount => 'images_count',
+      _GallerySortOption.fileCount => 'zip_file_count',
+      _GallerySortOption.createdAt => 'created_at',
+      _GallerySortOption.updatedAt => 'updated_at',
     };
     ref
         .read(galleryListProvider.notifier)
@@ -98,12 +124,18 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
 
   String _sortOptionLabel(_GallerySortOption option) {
     return switch (option) {
-      _GallerySortOption.title => context.l10n.common_title,
       _GallerySortOption.date => context.l10n.common_date,
-      _GallerySortOption.rating => context.l10n.common_rating,
-      _GallerySortOption.imageCount => context.l10n.common_image_count,
+      _GallerySortOption.title => context.l10n.common_title,
       _GallerySortOption.path => context.l10n.common_filepath,
+      _GallerySortOption.rating => context.l10n.common_rating,
+      _GallerySortOption.fileModTime => context.l10n.sort_file_mod_time,
+      _GallerySortOption.tagCount => context.l10n.sort_tag_count,
+      _GallerySortOption.performerCount => context.l10n.sort_performers_count,
       _GallerySortOption.random => context.l10n.common_random,
+      _GallerySortOption.imageCount => context.l10n.common_image_count,
+      _GallerySortOption.fileCount => context.l10n.sort_zip_file_count,
+      _GallerySortOption.createdAt => context.l10n.sort_created_at,
+      _GallerySortOption.updatedAt => context.l10n.sort_updated_at,
     };
   }
 
@@ -150,23 +182,38 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
                       style: context.textTheme.labelLarge,
                     ),
                     const SizedBox(height: AppTheme.spacingSmall),
-                    Wrap(
-                      spacing: AppTheme.spacingSmall,
-                      runSpacing: AppTheme.spacingSmall,
-                      children: _GallerySortOption.values
-                          .map(
-                            (option) => ChoiceChip(
-                              label: Text(_sortOptionLabel(option)),
-                              selected: tempOption == option,
-                              onSelected: (selected) {
-                                if (!selected) return;
-                                setModalState(() {
-                                  tempOption = option;
-                                });
-                              },
+                    Flexible(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height * 0.35,
+                        ),
+                        child: Scrollbar(
+                          thumbVisibility: true,
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: AppTheme.spacingSmall,
                             ),
-                          )
-                          .toList(),
+                            child: Wrap(
+                              spacing: AppTheme.spacingSmall,
+                              runSpacing: AppTheme.spacingSmall,
+                              children: _GallerySortOption.values
+                                  .map(
+                                    (option) => ChoiceChip(
+                                      label: Text(_sortOptionLabel(option)),
+                                      selected: tempOption == option,
+                                      onSelected: (selected) {
+                                        if (!selected) return;
+                                        setModalState(() {
+                                          tempOption = option;
+                                        });
+                                      },
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: AppTheme.spacingMedium),
                     Text(
@@ -219,7 +266,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
                     const SizedBox(height: AppTheme.spacingSmall),
                     SizedBox(
                       width: double.infinity,
-                      child: OutlinedButton(
+                      child: TextButton(
                         onPressed: () async {
                           setState(() {
                             _sortOption = tempOption;
@@ -238,7 +285,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
                             );
                           }
                         },
-                        style: OutlinedButton.styleFrom(
+                        style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                             vertical: AppTheme.spacingMedium,
                           ),
@@ -289,8 +336,8 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
     final filterActive = ref.watch(
       galleryFilterStateProvider.select((s) => s != GalleryFilter.empty()),
     );
-    final organizedOnly = ref.watch(galleryOrganizedOnlyProvider);
-    final hasActiveFilters = filterActive || organizedOnly;
+    final organizedFilter = ref.watch(galleryOrganizedOnlyProvider);
+    final hasActiveFilters = filterActive || organizedFilter != OrganizedFilter.all;
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return ListPageScaffold<Gallery>(
@@ -323,6 +370,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
         Stack(
           children: [
             IconButton(
+              tooltip: context.l10n.common_filter,
               icon: const Icon(Icons.filter_list),
               onPressed: _showFilterPanel,
             ),

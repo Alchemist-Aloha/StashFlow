@@ -1,0 +1,10 @@
+query GetStashBoxes {
+  configuration {
+    general {
+      stashBoxes {
+        name
+        endpoint
+      }
+    }
+  }
+}

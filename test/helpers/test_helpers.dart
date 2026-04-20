@@ -2,69 +2,46 @@ import 'package:flutter/material.dart' hide Image;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
-
-import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
-import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
-import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
-import 'package:stash_app_flutter/features/scenes/domain/models/scraper.dart';
-import 'package:stash_app_flutter/features/scenes/domain/models/scraped_scene.dart';
-
-import 'package:stash_app_flutter/features/performers/domain/entities/performer.dart';
-import 'package:stash_app_flutter/features/performers/domain/repositories/performer_repository.dart';
-
-import 'package:stash_app_flutter/features/studios/domain/entities/studio.dart';
-import 'package:stash_app_flutter/features/studios/domain/repositories/studio_repository.dart';
-
-import 'package:stash_app_flutter/features/tags/domain/entities/tag.dart';
-import 'package:stash_app_flutter/features/tags/domain/repositories/tag_repository.dart';
-
-import 'package:stash_app_flutter/features/images/domain/entities/image.dart';
-import 'package:stash_app_flutter/features/images/domain/entities/image_filter.dart';
-import 'package:stash_app_flutter/features/images/domain/repositories/image_repository.dart';
-
 import 'package:stash_app_flutter/core/presentation/widgets/error_state_view.dart';
+import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
+import 'package:stash_app_flutter/features/performers/domain/repositories/performer_repository.dart';
+import 'package:stash_app_flutter/features/studios/domain/repositories/studio_repository.dart';
+import 'package:stash_app_flutter/features/tags/domain/repositories/tag_repository.dart';
+import 'package:stash_app_flutter/features/images/domain/repositories/image_repository.dart';
+import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
+import 'package:stash_app_flutter/features/performers/domain/entities/performer.dart';
+import 'package:stash_app_flutter/features/studios/domain/entities/studio.dart';
+import 'package:stash_app_flutter/features/tags/domain/entities/tag.dart';
+import 'package:stash_app_flutter/features/images/domain/entities/image.dart';
+import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
+import 'package:stash_app_flutter/features/performers/domain/entities/performer_filter.dart';
+import 'package:stash_app_flutter/features/studios/domain/entities/studio_filter.dart';
+import 'package:stash_app_flutter/features/images/domain/entities/image_filter.dart';
+import 'package:stash_app_flutter/features/scenes/domain/models/scraped_scene.dart';
+import 'package:stash_app_flutter/features/scenes/domain/models/scraper.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 
-import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart';
-import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
-import 'package:stash_app_flutter/features/studios/presentation/providers/studio_media_provider.dart';
-
-/// Base class for manual mock repositories with common state control
-class MockRepositoryState<T> {
+abstract class MockRepositoryState<T> {
   List<T> data = [];
   bool shouldThrow = false;
-  String errorMessage = 'Something went wrong';
+  String errorMessage = 'Mock error';
 
-  void withData(List<T> data) {
-    this.data = data;
-    shouldThrow = false;
-  }
-
-  void withEmpty() {
-    data = [];
-    shouldThrow = false;
-  }
-
-  void withError(String message) {
+  void setThrow(bool value, {String message = 'Mock error'}) {
+    shouldThrow = value;
     errorMessage = message;
-    shouldThrow = true;
   }
-}
 
-class MockStreamResolver extends StreamResolver {
-  @override
-  void build() {}
-
-  @override
-  Future<StreamChoice?> resolvePreferredStream(Scene scene) async {
-    if (scene.paths.stream != null) {
-      return StreamChoice(url: scene.paths.stream!, mimeType: 'video/mp4');
-    }
-    return null;
+  void setData(List<T> value) {
+    data = value;
+    shouldThrow = false;
   }
+
+  void withData(List<T> value) => setData(value);
+  void withEmpty() => setData([]);
+  void withError(String message) => setThrow(true, message: message);
 }
 
 class MockSceneRepository extends MockRepositoryState<Scene>
@@ -94,17 +71,6 @@ class MockSceneRepository extends MockRepositoryState<Scene>
   }
 
   @override
-  Future<void> updateSceneRating(String id, int rating100) async {
-    if (shouldThrow) throw Exception(errorMessage);
-  }
-
-  @override
-  Future<void> incrementSceneOCounter(String id) async {}
-
-  @override
-  Future<void> incrementScenePlayCount(String id) async {}
-
-  @override
   Future<List<Scraper>> listScrapers({required List<String> types}) async {
     if (shouldThrow) throw Exception(errorMessage);
     return [];
@@ -112,11 +78,24 @@ class MockSceneRepository extends MockRepositoryState<Scene>
 
   @override
   Future<List<ScrapedScene>> scrapeSingleScene({
-    required String scraperId,
-    required String sceneId,
+    String? scraperId,
+    String? stashBoxEndpoint,
+    String? sceneId,
+    String? query,
   }) async {
     if (shouldThrow) throw Exception(errorMessage);
     return [];
+  }
+
+  @override
+  Future<ScrapedScene?> scrapeSceneURL(String url) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    return null;
+  }
+
+  @override
+  Future<void> generatePhash(String sceneId) async {
+    if (shouldThrow) throw Exception(errorMessage);
   }
 
   @override
@@ -133,8 +112,9 @@ class MockSceneRepository extends MockRepositoryState<Scene>
 
   @override
   Future<Map<String, List<Map<String, dynamic>>>> findPerformerCandidates(
-    List<String> queries,
+    List<String> performers,
   ) async {
+    if (shouldThrow) throw Exception(errorMessage);
     return {};
   }
 
@@ -142,7 +122,23 @@ class MockSceneRepository extends MockRepositoryState<Scene>
   Future<Map<String, List<Map<String, dynamic>>>> findTagCandidates(
     List<String> tags,
   ) async {
+    if (shouldThrow) throw Exception(errorMessage);
     return {};
+  }
+
+  @override
+  Future<void> updateSceneRating(String id, int rating100) async {
+    if (shouldThrow) throw Exception(errorMessage);
+  }
+
+  @override
+  Future<void> incrementSceneOCounter(String id) async {
+    if (shouldThrow) throw Exception(errorMessage);
+  }
+
+  @override
+  Future<void> incrementScenePlayCount(String id) async {
+    if (shouldThrow) throw Exception(errorMessage);
   }
 }
 
@@ -155,6 +151,7 @@ class MockPerformerRepository extends MockRepositoryState<Performer>
     String? filter,
     String? sort,
     bool descending = true,
+    PerformerFilter? performerFilter,
     bool favoritesOnly = false,
     List<String>? genders,
   }) async {
@@ -172,6 +169,31 @@ class MockPerformerRepository extends MockRepositoryState<Performer>
   Future<void> setPerformerFavorite(String id, bool favorite) async {
     if (shouldThrow) throw Exception(errorMessage);
   }
+
+  @override
+  Future<List<ScrapedPerformer>> scrapePerformer({
+    String? scraperId,
+    String? stashBoxEndpoint,
+    String? performerId,
+    String? query,
+  }) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    return [];
+  }
+
+  @override
+  Future<ScrapedPerformer?> scrapePerformerURL(String url) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    return null;
+  }
+
+  @override
+  Future<void> updatePerformer({
+    required String id,
+    required Map<String, dynamic> input,
+  }) async {
+    if (shouldThrow) throw Exception(errorMessage);
+  }
 }
 
 class MockStudioRepository extends MockRepositoryState<Studio>
@@ -183,6 +205,7 @@ class MockStudioRepository extends MockRepositoryState<Studio>
     String? filter,
     String? sort,
     bool? descending,
+    StudioFilter? studioFilter,
     bool favoritesOnly = false,
   }) async {
     if (shouldThrow) throw Exception(errorMessage);
@@ -197,6 +220,31 @@ class MockStudioRepository extends MockRepositoryState<Studio>
 
   @override
   Future<void> setStudioFavorite(String id, bool favorite) async {
+    if (shouldThrow) throw Exception(errorMessage);
+  }
+
+  @override
+  Future<List<ScrapedStudio>> scrapeStudio({
+    String? scraperId,
+    String? stashBoxEndpoint,
+    String? studioId,
+    String? query,
+  }) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    return [];
+  }
+
+  @override
+  Future<ScrapedStudio?> scrapeStudioURL(String url) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    return null;
+  }
+
+  @override
+  Future<void> updateStudio({
+    required String id,
+    required Map<String, dynamic> input,
+  }) async {
     if (shouldThrow) throw Exception(errorMessage);
   }
 }
@@ -256,46 +304,42 @@ class MockImageRepository extends MockRepositoryState<Image>
   }
 }
 
-/// Helper to pump a widget with all necessary providers and theme
 Future<void> pumpTestWidget(
   WidgetTester tester, {
+  SharedPreferences? prefs,
   required Widget child,
   List<dynamic> overrides = const [],
-  SharedPreferences? prefs,
-  bool wrapWithApp = true,
 }) async {
   if (prefs == null) {
-    SharedPreferences.setMockInitialValues({
-      'server_base_url': 'http://localhost:9999',
-    });
+    SharedPreferences.setMockInitialValues({});
+    prefs = await SharedPreferences.getInstance();
   }
-  final finalPrefs = prefs ?? await SharedPreferences.getInstance();
+  PackageInfo.setMockInitialValues(
+    appName: 'StashFlow',
+    packageName: 'io.github.alchemistaloha.stashflow',
+    version: '1.10.0',
+    buildNumber: '1',
+    buildSignature: '',
+  );
 
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        sharedPreferencesProvider.overrideWithValue(finalPrefs),
-        studioMediaProvider.overrideWith((ref, id) => const []),
-        streamResolverProvider.overrideWith(MockStreamResolver.new),
-        mediaHeadersProvider.overrideWithValue(const {}),
+        sharedPreferencesProvider.overrideWithValue(prefs),
         ...overrides,
       ],
-      child: wrapWithApp
-          ? MaterialApp(
-              theme: AppTheme.darkTheme,
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-              home: child,
-            )
-          : child,
+      child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        home: child,
+      ),
     ),
   );
 }
 
-/// Extension for common finders
-extension CommonFindersX on CommonFinders {
-  Finder loadingSpinner() => byType(CircularProgressIndicator);
-
+extension CommonFindersExtension on CommonFinders {
   Finder errorView({String? message}) {
     if (message != null) {
       return find.descendant(
@@ -307,7 +351,7 @@ extension CommonFindersX on CommonFinders {
   }
 
   Finder retryButton() => find.descendant(
-    of: find.byType(ErrorStateView),
-    matching: find.byType(FilledButton),
-  );
+        of: find.byType(ErrorStateView),
+        matching: find.byType(FilledButton),
+      );
 }

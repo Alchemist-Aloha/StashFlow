@@ -19,7 +19,6 @@ import '../../domain/entities/scene_title_utils.dart';
 import '../../../studios/presentation/providers/studio_media_provider.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
-import './scene_edit_page.dart';
 import '../providers/video_player_provider.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../setup/presentation/providers/scrape_customization_provider.dart';
@@ -189,7 +188,23 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     final scrapeEnabled = ref.watch(scrapeEnabledProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.details_scene)),
+      appBar: AppBar(
+        title: Text(context.l10n.details_scene),
+        actions: [
+          if (scrapeEnabled)
+            sceneAsync.maybeWhen(
+              data: (scene) => IconButton(
+                tooltip: context.l10n.common_edit,
+                icon: const Icon(Icons.edit_outlined),
+                onPressed: () => context.push(
+                  '/scenes/scene/${scene.id}/edit',
+                  extra: scene,
+                ),
+              ),
+              orElse: () => const SizedBox.shrink(),
+            ),
+        ],
+      ),
       floatingActionButton: randomNavigationEnabled
           ? sceneAsync.maybeWhen(
               data: (_) => FloatingActionButton.small(
@@ -501,24 +516,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           icon: const Icon(Icons.water_drop_outlined),
           label: Text('${scene.oCounter}'),
         ),
-        if (scrapeEnabled)
-          FilledButton.tonalIcon(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => SceneEditPage(scene: scene),
-                ),
-              );
-            },
-            style: FilledButton.styleFrom(
-              visualDensity: VisualDensity.compact,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              minimumSize: const Size(0, 32),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            ),
-            icon: const Icon(Icons.edit_outlined),
-            label: Text(context.l10n.common_edit),
-          ),
       ],
     );
   }
@@ -683,9 +680,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 onPressed: () {
                   setState(() => _performersExpanded = !_performersExpanded);
                 },
-                child: Text(_performersExpanded
-                    ? context.l10n.details_show_less
-                    : context.l10n.details_show_more),
+                child: Text(
+                  _performersExpanded
+                      ? context.l10n.details_show_less
+                      : context.l10n.details_show_more,
+                ),
               ),
           ],
         ),

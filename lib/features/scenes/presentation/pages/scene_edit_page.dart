@@ -4,8 +4,8 @@ import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/scene.dart';
+import '../../domain/entities/scene_title_utils.dart';
 import '../../domain/models/scraped_scene.dart';
-import '../../domain/models/scraper.dart';
 import '../providers/scene_scrape_provider.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
@@ -15,6 +15,8 @@ import '../../../studios/domain/entities/studio.dart';
 import '../../../performers/domain/entities/performer.dart';
 import '../../../tags/domain/entities/tag.dart';
 import '../widgets/entity_picker.dart';
+import '../widgets/scrape_query_dialog.dart';
+import '../widgets/enhanced_scrape_dialog.dart';
 
 /// A page for editing scene metadata.
 class SceneEditPage extends ConsumerStatefulWidget {
@@ -152,9 +154,9 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
 
   Future<void> _pickTags() async {
     final results = await showDialog<List<Tag>>(
-          context: context,
-          builder: (context) => EntityPicker<Tag>(
-            title: context.l10n.scenes_select_tags,
+      context: context,
+      builder: (context) => EntityPicker<Tag>(
+        title: context.l10n.scenes_select_tags,
         providerType: 'tag',
         multiSelect: true,
         initialSelection: _selectedTagIds,
@@ -170,55 +172,43 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
   }
 
   Future<void> _scrape() async {
-    final scrapers = await ref
-        .read(sceneScrapeProvider)
-        .listAvailableScrapers(types: ['SCENE']);
-
-    if (!mounted) return;
-
-    if (scrapers.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.scenes_no_scrapers)));
-      return;
+    String query = _titleController.text;
+    if (query.isEmpty) {
+      query = getFilestem(widget.scene.path) ?? '';
     }
 
-    final scraper = await showDialog<Scraper>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(context.l10n.scenes_select_scraper),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: scrapers.length,
-            itemBuilder: (context, index) {
-              final s = scrapers[index];
-              return ListTile(
-                title: Text(s.name),
-                subtitle: s.description != null ? Text(s.description!) : null,
-                onTap: () => Navigator.of(context).pop(s),
-              );
-            },
-          ),
-        ),
-      ),
+    final scrapeRequest = await showDialog<ScrapeRequest>(
+      context: context,
+      builder: (context) => ScrapeQueryDialog(initialQuery: query),
     );
 
-    if (scraper == null || !mounted) return;
+    if (scrapeRequest == null || !mounted) return;
 
     setState(() => _isScraping = true);
     try {
-      final results = await ref
-          .read(sceneScrapeProvider)
-          .scrapeScene(scraperId: scraper.id, sceneId: widget.scene.id);
+      List<ScrapedScene> results = [];
+      if (scrapeRequest.url != null) {
+        final res = await ref
+            .read(sceneScrapeProvider)
+            .scrapeSceneURL(scrapeRequest.url!);
+        if (res != null) results = [res];
+      } else {
+        results = await ref
+            .read(sceneScrapeProvider)
+            .scrapeScene(
+              scraperId: scrapeRequest.scraperId,
+              stashBoxEndpoint: scrapeRequest.stashBoxEndpoint,
+              sceneId: scrapeRequest.useFingerprints ? widget.scene.id : null,
+              query: scrapeRequest.query,
+            );
+      }
 
       if (!mounted) return;
 
       if (results.isEmpty) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(context.l10n.scenes_no_results_found)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.scenes_no_results_found)),
+        );
         return;
       }
 
@@ -237,7 +227,11 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                   final r = results[index];
                   return ListTile(
                     title: Text(r.title ?? context.l10n.common_no_title),
-                    subtitle: Text(r.urls.isNotEmpty ? r.urls.first : context.l10n.common_no_url),
+                    subtitle: Text(
+                      r.urls.isNotEmpty
+                          ? r.urls.first
+                          : context.l10n.common_no_url,
+                    ),
                     onTap: () => Navigator.of(context).pop(r),
                   );
                 },
@@ -251,30 +245,52 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
         selected = results.first;
       }
 
+      // Enhanced merge dialog
+      final original = ScrapedScene(
+        title: _titleController.text,
+        details: _detailsController.text,
+        date: _selectedDate,
+        studioId: _selectedStudioId,
+        image: _scrapedImage,
+      );
+
+      if (!mounted) return;
+
+      final merged = await showDialog<ScrapedScene>(
+        context: context,
+        builder: (context) => EnhancedScrapeDialog(
+          original: original,
+          scraped: selected,
+          type: ScrapeEntityType.scene,
+        ),
+      );
+
+      if (merged == null || !mounted) return;
+
       setState(() {
-        if (selected.title != null) _titleController.text = selected.title!;
-        if (selected.details != null) {
-          _detailsController.text = selected.details!;
+        if (merged.title != null) _titleController.text = merged.title!;
+        if (merged.details != null) {
+          _detailsController.text = merged.details!;
         }
-        if (selected.date != null) {
-          _selectedDate = selected.date;
+        if (merged.date != null) {
+          _selectedDate = merged.date;
           _dateController.text = _selectedDate!
               .toIso8601String()
               .split('T')
               .first;
         }
-        if (selected.urls.isNotEmpty) {
+        if (merged.urls.isNotEmpty) {
           for (final controller in _urlControllers) {
             controller.dispose();
           }
-          _urlControllers = selected.urls
+          _urlControllers = merged.urls
               .map((u) => TextEditingController(text: u))
               .toList();
         }
-        _scrapedImage = selected.image;
+        _scrapedImage = merged.image;
 
         // Merge Performers that exist in library
-        for (final p in selected.performers) {
+        for (final p in merged.performers) {
           final id = p.storedId;
           if (id != null && !_selectedPerformerIds.contains(id)) {
             _selectedPerformerIds.add(id);
@@ -283,7 +299,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
         }
 
         // Merge Tags that exist in library
-        for (final t in selected.tags) {
+        for (final t in merged.tags) {
           final id = t.storedId;
           if (id != null && !_selectedTagIds.contains(id)) {
             _selectedTagIds.add(id);
@@ -291,19 +307,46 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
           }
         }
 
-        _scrapedTags = selected.tags;
-        _scrapedPerformers = selected.performers;
+        _scrapedTags = merged.tags;
+        _scrapedPerformers = merged.performers;
 
-        if (selected.studioId != null && _selectedStudioId == null) {
-          _selectedStudioId = selected.studioId;
-          _selectedStudioName = context.l10n.scenes_studio_id_prefix(selected.studioId!);
+        if (merged.studioId != null) {
+          _selectedStudioId = merged.studioId;
+          _selectedStudioName =
+              merged.studio?.name ??
+              context.l10n.scenes_studio_id_prefix(merged.studioId!);
+        } else if (merged.studio != null) {
+          _selectedStudioId = merged.studio!.storedId;
+          _selectedStudioName = merged.studio!.name;
         }
       });
     } catch (e) {
       if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.scenes_scrape_failed(e.toString())),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isScraping = false);
+    }
+  }
+
+  Future<void> _generatePhash() async {
+    setState(() => _isScraping = true);
+    try {
+      await ref.read(sceneScrapeProvider).generatePhash(widget.scene.id);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.scenes_phash_started)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(context.l10n.scenes_scrape_failed(e.toString()))));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.scenes_phash_failed(e.toString()))));
       }
     } finally {
       if (mounted) setState(() => _isScraping = false);
@@ -352,9 +395,11 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(context.l10n.scenes_update_failed(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.scenes_update_failed(e.toString())),
+          ),
+        );
       }
     }
   }
@@ -395,12 +440,18 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                   ),
                 ),
               )
-            else
+            else ...[
+              IconButton(
+                onPressed: _generatePhash,
+                icon: const Icon(Icons.fingerprint),
+                tooltip: context.l10n.details_scene_fingerprint_query,
+              ),
               IconButton(
                 onPressed: _scrape,
                 icon: const Icon(Icons.search),
                 tooltip: context.l10n.details_scene_scrape,
               ),
+            ],
           IconButton(
             onPressed: _isSaving ? null : _save,
             icon: _isSaving
@@ -472,7 +523,10 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
             const SizedBox(height: AppTheme.spacingMedium),
 
             // Studio
-            Text(context.l10n.scenes_field_studio, style: Theme.of(context).textTheme.labelLarge),
+            Text(
+              context.l10n.scenes_field_studio,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
             const SizedBox(height: AppTheme.spacingSmall),
             InkWell(
               onTap: _pickStudio,
@@ -486,9 +540,14 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                 ),
                 child: Row(
                   children: [
-                    Expanded(child: Text(_selectedStudioName ?? context.l10n.common_none)),
+                    Expanded(
+                      child: Text(
+                        _selectedStudioName ?? context.l10n.common_none,
+                      ),
+                    ),
                     if (_selectedStudioId != null)
                       IconButton(
+                        tooltip: 'Clear',
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                         icon: const Icon(Icons.clear, size: 18),
@@ -542,7 +601,10 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
             // Tags
             Row(
               children: [
-                Text(context.l10n.scenes_field_tags, style: Theme.of(context).textTheme.labelLarge),
+                Text(
+                  context.l10n.scenes_field_tags,
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
                 const Spacer(),
                 IconButton(
                   onPressed: _pickTags,
@@ -570,7 +632,10 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
 
             Row(
               children: [
-                Text(context.l10n.scenes_field_urls, style: Theme.of(context).textTheme.titleMedium),
+                Text(
+                  context.l10n.scenes_field_urls,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
                 const Spacer(),
                 IconButton(
                   onPressed: _addUrlField,

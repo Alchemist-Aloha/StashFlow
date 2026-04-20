@@ -56,9 +56,17 @@ class FakeSceneRepository implements SceneRepository {
 
   @override
   Future<List<ScrapedScene>> scrapeSingleScene({
-    required String scraperId,
-    required String sceneId,
+    String? scraperId,
+    String? stashBoxEndpoint,
+    String? sceneId,
+    String? query,
   }) async => [];
+
+  @override
+  Future<ScrapedScene?> scrapeSceneURL(String url) async => null;
+
+  @override
+  Future<void> generatePhash(String sceneId) async {}
 
   @override
   Future<void> saveScrapedScene({
@@ -125,6 +133,7 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(TextField), 'zzz');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
 
     final l10n = AppLocalizations.of(tester.element(find.byType(ScenesPage)))!;

@@ -66,6 +66,7 @@ class RatingBottomSheet extends StatelessWidget {
                 final starValue = (index + 1) * 20;
                 final isSelected = initialRating >= starValue;
                 return IconButton(
+                  tooltip: 'Star',
                   icon: Icon(
                     isSelected ? Icons.star : Icons.star_border,
                     size: 48,
