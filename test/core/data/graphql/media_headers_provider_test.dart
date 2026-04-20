@@ -50,6 +50,43 @@ void main() {
       
       expect(headers['Authorization'], 'Bearer some-token');
     });
+
+    test('injects both ApiKey and Bearer when both are available', () {
+      final container = ProviderContainer(
+        overrides: [
+          serverApiKeyProvider.overrideWithValue('some-token'),
+          authProvider.overrideWith(() => MockAuthProvider(AuthState.initial().copyWith(
+            mode: AuthMode.bearer,
+          ))),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final headers = container.read(mediaHeadersProvider);
+      
+      expect(headers['ApiKey'], 'some-token');
+      expect(headers['Authorization'], 'Bearer some-token');
+    });
+
+    test('injects both ApiKey and Basic when both are available', () {
+      final container = ProviderContainer(
+        overrides: [
+          serverApiKeyProvider.overrideWithValue('some-token'),
+          authProvider.overrideWith(() => MockAuthProvider(AuthState.initial().copyWith(
+            mode: AuthMode.basic,
+            username: 'alice',
+            password: 'secret',
+          ))),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final headers = container.read(mediaHeadersProvider);
+      
+      final expectedBase64 = base64Encode(utf8.encode('alice:secret'));
+      expect(headers['ApiKey'], 'some-token');
+      expect(headers['Authorization'], 'Basic $expectedBase64');
+    });
   });
 
   group('mediaPlaybackHeadersProvider', () {
