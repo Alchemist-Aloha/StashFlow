@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import '../auth/auth_headers.dart';
 import '../auth/auth_mode.dart';
 import '../auth/auth_provider.dart';
 import 'http_client_factory.dart';
@@ -102,28 +103,7 @@ class GraphqlClient extends _$GraphqlClient {
     final authState = ref.watch(authProvider);
     final isPasswordMode = authState.mode == AuthMode.password;
 
-    final headers = <String, String>{};
-    if (isPasswordMode) {
-      // Browsers treat Cookie as a forbidden request header. For web we rely
-      // on credentials-enabled requests instead of manually setting Cookie.
-      if (!kIsWeb && authState.cookieHeader.isNotEmpty) {
-        headers['Cookie'] = authState.cookieHeader;
-      }
-    } else if (authState.mode == AuthMode.basic) {
-      final user = authState.username.trim();
-      final pass = authState.password;
-      if (user.isNotEmpty || pass.isNotEmpty) {
-        final bytes = utf8.encode('$user:$pass');
-        final base64 = base64Encode(bytes);
-        headers['Authorization'] = 'Basic $base64';
-      }
-    } else if (authState.mode == AuthMode.bearer) {
-      if (apiKey.isNotEmpty) {
-        headers['Authorization'] = 'Bearer $apiKey';
-      }
-    } else if (apiKey.isNotEmpty) {
-      headers['ApiKey'] = apiKey;
-    }
+    final headers = getAuthHeaders(authState: authState, apiKey: apiKey);
 
     final httpClient = createGraphqlHttpClient(withCredentials: isPasswordMode);
 
