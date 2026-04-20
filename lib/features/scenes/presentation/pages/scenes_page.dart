@@ -278,7 +278,9 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                     Flexible(
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
-                          maxHeight: MediaQuery.of(context).size.height * 0.35,
+                          // Using MediaQuery.sizeOf(context) instead of MediaQuery.of(context).size
+                          // to prevent unnecessary rebuilds when unrelated MediaQueryData properties change.
+                          maxHeight: MediaQuery.sizeOf(context).height * 0.35,
                         ),
                         child: Scrollbar(
                           thumbVisibility: true,
@@ -441,7 +443,9 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
         if (!isGrid) return 640;
         final padding = AppTheme.spacingSmall * 2;
         final crossAxisCount = _getGridColumnCount(context);
-        final availableWidth = MediaQuery.of(context).size.width - padding;
+        // Using MediaQuery.sizeOf(context) instead of MediaQuery.of(context).size
+        // to prevent unnecessary rebuilds when unrelated MediaQueryData properties change.
+        final availableWidth = MediaQuery.sizeOf(context).width - padding;
         final itemWidth =
             (availableWidth - (AppTheme.spacingSmall * (crossAxisCount - 1))) /
             crossAxisCount;
