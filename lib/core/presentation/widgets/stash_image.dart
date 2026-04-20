@@ -270,8 +270,6 @@ class StashImage extends ConsumerWidget {
         url: imageUrl!,
         authMode: authState.mode,
         apiKey: apiKey,
-        username: authState.username,
-        password: authState.password,
         graphqlEndpoint: graphqlEndpoint,
       );
       return Image.network(

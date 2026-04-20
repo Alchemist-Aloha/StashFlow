@@ -63,8 +63,6 @@ String applyWebMediaAuthFallback({
   required String url,
   required AuthMode authMode,
   required String apiKey,
-  @Deprecated('Username should not be inserted into URL') String? username,
-  @Deprecated('Password should not be inserted into URL') String? password,
   Uri? graphqlEndpoint,
 }) {
   final trimmedUrl = url.trim();

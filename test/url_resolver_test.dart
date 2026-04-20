@@ -103,45 +103,35 @@ void main() {
         url: url,
         authMode: AuthMode.password,
         apiKey: '',
-        username: 'user',
-        password: 'pass',
         graphqlEndpoint: endpoint,
       );
       expect(result, url);
     });
 
     test('appends apikey for basic mode when apikey exists', () {
-      const url =
-          'https://stash.host.tld/scene/5/stream.mp4?resolution=ORIGINAL';
+      const url = 'https://stash.host.tld/scene/5/stream.mp4?resolution=ORIGINAL';
       final result = applyWebMediaAuthFallback(
         url: url,
         authMode: AuthMode.basic,
         apiKey: 'key123',
-        username: 'user',
-        password: 'pass',
         graphqlEndpoint: endpoint,
       );
       expect(result, contains('apikey=key123'));
       expect(result, contains('resolution=ORIGINAL'));
     });
 
-    test(
-      'DOES NOT inject basic userInfo for same-origin url when no apikey',
-      () {
-        const url = 'https://stash.host.tld/gallery/11/cover?t=1';
-        final result = applyWebMediaAuthFallback(
-          url: url,
-          authMode: AuthMode.basic,
-          apiKey: '',
-          username: 'alice',
-          password: 'secret',
-          graphqlEndpoint: endpoint,
-        );
-        // New behavior: user:pass should NOT be injected
-        expect(result, 'https://stash.host.tld/gallery/11/cover?t=1');
-        expect(result, isNot(contains('alice:secret')));
-      },
-    );
+    test('DOES NOT inject basic userInfo for same-origin url when no apikey', () {
+      const url = 'https://stash.host.tld/gallery/11/cover?t=1';
+      final result = applyWebMediaAuthFallback(
+        url: url,
+        authMode: AuthMode.basic,
+        apiKey: '',
+        graphqlEndpoint: endpoint,
+      );
+      // New behavior: user:pass should NOT be injected
+      expect(result, 'https://stash.host.tld/gallery/11/cover?t=1');
+      expect(result, isNot(contains('alice:secret')));
+    });
 
     test('does not inject userInfo for cross-origin url', () {
       const url = 'https://cdn.host.tld/gallery/11/cover?t=1';
@@ -149,8 +139,6 @@ void main() {
         url: url,
         authMode: AuthMode.basic,
         apiKey: '',
-        username: 'alice',
-        password: 'secret',
         graphqlEndpoint: endpoint,
       );
       expect(result, url);

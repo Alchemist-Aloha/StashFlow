@@ -583,8 +583,6 @@ class PlayerState extends _$PlayerState {
         url: streamUrl,
         authMode: authState.mode,
         apiKey: apiKey,
-        username: authState.username,
-        password: authState.password,
         graphqlEndpoint: Uri.tryParse(serverUrl),
       );
     }
