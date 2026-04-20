@@ -57,14 +57,14 @@ String appendApiKey(String url, String apiKey) {
 ///
 /// Priority:
 /// 1) If an API key exists, append it as `apikey` query param.
-/// 2) For Basic auth without API key, inject userinfo (`user:pass@`) only for
-///    same-origin media URLs to avoid leaking credentials cross-origin.
+/// 2) Password and Basic auth rely on browser session/headers or apikey fallback.
+///    Username and password are NO LONGER injected into the URL for security.
 String applyWebMediaAuthFallback({
   required String url,
   required AuthMode authMode,
   required String apiKey,
-  required String username,
-  required String password,
+  @Deprecated('Username should not be inserted into URL') String? username,
+  @Deprecated('Password should not be inserted into URL') String? password,
   Uri? graphqlEndpoint,
 }) {
   final trimmedUrl = url.trim();
@@ -78,29 +78,5 @@ String applyWebMediaAuthFallback({
     return appendApiKey(trimmedUrl, trimmedApiKey);
   }
 
-  if (authMode != AuthMode.basic) {
-    return trimmedUrl;
-  }
-
-  final trimmedUser = username.trim();
-  if ((trimmedUser.isEmpty && password.isEmpty) || graphqlEndpoint == null) {
-    return trimmedUrl;
-  }
-
-  final mediaUri = Uri.tryParse(trimmedUrl);
-  if (mediaUri == null || !mediaUri.hasScheme || mediaUri.host.isEmpty) {
-    return trimmedUrl;
-  }
-
-  final sameOrigin = mediaUri.scheme == graphqlEndpoint.scheme &&
-      mediaUri.host == graphqlEndpoint.host &&
-      ((mediaUri.hasPort ? mediaUri.port : null) ==
-          (graphqlEndpoint.hasPort ? graphqlEndpoint.port : null));
-  if (!sameOrigin) {
-    return trimmedUrl;
-  }
-
-  return mediaUri
-      .replace(userInfo: '$trimmedUser:$password')
-      .toString();
+  return trimmedUrl;
 }

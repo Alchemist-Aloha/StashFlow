@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../auth/auth_mode.dart';
@@ -7,68 +8,60 @@ import '../graphql/graphql_client.dart';
 
 final mediaHeadersProvider = Provider<Map<String, String>>((ref) {
   final authState = ref.watch(authProvider);
-  if (authState.mode == AuthMode.password) {
-    if (authState.cookieHeader.isEmpty) {
-      return const <String, String>{};
-    }
-    return <String, String>{'Cookie': authState.cookieHeader};
-  }
-
   final apiKey = ref.watch(serverApiKeyProvider);
+  final headers = <String, String>{};
 
-  if (authState.mode == AuthMode.basic) {
+  if (authState.mode == AuthMode.password) {
+    // Browsers treat Cookie as a forbidden request header. For web we rely
+    // on credentials-enabled requests instead of manually setting Cookie.
+    if (!kIsWeb && authState.cookieHeader.isNotEmpty) {
+      headers['Cookie'] = authState.cookieHeader;
+    }
+  } else if (authState.mode == AuthMode.basic) {
     final user = authState.username.trim();
     final pass = authState.password;
     if (user.isNotEmpty || pass.isNotEmpty) {
       final bytes = utf8.encode('$user:$pass');
       final base64 = base64Encode(bytes);
-      return <String, String>{'Authorization': 'Basic $base64'};
+      headers['Authorization'] = 'Basic $base64';
     }
-  }
-
-  if (authState.mode == AuthMode.bearer) {
+  } else if (authState.mode == AuthMode.bearer) {
     if (apiKey.isNotEmpty) {
-      return <String, String>{'Authorization': 'Bearer $apiKey'};
+      headers['Authorization'] = 'Bearer $apiKey';
     }
+  } else if (apiKey.isNotEmpty) {
+    headers['ApiKey'] = apiKey;
   }
 
-  if (apiKey.isEmpty) {
-    return const <String, String>{};
-  }
-
-  return <String, String>{'ApiKey': apiKey};
+  return headers;
 });
 
 final mediaPlaybackHeadersProvider = Provider<Map<String, String>>((ref) {
   final authState = ref.watch(authProvider);
-  if (authState.mode == AuthMode.password) {
-    if (authState.cookieHeader.isEmpty) {
-      return const <String, String>{};
-    }
-    return <String, String>{'Cookie': authState.cookieHeader};
-  }
-
   final apiKey = ref.watch(serverApiKeyProvider);
+  final headers = <String, String>{};
 
-  if (authState.mode == AuthMode.basic) {
+  if (authState.mode == AuthMode.password) {
+    // Browsers treat Cookie as a forbidden request header. For web we rely
+    // on credentials-enabled requests instead of manually setting Cookie.
+    if (!kIsWeb && authState.cookieHeader.isNotEmpty) {
+      headers['Cookie'] = authState.cookieHeader;
+    }
+  } else if (authState.mode == AuthMode.basic) {
     final user = authState.username.trim();
     final pass = authState.password;
     if (user.isNotEmpty || pass.isNotEmpty) {
       final bytes = utf8.encode('$user:$pass');
       final base64 = base64Encode(bytes);
-      return <String, String>{'Authorization': 'Basic $base64'};
+      headers['Authorization'] = 'Basic $base64';
     }
-  }
-
-  if (authState.mode == AuthMode.bearer) {
+  } else if (authState.mode == AuthMode.bearer) {
     if (apiKey.isNotEmpty) {
-      return <String, String>{'Authorization': 'Bearer $apiKey'};
+      headers['Authorization'] = 'Bearer $apiKey';
     }
+  } else if (apiKey.isNotEmpty) {
+    headers['ApiKey'] = apiKey;
   }
 
-  if (apiKey.isEmpty) {
-    return const <String, String>{};
-  }
-
-  return <String, String>{'ApiKey': apiKey};
+  return headers;
 });

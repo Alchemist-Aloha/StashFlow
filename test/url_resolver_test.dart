@@ -124,7 +124,7 @@ void main() {
       expect(result, contains('resolution=ORIGINAL'));
     });
 
-    test('injects basic userInfo for same-origin url when no apikey', () {
+    test('DOES NOT inject basic userInfo for same-origin url when no apikey', () {
       const url = 'https://stash.host.tld/gallery/11/cover?t=1';
       final result = applyWebMediaAuthFallback(
         url: url,
@@ -134,7 +134,9 @@ void main() {
         password: 'secret',
         graphqlEndpoint: endpoint,
       );
-      expect(result, 'https://alice:secret@stash.host.tld/gallery/11/cover?t=1');
+      // New behavior: user:pass should NOT be injected
+      expect(result, 'https://stash.host.tld/gallery/11/cover?t=1');
+      expect(result, isNot(contains('alice:secret')));
     });
 
     test('does not inject userInfo for cross-origin url', () {
