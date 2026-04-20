@@ -125,8 +125,9 @@ void main() {
     mockRepo.withData([testPerformer2]);
 
     await tester.enterText(find.byType(TextField), 'Alice');
-    // We might need multiple pumps if it's a debounced search,
-    // but here it seems immediate in the provider.
+    // Submit search to close view and trigger callback
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
     await tester.pump(const Duration(seconds: 1));
 
     expect(
@@ -173,15 +174,23 @@ void main() {
     // Change mock to reflect filtered data
     mockRepo.withData([testPerformer2]);
 
-    // Tap favorites only switch (scroll if needed)
-    final switchFinder = find.byType(SwitchListTile);
-    await tester.ensureVisible(switchFinder);
-    await tester.tap(switchFinder, warnIfMissed: false);
+    // Tap favorites only Yes chip (scroll if needed)
+    final yesChipFinder = find.text('Yes');
+    await tester.dragUntilVisible(
+      yesChipFinder,
+      find.byType(SingleChildScrollView),
+      const Offset(0, -100),
+    );
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.tap(yesChipFinder.first);
     await tester.pump(const Duration(milliseconds: 500));
 
     // Apply filter
     await tester.tap(find.text('Apply Filters'));
+    // Use pump instead of pumpAndSettle to avoid timeout with loading indicator
     await tester.pump(const Duration(seconds: 1));
+    await tester.pump(); // One last pump to be sure
+
 
     expect(
       find.descendant(

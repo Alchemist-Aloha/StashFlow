@@ -36,6 +36,7 @@ abstract class MockRepositoryState<T> {
 
   void setData(List<T> value) {
     data = value;
+    shouldThrow = false;
   }
 
   void withData(List<T> value) => setData(value);

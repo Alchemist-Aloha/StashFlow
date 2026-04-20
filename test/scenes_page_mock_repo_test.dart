@@ -133,6 +133,7 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(TextField), 'zzz');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
 
     final l10n = AppLocalizations.of(tester.element(find.byType(ScenesPage)))!;

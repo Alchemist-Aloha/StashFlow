@@ -208,12 +208,13 @@ void main() {
     await tester.tap(find.byIcon(Icons.search));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'Apple');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
 
     expect(find.text('Apple Scene'), findsOneWidget);
     expect(find.text('Zebra Scene'), findsNothing);
 
-    // Clear Search
+    // Clear Search - tapping the close icon in the "Searching for" bar
     await tester.tap(find.byIcon(Icons.close));
     await tester.pumpAndSettle();
 

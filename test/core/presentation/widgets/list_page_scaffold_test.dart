@@ -112,7 +112,7 @@ void main() {
           title: 'Test Title',
           searchHint: 'Search hint...',
           onSearchChanged: (val) => searchQuery = val,
-          provider: const AsyncValue.loading(),
+          provider: const AsyncValue.data(['Item 1']),
           itemBuilder: (context, item, mw, mh) => Text(item),
         ),
       );
@@ -130,14 +130,22 @@ void main() {
       
       // Type in search field
       await tester.enterText(find.byType(TextField), 'hello');
+      
+      // Submit search to close view and trigger callback
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+
       expect(searchQuery, 'hello');
 
-      // Tap close icon (this is inside SearchAnchor view)
-      await tester.pageBack(); // Often closes modal views
+      // Check that the "Searching for" bar is visible
+      expect(find.textContaining('Searching for: "hello"'), findsOneWidget);
+
+      // Tap close icon in the searching for bar to clear search
+      await tester.tap(find.byIcon(Icons.close));
       await tester.pumpAndSettle();
 
       // Back to initial state, search query cleared
-      expect(find.byType(TextField), findsNothing);
+      expect(searchQuery, '');
     });
 
     testWidgets('displays custom sortBar', (WidgetTester tester) async {
