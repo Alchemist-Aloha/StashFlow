@@ -260,34 +260,9 @@ class StashImage extends ConsumerWidget {
     }
 
     final headers = ref.watch(mediaHeadersProvider);
-    final apiKey = ref.watch(serverApiKeyProvider);
-    final serverUrl = ref.watch(serverUrlProvider);
-    final authState = ref.watch(authProvider);
-
-    if (kIsWeb) {
-      final graphqlEndpoint = Uri.tryParse(serverUrl);
-      final webUrl = applyWebMediaAuthFallback(
-        url: imageUrl!,
-        authMode: authState.mode,
-        apiKey: apiKey,
-        graphqlEndpoint: graphqlEndpoint,
-      );
-      return Image.network(
-        webUrl,
-        // Avoid custom headers on web; browser manages credentials/cookies.
-        width: width,
-        height: height,
-        headers: headers,
-        fit: fit,
-        errorBuilder: (context, error, stackTrace) => _buildError(context),
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return _buildPlaceholder(context);
-        },
-      );
-    }
 
     // Ensure we only schedule the costly cache-check once per imageUrl during lifetime
+
     if (!_cacheCheckedUrls.contains(imageUrl)) {
       _cacheCheckedUrls.add(imageUrl!);
 
