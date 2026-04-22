@@ -19,6 +19,7 @@ import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/utils/web_helpers.dart';
 import 'native_video_controls.dart';
 import 'scene_subtitle_overlay.dart';
+import 'transformable_video_surface.dart';
 
 TextAlign _subtitleTextAlign(String setting) {
   switch (setting) {
@@ -299,9 +300,9 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                   child: Container(
                     color: Colors.black,
                     child: Center(
-                      child: AspectRatio(
+                      child: TransformableVideoSurface(
+                        controller: controller,
                         aspectRatio: controller.value.aspectRatio,
-                        child: VideoPlayer(controller),
                       ),
                     ),
                   ),
@@ -651,9 +652,9 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                     child: Container(
                       color: Colors.black,
                       child: Center(
-                        child: AspectRatio(
+                        child: TransformableVideoSurface(
+                          controller: controller,
                           aspectRatio: controller.value.aspectRatio,
-                          child: VideoPlayer(controller),
                         ),
                       ),
                     ),
