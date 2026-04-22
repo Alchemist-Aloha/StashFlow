@@ -40,11 +40,8 @@ Modify the orientation selection logic in the fullscreen player.
    - **If `aspectRatio > 1.0` (Landscape):**
      - If `videoGravityOrientation` is `true`: `[DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]`
      - Else: `[DeviceOrientation.landscapeLeft]`
-   - **If `aspectRatio < 1.0` (Portrait):**
+   - **If `aspectRatio <= 1.0` (Portrait/Square):**
      - If `videoGravityOrientation` is `true`: `[DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]`
-     - Else: `[DeviceOrientation.portraitUp]`
-   - **If `aspectRatio == 1.0` (Square):**
-     - If `videoGravityOrientation` is `true`: `[DeviceOrientation.portraitUp, DeviceOrientation.portraitDown, DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]`
      - Else: `[DeviceOrientation.portraitUp]`
 5. Call `SystemChrome.setPreferredOrientations(orientations)`.
 
@@ -74,7 +71,7 @@ Update the English ARB file with new keys.
 2. If gravity control is ON, verify flipping the device 180° rotates the video.
 3. If gravity control is OFF, verify it stays in one landscape orientation.
 4. Repeat with a portrait video. Verify it enters portrait mode.
-5. Verify square videos default to portrait (or the allowed set if gravity control is ON).
+5. Verify square videos are treated as portrait (only allowing portrait orientations, even if gravity control is ON).
 
 ### 3.2 Automated Tests
 - Add a widget test for `PlaybackSettingsPage` to verify the toggle exists and updates the provider.

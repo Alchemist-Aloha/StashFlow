@@ -6,11 +6,13 @@ class TransformableVideoSurface extends StatefulWidget {
     required this.controller,
     required this.aspectRatio,
     this.transformationNotifier,
+    this.fit = BoxFit.contain,
     super.key,
   });
 
   final VideoPlayerController controller;
   final double aspectRatio;
+  final BoxFit fit;
   
   /// Optional notifier to sync transformations from external gesture detectors.
   final ValueNotifier<Matrix4>? transformationNotifier;
@@ -57,15 +59,35 @@ class _TransformableVideoSurfaceState extends State<TransformableVideoSurface> {
 
   @override
   Widget build(BuildContext context) {
+    Widget content = VideoPlayer(widget.controller);
+
+    if (widget.fit == BoxFit.fill) {
+      content = SizedBox.expand(child: content);
+    } else if (widget.fit == BoxFit.cover) {
+      content = SizedBox.expand(
+        child: FittedBox(
+          fit: BoxFit.cover,
+          clipBehavior: Clip.hardEdge,
+          child: SizedBox(
+            width: widget.controller.value.size.width,
+            height: widget.controller.value.size.height,
+            child: content,
+          ),
+        ),
+      );
+    } else {
+      content = Center(
+        child: AspectRatio(
+          aspectRatio: widget.aspectRatio,
+          child: content,
+        ),
+      );
+    }
+
     return ClipRect(
       child: Transform(
         transform: _transformationMatrix,
-        child: Center(
-          child: AspectRatio(
-            aspectRatio: widget.aspectRatio,
-            child: VideoPlayer(widget.controller),
-          ),
-        ),
+        child: content,
       ),
     );
   }

@@ -17,6 +17,7 @@ import '../../data/repositories/stream_resolver.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
+import 'transformable_video_surface.dart';
 
 class FullScreenMode extends Notifier<bool> {
   @override
@@ -544,11 +545,14 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                             Positioned.fill(
                               child: Container(
                                 color: Colors.black,
-                                child: Center(
-                                  child: AspectRatio(
-                                    aspectRatio: controller.value.aspectRatio,
-                                    child: VideoPlayer(controller),
-                                  ),
+                                child: TransformableVideoSurface(
+                                  controller: controller,
+                                  aspectRatio: controller.value.aspectRatio,
+                                  fit: (controller.value.aspectRatio - 1.0).abs() < 0.01
+                                      ? BoxFit.fill
+                                      : (controller.value.aspectRatio < 1.0
+                                          ? BoxFit.cover
+                                          : BoxFit.contain),
                                 ),
                               ),
                             ),
