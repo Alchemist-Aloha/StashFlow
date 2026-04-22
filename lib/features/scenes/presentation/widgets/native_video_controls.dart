@@ -34,6 +34,7 @@ class NativeVideoControls extends ConsumerStatefulWidget {
     this.onScaleStart,
     this.onScaleUpdate,
     this.onScaleEnd,
+    this.onTransformationDelta,
     super.key,
   });
 
@@ -45,6 +46,7 @@ class NativeVideoControls extends ConsumerStatefulWidget {
   final GestureScaleStartCallback? onScaleStart;
   final GestureScaleUpdateCallback? onScaleUpdate;
   final GestureScaleEndCallback? onScaleEnd;
+  final void Function(Matrix4 delta, Offset focalPoint)? onTransformationDelta;
 
   @override
   ConsumerState<NativeVideoControls> createState() =>
@@ -770,6 +772,51 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                       child: Listener(
                         onPointerSignal: (pointerSignal) {
                           if (pointerSignal is PointerScrollEvent) {
+                            final isCtrlPressed = HardwareKeyboard.instance
+                                .isControlPressed;
+                            final isAltPressed = HardwareKeyboard.instance
+                                .isAltPressed;
+
+                            if (isCtrlPressed) {
+                              // Zoom logic: Scroll up (dy < 0) zooms in
+                              final double scaleDelta = pointerSignal
+                                          .scrollDelta.dy <
+                                      0
+                                  ? 1.1
+                                  : 0.9;
+                              final matrix = Matrix4.identity()
+                                ..translate(pointerSignal.localPosition.dx,
+                                    pointerSignal.localPosition.dy)
+                                ..scale(scaleDelta)
+                                ..translate(-pointerSignal.localPosition.dx,
+                                    -pointerSignal.localPosition.dy);
+                              widget.onTransformationDelta?.call(
+                                matrix,
+                                pointerSignal.localPosition,
+                              );
+                              return;
+                            }
+
+                            if (isAltPressed) {
+                              // Rotate logic: Scroll dy determines direction
+                              final double rotationDelta = pointerSignal
+                                          .scrollDelta.dy <
+                                      0
+                                  ? 0.1
+                                  : -0.1;
+                              final matrix = Matrix4.identity()
+                                ..translate(pointerSignal.localPosition.dx,
+                                    pointerSignal.localPosition.dy)
+                                ..rotateZ(rotationDelta)
+                                ..translate(-pointerSignal.localPosition.dx,
+                                    -pointerSignal.localPosition.dy);
+                              widget.onTransformationDelta?.call(
+                                matrix,
+                                pointerSignal.localPosition,
+                              );
+                              return;
+                            }
+
                             if (pointerSignal.scrollDelta.dy != 0) {
                               // Vertical scroll -> Volume
                               final currentVol = ref

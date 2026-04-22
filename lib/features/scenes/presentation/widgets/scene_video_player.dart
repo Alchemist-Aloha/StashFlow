@@ -93,6 +93,10 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     _lastRotation = details.rotation;
   }
 
+  void _onTransformationDelta(Matrix4 delta, Offset focalPoint) {
+    _transformationNotifier.value = delta * _transformationNotifier.value;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -368,6 +372,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                       scene: widget.scene,
                       onScaleStart: _onScaleStart,
                       onScaleUpdate: _onScaleUpdate,
+                      onTransformationDelta: _onTransformationDelta,
                     ),
                   ),
                 ),
@@ -429,6 +434,10 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
     _transformationNotifier.value = matrix * _transformationNotifier.value;
     _lastScale = details.scale;
     _lastRotation = details.rotation;
+  }
+
+  void _onTransformationDelta(Matrix4 delta, Offset focalPoint) {
+    _transformationNotifier.value = delta * _transformationNotifier.value;
   }
 
   void _onControllerUpdate() {
@@ -752,6 +761,7 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                         scene: scene,
                         onScaleStart: _onScaleStart,
                         onScaleUpdate: _onScaleUpdate,
+                        onTransformationDelta: _onTransformationDelta,
                       ),
                     ),
                   ),
