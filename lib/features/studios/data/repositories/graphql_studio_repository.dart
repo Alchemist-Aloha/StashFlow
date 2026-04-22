@@ -2,12 +2,12 @@ import 'package:graphql/client.dart';
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
-import '../../../scenes/domain/models/scraped_scene.dart';
 import 'package:stash_app_flutter/core/domain/entities/criterion.dart' as domain;
 import '../../domain/entities/studio.dart';
 import '../../domain/entities/studio_filter.dart';
 import '../../domain/repositories/studio_repository.dart';
 import '../graphql/studios.graphql.dart';
+import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_studio.dart';
 
 class GraphQLStudioRepository implements StudioRepository {
   final GraphQLClient client;

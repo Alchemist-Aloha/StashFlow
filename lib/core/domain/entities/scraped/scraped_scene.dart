@@ -7,7 +7,7 @@ part 'scraped_scene.freezed.dart';
 part 'scraped_scene.g.dart';
 
 @freezed
-class ScrapedScene with _$ScrapedScene {
+abstract class ScrapedScene with _$ScrapedScene {
   const factory ScrapedScene({
     @JsonKey(name: 'remote_site_id') String? remoteSiteId,
     String? title,

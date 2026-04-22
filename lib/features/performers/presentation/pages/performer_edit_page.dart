@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
-import '../../../scenes/domain/models/scraped_scene.dart';
 import '../../../scenes/presentation/widgets/scrape_query_dialog.dart';
 import '../../../scenes/presentation/widgets/enhanced_scrape_dialog.dart';
 import '../../domain/entities/performer.dart';
 import '../providers/performer_details_provider.dart';
 import '../providers/performer_scrape_provider.dart';
 import '../../../setup/presentation/providers/scrape_customization_provider.dart';
+import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_performer.dart';
 
 class PerformerEditPage extends ConsumerStatefulWidget {
   final Performer performer;

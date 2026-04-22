@@ -5,7 +5,7 @@ part 'scraped_studio.freezed.dart';
 part 'scraped_studio.g.dart';
 
 @freezed
-class ScrapedStudio with _$ScrapedStudio {
+abstract class ScrapedStudio with _$ScrapedStudio {
   const factory ScrapedStudio({
     @JsonKey(name: 'stored_id') String? storedId,
     required String name,

@@ -20,9 +20,11 @@ import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.d
 import 'package:stash_app_flutter/features/performers/domain/entities/performer_filter.dart';
 import 'package:stash_app_flutter/features/studios/domain/entities/studio_filter.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image_filter.dart';
-import 'package:stash_app_flutter/features/scenes/domain/models/scraped_scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/models/scraper.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_performer.dart';
+import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
+import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_studio.dart';
 
 abstract class MockRepositoryState<T> {
   List<T> data = [];

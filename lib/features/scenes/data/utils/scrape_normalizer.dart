@@ -1,4 +1,4 @@
-import '../../domain/models/scraped_scene.dart';
+import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
 
 String? _normalizeDate(DateTime? date) {
   if (date == null) return null;

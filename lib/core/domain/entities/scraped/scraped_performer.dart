@@ -5,7 +5,7 @@ part 'scraped_performer.freezed.dart';
 part 'scraped_performer.g.dart';
 
 @freezed
-class ScrapedPerformer with _$ScrapedPerformer {
+abstract class ScrapedPerformer with _$ScrapedPerformer {
   const factory ScrapedPerformer({
     @JsonKey(name: 'stored_id') String? storedId,
     @JsonKey(name: 'remote_site_id') String? remoteSiteId,

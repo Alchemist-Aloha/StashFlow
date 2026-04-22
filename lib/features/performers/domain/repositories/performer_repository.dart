@@ -1,7 +1,7 @@
-import '../../../scenes/domain/models/scraped_scene.dart';
 import '../entities/performer.dart';
 
 import '../entities/performer_filter.dart';
+import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_performer.dart';
 
 abstract class PerformerRepository {
   Future<List<Performer>> findPerformers({

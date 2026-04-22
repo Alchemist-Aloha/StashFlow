@@ -7,8 +7,8 @@ import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../../domain/repositories/scene_repository.dart';
 import '../../domain/models/scraper.dart';
-import '../../domain/models/scraped_scene.dart';
 import '../graphql/scenes.graphql.dart';
+import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
 
 class GraphQLSceneRepository implements SceneRepository {
   final GraphQLClient client;

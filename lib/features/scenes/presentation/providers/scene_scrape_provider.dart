@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../domain/models/scraped_scene.dart';
 import '../../domain/models/scraper.dart';
 import 'scene_list_provider.dart';
+import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
 
 class SceneScrapeNotifier {
   final Ref ref;

@@ -1,7 +1,7 @@
 import '../entities/scene.dart';
 import '../entities/scene_filter.dart';
 import '../models/scraper.dart';
-import '../models/scraped_scene.dart';
+import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
 
 abstract class SceneRepository {
   Future<List<Scene>> findScenes({

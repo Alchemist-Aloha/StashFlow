@@ -1,5 +1,3 @@
-library;
-
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'criterion.freezed.dart';
@@ -35,7 +33,7 @@ enum CriterionModifier {
 }
 
 @freezed
-class IntCriterion with _$IntCriterion {
+abstract class IntCriterion with _$IntCriterion {
   const factory IntCriterion({
     required int value,
     int? value2,
@@ -46,7 +44,7 @@ class IntCriterion with _$IntCriterion {
 }
 
 @freezed
-class StringCriterion with _$StringCriterion {
+abstract class StringCriterion with _$StringCriterion {
   const factory StringCriterion({
     required String value,
     @Default(CriterionModifier.equals) CriterionModifier modifier,
@@ -56,7 +54,7 @@ class StringCriterion with _$StringCriterion {
 }
 
 @freezed
-class DateCriterion with _$DateCriterion {
+abstract class DateCriterion with _$DateCriterion {
   const factory DateCriterion({
     required String value,
     String? value2,
@@ -67,7 +65,7 @@ class DateCriterion with _$DateCriterion {
 }
 
 @freezed
-class MultiCriterion with _$MultiCriterion {
+abstract class MultiCriterion with _$MultiCriterion {
   const factory MultiCriterion({
     required List<String> value,
     @Default(CriterionModifier.includes) CriterionModifier modifier,
@@ -77,7 +75,7 @@ class MultiCriterion with _$MultiCriterion {
 }
 
 @freezed
-class HierarchicalMultiCriterion with _$HierarchicalMultiCriterion {
+abstract class HierarchicalMultiCriterion with _$HierarchicalMultiCriterion {
   const factory HierarchicalMultiCriterion({
     required List<String> value,
     @Default(CriterionModifier.includes) CriterionModifier modifier,
