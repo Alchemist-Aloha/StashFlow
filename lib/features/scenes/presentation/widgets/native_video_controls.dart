@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
@@ -31,6 +32,10 @@ class NativeVideoControls extends ConsumerStatefulWidget {
     required this.enableNativePip,
     this.onFullScreenToggle,
     required this.scene,
+    this.onScaleStart,
+    this.onScaleUpdate,
+    this.onScaleEnd,
+    this.onTransformationDelta,
     super.key,
   });
 
@@ -39,6 +44,10 @@ class NativeVideoControls extends ConsumerStatefulWidget {
   final bool enableNativePip;
   final VoidCallback? onFullScreenToggle;
   final Scene scene;
+  final GestureScaleStartCallback? onScaleStart;
+  final GestureScaleUpdateCallback? onScaleUpdate;
+  final GestureScaleEndCallback? onScaleEnd;
+  final void Function(Matrix4 delta, Offset focalPoint)? onTransformationDelta;
 
   @override
   ConsumerState<NativeVideoControls> createState() =>
@@ -259,7 +268,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     );
   }
 
-  void _updateDragSeek(DragUpdateDetails details, double dragAreaWidth) {
+  void _updateDragSeek(ScaleUpdateDetails details, double dragAreaWidth) {
     final isActive =
         ref.read(playerStateProvider).activeScene?.id == widget.scene.id;
     if (!isActive) return;
@@ -271,7 +280,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     final duration = widget.controller.value.duration;
     if (duration <= Duration.zero) return;
 
-    _dragSeekAccumulatedDx += details.primaryDelta ?? 0;
+    _dragSeekAccumulatedDx += details.focalPointDelta.dx;
     final linearDragRatio = _dragSeekAccumulatedDx / dragAreaWidth;
     final curvedMagnitude = math
         .pow(linearDragRatio.abs(), _dragSeekCurveExponent)
@@ -764,6 +773,51 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                       child: Listener(
                         onPointerSignal: (pointerSignal) {
                           if (pointerSignal is PointerScrollEvent) {
+                            final isCtrlPressed = HardwareKeyboard.instance
+                                .isControlPressed;
+                            final isAltPressed = HardwareKeyboard.instance
+                                .isAltPressed;
+
+                            if (isCtrlPressed) {
+                              // Zoom logic: Scroll up (dy < 0) zooms in
+                              final double scaleDelta = pointerSignal
+                                          .scrollDelta.dy <
+                                      0
+                                  ? 1.1
+                                  : 0.9;
+                              final matrix = Matrix4.identity()
+                                ..translate(pointerSignal.localPosition.dx,
+                                    pointerSignal.localPosition.dy)
+                                ..scale(scaleDelta)
+                                ..translate(-pointerSignal.localPosition.dx,
+                                    -pointerSignal.localPosition.dy);
+                              widget.onTransformationDelta?.call(
+                                matrix,
+                                pointerSignal.localPosition,
+                              );
+                              return;
+                            }
+
+                            if (isAltPressed) {
+                              // Rotate logic: Scroll dy determines direction
+                              final double rotationDelta = pointerSignal
+                                          .scrollDelta.dy <
+                                      0
+                                  ? 0.1
+                                  : -0.1;
+                              final matrix = Matrix4.identity()
+                                ..translate(pointerSignal.localPosition.dx,
+                                    pointerSignal.localPosition.dy)
+                                ..rotateZ(rotationDelta)
+                                ..translate(-pointerSignal.localPosition.dx,
+                                    -pointerSignal.localPosition.dy);
+                              widget.onTransformationDelta?.call(
+                                matrix,
+                                pointerSignal.localPosition,
+                              );
+                              return;
+                            }
+
                             if (pointerSignal.scrollDelta.dy != 0) {
                               // Vertical scroll -> Volume
                               final currentVol = ref
@@ -806,21 +860,30 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                   widget.onFullScreenToggle?.call();
                                 }
                               : null,
-                          onHorizontalDragStart: !widget.useDoubleTapSeek
-                              ? (_) => _beginDragSeek()
-                              : null,
-                          onHorizontalDragUpdate: !widget.useDoubleTapSeek
-                              ? (details) => _updateDragSeek(
-                                  details,
-                                  constraints.maxWidth,
-                                )
-                              : null,
-                          onHorizontalDragEnd: !widget.useDoubleTapSeek
-                              ? (_) => _endDragSeek()
-                              : null,
-                          onHorizontalDragCancel: !widget.useDoubleTapSeek
-                              ? () => _endDragSeek()
-                              : null,
+                          onScaleStart: (details) {
+                            if (details.pointerCount == 1) {
+                              if (!widget.useDoubleTapSeek) {
+                                _beginDragSeek();
+                              }
+                            } else if (details.pointerCount >= 2) {
+                              widget.onScaleStart?.call(details);
+                            }
+                          },
+                          onScaleUpdate: (details) {
+                            if (details.pointerCount == 1) {
+                              if (!widget.useDoubleTapSeek) {
+                                _updateDragSeek(details, constraints.maxWidth);
+                              }
+                            } else if (details.pointerCount >= 2) {
+                              widget.onScaleUpdate?.call(details);
+                            }
+                          },
+                          onScaleEnd: (details) {
+                            if (_dragSeekStartPosition != null) {
+                              _endDragSeek();
+                            }
+                            widget.onScaleEnd?.call(details);
+                          },
                           child: const ColoredBox(color: Colors.transparent),
                         ),
                       ),

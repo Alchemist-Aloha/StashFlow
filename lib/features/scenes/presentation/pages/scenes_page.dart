@@ -278,7 +278,9 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                     Flexible(
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
-                          maxHeight: MediaQuery.of(context).size.height * 0.35,
+                          // Using MediaQuery.sizeOf(context) instead of MediaQuery.of(context).size
+                          // to prevent unnecessary rebuilds when unrelated MediaQueryData properties change.
+                          maxHeight: MediaQuery.sizeOf(context).height * 0.35,
                         ),
                         child: Scrollbar(
                           thumbVisibility: true,
@@ -431,6 +433,13 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
 
     final hasActiveFilters = filterActive || organizedFilter != OrganizedFilter.all;
 
+    // ⚡ Bolt: Hoist scene lookup map out of the itemBuilder loop.
+    // Why: Previously, every item built during scrolling performed an O(N) indexWhere lookup,
+    // causing O(N^2) complexity and potential frame drops.
+    // Impact: Reduces lookup from O(N) to O(1), significantly improving scrolling performance.
+    final scenes = scenesAsync.value ?? [];
+    final sceneIndexMap = {for (var i = 0; i < scenes.length; i++) scenes[i].id: i};
+
     return ListPageScaffold<Scene>(
       title: context.l10n.appTitle,
       searchHint: context.l10n.scenes_search_hint,
@@ -441,7 +450,9 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
         if (!isGrid) return 640;
         final padding = AppTheme.spacingSmall * 2;
         final crossAxisCount = _getGridColumnCount(context);
-        final availableWidth = MediaQuery.of(context).size.width - padding;
+        // Using MediaQuery.sizeOf(context) instead of MediaQuery.of(context).size
+        // to prevent unnecessary rebuilds when unrelated MediaQueryData properties change.
+        final availableWidth = MediaQuery.sizeOf(context).width - padding;
         final itemWidth =
             (availableWidth - (AppTheme.spacingSmall * (crossAxisCount - 1))) /
             crossAxisCount;
@@ -508,8 +519,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
           : null,
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, scene, memCacheWidth, memCacheHeight) {
-        final scenes = scenesAsync.value ?? [];
-        final index = scenes.indexWhere((s) => s.id == scene.id);
+        final index = sceneIndexMap[scene.id] ?? -1;
 
         return SceneCard(
           scene: scene,

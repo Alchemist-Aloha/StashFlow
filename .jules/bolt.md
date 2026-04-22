@@ -9,3 +9,11 @@
 ## 2024-05-30 - [Hoist Invariant Calculations from SliverMasonryGrid itemBuilder]
 **Learning:** Just like with ListView.builder, performing invariant calculations like MediaQuery.sizeOf(context) inside SliverMasonryGrid.count's itemBuilder causes an O(N) performance bottleneck during fast scroll events due to continuous redundant math operations and inherited widget lookups.
 **Action:** Always hoist invariant layout variables out of the itemBuilder and into the parent build method to ensure O(1) performance.
+
+## 2024-05-31 - [MediaQuery Rebuild Optimization]
+**Learning:** Using `MediaQuery.of(context).size` binds the widget to the entire `MediaQueryData` object, triggering an unnecessary rebuild whenever any unrelated property changes (like the keyboard appearing/disappearing or text scaling updates).
+**Action:** Always use granular MediaQuery methods like `MediaQuery.sizeOf(context)`, `MediaQuery.paddingOf(context)`, etc. to isolate dependencies to only the properties the widget actually uses.
+
+## 2024-06-25 - [O(N^2) Scroll Stutter via itemBuilder lookups]
+**Learning:** Performing an `O(N)` list scan like `indexWhere` inside a Flutter `itemBuilder` callback causes massive O(N^2) scaling issues when the user scrolls through long lists. Similarly, evaluating fallbacks like `images ?? []` repeatedly causes needless GC pressure.
+**Action:** Always pre-compute a lookup map (like `{for (var i=0; i<list.length; i++) list[i].id: i}`) in the parent `build` method before passing data to `itemBuilder`, ensuring O(1) lookups during the render phase. Hoist all possible allocations out of the builder.

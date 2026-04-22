@@ -198,6 +198,39 @@ class StashImage extends ConsumerWidget {
   final int? memCacheWidth;
   final int? memCacheHeight;
 
+  /// Returns an [ImageProvider] for the given [imageUrl], applying web-specific
+  /// authentication fallbacks (apikey query parameter) when running on the web.
+  static ImageProvider provider(
+    WidgetRef ref,
+    String imageUrl, {
+    Map<String, String>? headers,
+  }) {
+    if (imageUrl.isEmpty) {
+      return const AssetImage('asset/icon_original.png');
+    }
+
+    if (kIsWeb) {
+      final authState = ref.read(authProvider);
+      final apiKey = ref.read(serverApiKeyProvider);
+      final serverUrl = ref.read(serverUrlProvider);
+
+      final effectiveUrl = applyWebMediaAuthFallback(
+        url: imageUrl,
+        authMode: authState.mode,
+        apiKey: apiKey,
+        graphqlEndpoint: Uri.tryParse(serverUrl),
+      );
+
+      return NetworkImage(effectiveUrl, headers: headers);
+    }
+
+    return CachedNetworkImageProvider(
+      imageUrl,
+      headers: headers,
+      cacheManager: cacheManager,
+    );
+  }
+
   static final Set<String> _prefetched = <String>{};
   static final Set<String> _cacheCheckedUrls = <String>{};
   static const int defaultPrefetchDistance = 40;
@@ -260,6 +293,32 @@ class StashImage extends ConsumerWidget {
     }
 
     final headers = ref.watch(mediaHeadersProvider);
+
+    if (kIsWeb) {
+      final authState = ref.watch(authProvider);
+      final apiKey = ref.watch(serverApiKeyProvider);
+      final serverUrl = ref.watch(serverUrlProvider);
+
+      final effectiveUrl = applyWebMediaAuthFallback(
+        url: imageUrl!,
+        authMode: authState.mode,
+        apiKey: apiKey,
+        graphqlEndpoint: Uri.tryParse(serverUrl),
+      );
+
+      return Image.network(
+        effectiveUrl,
+        headers: headers,
+        width: width,
+        height: height,
+        fit: fit,
+        errorBuilder: (context, error, stackTrace) => _buildError(context),
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return _buildPlaceholder(context);
+        },
+      );
+    }
 
     // Ensure we only schedule the costly cache-check once per imageUrl during lifetime
 

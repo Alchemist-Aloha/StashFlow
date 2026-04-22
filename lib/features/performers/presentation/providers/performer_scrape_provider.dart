@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../scenes/domain/models/scraped_scene.dart';
 import '../../../scenes/domain/models/scraper.dart';
 import '../../../scenes/presentation/providers/scene_list_provider.dart';
 import '../providers/performer_list_provider.dart';
+import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_performer.dart';
 
 class PerformerScrapeNotifier {
   final Ref ref;

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../../core/utils/l10n_extensions.dart';
-import '../../domain/models/scraped_scene.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_performer.dart';
+import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
+import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_studio.dart';
 
 enum ScrapeEntityType { scene, performer, studio }
 

@@ -57,3 +57,4 @@ android/upload-keystore.jks
 .vscode/
 # Git worktrees
 .worktrees/
+Caddyfile

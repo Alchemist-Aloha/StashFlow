@@ -165,7 +165,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   @override
   void initState() {
     super.initState();
-    _historyKey = widget.searchHistoryKey ??
+    _historyKey =
+        widget.searchHistoryKey ??
         'search_history_${widget.title.toLowerCase().replaceAll(' ', '_')}';
   }
 
@@ -450,7 +451,9 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                       });
                       widget.onSearchChanged(text);
                       if (text.isNotEmpty) {
-                        ref.read(searchHistoryProvider(_historyKey).notifier).addQuery(text);
+                        ref
+                            .read(searchHistoryProvider(_historyKey).notifier)
+                            .addQuery(text);
                       }
                     }
                   },
@@ -468,56 +471,77 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                   viewOnSubmitted: (value) {
                     _searchController.closeView(value);
                   },
-                  suggestionsBuilder: (BuildContext context, SearchController controller) {
-                    return [
-                      Consumer(
-                        builder: (context, ref, _) {
-                          final history = ref.watch(searchHistoryProvider(_historyKey));
-                          return Column(
-                            children: [
-                              if (history.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'Recent Searches',
-                                        style: TextStyle(
-                                          color: context.colors.onSurface.withValues(alpha: 0.7),
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                  suggestionsBuilder:
+                      (BuildContext context, SearchController controller) {
+                        return [
+                          Consumer(
+                            builder: (context, ref, _) {
+                              final history = ref.watch(
+                                searchHistoryProvider(_historyKey),
+                              );
+                              return Column(
+                                children: [
+                                  if (history.isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0,
+                                        vertical: 8.0,
                                       ),
-                                      TextButton(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            'Recent Searches',
+                                            style: TextStyle(
+                                              color: context.colors.onSurface
+                                                  .withValues(alpha: 0.7),
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              ref
+                                                  .read(
+                                                    searchHistoryProvider(
+                                                      _historyKey,
+                                                    ).notifier,
+                                                  )
+                                                  .clearAll();
+                                            },
+                                            child: const Text('Clear History'),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ...history.map((item) {
+                                    return ListTile(
+                                      leading: const Icon(Icons.history),
+                                      title: Text(item),
+                                      trailing: IconButton(
+                                        tooltip: context.l10n.common_close,
+                                        icon: const Icon(Icons.close),
                                         onPressed: () {
-                                          ref.read(searchHistoryProvider(_historyKey).notifier).clearAll();
+                                          ref
+                                              .read(
+                                                searchHistoryProvider(
+                                                  _historyKey,
+                                                ).notifier,
+                                              )
+                                              .removeQuery(item);
                                         },
-                                        child: const Text('Clear History'),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              ...history.map((item) {
-                                return ListTile(
-                                  leading: const Icon(Icons.history),
-                                  title: Text(item),
-                                  trailing: IconButton(
-                                    icon: const Icon(Icons.close),
-                                    onPressed: () {
-                                      ref.read(searchHistoryProvider(_historyKey).notifier).removeQuery(item);
-                                    },
-                                  ),
-                                  onTap: () {
-                                    controller.closeView(item);
-                                  },
-                                );
-                                }),
-                            ],
-                          );
-                        },
-                      ),
-                    ];
-                  },
+                                      onTap: () {
+                                        controller.closeView(item);
+                                      },
+                                    );
+                                  }),
+                                ],
+                              );
+                            },
+                          ),
+                        ];
+                      },
                 ),
                 IconButton(
                   icon: const Icon(Icons.settings),
@@ -560,7 +584,10 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
           children: [
             if (_currentQuery != null)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 color: context.colors.surfaceVariant,
                 child: Row(
                   children: [
@@ -574,6 +601,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                       ),
                     ),
                     IconButton(
+                      tooltip: context.l10n.common_close,
                       icon: const Icon(Icons.close, size: 20),
                       onPressed: () {
                         setState(() {
@@ -599,16 +627,16 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                         child: SizedBox(
                           height: MediaQuery.sizeOf(context).height * 0.7,
                           child: Center(
-                                    child: Text(
-                                      widget.emptyMessage == 'No items found'
-                                          ? context.l10n.common_no_items
-                                          : widget.emptyMessage,
-                                      style: TextStyle(
-                                        color: context.colors.onSurface.withValues(
-                                          alpha: 0.7,
-                                        ),
-                                      ),
-                                    ),
+                            child: Text(
+                              widget.emptyMessage == 'No items found'
+                                  ? context.l10n.common_no_items
+                                  : widget.emptyMessage,
+                              style: TextStyle(
+                                color: context.colors.onSurface.withValues(
+                                  alpha: 0.7,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),

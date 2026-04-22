@@ -189,7 +189,9 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                     Flexible(
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
-                          maxHeight: MediaQuery.of(context).size.height * 0.35,
+                          // Using MediaQuery.sizeOf(context) instead of MediaQuery.of(context).size
+                          // to prevent unnecessary rebuilds when unrelated MediaQueryData properties change.
+                          maxHeight: MediaQuery.sizeOf(context).height * 0.35,
                         ),
                         child: Scrollbar(
                           thumbVisibility: true,
@@ -340,6 +342,12 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final memCacheWidth = (screenWidth / crossAxisCount * 1.5).toInt();
 
+    // ⚡ Bolt: Hoist fallback list allocation out of the itemBuilder.
+    // Why: Prevents creating a new empty list or evaluating the null-aware operator
+    // for every item during scroll layout passes.
+    // Impact: Reduces GC pressure and speeds up grid rendering.
+    final items = imagesAsync.value ?? [];
+
     return ListPageScaffold<entity.Image>(
       title: context.l10n.images_title,
       imageUrlBuilder: (img) => img.paths.thumbnail,
@@ -441,7 +449,6 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
               mainAxisSpacing: AppTheme.spacingSmall,
               crossAxisSpacing: AppTheme.spacingSmall,
               itemBuilder: (context, index) {
-                final items = imagesAsync.value ?? [];
                 if (index >= items.length) return const SizedBox.shrink();
 
                 return RepaintBoundary(

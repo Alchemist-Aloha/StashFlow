@@ -415,8 +415,8 @@ class _ShellPageState extends ConsumerState<ShellPage> {
       ];
       for (int i = 0; i < visibleTabs.length && i < digitKeys.length; i++) {
         final index = i;
-        bindings[SingleActivator(digitKeys[i])] = () =>
-            onDestinationSelected(index);
+        bindings[SingleActivator(digitKeys[i], control: true)] =
+            () => onDestinationSelected(index);
       }
 
       // Add back bind

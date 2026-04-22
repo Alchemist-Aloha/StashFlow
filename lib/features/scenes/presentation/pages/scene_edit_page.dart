@@ -5,7 +5,6 @@ import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
-import '../../domain/models/scraped_scene.dart';
 import '../providers/scene_scrape_provider.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
@@ -17,6 +16,9 @@ import '../../../tags/domain/entities/tag.dart';
 import '../widgets/entity_picker.dart';
 import '../widgets/scrape_query_dialog.dart';
 import '../widgets/enhanced_scrape_dialog.dart';
+import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_performer.dart';
+import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
+import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_tag.dart';
 
 /// A page for editing scene metadata.
 class SceneEditPage extends ConsumerStatefulWidget {
@@ -365,8 +367,8 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
             .where((t) => t.isNotEmpty)
             .toList(),
         image: _scrapedImage,
-        tags: _scrapedTags,
-        performers: _scrapedPerformers,
+        tags: _scrapedTags ?? [],
+        performers: _scrapedPerformers ?? [],
         studioId: _selectedStudioId,
       );
 

@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../domain/entities/scene.dart';
+import '../../domain/entities/scene_title_utils.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/video_player_provider.dart';
 import '../providers/playback_queue_provider.dart';
@@ -17,6 +18,7 @@ import '../../data/repositories/stream_resolver.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
+import 'transformable_video_surface.dart';
 
 class FullScreenMode extends Notifier<bool> {
   @override
@@ -544,11 +546,14 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                             Positioned.fill(
                               child: Container(
                                 color: Colors.black,
-                                child: Center(
-                                  child: AspectRatio(
-                                    aspectRatio: controller.value.aspectRatio,
-                                    child: VideoPlayer(controller),
-                                  ),
+                                child: TransformableVideoSurface(
+                                  controller: controller,
+                                  aspectRatio: controller.value.aspectRatio,
+                                  fit: (controller.value.aspectRatio - 1.0).abs() < 0.01
+                                      ? BoxFit.fill
+                                      : (controller.value.aspectRatio < 1.0
+                                          ? BoxFit.cover
+                                          : BoxFit.contain),
                                 ),
                               ),
                             ),
@@ -673,9 +678,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.scene.title.isNotEmpty
-                              ? widget.scene.title
-                              : 'Scene ${widget.scene.id}',
+                          widget.scene.displayTitle,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -718,21 +721,41 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                     ),
                   ),
 
-                  // Minimum Progress Bar
+                  // Progress Bar
                   Positioned(
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    child: SizedBox(
-                      height: 2,
-                      child: VideoProgressIndicator(
-                        controller,
-                        allowScrubbing: true,
-                        padding: EdgeInsets.zero,
-                        colors: VideoProgressColors(
-                          playedColor: Colors.white.withValues(alpha: 0.8),
-                          bufferedColor: Colors.white.withValues(alpha: 0.2),
-                          backgroundColor: Colors.transparent,
+                    child: SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        trackHeight: 4,
+                        thumbShape: const RoundSliderThumbShape(
+                          enabledThumbRadius: 6,
+                          elevation: 2,
+                          pressedElevation: 4,
+                        ),
+                        overlayShape: SliderComponentShape.noOverlay,
+                        activeTrackColor: Colors.white,
+                        inactiveTrackColor: Colors.white.withValues(alpha: 0.3),
+                        thumbColor: Colors.white,
+                        trackShape: const RectangularSliderTrackShape(),
+                      ),
+                      child: SizedBox(
+                        height: 24, // Larger tap target
+                        child: ListenableBuilder(
+                          listenable: controller,
+                          builder: (context, child) {
+                            final value = controller.value;
+                            final duration = value.duration.inMilliseconds.toDouble();
+                            final position = value.position.inMilliseconds.toDouble();
+                            return Slider(
+                              value: position.clamp(0.0, duration),
+                              max: duration > 0 ? duration : 1.0,
+                              onChanged: (val) {
+                                controller.seekTo(Duration(milliseconds: val.toInt()));
+                              },
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -810,11 +833,21 @@ class _OverlayButton extends StatelessWidget {
         message: tooltip ?? '',
         child: Container(
           padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.5),
+          decoration: const BoxDecoration(
+            color: Colors.transparent,
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: Colors.white, size: 28),
+          child: Icon(
+            icon,
+            color: Colors.white,
+            size: 28,
+            shadows: [
+              Shadow(
+                color: Colors.black.withValues(alpha: 0.5),
+                blurRadius: 8,
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -13,6 +13,7 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
 import '../../../../core/presentation/widgets/media_strip.dart';
+import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../domain/entities/scene_title_utils.dart';
@@ -713,15 +714,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               leading: hasImage
                   ? CircleAvatar(
                       backgroundColor: context.colors.surfaceVariant,
-                      foregroundImage: kIsWeb
-                          ? NetworkImage(
-                              performerImagePath,
-                              headers: mediaHeaders,
-                            )
-                          : CachedNetworkImageProvider(
-                              performerImagePath,
-                              headers: mediaHeaders,
-                            ),
+                      foregroundImage: StashImage.provider(
+                        ref,
+                        performerImagePath,
+                        headers: mediaHeaders,
+                      ),
                       child: const Icon(Icons.person),
                     )
                   : const CircleAvatar(child: Icon(Icons.person)),

@@ -1,7 +1,7 @@
-import '../../../scenes/domain/models/scraped_scene.dart';
 import '../../domain/entities/studio.dart';
 
 import '../entities/studio_filter.dart';
+import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_studio.dart';
 
 abstract class StudioRepository {
   Future<List<Studio>> findStudios({

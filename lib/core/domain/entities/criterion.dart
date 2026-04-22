@@ -1,6 +1,7 @@
-library;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'package:json_annotation/json_annotation.dart';
+part 'criterion.freezed.dart';
+part 'criterion.g.dart';
 
 enum CriterionModifier {
   @JsonValue('EQUALS')
@@ -31,145 +32,54 @@ enum CriterionModifier {
   notBetween,
 }
 
-class IntCriterion {
-  final int value;
-  final int? value2;
-  final CriterionModifier modifier;
+@freezed
+abstract class IntCriterion with _$IntCriterion {
+  const factory IntCriterion({
+    required int value,
+    int? value2,
+    @Default(CriterionModifier.equals) CriterionModifier modifier,
+  }) = _IntCriterion;
 
-  const IntCriterion({
-    required this.value,
-    this.value2,
-    this.modifier = CriterionModifier.equals,
-  });
-
-  factory IntCriterion.fromJson(Map<String, dynamic> json) {
-    return IntCriterion(
-      value: json['value'] as int,
-      value2: json['value2'] as int?,
-      modifier: CriterionModifier.values.firstWhere(
-        (e) => e.toString().split('.').last.toUpperCase() == json['modifier'],
-        orElse: () => CriterionModifier.equals,
-      ),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'value': value,
-      if (value2 != null) 'value2': value2,
-      'modifier': modifier.toString().split('.').last.toUpperCase(),
-    };
-  }
+  factory IntCriterion.fromJson(Map<String, dynamic> json) => _$IntCriterionFromJson(json);
 }
 
-class StringCriterion {
-  final String value;
-  final CriterionModifier modifier;
+@freezed
+abstract class StringCriterion with _$StringCriterion {
+  const factory StringCriterion({
+    required String value,
+    @Default(CriterionModifier.equals) CriterionModifier modifier,
+  }) = _StringCriterion;
 
-  const StringCriterion({
-    required this.value,
-    this.modifier = CriterionModifier.equals,
-  });
-
-  factory StringCriterion.fromJson(Map<String, dynamic> json) {
-    return StringCriterion(
-      value: json['value'] as String,
-      modifier: CriterionModifier.values.firstWhere(
-        (e) => e.toString().split('.').last.toUpperCase() == json['modifier'],
-        orElse: () => CriterionModifier.equals,
-      ),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'value': value,
-      'modifier': modifier.toString().split('.').last.toUpperCase(),
-    };
-  }
+  factory StringCriterion.fromJson(Map<String, dynamic> json) => _$StringCriterionFromJson(json);
 }
 
-class DateCriterion {
-  final String value;
-  final String? value2;
-  final CriterionModifier modifier;
+@freezed
+abstract class DateCriterion with _$DateCriterion {
+  const factory DateCriterion({
+    required String value,
+    String? value2,
+    @Default(CriterionModifier.equals) CriterionModifier modifier,
+  }) = _DateCriterion;
 
-  const DateCriterion({
-    required this.value,
-    this.value2,
-    this.modifier = CriterionModifier.equals,
-  });
-
-  factory DateCriterion.fromJson(Map<String, dynamic> json) {
-    return DateCriterion(
-      value: json['value'] as String,
-      value2: json['value2'] as String?,
-      modifier: CriterionModifier.values.firstWhere(
-        (e) => e.toString().split('.').last.toUpperCase() == json['modifier'],
-        orElse: () => CriterionModifier.equals,
-      ),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'value': value,
-      if (value2 != null) 'value2': value2,
-      'modifier': modifier.toString().split('.').last.toUpperCase(),
-    };
-  }
+  factory DateCriterion.fromJson(Map<String, dynamic> json) => _$DateCriterionFromJson(json);
 }
 
-class MultiCriterion {
-  final List<String> value;
-  final CriterionModifier modifier;
+@freezed
+abstract class MultiCriterion with _$MultiCriterion {
+  const factory MultiCriterion({
+    required List<String> value,
+    @Default(CriterionModifier.includes) CriterionModifier modifier,
+  }) = _MultiCriterion;
 
-  const MultiCriterion({
-    required this.value,
-    this.modifier = CriterionModifier.includes,
-  });
-
-  factory MultiCriterion.fromJson(Map<String, dynamic> json) {
-    return MultiCriterion(
-      value: (json['value'] as List).cast<String>(),
-      modifier: CriterionModifier.values.firstWhere(
-        (e) => e.toString().split('.').last.toUpperCase() == json['modifier'],
-        orElse: () => CriterionModifier.includes,
-      ),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'value': value,
-      'modifier': modifier.toString().split('.').last.toUpperCase(),
-    };
-  }
+  factory MultiCriterion.fromJson(Map<String, dynamic> json) => _$MultiCriterionFromJson(json);
 }
 
-class HierarchicalMultiCriterion {
-  final List<String> value;
-  final CriterionModifier modifier;
+@freezed
+abstract class HierarchicalMultiCriterion with _$HierarchicalMultiCriterion {
+  const factory HierarchicalMultiCriterion({
+    required List<String> value,
+    @Default(CriterionModifier.includes) CriterionModifier modifier,
+  }) = _HierarchicalMultiCriterion;
 
-  const HierarchicalMultiCriterion({
-    required this.value,
-    this.modifier = CriterionModifier.includes,
-  });
-
-  factory HierarchicalMultiCriterion.fromJson(Map<String, dynamic> json) {
-    return HierarchicalMultiCriterion(
-      value: (json['value'] as List).cast<String>(),
-      modifier: CriterionModifier.values.firstWhere(
-        (e) => e.toString().split('.').last.toUpperCase() == json['modifier'],
-        orElse: () => CriterionModifier.includes,
-      ),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'value': value,
-      'modifier': modifier.toString().split('.').last.toUpperCase(),
-    };
-  }
+  factory HierarchicalMultiCriterion.fromJson(Map<String, dynamic> json) => _$HierarchicalMultiCriterionFromJson(json);
 }

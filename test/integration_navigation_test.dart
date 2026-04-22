@@ -12,9 +12,9 @@ import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
 import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
 import 'package:stash_app_flutter/features/scenes/domain/models/scraper.dart';
-import 'package:stash_app_flutter/features/scenes/domain/models/scraped_scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'helpers/test_helpers.dart';
+import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
 
 // Helper to create a Scene with all required fields for testing
 Scene createTestScene({

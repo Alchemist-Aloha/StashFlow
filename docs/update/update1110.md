@@ -4,6 +4,12 @@ This release introduces major improvements to media organization, enhanced secur
 
 ## 🚀 New Features Since v1.10.0
 
+### ⚡ Performance & Efficiency (Bolt)
+- **Granular Rebuilds:** Refactored all major list pages to use `MediaQuery.sizeOf(context)`, isolating widgets from unrelated screen changes (like keyboard events) and significantly reducing redundant builds.
+- **Scroll Optimization:** Hoisted invariant calculations and list allocations out of `itemBuilder` loops in Scenes and Images pages.
+- **Complexity Reduction:** Reduced list lookup complexity from O(N) to O(1) during scrolling by pre-computing lookup maps for active data sets.
+- **Deduplication:** Implemented synchronous task tracking to prevent redundant async operations during rapid widget rebuilds.
+
 ### 📁 Advanced Media Organization
 - **Unified "Organized" Filter:** Introduced a new `OrganizedFilter` system across all media types (Scenes, Studios, Tags), allowing users to filter by "Organized", "Unorganized", or "Any".
 - **Enhanced Sorting Options:** Expanded sorting capabilities for Studios and Tags, including:
@@ -29,12 +35,10 @@ This release introduces major improvements to media organization, enhanced secur
 - **Metadata Editing:** Significant updates to scene editing components, including improved input fields and status indicators.
 - **Batch Tasks:** Improved reliability for background tasks like PHash generation and URL resolving.
 
-### 🌍 Localization
-- **Complete Localization Coverage:** Localized dozens of new strings across all supported languages, including:
-  - New sorting options and filter modes.
-  - Performer measurements and physical attributes.
-  - Scene editing and scraping status messages.
-- **Dynamic Tooltips:** Added localized tooltips to `IconButton` components across the app for improved accessibility.
+### 🌍 Localization & Accessibility
+- **Complete Localization Coverage:** Localized dozens of new strings across all supported languages, including new sorting options and filter modes.
+- **Accessibility Sweep:** Added localized tooltips to `IconButton` components across the app, specifically targeting search history removal and query clearing in `ListPageScaffold`.
+- **Semantic Labels:** Verified that all interactive elements map correctly to screen reader labels for better broad device support.
 
 ## 🔧 Fixes & Refinements Since v1.10.0
 

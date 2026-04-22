@@ -19,6 +19,7 @@ import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/utils/web_helpers.dart';
 import 'native_video_controls.dart';
 import 'scene_subtitle_overlay.dart';
+import 'transformable_video_surface.dart';
 
 TextAlign _subtitleTextAlign(String setting) {
   switch (setting) {
@@ -62,6 +63,39 @@ class SceneVideoPlayer extends ConsumerStatefulWidget {
 class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   /// Local state to track initial player startup for UI feedback.
   bool _isStarting = false;
+
+  final ValueNotifier<Matrix4> _transformationNotifier =
+      ValueNotifier(Matrix4.identity());
+  double _lastScale = 1.0;
+  double _lastRotation = 0.0;
+
+  void _onScaleStart(ScaleStartDetails details) {
+    _lastScale = 1.0;
+    _lastRotation = 0.0;
+  }
+
+  void _onScaleUpdate(ScaleUpdateDetails details) {
+    if (details.pointerCount < 2) return;
+
+    final double deltaScale = details.scale / _lastScale;
+    final double deltaRotation = details.rotation - _lastRotation;
+    final Offset focalPoint = details.localFocalPoint;
+
+    final Matrix4 matrix = Matrix4.identity()
+      ..translate(focalPoint.dx, focalPoint.dy)
+      ..rotateZ(deltaRotation)
+      ..scale(deltaScale)
+      ..translate(-focalPoint.dx, -focalPoint.dy)
+      ..translate(details.focalPointDelta.dx, details.focalPointDelta.dy);
+
+    _transformationNotifier.value = matrix * _transformationNotifier.value;
+    _lastScale = details.scale;
+    _lastRotation = details.rotation;
+  }
+
+  void _onTransformationDelta(Matrix4 delta, Offset focalPoint) {
+    _transformationNotifier.value = delta * _transformationNotifier.value;
+  }
 
   @override
   void initState() {
@@ -141,13 +175,26 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   /// Falls back to 16/9 if metadata is unavailable.
   double _effectiveAspectRatio(VideoPlayerController? controller) {
     if (controller != null && controller.value.isInitialized) {
-      return controller.value.aspectRatio;
+      final ratio = controller.value.aspectRatio;
+      // Force square videos to 9/16 portrait on mobile to avoid the "fat" look.
+      if ((ratio - 1.0).abs() < 0.01 &&
+          (defaultTargetPlatform == TargetPlatform.android ||
+              defaultTargetPlatform == TargetPlatform.iOS)) {
+        return 9 / 16;
+      }
+      return ratio;
     }
     // Try using scene file metadata if the controller is still loading.
     if (widget.scene.files.isNotEmpty) {
       final f = widget.scene.files.first;
       if (f.width != null && f.height != null && f.height! > 0) {
-        return f.width! / f.height!;
+        final ratio = f.width! / f.height!;
+        if ((ratio - 1.0).abs() < 0.01 &&
+            (defaultTargetPlatform == TargetPlatform.android ||
+                defaultTargetPlatform == TargetPlatform.iOS)) {
+          return 9 / 16;
+        }
+        return ratio;
       }
     }
     return 16 / 9;
@@ -298,11 +345,13 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                 Positioned.fill(
                   child: Container(
                     color: Colors.black,
-                    child: Center(
-                      child: AspectRatio(
-                        aspectRatio: controller.value.aspectRatio,
-                        child: VideoPlayer(controller),
-                      ),
+                    child: TransformableVideoSurface(
+                      controller: controller,
+                      aspectRatio: controller.value.aspectRatio,
+                      transformationNotifier: _transformationNotifier,
+                      fit: (aspectRatio - controller.value.aspectRatio).abs() > 0.05
+                          ? BoxFit.fill
+                          : BoxFit.contain,
                     ),
                   ),
                 ),
@@ -335,6 +384,9 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                       enableNativePip: playerState.enableNativePip,
                       onFullScreenToggle: _toggleFullScreen,
                       scene: widget.scene,
+                      onScaleStart: _onScaleStart,
+                      onScaleUpdate: _onScaleUpdate,
+                      onTransformationDelta: _onTransformationDelta,
                     ),
                   ),
                 ),
@@ -368,6 +420,39 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
   bool _wasMaximizedBeforeFullscreen = false;
   bool _wasPlayingBeforeExit = false;
   VideoPlayerController? _currentListenedController;
+
+  final ValueNotifier<Matrix4> _transformationNotifier =
+      ValueNotifier(Matrix4.identity());
+  double _lastScale = 1.0;
+  double _lastRotation = 0.0;
+
+  void _onScaleStart(ScaleStartDetails details) {
+    _lastScale = 1.0;
+    _lastRotation = 0.0;
+  }
+
+  void _onScaleUpdate(ScaleUpdateDetails details) {
+    if (details.pointerCount < 2) return;
+
+    final double deltaScale = details.scale / _lastScale;
+    final double deltaRotation = details.rotation - _lastRotation;
+    final Offset focalPoint = details.localFocalPoint;
+
+    final Matrix4 matrix = Matrix4.identity()
+      ..translate(focalPoint.dx, focalPoint.dy)
+      ..rotateZ(deltaRotation)
+      ..scale(deltaScale)
+      ..translate(-focalPoint.dx, -focalPoint.dy)
+      ..translate(details.focalPointDelta.dx, details.focalPointDelta.dy);
+
+    _transformationNotifier.value = matrix * _transformationNotifier.value;
+    _lastScale = details.scale;
+    _lastRotation = details.rotation;
+  }
+
+  void _onTransformationDelta(Matrix4 delta, Offset focalPoint) {
+    _transformationNotifier.value = delta * _transformationNotifier.value;
+  }
 
   void _onControllerUpdate() {
     if (!_isPopping && _currentListenedController != null) {
@@ -443,20 +528,10 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                   DeviceOrientation.landscapeRight,
                 ]
               : [DeviceOrientation.landscapeLeft];
-        } else if (aspectRatio < 1.0) {
-          // Portrait
+        } else {
+          // Portrait or Square
           orientations = allowGravity
               ? [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]
-              : [DeviceOrientation.portraitUp];
-        } else {
-          // Square
-          orientations = allowGravity
-              ? [
-                  DeviceOrientation.portraitUp,
-                  DeviceOrientation.portraitDown,
-                  DeviceOrientation.landscapeLeft,
-                  DeviceOrientation.landscapeRight,
-                ]
               : [DeviceOrientation.portraitUp];
         }
 
@@ -650,11 +725,13 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                   Positioned.fill(
                     child: Container(
                       color: Colors.black,
-                      child: Center(
-                        child: AspectRatio(
-                          aspectRatio: controller.value.aspectRatio,
-                          child: VideoPlayer(controller),
-                        ),
+                      child: TransformableVideoSurface(
+                        controller: controller,
+                        aspectRatio: controller.value.aspectRatio,
+                        transformationNotifier: _transformationNotifier,
+                        fit: (controller.value.aspectRatio - 1.0).abs() < 0.01
+                            ? BoxFit.fill
+                            : BoxFit.contain,
                       ),
                     ),
                   ),
@@ -687,6 +764,9 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                         enableNativePip: playerState.enableNativePip,
                         onFullScreenToggle: _toggleFullScreen,
                         scene: scene,
+                        onScaleStart: _onScaleStart,
+                        onScaleUpdate: _onScaleUpdate,
+                        onTransformationDelta: _onTransformationDelta,
                       ),
                     ),
                   ),

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -183,13 +184,20 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     // Use primary file's aspect ratio if available, default to 16/9.
     // This ensures the image container in List view adapts to the media,
     // preventing black bars or forced cropping of portrait/square content.
-    final double? fileAspectRatio =
-        (widget.scene.files.isNotEmpty &&
+    double? fileAspectRatio = (widget.scene.files.isNotEmpty &&
             widget.scene.files.first.width != null &&
             widget.scene.files.first.height != null)
         ? widget.scene.files.first.width!.toDouble() /
-              widget.scene.files.first.height!.toDouble()
+            widget.scene.files.first.height!.toDouble()
         : null;
+
+    // Force square videos to 9/16 portrait on mobile to avoid the "fat" look.
+    if (fileAspectRatio != null &&
+        (fileAspectRatio! - 1.0).abs() < 0.01 &&
+        (defaultTargetPlatform == TargetPlatform.android ||
+            defaultTargetPlatform == TargetPlatform.iOS)) {
+      fileAspectRatio = 9 / 16;
+    }
 
     if (widget.isGrid) {
       return _buildGridCard(context, ref, duration, fileAspectRatio ?? 16 / 9);

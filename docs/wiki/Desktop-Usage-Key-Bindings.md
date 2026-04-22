@@ -58,7 +58,17 @@ StashFlow uses a persistent **Navigation Rail** on the left side on desktop, giv
 - Tags
 - Groups
 
-There are no additional keyboard shortcuts for tab switching at this time. Use the rail or standard OS window management.
+### Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| `Ctrl + 1` | Go to first tab (usually Scenes) |
+| `Ctrl + 2` | Go to second tab (usually Performers) |
+| `Ctrl + 3` | Go to third tab (usually Studios) |
+| `...` | Up to `Ctrl + 9` |
+
+These shortcuts follow the order of your tabs as configured in **Settings → Interface → Navigation Tabs**.
+
 
 ---
 

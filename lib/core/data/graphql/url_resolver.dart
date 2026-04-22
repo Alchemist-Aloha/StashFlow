@@ -35,6 +35,17 @@ String resolveGraphqlMediaUrl({
   return resolved.toString();
 }
 
+/// Appends Basic Auth credentials to the given [url] if provided.
+String appendBasicAuth(String url, String username, String password) {
+  final uri = Uri.tryParse(url);
+  if (uri == null) return url;
+  if (username.isEmpty && password.isEmpty) return url;
+
+  return uri.replace(
+    userInfo: '${Uri.encodeFull(username)}:${Uri.encodeFull(password)}',
+  ).toString();
+}
+
 /// Appends an API key to the given [url] as a query parameter.
 ///
 /// This is used to allow external system components (like the Android notification shade)
@@ -57,23 +68,27 @@ String appendApiKey(String url, String apiKey) {
 ///
 /// Priority:
 /// 1) If an API key exists, append it as `apikey` query param.
-/// 2) Password and Basic auth rely on browser session/headers or apikey fallback.
-///    Username and password are NO LONGER injected into the URL for security.
+/// 2) If Basic auth is used, inject credentials into the URL (UserInfo).
+///    This is necessary for standard <video> tags on Web which don't support custom headers.
 String applyWebMediaAuthFallback({
   required String url,
   required AuthMode authMode,
   required String apiKey,
+  String? username,
+  String? password,
   Uri? graphqlEndpoint,
 }) {
   final trimmedUrl = url.trim();
   if (trimmedUrl.isEmpty) return trimmedUrl;
 
   // Priority: If we have an API key, it's our best fallback for the URL itself.
-  // Note: We primarily rely on custom headers now (XHR on Web), but this
-  // remains for environments that don't support custom headers or as a backup.
   final trimmedApiKey = apiKey.trim();
   if (trimmedApiKey.isNotEmpty) {
     return appendApiKey(trimmedUrl, trimmedApiKey);
+  }
+
+  if (authMode == AuthMode.basic && username != null && password != null) {
+    return appendBasicAuth(trimmedUrl, username, password);
   }
 
   return trimmedUrl;

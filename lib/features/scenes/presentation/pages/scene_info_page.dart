@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/stash_image.dart';
 import '../../domain/entities/scene.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 
@@ -66,15 +67,11 @@ class SceneInfoPage extends ConsumerWidget {
                         ? CircleAvatar(
                             backgroundColor:
                                 theme.colorScheme.surfaceContainerHighest,
-                            foregroundImage: kIsWeb
-                                ? NetworkImage(
-                                    performerImagePath,
-                                    headers: mediaHeaders,
-                                  )
-                                : CachedNetworkImageProvider(
-                                    performerImagePath,
-                                    headers: mediaHeaders,
-                                  ),
+                            foregroundImage: StashImage.provider(
+                              ref,
+                              performerImagePath,
+                              headers: mediaHeaders,
+                            ),
                             child: const Icon(Icons.person),
                           )
                         : const CircleAvatar(child: Icon(Icons.person)),
