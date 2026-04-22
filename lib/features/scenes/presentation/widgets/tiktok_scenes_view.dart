@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../domain/entities/scene.dart';
+import '../../domain/entities/scene_title_utils.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/video_player_provider.dart';
 import '../providers/playback_queue_provider.dart';
@@ -677,9 +678,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.scene.title.isNotEmpty
-                              ? widget.scene.title
-                              : 'Scene ${widget.scene.id}',
+                          widget.scene.displayTitle,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
