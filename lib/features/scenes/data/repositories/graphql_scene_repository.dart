@@ -515,12 +515,9 @@ class GraphQLSceneRepository implements SceneRepository {
 
   @override
   Future<void> incrementSceneOCounter(String id) async {
-    final scene = await getSceneById(id);
-    final result = await client.mutate$SceneUpdate(
-      Options$Mutation$SceneUpdate(
-        variables: Variables$Mutation$SceneUpdate(
-          input: Input$SceneUpdateInput(id: id, o_counter: scene.oCounter + 1),
-        ),
+    final result = await client.mutate$SceneAddO(
+      Options$Mutation$SceneAddO(
+        variables: Variables$Mutation$SceneAddO(id: id),
       ),
     );
     if (result.hasException) throw result.exception!;

@@ -452,6 +452,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 await ref
                     .read(sceneRepositoryProvider)
                     .updateSceneRating(scene.id, newRating);
+                await ref
+                    .read(sceneRepositoryProvider)
+                    .getSceneById(scene.id, refresh: true);
                 ref.invalidate(sceneDetailsProvider(scene.id));
                 _invalidateSceneListUnlessRandom();
               } catch (e) {
@@ -485,6 +488,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               await ref
                   .read(sceneRepositoryProvider)
                   .incrementSceneOCounter(scene.id);
+              await ref
+                  .read(sceneRepositoryProvider)
+                  .getSceneById(scene.id, refresh: true);
               ref.invalidate(sceneDetailsProvider(scene.id));
               _invalidateSceneListUnlessRandom();
               if (context.mounted) {
