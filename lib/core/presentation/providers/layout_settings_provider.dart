@@ -248,3 +248,21 @@ class TagGridColumns extends _$TagGridColumns {
     }
   }
 }
+
+@riverpod
+class MaxPerformerAvatars extends _$MaxPerformerAvatars {
+  static const _storageKey = 'max_performer_avatars';
+
+  @override
+  int build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getInt(_storageKey) ?? 3;
+  }
+
+  Future<void> set(int value) async {
+    if (state == value) return;
+    state = value;
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setInt(_storageKey, value);
+  }
+}

@@ -355,6 +355,8 @@
   "settings_interface_scenes_layout_subtitle": "Default browsing mode for scenes",
   "settings_interface_galleries_layout": "Galleries Layout",
   "settings_interface_galleries_layout_subtitle": "Default browsing mode for galleries",
+  "settings_interface_max_performer_avatars": "Max Performer Avatars (Desktop)",
+  "settings_interface_max_performer_avatars_subtitle": "Maximum number of performer avatars to show in the scene card on desktop.",
   "settings_interface_layout_default": "Default Layout",
   "settings_interface_layout_default_desc": "Choose the default layout for the page",
   "settings_interface_layout_list": "List",
