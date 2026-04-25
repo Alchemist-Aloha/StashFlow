@@ -16,6 +16,7 @@ import '../../../../core/presentation/providers/keybinds_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/utils/web_helpers.dart';
 import 'native_video_controls.dart';
 import 'scene_subtitle_overlay.dart';
@@ -309,6 +310,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                 child: _isStarting
                     ? const CircularProgressIndicator()
                     : IconButton.filledTonal(
+                          tooltip: context.l10n.common_play,
                         style: IconButton.styleFrom(
                           backgroundColor: colorScheme.surfaceContainerHigh
                               .withValues(alpha: 0.92),
