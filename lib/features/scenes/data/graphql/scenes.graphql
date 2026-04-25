@@ -11,6 +11,8 @@ fragment SlimSceneData on Scene {
   files {
     path
     duration
+    width
+    height
     fingerprints {
       type
       value

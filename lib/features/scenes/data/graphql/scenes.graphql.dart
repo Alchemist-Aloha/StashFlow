@@ -710,6 +710,20 @@ const fragmentDefinitionSlimSceneData = FragmentDefinitionNode(
               selectionSet: null,
             ),
             FieldNode(
+              name: NameNode(value: 'width'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'height'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
               name: NameNode(value: 'fingerprints'),
               alias: null,
               arguments: [],
@@ -1000,6 +1014,8 @@ class Fragment$SlimSceneData$files {
   Fragment$SlimSceneData$files({
     required this.path,
     required this.duration,
+    required this.width,
+    required this.height,
     required this.fingerprints,
     this.$__typename = 'VideoFile',
   });
@@ -1007,11 +1023,15 @@ class Fragment$SlimSceneData$files {
   factory Fragment$SlimSceneData$files.fromJson(Map<String, dynamic> json) {
     final l$path = json['path'];
     final l$duration = json['duration'];
+    final l$width = json['width'];
+    final l$height = json['height'];
     final l$fingerprints = json['fingerprints'];
     final l$$__typename = json['__typename'];
     return Fragment$SlimSceneData$files(
       path: (l$path as String),
       duration: (l$duration as num).toDouble(),
+      width: (l$width as int),
+      height: (l$height as int),
       fingerprints: (l$fingerprints as List<dynamic>)
           .map(
             (e) => Fragment$SlimSceneData$files$fingerprints.fromJson(
@@ -1027,6 +1047,10 @@ class Fragment$SlimSceneData$files {
 
   final double duration;
 
+  final int width;
+
+  final int height;
+
   final List<Fragment$SlimSceneData$files$fingerprints> fingerprints;
 
   final String $__typename;
@@ -1037,6 +1061,10 @@ class Fragment$SlimSceneData$files {
     _resultData['path'] = l$path;
     final l$duration = duration;
     _resultData['duration'] = l$duration;
+    final l$width = width;
+    _resultData['width'] = l$width;
+    final l$height = height;
+    _resultData['height'] = l$height;
     final l$fingerprints = fingerprints;
     _resultData['fingerprints'] = l$fingerprints
         .map((e) => e.toJson())
@@ -1050,11 +1078,15 @@ class Fragment$SlimSceneData$files {
   int get hashCode {
     final l$path = path;
     final l$duration = duration;
+    final l$width = width;
+    final l$height = height;
     final l$fingerprints = fingerprints;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$path,
       l$duration,
+      l$width,
+      l$height,
       Object.hashAll(l$fingerprints.map((v) => v)),
       l$$__typename,
     ]);
@@ -1077,6 +1109,16 @@ class Fragment$SlimSceneData$files {
     final l$duration = duration;
     final lOther$duration = other.duration;
     if (l$duration != lOther$duration) {
+      return false;
+    }
+    final l$width = width;
+    final lOther$width = other.width;
+    if (l$width != lOther$width) {
+      return false;
+    }
+    final l$height = height;
+    final lOther$height = other.height;
+    if (l$height != lOther$height) {
       return false;
     }
     final l$fingerprints = fingerprints;
@@ -1118,6 +1160,8 @@ abstract class CopyWith$Fragment$SlimSceneData$files<TRes> {
   TRes call({
     String? path,
     double? duration,
+    int? width,
+    int? height,
     List<Fragment$SlimSceneData$files$fingerprints>? fingerprints,
     String? $__typename,
   });
@@ -1146,6 +1190,8 @@ class _CopyWithImpl$Fragment$SlimSceneData$files<TRes>
   TRes call({
     Object? path = _undefined,
     Object? duration = _undefined,
+    Object? width = _undefined,
+    Object? height = _undefined,
     Object? fingerprints = _undefined,
     Object? $__typename = _undefined,
   }) => _then(
@@ -1156,6 +1202,12 @@ class _CopyWithImpl$Fragment$SlimSceneData$files<TRes>
       duration: duration == _undefined || duration == null
           ? _instance.duration
           : (duration as double),
+      width: width == _undefined || width == null
+          ? _instance.width
+          : (width as int),
+      height: height == _undefined || height == null
+          ? _instance.height
+          : (height as int),
       fingerprints: fingerprints == _undefined || fingerprints == null
           ? _instance.fingerprints
           : (fingerprints as List<Fragment$SlimSceneData$files$fingerprints>),
@@ -1192,6 +1244,8 @@ class _CopyWithStubImpl$Fragment$SlimSceneData$files<TRes>
   call({
     String? path,
     double? duration,
+    int? width,
+    int? height,
     List<Fragment$SlimSceneData$files$fingerprints>? fingerprints,
     String? $__typename,
   }) => _res;
@@ -2943,12 +2997,12 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
   Fragment$SceneData$files({
     required this.path,
     required this.duration,
+    required this.width,
+    required this.height,
     required this.fingerprints,
     this.$__typename = 'VideoFile',
     required this.basename,
     required this.format,
-    required this.width,
-    required this.height,
     required this.video_codec,
     required this.audio_codec,
     required this.bit_rate,
@@ -2958,12 +3012,12 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
   factory Fragment$SceneData$files.fromJson(Map<String, dynamic> json) {
     final l$path = json['path'];
     final l$duration = json['duration'];
+    final l$width = json['width'];
+    final l$height = json['height'];
     final l$fingerprints = json['fingerprints'];
     final l$$__typename = json['__typename'];
     final l$basename = json['basename'];
     final l$format = json['format'];
-    final l$width = json['width'];
-    final l$height = json['height'];
     final l$video_codec = json['video_codec'];
     final l$audio_codec = json['audio_codec'];
     final l$bit_rate = json['bit_rate'];
@@ -2971,6 +3025,8 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
     return Fragment$SceneData$files(
       path: (l$path as String),
       duration: (l$duration as num).toDouble(),
+      width: (l$width as int),
+      height: (l$height as int),
       fingerprints: (l$fingerprints as List<dynamic>)
           .map(
             (e) => Fragment$SceneData$files$fingerprints.fromJson(
@@ -2981,8 +3037,6 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
       $__typename: (l$$__typename as String),
       basename: (l$basename as String),
       format: (l$format as String),
-      width: (l$width as int),
-      height: (l$height as int),
       video_codec: (l$video_codec as String),
       audio_codec: (l$audio_codec as String),
       bit_rate: (l$bit_rate as int),
@@ -2994,6 +3048,10 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
 
   final double duration;
 
+  final int width;
+
+  final int height;
+
   final List<Fragment$SceneData$files$fingerprints> fingerprints;
 
   final String $__typename;
@@ -3001,10 +3059,6 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
   final String basename;
 
   final String format;
-
-  final int width;
-
-  final int height;
 
   final String video_codec;
 
@@ -3020,6 +3074,10 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
     _resultData['path'] = l$path;
     final l$duration = duration;
     _resultData['duration'] = l$duration;
+    final l$width = width;
+    _resultData['width'] = l$width;
+    final l$height = height;
+    _resultData['height'] = l$height;
     final l$fingerprints = fingerprints;
     _resultData['fingerprints'] = l$fingerprints
         .map((e) => e.toJson())
@@ -3030,10 +3088,6 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
     _resultData['basename'] = l$basename;
     final l$format = format;
     _resultData['format'] = l$format;
-    final l$width = width;
-    _resultData['width'] = l$width;
-    final l$height = height;
-    _resultData['height'] = l$height;
     final l$video_codec = video_codec;
     _resultData['video_codec'] = l$video_codec;
     final l$audio_codec = audio_codec;
@@ -3049,12 +3103,12 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
   int get hashCode {
     final l$path = path;
     final l$duration = duration;
+    final l$width = width;
+    final l$height = height;
     final l$fingerprints = fingerprints;
     final l$$__typename = $__typename;
     final l$basename = basename;
     final l$format = format;
-    final l$width = width;
-    final l$height = height;
     final l$video_codec = video_codec;
     final l$audio_codec = audio_codec;
     final l$bit_rate = bit_rate;
@@ -3062,12 +3116,12 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
     return Object.hashAll([
       l$path,
       l$duration,
+      l$width,
+      l$height,
       Object.hashAll(l$fingerprints.map((v) => v)),
       l$$__typename,
       l$basename,
       l$format,
-      l$width,
-      l$height,
       l$video_codec,
       l$audio_codec,
       l$bit_rate,
@@ -3092,6 +3146,16 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
     final l$duration = duration;
     final lOther$duration = other.duration;
     if (l$duration != lOther$duration) {
+      return false;
+    }
+    final l$width = width;
+    final lOther$width = other.width;
+    if (l$width != lOther$width) {
+      return false;
+    }
+    final l$height = height;
+    final lOther$height = other.height;
+    if (l$height != lOther$height) {
       return false;
     }
     final l$fingerprints = fingerprints;
@@ -3119,16 +3183,6 @@ class Fragment$SceneData$files implements Fragment$SlimSceneData$files {
     final l$format = format;
     final lOther$format = other.format;
     if (l$format != lOther$format) {
-      return false;
-    }
-    final l$width = width;
-    final lOther$width = other.width;
-    if (l$width != lOther$width) {
-      return false;
-    }
-    final l$height = height;
-    final lOther$height = other.height;
-    if (l$height != lOther$height) {
       return false;
     }
     final l$video_codec = video_codec;
@@ -3173,12 +3227,12 @@ abstract class CopyWith$Fragment$SceneData$files<TRes> {
   TRes call({
     String? path,
     double? duration,
+    int? width,
+    int? height,
     List<Fragment$SceneData$files$fingerprints>? fingerprints,
     String? $__typename,
     String? basename,
     String? format,
-    int? width,
-    int? height,
     String? video_codec,
     String? audio_codec,
     int? bit_rate,
@@ -3209,12 +3263,12 @@ class _CopyWithImpl$Fragment$SceneData$files<TRes>
   TRes call({
     Object? path = _undefined,
     Object? duration = _undefined,
+    Object? width = _undefined,
+    Object? height = _undefined,
     Object? fingerprints = _undefined,
     Object? $__typename = _undefined,
     Object? basename = _undefined,
     Object? format = _undefined,
-    Object? width = _undefined,
-    Object? height = _undefined,
     Object? video_codec = _undefined,
     Object? audio_codec = _undefined,
     Object? bit_rate = _undefined,
@@ -3227,6 +3281,12 @@ class _CopyWithImpl$Fragment$SceneData$files<TRes>
       duration: duration == _undefined || duration == null
           ? _instance.duration
           : (duration as double),
+      width: width == _undefined || width == null
+          ? _instance.width
+          : (width as int),
+      height: height == _undefined || height == null
+          ? _instance.height
+          : (height as int),
       fingerprints: fingerprints == _undefined || fingerprints == null
           ? _instance.fingerprints
           : (fingerprints as List<Fragment$SceneData$files$fingerprints>),
@@ -3239,12 +3299,6 @@ class _CopyWithImpl$Fragment$SceneData$files<TRes>
       format: format == _undefined || format == null
           ? _instance.format
           : (format as String),
-      width: width == _undefined || width == null
-          ? _instance.width
-          : (width as int),
-      height: height == _undefined || height == null
-          ? _instance.height
-          : (height as int),
       video_codec: video_codec == _undefined || video_codec == null
           ? _instance.video_codec
           : (video_codec as String),
@@ -3287,12 +3341,12 @@ class _CopyWithStubImpl$Fragment$SceneData$files<TRes>
   call({
     String? path,
     double? duration,
+    int? width,
+    int? height,
     List<Fragment$SceneData$files$fingerprints>? fingerprints,
     String? $__typename,
     String? basename,
     String? format,
-    int? width,
-    int? height,
     String? video_codec,
     String? audio_codec,
     int? bit_rate,

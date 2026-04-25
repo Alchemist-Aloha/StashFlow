@@ -86,8 +86,8 @@ class GraphQLSceneRepository implements SceneRepository {
                 .map(
                   (f) => SceneFile(
                     format: null,
-                    width: null,
-                    height: null,
+                    width: f.width,
+                    height: f.height,
                     videoCodec: null,
                     audioCodec: null,
                     bitRate: null,
