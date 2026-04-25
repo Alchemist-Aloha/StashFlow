@@ -429,16 +429,19 @@ class _PerformerAvatarRow extends ConsumerWidget {
         for (int i = 0; i < displayCount; i++)
           Padding(
             padding: const EdgeInsets.only(right: 4.0),
-            child: CircleAvatar(
-              radius: 8,
-              backgroundColor: context.colors.surfaceContainerHighest,
-              child: ClipOval(
-                child: StashImage(
-                  imageUrl: performerImagePaths[i],
-                  width: 16,
-                  height: 16,
-                  fit: BoxFit.cover,
-                  errorWidget: const Icon(Icons.person, size: 8),
+            child: Tooltip(
+              message: performerNames[i],
+              child: CircleAvatar(
+                radius: 8,
+                backgroundColor:
+                    Theme.of(context).colorScheme.surfaceContainerHighest,
+                child: ClipOval(
+                  child: StashImage(
+                    imageUrl: performerImagePaths[i],
+                    width: 16,
+                    height: 16,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
@@ -449,7 +452,7 @@ class _PerformerAvatarRow extends ConsumerWidget {
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.bold,
-              color: context.colors.onSurfaceVariant,
+              color: context.colors.onSurface.withValues(alpha: 0.75),
             ),
           ),
       ],
