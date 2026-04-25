@@ -240,12 +240,12 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Check for visibility and star icons in the overlay
-    expect(find.byIcon(Icons.visibility), findsOneWidget);
+    // Check for water_drop_outlined and star icons in the overlay
+    expect(find.byIcon(Icons.water_drop_outlined), findsOneWidget);
     expect(find.byIcon(Icons.star), findsOneWidget);
 
     // Check values
-    expect(find.text('10'), findsOneWidget); // playCount
+    expect(find.text('5'), findsOneWidget); // oCounter
     expect(find.text('2.0'), findsOneWidget); // rating100: 40 -> 40/20 = 2.0
   });
 
@@ -256,8 +256,8 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Check for thumb_up and star icons in the overlay
-    expect(find.byIcon(Icons.thumb_up), findsOneWidget);
+    // Check for water_drop_outlined and star icons in the overlay
+    expect(find.byIcon(Icons.water_drop_outlined), findsOneWidget);
     expect(find.byIcon(Icons.star), findsOneWidget);
 
     // Check values
@@ -311,5 +311,84 @@ void main() {
 
     debugDefaultTargetPlatformOverride = null;
   });
+
+  testWidgets('SceneCard uses dynamic aspect ratio when useMasonry is true', (
+    tester,
+  ) async {
+    final portraitScene = defaultTestScene.copyWith(
+      files: [
+        const SceneFile(
+          width: 1000,
+          height: 2000, // 0.5 aspect ratio
+          duration: 100,
+          format: 'mp4',
+          videoCodec: 'h264',
+          audioCodec: 'aac',
+          bitRate: 5000,
+          frameRate: 30,
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      buildTestWidget(
+        Center(
+          child: SizedBox(
+            width: 200,
+            child: SceneCard(scene: portraitScene, isGrid: true, useMasonry: true),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    final aspectRatioWidget = tester.widget<AspectRatio>(
+      find.byType(AspectRatio),
+    );
+    expect(aspectRatioWidget.aspectRatio, closeTo(0.5, 0.01));
+  });
+
+  testWidgets(
+    'SceneCard uses fixed 16/9 aspect ratio when useMasonry is false in grid mode',
+    (tester) async {
+      final portraitScene = defaultTestScene.copyWith(
+        files: [
+          const SceneFile(
+            width: 1000,
+            height: 2000, // 0.5 aspect ratio
+            duration: 100,
+            format: 'mp4',
+            videoCodec: 'h264',
+            audioCodec: 'aac',
+            bitRate: 5000,
+            frameRate: 30,
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        buildTestWidget(
+          Center(
+            child: SizedBox(
+              width: 200,
+              child: SceneCard(
+                scene: portraitScene,
+                isGrid: true,
+                useMasonry: false,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      final aspectRatioWidget = tester.widget<AspectRatio>(
+        find.byType(AspectRatio),
+      );
+      expect(aspectRatioWidget.aspectRatio, closeTo(16 / 9, 0.01));
+    },
+  );
 }
 

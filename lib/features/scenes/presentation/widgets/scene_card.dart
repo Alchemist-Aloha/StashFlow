@@ -26,6 +26,7 @@ class SceneCard extends ConsumerStatefulWidget {
   const SceneCard({
     required this.scene,
     this.isGrid = false,
+    this.useMasonry = false,
     this.onTap,
     this.memCacheWidth,
     this.memCacheHeight,
@@ -37,6 +38,9 @@ class SceneCard extends ConsumerStatefulWidget {
 
   /// Whether to display in a compact grid format or a wide list format.
   final bool isGrid;
+
+  /// Whether to use dynamic aspect ratio in grid mode (for masonry layouts).
+  final bool useMasonry;
 
   /// Callback triggered when the card is tapped.
   final VoidCallback? onTap;
@@ -213,7 +217,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
 
     // Force square videos to 9/16 portrait on mobile to avoid the "fat" look.
     if (fileAspectRatio != null &&
-        (fileAspectRatio! - 1.0).abs() < 0.01 &&
+        (fileAspectRatio - 1.0).abs() < 0.01 &&
         (defaultTargetPlatform == TargetPlatform.android ||
             defaultTargetPlatform == TargetPlatform.iOS)) {
       fileAspectRatio = 9 / 16;
@@ -330,10 +334,14 @@ class _SceneCardState extends ConsumerState<SceneCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AspectRatio(
-            aspectRatio: 16 / 9, // Keep grid items consistent
+            aspectRatio: widget.useMasonry ? aspectRatio.clamp(0.5, 2.5) : 16 / 9,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-              child: _buildThumbnail(context, duration, 16 / 9),
+              child: _buildThumbnail(
+                context,
+                duration,
+                widget.useMasonry ? aspectRatio.clamp(0.5, 2.5) : 16 / 9,
+              ),
             ),
           ),
           Padding(
