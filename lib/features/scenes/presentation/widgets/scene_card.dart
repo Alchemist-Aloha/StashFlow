@@ -349,3 +349,59 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     );
   }
 }
+
+class _ThumbnailMetadataOverlay extends StatelessWidget {
+  const _ThumbnailMetadataOverlay({
+    required this.playCount,
+    required this.rating,
+    required this.duration,
+    required this.isGrid,
+  });
+
+  final int playCount;
+  final int? rating;
+  final String duration;
+  final bool isGrid;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.6),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _buildItem(Icons.visibility, playCount.toString()),
+          if (rating != null)
+            _buildItem(Icons.star, (rating! / 20.0).toStringAsFixed(1)),
+          Text(
+            duration,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: isGrid ? 10 : 12,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildItem(IconData icon, String text) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: Colors.white, size: isGrid ? 10 : 12),
+        const SizedBox(width: 2),
+        Text(
+          text,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: isGrid ? 10 : 12,
+          ),
+        ),
+      ],
+    );
+  }
+}
