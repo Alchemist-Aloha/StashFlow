@@ -53,7 +53,6 @@ void main() {
       prefs: prefs,
       overrides: [
         sceneRepositoryProvider.overrideWithValue(mockRepo),
-        sceneDetailsProvider(testScene.id).overrideWith((ref) => testScene),
       ],
       child: Builder(
         builder: (context) {

@@ -8,3 +8,6 @@
 ## 2024-05-24 - Added Tooltips to Close Buttons
 **Learning:** In a heavily reusable widget like `ListPageScaffold`, missing tooltips on interactive elements like search history removal or query clearing degrade accessibility across many screens. It's crucial to inspect nested builders (like `SearchAnchor`'s viewBuilder) for `IconButton` usage without tooltips.
 **Action:** When creating robust wrapper layouts, verify that dynamic icons (e.g., clearing inputs or managing overlays) map their semantic action to localized strings for tooltips to ensure broad screen reader support.
+## 2024-04-23 - Accessibility for non-standard IconButtons
+**Learning:** Even specialized `IconButton` variants like `IconButton.filledTonal` omit tooltips by default. When these are used for primary actions (like the large central play button on a video player), they lack an accessible name for screen readers, violating WCAG requirements.
+**Action:** Always verify that *all* forms of icon-only interactive widgets (e.g., `IconButton.filled`, `IconButton.filledTonal`, `IconButton.outlined`) include a `tooltip` or `semanticLabel` property.
