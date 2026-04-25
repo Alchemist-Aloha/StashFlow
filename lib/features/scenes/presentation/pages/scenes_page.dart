@@ -525,6 +525,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
         return SceneCard(
           scene: scene,
           isGrid: isGridView,
+          useMasonry: isGridView,
           memCacheWidth: memCacheWidth,
           memCacheHeight: memCacheHeight,
           onTap: () {
