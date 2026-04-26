@@ -1,13 +1,3 @@
-## 2025-02-28 - Tooltips for Dynamic State Toggles
-**Learning:** In Flutter, adding a `tooltip` to an `IconButton` automatically sets its semantic accessibility label for screen readers. For dynamic state toggles like password visibility (`_obscurePassword`), the tooltip must conditionally update its text (e.g., 'Show password' vs 'Hide password') to maintain accurate screen reader announcements matching the visual state.
-**Action:** When adding or reviewing tooltips on toggle buttons, always ensure the tooltip text dynamically reflects the active state rather than using a static label.
-## 2024-05-19 - Localized Icon Tooltips
-**Learning:** Hardcoded strings in Flutter tooltips bypass localization mechanisms and result in inconsistent accessibility labeling for screen readers. In `stash_app_flutter`, `IconButton.tooltip` maps to ARIA labels.
-**Action:** Always verify `tooltip` strings use `context.l10n.[key]` rather than literal strings, and proactively sweep UI files (e.g., list pages and details pages) for typoed or hardcoded tooltips to maintain semantic a11y.
-## 2026-04-20 - Added Tooltips to Close Buttons\n**Learning:** In a heavily reusable widget like `ListPageScaffold`, missing tooltips on interactive elements like search history removal or query clearing degrade accessibility across many screens. It's crucial to inspect nested builders (like 's viewBuilder) for  usage without tooltips.\n**Action:** When creating robust wrapper layouts, verify that dynamic icons (e.g., clearing inputs or managing overlays) map their semantic action to localized strings for tooltips to ensure broad screen reader support.
-## 2024-05-24 - Added Tooltips to Close Buttons
-**Learning:** In a heavily reusable widget like `ListPageScaffold`, missing tooltips on interactive elements like search history removal or query clearing degrade accessibility across many screens. It's crucial to inspect nested builders (like `SearchAnchor`'s viewBuilder) for `IconButton` usage without tooltips.
-**Action:** When creating robust wrapper layouts, verify that dynamic icons (e.g., clearing inputs or managing overlays) map their semantic action to localized strings for tooltips to ensure broad screen reader support.
-## 2024-04-23 - Accessibility for non-standard IconButtons
-**Learning:** Even specialized `IconButton` variants like `IconButton.filledTonal` omit tooltips by default. When these are used for primary actions (like the large central play button on a video player), they lack an accessible name for screen readers, violating WCAG requirements.
-**Action:** Always verify that *all* forms of icon-only interactive widgets (e.g., `IconButton.filled`, `IconButton.filledTonal`, `IconButton.outlined`) include a `tooltip` or `semanticLabel` property.
+## 2026-04-26 - Found un-labelled Icon-Only Button
+**Learning:** Found an `IconButton` in `SceneInfoPage` that had no `tooltip` property. Icon-only buttons without tooltips are completely opaque to screen readers and also miss native desktop hover hints.
+**Action:** Always add the `tooltip` parameter to `IconButton` when it only contains an `Icon` widget. This serves as the semantic label and desktop hover text.
