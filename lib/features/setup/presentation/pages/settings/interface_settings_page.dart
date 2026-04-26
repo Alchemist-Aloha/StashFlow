@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
@@ -149,6 +150,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final isDesktop = kIsWeb || (defaultTargetPlatform != TargetPlatform.android && defaultTargetPlatform != TargetPlatform.iOS);
 
     return SettingsPageShell(
       title: context.l10n.settings_interface_title,
@@ -372,15 +374,17 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                             },
                           ),
                         ],
-                        const Divider(height: AppTheme.spacingLarge),
-                        _buildGridColumnSetting(
-                          label: context.l10n.settings_interface_max_performer_avatars,
-                          value: _maxPerformerAvatars == 3 ? null : _maxPerformerAvatars,
-                          onChanged: (value) async {
-                            setState(() => _maxPerformerAvatars = value ?? 3);
-                            await _saveSettings();
-                          },
-                        ),
+                        if (isDesktop) ...[
+                          const Divider(height: AppTheme.spacingLarge),
+                          _buildGridColumnSetting(
+                            label: context.l10n.settings_interface_max_performer_avatars,
+                            value: _maxPerformerAvatars == 3 ? null : _maxPerformerAvatars,
+                            onChanged: (value) async {
+                              setState(() => _maxPerformerAvatars = value ?? 3);
+                              await _saveSettings();
+                            },
+                          ),
+                        ],
                         const Divider(height: AppTheme.spacingLarge),
                         _buildFontSizeSetting(
                           label: 'Card Title Font Size',
