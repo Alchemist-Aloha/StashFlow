@@ -302,6 +302,8 @@
   "settings_interface_grid_columns": "グリッドの列数",
   "settings_interface_image_viewer": "画像ビューアー",
   "settings_interface_image_viewer_subtitle": "フルスクリーン画像閲覧の動作を設定します",
+  "settings_interface_max_performer_avatars": "パフォーマーの最大アバター数（デスクトップ）",
+  "settings_interface_max_performer_avatars_subtitle": "デスクトップのシーンカードに表示するパフォーマーのアバターの最大数。",
   "settings_interface_swipe_direction": "フルスクリーンスワイプ方向",
   "settings_interface_swipe_direction_desc": "フルスクリーンモードで画像を切り替える方法を選択します",
   "settings_interface_swipe_vertical": "垂直",

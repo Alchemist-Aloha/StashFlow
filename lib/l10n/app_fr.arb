@@ -329,6 +329,8 @@
   "settings_interface_grid_columns": "Colonnes de la grille",
   "settings_interface_image_viewer": "Visionneuse d'images",
   "settings_interface_image_viewer_subtitle": "Configurer le comportement de navigation d'images en plein écran",
+  "settings_interface_max_performer_avatars": "Nombre maximum d'avatars d'acteurs (Bureau)",
+  "settings_interface_max_performer_avatars_subtitle": "Nombre maximum d'avatars d'acteurs à afficher sur la carte de la scène sur le bureau.",
   "settings_interface_swipe_direction": "Direction de balayage plein écran",
   "settings_interface_swipe_direction_desc": "Choisissez comment les images avancent en mode plein écran",
   "settings_interface_swipe_vertical": "Vertical",

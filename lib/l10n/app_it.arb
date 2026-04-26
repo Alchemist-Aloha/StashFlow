@@ -291,6 +291,8 @@
   "settings_interface_grid_columns": "Colonne Griglia",
   "settings_interface_image_viewer": "Visualizzatore Immagini",
   "settings_interface_image_viewer_subtitle": "Configura il comportamento della navigazione immagini a schermo intero",
+  "settings_interface_max_performer_avatars": "Numero massimo di avatar degli attori (Desktop)",
+  "settings_interface_max_performer_avatars_subtitle": "Numero massimo di avatar degli attori da mostrare nella scheda della scena su desktop.",
   "settings_interface_swipe_direction": "Direzione Scorrimento Schermo Intero",
   "settings_interface_swipe_direction_desc": "Scegli come avanzano le immagini in modalità schermo intero",
   "settings_interface_swipe_vertical": "Verticale",

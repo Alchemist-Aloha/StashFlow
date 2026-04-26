@@ -1051,11 +1051,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settings_interface_max_performer_avatars =>
-      'Max Performer Avatars (Desktop)';
+      'Nombre maximum d\'avatars d\'acteurs (Bureau)';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      'Maximum number of performer avatars to show in the scene card on desktop.';
+      'Nombre maximum d\'avatars d\'acteurs à afficher sur la carte de la scène sur le bureau.';
 
   @override
   String get settings_interface_layout_default => 'Disposition par défaut';

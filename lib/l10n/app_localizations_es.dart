@@ -1059,11 +1059,11 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settings_interface_max_performer_avatars =>
-      'Max Performer Avatars (Desktop)';
+      'Avatares máximos de actores (Escritorio)';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      'Maximum number of performer avatars to show in the scene card on desktop.';
+      'Número máximo de avatares de actores para mostrar en la tarjeta de escena en el escritorio.';
 
   @override
   String get settings_interface_layout_default => 'Diseño predeterminado';

@@ -358,6 +358,8 @@
   "settings_interface_grid_columns": "Колонки сетки",
   "settings_interface_image_viewer": "Просмотр изображений",
   "settings_interface_image_viewer_subtitle": "Настроить поведение полноэкранного просмотра изображений",
+  "settings_interface_max_performer_avatars": "Максимальное количество аватаров исполнителей (на рабочем столе)",
+  "settings_interface_max_performer_avatars_subtitle": "Максимальное количество аватаров исполнителей, отображаемых в карточке сцены на рабочем столе.",
   "settings_interface_swipe_direction": "Направление свайпа в полноэкранном режиме",
   "settings_interface_swipe_direction_desc": "Выберите способ перелистывания изображений в полноэкранном режиме",
   "settings_interface_swipe_vertical": "Вертикально",

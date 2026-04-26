@@ -1050,11 +1050,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settings_interface_max_performer_avatars =>
-      'Max Performer Avatars (Desktop)';
+      'Maximale Darsteller-Avatare (Desktop)';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      'Maximum number of performer avatars to show in the scene card on desktop.';
+      'Maximale Anzahl der Darsteller-Avatare, die in der Szenenkarte auf dem Desktop angezeigt werden.';
 
   @override
   String get settings_interface_layout_default => 'Standard-Layout';

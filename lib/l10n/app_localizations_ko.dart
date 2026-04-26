@@ -1021,12 +1021,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_interface_galleries_layout_subtitle => '갤러리의 기본 브라우징 모드';
 
   @override
-  String get settings_interface_max_performer_avatars =>
-      'Max Performer Avatars (Desktop)';
+  String get settings_interface_max_performer_avatars => '출연자 아바타 최대 수(데스크톱)';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      'Maximum number of performer avatars to show in the scene card on desktop.';
+      '데스크톱의 씬 카드에 표시할 출연자 아바타의 최대 수입니다.';
 
   @override
   String get settings_interface_layout_default => '기본 레이아웃';

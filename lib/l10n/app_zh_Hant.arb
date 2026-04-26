@@ -358,6 +358,8 @@
   "settings_interface_grid_columns": "網格欄數",
   "settings_interface_image_viewer": "圖片查看器",
   "settings_interface_image_viewer_subtitle": "設定全螢幕圖片瀏覽行為",
+  "settings_interface_max_performer_avatars": "最多演出者頭像（桌面）",
+  "settings_interface_max_performer_avatars_subtitle": "在桌面場景卡上顯示的演出者頭像的最大數量。",
   "settings_interface_swipe_direction": "全螢幕滑動方向",
   "settings_interface_swipe_direction_desc": "選擇圖片在全螢幕模式下如何切換",
   "settings_interface_swipe_vertical": "垂直",

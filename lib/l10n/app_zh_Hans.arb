@@ -365,6 +365,8 @@
   "settings_interface_grid_columns": "网格列数",
   "settings_interface_image_viewer": "图片查看器",
   "settings_interface_image_viewer_subtitle": "配置全屏图片浏览行为",
+  "settings_interface_max_performer_avatars": "最多出演者头像（桌面）",
+  "settings_interface_max_performer_avatars_subtitle": "在桌面场景卡上显示的出演者头像的最大数量。",
   "settings_interface_swipe_direction": "全屏滑动方向",
   "settings_interface_swipe_direction_desc": "选择全屏模式下图片的切换方式",
   "settings_interface_swipe_vertical": "垂直",

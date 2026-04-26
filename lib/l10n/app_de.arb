@@ -312,6 +312,8 @@
   "settings_interface_grid_columns": "Rasterspalten",
   "settings_interface_image_viewer": "Bildbetrachter",
   "settings_interface_image_viewer_subtitle": "Vollbild-Bild-Browsing-Verhalten konfigurieren",
+  "settings_interface_max_performer_avatars": "Maximale Darsteller-Avatare (Desktop)",
+  "settings_interface_max_performer_avatars_subtitle": "Maximale Anzahl der Darsteller-Avatare, die in der Szenenkarte auf dem Desktop angezeigt werden.",
   "settings_interface_swipe_direction": "Vollbild-Wischrichtung",
   "settings_interface_swipe_direction_desc": "Wählen Sie, wie Bilder im Vollbildmodus gewechselt werden",
   "settings_interface_swipe_vertical": "Vertikal",

@@ -329,6 +329,8 @@
   "settings_interface_grid_columns": "Columnas de la cuadrícula",
   "settings_interface_image_viewer": "Visor de imágenes",
   "settings_interface_image_viewer_subtitle": "Configurar el comportamiento de navegación de imágenes a pantalla completa",
+  "settings_interface_max_performer_avatars": "Avatares máximos de actores (Escritorio)",
+  "settings_interface_max_performer_avatars_subtitle": "Número máximo de avatares de actores para mostrar en la tarjeta de escena en el escritorio.",
   "settings_interface_swipe_direction": "Dirección de deslizamiento a pantalla completa",
   "settings_interface_swipe_direction_desc": "Elige cómo avanzan las imágenes en el modo de pantalla completa",
   "settings_interface_swipe_vertical": "Vertical",

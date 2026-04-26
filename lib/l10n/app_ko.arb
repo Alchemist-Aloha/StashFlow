@@ -315,6 +315,8 @@
   "settings_interface_grid_columns": "그리드 열",
   "settings_interface_image_viewer": "이미지 뷰어",
   "settings_interface_image_viewer_subtitle": "전체 화면 이미지 브라우징 동작 설정",
+  "settings_interface_max_performer_avatars": "출연자 아바타 최대 수(데스크톱)",
+  "settings_interface_max_performer_avatars_subtitle": "데스크톱의 씬 카드에 표시할 출연자 아바타의 최대 수입니다.",
   "settings_interface_swipe_direction": "전체 화면 스와이프 방향",
   "settings_interface_swipe_direction_desc": "전체 화면 모드에서 이미지가 넘어가는 방식 선택",
   "settings_interface_swipe_vertical": "세로",

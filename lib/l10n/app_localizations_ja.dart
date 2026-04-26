@@ -1023,11 +1023,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settings_interface_max_performer_avatars =>
-      'Max Performer Avatars (Desktop)';
+      'パフォーマーの最大アバター数（デスクトップ）';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      'Maximum number of performer avatars to show in the scene card on desktop.';
+      'デスクトップのシーンカードに表示するパフォーマーのアバターの最大数。';
 
   @override
   String get settings_interface_layout_default => 'デフォルトレイアウト';

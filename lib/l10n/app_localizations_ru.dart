@@ -1042,11 +1042,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settings_interface_max_performer_avatars =>
-      'Max Performer Avatars (Desktop)';
+      'Максимальное количество аватаров исполнителей (на рабочем столе)';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      'Maximum number of performer avatars to show in the scene card on desktop.';
+      'Максимальное количество аватаров исполнителей, отображаемых в карточке сцены на рабочем столе.';
 
   @override
   String get settings_interface_layout_default => 'Макет по умолчанию';
