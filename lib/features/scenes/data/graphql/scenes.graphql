@@ -24,6 +24,7 @@ fragment SlimSceneData on Scene {
     stream
     caption
     vtt
+    sprite
   }
   captions {
     language_code

@@ -81,6 +81,7 @@ abstract class ScenePaths with _$ScenePaths {
     required String? stream,
     @Default(null) String? caption,
     @Default(null) String? vtt,
+    @Default(null) String? sprite,
   }) = _ScenePaths;
 
   factory ScenePaths.fromJson(Map<String, dynamic> json) =>

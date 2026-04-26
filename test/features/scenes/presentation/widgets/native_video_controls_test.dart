@@ -246,6 +246,7 @@ Scene _buildScene({
       stream: null,
       caption: captionPath,
       vtt: vttPath,
+      sprite: null,
     ),
     studioId: '',
     studioName: '',

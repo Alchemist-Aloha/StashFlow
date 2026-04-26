@@ -807,6 +807,13 @@ const fragmentDefinitionSlimSceneData = FragmentDefinitionNode(
               selectionSet: null,
             ),
             FieldNode(
+              name: NameNode(value: 'sprite'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
               name: NameNode(value: '__typename'),
               alias: null,
               arguments: [],
@@ -1395,6 +1402,7 @@ class Fragment$SlimSceneData$paths {
     this.stream,
     this.caption,
     this.vtt,
+    this.sprite,
     this.$__typename = 'ScenePathsType',
   });
 
@@ -1404,6 +1412,7 @@ class Fragment$SlimSceneData$paths {
     final l$stream = json['stream'];
     final l$caption = json['caption'];
     final l$vtt = json['vtt'];
+    final l$sprite = json['sprite'];
     final l$$__typename = json['__typename'];
     return Fragment$SlimSceneData$paths(
       screenshot: (l$screenshot as String?),
@@ -1411,6 +1420,7 @@ class Fragment$SlimSceneData$paths {
       stream: (l$stream as String?),
       caption: (l$caption as String?),
       vtt: (l$vtt as String?),
+      sprite: (l$sprite as String?),
       $__typename: (l$$__typename as String),
     );
   }
@@ -1424,6 +1434,8 @@ class Fragment$SlimSceneData$paths {
   final String? caption;
 
   final String? vtt;
+
+  final String? sprite;
 
   final String $__typename;
 
@@ -1439,6 +1451,8 @@ class Fragment$SlimSceneData$paths {
     _resultData['caption'] = l$caption;
     final l$vtt = vtt;
     _resultData['vtt'] = l$vtt;
+    final l$sprite = sprite;
+    _resultData['sprite'] = l$sprite;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -1451,6 +1465,7 @@ class Fragment$SlimSceneData$paths {
     final l$stream = stream;
     final l$caption = caption;
     final l$vtt = vtt;
+    final l$sprite = sprite;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$screenshot,
@@ -1458,6 +1473,7 @@ class Fragment$SlimSceneData$paths {
       l$stream,
       l$caption,
       l$vtt,
+      l$sprite,
       l$$__typename,
     ]);
   }
@@ -1496,6 +1512,11 @@ class Fragment$SlimSceneData$paths {
     if (l$vtt != lOther$vtt) {
       return false;
     }
+    final l$sprite = sprite;
+    final lOther$sprite = other.sprite;
+    if (l$sprite != lOther$sprite) {
+      return false;
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -1526,6 +1547,7 @@ abstract class CopyWith$Fragment$SlimSceneData$paths<TRes> {
     String? stream,
     String? caption,
     String? vtt,
+    String? sprite,
     String? $__typename,
   });
 }
@@ -1546,6 +1568,7 @@ class _CopyWithImpl$Fragment$SlimSceneData$paths<TRes>
     Object? stream = _undefined,
     Object? caption = _undefined,
     Object? vtt = _undefined,
+    Object? sprite = _undefined,
     Object? $__typename = _undefined,
   }) => _then(
     Fragment$SlimSceneData$paths(
@@ -1556,6 +1579,7 @@ class _CopyWithImpl$Fragment$SlimSceneData$paths<TRes>
       stream: stream == _undefined ? _instance.stream : (stream as String?),
       caption: caption == _undefined ? _instance.caption : (caption as String?),
       vtt: vtt == _undefined ? _instance.vtt : (vtt as String?),
+      sprite: sprite == _undefined ? _instance.sprite : (sprite as String?),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
@@ -1575,6 +1599,7 @@ class _CopyWithStubImpl$Fragment$SlimSceneData$paths<TRes>
     String? stream,
     String? caption,
     String? vtt,
+    String? sprite,
     String? $__typename,
   }) => _res;
 }
@@ -3499,6 +3524,7 @@ class Fragment$SceneData$paths implements Fragment$SlimSceneData$paths {
     this.stream,
     this.caption,
     this.vtt,
+    this.sprite,
     this.$__typename = 'ScenePathsType',
   });
 
@@ -3508,6 +3534,7 @@ class Fragment$SceneData$paths implements Fragment$SlimSceneData$paths {
     final l$stream = json['stream'];
     final l$caption = json['caption'];
     final l$vtt = json['vtt'];
+    final l$sprite = json['sprite'];
     final l$$__typename = json['__typename'];
     return Fragment$SceneData$paths(
       screenshot: (l$screenshot as String?),
@@ -3515,6 +3542,7 @@ class Fragment$SceneData$paths implements Fragment$SlimSceneData$paths {
       stream: (l$stream as String?),
       caption: (l$caption as String?),
       vtt: (l$vtt as String?),
+      sprite: (l$sprite as String?),
       $__typename: (l$$__typename as String),
     );
   }
@@ -3528,6 +3556,8 @@ class Fragment$SceneData$paths implements Fragment$SlimSceneData$paths {
   final String? caption;
 
   final String? vtt;
+
+  final String? sprite;
 
   final String $__typename;
 
@@ -3543,6 +3573,8 @@ class Fragment$SceneData$paths implements Fragment$SlimSceneData$paths {
     _resultData['caption'] = l$caption;
     final l$vtt = vtt;
     _resultData['vtt'] = l$vtt;
+    final l$sprite = sprite;
+    _resultData['sprite'] = l$sprite;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -3555,6 +3587,7 @@ class Fragment$SceneData$paths implements Fragment$SlimSceneData$paths {
     final l$stream = stream;
     final l$caption = caption;
     final l$vtt = vtt;
+    final l$sprite = sprite;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$screenshot,
@@ -3562,6 +3595,7 @@ class Fragment$SceneData$paths implements Fragment$SlimSceneData$paths {
       l$stream,
       l$caption,
       l$vtt,
+      l$sprite,
       l$$__typename,
     ]);
   }
@@ -3600,6 +3634,11 @@ class Fragment$SceneData$paths implements Fragment$SlimSceneData$paths {
     if (l$vtt != lOther$vtt) {
       return false;
     }
+    final l$sprite = sprite;
+    final lOther$sprite = other.sprite;
+    if (l$sprite != lOther$sprite) {
+      return false;
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -3630,6 +3669,7 @@ abstract class CopyWith$Fragment$SceneData$paths<TRes> {
     String? stream,
     String? caption,
     String? vtt,
+    String? sprite,
     String? $__typename,
   });
 }
@@ -3650,6 +3690,7 @@ class _CopyWithImpl$Fragment$SceneData$paths<TRes>
     Object? stream = _undefined,
     Object? caption = _undefined,
     Object? vtt = _undefined,
+    Object? sprite = _undefined,
     Object? $__typename = _undefined,
   }) => _then(
     Fragment$SceneData$paths(
@@ -3660,6 +3701,7 @@ class _CopyWithImpl$Fragment$SceneData$paths<TRes>
       stream: stream == _undefined ? _instance.stream : (stream as String?),
       caption: caption == _undefined ? _instance.caption : (caption as String?),
       vtt: vtt == _undefined ? _instance.vtt : (vtt as String?),
+      sprite: sprite == _undefined ? _instance.sprite : (sprite as String?),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
@@ -3679,6 +3721,7 @@ class _CopyWithStubImpl$Fragment$SceneData$paths<TRes>
     String? stream,
     String? caption,
     String? vtt,
+    String? sprite,
     String? $__typename,
   }) => _res;
 }

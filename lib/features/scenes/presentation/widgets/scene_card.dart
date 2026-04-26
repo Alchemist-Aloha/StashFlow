@@ -111,7 +111,8 @@ class _SceneCardState extends ConsumerState<SceneCard> {
         : 0.0;
 
     final rawVttUrl = widget.scene.paths.vtt ?? '';
-    final hasVtt = rawVttUrl.isNotEmpty && totalDuration > 0;
+    final rawSpriteUrl = widget.scene.paths.sprite ?? '';
+    final hasVtt = rawVttUrl.isNotEmpty && rawSpriteUrl.isNotEmpty && totalDuration > 0;
     final vttUrl = hasVtt ? appendApiKey(rawVttUrl, apiKey) : '';
 
     // Safety guard: if VTT is not available, ensure scrubbing is disabled.

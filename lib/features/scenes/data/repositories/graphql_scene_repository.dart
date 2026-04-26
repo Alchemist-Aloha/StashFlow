@@ -123,6 +123,10 @@ class GraphQLSceneRepository implements SceneRepository {
                 rawUrl: s.paths.vtt,
                 graphqlEndpoint: _graphqlEndpoint,
               ),
+              sprite: resolveGraphqlMediaUrl(
+                rawUrl: s.paths.sprite,
+                graphqlEndpoint: _graphqlEndpoint,
+              ),
             ),
             captions:
                 s.captions
@@ -345,6 +349,10 @@ class GraphQLSceneRepository implements SceneRepository {
         ),
         vtt: resolveGraphqlMediaUrl(
           rawUrl: s.paths.vtt,
+          graphqlEndpoint: _graphqlEndpoint,
+        ),
+        sprite: resolveGraphqlMediaUrl(
+          rawUrl: s.paths.sprite,
           graphqlEndpoint: _graphqlEndpoint,
         ),
       ),
