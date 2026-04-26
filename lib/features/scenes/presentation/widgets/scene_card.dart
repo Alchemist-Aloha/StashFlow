@@ -160,37 +160,44 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     return Hero(
       tag: 'scene_player_${widget.scene.id}',
       child: GestureDetector(
-        onPanStart: (_) {
-          if (vttUrl.isNotEmpty) {
-            setState(() {
-              _isScrubbing = true;
-            });
-          }
-        },
-        onPanUpdate: (details) {
-          if (_isScrubbing) {
-            final box = context.findRenderObject() as RenderBox;
-            final localPos = box.globalToLocal(details.globalPosition);
-            final relativePos = (localPos.dx / box.size.width).clamp(0.0, 1.0);
-            setState(() {
-              _scrubTime = relativePos * totalDuration;
-            });
-          }
-        },
-        onPanEnd: (_) {
-          if (!isDesktop) {
-            setState(() {
-              _isScrubbing = false;
-            });
-          }
-        },
-        onPanCancel: () {
-          if (!isDesktop) {
-            setState(() {
-              _isScrubbing = false;
-            });
-          }
-        },
+        onPanStart: vttUrl.isNotEmpty
+            ? (_) {
+                setState(() {
+                  _isScrubbing = true;
+                });
+              }
+            : null,
+        onPanUpdate: vttUrl.isNotEmpty
+            ? (details) {
+                if (_isScrubbing) {
+                  final box = context.findRenderObject() as RenderBox;
+                  final localPos = box.globalToLocal(details.globalPosition);
+                  final relativePos =
+                      (localPos.dx / box.size.width).clamp(0.0, 1.0);
+                  setState(() {
+                    _scrubTime = relativePos * totalDuration;
+                  });
+                }
+              }
+            : null,
+        onPanEnd: vttUrl.isNotEmpty
+            ? (_) {
+                if (!isDesktop) {
+                  setState(() {
+                    _isScrubbing = false;
+                  });
+                }
+              }
+            : null,
+        onPanCancel: vttUrl.isNotEmpty
+            ? () {
+                if (!isDesktop) {
+                  setState(() {
+                    _isScrubbing = false;
+                  });
+                }
+              }
+            : null,
         child: Material(
           color: Colors.transparent,
           child: content,
