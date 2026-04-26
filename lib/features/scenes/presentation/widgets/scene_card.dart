@@ -141,7 +141,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
       ],
     );
 
-    if (isDesktop && vttUrl.isNotEmpty) {
+    if (isDesktop && rawVttUrl.isNotEmpty) {
       content = MouseRegion(
         onEnter: (_) => setState(() => _isScrubbing = true),
         onExit: (_) => setState(() => _isScrubbing = false),
@@ -160,14 +160,14 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     return Hero(
       tag: 'scene_player_${widget.scene.id}',
       child: GestureDetector(
-        onPanStart: vttUrl.isNotEmpty
+        onPanStart: rawVttUrl.isNotEmpty
             ? (_) {
                 setState(() {
                   _isScrubbing = true;
                 });
               }
             : null,
-        onPanUpdate: vttUrl.isNotEmpty
+        onPanUpdate: rawVttUrl.isNotEmpty
             ? (details) {
                 if (_isScrubbing) {
                   final box = context.findRenderObject() as RenderBox;
@@ -180,7 +180,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                 }
               }
             : null,
-        onPanEnd: vttUrl.isNotEmpty
+        onPanEnd: rawVttUrl.isNotEmpty
             ? (_) {
                 if (!isDesktop) {
                   setState(() {
@@ -189,7 +189,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                 }
               }
             : null,
-        onPanCancel: vttUrl.isNotEmpty
+        onPanCancel: rawVttUrl.isNotEmpty
             ? () {
                 if (!isDesktop) {
                   setState(() {
