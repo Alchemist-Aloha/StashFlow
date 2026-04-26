@@ -89,6 +89,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     BuildContext context,
     double? duration,
     double aspectRatio,
+    String apiKey,
   ) {
     final isDesktop = kIsWeb ||
         (defaultTargetPlatform != TargetPlatform.android &&
@@ -99,7 +100,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
         : 0.0;
 
     final rawVttUrl = widget.scene.paths.vtt ?? '';
-    final apiKey = ref.read(serverApiKeyProvider);
+    final hasVtt = rawVttUrl.isNotEmpty;
     final vttUrl = appendApiKey(rawVttUrl, apiKey);
 
     Widget content = Stack(
@@ -114,7 +115,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
           height: double.infinity,
           fit: BoxFit.cover,
         ),
-        if (_isScrubbing && vttUrl.isNotEmpty)
+        if (_isScrubbing && hasVtt)
           Positioned.fill(
             child: ScrubbingPreview(
               vttUrl: vttUrl,
@@ -141,7 +142,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
       ],
     );
 
-    if (isDesktop && rawVttUrl.isNotEmpty) {
+    if (isDesktop && hasVtt) {
       content = MouseRegion(
         onEnter: (_) => setState(() => _isScrubbing = true),
         onExit: (_) => setState(() => _isScrubbing = false),
@@ -160,27 +161,26 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     return Hero(
       tag: 'scene_player_${widget.scene.id}',
       child: GestureDetector(
-        onPanStart: rawVttUrl.isNotEmpty
+        onPanStart: hasVtt
             ? (_) {
                 setState(() {
                   _isScrubbing = true;
                 });
               }
             : null,
-        onPanUpdate: rawVttUrl.isNotEmpty
+        onPanUpdate: hasVtt
             ? (details) {
                 if (_isScrubbing) {
                   final box = context.findRenderObject() as RenderBox;
-                  final localPos = box.globalToLocal(details.globalPosition);
                   final relativePos =
-                      (localPos.dx / box.size.width).clamp(0.0, 1.0);
+                      (details.localPosition.dx / box.size.width).clamp(0.0, 1.0);
                   setState(() {
                     _scrubTime = relativePos * totalDuration;
                   });
                 }
               }
             : null,
-        onPanEnd: rawVttUrl.isNotEmpty
+        onPanEnd: hasVtt
             ? (_) {
                 if (!isDesktop) {
                   setState(() {
@@ -189,7 +189,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                 }
               }
             : null,
-        onPanCancel: rawVttUrl.isNotEmpty
+        onPanCancel: hasVtt
             ? () {
                 if (!isDesktop) {
                   setState(() {
@@ -208,6 +208,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
 
   @override
   Widget build(BuildContext context) {
+    final apiKey = ref.watch(serverApiKeyProvider);
     final duration = widget.scene.files.isNotEmpty
         ? widget.scene.files.first.duration
         : null;
@@ -231,9 +232,11 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     }
 
     if (widget.isGrid) {
-      return _buildGridCard(context, ref, duration, fileAspectRatio ?? 16 / 9);
+      return _buildGridCard(
+          context, ref, duration, fileAspectRatio ?? 16 / 9, apiKey);
     }
-    return _buildListCard(context, ref, duration, fileAspectRatio ?? 16 / 9);
+    return _buildListCard(
+        context, ref, duration, fileAspectRatio ?? 16 / 9, apiKey);
   }
 
   /// Builds the full-width list variant of the card.
@@ -244,6 +247,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     WidgetRef ref,
     double? duration,
     double aspectRatio,
+    String apiKey,
   ) {
     final isDesktop = kIsWeb ||
         (defaultTargetPlatform != TargetPlatform.android &&
@@ -262,7 +266,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
             aspectRatio: aspectRatio.clamp(0.5, 2.5),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-              child: _buildThumbnail(context, duration, aspectRatio),
+              child: _buildThumbnail(context, duration, aspectRatio, apiKey),
             ),
           ),
           Padding(
@@ -328,6 +332,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     WidgetRef ref,
     double? duration,
     double aspectRatio,
+    String apiKey,
   ) {
     final isDesktop = kIsWeb ||
         (defaultTargetPlatform != TargetPlatform.android &&
@@ -348,6 +353,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                 context,
                 duration,
                 widget.useMasonry ? aspectRatio.clamp(0.5, 2.5) : 16 / 9,
+                apiKey,
               ),
             ),
           ),
