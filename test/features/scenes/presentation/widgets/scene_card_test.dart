@@ -390,5 +390,29 @@ void main() {
       expect(aspectRatioWidget.aspectRatio, closeTo(16 / 9, 0.01));
     },
   );
+
+  testWidgets('SceneCard pan gesture is disabled when VTT is missing', (
+    tester,
+  ) async {
+    final sceneNoVtt = defaultTestScene.copyWith(
+      paths: defaultTestScene.paths.copyWith(vtt: null),
+    );
+
+    await tester.pumpWidget(
+      buildTestWidget(SceneCard(scene: sceneNoVtt, isGrid: true)),
+    );
+
+    await tester.pumpAndSettle();
+
+    final detectorFinder = find.descendant(
+      of: find.byType(Hero),
+      matching: find.byType(GestureDetector),
+    );
+    final detector = tester.widget<GestureDetector>(detectorFinder);
+
+    expect(detector.onPanStart, isNull);
+    expect(detector.onPanUpdate, isNull);
+    expect(detector.onPanEnd, isNull);
+  });
 }
 
