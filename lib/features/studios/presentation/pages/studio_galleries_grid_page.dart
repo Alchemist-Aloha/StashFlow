@@ -37,6 +37,7 @@ class StudioGalleriesGridPage extends ConsumerWidget {
       gridDelegate: isGridView
           ? GridUtils.createDelegate(crossAxisCount: gridColumns ?? 2)
           : null,
+      useMasonry: isGridView,
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, item, memCacheWidth, memCacheHeight) => GridCard(
         title: item.title,

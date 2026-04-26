@@ -7,12 +7,14 @@ import '../../../../core/presentation/widgets/rating_bottom_sheet.dart';
 import '../providers/gallery_list_provider.dart';
 import '../../domain/entities/gallery.dart';
 import '../providers/gallery_details_provider.dart';
+import '../../../../core/presentation/providers/layout_settings_provider.dart';
 
 /// A card widget that displays a summary of a [Gallery].
 class GalleryCard extends ConsumerWidget {
   const GalleryCard({
     required this.gallery,
     this.isGrid = true,
+    this.useMasonry = false,
     this.onTap,
     this.thumbnailUrl,
     this.memCacheWidth,
@@ -25,6 +27,9 @@ class GalleryCard extends ConsumerWidget {
   /// Whether to display in a compact grid format or a wide list format.
   final bool isGrid;
 
+  /// Whether to use dynamic aspect ratio in grid mode (for masonry layouts).
+  final bool useMasonry;
+
   /// Callback triggered when the card is tapped.
   final VoidCallback? onTap;
 
@@ -36,10 +41,17 @@ class GalleryCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (isGrid) {
-      return _buildGridCard(context, ref);
+    final titleFontSize = ref.watch(cardTitleFontSizeProvider);
+
+    double aspectRatio = 16 / 9;
+    if (gallery.coverWidth != null && gallery.coverHeight != null && gallery.coverHeight! > 0) {
+      aspectRatio = gallery.coverWidth! / gallery.coverHeight!;
     }
-    return _buildListCard(context, ref);
+
+    if (isGrid) {
+      return _buildGridCard(context, ref, titleFontSize, aspectRatio);
+    }
+    return _buildListCard(context, ref, titleFontSize, aspectRatio);
   }
 
   Future<void> _showRating(BuildContext context, WidgetRef ref) async {
@@ -80,97 +92,14 @@ class GalleryCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildListCard(BuildContext context, WidgetRef ref) {
+  Widget _buildListCard(BuildContext context, WidgetRef ref, double? titleFontSize, double aspectRatio) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AspectRatio(
-            aspectRatio: 16 / 9,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-              child: Stack(
-                children: [
-                  StashImage(
-                    imageUrl: thumbnailUrl,
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
-                    memCacheWidth: memCacheWidth,
-                  ),
-                  if (gallery.rating100 != null && gallery.rating100! > 0)
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withAlpha(200),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                              size: 14,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              (gallery.rating100! / 20).toStringAsFixed(1),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  if (gallery.imageCount != null && gallery.imageCount! > 0)
-                    Positioned(
-                      bottom: 8,
-                      right: 8,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 4,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withAlpha(200),
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.photo_library,
-                              color: Colors.white,
-                              size: 12,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              '${gallery.imageCount}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
+          _buildThumbnail(aspectRatio.clamp(0.5, 2.5)),
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: Row(
@@ -184,7 +113,7 @@ class GalleryCard extends ConsumerWidget {
                         gallery.displayName,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                          fontSize: titleFontSize ?? 14,
                           color: context.colors.onSurface,
                         ),
                         maxLines: 2,
@@ -230,86 +159,14 @@ class GalleryCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildGridCard(BuildContext context, WidgetRef ref) {
+  Widget _buildGridCard(BuildContext context, WidgetRef ref, double? titleFontSize, double aspectRatio) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AspectRatio(
-            aspectRatio: 16 / 9,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-              child: Stack(
-                children: [
-                  StashImage(
-                    imageUrl: thumbnailUrl,
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
-                    memCacheWidth: memCacheWidth,
-                  ),
-                  if (gallery.rating100 != null && gallery.rating100! > 0)
-                    Positioned(
-                      top: 4,
-                      right: 4,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 4,
-                          vertical: 1,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withAlpha(200),
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                              size: 10,
-                            ),
-                            const SizedBox(width: 2),
-                            Text(
-                              (gallery.rating100! / 20).toStringAsFixed(1),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 9,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  if (gallery.imageCount != null && gallery.imageCount! > 0)
-                    Positioned(
-                      bottom: 4,
-                      right: 4,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 4,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withAlpha(200),
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                        child: Text(
-                          '${gallery.imageCount}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
+          _buildThumbnail(useMasonry ? aspectRatio.clamp(0.5, 2.5) : 16 / 9),
           Padding(
             padding: const EdgeInsets.only(top: 4.0, left: 4.0, right: 4.0),
             child: Row(
@@ -324,10 +181,10 @@ class GalleryCard extends ConsumerWidget {
                         gallery.displayName,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 11,
+                          fontSize: titleFontSize ?? 11,
                           color: context.colors.onSurface,
                         ),
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       if (gallery.details != null &&
@@ -357,4 +214,105 @@ class GalleryCard extends ConsumerWidget {
       ),
     );
   }
+
+  Widget _buildThumbnail(double? aspectRatio) {
+    final child = Stack(
+      fit: aspectRatio != null ? StackFit.expand : StackFit.loose,
+      children: [
+        StashImage(
+          imageUrl: thumbnailUrl,
+          width: double.infinity,
+          height: aspectRatio != null ? double.infinity : null,
+          fit: aspectRatio != null ? BoxFit.cover : BoxFit.contain,
+          memCacheWidth: memCacheWidth,
+        ),
+        if (gallery.rating100 != null && gallery.rating100! > 0)
+          Positioned(
+            top: isGrid ? 4 : 8,
+            right: isGrid ? 4 : 8,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: isGrid ? 4 : 6,
+                vertical: isGrid ? 1 : 2,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.black.withAlpha(200),
+                borderRadius: BorderRadius.circular(isGrid ? 2 : 4),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.star,
+                    color: Colors.amber,
+                    size: isGrid ? 10 : 14,
+                  ),
+                  SizedBox(width: isGrid ? 2 : 4),
+                  Text(
+                    (gallery.rating100! / 20).toStringAsFixed(1),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: isGrid ? 9 : 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        if (gallery.imageCount != null && gallery.imageCount! > 0)
+          Positioned(
+            bottom: isGrid ? 4 : 8,
+            right: isGrid ? 4 : 8,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 4,
+                vertical: 2,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.black.withAlpha(200),
+                borderRadius: BorderRadius.circular(2),
+              ),
+              child: isGrid
+                  ? Text(
+                      '${gallery.imageCount}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                      ),
+                    )
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.photo_library,
+                          color: Colors.white,
+                          size: 12,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${gallery.imageCount}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
+          ),
+      ],
+    );
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+      child: aspectRatio != null
+          ? AspectRatio(
+              aspectRatio: aspectRatio,
+              child: child,
+            )
+          : child,
+    );
+  }
 }
+

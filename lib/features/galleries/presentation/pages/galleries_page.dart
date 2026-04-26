@@ -411,11 +411,13 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
       gridDelegate: isGridView
           ? GridUtils.createDelegate(crossAxisCount: gridColumns ?? 2)
           : null,
+      useMasonry: isGridView,
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, gallery, memCacheWidth, memCacheHeight) =>
           GalleryCard(
             gallery: gallery,
             isGrid: isGridView,
+            useMasonry: isGridView,
             thumbnailUrl: _getThumbnailUrl(gallery),
             memCacheWidth: memCacheWidth,
             onTap: () {

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme/app_theme.dart';
 import 'stash_image.dart';
+import '../providers/layout_settings_provider.dart';
 
 /// A generic card widget for grid layouts.
 ///
 /// This component provides a consistent visual style for grid items,
 /// including a 16:9 thumbnail, title, optional subtitle, and badge.
-class GridCard extends StatelessWidget {
+class GridCard extends ConsumerWidget {
   const GridCard({
     required this.title,
     this.subtitle,
@@ -44,14 +46,16 @@ class GridCard extends StatelessWidget {
   final int? memCacheHeight;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final titleFontSize = ref.watch(cardTitleFontSizeProvider);
+
     if (isGrid) {
-      return _buildGridCard(context);
+      return _buildGridCard(context, titleFontSize);
     }
-    return _buildListCard(context);
+    return _buildListCard(context, titleFontSize);
   }
 
-  Widget _buildGridCard(BuildContext context) {
+  Widget _buildGridCard(BuildContext context, double? titleFontSize) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
@@ -108,6 +112,7 @@ class GridCard extends StatelessWidget {
                   style: context.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: context.colors.onSurface,
+                    fontSize: titleFontSize,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -131,7 +136,7 @@ class GridCard extends StatelessWidget {
     );
   }
 
-  Widget _buildListCard(BuildContext context) {
+  Widget _buildListCard(BuildContext context, double? titleFontSize) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
@@ -187,6 +192,7 @@ class GridCard extends StatelessWidget {
                   title,
                   style: context.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
+                    fontSize: titleFontSize,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

@@ -7,6 +7,8 @@ class Gallery {
   final String? details;
   final String? path;
   final String? coverPath;
+  final int? coverWidth;
+  final int? coverHeight;
 
   const Gallery({
     required this.id,
@@ -17,6 +19,8 @@ class Gallery {
     this.details,
     this.path,
     this.coverPath,
+    this.coverWidth,
+    this.coverHeight,
   });
 
   /// The display title of the gallery.
@@ -55,6 +59,17 @@ class Gallery {
     final paths = json['paths'] as Map<String, dynamic>?;
     final coverPath = paths?['cover']?.toString();
 
+    int? coverWidth;
+    int? coverHeight;
+    final cover = json['cover'] as Map<String, dynamic>?;
+    if (cover != null) {
+      final visualFiles = cover['visual_files'] as List<dynamic>?;
+      if (visualFiles != null && visualFiles.isNotEmpty) {
+        coverWidth = visualFiles.first['width'] as int?;
+        coverHeight = visualFiles.first['height'] as int?;
+      }
+    }
+
     return Gallery(
       id: json['id']?.toString() ?? '',
       title: json['title']?.toString() ?? '',
@@ -64,6 +79,8 @@ class Gallery {
       details: json['details']?.toString(),
       path: path,
       coverPath: coverPath,
+      coverWidth: coverWidth,
+      coverHeight: coverHeight,
     );
   }
 }

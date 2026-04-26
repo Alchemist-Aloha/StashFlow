@@ -73,24 +73,17 @@ class TagDetailsPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    height: 200,
-                    width: double.infinity,
-                    color: context.colors.surfaceVariant,
-                    child: tag.imagePath != null
-                        ? StashImage(
-                            imageUrl: tag.imagePath!,
-                            fit: BoxFit.contain,
-                            memCacheWidth: 600,
-                          )
-                        : Icon(
-                            Icons.local_offer,
-                            size: 80,
-                            color: context.colors.onSurfaceVariant.withValues(
-                              alpha: 0.5,
-                            ),
-                          ),
-                  ),
+                  if (tag.imagePath != null)
+                    Container(
+                      height: 200,
+                      width: double.infinity,
+                      color: context.colors.surfaceVariant,
+                      child: StashImage(
+                        imageUrl: tag.imagePath!,
+                        fit: BoxFit.contain,
+                        memCacheWidth: 600,
+                      ),
+                    ),
                   Padding(
                     padding: const EdgeInsets.all(AppTheme.spacingMedium),
                     child: Column(

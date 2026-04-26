@@ -91,24 +91,17 @@ class StudioDetailsPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    height: 200,
-                    width: double.infinity,
-                    color: context.colors.surfaceVariant,
-                    child: studio.imagePath != null
-                        ? StashImage(
-                            imageUrl: studio.imagePath!,
-                            fit: BoxFit.contain,
-                            memCacheWidth: 600,
-                          )
-                        : Icon(
-                            Icons.business,
-                            size: 80,
-                            color: context.colors.onSurfaceVariant.withValues(
-                              alpha: 0.5,
-                            ),
-                          ),
-                  ),
+                  if (studio.imagePath != null)
+                    Container(
+                      height: 200,
+                      width: double.infinity,
+                      color: context.colors.surfaceVariant,
+                      child: StashImage(
+                        imageUrl: studio.imagePath!,
+                        fit: BoxFit.contain,
+                        memCacheWidth: 600,
+                      ),
+                    ),
                   Padding(
                     padding: const EdgeInsets.all(AppTheme.spacingMedium),
                     child: Column(

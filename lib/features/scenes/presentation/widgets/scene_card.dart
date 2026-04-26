@@ -225,6 +225,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
   @override
   Widget build(BuildContext context) {
     final apiKey = ref.watch(serverApiKeyProvider);
+    final titleFontSize = ref.watch(cardTitleFontSizeProvider);
     final duration = widget.scene.files.isNotEmpty
         ? widget.scene.files.first.duration
         : null;
@@ -249,10 +250,10 @@ class _SceneCardState extends ConsumerState<SceneCard> {
 
     if (widget.isGrid) {
       return _buildGridCard(
-          context, ref, duration, fileAspectRatio ?? 16 / 9, apiKey);
+          context, ref, duration, fileAspectRatio ?? 16 / 9, apiKey, titleFontSize);
     }
     return _buildListCard(
-        context, ref, duration, fileAspectRatio ?? 16 / 9, apiKey);
+        context, ref, duration, fileAspectRatio ?? 16 / 9, apiKey, titleFontSize);
   }
 
   /// Builds the full-width list variant of the card.
@@ -264,6 +265,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     double? duration,
     double aspectRatio,
     String apiKey,
+    double? titleFontSize,
   ) {
     final isDesktop = kIsWeb ||
         (defaultTargetPlatform != TargetPlatform.android &&
@@ -298,7 +300,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                         widget.scene.displayTitle,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                          fontSize: titleFontSize ?? 14,
                           color: context.colors.onSurface,
                         ),
                         maxLines: 2,
@@ -349,6 +351,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     double? duration,
     double aspectRatio,
     String apiKey,
+    double? titleFontSize,
   ) {
     final isDesktop = kIsWeb ||
         (defaultTargetPlatform != TargetPlatform.android &&
@@ -385,7 +388,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                         widget.scene.displayTitle,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 12,
+                          fontSize: titleFontSize ?? 12,
                           color: context.colors.onSurface,
                         ),
                         maxLines: 2,

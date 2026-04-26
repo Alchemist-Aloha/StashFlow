@@ -266,3 +266,27 @@ class MaxPerformerAvatars extends _$MaxPerformerAvatars {
     await prefs.setInt(_storageKey, value);
   }
 }
+
+@riverpod
+class CardTitleFontSize extends _$CardTitleFontSize {
+  static const _storageKey = 'card_title_font_size';
+
+  @override
+  double? build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    final value = prefs.getDouble(_storageKey);
+    return value == 0 ? null : value;
+  }
+
+  Future<void> set(double? value) async {
+    if (state == value) return;
+    state = value;
+    final prefs = ref.read(sharedPreferencesProvider);
+    if (value == null) {
+      await prefs.setDouble(_storageKey, 0);
+    } else {
+      await prefs.setDouble(_storageKey, value);
+    }
+  }
+}
+

@@ -11,6 +11,18 @@ fragment GalleryData on Gallery {
   paths {
     cover
   }
+  cover {
+    visual_files {
+      ... on ImageFile {
+        width
+        height
+      }
+      ... on VideoFile {
+        width
+        height
+      }
+    }
+  }
 }
 
 query FindGalleries($filter: FindFilterType, $gallery_filter: GalleryFilterType) {

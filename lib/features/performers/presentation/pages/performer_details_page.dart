@@ -115,24 +115,17 @@ class PerformerDetailsPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    height: 300,
-                    width: double.infinity,
-                    color: context.colors.surfaceVariant,
-                    child: performer.imagePath != null
-                        ? StashImage(
-                            imageUrl: performer.imagePath!,
-                            fit: BoxFit.contain,
-                            memCacheWidth: 600,
-                          )
-                        : Icon(
-                            Icons.person,
-                            size: 100,
-                            color: context.colors.onSurfaceVariant.withValues(
-                              alpha: 0.5,
-                            ),
-                          ),
-                  ),
+                  if (performer.imagePath != null)
+                    Container(
+                      height: 300,
+                      width: double.infinity,
+                      color: context.colors.surfaceVariant,
+                      child: StashImage(
+                        imageUrl: performer.imagePath!,
+                        fit: BoxFit.contain,
+                        memCacheWidth: 600,
+                      ),
+                    ),
                   Padding(
                     padding: const EdgeInsets.all(AppTheme.spacingMedium),
                     child: Column(

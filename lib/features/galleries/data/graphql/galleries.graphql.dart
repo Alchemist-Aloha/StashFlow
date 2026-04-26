@@ -13,6 +13,7 @@ class Fragment$GalleryData {
     this.details,
     required this.files,
     required this.paths,
+    this.cover,
     this.$__typename = 'Gallery',
   });
 
@@ -25,6 +26,7 @@ class Fragment$GalleryData {
     final l$details = json['details'];
     final l$files = json['files'];
     final l$paths = json['paths'];
+    final l$cover = json['cover'];
     final l$$__typename = json['__typename'];
     return Fragment$GalleryData(
       id: (l$id as String),
@@ -43,6 +45,11 @@ class Fragment$GalleryData {
       paths: Fragment$GalleryData$paths.fromJson(
         (l$paths as Map<String, dynamic>),
       ),
+      cover: l$cover == null
+          ? null
+          : Fragment$GalleryData$cover.fromJson(
+              (l$cover as Map<String, dynamic>),
+            ),
       $__typename: (l$$__typename as String),
     );
   }
@@ -62,6 +69,8 @@ class Fragment$GalleryData {
   final List<Fragment$GalleryData$files> files;
 
   final Fragment$GalleryData$paths paths;
+
+  final Fragment$GalleryData$cover? cover;
 
   final String $__typename;
 
@@ -83,6 +92,8 @@ class Fragment$GalleryData {
     _resultData['files'] = l$files.map((e) => e.toJson()).toList();
     final l$paths = paths;
     _resultData['paths'] = l$paths.toJson();
+    final l$cover = cover;
+    _resultData['cover'] = l$cover?.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -98,6 +109,7 @@ class Fragment$GalleryData {
     final l$details = details;
     final l$files = files;
     final l$paths = paths;
+    final l$cover = cover;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -108,6 +120,7 @@ class Fragment$GalleryData {
       l$details,
       Object.hashAll(l$files.map((v) => v)),
       l$paths,
+      l$cover,
       l$$__typename,
     ]);
   }
@@ -167,6 +180,11 @@ class Fragment$GalleryData {
     if (l$paths != lOther$paths) {
       return false;
     }
+    final l$cover = cover;
+    final lOther$cover = other.cover;
+    if (l$cover != lOther$cover) {
+      return false;
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -199,6 +217,7 @@ abstract class CopyWith$Fragment$GalleryData<TRes> {
     String? details,
     List<Fragment$GalleryData$files>? files,
     Fragment$GalleryData$paths? paths,
+    Fragment$GalleryData$cover? cover,
     String? $__typename,
   });
   TRes files(
@@ -208,6 +227,7 @@ abstract class CopyWith$Fragment$GalleryData<TRes> {
     _fn,
   );
   CopyWith$Fragment$GalleryData$paths<TRes> get paths;
+  CopyWith$Fragment$GalleryData$cover<TRes> get cover;
 }
 
 class _CopyWithImpl$Fragment$GalleryData<TRes>
@@ -229,6 +249,7 @@ class _CopyWithImpl$Fragment$GalleryData<TRes>
     Object? details = _undefined,
     Object? files = _undefined,
     Object? paths = _undefined,
+    Object? cover = _undefined,
     Object? $__typename = _undefined,
   }) => _then(
     Fragment$GalleryData(
@@ -248,6 +269,9 @@ class _CopyWithImpl$Fragment$GalleryData<TRes>
       paths: paths == _undefined || paths == null
           ? _instance.paths
           : (paths as Fragment$GalleryData$paths),
+      cover: cover == _undefined
+          ? _instance.cover
+          : (cover as Fragment$GalleryData$cover?),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
@@ -274,6 +298,16 @@ class _CopyWithImpl$Fragment$GalleryData<TRes>
       (e) => call(paths: e),
     );
   }
+
+  CopyWith$Fragment$GalleryData$cover<TRes> get cover {
+    final local$cover = _instance.cover;
+    return local$cover == null
+        ? CopyWith$Fragment$GalleryData$cover.stub(_then(_instance))
+        : CopyWith$Fragment$GalleryData$cover(
+            local$cover,
+            (e) => call(cover: e),
+          );
+  }
 }
 
 class _CopyWithStubImpl$Fragment$GalleryData<TRes>
@@ -291,6 +325,7 @@ class _CopyWithStubImpl$Fragment$GalleryData<TRes>
     String? details,
     List<Fragment$GalleryData$files>? files,
     Fragment$GalleryData$paths? paths,
+    Fragment$GalleryData$cover? cover,
     String? $__typename,
   }) => _res;
 
@@ -298,6 +333,9 @@ class _CopyWithStubImpl$Fragment$GalleryData<TRes>
 
   CopyWith$Fragment$GalleryData$paths<TRes> get paths =>
       CopyWith$Fragment$GalleryData$paths.stub(_res);
+
+  CopyWith$Fragment$GalleryData$cover<TRes> get cover =>
+      CopyWith$Fragment$GalleryData$cover.stub(_res);
 }
 
 const fragmentDefinitionGalleryData = FragmentDefinitionNode(
@@ -387,6 +425,108 @@ const fragmentDefinitionGalleryData = FragmentDefinitionNode(
               arguments: [],
               directives: [],
               selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: '__typename'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+          ],
+        ),
+      ),
+      FieldNode(
+        name: NameNode(value: 'cover'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: SelectionSetNode(
+          selections: [
+            FieldNode(
+              name: NameNode(value: 'visual_files'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: SelectionSetNode(
+                selections: [
+                  InlineFragmentNode(
+                    typeCondition: TypeConditionNode(
+                      on: NamedTypeNode(
+                        name: NameNode(value: 'ImageFile'),
+                        isNonNull: false,
+                      ),
+                    ),
+                    directives: [],
+                    selectionSet: SelectionSetNode(
+                      selections: [
+                        FieldNode(
+                          name: NameNode(value: 'width'),
+                          alias: null,
+                          arguments: [],
+                          directives: [],
+                          selectionSet: null,
+                        ),
+                        FieldNode(
+                          name: NameNode(value: 'height'),
+                          alias: null,
+                          arguments: [],
+                          directives: [],
+                          selectionSet: null,
+                        ),
+                        FieldNode(
+                          name: NameNode(value: '__typename'),
+                          alias: null,
+                          arguments: [],
+                          directives: [],
+                          selectionSet: null,
+                        ),
+                      ],
+                    ),
+                  ),
+                  InlineFragmentNode(
+                    typeCondition: TypeConditionNode(
+                      on: NamedTypeNode(
+                        name: NameNode(value: 'VideoFile'),
+                        isNonNull: false,
+                      ),
+                    ),
+                    directives: [],
+                    selectionSet: SelectionSetNode(
+                      selections: [
+                        FieldNode(
+                          name: NameNode(value: 'width'),
+                          alias: null,
+                          arguments: [],
+                          directives: [],
+                          selectionSet: null,
+                        ),
+                        FieldNode(
+                          name: NameNode(value: 'height'),
+                          alias: null,
+                          arguments: [],
+                          directives: [],
+                          selectionSet: null,
+                        ),
+                        FieldNode(
+                          name: NameNode(value: '__typename'),
+                          alias: null,
+                          arguments: [],
+                          directives: [],
+                          selectionSet: null,
+                        ),
+                      ],
+                    ),
+                  ),
+                  FieldNode(
+                    name: NameNode(value: '__typename'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                ],
+              ),
             ),
             FieldNode(
               name: NameNode(value: '__typename'),
@@ -661,6 +801,621 @@ class _CopyWithStubImpl$Fragment$GalleryData$paths<TRes>
   TRes _res;
 
   call({String? cover, String? $__typename}) => _res;
+}
+
+class Fragment$GalleryData$cover {
+  Fragment$GalleryData$cover({
+    required this.visual_files,
+    this.$__typename = 'Image',
+  });
+
+  factory Fragment$GalleryData$cover.fromJson(Map<String, dynamic> json) {
+    final l$visual_files = json['visual_files'];
+    final l$$__typename = json['__typename'];
+    return Fragment$GalleryData$cover(
+      visual_files: (l$visual_files as List<dynamic>)
+          .map(
+            (e) => Fragment$GalleryData$cover$visual_files.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final List<Fragment$GalleryData$cover$visual_files> visual_files;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$visual_files = visual_files;
+    _resultData['visual_files'] = l$visual_files
+        .map((e) => e.toJson())
+        .toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$visual_files = visual_files;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      Object.hashAll(l$visual_files.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$GalleryData$cover ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$visual_files = visual_files;
+    final lOther$visual_files = other.visual_files;
+    if (l$visual_files.length != lOther$visual_files.length) {
+      return false;
+    }
+    for (int i = 0; i < l$visual_files.length; i++) {
+      final l$visual_files$entry = l$visual_files[i];
+      final lOther$visual_files$entry = lOther$visual_files[i];
+      if (l$visual_files$entry != lOther$visual_files$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$GalleryData$cover
+    on Fragment$GalleryData$cover {
+  CopyWith$Fragment$GalleryData$cover<Fragment$GalleryData$cover>
+  get copyWith => CopyWith$Fragment$GalleryData$cover(this, (i) => i);
+}
+
+abstract class CopyWith$Fragment$GalleryData$cover<TRes> {
+  factory CopyWith$Fragment$GalleryData$cover(
+    Fragment$GalleryData$cover instance,
+    TRes Function(Fragment$GalleryData$cover) then,
+  ) = _CopyWithImpl$Fragment$GalleryData$cover;
+
+  factory CopyWith$Fragment$GalleryData$cover.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$GalleryData$cover;
+
+  TRes call({
+    List<Fragment$GalleryData$cover$visual_files>? visual_files,
+    String? $__typename,
+  });
+  TRes visual_files(
+    Iterable<Fragment$GalleryData$cover$visual_files> Function(
+      Iterable<
+        CopyWith$Fragment$GalleryData$cover$visual_files<
+          Fragment$GalleryData$cover$visual_files
+        >
+      >,
+    )
+    _fn,
+  );
+}
+
+class _CopyWithImpl$Fragment$GalleryData$cover<TRes>
+    implements CopyWith$Fragment$GalleryData$cover<TRes> {
+  _CopyWithImpl$Fragment$GalleryData$cover(this._instance, this._then);
+
+  final Fragment$GalleryData$cover _instance;
+
+  final TRes Function(Fragment$GalleryData$cover) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? visual_files = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Fragment$GalleryData$cover(
+      visual_files: visual_files == _undefined || visual_files == null
+          ? _instance.visual_files
+          : (visual_files as List<Fragment$GalleryData$cover$visual_files>),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+
+  TRes visual_files(
+    Iterable<Fragment$GalleryData$cover$visual_files> Function(
+      Iterable<
+        CopyWith$Fragment$GalleryData$cover$visual_files<
+          Fragment$GalleryData$cover$visual_files
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    visual_files: _fn(
+      _instance.visual_files.map(
+        (e) => CopyWith$Fragment$GalleryData$cover$visual_files(e, (i) => i),
+      ),
+    ).toList(),
+  );
+}
+
+class _CopyWithStubImpl$Fragment$GalleryData$cover<TRes>
+    implements CopyWith$Fragment$GalleryData$cover<TRes> {
+  _CopyWithStubImpl$Fragment$GalleryData$cover(this._res);
+
+  TRes _res;
+
+  call({
+    List<Fragment$GalleryData$cover$visual_files>? visual_files,
+    String? $__typename,
+  }) => _res;
+
+  visual_files(_fn) => _res;
+}
+
+class Fragment$GalleryData$cover$visual_files {
+  Fragment$GalleryData$cover$visual_files({required this.$__typename});
+
+  factory Fragment$GalleryData$cover$visual_files.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    switch (json["__typename"] as String) {
+      case "ImageFile":
+        return Fragment$GalleryData$cover$visual_files$$ImageFile.fromJson(
+          json,
+        );
+
+      case "VideoFile":
+        return Fragment$GalleryData$cover$visual_files$$VideoFile.fromJson(
+          json,
+        );
+
+      default:
+        final l$$__typename = json['__typename'];
+        return Fragment$GalleryData$cover$visual_files(
+          $__typename: (l$$__typename as String),
+        );
+    }
+  }
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$GalleryData$cover$visual_files ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$GalleryData$cover$visual_files
+    on Fragment$GalleryData$cover$visual_files {
+  CopyWith$Fragment$GalleryData$cover$visual_files<
+    Fragment$GalleryData$cover$visual_files
+  >
+  get copyWith =>
+      CopyWith$Fragment$GalleryData$cover$visual_files(this, (i) => i);
+
+  _T when<_T>({
+    required _T Function(Fragment$GalleryData$cover$visual_files$$ImageFile)
+    imageFile,
+    required _T Function(Fragment$GalleryData$cover$visual_files$$VideoFile)
+    videoFile,
+    required _T Function() orElse,
+  }) {
+    switch ($__typename) {
+      case "ImageFile":
+        return imageFile(
+          this as Fragment$GalleryData$cover$visual_files$$ImageFile,
+        );
+
+      case "VideoFile":
+        return videoFile(
+          this as Fragment$GalleryData$cover$visual_files$$VideoFile,
+        );
+
+      default:
+        return orElse();
+    }
+  }
+
+  _T maybeWhen<_T>({
+    _T Function(Fragment$GalleryData$cover$visual_files$$ImageFile)? imageFile,
+    _T Function(Fragment$GalleryData$cover$visual_files$$VideoFile)? videoFile,
+    required _T Function() orElse,
+  }) {
+    switch ($__typename) {
+      case "ImageFile":
+        if (imageFile != null) {
+          return imageFile(
+            this as Fragment$GalleryData$cover$visual_files$$ImageFile,
+          );
+        } else {
+          return orElse();
+        }
+
+      case "VideoFile":
+        if (videoFile != null) {
+          return videoFile(
+            this as Fragment$GalleryData$cover$visual_files$$VideoFile,
+          );
+        } else {
+          return orElse();
+        }
+
+      default:
+        return orElse();
+    }
+  }
+}
+
+abstract class CopyWith$Fragment$GalleryData$cover$visual_files<TRes> {
+  factory CopyWith$Fragment$GalleryData$cover$visual_files(
+    Fragment$GalleryData$cover$visual_files instance,
+    TRes Function(Fragment$GalleryData$cover$visual_files) then,
+  ) = _CopyWithImpl$Fragment$GalleryData$cover$visual_files;
+
+  factory CopyWith$Fragment$GalleryData$cover$visual_files.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$GalleryData$cover$visual_files;
+
+  TRes call({String? $__typename});
+}
+
+class _CopyWithImpl$Fragment$GalleryData$cover$visual_files<TRes>
+    implements CopyWith$Fragment$GalleryData$cover$visual_files<TRes> {
+  _CopyWithImpl$Fragment$GalleryData$cover$visual_files(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$GalleryData$cover$visual_files _instance;
+
+  final TRes Function(Fragment$GalleryData$cover$visual_files) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? $__typename = _undefined}) => _then(
+    Fragment$GalleryData$cover$visual_files(
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Fragment$GalleryData$cover$visual_files<TRes>
+    implements CopyWith$Fragment$GalleryData$cover$visual_files<TRes> {
+  _CopyWithStubImpl$Fragment$GalleryData$cover$visual_files(this._res);
+
+  TRes _res;
+
+  call({String? $__typename}) => _res;
+}
+
+class Fragment$GalleryData$cover$visual_files$$ImageFile
+    implements Fragment$GalleryData$cover$visual_files {
+  Fragment$GalleryData$cover$visual_files$$ImageFile({
+    required this.width,
+    required this.height,
+    this.$__typename = 'ImageFile',
+  });
+
+  factory Fragment$GalleryData$cover$visual_files$$ImageFile.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$width = json['width'];
+    final l$height = json['height'];
+    final l$$__typename = json['__typename'];
+    return Fragment$GalleryData$cover$visual_files$$ImageFile(
+      width: (l$width as int),
+      height: (l$height as int),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final int width;
+
+  final int height;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$width = width;
+    _resultData['width'] = l$width;
+    final l$height = height;
+    _resultData['height'] = l$height;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$width = width;
+    final l$height = height;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$width, l$height, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$GalleryData$cover$visual_files$$ImageFile ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$width = width;
+    final lOther$width = other.width;
+    if (l$width != lOther$width) {
+      return false;
+    }
+    final l$height = height;
+    final lOther$height = other.height;
+    if (l$height != lOther$height) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$GalleryData$cover$visual_files$$ImageFile
+    on Fragment$GalleryData$cover$visual_files$$ImageFile {
+  CopyWith$Fragment$GalleryData$cover$visual_files$$ImageFile<
+    Fragment$GalleryData$cover$visual_files$$ImageFile
+  >
+  get copyWith => CopyWith$Fragment$GalleryData$cover$visual_files$$ImageFile(
+    this,
+    (i) => i,
+  );
+}
+
+abstract class CopyWith$Fragment$GalleryData$cover$visual_files$$ImageFile<
+  TRes
+> {
+  factory CopyWith$Fragment$GalleryData$cover$visual_files$$ImageFile(
+    Fragment$GalleryData$cover$visual_files$$ImageFile instance,
+    TRes Function(Fragment$GalleryData$cover$visual_files$$ImageFile) then,
+  ) = _CopyWithImpl$Fragment$GalleryData$cover$visual_files$$ImageFile;
+
+  factory CopyWith$Fragment$GalleryData$cover$visual_files$$ImageFile.stub(
+    TRes res,
+  ) = _CopyWithStubImpl$Fragment$GalleryData$cover$visual_files$$ImageFile;
+
+  TRes call({int? width, int? height, String? $__typename});
+}
+
+class _CopyWithImpl$Fragment$GalleryData$cover$visual_files$$ImageFile<TRes>
+    implements
+        CopyWith$Fragment$GalleryData$cover$visual_files$$ImageFile<TRes> {
+  _CopyWithImpl$Fragment$GalleryData$cover$visual_files$$ImageFile(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$GalleryData$cover$visual_files$$ImageFile _instance;
+
+  final TRes Function(Fragment$GalleryData$cover$visual_files$$ImageFile) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? width = _undefined,
+    Object? height = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Fragment$GalleryData$cover$visual_files$$ImageFile(
+      width: width == _undefined || width == null
+          ? _instance.width
+          : (width as int),
+      height: height == _undefined || height == null
+          ? _instance.height
+          : (height as int),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Fragment$GalleryData$cover$visual_files$$ImageFile<TRes>
+    implements
+        CopyWith$Fragment$GalleryData$cover$visual_files$$ImageFile<TRes> {
+  _CopyWithStubImpl$Fragment$GalleryData$cover$visual_files$$ImageFile(
+    this._res,
+  );
+
+  TRes _res;
+
+  call({int? width, int? height, String? $__typename}) => _res;
+}
+
+class Fragment$GalleryData$cover$visual_files$$VideoFile
+    implements Fragment$GalleryData$cover$visual_files {
+  Fragment$GalleryData$cover$visual_files$$VideoFile({
+    required this.width,
+    required this.height,
+    this.$__typename = 'VideoFile',
+  });
+
+  factory Fragment$GalleryData$cover$visual_files$$VideoFile.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$width = json['width'];
+    final l$height = json['height'];
+    final l$$__typename = json['__typename'];
+    return Fragment$GalleryData$cover$visual_files$$VideoFile(
+      width: (l$width as int),
+      height: (l$height as int),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final int width;
+
+  final int height;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$width = width;
+    _resultData['width'] = l$width;
+    final l$height = height;
+    _resultData['height'] = l$height;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$width = width;
+    final l$height = height;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$width, l$height, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$GalleryData$cover$visual_files$$VideoFile ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$width = width;
+    final lOther$width = other.width;
+    if (l$width != lOther$width) {
+      return false;
+    }
+    final l$height = height;
+    final lOther$height = other.height;
+    if (l$height != lOther$height) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$GalleryData$cover$visual_files$$VideoFile
+    on Fragment$GalleryData$cover$visual_files$$VideoFile {
+  CopyWith$Fragment$GalleryData$cover$visual_files$$VideoFile<
+    Fragment$GalleryData$cover$visual_files$$VideoFile
+  >
+  get copyWith => CopyWith$Fragment$GalleryData$cover$visual_files$$VideoFile(
+    this,
+    (i) => i,
+  );
+}
+
+abstract class CopyWith$Fragment$GalleryData$cover$visual_files$$VideoFile<
+  TRes
+> {
+  factory CopyWith$Fragment$GalleryData$cover$visual_files$$VideoFile(
+    Fragment$GalleryData$cover$visual_files$$VideoFile instance,
+    TRes Function(Fragment$GalleryData$cover$visual_files$$VideoFile) then,
+  ) = _CopyWithImpl$Fragment$GalleryData$cover$visual_files$$VideoFile;
+
+  factory CopyWith$Fragment$GalleryData$cover$visual_files$$VideoFile.stub(
+    TRes res,
+  ) = _CopyWithStubImpl$Fragment$GalleryData$cover$visual_files$$VideoFile;
+
+  TRes call({int? width, int? height, String? $__typename});
+}
+
+class _CopyWithImpl$Fragment$GalleryData$cover$visual_files$$VideoFile<TRes>
+    implements
+        CopyWith$Fragment$GalleryData$cover$visual_files$$VideoFile<TRes> {
+  _CopyWithImpl$Fragment$GalleryData$cover$visual_files$$VideoFile(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$GalleryData$cover$visual_files$$VideoFile _instance;
+
+  final TRes Function(Fragment$GalleryData$cover$visual_files$$VideoFile) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? width = _undefined,
+    Object? height = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Fragment$GalleryData$cover$visual_files$$VideoFile(
+      width: width == _undefined || width == null
+          ? _instance.width
+          : (width as int),
+      height: height == _undefined || height == null
+          ? _instance.height
+          : (height as int),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Fragment$GalleryData$cover$visual_files$$VideoFile<TRes>
+    implements
+        CopyWith$Fragment$GalleryData$cover$visual_files$$VideoFile<TRes> {
+  _CopyWithStubImpl$Fragment$GalleryData$cover$visual_files$$VideoFile(
+    this._res,
+  );
+
+  TRes _res;
+
+  call({int? width, int? height, String? $__typename}) => _res;
 }
 
 class Variables$Query$FindGalleries {
