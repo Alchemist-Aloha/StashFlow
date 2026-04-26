@@ -12,6 +12,7 @@ import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
+import '../../../../core/utils/vtt_service.dart';
 
 /// A card widget that displays a summary of a [Scene].
 ///
@@ -59,17 +60,85 @@ class _SceneCardState extends ConsumerState<SceneCard> {
   bool _isScrubbing = false;
   double _scrubTime = 0;
   bool _isVttValid = true;
+  _SpriteAvailability _spriteAvailability = _SpriteAvailability.unknown;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshSpriteAvailability();
+  }
 
   @override
   void didUpdateWidget(SceneCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     // Reset scrubbing state when the scene changes to prevent state leakage
     // during list item reuse (scrolling).
-    if (oldWidget.scene.id != widget.scene.id) {
+    if (oldWidget.scene.id != widget.scene.id ||
+        oldWidget.scene.paths.vtt != widget.scene.paths.vtt ||
+        oldWidget.scene.paths.sprite != widget.scene.paths.sprite) {
       _isScrubbing = false;
       _scrubTime = 0;
       _isVttValid = true;
+      _spriteAvailability = _SpriteAvailability.unknown;
+      _refreshSpriteAvailability();
     }
+  }
+
+  bool _isPlaceholderSpritePath(String rawUrl) {
+    final trimmed = rawUrl.trim();
+    if (trimmed.isEmpty) return true;
+
+    final uri = Uri.tryParse(trimmed);
+    final path = uri?.path ?? trimmed;
+    final fileName = path.split('/').last;
+    return fileName.startsWith('_sprite.');
+  }
+
+  Future<void> _refreshSpriteAvailability() async {
+    final rawVttUrl = widget.scene.paths.vtt?.trim() ?? '';
+    final rawSpriteUrl = widget.scene.paths.sprite?.trim() ?? '';
+    final totalDuration = widget.scene.files.isNotEmpty
+        ? (widget.scene.files.first.duration ?? 0.0)
+        : 0.0;
+
+    if (rawVttUrl.isEmpty ||
+        rawSpriteUrl.isEmpty ||
+        totalDuration <= 0 ||
+        _isPlaceholderSpritePath(rawSpriteUrl)) {
+      if (mounted) {
+        setState(() {
+          _spriteAvailability = _SpriteAvailability.invalid;
+        });
+      }
+      return;
+    }
+
+    if (mounted) {
+      setState(() {
+        _spriteAvailability = _SpriteAvailability.unknown;
+      });
+    }
+
+    final sceneId = widget.scene.id;
+    final vttService = ref.read(vttServiceProvider);
+    final headers = ref.read(mediaHeadersProvider);
+    final sprites = await vttService.fetchSpriteInfo(rawVttUrl, headers);
+
+    if (!mounted || widget.scene.id != sceneId) return;
+
+    final hasUsableSprite = sprites != null &&
+        sprites.isNotEmpty &&
+        sprites.any(
+          (sprite) =>
+              sprite.w > 0 &&
+              sprite.h > 0 &&
+              !_isPlaceholderSpritePath(sprite.url),
+        );
+
+    setState(() {
+      _spriteAvailability =
+          hasUsableSprite ? _SpriteAvailability.valid : _SpriteAvailability.invalid;
+    });
   }
 
   /// Displays a custom scene info sheet for navigation actions.
@@ -113,12 +182,12 @@ class _SceneCardState extends ConsumerState<SceneCard> {
         : 0.0;
 
     final rawVttUrl = widget.scene.paths.vtt ?? '';
-    final rawSpriteUrl = widget.scene.paths.sprite ?? '';
-    final hasVtt = rawVttUrl.isNotEmpty && rawSpriteUrl.isNotEmpty && totalDuration > 0 && _isVttValid;
-    final vttUrl = hasVtt ? appendApiKey(rawVttUrl, apiKey) : '';
+    final hasValidSprite =
+        _spriteAvailability == _SpriteAvailability.valid && _isVttValid;
+    final vttUrl = hasValidSprite ? appendApiKey(rawVttUrl, apiKey) : '';
 
     // Safety guard: if VTT is not available, ensure scrubbing is disabled.
-    if (!hasVtt && _isScrubbing) {
+    if (!hasValidSprite && _isScrubbing) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && _isScrubbing) {
           setState(() => _isScrubbing = false);
@@ -138,7 +207,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
           height: double.infinity,
           fit: BoxFit.cover,
         ),
-        if (_isScrubbing && hasVtt)
+        if (_isScrubbing && hasValidSprite)
           Positioned.fill(
             child: ScrubbingPreview(
               vttUrl: vttUrl,
@@ -150,6 +219,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                 if (mounted) {
                   setState(() {
                     _isVttValid = false;
+                    _spriteAvailability = _SpriteAvailability.invalid;
                     _isScrubbing = false;
                   });
                 }
@@ -173,7 +243,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
       ],
     );
 
-    if (isDesktop && hasVtt) {
+    if (isDesktop && hasValidSprite) {
       content = MouseRegion(
         onEnter: (_) => setState(() => _isScrubbing = true),
         onExit: (_) => setState(() => _isScrubbing = false),
@@ -192,14 +262,14 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     return Hero(
       tag: 'scene_player_${widget.scene.id}',
       child: GestureDetector(
-        onPanStart: hasVtt
+        onHorizontalDragStart: hasValidSprite
             ? (_) {
                 setState(() {
                   _isScrubbing = true;
                 });
               }
             : null,
-        onPanUpdate: hasVtt
+        onHorizontalDragUpdate: hasValidSprite
             ? (details) {
                 if (_isScrubbing) {
                   final box = context.findRenderObject() as RenderBox;
@@ -211,14 +281,14 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                 }
               }
             : null,
-        onPanEnd: hasVtt
+        onHorizontalDragEnd: hasValidSprite
             ? (_) {
                 setState(() {
                   _isScrubbing = false;
                 });
               }
             : null,
-        onPanCancel: hasVtt
+        onHorizontalDragCancel: hasValidSprite
             ? () {
                 setState(() {
                   _isScrubbing = false;
@@ -441,6 +511,12 @@ class _SceneCardState extends ConsumerState<SceneCard> {
       ),
     );
   }
+}
+
+enum _SpriteAvailability {
+  unknown,
+  valid,
+  invalid,
 }
 
 class _ThumbnailMetadataOverlay extends StatelessWidget {
