@@ -13,6 +13,7 @@ class ScrubbingPreview extends ConsumerStatefulWidget {
     this.headers,
     this.width = 160,
     this.height = 90,
+    this.onVttUnavailable,
     super.key,
   });
 
@@ -21,6 +22,7 @@ class ScrubbingPreview extends ConsumerStatefulWidget {
   final Map<String, String>? headers;
   final double width;
   final double height;
+  final VoidCallback? onVttUnavailable;
 
   @override
   ConsumerState<ScrubbingPreview> createState() => _ScrubbingPreviewState();
@@ -56,11 +58,18 @@ class _ScrubbingPreviewState extends ConsumerState<ScrubbingPreview> {
     return FutureBuilder<List<SpriteInfo>?>(
       future: _spriteInfoFuture,
       builder: (context, snapshot) {
-        if (!snapshot.hasData || snapshot.data == null) {
+        if (!snapshot.hasData) {
           return const SizedBox.shrink();
         }
 
         final sprites = snapshot.data!;
+        if (sprites.isEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            widget.onVttUnavailable?.call();
+          });
+          return const SizedBox.shrink();
+        }
+
         SpriteInfo? activeSprite;
 
         // Find the sprite for the current time

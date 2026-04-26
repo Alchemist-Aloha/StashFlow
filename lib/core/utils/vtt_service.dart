@@ -40,11 +40,15 @@ class VttService {
         headers: headers,
       );
       if (response.statusCode != 200) {
-        AppLogStore.instance.add(
-          'Failed to fetch VTT: ${response.statusCode}',
-          source: 'VttService',
-        );
-        return null;
+        if (response.statusCode != 404) {
+          AppLogStore.instance.add(
+            'Failed to fetch VTT: ${response.statusCode}',
+            source: 'VttService',
+          );
+        }
+        // Cache the failure so we don't spam 404s
+        _cache[effectiveUrl] = [];
+        return [];
       }
 
       final spriteInfoList = _parseVtt(response.body, effectiveUrl);

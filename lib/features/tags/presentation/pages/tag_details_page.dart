@@ -73,7 +73,9 @@ class TagDetailsPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (tag.imagePath != null && tag.imagePath!.isNotEmpty)
+                  if (tag.imagePath != null &&
+                      tag.imagePath!.isNotEmpty &&
+                      !tag.imagePath!.contains('default=true'))
                     Container(
                       height: 200,
                       width: double.infinity,

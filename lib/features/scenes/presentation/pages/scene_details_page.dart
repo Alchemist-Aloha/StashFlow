@@ -713,7 +713,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 : null;
             final hasImage =
                 performerImagePath != null &&
-                performerImagePath.trim().isNotEmpty;
+                performerImagePath.trim().isNotEmpty &&
+                !performerImagePath.contains('default=true');
 
             return ListTile(
               contentPadding: EdgeInsets.zero,

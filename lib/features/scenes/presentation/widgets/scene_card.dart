@@ -58,6 +58,7 @@ class SceneCard extends ConsumerStatefulWidget {
 class _SceneCardState extends ConsumerState<SceneCard> {
   bool _isScrubbing = false;
   double _scrubTime = 0;
+  bool _isVttValid = true;
 
   @override
   void didUpdateWidget(SceneCard oldWidget) {
@@ -67,6 +68,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     if (oldWidget.scene.id != widget.scene.id) {
       _isScrubbing = false;
       _scrubTime = 0;
+      _isVttValid = true;
     }
   }
 
@@ -112,7 +114,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
 
     final rawVttUrl = widget.scene.paths.vtt ?? '';
     final rawSpriteUrl = widget.scene.paths.sprite ?? '';
-    final hasVtt = rawVttUrl.isNotEmpty && rawSpriteUrl.isNotEmpty && totalDuration > 0;
+    final hasVtt = rawVttUrl.isNotEmpty && rawSpriteUrl.isNotEmpty && totalDuration > 0 && _isVttValid;
     final vttUrl = hasVtt ? appendApiKey(rawVttUrl, apiKey) : '';
 
     // Safety guard: if VTT is not available, ensure scrubbing is disabled.
@@ -144,6 +146,14 @@ class _SceneCardState extends ConsumerState<SceneCard> {
               headers: headers,
               width: double.infinity,
               height: double.infinity,
+              onVttUnavailable: () {
+                if (mounted) {
+                  setState(() {
+                    _isVttValid = false;
+                    _isScrubbing = false;
+                  });
+                }
+              },
             ),
           ),
         Positioned(
@@ -519,14 +529,18 @@ class _PerformerAvatarRow extends ConsumerWidget {
                 radius: 8,
                 backgroundColor:
                     Theme.of(context).colorScheme.surfaceContainerHighest,
-                child: ClipOval(
-                  child: StashImage(
-                    imageUrl: performerImagePaths[i],
-                    width: 16,
-                    height: 16,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                child: performerImagePaths[i] != null &&
+                        performerImagePaths[i]!.isNotEmpty &&
+                        !performerImagePaths[i]!.contains('default=true')
+                    ? ClipOval(
+                        child: StashImage(
+                          imageUrl: performerImagePaths[i],
+                          width: 16,
+                          height: 16,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : const Icon(Icons.person, size: 10),
               ),
             ),
           ),

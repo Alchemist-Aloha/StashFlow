@@ -59,7 +59,8 @@ class SceneInfoPage extends ConsumerWidget {
                       : null;
                   final hasImage =
                       performerImagePath != null &&
-                      performerImagePath.trim().isNotEmpty;
+                      performerImagePath.trim().isNotEmpty &&
+                      !performerImagePath.contains('default=true');
 
                   return ListTile(
                     contentPadding: EdgeInsets.zero,
