@@ -8,6 +8,8 @@ import '../auth/auth_mode.dart';
 import '../auth/auth_provider.dart';
 import 'http_client_factory.dart';
 import '../preferences/shared_preferences_provider.dart';
+import '../preferences/secure_storage_provider.dart';
+import '../../../features/setup/presentation/providers/server_profiles_provider.dart';
 import '../../utils/environment.dart' as env;
 
 part 'graphql_client.g.dart';
@@ -49,6 +51,11 @@ class ServerUrl extends _$ServerUrl {
   @override
   String build() {
     ref.watch(sharedPreferencesTriggerProvider);
+    final profile = ref.watch(activeProfileProvider);
+    if (profile != null) {
+      return normalizeGraphqlServerUrl(profile.baseUrl);
+    }
+    
     final prefs = ref.watch(sharedPreferencesProvider);
     final storedServerUrl = prefs.getString('server_base_url')?.trim() ?? '';
     return normalizeGraphqlServerUrl(storedServerUrl);
@@ -56,16 +63,9 @@ class ServerUrl extends _$ServerUrl {
 }
 
 @riverpod
-class InitialServerApiKey extends _$InitialServerApiKey {
-  @override
-  String build() => '';
-}
-
-@riverpod
-class ServerApiKeyInternal extends _$ServerApiKeyInternal {
-  @override
-  String build() => ref.watch(initialServerApiKeyProvider);
-  void update(String value) => state = value;
+Future<String> profileApiKey(Ref ref, String profileId) async {
+  final secureStorage = ref.read(secureStorageProvider);
+  return await secureStorage.read(key: 'profile_${profileId}_api_key') ?? '';
 }
 
 @riverpod
@@ -73,7 +73,10 @@ class ServerApiKey extends _$ServerApiKey {
   @override
   String build() {
     ref.watch(sharedPreferencesTriggerProvider);
-    return ref.watch(serverApiKeyInternalProvider);
+    final profile = ref.watch(activeProfileProvider);
+    if (profile == null) return '';
+    
+    return ref.watch(profileApiKeyProvider(profile.id)).value ?? '';
   }
 }
 
