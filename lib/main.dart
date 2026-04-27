@@ -7,7 +7,6 @@ import 'package:stash_app_flutter/core/presentation/providers/app_language_provi
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fvp/fvp.dart' as fvp;
 import 'features/navigation/presentation/router.dart';
-import 'core/data/graphql/graphql_client.dart';
 import 'core/data/preferences/secure_storage_provider.dart';
 import 'core/data/preferences/shared_preferences_provider.dart';
 import 'core/utils/app_log_store.dart';
@@ -89,8 +88,6 @@ Future<void> main() async {
     await sharedPreferences.remove('server_api_key');
   }
 
-  final initialApiKey = await secureStorage.read(key: 'server_api_key') ?? '';
-
   final oldDebugPrint = debugPrint;
   debugPrint = (String? message, {int? wrapWidth}) {
     if (message != null) {
@@ -117,7 +114,6 @@ Future<void> main() async {
       overrides: [
         sharedPreferencesProvider.overrideWithValue(sharedPreferences),
         secureStorageProvider.overrideWithValue(secureStorage),
-        initialServerApiKeyProvider.overrideWithValue(initialApiKey),
       ],
       child: const MyApp(),
     ),

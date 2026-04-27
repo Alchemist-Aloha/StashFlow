@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
@@ -9,6 +7,7 @@ import '../auth/auth_provider.dart';
 import 'http_client_factory.dart';
 import '../preferences/shared_preferences_provider.dart';
 import '../preferences/secure_storage_provider.dart';
+import '../../../features/setup/domain/models/server_profile.dart';
 import '../../../features/setup/presentation/providers/server_profiles_provider.dart';
 import '../../utils/environment.dart' as env;
 
@@ -109,7 +108,7 @@ GraphQLClient profileGraphqlClient(Ref ref, ServerProfile profile) {
   final username = ref.watch(profileUsernameProvider(profile.id)).value ?? '';
   final password = ref.watch(profilePasswordProvider(profile.id)).value ?? '';
 
-  final authState = AuthState(
+  final authState = const AuthState.initial().copyWith(
     mode: profile.authMode,
     username: username,
     password: password,
