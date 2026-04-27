@@ -1162,10 +1162,10 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get settings_server_url_helper =>
-      'Esempio formato: http(s)://host:port/graphql.';
+      'Esempio formato: http(s)://host:port.';
 
   @override
-  String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
+  String get settings_server_url_example => 'http://192.168.1.100:9999';
 
   @override
   String get settings_server_login_failed => 'Accesso non riuscito';

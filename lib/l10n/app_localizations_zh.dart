@@ -1112,7 +1112,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_server_url_helper => '示例格式：http(s)://host:port/graphql。';
 
   @override
-  String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
+  String get settings_server_url_example => 'http://192.168.1.100:9999';
 
   @override
   String get settings_server_login_failed => '登录失败';
@@ -2749,7 +2749,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_server_url_helper => '示例格式：http(s)://host:port/graphql。';
 
   @override
-  String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
+  String get settings_server_url_example => 'http://192.168.1.100:9999';
 
   @override
   String get settings_server_login_failed => '登录失败';
@@ -4359,7 +4359,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_server_url_helper => '範例格式：http(s)://主機:連接埠/graphql。';
 
   @override
-  String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
+  String get settings_server_url_example => 'http://192.168.1.100:9999';
 
   @override
   String get settings_server_login_failed => '登入失敗';

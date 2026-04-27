@@ -531,7 +531,7 @@
       }
     }
   },
-  "settings_server_url_example": "http://192.168.1.100:9999/graphql",
+  "settings_server_url_example": "http://192.168.1.100:9999",
   "settings_server_login_failed": "登录失败",
   "tags_search_placeholder": "搜索标签...",
   "scenes_duration_short": "< 5分钟",

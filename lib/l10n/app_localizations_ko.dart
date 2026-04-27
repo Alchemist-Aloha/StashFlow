@@ -1119,11 +1119,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_server_url => 'GraphQL 서버 URL';
 
   @override
-  String get settings_server_url_helper =>
-      '예시 형식: http(s)://host:port/graphql.';
+  String get settings_server_url_helper => '예시 형식: http(s)://host:port.';
 
   @override
-  String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
+  String get settings_server_url_example => 'http://192.168.1.100:9999';
 
   @override
   String get settings_server_login_failed => '로그인 실패';

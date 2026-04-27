@@ -1159,10 +1159,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settings_server_url_helper =>
-      'Exemple de format : http(s)://hôte:port/graphql.';
+      'Exemple de format : http(s)://hôte:port.';
 
   @override
-  String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
+  String get settings_server_url_example => 'http://192.168.1.100:9999';
 
   @override
   String get settings_server_login_failed => 'Échec de la connexion';

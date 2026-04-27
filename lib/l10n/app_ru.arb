@@ -381,7 +381,7 @@
   "settings_server_details": "Детали сервера",
   "settings_server_details_subtitle": "Настройте адрес и метод аутентификации",
   "settings_server_url": "URL GraphQL-сервера",
-  "settings_server_url_helper": "Пример формата: http(s)://host:port/graphql.",
+  "settings_server_url_helper": "Пример формата: http(s)://host:port.",
   "settings_server_auth_method": "Метод аутентификации",
   "settings_server_auth_apikey": "API-ключ",
   "settings_server_auth_password": "Имя пользователя + Пароль",
@@ -531,7 +531,7 @@
       }
     }
   },
-  "settings_server_url_example": "http://192.168.1.100:9999/graphql",
+  "settings_server_url_example": "http://192.168.1.100:9999",
   "settings_server_login_failed": "Ошибка входа",
   "tags_search_placeholder": "Поиск тегов...",
   "scenes_duration_short": "< 5 мин.",

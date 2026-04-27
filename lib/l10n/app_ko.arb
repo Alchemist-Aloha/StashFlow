@@ -338,7 +338,7 @@
   "settings_server_details": "서버 상세 정보",
   "settings_server_details_subtitle": "엔드포인트 및 인증 방식 설정",
   "settings_server_url": "GraphQL 서버 URL",
-  "settings_server_url_helper": "예시 형식: http(s)://host:port/graphql.",
+  "settings_server_url_helper": "예시 형식: http(s)://host:port.",
   "settings_server_auth_method": "인증 방식",
   "settings_server_auth_apikey": "API 키",
   "settings_server_auth_password": "사용자 이름 + 비밀번호",
@@ -531,7 +531,7 @@
       }
     }
   },
-  "settings_server_url_example": "http://192.168.1.100:9999/graphql",
+  "settings_server_url_example": "http://192.168.1.100:9999",
   "settings_server_login_failed": "로그인 실패",
   "tags_search_placeholder": "태그 검색...",
   "scenes_duration_short": "< 5분",

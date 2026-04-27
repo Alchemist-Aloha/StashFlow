@@ -1125,7 +1125,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_server_url_helper => '例: http(s)://host:port/graphql';
 
   @override
-  String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
+  String get settings_server_url_example => 'http://192.168.1.100:9999';
 
   @override
   String get settings_server_login_failed => 'ログインに失敗しました';

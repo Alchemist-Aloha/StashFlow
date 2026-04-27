@@ -2223,13 +2223,13 @@ abstract class AppLocalizations {
   /// No description provided for @settings_server_url_helper.
   ///
   /// In en, this message translates to:
-  /// **'Example format: http(s)://host:port/graphql.'**
+  /// **'Example format: http(s)://host:port.'**
   String get settings_server_url_helper;
 
   /// No description provided for @settings_server_url_example.
   ///
   /// In en, this message translates to:
-  /// **'http://192.168.1.100:9999/graphql'**
+  /// **'http://192.168.1.100:9999'**
   String get settings_server_url_example;
 
   /// No description provided for @settings_server_login_failed.
