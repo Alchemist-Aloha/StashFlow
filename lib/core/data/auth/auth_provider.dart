@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../features/setup/domain/models/server_profile.dart';
+import '../../../features/setup/presentation/providers/server_profiles_provider.dart';
 import '../preferences/secure_storage_provider.dart';
 import '../preferences/shared_preferences_provider.dart';
 import 'auth_mode.dart';
@@ -66,38 +68,47 @@ final authProvider = NotifierProvider<AuthProvider, AuthState>(
 );
 
 class AuthProvider extends Notifier<AuthState> {
-  static const _authModePrefKey = 'auth_mode';
-  static const _usernameKey = 'server_username';
-  static const _passwordKey = 'server_password';
-  static const _cookieHeaderKey = 'server_cookie_header';
+  String _getAuthModeKey(String profileId) => 'profile_${profileId}_auth_mode';
+  String _getUsernameKey(String profileId) => 'profile_${profileId}_username';
+  String _getPasswordKey(String profileId) => 'profile_${profileId}_password';
+  String _getCookieHeaderKey(String profileId) =>
+      'profile_${profileId}_cookie_header';
 
   @override
   AuthState build() {
-    _hydrate();
+    final profile = ref.watch(activeProfileProvider);
+    _hydrateForProfile(profile);
     return const AuthState.initial();
   }
 
-  Future<void> _hydrate() async {
+  Future<void> _hydrateForProfile(ServerProfile? profile) async {
+    if (profile == null) {
+      state = const AuthState.initial().copyWith(hydrated: true);
+      return;
+    }
+
     final prefs = ref.read(sharedPreferencesProvider);
     final secureStorage = ref.read(secureStorageProvider);
 
-    final modeRaw = prefs.getString(_authModePrefKey);
+    final modeRaw = prefs.getString(_getAuthModeKey(profile.id));
     final mode = AuthMode.values.firstWhere(
       (e) => e.name == modeRaw,
-      orElse: () => AuthMode.apiKey,
+      orElse: () => profile.authMode,
     );
 
-    final username = await secureStorage.read(key: _usernameKey) ?? '';
-    final password = await secureStorage.read(key: _passwordKey) ?? '';
+    final username =
+        await secureStorage.read(key: _getUsernameKey(profile.id)) ?? '';
+    final password =
+        await secureStorage.read(key: _getPasswordKey(profile.id)) ?? '';
     final storedCookieHeader =
-        await secureStorage.read(key: _cookieHeaderKey) ?? '';
+        await secureStorage.read(key: _getCookieHeaderKey(profile.id)) ?? '';
 
     String cookieHeader = storedCookieHeader;
     AuthLoginStatus loginStatus = AuthLoginStatus.loggedOut;
 
     if (mode == AuthMode.password) {
       if (cookieHeader.isEmpty) {
-        cookieHeader = await _refreshCookieHeader();
+        cookieHeader = await _refreshCookieHeaderForProfile(profile);
       }
       loginStatus = cookieHeader.isNotEmpty
           ? AuthLoginStatus.loggedIn
@@ -118,8 +129,11 @@ class AuthProvider extends Notifier<AuthState> {
   }
 
   Future<void> setMode(AuthMode mode) async {
+    final profile = ref.read(activeProfileProvider);
+    if (profile == null) return;
+
     final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setString(_authModePrefKey, mode.name);
+    await prefs.setString(_getAuthModeKey(profile.id), mode.name);
 
     AuthLoginStatus loginStatus = state.loginStatus;
     if (mode == AuthMode.apiKey) {
@@ -136,36 +150,45 @@ class AuthProvider extends Notifier<AuthState> {
   }
 
   Future<void> updateUsername(String username) async {
+    final profile = ref.read(activeProfileProvider);
+    if (profile == null) return;
+
     final secureStorage = ref.read(secureStorageProvider);
     final trimmed = username.trim();
 
     if (trimmed.isEmpty) {
-      await secureStorage.delete(key: _usernameKey);
+      await secureStorage.delete(key: _getUsernameKey(profile.id));
     } else {
-      await secureStorage.write(key: _usernameKey, value: trimmed);
+      await secureStorage.write(key: _getUsernameKey(profile.id), value: trimmed);
     }
 
     state = state.copyWith(username: trimmed, clearError: true);
   }
 
   Future<void> updatePassword(String password) async {
+    final profile = ref.read(activeProfileProvider);
+    if (profile == null) return;
+
     final secureStorage = ref.read(secureStorageProvider);
 
     if (password.isEmpty) {
-      await secureStorage.delete(key: _passwordKey);
+      await secureStorage.delete(key: _getPasswordKey(profile.id));
     } else {
-      await secureStorage.write(key: _passwordKey, value: password);
+      await secureStorage.write(key: _getPasswordKey(profile.id), value: password);
     }
 
     state = state.copyWith(password: password, clearError: true);
   }
 
   Future<bool> login() async {
+    final profile = ref.read(activeProfileProvider);
+    if (profile == null) return false;
+
     if (state.mode != AuthMode.password) {
       return false;
     }
 
-    final endpoint = _readServerUrl();
+    final endpoint = profile.baseUrl.trim();
     if (endpoint.isEmpty) {
       state = state.copyWith(
         loginStatus: AuthLoginStatus.error,
@@ -209,9 +232,10 @@ class AuthProvider extends Notifier<AuthState> {
       );
       final secureStorage = ref.read(secureStorageProvider);
       if (cookieHeader.isEmpty) {
-        await secureStorage.delete(key: _cookieHeaderKey);
+        await secureStorage.delete(key: _getCookieHeaderKey(profile.id));
       } else {
-        await secureStorage.write(key: _cookieHeaderKey, value: cookieHeader);
+        await secureStorage.write(
+            key: _getCookieHeaderKey(profile.id), value: cookieHeader);
       }
 
       state = state.copyWith(
@@ -233,7 +257,10 @@ class AuthProvider extends Notifier<AuthState> {
   }
 
   Future<void> logout() async {
-    final endpoint = _readServerUrl();
+    final profile = ref.read(activeProfileProvider);
+    if (profile == null) return;
+
+    final endpoint = profile.baseUrl.trim();
     final secureStorage = ref.read(secureStorageProvider);
 
     if (endpoint.isNotEmpty) {
@@ -245,7 +272,7 @@ class AuthProvider extends Notifier<AuthState> {
       }
     }
 
-    await secureStorage.delete(key: _cookieHeaderKey);
+    await secureStorage.delete(key: _getCookieHeaderKey(profile.id));
     state = state.copyWith(
       cookieHeader: '',
       loginStatus: AuthLoginStatus.loggedOut,
@@ -254,13 +281,17 @@ class AuthProvider extends Notifier<AuthState> {
   }
 
   Future<String> refreshCookieHeader() async {
-    final cookieHeader = await _refreshCookieHeader();
+    final profile = ref.read(activeProfileProvider);
+    if (profile == null) return '';
+
+    final cookieHeader = await _refreshCookieHeaderForProfile(profile);
     final secureStorage = ref.read(secureStorageProvider);
 
     if (cookieHeader.isEmpty) {
-      await secureStorage.delete(key: _cookieHeaderKey);
+      await secureStorage.delete(key: _getCookieHeaderKey(profile.id));
     } else {
-      await secureStorage.write(key: _cookieHeaderKey, value: cookieHeader);
+      await secureStorage.write(
+          key: _getCookieHeaderKey(profile.id), value: cookieHeader);
     }
 
     state = state.copyWith(
@@ -274,8 +305,8 @@ class AuthProvider extends Notifier<AuthState> {
     return cookieHeader;
   }
 
-  Future<String> _refreshCookieHeader() async {
-    final endpoint = _readServerUrl();
+  Future<String> _refreshCookieHeaderForProfile(ServerProfile profile) async {
+    final endpoint = profile.baseUrl.trim();
     if (endpoint.isEmpty) {
       return '';
     }
@@ -286,10 +317,5 @@ class AuthProvider extends Notifier<AuthState> {
     } catch (_) {
       return '';
     }
-  }
-
-  String _readServerUrl() {
-    final prefs = ref.read(sharedPreferencesProvider);
-    return prefs.getString('server_base_url')?.trim() ?? '';
   }
 }

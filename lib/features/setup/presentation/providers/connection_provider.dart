@@ -2,16 +2,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:graphql/client.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../data/graphql/version.graphql.dart';
+import '../../domain/models/server_profile.dart';
 
-final connectionStatusProvider = FutureProvider.autoDispose<String>((
+final connectionStatusProvider = FutureProvider.family.autoDispose<String, ServerProfile>((
   ref,
+  profile,
 ) async {
-  final url = ref.watch(serverUrlProvider);
-  if (url.isEmpty) {
+  if (profile.baseUrl.isEmpty) {
     return 'Not Configured';
   }
 
-  final client = ref.watch(graphqlClientProvider);
+  final client = ref.watch(profileGraphqlClientProvider(profile));
 
   try {
     final result = await client.query$GetVersion(

@@ -13,6 +13,8 @@ import 'package:stash_app_flutter/core/data/auth/auth_provider.dart';
 import 'package:stash_app_flutter/core/data/auth/auth_service.dart';
 import 'package:stash_app_flutter/core/data/preferences/secure_storage_provider.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
+import 'package:stash_app_flutter/features/setup/domain/models/server_profile.dart';
+import 'package:stash_app_flutter/features/setup/presentation/providers/server_profiles_provider.dart';
 
 class FakeSecureStorage extends FlutterSecureStorage {
   FakeSecureStorage([Map<String, String>? seed]) : _values = {...?seed};
@@ -65,24 +67,32 @@ class FakeSecureStorage extends FlutterSecureStorage {
 }
 
 void main() {
+  const profileId = 'test_profile';
+  final testProfile = ServerProfile(
+    id: profileId,
+    name: 'Test Profile',
+    baseUrl: 'http://localhost:9999/graphql',
+    authMode: AuthMode.password,
+  );
+
   group('AuthProvider', () {
     test('hydrates mode and credentials from storage', () async {
       SharedPreferences.setMockInitialValues({
-        'server_base_url': 'http://localhost:9999/graphql',
-        'auth_mode': 'password',
+        'profile_${profileId}_auth_mode': 'password',
       });
       final prefs = await SharedPreferences.getInstance();
 
       final secureStorage = FakeSecureStorage({
-        'server_username': 'alice',
-        'server_password': 'secret',
-        'server_cookie_header': 'session=restored',
+        'profile_${profileId}_username': 'alice',
+        'profile_${profileId}_password': 'secret',
+        'profile_${profileId}_cookie_header': 'session=restored',
       });
 
       final container = ProviderContainer(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
           secureStorageProvider.overrideWithValue(secureStorage),
+          activeProfileProvider.overrideWithValue(testProfile),
         ],
       );
       addTearDown(container.dispose);
@@ -101,14 +111,13 @@ void main() {
 
     test('login stores cookie header and updates status', () async {
       SharedPreferences.setMockInitialValues({
-        'server_base_url': 'http://localhost:9999/graphql',
-        'auth_mode': 'password',
+        'profile_${profileId}_auth_mode': 'password',
       });
       final prefs = await SharedPreferences.getInstance();
 
       final secureStorage = FakeSecureStorage({
-        'server_username': 'alice',
-        'server_password': 'secret',
+        'profile_${profileId}_username': 'alice',
+        'profile_${profileId}_password': 'secret',
       });
 
       final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
@@ -138,7 +147,7 @@ void main() {
       });
 
       final endpoint = 'http://${server.address.host}:${server.port}/graphql';
-      await prefs.setString('server_base_url', endpoint);
+      final profileWithDynamicUrl = testProfile.copyWith(baseUrl: endpoint);
 
       final cookieJar = CookieJar();
       final dio = Dio()
@@ -152,6 +161,7 @@ void main() {
           sharedPreferencesProvider.overrideWithValue(prefs),
           secureStorageProvider.overrideWithValue(secureStorage),
           authServiceProvider.overrideWith((ref) async => authService),
+          activeProfileProvider.overrideWithValue(profileWithDynamicUrl),
         ],
       );
 
@@ -173,25 +183,26 @@ void main() {
       final state = container.read(authProvider);
       expect(state.loginStatus, AuthLoginStatus.loggedIn);
       expect(state.cookieHeader, contains('session=provider-cookie'));
-      expect(await secureStorage.read(key: 'server_cookie_header'), isNotEmpty);
+      expect(await secureStorage.read(key: 'profile_${profileId}_cookie_header'),
+          isNotEmpty);
     });
 
     test('hydrates basic mode and sets loggedIn status', () async {
       SharedPreferences.setMockInitialValues({
-        'server_base_url': 'http://localhost:9999/graphql',
-        'auth_mode': 'basic',
+        'profile_${profileId}_auth_mode': 'basic',
       });
       final prefs = await SharedPreferences.getInstance();
 
       final secureStorage = FakeSecureStorage({
-        'server_username': 'alice',
-        'server_password': 'secret',
+        'profile_${profileId}_username': 'alice',
+        'profile_${profileId}_password': 'secret',
       });
 
       final container = ProviderContainer(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
           secureStorageProvider.overrideWithValue(secureStorage),
+          activeProfileProvider.overrideWithValue(testProfile),
         ],
       );
       addTearDown(container.dispose);
@@ -209,19 +220,19 @@ void main() {
 
     test('hydrates bearer mode and sets loggedIn status', () async {
       SharedPreferences.setMockInitialValues({
-        'server_base_url': 'http://localhost:9999/graphql',
-        'auth_mode': 'bearer',
+        'profile_${profileId}_auth_mode': 'bearer',
       });
       final prefs = await SharedPreferences.getInstance();
 
       final secureStorage = FakeSecureStorage({
-        'server_api_key': 'some-token',
+        'profile_${profileId}_api_key': 'some-token',
       });
 
       final container = ProviderContainer(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
           secureStorageProvider.overrideWithValue(secureStorage),
+          activeProfileProvider.overrideWithValue(testProfile),
         ],
       );
       addTearDown(container.dispose);
