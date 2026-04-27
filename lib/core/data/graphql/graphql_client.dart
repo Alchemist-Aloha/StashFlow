@@ -111,11 +111,19 @@ Future<GraphQLClient> profileGraphqlClient(Ref ref, ServerProfile profile) async
     throw Exception('Invalid profile URL');
   }
 
-  final apiKey = await ref.watch(profileApiKeyProvider(profile.id).future);
-  final username = await ref.watch(profileUsernameProvider(profile.id).future);
-  final password = await ref.watch(profilePasswordProvider(profile.id).future);
-  final cookieHeader =
-      await ref.watch(profileCookieHeaderProvider(profile.id).future);
+  // Fetch all credentials and cookies in parallel.
+  // This reduces the number of sequential awaits that might check 'ref' state.
+  final results = await Future.wait([
+    ref.watch(profileApiKeyProvider(profile.id).future),
+    ref.watch(profileUsernameProvider(profile.id).future),
+    ref.watch(profilePasswordProvider(profile.id).future),
+    ref.watch(profileCookieHeaderProvider(profile.id).future),
+  ]);
+
+  final apiKey = results[0];
+  final username = results[1];
+  final password = results[2];
+  final cookieHeader = results[3];
 
   final authState = const AuthState.initial().copyWith(
     mode: profile.authMode,

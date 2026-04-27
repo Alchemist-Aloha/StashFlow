@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import '../../../../core/data/auth/auth_mode.dart';
 import '../../../../core/data/auth/auth_provider.dart';
-import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/secure_storage_provider.dart';
 import '../../domain/models/server_profile.dart';
 import '../providers/connection_provider.dart';
@@ -121,13 +120,9 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
         password: password,
       );
 
-      // Invalidate providers to ensure they pick up the new credentials/cookies
-      ref.invalidate(profileApiKeyProvider('test'));
-      ref.invalidate(profileUsernameProvider('test'));
-      ref.invalidate(profilePasswordProvider('test'));
-      ref.invalidate(profileCookieHeaderProvider('test'));
-      ref.invalidate(profileGraphqlClientProvider(tempProfile));
-
+      // We only need to refresh the top-level status provider.
+      // Riverpod will handle the invalidation chain for profileGraphqlClient
+      // and its credential dependencies.
       final result = await ref.refresh(connectionStatusProvider(tempProfile).future);
       setState(() {
         _testResult = result;
