@@ -77,9 +77,40 @@ class ServerProfiles extends _$ServerProfiles {
     await saveProfiles(newList);
   }
 
+  Future<void> updateProfileCredentials({
+    required String profileId,
+    String? apiKey,
+    String? username,
+    String? password,
+  }) async {
+    final secureStorage = ref.read(secureStorageProvider);
+    if (apiKey != null) {
+      await secureStorage.write(key: 'profile_${profileId}_api_key', value: apiKey);
+    }
+    if (username != null) {
+      await secureStorage.write(key: 'profile_${profileId}_username', value: username);
+    }
+    if (password != null) {
+      await secureStorage.write(key: 'profile_${profileId}_password', value: password);
+    }
+  }
+
   Future<void> removeProfile(String id) async {
     final newList = state.where((e) => e.id != id).toList();
     await saveProfiles(newList);
+    
+    // Cleanup secure storage
+    final secureStorage = ref.read(secureStorageProvider);
+    await secureStorage.delete(key: 'profile_${id}_api_key');
+    await secureStorage.delete(key: 'profile_${id}_username');
+    await secureStorage.delete(key: 'profile_${id}_password');
+    await secureStorage.delete(key: 'profile_${id}_cookie_header');
+    
+    // If active profile was removed, reset active profile id
+    final activeId = ref.read(activeServerProfileIdProvider);
+    if (activeId == id) {
+      await ref.read(activeServerProfileIdProvider.notifier).set(newList.isNotEmpty ? newList.first.id : '');
+    }
   }
 }
 

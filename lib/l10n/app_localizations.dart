@@ -2340,6 +2340,60 @@ abstract class AppLocalizations {
   /// **'Logged out and cookies cleared.'**
   String get settings_server_logout_confirm;
 
+  /// No description provided for @settings_server_profile_add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Profile'**
+  String get settings_server_profile_add;
+
+  /// No description provided for @settings_server_profile_edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get settings_server_profile_edit;
+
+  /// No description provided for @settings_server_profile_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile Name'**
+  String get settings_server_profile_name;
+
+  /// No description provided for @settings_server_profile_delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Profile'**
+  String get settings_server_profile_delete;
+
+  /// No description provided for @settings_server_profile_delete_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this profile? This action cannot be undone.'**
+  String get settings_server_profile_delete_confirm;
+
+  /// No description provided for @settings_server_profile_active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get settings_server_profile_active;
+
+  /// No description provided for @settings_server_profile_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No server profiles configured'**
+  String get settings_server_profile_empty;
+
+  /// No description provided for @settings_server_profiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Server Profiles'**
+  String get settings_server_profiles;
+
+  /// No description provided for @settings_server_profiles_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage multiple Stash server connections'**
+  String get settings_server_profiles_subtitle;
+
   /// No description provided for @settings_server_auth_status_logging_in.
   ///
   /// In en, this message translates to:

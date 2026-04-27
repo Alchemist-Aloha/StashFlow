@@ -87,6 +87,51 @@ final proxyAuthModesEnabledProvider = Provider<bool>((ref) {
 });
 
 @riverpod
+Future<String> profileUsername(Ref ref, String profileId) async {
+  final secureStorage = ref.read(secureStorageProvider);
+  return await secureStorage.read(key: 'profile_${profileId}_username') ?? '';
+}
+
+@riverpod
+Future<String> profilePassword(Ref ref, String profileId) async {
+  final secureStorage = ref.read(secureStorageProvider);
+  return await secureStorage.read(key: 'profile_${profileId}_password') ?? '';
+}
+
+@riverpod
+GraphQLClient profileGraphqlClient(Ref ref, ServerProfile profile) {
+  final url = normalizeGraphqlServerUrl(profile.baseUrl);
+  if (url.isEmpty) {
+    throw Exception('Invalid profile URL');
+  }
+
+  final apiKey = ref.watch(profileApiKeyProvider(profile.id)).value ?? '';
+  final username = ref.watch(profileUsernameProvider(profile.id)).value ?? '';
+  final password = ref.watch(profilePasswordProvider(profile.id)).value ?? '';
+
+  final authState = AuthState(
+    mode: profile.authMode,
+    username: username,
+    password: password,
+  );
+
+  final headers = getAuthHeaders(authState: authState, apiKey: apiKey);
+  final isPasswordMode = profile.authMode == AuthMode.password;
+  final httpClient = createGraphqlHttpClient(withCredentials: isPasswordMode);
+
+  final HttpLink httpLink = HttpLink(
+    url,
+    defaultHeaders: headers,
+    httpClient: httpClient,
+  );
+
+  return GraphQLClient(
+    link: httpLink,
+    cache: GraphQLCache(), // Always use fresh cache for non-active profile checks
+  );
+}
+
+@riverpod
 class GraphqlClient extends _$GraphqlClient {
   @override
   GraphQLClient build() {

@@ -1,1 +1,121 @@
-{}
+{
+  "de": [
+    "settings_server_profile_add",
+    "settings_server_profile_edit",
+    "settings_server_profile_name",
+    "settings_server_profile_delete",
+    "settings_server_profile_delete_confirm",
+    "settings_server_profile_active",
+    "settings_server_profile_empty",
+    "settings_server_profiles",
+    "settings_server_profiles_subtitle"
+  ],
+
+  "es": [
+    "settings_server_profile_add",
+    "settings_server_profile_edit",
+    "settings_server_profile_name",
+    "settings_server_profile_delete",
+    "settings_server_profile_delete_confirm",
+    "settings_server_profile_active",
+    "settings_server_profile_empty",
+    "settings_server_profiles",
+    "settings_server_profiles_subtitle"
+  ],
+
+  "fr": [
+    "settings_server_profile_add",
+    "settings_server_profile_edit",
+    "settings_server_profile_name",
+    "settings_server_profile_delete",
+    "settings_server_profile_delete_confirm",
+    "settings_server_profile_active",
+    "settings_server_profile_empty",
+    "settings_server_profiles",
+    "settings_server_profiles_subtitle"
+  ],
+
+  "it": [
+    "settings_server_profile_add",
+    "settings_server_profile_edit",
+    "settings_server_profile_name",
+    "settings_server_profile_delete",
+    "settings_server_profile_delete_confirm",
+    "settings_server_profile_active",
+    "settings_server_profile_empty",
+    "settings_server_profiles",
+    "settings_server_profiles_subtitle"
+  ],
+
+  "ja": [
+    "settings_server_profile_add",
+    "settings_server_profile_edit",
+    "settings_server_profile_name",
+    "settings_server_profile_delete",
+    "settings_server_profile_delete_confirm",
+    "settings_server_profile_active",
+    "settings_server_profile_empty",
+    "settings_server_profiles",
+    "settings_server_profiles_subtitle"
+  ],
+
+  "ko": [
+    "settings_server_profile_add",
+    "settings_server_profile_edit",
+    "settings_server_profile_name",
+    "settings_server_profile_delete",
+    "settings_server_profile_delete_confirm",
+    "settings_server_profile_active",
+    "settings_server_profile_empty",
+    "settings_server_profiles",
+    "settings_server_profiles_subtitle"
+  ],
+
+  "ru": [
+    "settings_server_profile_add",
+    "settings_server_profile_edit",
+    "settings_server_profile_name",
+    "settings_server_profile_delete",
+    "settings_server_profile_delete_confirm",
+    "settings_server_profile_active",
+    "settings_server_profile_empty",
+    "settings_server_profiles",
+    "settings_server_profiles_subtitle"
+  ],
+
+  "zh": [
+    "settings_server_profile_add",
+    "settings_server_profile_edit",
+    "settings_server_profile_name",
+    "settings_server_profile_delete",
+    "settings_server_profile_delete_confirm",
+    "settings_server_profile_active",
+    "settings_server_profile_empty",
+    "settings_server_profiles",
+    "settings_server_profiles_subtitle"
+  ],
+
+  "zh_Hans": [
+    "settings_server_profile_add",
+    "settings_server_profile_edit",
+    "settings_server_profile_name",
+    "settings_server_profile_delete",
+    "settings_server_profile_delete_confirm",
+    "settings_server_profile_active",
+    "settings_server_profile_empty",
+    "settings_server_profiles",
+    "settings_server_profiles_subtitle"
+  ],
+
+  "zh_Hant": [
+    "settings_server_profile_add",
+    "settings_server_profile_edit",
+    "settings_server_profile_name",
+    "settings_server_profile_delete",
+    "settings_server_profile_delete_confirm",
+    "settings_server_profile_active",
+    "settings_server_profile_empty",
+    "settings_server_profiles",
+    "settings_server_profiles_subtitle"
+  ]
+}

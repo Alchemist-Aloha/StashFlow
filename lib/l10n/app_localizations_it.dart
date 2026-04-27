@@ -1230,6 +1230,35 @@ class AppLocalizationsIt extends AppLocalizations {
       'Disconnessione effettuata e cookie cancellati.';
 
   @override
+  String get settings_server_profile_add => 'Add Profile';
+
+  @override
+  String get settings_server_profile_edit => 'Edit Profile';
+
+  @override
+  String get settings_server_profile_name => 'Profile Name';
+
+  @override
+  String get settings_server_profile_delete => 'Delete Profile';
+
+  @override
+  String get settings_server_profile_delete_confirm =>
+      'Are you sure you want to delete this profile? This action cannot be undone.';
+
+  @override
+  String get settings_server_profile_active => 'Active';
+
+  @override
+  String get settings_server_profile_empty => 'No server profiles configured';
+
+  @override
+  String get settings_server_profiles => 'Server Profiles';
+
+  @override
+  String get settings_server_profiles_subtitle =>
+      'Manage multiple Stash server connections';
+
+  @override
   String get settings_server_auth_status_logging_in =>
       'Stato autenticazione: accesso in corso...';
 
