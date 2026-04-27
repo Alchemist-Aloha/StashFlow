@@ -1062,6 +1062,18 @@ class AppLocalizationsIt extends AppLocalizations {
       'Numero massimo di avatar degli attori da mostrare nella scheda della scena su desktop.';
 
   @override
+  String get settings_interface_show_performer_avatars =>
+      'Show Performer Avatars';
+
+  @override
+  String get settings_interface_show_performer_avatars_subtitle =>
+      'Display performer icons on scene cards across all platforms.';
+
+  @override
+  String get settings_interface_performer_avatar_size =>
+      'Performer Avatar Size';
+
+  @override
   String get settings_interface_layout_default => 'Layout Predefinito';
 
   @override

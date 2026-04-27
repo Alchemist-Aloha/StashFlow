@@ -1022,6 +1022,18 @@ class AppLocalizationsZh extends AppLocalizations {
       '在桌面场景卡上显示的出演者头像的最大数量。';
 
   @override
+  String get settings_interface_show_performer_avatars =>
+      'Show Performer Avatars';
+
+  @override
+  String get settings_interface_show_performer_avatars_subtitle =>
+      'Display performer icons on scene cards across all platforms.';
+
+  @override
+  String get settings_interface_performer_avatar_size =>
+      'Performer Avatar Size';
+
+  @override
   String get settings_interface_layout_default => '默认布局';
 
   @override

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../domain/entities/scene.dart';
@@ -397,11 +398,12 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                           fontSize: 12,
                         ),
                       ),
-                      if (isDesktop && widget.scene.performerNames.isNotEmpty) ...[
+                      if (ref.watch(showPerformerAvatarsProvider) && widget.scene.performerNames.isNotEmpty) ...[
                         const SizedBox(height: 8),
                         _PerformerAvatarRow(
                           performerImagePaths: widget.scene.performerImagePaths,
                           performerNames: widget.scene.performerNames,
+                          performerIds: widget.scene.performerIds,
                         ),
                       ],
                     ],
@@ -487,11 +489,12 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      if (isDesktop && widget.scene.performerNames.isNotEmpty) ...[
+                      if (ref.watch(showPerformerAvatarsProvider) && widget.scene.performerNames.isNotEmpty) ...[
                         const SizedBox(height: 4),
                         _PerformerAvatarRow(
                           performerImagePaths: widget.scene.performerImagePaths,
                           performerNames: widget.scene.performerNames,
+                          performerIds: widget.scene.performerIds,
                         ),
                       ],
                     ],
@@ -581,14 +584,17 @@ class _PerformerAvatarRow extends ConsumerWidget {
   const _PerformerAvatarRow({
     required this.performerImagePaths,
     required this.performerNames,
+    required this.performerIds,
   });
 
   final List<String?> performerImagePaths;
   final List<String> performerNames;
+  final List<String> performerIds;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final limit = ref.watch(maxPerformerAvatarsProvider);
+    final size = ref.watch(performerAvatarSizeProvider);
     final count = performerImagePaths.length;
     final displayCount = count > limit ? limit : count;
     final overflow = count > limit ? count - limit : 0;
@@ -601,22 +607,31 @@ class _PerformerAvatarRow extends ConsumerWidget {
             padding: const EdgeInsets.only(right: 4.0),
             child: Tooltip(
               message: performerNames[i],
-              child: CircleAvatar(
-                radius: 8,
-                backgroundColor:
-                    Theme.of(context).colorScheme.surfaceContainerHighest,
-                child: performerImagePaths[i] != null &&
-                        performerImagePaths[i]!.isNotEmpty &&
-                        !performerImagePaths[i]!.contains('default=true')
-                    ? ClipOval(
-                        child: StashImage(
-                          imageUrl: performerImagePaths[i],
-                          width: 16,
-                          height: 16,
-                          fit: BoxFit.cover,
-                        ),
-                      )
-                    : const Icon(Icons.person, size: 10),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: i < performerIds.length
+                      ? () => context.push('/performer/${performerIds[i]}')
+                      : null,
+                  borderRadius: BorderRadius.circular(size / 2),
+                  child: CircleAvatar(
+                    radius: size / 2,
+                    backgroundColor:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
+                    child: performerImagePaths[i] != null &&
+                            performerImagePaths[i]!.isNotEmpty &&
+                            !performerImagePaths[i]!.contains('default=true')
+                        ? ClipOval(
+                            child: StashImage(
+                              imageUrl: performerImagePaths[i],
+                              width: size,
+                              height: size,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : Icon(Icons.person, size: size * 0.625),
+                  ),
+                ),
               ),
             ),
           ),

@@ -2037,14 +2037,32 @@ abstract class AppLocalizations {
   /// No description provided for @settings_interface_max_performer_avatars.
   ///
   /// In en, this message translates to:
-  /// **'Max Performer Avatars (Desktop)'**
+  /// **'Max Performer Avatars'**
   String get settings_interface_max_performer_avatars;
 
   /// No description provided for @settings_interface_max_performer_avatars_subtitle.
   ///
   /// In en, this message translates to:
-  /// **'Maximum number of performer avatars to show in the scene card on desktop.'**
+  /// **'Maximum number of performer avatars to show in the scene card.'**
   String get settings_interface_max_performer_avatars_subtitle;
+
+  /// No description provided for @settings_interface_show_performer_avatars.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Performer Avatars'**
+  String get settings_interface_show_performer_avatars;
+
+  /// No description provided for @settings_interface_show_performer_avatars_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Display performer icons on scene cards across all platforms.'**
+  String get settings_interface_show_performer_avatars_subtitle;
+
+  /// No description provided for @settings_interface_performer_avatar_size.
+  ///
+  /// In en, this message translates to:
+  /// **'Performer Avatar Size'**
+  String get settings_interface_performer_avatar_size;
 
   /// No description provided for @settings_interface_layout_default.
   ///

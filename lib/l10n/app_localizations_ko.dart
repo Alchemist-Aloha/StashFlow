@@ -1028,6 +1028,18 @@ class AppLocalizationsKo extends AppLocalizations {
       '데스크톱의 씬 카드에 표시할 출연자 아바타의 최대 수입니다.';
 
   @override
+  String get settings_interface_show_performer_avatars =>
+      'Show Performer Avatars';
+
+  @override
+  String get settings_interface_show_performer_avatars_subtitle =>
+      'Display performer icons on scene cards across all platforms.';
+
+  @override
+  String get settings_interface_performer_avatar_size =>
+      'Performer Avatar Size';
+
+  @override
   String get settings_interface_layout_default => '기본 레이아웃';
 
   @override

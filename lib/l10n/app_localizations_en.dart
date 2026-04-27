@@ -1037,11 +1037,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_interface_max_performer_avatars =>
-      'Max Performer Avatars (Desktop)';
+      'Max Performer Avatars';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      'Maximum number of performer avatars to show in the scene card on desktop.';
+      'Maximum number of performer avatars to show in the scene card.';
+
+  @override
+  String get settings_interface_show_performer_avatars =>
+      'Show Performer Avatars';
+
+  @override
+  String get settings_interface_show_performer_avatars_subtitle =>
+      'Display performer icons on scene cards across all platforms.';
+
+  @override
+  String get settings_interface_performer_avatar_size =>
+      'Performer Avatar Size';
 
   @override
   String get settings_interface_layout_default => 'Default Layout';

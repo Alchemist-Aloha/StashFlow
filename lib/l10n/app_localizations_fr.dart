@@ -1058,6 +1058,18 @@ class AppLocalizationsFr extends AppLocalizations {
       'Nombre maximum d\'avatars d\'acteurs à afficher sur la carte de la scène sur le bureau.';
 
   @override
+  String get settings_interface_show_performer_avatars =>
+      'Show Performer Avatars';
+
+  @override
+  String get settings_interface_show_performer_avatars_subtitle =>
+      'Display performer icons on scene cards across all platforms.';
+
+  @override
+  String get settings_interface_performer_avatar_size =>
+      'Performer Avatar Size';
+
+  @override
   String get settings_interface_layout_default => 'Disposition par défaut';
 
   @override
