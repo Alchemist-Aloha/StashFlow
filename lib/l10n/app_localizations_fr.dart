@@ -1051,23 +1051,23 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settings_interface_max_performer_avatars =>
-      'Nombre maximum d\'avatars d\'acteurs (Bureau)';
+      'Max d\'avatars d\'interprètes';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      'Nombre maximum d\'avatars d\'acteurs à afficher sur la carte de la scène sur le bureau.';
+      'Nombre maximum d\'avatars d\'interprètes à afficher dans la carte de scène.';
 
   @override
   String get settings_interface_show_performer_avatars =>
-      'Show Performer Avatars';
+      'Afficher les avatars des interprètes';
 
   @override
   String get settings_interface_show_performer_avatars_subtitle =>
-      'Display performer icons on scene cards across all platforms.';
+      'Afficher les icônes des interprètes sur les cartes de scène sur toutes les plateformes.';
 
   @override
   String get settings_interface_performer_avatar_size =>
-      'Performer Avatar Size';
+      'Taille de l\'avatar de l\'interprète';
 
   @override
   String get settings_interface_layout_default => 'Disposition par défaut';
@@ -1238,33 +1238,34 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settings_server_logout_confirm => 'Déconnecté et cookies effacés.';
 
   @override
-  String get settings_server_profile_add => 'Add Profile';
+  String get settings_server_profile_add => 'Ajouter un profil';
 
   @override
-  String get settings_server_profile_edit => 'Edit Profile';
+  String get settings_server_profile_edit => 'Modifier le profil';
 
   @override
-  String get settings_server_profile_name => 'Profile Name';
+  String get settings_server_profile_name => 'Nom du profil';
 
   @override
-  String get settings_server_profile_delete => 'Delete Profile';
+  String get settings_server_profile_delete => 'Supprimer le profil';
 
   @override
   String get settings_server_profile_delete_confirm =>
-      'Are you sure you want to delete this profile? This action cannot be undone.';
+      'Êtes-vous sûr de vouloir supprimer ce profil ? Cette action est irréversible.';
 
   @override
-  String get settings_server_profile_active => 'Active';
+  String get settings_server_profile_active => 'Actif';
 
   @override
-  String get settings_server_profile_empty => 'No server profiles configured';
+  String get settings_server_profile_empty =>
+      'Aucun profil de serveur configuré';
 
   @override
-  String get settings_server_profiles => 'Server Profiles';
+  String get settings_server_profiles => 'Profils de serveur';
 
   @override
   String get settings_server_profiles_subtitle =>
-      'Manage multiple Stash server connections';
+      'Gérer plusieurs connexions au serveur Stash';
 
   @override
   String get settings_server_auth_status_logging_in =>

@@ -1042,23 +1042,23 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settings_interface_max_performer_avatars =>
-      'Максимальное количество аватаров исполнителей (на рабочем столе)';
+      'Максимальное количество аватаров исполнителей';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      'Максимальное количество аватаров исполнителей, отображаемых в карточке сцены на рабочем столе.';
+      'Максимальное количество аватаров исполнителей, отображаемых в карточке сцены.';
 
   @override
   String get settings_interface_show_performer_avatars =>
-      'Show Performer Avatars';
+      'Показывать аватары исполнителей';
 
   @override
   String get settings_interface_show_performer_avatars_subtitle =>
-      'Display performer icons on scene cards across all platforms.';
+      'Отображать иконки исполнителей на карточках сцен на всех платформах.';
 
   @override
   String get settings_interface_performer_avatar_size =>
-      'Performer Avatar Size';
+      'Размер аватара исполнителя';
 
   @override
   String get settings_interface_layout_default => 'Макет по умолчанию';
@@ -1228,33 +1228,33 @@ class AppLocalizationsRu extends AppLocalizations {
       'Выход выполнен, файлы cookie очищены.';
 
   @override
-  String get settings_server_profile_add => 'Add Profile';
+  String get settings_server_profile_add => 'Добавить профиль';
 
   @override
-  String get settings_server_profile_edit => 'Edit Profile';
+  String get settings_server_profile_edit => 'Изменить профиль';
 
   @override
-  String get settings_server_profile_name => 'Profile Name';
+  String get settings_server_profile_name => 'Имя профиля';
 
   @override
-  String get settings_server_profile_delete => 'Delete Profile';
+  String get settings_server_profile_delete => 'Удалить профиль';
 
   @override
   String get settings_server_profile_delete_confirm =>
-      'Are you sure you want to delete this profile? This action cannot be undone.';
+      'Вы уверены, что хотите удалить этот профиль? Это действие нельзя отменить.';
 
   @override
-  String get settings_server_profile_active => 'Active';
+  String get settings_server_profile_active => 'Активен';
 
   @override
-  String get settings_server_profile_empty => 'No server profiles configured';
+  String get settings_server_profile_empty => 'Серверные профили не настроены';
 
   @override
-  String get settings_server_profiles => 'Server Profiles';
+  String get settings_server_profiles => 'Профили сервера';
 
   @override
   String get settings_server_profiles_subtitle =>
-      'Manage multiple Stash server connections';
+      'Управление несколькими подключениями к серверу Stash';
 
   @override
   String get settings_server_auth_status_logging_in =>

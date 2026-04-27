@@ -1022,24 +1022,21 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_interface_galleries_layout_subtitle => 'ギャラリーのデフォルト閲覧モード';
 
   @override
-  String get settings_interface_max_performer_avatars =>
-      'パフォーマーの最大アバター数（デスクトップ）';
+  String get settings_interface_max_performer_avatars => 'パフォーマーの最大アバター数';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      'デスクトップのシーンカードに表示するパフォーマーのアバターの最大数。';
+      'シーンカードに表示するパフォーマーのアバターの最大数。';
 
   @override
-  String get settings_interface_show_performer_avatars =>
-      'Show Performer Avatars';
+  String get settings_interface_show_performer_avatars => 'パフォーマーのアバターを表示';
 
   @override
   String get settings_interface_show_performer_avatars_subtitle =>
-      'Display performer icons on scene cards across all platforms.';
+      'すべてのプラットフォームでシーンカードにパフォーマーのアイコンを表示します。';
 
   @override
-  String get settings_interface_performer_avatar_size =>
-      'Performer Avatar Size';
+  String get settings_interface_performer_avatar_size => 'パフォーマーのアバターのサイズ';
 
   @override
   String get settings_interface_layout_default => 'デフォルトレイアウト';
@@ -1200,33 +1197,32 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_server_logout_confirm => 'ログアウトし、クッキーをクリアしました。';
 
   @override
-  String get settings_server_profile_add => 'Add Profile';
+  String get settings_server_profile_add => 'プロファイルを追加';
 
   @override
-  String get settings_server_profile_edit => 'Edit Profile';
+  String get settings_server_profile_edit => 'プロファイルを編集';
 
   @override
-  String get settings_server_profile_name => 'Profile Name';
+  String get settings_server_profile_name => 'プロファイル名';
 
   @override
-  String get settings_server_profile_delete => 'Delete Profile';
+  String get settings_server_profile_delete => 'プロファイルを削除';
 
   @override
   String get settings_server_profile_delete_confirm =>
-      'Are you sure you want to delete this profile? This action cannot be undone.';
+      'このプロファイルを削除してもよろしいですか？この操作は取り消せません。';
 
   @override
-  String get settings_server_profile_active => 'Active';
+  String get settings_server_profile_active => '有効';
 
   @override
-  String get settings_server_profile_empty => 'No server profiles configured';
+  String get settings_server_profile_empty => 'サーバープロファイルが設定されていません';
 
   @override
-  String get settings_server_profiles => 'Server Profiles';
+  String get settings_server_profiles => 'サーバープロファイル';
 
   @override
-  String get settings_server_profiles_subtitle =>
-      'Manage multiple Stash server connections';
+  String get settings_server_profiles_subtitle => '複数のStashサーバー接続を管理します';
 
   @override
   String get settings_server_auth_status_logging_in => '認証状態: ログイン中...';

@@ -1055,23 +1055,23 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get settings_interface_max_performer_avatars =>
-      'Numero massimo di avatar degli attori (Desktop)';
+      'Numero massimo di avatar degli attori';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      'Numero massimo di avatar degli attori da mostrare nella scheda della scena su desktop.';
+      'Numero massimo di avatar degli attori da mostrare nella scheda della scena.';
 
   @override
   String get settings_interface_show_performer_avatars =>
-      'Show Performer Avatars';
+      'Mostra avatar degli attori';
 
   @override
   String get settings_interface_show_performer_avatars_subtitle =>
-      'Display performer icons on scene cards across all platforms.';
+      'Visualizza le icone degli attori sulle schede delle scene su tutte le piattaforme.';
 
   @override
   String get settings_interface_performer_avatar_size =>
-      'Performer Avatar Size';
+      'Dimensioni avatar dell\'attore';
 
   @override
   String get settings_interface_layout_default => 'Layout Predefinito';
@@ -1242,33 +1242,34 @@ class AppLocalizationsIt extends AppLocalizations {
       'Disconnessione effettuata e cookie cancellati.';
 
   @override
-  String get settings_server_profile_add => 'Add Profile';
+  String get settings_server_profile_add => 'Aggiungi profilo';
 
   @override
-  String get settings_server_profile_edit => 'Edit Profile';
+  String get settings_server_profile_edit => 'Modifica profilo';
 
   @override
-  String get settings_server_profile_name => 'Profile Name';
+  String get settings_server_profile_name => 'Nome profilo';
 
   @override
-  String get settings_server_profile_delete => 'Delete Profile';
+  String get settings_server_profile_delete => 'Elimina profilo';
 
   @override
   String get settings_server_profile_delete_confirm =>
-      'Are you sure you want to delete this profile? This action cannot be undone.';
+      'Sei sicuro di voler eliminare questo profilo? Questa azione non può essere annullata.';
 
   @override
-  String get settings_server_profile_active => 'Active';
+  String get settings_server_profile_active => 'Attivo';
 
   @override
-  String get settings_server_profile_empty => 'No server profiles configured';
+  String get settings_server_profile_empty =>
+      'Nessun profilo server configurato';
 
   @override
-  String get settings_server_profiles => 'Server Profiles';
+  String get settings_server_profiles => 'Profili server';
 
   @override
   String get settings_server_profiles_subtitle =>
-      'Manage multiple Stash server connections';
+      'Gestisci connessioni multiple al server Stash';
 
   @override
   String get settings_server_auth_status_logging_in =>

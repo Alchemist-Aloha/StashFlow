@@ -1021,23 +1021,21 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_interface_galleries_layout_subtitle => '갤러리의 기본 브라우징 모드';
 
   @override
-  String get settings_interface_max_performer_avatars => '출연자 아바타 최대 수(데스크톱)';
+  String get settings_interface_max_performer_avatars => '출연자 아바타 최대 수';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      '데스크톱의 씬 카드에 표시할 출연자 아바타의 최대 수입니다.';
+      '장면 카드에 표시할 출연자 아바타의 최대 수입니다.';
 
   @override
-  String get settings_interface_show_performer_avatars =>
-      'Show Performer Avatars';
+  String get settings_interface_show_performer_avatars => '출연자 아바타 표시';
 
   @override
   String get settings_interface_show_performer_avatars_subtitle =>
-      'Display performer icons on scene cards across all platforms.';
+      '모든 플랫폼의 장면 카드에 출연자 아이콘을 표시합니다.';
 
   @override
-  String get settings_interface_performer_avatar_size =>
-      'Performer Avatar Size';
+  String get settings_interface_performer_avatar_size => '출연자 아바타 크기';
 
   @override
   String get settings_interface_layout_default => '기본 레이아웃';
@@ -1197,33 +1195,32 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_server_logout_confirm => '로그아웃되었으며 쿠키가 삭제되었습니다.';
 
   @override
-  String get settings_server_profile_add => 'Add Profile';
+  String get settings_server_profile_add => '프로필 추가';
 
   @override
-  String get settings_server_profile_edit => 'Edit Profile';
+  String get settings_server_profile_edit => '프로필 편집';
 
   @override
-  String get settings_server_profile_name => 'Profile Name';
+  String get settings_server_profile_name => '프로필 이름';
 
   @override
-  String get settings_server_profile_delete => 'Delete Profile';
+  String get settings_server_profile_delete => '프로필 삭제';
 
   @override
   String get settings_server_profile_delete_confirm =>
-      'Are you sure you want to delete this profile? This action cannot be undone.';
+      '이 프로필을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.';
 
   @override
-  String get settings_server_profile_active => 'Active';
+  String get settings_server_profile_active => '활성';
 
   @override
-  String get settings_server_profile_empty => 'No server profiles configured';
+  String get settings_server_profile_empty => '구성된 서버 프로필이 없습니다';
 
   @override
-  String get settings_server_profiles => 'Server Profiles';
+  String get settings_server_profiles => '서버 프로필';
 
   @override
-  String get settings_server_profiles_subtitle =>
-      'Manage multiple Stash server connections';
+  String get settings_server_profiles_subtitle => '여러 Stash 서버 연결 관리';
 
   @override
   String get settings_server_auth_status_logging_in => '인증 상태: 로그인 중...';
