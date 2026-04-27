@@ -65,6 +65,7 @@ class AuthService {
     }
 
     final loginUri = _resolveEndpoint(graphqlEndpoint, 'login');
+    debugPrint('AuthService: Attempting login to $loginUri for user: $trimmedUsername');
     Response response;
     try {
       response = await _dio.postUri(
@@ -80,7 +81,12 @@ class AuthService {
           extra: kIsWeb ? <String, dynamic>{'withCredentials': true} : null,
         ),
       );
-    } on DioException catch (_) {
+      debugPrint('AuthService: Login response status: ${response.statusCode}');
+    } on DioException catch (e) {
+      debugPrint('AuthService: Login failed with DioException: ${e.message}');
+      if (e.response != null) {
+        debugPrint('AuthService: Error response body: ${e.response?.data}');
+      }
       return false;
     }
 

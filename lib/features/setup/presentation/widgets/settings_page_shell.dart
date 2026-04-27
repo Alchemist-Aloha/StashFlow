@@ -11,11 +11,13 @@ class SettingsPageShell extends ConsumerWidget {
     required this.title,
     required this.child,
     this.maxContentWidth = 920,
+    this.floatingActionButton,
   });
 
   final String title;
   final Widget child;
   final double maxContentWidth;
+  final Widget? floatingActionButton;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,6 +39,7 @@ class SettingsPageShell extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(title), leading: leading),
+      floatingActionButton: floatingActionButton,
       body: SafeArea(
         child: Align(
           alignment: Alignment.topCenter,

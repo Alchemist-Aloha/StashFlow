@@ -37,6 +37,7 @@ class SceneInfoPage extends ConsumerWidget {
                 ),
                 IconButton(
                   icon: const Icon(Icons.close),
+                  tooltip: context.l10n.common_close,
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ],
@@ -72,8 +73,8 @@ class SceneInfoPage extends ConsumerWidget {
                       : null;
                   final performerImagePath =
                       index < scene.performerImagePaths.length
-                          ? scene.performerImagePaths[index]
-                          : null;
+                      ? scene.performerImagePaths[index]
+                      : null;
                   final hasImage =
                       performerImagePath != null &&
                       performerImagePath.trim().isNotEmpty &&

@@ -1112,7 +1112,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_server_url_helper => '示例格式：http(s)://host:port/graphql。';
 
   @override
-  String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
+  String get settings_server_url_example => 'http://192.168.1.100:9999';
 
   @override
   String get settings_server_login_failed => '登录失败';
@@ -1171,6 +1171,35 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settings_server_logout_confirm => '已退出登录并清除 Cookie。';
+
+  @override
+  String get settings_server_profile_add => 'Add Profile';
+
+  @override
+  String get settings_server_profile_edit => 'Edit Profile';
+
+  @override
+  String get settings_server_profile_name => 'Profile Name';
+
+  @override
+  String get settings_server_profile_delete => 'Delete Profile';
+
+  @override
+  String get settings_server_profile_delete_confirm =>
+      'Are you sure you want to delete this profile? This action cannot be undone.';
+
+  @override
+  String get settings_server_profile_active => 'Active';
+
+  @override
+  String get settings_server_profile_empty => 'No server profiles configured';
+
+  @override
+  String get settings_server_profiles => 'Server Profiles';
+
+  @override
+  String get settings_server_profiles_subtitle =>
+      'Manage multiple Stash server connections';
 
   @override
   String get settings_server_auth_status_logging_in => '身份验证状态：正在登录...';
@@ -2720,7 +2749,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_server_url_helper => '示例格式：http(s)://host:port/graphql。';
 
   @override
-  String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
+  String get settings_server_url_example => 'http://192.168.1.100:9999';
 
   @override
   String get settings_server_login_failed => '登录失败';
@@ -4330,7 +4359,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_server_url_helper => '範例格式：http(s)://主機:連接埠/graphql。';
 
   @override
-  String get settings_server_url_example => 'http://192.168.1.100:9999/graphql';
+  String get settings_server_url_example => 'http://192.168.1.100:9999';
 
   @override
   String get settings_server_login_failed => '登入失敗';
