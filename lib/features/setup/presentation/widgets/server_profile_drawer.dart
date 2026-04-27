@@ -28,6 +28,9 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
   bool _allowWebPasswordLogin = false;
   bool _isTesting = false;
   String? _testResult;
+  bool _obscureApiKey = true;
+  bool _obscurePassword = true;
+  bool _showAdvancedAuth = false;
 
   @override
   void initState() {
@@ -39,6 +42,8 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
     _passwordController = TextEditingController();
     _authMode = widget.profile?.authMode ?? AuthMode.apiKey;
     _allowWebPasswordLogin = widget.profile?.allowWebPasswordLogin ?? false;
+
+    _showAdvancedAuth = _authMode == AuthMode.basic || _authMode == AuthMode.bearer;
 
     if (widget.profile != null) {
       _loadCredentials();
@@ -321,21 +326,33 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
   }
 
   Widget _buildAuthModeSelector(AppLocalizations l10n) {
+    final visibleModes = AuthMode.values.where((mode) {
+      if (_showAdvancedAuth) return true;
+      return mode == AuthMode.apiKey || mode == AuthMode.password;
+    }).toList();
+
     return Column(
-      children: AuthMode.values.map((mode) {
-        return RadioListTile<AuthMode>(
-          title: Text(_getAuthModeLabel(mode, l10n)),
-          subtitle: Text(_getAuthModeDescription(mode, l10n)),
-          value: mode,
-          groupValue: _authMode,
-          onChanged: (value) {
-            if (value != null) {
-              setState(() => _authMode = value);
-            }
-          },
-          contentPadding: EdgeInsets.zero,
-        );
-      }).toList(),
+      children: [
+        ...visibleModes.map((mode) {
+          return RadioListTile<AuthMode>(
+            title: Text(_getAuthModeLabel(mode, l10n)),
+            subtitle: Text(_getAuthModeDescription(mode, l10n)),
+            value: mode,
+            groupValue: _authMode,
+            onChanged: (value) {
+              if (value != null) {
+                setState(() => _authMode = value);
+              }
+            },
+            contentPadding: EdgeInsets.zero,
+          );
+        }),
+        if (!_showAdvancedAuth)
+          TextButton(
+            onPressed: () => setState(() => _showAdvancedAuth = true),
+            child: Text(l10n.details_show_more),
+          ),
+      ],
     );
   }
 
@@ -372,8 +389,12 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
         decoration: InputDecoration(
           labelText: _authMode == AuthMode.apiKey ? l10n.settings_server_auth_apikey : 'Token',
           border: const OutlineInputBorder(),
+          suffixIcon: IconButton(
+            icon: Icon(_obscureApiKey ? Icons.visibility : Icons.visibility_off),
+            onPressed: () => setState(() => _obscureApiKey = !_obscureApiKey),
+          ),
         ),
-        obscureText: true,
+        obscureText: _obscureApiKey,
       );
     } else {
       return Column(
@@ -391,8 +412,12 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
             decoration: InputDecoration(
               labelText: l10n.settings_server_password,
               border: const OutlineInputBorder(),
+              suffixIcon: IconButton(
+                icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
+                onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+              ),
             ),
-            obscureText: true,
+            obscureText: _obscurePassword,
           ),
         ],
       );
