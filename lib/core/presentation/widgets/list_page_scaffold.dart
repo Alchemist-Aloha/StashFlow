@@ -13,6 +13,7 @@ import '../../utils/pagination.dart';
 import 'stash_image.dart';
 import '../../data/graphql/media_headers_provider.dart';
 import '../../data/preferences/search_history_provider.dart';
+import '../../../features/scenes/presentation/widgets/scene_card_skeleton.dart';
 import 'grid_utils.dart';
 import 'stats_floating_panel.dart';
 
@@ -836,7 +837,25 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                     child: body,
                   );
                 },
-                loading: () => const Center(child: CircularProgressIndicator()),
+                loading: () {
+                  final isGrid = widget.gridDelegate != null;
+                  final responsiveDelegate = isGrid ? _getResponsiveGridDelegate(context) : null;
+                  final fixedDelegate = responsiveDelegate is SliverGridDelegateWithFixedCrossAxisCount ? responsiveDelegate : null;
+
+                  if (isGrid) {
+                    return GridView.builder(
+                      padding: widget.padding,
+                      gridDelegate: responsiveDelegate!,
+                      itemCount: 8,
+                      itemBuilder: (context, index) => const SceneCardSkeleton(isGrid: true),
+                    );
+                  }
+                  return ListView.builder(
+                    padding: widget.padding,
+                    itemCount: 5,
+                    itemBuilder: (context, index) => const SceneCardSkeleton(isGrid: false),
+                  );
+                },
                 error: (err, stack) => ErrorStateView(
                   message: context.l10n.common_error(err.toString()),
                   onRetry: widget.onRefresh,
