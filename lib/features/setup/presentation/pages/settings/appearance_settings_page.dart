@@ -123,17 +123,26 @@ class _AppearanceSettingsPageState
                             segments: [
                               ButtonSegment<ThemeMode>(
                                 value: ThemeMode.system,
-                                icon: const Icon(Icons.brightness_auto_outlined),
+                                icon: Icon(
+                                  Icons.brightness_auto_outlined,
+                                  size: 24 * context.dimensions.fontSizeFactor,
+                                ),
                                 label: Text(l10n.settings_appearance_theme_system),
                               ),
                               ButtonSegment<ThemeMode>(
                                 value: ThemeMode.light,
-                                icon: const Icon(Icons.light_mode_outlined),
+                                icon: Icon(
+                                  Icons.light_mode_outlined,
+                                  size: 24 * context.dimensions.fontSizeFactor,
+                                ),
                                 label: Text(l10n.settings_appearance_theme_light),
                               ),
                               ButtonSegment<ThemeMode>(
                                 value: ThemeMode.dark,
-                                icon: const Icon(Icons.dark_mode_outlined),
+                                icon: Icon(
+                                  Icons.dark_mode_outlined,
+                                  size: 24 * context.dimensions.fontSizeFactor,
+                                ),
                                 label: Text(l10n.settings_appearance_theme_dark),
                               ),
                             ],
@@ -295,10 +304,10 @@ class _AppearanceSettingsPageState
             _customHexFocusNode.requestFocus();
           }
         },
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20 * context.dimensions.fontSizeFactor),
         child: Container(
-          width: 40,
-          height: 40,
+          width: 40 * context.dimensions.fontSizeFactor,
+          height: 40 * context.dimensions.fontSizeFactor,
           decoration: BoxDecoration(
             color: displayColor,
             shape: BoxShape.circle,
@@ -314,7 +323,7 @@ class _AppearanceSettingsPageState
           child: color == null && !isSelected
               ? Icon(
                   Icons.palette_outlined,
-                  size: 20,
+                  size: 20 * context.dimensions.fontSizeFactor,
                   color: displayColor.computeLuminance() > 0.5
                       ? Colors.black
                       : Colors.white,
@@ -322,7 +331,7 @@ class _AppearanceSettingsPageState
               : isSelected
               ? Icon(
                   Icons.check,
-                  size: 20,
+                  size: 20 * context.dimensions.fontSizeFactor,
                   color: displayColor.computeLuminance() > 0.5
                       ? Colors.black
                       : Colors.white,
