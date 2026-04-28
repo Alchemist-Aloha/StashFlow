@@ -997,13 +997,6 @@ class AppLocalizationsKo extends AppLocalizations {
       '목록 및 상세 페이지에서 부동 카지노 버튼 활성화 또는 비활성화';
 
   @override
-  String get settings_interface_shake_random => '흔들어서 발견하기';
-
-  @override
-  String get settings_interface_shake_random_subtitle =>
-      '기기를 흔들어 현재 탭의 랜덤 항목으로 이동';
-
-  @override
   String get settings_interface_main_pages_gravity_orientation =>
       '중력 제어 화면 방향(메인 페이지)';
 

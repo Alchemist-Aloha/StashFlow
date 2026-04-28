@@ -12,29 +12,14 @@ class SettingsHubPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colorScheme = Theme.of(context).colorScheme;
     final isDesktop = ref.watch(desktopCapabilitiesProvider);
     final l10n = AppLocalizations.of(context)!;
 
     return SettingsPageShell(
       title: l10n.settings_title,
       child: ListView(
-        padding: const EdgeInsets.all(AppTheme.spacingMedium),
+        padding: const EdgeInsets.all(AppTheme.spacingLarge),
         children: [
-          Text(
-            l10n.settings_customize,
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            l10n.settings_customize_subtitle,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacingLarge),
           SettingsSectionCard(
             title: l10n.settings_core_section,
             subtitle: l10n.settings_core_subtitle,
@@ -46,14 +31,14 @@ class SettingsHubPage extends ConsumerWidget {
                   subtitle: l10n.settings_server_subtitle,
                   onTap: () => context.push('/settings/server'),
                 ),
-                const SizedBox(height: AppTheme.spacingSmall),
+                const SizedBox(height: AppTheme.spacingMedium),
                 SettingsActionCard(
                   icon: Icons.play_circle_fill_rounded,
                   title: l10n.settings_playback,
                   subtitle: l10n.settings_playback_subtitle,
                   onTap: () => context.push('/settings/playback'),
                 ),
-                const SizedBox(height: AppTheme.spacingSmall),
+                const SizedBox(height: AppTheme.spacingMedium),
                 if (isDesktop) ...[
                   SettingsActionCard(
                     icon: Icons.keyboard_rounded,
@@ -61,7 +46,7 @@ class SettingsHubPage extends ConsumerWidget {
                     subtitle: l10n.settings_keyboard_subtitle,
                     onTap: () => context.push('/settings/keybinds'),
                   ),
-                  const SizedBox(height: AppTheme.spacingSmall),
+                  const SizedBox(height: AppTheme.spacingMedium),
                 ],
                 SettingsActionCard(
                   icon: Icons.palette_rounded,
@@ -69,21 +54,21 @@ class SettingsHubPage extends ConsumerWidget {
                   subtitle: l10n.settings_appearance_subtitle,
                   onTap: () => context.push('/settings/appearance'),
                 ),
-                const SizedBox(height: AppTheme.spacingSmall),
+                const SizedBox(height: AppTheme.spacingMedium),
                 SettingsActionCard(
                   icon: Icons.dashboard_customize_rounded,
                   title: l10n.settings_interface,
                   subtitle: l10n.settings_interface_subtitle,
                   onTap: () => context.push('/settings/interface'),
                 ),
-                const SizedBox(height: AppTheme.spacingSmall),
+                const SizedBox(height: AppTheme.spacingMedium),
                 SettingsActionCard(
                   icon: Icons.help_outline_rounded,
                   title: l10n.settings_support,
                   subtitle: l10n.settings_support_subtitle,
                   onTap: () => context.push('/settings/support'),
                 ),
-                const SizedBox(height: AppTheme.spacingSmall),
+                const SizedBox(height: AppTheme.spacingMedium),
                 SettingsActionCard(
                   icon: Icons.developer_mode_rounded,
                   title: l10n.settings_develop,

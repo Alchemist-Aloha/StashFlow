@@ -109,7 +109,6 @@
   },
   "common_error": "Error: {message}",
   "common_no_media_available": "No media available",
-  
   "common_id": "ID: {id}",
   "common_search_placeholder": "Search...",
   "common_pause": "Pause",
@@ -161,7 +160,6 @@
   "common_not_found": "{item} not found",
   "common_add_favorite": "Add favorite",
   "common_remove_favorite": "Remove favorite",
-
   "details_group": "Group Details",
   "details_synopsis": "Synopsis",
   "details_media": "Media",
@@ -180,16 +178,13 @@
   "details_scene_add_tag": "Add Tag",
   "details_scene_add_url": "Add URL",
   "details_scene_remove_url": "Remove URL",
-
   "groups_title": "Groups",
   "groups_unnamed": "Unnamed group",
   "groups_untitled": "Untitled group",
-
   "studios_title": "Studios",
   "studios_galleries_title": "Studio Galleries",
   "studios_media_title": "Studio Media",
   "studios_sort_title": "Sort Studios",
-
   "galleries_title": "Galleries",
   "galleries_sort_title": "Sort Galleries",
   "galleries_all_images": "All Images",
@@ -198,7 +193,6 @@
   "galleries_image_count": "Image Count",
   "galleries_organization": "Organization",
   "galleries_organized_only": "Organized only",
-
   "scenes_filter_title": "Filter Scenes",
   "scenes_filter_saved": "Filter preferences saved as default",
   "scenes_watched": "Watched",
@@ -213,7 +207,6 @@
   "tags_search_hint": "Search tags...",
   "tags_sort_tooltip": "Sort options",
   "tags_filter_tooltip": "Filter options",
-
   "performers_title": "Performers",
   "performers_sort_title": "Sort Performers",
   "performers_filter_title": "Filter Performers",
@@ -250,13 +243,11 @@
   "performers_field_aliases": "Aliases",
   "common_organized": "Organized",
   "scenes_duplicated": "Duplicated",
-
   "random_studio": "Random studio",
   "random_gallery": "Random gallery",
   "random_tag": "Random tag",
   "random_scene": "Random scene",
   "random_performer": "Random performer",
-
   "filter_modifier": "Modifier",
   "filter_value": "Value",
   "filter_equals": "Equals",
@@ -265,7 +256,6 @@
   "filter_less_than": "Less Than",
   "filter_is_null": "Is Null",
   "filter_not_null": "Not Null",
-
   "images_resolution_title": "Resolution",
   "resolution_144p": "144p",
   "resolution_240p": "240p",
@@ -278,18 +268,12 @@
   "resolution_1920p": "1920p",
   "resolution_2160p": "4K (2160p)",
   "resolution_4320p": "8K (4320p)",
-
   "images_orientation_title": "Orientation",
-
   "common_or": "OR",
-
   "scrape_from_url": "Scrape from URL",
-
   "scenes_phash_started": "Phash generation started",
   "scenes_phash_failed": "Failed to generate phash: {error}",
-
   "details_failed_update_studio": "Failed to update studio: {error}",
-
   "settings_title": "Settings",
   "settings_customize": "Customize StashFlow",
   "settings_customize_subtitle": "Tune playback, appearance, layout, and support tools from one place.",
@@ -352,8 +336,6 @@
   "settings_interface_navigation_subtitle": "Visibility of global navigation shortcuts",
   "settings_interface_show_random": "Show Random Navigation Buttons",
   "settings_interface_show_random_subtitle": "Enable or disable the floating casino buttons across list and details pages",
-  "settings_interface_shake_random": "Shake to Discover",
-  "settings_interface_shake_random_subtitle": "Shake your device to jump to a random item in the current tab",
   "settings_interface_main_pages_gravity_orientation": "Gravity-controlled orientation (main pages)",
   "settings_interface_main_pages_gravity_orientation_subtitle": "Allow main pages to rotate using the device sensor. Fullscreen video playback follows its own orientation settings.",
   "settings_interface_show_edit": "Show Edit Button",
@@ -572,17 +554,31 @@
   "common_gallery": "Gallery",
   "images_gallery_rating_unavailable": "Gallery rating is only available when browsing a gallery.",
   "images_rating": "Rating: {rating} / 5",
-  "@images_rating": {"placeholders": {"rating": {"type": "String"}}},
+  "@images_rating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
   "images_filtered_by_gallery": "Filtered by Gallery",
   "images_slideshow_need_two": "Need at least 2 images for slideshow.",
   "images_slideshow_start_title": "Start Slideshow",
   "images_slideshow_interval": "Interval: {seconds}s",
   "@images_slideshow_interval": {
-    "placeholders": {"seconds": {"type": "num"}}
+    "placeholders": {
+      "seconds": {
+        "type": "num"
+      }
+    }
   },
   "images_slideshow_transition_ms": "Transition: {ms}ms",
   "@images_slideshow_transition_ms": {
-    "placeholders": {"ms": {"type": "num"}}
+    "placeholders": {
+      "ms": {
+        "type": "num"
+      }
+    }
   },
   "common_forward": "Forward",
   "common_backward": "Backward",
@@ -596,29 +592,38 @@
         "type": "String"
       }
     }
-  }
-  ,
+  },
   "settings_keybind_assign_shortcut": "Assign Shortcut",
   "settings_keybind_press_any": "Press any key combination...",
-
   "scenes_select_tags": "Select Tags",
   "scenes_no_scrapers": "No scrapers available",
   "scenes_select_scraper": "Select Scraper",
   "scenes_no_results_found": "No results found",
   "scenes_select_result": "Select Result",
   "scenes_scrape_failed": "Scrape failed: {error}",
-  "@scenes_scrape_failed": {"placeholders": {"error": {"type": "String"}}},
+  "@scenes_scrape_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "scenes_updated_successfully": "Scene updated successfully",
   "scenes_update_failed": "Failed to update scene: {error}",
-  "@scenes_update_failed": {"placeholders": {"error": {"type": "String"}}},
+  "@scenes_update_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "scenes_edit_title": "Edit Scene",
   "scenes_field_studio": "Studio",
   "scenes_field_tags": "Tags",
   "scenes_field_urls": "URLs",
   "scenes_edit_performer": "Edit Performer",
   "scenes_edit_studio": "Edit Studio",
-  "common_no_title": "No title"
-  ,
+  "common_no_title": "No title",
   "scenes_select_studio": "Select Studio",
   "scenes_select_performers": "Select Performers",
   "scenes_unmatched_scraped_tags": "Unmatched Scraped Tags",
@@ -626,7 +631,13 @@
   "scenes_no_matching_performer_found": "No matching performer found in library",
   "common_unknown": "Unknown",
   "scenes_studio_id_prefix": "Studio ID: {id}",
-  "@scenes_studio_id_prefix": {"placeholders": {"id": {"type": "String"}}},
+  "@scenes_studio_id_prefix": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "tags_search_placeholder": "Search tags...",
   "scenes_duration_short": "< 5m",
   "scenes_duration_medium": "5-20m",
@@ -634,6 +645,5 @@
   "details_scene_fingerprint_query": "Query by Fingerprint",
   "scenes_available_scrapers": "Available Scrapers",
   "scrape_results_existing": "Existing",
-  "scrape_results_scraped": "Scraped",
-  "common_apply": "Apply"
+  "scrape_results_scraped": "Scraped"
 }

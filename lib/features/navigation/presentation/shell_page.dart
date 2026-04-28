@@ -19,11 +19,9 @@ import '../../scenes/presentation/providers/scene_list_provider.dart';
 import '../../performers/presentation/providers/performer_list_provider.dart';
 import '../../studios/presentation/providers/studio_list_provider.dart';
 import '../../tags/presentation/providers/tag_list_provider.dart';
-import 'package:shake_gesture/shake_gesture.dart';
 import '../../galleries/presentation/providers/gallery_list_provider.dart';
 import '../../scenes/presentation/widgets/tiktok_scenes_view.dart';
 import '../../setup/presentation/providers/navigation_tabs_provider.dart';
-import '../../setup/presentation/providers/gesture_settings_provider.dart';
 import '../../setup/presentation/providers/main_page_orientation_provider.dart';
 import '../../setup/presentation/providers/update_provider.dart';
 import '../../setup/domain/entities/update_info.dart';
@@ -242,7 +240,6 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         playerState.isFullScreen || isTiktokFullScreen || isFullscreenPath;
     final isTiktokLayout = ref.watch(sceneTiktokLayoutProvider);
     final isMobile = Responsive.isMobile(context);
-    final shakeEnabled = ref.watch(shakeToRandomEnabledProvider);
 
     final allTabs = ref.watch(navigationTabsProvider);
     final visibleTabs = allTabs.where((t) => t.visible).toList();
@@ -295,62 +292,6 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         branchIndex,
         initialLocation: branchIndex == navigationShell.currentIndex,
       );
-    }
-
-    Future<void> handleShake() async {
-      if (!shakeEnabled || !mounted) return;
-
-      // Provide haptic feedback when shake is detected
-      HapticFeedback.mediumImpact();
-
-      // IMPORTANT: navigationShell.currentIndex refers to the index in the
-      // static branches list in router.dart, which corresponds to NavigationTabType.values.
-      // We must NOT use allTabs[currentIndex] because allTabs can be reordered by the user.
-      final currentTabType =
-          NavigationTabType.values[navigationShell.currentIndex];
-
-      switch (currentTabType) {
-        case NavigationTabType.scenes:
-          final random = await ref
-              .read(sceneListProvider.notifier)
-              .getRandomScene();
-          if (mounted && context.mounted && random != null) {
-            context.push('/scenes/scene/${random.id}');
-          }
-          break;
-        case NavigationTabType.performers:
-          final random = await ref
-              .read(performerListProvider.notifier)
-              .getRandomPerformer();
-          if (mounted && context.mounted && random != null) {
-            context.push('/performers/performer/${random.id}');
-          }
-          break;
-        case NavigationTabType.studios:
-          final random = await ref
-              .read(studioListProvider.notifier)
-              .getRandomStudio();
-          if (mounted && context.mounted && random != null) {
-            context.push('/studios/studio/${random.id}');
-          }
-          break;
-        case NavigationTabType.tags:
-          final random = await ref
-              .read(tagListProvider.notifier)
-              .getRandomTag();
-          if (mounted && context.mounted && random != null) {
-            context.push('/tags/tag/${random.id}');
-          }
-          break;
-        case NavigationTabType.galleries:
-          final random = await ref
-              .read(galleryListProvider.notifier)
-              .getRandomGallery();
-          if (mounted && context.mounted && random != null) {
-            context.push('/galleries/gallery/${random.id}');
-          }
-          break;
-      }
     }
 
     final navigationDestinations = visibleTabs
@@ -439,10 +380,8 @@ class _ShellPageState extends ConsumerState<ShellPage> {
 
     return PopScope(
       canPop: !context.canPop(),
-      child: ShakeGesture(
-        onShake: handleShake,
-        child: Scaffold(
-          body: Listener(
+      child: Scaffold(
+        body: Listener(
             onPointerSignal: (pointerSignal) {
               if (isDesktop && pointerSignal is PointerScrollEvent) {
                 if (pointerSignal.scrollDelta.dx.abs() > 30) {
@@ -486,7 +425,6 @@ class _ShellPageState extends ConsumerState<ShellPage> {
                   ),
                 ),
         ),
-      ),
     );
   }
 }

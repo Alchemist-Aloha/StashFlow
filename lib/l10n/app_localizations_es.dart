@@ -1032,13 +1032,6 @@ class AppLocalizationsEs extends AppLocalizations {
       'Habilitar o deshabilitar los botones flotantes de casino en las páginas de lista y detalles';
 
   @override
-  String get settings_interface_shake_random => 'Agitar para descubrir';
-
-  @override
-  String get settings_interface_shake_random_subtitle =>
-      'Agita tu dispositivo para saltar a un elemento aleatorio en la pestaña actual';
-
-  @override
   String get settings_interface_main_pages_gravity_orientation =>
       'Orientación controlada por gravedad (páginas principales)';
 

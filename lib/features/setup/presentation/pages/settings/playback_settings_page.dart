@@ -112,7 +112,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
       child: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(AppTheme.spacingMedium),
+              padding: const EdgeInsets.all(AppTheme.spacingLarge),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [

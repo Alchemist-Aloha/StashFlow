@@ -247,8 +247,6 @@
   "settings_interface_navigation_subtitle": "전역 탐색 단축키 표시 여부",
   "settings_interface_show_random": "랜덤 탐색 버튼 표시",
   "settings_interface_show_random_subtitle": "목록 및 상세 페이지에서 부동 카지노 버튼 활성화 또는 비활성화",
-  "settings_interface_shake_random": "흔들어서 발견하기",
-  "settings_interface_shake_random_subtitle": "기기를 흔들어 현재 탭의 랜덤 항목으로 이동",
   "settings_interface_main_pages_gravity_orientation": "중력 제어 화면 방향(메인 페이지)",
   "settings_interface_main_pages_gravity_orientation_subtitle": "기기 센서를 사용해 메인 페이지가 회전하도록 허용합니다. 전체 화면 동영상 재생은 별도의 화면 방향 설정을 따릅니다.",
   "settings_interface_show_edit": "편집 버튼 표시",

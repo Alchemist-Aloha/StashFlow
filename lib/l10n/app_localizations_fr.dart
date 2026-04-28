@@ -1024,13 +1024,6 @@ class AppLocalizationsFr extends AppLocalizations {
       'Activer ou désactiver les boutons flottants de casino sur les pages de liste et de détails';
 
   @override
-  String get settings_interface_shake_random => 'Secouer pour découvrir';
-
-  @override
-  String get settings_interface_shake_random_subtitle =>
-      'Secouez votre appareil pour passer à un élément aléatoire dans l\'onglet actuel';
-
-  @override
   String get settings_interface_main_pages_gravity_orientation =>
       'Orientation contrôlée par la gravité (pages principales)';
 

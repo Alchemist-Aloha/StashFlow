@@ -1968,18 +1968,6 @@ abstract class AppLocalizations {
   /// **'Enable or disable the floating casino buttons across list and details pages'**
   String get settings_interface_show_random_subtitle;
 
-  /// No description provided for @settings_interface_shake_random.
-  ///
-  /// In en, this message translates to:
-  /// **'Shake to Discover'**
-  String get settings_interface_shake_random;
-
-  /// No description provided for @settings_interface_shake_random_subtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Shake your device to jump to a random item in the current tab'**
-  String get settings_interface_shake_random_subtitle;
-
   /// No description provided for @settings_interface_main_pages_gravity_orientation.
   ///
   /// In en, this message translates to:

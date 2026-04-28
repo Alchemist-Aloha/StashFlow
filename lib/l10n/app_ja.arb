@@ -234,8 +234,6 @@
   "settings_interface_navigation_subtitle": "グローバルナビゲーションショートカットの表示設定",
   "settings_interface_show_random": "ランダムナビゲーションボタンを表示",
   "settings_interface_show_random_subtitle": "リストおよび詳細ページでフローティングカジノボタンを有効または無効にします",
-  "settings_interface_shake_random": "シェイクして発見",
-  "settings_interface_shake_random_subtitle": "デバイスを振って、現在のタブのランダムなアイテムにジャンプします",
   "settings_interface_main_pages_gravity_orientation": "重力制御の画面向き（メインページ）",
   "settings_interface_main_pages_gravity_orientation_subtitle": "デバイスセンサーを使ってメインページの向きを回転できるようにします。全画面動画再生は専用の画面向き設定に従います。",
   "settings_interface_show_edit": "編集ボタンを表示",

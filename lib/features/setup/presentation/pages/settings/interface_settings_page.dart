@@ -6,7 +6,6 @@ import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/navigation_customization_provider.dart';
-import 'package:stash_app_flutter/features/setup/presentation/providers/gesture_settings_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/main_page_orientation_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/scrape_customization_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
@@ -155,50 +154,27 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    
+    ref.watch(appLanguageProvider);
+    final currentLanguageKey = ref.read(sharedPreferencesProvider).getString(appLanguagePreferenceKey);
 
     return SettingsPageShell(
       title: context.l10n.settings_interface_title,
       child: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(AppTheme.spacingMedium),
+              padding: const EdgeInsets.all(AppTheme.spacingLarge),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SettingsSectionCard(
                     title: context.l10n.settings_interface_language,
                     subtitle: context.l10n.settings_interface_language_subtitle,
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              context.l10n.settings_interface_app_language,
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            DropdownButton<String?>(
-                              value:
-                                  ref.watch(appLanguageProvider)?.toString() ??
-                                  (ref
-                                      .watch(sharedPreferencesProvider)
-                                      .getString(appLanguagePreferenceKey)),
-                              dropdownColor: colorScheme.surface,
-                              items: supportedLanguages.entries.map((entry) {
-                                return DropdownMenuItem<String?>(
-                                  value: entry.key,
-                                  child: Text(entry.value),
-                                );
-                              }).toList(),
-                              onChanged: (value) async {
-                                await ref
-                                    .read(appLanguageProvider.notifier)
-                                    .setLanguage(value);
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
+                    child: SettingsActionCard(
+                      icon: Icons.translate_rounded,
+                      title: context.l10n.settings_interface_app_language,
+                      subtitle: supportedLanguages[currentLanguageKey] ?? 'System Default',
+                      onTap: () => _showLanguagePicker(context, ref),
                     ),
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
@@ -222,24 +198,6 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           onChanged: (value) async {
                             setState(() => _showRandomNavigation = value);
                             await _saveSettings();
-                          },
-                        ),
-                        const Divider(height: AppTheme.spacingLarge),
-                        SwitchListTile.adaptive(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(
-                            context.l10n.settings_interface_shake_random,
-                          ),
-                          subtitle: Text(
-                            context
-                                .l10n
-                                .settings_interface_shake_random_subtitle,
-                          ),
-                          value: ref.watch(shakeToRandomEnabledProvider),
-                          onChanged: (value) {
-                            ref
-                                .read(shakeToRandomEnabledProvider.notifier)
-                                .setShakeToRandom(value);
                           },
                         ),
                         const Divider(height: AppTheme.spacingLarge),
@@ -670,6 +628,69 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     );
   }
 
+  void _showLanguagePicker(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final currentLanguageKey = ref.read(sharedPreferencesProvider).getString(appLanguagePreferenceKey);
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppTheme.radiusExtraLarge),
+        ),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: AppTheme.spacingMedium),
+              Container(
+                width: 32,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: colorScheme.outlineVariant,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: AppTheme.spacingMedium),
+              Flexible(
+                child: ListView(
+                  shrinkWrap: true,
+                  children:
+                      supportedLanguages.entries.map((entry) {
+                        final isSelected = entry.key == currentLanguageKey;
+                        return ListTile(
+                          leading: Icon(
+                            isSelected
+                                ? Icons.check_circle_rounded
+                                : Icons.circle_outlined,
+                            color: isSelected ? colorScheme.primary : null,
+                          ),
+                          title: Text(
+                            entry.value,
+                            style: TextStyle(
+                              fontWeight:
+                                  isSelected ? FontWeight.bold : null,
+                            ),
+                          ),
+                          onTap: () async {
+                            await ref
+                                .read(appLanguageProvider.notifier)
+                                .setLanguage(entry.key);
+                            if (context.mounted) Navigator.pop(context);
+                          },
+                        );
+                      }).toList(),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildLayoutSetting({
     required String title,
     required String subtitle,
@@ -834,26 +855,67 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     required ValueChanged<int?> onChanged,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final l10n = AppLocalizations.of(context)!;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label, style: const TextStyle(fontSize: 16)),
-        DropdownButton<int?>(
-          value: value,
-          dropdownColor: colorScheme.surface,
-          items: [
-            DropdownMenuItem<int?>(
-              value: null,
+        MenuAnchor(
+          builder: (context, controller, child) {
+            return InkWell(
+              onTap: () {
+                if (controller.isOpen) {
+                  controller.close();
+                } else {
+                  controller.open();
+                }
+              },
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                decoration: ShapeDecoration(
+                  color: colorScheme.primaryContainer.withValues(alpha: 0.1),
+                  shape: StadiumBorder(
+                    side: BorderSide(color: colorScheme.outlineVariant),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      value == null ? l10n.common_default : value.toString(),
+                      style: textTheme.labelLarge?.copyWith(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Icon(
+                      Icons.arrow_drop_down_rounded,
+                      color: colorScheme.primary,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+          menuChildren: [
+            MenuItemButton(
+              onPressed: () => onChanged(null),
               child: Text(l10n.common_default),
             ),
             ...List.generate(10, (index) => index + 1).map(
-              (i) =>
-                  DropdownMenuItem<int?>(value: i, child: Text(i.toString())),
+              (i) => MenuItemButton(
+                onPressed: () => onChanged(i),
+                child: Text(i.toString()),
+              ),
             ),
           ],
-          onChanged: onChanged,
         ),
       ],
     );
@@ -865,28 +927,31 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     required ValueChanged<double?> onChanged,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context)!;
+    final textTheme = Theme.of(context).textTheme;
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 16)),
-        DropdownButton<double?>(
-          value: value,
-          dropdownColor: colorScheme.surface,
-          items: [
-            DropdownMenuItem<double?>(
-              value: null,
-              child: Text(l10n.common_default),
-            ),
-            ...[10.0, 12.0, 14.0, 16.0, 18.0, 20.0, 22.0, 24.0].map(
-              (i) => DropdownMenuItem<double?>(
-                value: i,
-                child: Text('${i.toInt()} pt'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label, style: const TextStyle(fontSize: 16)),
+            Text(
+              value == null ? 'Default' : '${value.toInt()} pt',
+              style: textTheme.labelLarge?.copyWith(
+                color: colorScheme.primary,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],
-          onChanged: onChanged,
+        ),
+        Slider(
+          value: value ?? 14.0,
+          min: 10.0,
+          max: 24.0,
+          divisions: 7,
+          label: value == null ? 'Default' : '${value.toInt()} pt',
+          onChanged: (val) => onChanged(val),
         ),
       ],
     );
@@ -898,20 +963,30 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     required ValueChanged<double?> onChanged,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 16)),
-        DropdownButton<double>(
-          value: value,
-          dropdownColor: colorScheme.surface,
-          items: [12.0, 16.0, 20.0, 24.0, 32.0, 40.0, 48.0].map(
-            (i) => DropdownMenuItem<double>(
-              value: i,
-              child: Text('${i.toInt()} px'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label, style: const TextStyle(fontSize: 16)),
+            Text(
+              '${value.toInt()} px',
+              style: textTheme.labelLarge?.copyWith(
+                color: colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ).toList(),
+          ],
+        ),
+        Slider(
+          value: value,
+          min: 12.0,
+          max: 48.0,
+          divisions: 9,
+          label: '${value.toInt()} px',
           onChanged: (val) => onChanged(val),
         ),
       ],

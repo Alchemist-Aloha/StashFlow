@@ -297,8 +297,6 @@
   "settings_interface_navigation_subtitle": "全局导航快捷方式的可见性",
   "settings_interface_show_random": "显示随机导航按钮",
   "settings_interface_show_random_subtitle": "在列表和详情页启用或禁用悬浮随机按钮",
-  "settings_interface_shake_random": "摇一摇发现",
-  "settings_interface_shake_random_subtitle": "摇晃设备以跳转到当前选项卡中的随机项目",
   "settings_interface_main_pages_gravity_orientation": "重力控制的方向（主页面）",
   "settings_interface_main_pages_gravity_orientation_subtitle": "允许主页面使用设备传感器旋转。全屏视频播放将使用其自己的方向设置。",
   "settings_interface_show_edit": "显示编辑按钮",

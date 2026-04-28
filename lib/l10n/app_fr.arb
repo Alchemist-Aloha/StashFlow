@@ -261,8 +261,6 @@
   "settings_interface_navigation_subtitle": "Visibilité des raccourcis de navigation globaux",
   "settings_interface_show_random": "Afficher les boutons de navigation aléatoire",
   "settings_interface_show_random_subtitle": "Activer ou désactiver les boutons flottants de casino sur les pages de liste et de détails",
-  "settings_interface_shake_random": "Secouer pour découvrir",
-  "settings_interface_shake_random_subtitle": "Secouez votre appareil pour passer à un élément aléatoire dans l'onglet actuel",
   "settings_interface_main_pages_gravity_orientation": "Orientation contrôlée par la gravité (pages principales)",
   "settings_interface_main_pages_gravity_orientation_subtitle": "Autoriser les pages principales à pivoter à l'aide du capteur de l'appareil. La lecture vidéo en plein écran utilise ses propres paramètres d'orientation.",
   "settings_interface_show_edit": "Afficher le bouton d'édition",
