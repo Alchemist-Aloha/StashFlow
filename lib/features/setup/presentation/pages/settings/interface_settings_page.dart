@@ -289,16 +289,14 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         context.l10n.settings_interface_scenes_layout_subtitle,
                     child: Column(
                       children: [
-                        _buildLayoutRow(
-                          context,
-                          label: context.l10n.settings_interface_layout_default,
+                        _buildSegmentedSetting(
+                          context: context,
+                          label:
+                              context.l10n.settings_interface_layout_default,
                           description: context
                               .l10n
                               .settings_interface_layout_default_desc,
-                          value: _sceneTiktokLayout
-                              ? 'tiktok'
-                              : (_sceneGridLayout ? 'grid' : 'list'),
-                          options: [
+                          segments: [
                             ButtonSegment<String>(
                               value: 'list',
                               label: Text(
@@ -321,10 +319,16 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                               icon: Icon(Icons.swipe_up),
                             ),
                           ],
-                          onSelected: (value) async {
+                          selected: {
+                            _sceneTiktokLayout
+                                ? 'tiktok'
+                                : (_sceneGridLayout ? 'grid' : 'list'),
+                          },
+                          onSelectionChanged: (selection) async {
+                            if (selection.isEmpty) return;
                             setState(() {
-                              _sceneTiktokLayout = value == 'tiktok';
-                              _sceneGridLayout = value == 'grid';
+                              _sceneTiktokLayout = selection.first == 'tiktok';
+                              _sceneGridLayout = selection.first == 'grid';
                             });
                             await _saveSettings();
                           },
@@ -407,14 +411,14 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         .settings_interface_galleries_layout_subtitle,
                     child: Column(
                       children: [
-                        _buildLayoutRow(
-                          context,
-                          label: context.l10n.settings_interface_layout_default,
+                        _buildSegmentedSetting(
+                          context: context,
+                          label:
+                              context.l10n.settings_interface_layout_default,
                           description: context
                               .l10n
                               .settings_interface_galleries_layout_subtitle_item,
-                          value: _galleryGridLayout ? 'grid' : 'list',
-                          options: [
+                          segments: [
                             ButtonSegment<String>(
                               value: 'list',
                               label: Text(
@@ -430,9 +434,11 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                               icon: Icon(Icons.grid_view),
                             ),
                           ],
-                          onSelected: (value) async {
+                          selected: {_galleryGridLayout ? 'grid' : 'list'},
+                          onSelectionChanged: (selection) async {
+                            if (selection.isEmpty) return;
                             setState(() {
-                              _galleryGridLayout = value == 'grid';
+                              _galleryGridLayout = selection.first == 'grid';
                             });
                             await _saveSettings();
                           },
@@ -458,17 +464,14 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         context.l10n.settings_interface_image_viewer_subtitle,
                     child: Column(
                       children: [
-                        _buildLayoutRow(
-                          context,
+                        _buildSegmentedSetting(
+                          context: context,
                           label:
                               context.l10n.settings_interface_swipe_direction,
                           description: context
                               .l10n
                               .settings_interface_swipe_direction_desc,
-                          value: _imageFullscreenVerticalSwipe
-                              ? 'vertical'
-                              : 'horizontal',
-                          options: [
+                          segments: [
                             ButtonSegment<String>(
                               value: 'vertical',
                               label: Text(
@@ -486,10 +489,16 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                               icon: Icon(Icons.swap_horiz_rounded),
                             ),
                           ],
-                          onSelected: (value) async {
+                          selected: {
+                            _imageFullscreenVerticalSwipe
+                                ? 'vertical'
+                                : 'horizontal',
+                          },
+                          onSelectionChanged: (selection) async {
+                            if (selection.isEmpty) return;
                             setState(() {
                               _imageFullscreenVerticalSwipe =
-                                  value == 'vertical';
+                                  selection.first == 'vertical';
                             });
                             await _saveSettings();
                           },
@@ -592,31 +601,55 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     required ValueChanged<int?> onGridColumnsChanged,
   }) {
     final l10n = AppLocalizations.of(context)!;
+    final listGridSegments = [
+      ButtonSegment<String>(
+        value: 'list',
+        label: Text(l10n.settings_interface_layout_list),
+        icon: Icon(Icons.view_list),
+      ),
+      ButtonSegment<String>(
+        value: 'grid',
+        label: Text(l10n.settings_interface_layout_grid),
+        icon: Icon(Icons.grid_view),
+      ),
+    ];
 
     return SettingsSectionCard(
       title: title,
       subtitle: subtitle,
       child: Column(
         children: [
-          _buildLayoutSetting(
-            title: l10n.settings_interface_media_layout,
-            subtitle: l10n.settings_interface_media_layout_subtitle,
-            currentValue: mediaGridValue,
-            onChanged: onMediaChanged,
+          _buildSegmentedSetting(
+            context: context,
+            label: l10n.settings_interface_media_layout,
+            description: l10n.settings_interface_media_layout_subtitle,
+            segments: listGridSegments,
+            selected: {mediaGridValue ? 'grid' : 'list'},
+            onSelectionChanged: (selection) {
+              if (selection.isEmpty) return;
+              onMediaChanged(selection.first == 'grid');
+            },
           ),
           const Divider(height: AppTheme.spacingLarge),
-          _buildLayoutSetting(
-            title: l10n.settings_interface_galleries_layout_item,
-            subtitle: l10n.settings_interface_galleries_layout_subtitle_item,
-            currentValue: galleriesGridValue,
-            onChanged: onGalleriesChanged,
+          _buildSegmentedSetting(
+            context: context,
+            label: l10n.settings_interface_galleries_layout_item,
+            description: l10n.settings_interface_galleries_layout_subtitle_item,
+            segments: listGridSegments,
+            selected: {galleriesGridValue ? 'grid' : 'list'},
+            onSelectionChanged: (selection) {
+              if (selection.isEmpty) return;
+              onGalleriesChanged(selection.first == 'grid');
+            },
           ),
-          const Divider(height: AppTheme.spacingLarge),
-          _buildGridColumnSetting(
-            label: l10n.settings_interface_grid_columns,
-            value: gridColumnsValue,
-            onChanged: onGridColumnsChanged,
-          ),
+          if (mediaGridValue || galleriesGridValue) ...[
+            const Divider(height: AppTheme.spacingLarge),
+            _buildGridColumnSetting(
+              label: l10n.settings_interface_grid_columns,
+              value: gridColumnsValue,
+              onChanged: onGridColumnsChanged,
+            ),
+          ],
         ],
       ),
     );
@@ -681,56 +714,6 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
             ],
           ),
         );
-      },
-    );
-  }
-
-  Widget _buildLayoutSetting({
-    required String title,
-    required String subtitle,
-    required bool currentValue,
-    required ValueChanged<bool> onChanged,
-  }) {
-    return _buildSegmentedSetting(
-      context: context,
-      label: title,
-      description: subtitle,
-      segments: [
-        ButtonSegment<String>(
-          value: 'list',
-          label: Text(context.l10n.settings_interface_layout_list),
-          icon: Icon(Icons.view_list),
-        ),
-        ButtonSegment<String>(
-          value: 'grid',
-          label: Text(context.l10n.settings_interface_layout_grid),
-          icon: Icon(Icons.grid_view),
-        ),
-      ],
-      selected: {currentValue ? 'grid' : 'list'},
-      onSelectionChanged: (selection) {
-        onChanged(selection.first == 'grid');
-      },
-    );
-  }
-
-  Widget _buildLayoutRow(
-    BuildContext context, {
-    required String label,
-    required String description,
-    required String value,
-    required List<ButtonSegment<String>> options,
-    required ValueChanged<String> onSelected,
-  }) {
-    return _buildSegmentedSetting(
-      context: context,
-      label: label,
-      description: description,
-      segments: options,
-      selected: {value},
-      onSelectionChanged: (selection) {
-        if (selection.isEmpty) return;
-        onSelected(selection.first);
       },
     );
   }
