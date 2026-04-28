@@ -96,34 +96,36 @@ class _AppearanceSettingsPageState
       child: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(AppTheme.spacingMedium),
+              padding: const EdgeInsets.all(AppTheme.spacingLarge),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SettingsSectionCard(
                     title: l10n.settings_appearance_theme_mode,
                     subtitle: l10n.settings_appearance_theme_mode_subtitle,
-                    child: SizedBox(
+                    child: Container(
                       width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
+                      ),
+                      padding: const EdgeInsets.all(4),
                       child: SegmentedButton<ThemeMode>(
                         showSelectedIcon: false,
-                        style: const ButtonStyle(
-                          visualDensity: VisualDensity.compact,
-                        ),
                         segments: [
                           ButtonSegment<ThemeMode>(
                             value: ThemeMode.system,
-                            icon: Icon(Icons.brightness_auto_outlined),
+                            icon: const Icon(Icons.brightness_auto_outlined),
                             label: Text(l10n.settings_appearance_theme_system),
                           ),
                           ButtonSegment<ThemeMode>(
                             value: ThemeMode.light,
-                            icon: Icon(Icons.light_mode_outlined),
+                            icon: const Icon(Icons.light_mode_outlined),
                             label: Text(l10n.settings_appearance_theme_light),
                           ),
                           ButtonSegment<ThemeMode>(
                             value: ThemeMode.dark,
-                            icon: Icon(Icons.dark_mode_outlined),
+                            icon: const Icon(Icons.dark_mode_outlined),
                             label: Text(l10n.settings_appearance_theme_dark),
                           ),
                         ],

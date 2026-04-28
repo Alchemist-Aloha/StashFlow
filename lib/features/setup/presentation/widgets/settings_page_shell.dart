@@ -72,48 +72,49 @@ class SettingsSectionCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      elevation: 0,
-      color: colorScheme.surfaceContainerHigh,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
-      ),
-      child: Padding(
-        padding: padding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (title != null) ...[
-              Text(
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 32.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (title != null) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppTheme.spacingSmall,
+              ),
+              child: Text(
                 title!,
-                style: textTheme.titleSmall?.copyWith(
+                style: textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: colorScheme.primary,
-                  letterSpacing: 0.5,
                 ),
               ),
-            ],
-            if (subtitle != null) ...[
-              const SizedBox(height: 4),
-              Text(
+            ),
+          ],
+          if (subtitle != null) ...[
+            const SizedBox(height: 4),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppTheme.spacingSmall,
+              ),
+              child: Text(
                 subtitle!,
                 style: textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
-            ],
-            if (title != null || subtitle != null)
-              const SizedBox(height: AppTheme.spacingMedium),
-            child,
+            ),
           ],
-        ),
+          if (title != null || subtitle != null)
+            const SizedBox(height: AppTheme.spacingMedium),
+          child,
+        ],
       ),
     );
   }
 }
 
-class SettingsActionCard extends StatelessWidget {
+class SettingsActionCard extends StatefulWidget {
   const SettingsActionCard({
     super.key,
     required this.icon,
@@ -130,52 +131,84 @@ class SettingsActionCard extends StatelessWidget {
   final Widget? trailing;
 
   @override
+  State<SettingsActionCard> createState() => _SettingsActionCardState();
+}
+
+class _SettingsActionCardState extends State<SettingsActionCard> {
+  bool _isPressed = false;
+
+  @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      elevation: 0,
-      color: colorScheme.surfaceContainerHigh,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppTheme.spacingMedium,
-          vertical: AppTheme.spacingSmall,
+    return AnimatedScale(
+      scale: _isPressed ? 0.98 : 1.0,
+      duration: const Duration(milliseconds: 100),
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        elevation: 0,
+        color: colorScheme.primaryContainer.withValues(alpha: 0.1),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
         ),
-        leading: Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: colorScheme.primaryContainer.withValues(alpha: 0.4),
-            borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-          ),
-          child: Icon(icon, color: colorScheme.primary, size: 20),
-        ),
-        title: Text(
-          title,
-          style: textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: colorScheme.onSurface,
-          ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: textTheme.bodySmall?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-        ),
-        trailing:
-            trailing ??
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 14,
-              color: colorScheme.outline,
+        child: InkWell(
+          onTapDown: (_) => setState(() => _isPressed = true),
+          onTapUp: (_) => setState(() => _isPressed = false),
+          onTapCancel: () => setState(() => _isPressed = false),
+          onTap: widget.onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppTheme.spacingMedium,
+              vertical: AppTheme.spacingMedium,
             ),
-        onTap: onTap,
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: ShapeDecoration(
+                    color: colorScheme.secondaryContainer,
+                    shape: ContinuousRectangleBorder(
+                      borderRadius: BorderRadius.circular(32),
+                    ),
+                  ),
+                  child: Icon(widget.icon, color: colorScheme.primary, size: 24),
+                ),
+                const SizedBox(width: AppTheme.spacingMedium),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.title,
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        widget.subtitle,
+                        style: textTheme.labelMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                          height: 1.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: AppTheme.spacingSmall),
+                widget.trailing ??
+                    Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 14,
+                      color: colorScheme.outline,
+                    ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
