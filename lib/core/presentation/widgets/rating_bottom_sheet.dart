@@ -45,9 +45,13 @@ class RatingBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final dims = context.dimensions;
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+        padding: EdgeInsets.symmetric(
+          vertical: dims.spacingLarge,
+          horizontal: dims.spacingMedium,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -59,7 +63,7 @@ class RatingBottomSheet extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: dims.spacingLarge),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(5, (index) {
@@ -69,7 +73,7 @@ class RatingBottomSheet extends StatelessWidget {
                   tooltip: 'Star',
                   icon: Icon(
                     isSelected ? Icons.star : Icons.star_border,
-                    size: 48,
+                    size: 48 * dims.fontSizeFactor,
                     color: Colors.amber,
                   ),
                   onPressed: () {
@@ -79,7 +83,7 @@ class RatingBottomSheet extends StatelessWidget {
                 );
               }),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: dims.spacingMedium),
             TextButton(
               onPressed: () {
                 onRatingSelected(0);
