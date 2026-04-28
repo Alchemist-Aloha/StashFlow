@@ -6,7 +6,6 @@ import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/navigation_customization_provider.dart';
-import 'package:stash_app_flutter/features/setup/presentation/providers/gesture_settings_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/main_page_orientation_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/scrape_customization_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
@@ -199,24 +198,6 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           onChanged: (value) async {
                             setState(() => _showRandomNavigation = value);
                             await _saveSettings();
-                          },
-                        ),
-                        const Divider(height: AppTheme.spacingLarge),
-                        SwitchListTile.adaptive(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(
-                            context.l10n.settings_interface_shake_random,
-                          ),
-                          subtitle: Text(
-                            context
-                                .l10n
-                                .settings_interface_shake_random_subtitle,
-                          ),
-                          value: ref.watch(shakeToRandomEnabledProvider),
-                          onChanged: (value) {
-                            ref
-                                .read(shakeToRandomEnabledProvider.notifier)
-                                .setShakeToRandom(value);
                           },
                         ),
                         const Divider(height: AppTheme.spacingLarge),

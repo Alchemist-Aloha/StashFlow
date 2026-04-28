@@ -1023,13 +1023,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Aktivieren oder deaktivieren Sie die schwebenden Casino-Schaltflächen auf Listen- und Detailseiten';
 
   @override
-  String get settings_interface_shake_random => 'Schütteln zum Entdecken';
-
-  @override
-  String get settings_interface_shake_random_subtitle =>
-      'Schütteln Sie Ihr Gerät, um zu einem zufälligen Element im aktuellen Tab zu springen';
-
-  @override
   String get settings_interface_main_pages_gravity_orientation =>
       'Schwerkraftgesteuerte Ausrichtung (Hauptseiten)';
 

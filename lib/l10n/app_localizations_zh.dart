@@ -994,12 +994,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_interface_show_random_subtitle => '在列表和详情页启用或禁用悬浮随机按钮';
 
   @override
-  String get settings_interface_shake_random => '摇一摇发现';
-
-  @override
-  String get settings_interface_shake_random_subtitle => '摇晃设备以跳转到当前选项卡中的随机项目';
-
-  @override
   String get settings_interface_main_pages_gravity_orientation =>
       '重力控制的方向（主页面）';
 
@@ -2638,12 +2632,6 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_interface_show_random_subtitle => '在列表和详情页启用或禁用悬浮随机按钮';
-
-  @override
-  String get settings_interface_shake_random => '摇一摇发现';
-
-  @override
-  String get settings_interface_shake_random_subtitle => '摇晃设备以跳转到当前选项卡中的随机项目';
 
   @override
   String get settings_interface_main_pages_gravity_orientation =>
@@ -4286,12 +4274,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_interface_show_random_subtitle => '在列表和詳情頁面啟用或停用浮動隨機按鈕';
-
-  @override
-  String get settings_interface_shake_random => '搖一搖發現';
-
-  @override
-  String get settings_interface_shake_random_subtitle => '搖晃您的裝置以跳轉到目前分頁中的隨機項目';
 
   @override
   String get settings_interface_main_pages_gravity_orientation =>

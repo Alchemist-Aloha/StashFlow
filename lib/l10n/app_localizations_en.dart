@@ -1010,13 +1010,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enable or disable the floating casino buttons across list and details pages';
 
   @override
-  String get settings_interface_shake_random => 'Shake to Discover';
-
-  @override
-  String get settings_interface_shake_random_subtitle =>
-      'Shake your device to jump to a random item in the current tab';
-
-  @override
   String get settings_interface_main_pages_gravity_orientation =>
       'Gravity-controlled orientation (main pages)';
 

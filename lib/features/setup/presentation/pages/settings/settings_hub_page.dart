@@ -12,7 +12,6 @@ class SettingsHubPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colorScheme = Theme.of(context).colorScheme;
     final isDesktop = ref.watch(desktopCapabilitiesProvider);
     final l10n = AppLocalizations.of(context)!;
 

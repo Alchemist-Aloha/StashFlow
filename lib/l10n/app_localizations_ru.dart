@@ -1015,13 +1015,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Включить или отключить плавающие кнопки казино на страницах списков и деталей';
 
   @override
-  String get settings_interface_shake_random => 'Встряхнуть для открытия';
-
-  @override
-  String get settings_interface_shake_random_subtitle =>
-      'Встряхните устройство, чтобы перейти к случайному элементу в текущей вкладке';
-
-  @override
   String get settings_interface_main_pages_gravity_orientation =>
       'Ориентация, управляемая гравитацией (основные страницы)';
 

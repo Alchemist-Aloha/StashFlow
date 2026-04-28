@@ -290,8 +290,6 @@
   "settings_interface_navigation_subtitle": "Видимость глобальных ярлыков навигации",
   "settings_interface_show_random": "Показывать кнопки случайной навигации",
   "settings_interface_show_random_subtitle": "Включить или отключить плавающие кнопки казино на страницах списков и деталей",
-  "settings_interface_shake_random": "Встряхнуть для открытия",
-  "settings_interface_shake_random_subtitle": "Встряхните устройство, чтобы перейти к случайному элементу в текущей вкладке",
   "settings_interface_main_pages_gravity_orientation": "Ориентация, управляемая гравитацией (основные страницы)",
   "settings_interface_main_pages_gravity_orientation_subtitle": "Разрешить основным страницам поворачиваться с помощью датчика устройства. Полноэкранное воспроизведение видео использует собственные настройки ориентации.",
   "settings_interface_show_edit": "Показывать кнопку редактирования",

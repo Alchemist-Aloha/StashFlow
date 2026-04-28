@@ -1028,13 +1028,6 @@ class AppLocalizationsIt extends AppLocalizations {
       'Abilita o disabilita i pulsanti fluttuanti nelle pagine di elenco e dettaglio';
 
   @override
-  String get settings_interface_shake_random => 'Agita per Scoprire';
-
-  @override
-  String get settings_interface_shake_random_subtitle =>
-      'Agita il dispositivo per passare a un elemento casuale nella scheda corrente';
-
-  @override
   String get settings_interface_main_pages_gravity_orientation =>
       'Orientamento controllato dalla gravità (pagine principali)';
 

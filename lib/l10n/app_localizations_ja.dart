@@ -998,13 +998,6 @@ class AppLocalizationsJa extends AppLocalizations {
       'リストおよび詳細ページでフローティングカジノボタンを有効または無効にします';
 
   @override
-  String get settings_interface_shake_random => 'シェイクして発見';
-
-  @override
-  String get settings_interface_shake_random_subtitle =>
-      'デバイスを振って、現在のタブのランダムなアイテムにジャンプします';
-
-  @override
   String get settings_interface_main_pages_gravity_orientation =>
       '重力制御の画面向き（メインページ）';
 
