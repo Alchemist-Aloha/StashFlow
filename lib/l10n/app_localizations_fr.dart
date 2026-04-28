@@ -996,11 +996,11 @@ class AppLocalizationsFr extends AppLocalizations {
       'Entrez un code hexadécimal ARGB à 8 chiffres';
 
   @override
-  String get settings_appearance_font_size => 'Global Font Size';
+  String get settings_appearance_font_size => 'Global UI Scale';
 
   @override
   String get settings_appearance_font_size_subtitle =>
-      'Scale the text across the entire application interface';
+      'Scale typography and spacing proportionally';
 
   @override
   String get settings_interface_title => 'Paramètres d\'interface';

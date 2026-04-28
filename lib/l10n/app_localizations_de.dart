@@ -995,11 +995,11 @@ class AppLocalizationsDe extends AppLocalizations {
       'Geben Sie einen 8-stelligen ARGB-Hex-Code ein';
 
   @override
-  String get settings_appearance_font_size => 'Global Font Size';
+  String get settings_appearance_font_size => 'Global UI Scale';
 
   @override
   String get settings_appearance_font_size_subtitle =>
-      'Scale the text across the entire application interface';
+      'Scale typography and spacing proportionally';
 
   @override
   String get settings_interface_title => 'Interface-Einstellungen';

@@ -1923,13 +1923,13 @@ abstract class AppLocalizations {
   /// No description provided for @settings_appearance_font_size.
   ///
   /// In en, this message translates to:
-  /// **'Global Font Size'**
+  /// **'Global UI Scale'**
   String get settings_appearance_font_size;
 
   /// No description provided for @settings_appearance_font_size_subtitle.
   ///
   /// In en, this message translates to:
-  /// **'Scale the text across the entire application interface'**
+  /// **'Scale typography and spacing proportionally'**
   String get settings_appearance_font_size_subtitle;
 
   /// No description provided for @settings_interface_title.

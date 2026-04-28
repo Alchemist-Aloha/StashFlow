@@ -1000,11 +1000,11 @@ class AppLocalizationsIt extends AppLocalizations {
       'Inserisci un codice esadecimale ARGB a 8 cifre';
 
   @override
-  String get settings_appearance_font_size => 'Global Font Size';
+  String get settings_appearance_font_size => 'Global UI Scale';
 
   @override
   String get settings_appearance_font_size_subtitle =>
-      'Scale the text across the entire application interface';
+      'Scale typography and spacing proportionally';
 
   @override
   String get settings_interface_title => 'Impostazioni Interfaccia';

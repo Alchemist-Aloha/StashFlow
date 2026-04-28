@@ -987,11 +987,11 @@ class AppLocalizationsRu extends AppLocalizations {
       'Введите 8-значный ARGB hex-код';
 
   @override
-  String get settings_appearance_font_size => 'Global Font Size';
+  String get settings_appearance_font_size => 'Global UI Scale';
 
   @override
   String get settings_appearance_font_size_subtitle =>
-      'Scale the text across the entire application interface';
+      'Scale typography and spacing proportionally';
 
   @override
   String get settings_interface_title => 'Настройки интерфейса';

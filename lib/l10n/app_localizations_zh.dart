@@ -970,11 +970,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_appearance_custom_hex_helper => '输入 8 位 ARGB hex 代码';
 
   @override
-  String get settings_appearance_font_size => 'Global Font Size';
+  String get settings_appearance_font_size => 'Global UI Scale';
 
   @override
   String get settings_appearance_font_size_subtitle =>
-      'Scale the text across the entire application interface';
+      'Scale typography and spacing proportionally';
 
   @override
   String get settings_interface_title => '界面设置';

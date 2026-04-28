@@ -170,7 +170,7 @@ class _AppearanceSettingsPageState
                   SettingsSectionCard(
                     title: l10n.settings_appearance_font_size,
                     subtitle: l10n.settings_appearance_font_size_subtitle,
-                    child: _buildFontSizeFactorSlider(l10n),
+                    child: _buildGlobalScaleSlider(l10n),
                   ),
                 ],
               ),
@@ -178,7 +178,7 @@ class _AppearanceSettingsPageState
     );
   }
 
-  Widget _buildFontSizeFactorSlider(AppLocalizations l10n) {
+  Widget _buildGlobalScaleSlider(AppLocalizations l10n) {
     final value = ref.watch(appGlobalScaleProvider);
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
