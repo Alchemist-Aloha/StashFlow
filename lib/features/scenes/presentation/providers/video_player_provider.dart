@@ -623,6 +623,7 @@ class PlayerState extends _$PlayerState {
       httpHeaders: httpHeaders ?? const <String, String>{},
       videoPlayerOptions: VideoPlayerOptions(
         allowBackgroundPlayback: allowBackgroundPlayback,
+        mixWithOthers: true,
       ),
       closedCaptionFile: closedCaptionFile,
     );
