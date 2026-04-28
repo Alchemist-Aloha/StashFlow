@@ -393,15 +393,12 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
 
   ButtonStyle _controlButtonStyle(ColorScheme colorScheme) {
     return IconButton.styleFrom(
-      backgroundColor: colorScheme.surfaceContainerHigh.withValues(alpha: 0.62),
+      backgroundColor: Colors.transparent,
       foregroundColor: colorScheme.onSurface,
-      disabledBackgroundColor: colorScheme.surfaceContainerLow.withValues(
-        alpha: 0.5,
-      ),
+      disabledBackgroundColor: Colors.transparent,
       disabledForegroundColor: colorScheme.onSurfaceVariant.withValues(
         alpha: 0.55,
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       padding: const EdgeInsets.all(8),
       minimumSize: const Size(38, 38),
     );

@@ -81,15 +81,12 @@ class VideoPlaybackControls extends StatelessWidget {
 
   ButtonStyle _controlButtonStyle(ColorScheme colorScheme) {
     return IconButton.styleFrom(
-      backgroundColor: colorScheme.surfaceContainerHigh.withValues(alpha: 0.62),
+      backgroundColor: Colors.transparent,
       foregroundColor: colorScheme.onSurface,
-      disabledBackgroundColor: colorScheme.surfaceContainerLow.withValues(
-        alpha: 0.5,
-      ),
+      disabledBackgroundColor: Colors.transparent,
       disabledForegroundColor: colorScheme.onSurfaceVariant.withValues(
         alpha: 0.55,
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       padding: const EdgeInsets.all(8),
       minimumSize: const Size(38, 38),
     );
@@ -114,7 +111,7 @@ class VideoPlaybackControls extends StatelessWidget {
           },
         ),
         if (nextScene != null && !isFullScreen) ...[
-          const SizedBox(width: 8),
+          const SizedBox(width: 4),
           IconButton(
             tooltip: context.l10n.common_skip_next,
             style: _controlButtonStyle(colorScheme),
@@ -126,7 +123,7 @@ class VideoPlaybackControls extends StatelessWidget {
             },
           ),
         ],
-        const SizedBox(width: 8),
+        const SizedBox(width: 4),
         Expanded(
           child: Text(
             '$formattedCurrentTime / $formattedDuration',
@@ -139,7 +136,7 @@ class VideoPlaybackControls extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 4),
         if (scene.captions.isNotEmpty)
           PopupMenuButton<String?>(
             tooltip: context.l10n.common_select_subtitle,
@@ -178,7 +175,7 @@ class VideoPlaybackControls extends StatelessWidget {
                             ? colorScheme.primary
                             : colorScheme.onSurfaceVariant,
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 4),
                       Text(
                         context.l10n.common_none,
                         style: TextStyle(color: colorScheme.onSurface),
@@ -218,7 +215,7 @@ class VideoPlaybackControls extends StatelessWidget {
                               ? colorScheme.primary
                               : colorScheme.onSurfaceVariant,
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 4),
                         Text(
                           label,
                           style: TextStyle(color: colorScheme.onSurface),
@@ -231,7 +228,7 @@ class VideoPlaybackControls extends StatelessWidget {
               return items;
             },
           ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 4),
         PopupMenuButton<double>(
           tooltip: context.l10n.common_playback_speed,
           initialValue: playbackSpeed,
@@ -257,7 +254,7 @@ class VideoPlaybackControls extends StatelessWidget {
                               ? colorScheme.primary
                               : colorScheme.onSurfaceVariant,
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 4),
                         Text(
                           _formatSpeed(speed),
                           style: TextStyle(color: colorScheme.onSurface),
@@ -295,10 +292,10 @@ class VideoPlaybackControls extends StatelessWidget {
           ),
         ),
         if (desktopVolumeControl != null) ...[
-          const SizedBox(width: 8),
+          const SizedBox(width: 4),
           desktopVolumeControl!,
         ],
-        const SizedBox(width: 8),
+        const SizedBox(width: 4),
         IconButton(
           tooltip: 'Cast',
           style: _controlButtonStyle(colorScheme),
@@ -317,7 +314,7 @@ class VideoPlaybackControls extends StatelessWidget {
           },
         ),
         if (enableNativePip && !kIsWeb && Platform.isAndroid) ...[
-          const SizedBox(width: 8),
+          const SizedBox(width: 4),
           IconButton(
             tooltip: context.l10n.common_pip,
             style: _controlButtonStyle(colorScheme),
@@ -334,7 +331,7 @@ class VideoPlaybackControls extends StatelessWidget {
             },
           ),
         ],
-        const SizedBox(width: 8),
+        const SizedBox(width: 4),
         GestureDetector(
           onTap: () {}, // Consume tap to prevent propagation
           child: IconButton(

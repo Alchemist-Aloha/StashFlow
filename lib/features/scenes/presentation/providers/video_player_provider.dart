@@ -618,6 +618,10 @@ class PlayerState extends _$PlayerState {
       );
     }
 
+    if (state.videoPlayerController != null) {
+      await _disposeControllers();
+    }
+
     final videoController = VideoPlayerController.networkUrl(
       Uri.parse(effectiveStreamUrl),
       httpHeaders: httpHeaders ?? const <String, String>{},
