@@ -18,20 +18,6 @@ class SupportSettingsPage extends ConsumerWidget {
       child: ListView(
         padding: const EdgeInsets.all(AppTheme.spacingMedium),
         children: [
-          Text(
-            l10n.settings_support_diagnostics,
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            l10n.settings_support_diagnostics_subtitle,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacingLarge),
 
           // Update check section
           ref
