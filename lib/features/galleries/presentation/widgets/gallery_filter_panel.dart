@@ -49,7 +49,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                padding: EdgeInsets.all(context.dimensions.spacingMedium),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -75,7 +75,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
               Expanded(
                 child: SingleChildScrollView(
                   padding: EdgeInsets.only(
-                    bottom: bottomInset + safeBottom + AppTheme.spacingLarge,
+                    bottom: bottomInset + safeBottom + context.dimensions.spacingLarge,
                   ),
                   child: Column(
                     children: [
@@ -89,7 +89,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
               ),
               const Divider(height: 1),
               Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                padding: EdgeInsets.all(context.dimensions.spacingMedium),
                 child: Column(
                   children: [
                     SizedBox(
@@ -107,14 +107,14 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.colors.primary,
                           foregroundColor: context.colors.onPrimary,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppTheme.spacingMedium,
+                          padding: EdgeInsets.symmetric(
+                            vertical: context.dimensions.spacingMedium,
                           ),
                         ),
                         child: Text(context.l10n.common_apply_filters),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     SizedBox(
                       width: double.infinity,
                       child: TextButton(
@@ -141,8 +141,8 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                           }
                         },
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppTheme.spacingMedium,
+                          padding: EdgeInsets.symmetric(
+                            vertical: context.dimensions.spacingMedium,
                           ),
                         ),
                         child: Text(context.l10n.common_save_default),
@@ -315,8 +315,11 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text('$stars'),
-                          const SizedBox(width: 4),
-                          const Icon(Icons.star, size: 16),
+                          SizedBox(width: context.dimensions.spacingSmall / 2),
+                          Icon(
+                            Icons.star,
+                            size: 16 * context.dimensions.fontSizeFactor,
+                          ),
                         ],
                       ),
                 selected: (stars == 0 && _tempFilter.rating100 == null) || 
@@ -345,7 +348,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
       children: [
         Text(context.l10n.common_organized, style: context.textTheme.labelLarge),
         Wrap(
-          spacing: 8,
+          spacing: context.dimensions.spacingSmall,
           children: OrganizedFilter.values.map((option) {
             return ChoiceChip(
               label: Text(option.name.toUpperCase()),
@@ -368,7 +371,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
       children: [
         Text(label, style: context.textTheme.labelLarge),
         Wrap(
-          spacing: 8,
+          spacing: context.dimensions.spacingSmall,
           children: [
             ChoiceChip(
               label: const Text('Any'),
@@ -407,7 +410,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
     final List<String> selectedIds = criterion?.value ?? [];
     
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -453,7 +456,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
           ),
           if (selectedIds.isNotEmpty)
             Wrap(
-              spacing: 4,
+              spacing: context.dimensions.spacingSmall / 2,
               children: selectedIds.map((id) => Chip(
                 label: Text(id),
                 onDeleted: () {
