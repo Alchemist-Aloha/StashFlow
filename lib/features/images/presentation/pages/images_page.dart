@@ -155,7 +155,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
           builder: (context, setModalState) {
             return SafeArea(
               child: Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingLarge),
+                padding: EdgeInsets.all(context.dimensions.spacingLarge),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,12 +180,12 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: AppTheme.spacingMedium),
+                    SizedBox(height: context.dimensions.spacingMedium),
                     Text(
                       context.l10n.common_sort_method,
                       style: context.textTheme.labelLarge,
                     ),
-                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     Flexible(
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
@@ -196,12 +196,12 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                         child: Scrollbar(
                           thumbVisibility: true,
                           child: SingleChildScrollView(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: AppTheme.spacingSmall,
+                            padding: EdgeInsets.symmetric(
+                              vertical: context.dimensions.spacingSmall,
                             ),
                             child: Wrap(
-                              spacing: AppTheme.spacingSmall,
-                              runSpacing: AppTheme.spacingSmall,
+                              spacing: context.dimensions.spacingSmall,
+                              runSpacing: context.dimensions.spacingSmall,
                               children: _ImageSortOption.values
                                   .map(
                                     (option) => ChoiceChip(
@@ -221,12 +221,12 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingMedium),
+                    SizedBox(height: context.dimensions.spacingMedium),
                     Text(
                       context.l10n.common_direction,
                       style: context.textTheme.labelLarge,
                     ),
-                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     SizedBox(
                       width: double.infinity,
                       child: SegmentedButton<bool>(
@@ -247,7 +247,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                             setModalState(() => tempDescending = value.first),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingLarge),
+                    SizedBox(height: context.dimensions.spacingLarge),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -262,14 +262,14 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.colors.primary,
                           foregroundColor: context.colors.onPrimary,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppTheme.spacingMedium,
+                          padding: EdgeInsets.symmetric(
+                            vertical: context.dimensions.spacingMedium,
                           ),
                         ),
                         child: Text(context.l10n.common_apply_sort),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     SizedBox(
                       width: double.infinity,
                       child: TextButton(
@@ -292,14 +292,14 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                           }
                         },
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppTheme.spacingMedium,
+                          padding: EdgeInsets.symmetric(
+                            vertical: context.dimensions.spacingMedium,
                           ),
                         ),
                         child: Text(context.l10n.common_save_default),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingMedium),
+                    SizedBox(height: context.dimensions.spacingMedium),
                   ],
                 ),
               ),
@@ -421,9 +421,9 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
           : null,
       sortBar: filterState.galleryId != null
           ? Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppTheme.spacingMedium,
-                vertical: AppTheme.spacingSmall,
+              padding: EdgeInsets.symmetric(
+                horizontal: context.dimensions.spacingMedium,
+                vertical: context.dimensions.spacingSmall,
               ),
               child: Row(
                 children: [
@@ -443,11 +443,11 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
         controller: ref.watch(imageScrollControllerProvider),
         slivers: [
           SliverPadding(
-            padding: const EdgeInsets.all(AppTheme.spacingSmall),
+            padding: EdgeInsets.all(context.dimensions.spacingSmall),
             sliver: SliverMasonryGrid.count(
               crossAxisCount: crossAxisCount,
-              mainAxisSpacing: AppTheme.spacingSmall,
-              crossAxisSpacing: AppTheme.spacingSmall,
+              mainAxisSpacing: context.dimensions.spacingSmall,
+              crossAxisSpacing: context.dimensions.spacingSmall,
               itemBuilder: (context, index) {
                 if (index >= items.length) return const SizedBox.shrink();
 

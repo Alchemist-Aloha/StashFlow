@@ -225,7 +225,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
             ),
     );
   }
-  }
 
   Widget _buildDefaultSubtitleSelector() {
     final languages = [

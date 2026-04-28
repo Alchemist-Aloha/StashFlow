@@ -150,7 +150,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
           builder: (context, setModalState) {
             return SafeArea(
               child: Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingLarge),
+                padding: EdgeInsets.all(context.dimensions.spacingLarge),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,12 +175,12 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: AppTheme.spacingMedium),
+                    SizedBox(height: context.dimensions.spacingMedium),
                     Text(
                       context.l10n.common_sort_method,
                       style: context.textTheme.labelLarge,
                     ),
-                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     Flexible(
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
@@ -191,12 +191,12 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
                         child: Scrollbar(
                           thumbVisibility: true,
                           child: SingleChildScrollView(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: AppTheme.spacingSmall,
+                            padding: EdgeInsets.symmetric(
+                              vertical: context.dimensions.spacingSmall,
                             ),
                             child: Wrap(
-                              spacing: AppTheme.spacingSmall,
-                              runSpacing: AppTheme.spacingSmall,
+                              spacing: context.dimensions.spacingSmall,
+                              runSpacing: context.dimensions.spacingSmall,
                               children: _GallerySortOption.values
                                   .map(
                                     (option) => ChoiceChip(
@@ -216,12 +216,12 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingMedium),
+                    SizedBox(height: context.dimensions.spacingMedium),
                     Text(
                       context.l10n.common_direction,
                       style: context.textTheme.labelLarge,
                     ),
-                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     SizedBox(
                       width: double.infinity,
                       child: SegmentedButton<bool>(
@@ -242,7 +242,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
                             setModalState(() => tempDescending = value.first),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingLarge),
+                    SizedBox(height: context.dimensions.spacingLarge),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -257,14 +257,14 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.colors.primary,
                           foregroundColor: context.colors.onPrimary,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppTheme.spacingMedium,
+                          padding: EdgeInsets.symmetric(
+                            vertical: context.dimensions.spacingMedium,
                           ),
                         ),
                         child: Text(context.l10n.common_apply_sort),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     SizedBox(
                       width: double.infinity,
                       child: TextButton(
@@ -287,14 +287,14 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
                           }
                         },
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppTheme.spacingMedium,
+                          padding: EdgeInsets.symmetric(
+                            vertical: context.dimensions.spacingMedium,
                           ),
                         ),
                         child: Text(context.l10n.common_save_default),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingMedium),
+                    SizedBox(height: context.dimensions.spacingMedium),
                   ],
                 ),
               ),
@@ -352,15 +352,20 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
             ),
             if (_sortOption != _GallerySortOption.path || _sortDescending)
               Positioned(
-                right: 8,
-                top: 8,
+                right: context.dimensions.spacingSmall,
+                top: context.dimensions.spacingSmall,
                 child: Container(
-                  padding: const EdgeInsets.all(2),
+                  padding: EdgeInsets.all(
+                    context.dimensions.spacingSmall * 0.25,
+                  ),
                   decoration: BoxDecoration(
                     color: context.colors.secondary,
                     shape: BoxShape.circle,
                   ),
-                  constraints: const BoxConstraints(minWidth: 8, minHeight: 8),
+                  constraints: BoxConstraints(
+                    minWidth: context.dimensions.spacingSmall,
+                    minHeight: context.dimensions.spacingSmall,
+                  ),
                 ),
               ),
           ],
@@ -374,15 +379,20 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
             ),
             if (hasActiveFilters)
               Positioned(
-                right: 8,
-                top: 8,
+                right: context.dimensions.spacingSmall,
+                top: context.dimensions.spacingSmall,
                 child: Container(
-                  padding: const EdgeInsets.all(2),
+                  padding: EdgeInsets.all(
+                    context.dimensions.spacingSmall * 0.25,
+                  ),
                   decoration: BoxDecoration(
                     color: context.colors.secondary,
                     shape: BoxShape.circle,
                   ),
-                  constraints: const BoxConstraints(minWidth: 8, minHeight: 8),
+                  constraints: BoxConstraints(
+                    minWidth: context.dimensions.spacingSmall,
+                    minHeight: context.dimensions.spacingSmall,
+                  ),
                 ),
               ),
           ],

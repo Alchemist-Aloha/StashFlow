@@ -242,7 +242,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
           builder: (context, setModalState) {
             return SafeArea(
               child: Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingLarge),
+                padding: EdgeInsets.all(context.dimensions.spacingLarge),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,12 +269,12 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: AppTheme.spacingMedium),
+                    SizedBox(height: context.dimensions.spacingMedium),
                     Text(
                       context.l10n.common_sort_method,
                       style: context.textTheme.labelLarge,
                     ),
-                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     Flexible(
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
@@ -285,12 +285,12 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                         child: Scrollbar(
                           thumbVisibility: true,
                           child: SingleChildScrollView(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: AppTheme.spacingSmall,
+                            padding: EdgeInsets.symmetric(
+                              vertical: context.dimensions.spacingSmall,
                             ),
                             child: Wrap(
-                              spacing: AppTheme.spacingSmall,
-                              runSpacing: AppTheme.spacingSmall,
+                              spacing: context.dimensions.spacingSmall,
+                              runSpacing: context.dimensions.spacingSmall,
                               children: _SceneSortField.values
                                   .map(
                                     (field) => ChoiceChip(
@@ -310,12 +310,12 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingMedium),
+                    SizedBox(height: context.dimensions.spacingMedium),
                     Text(
                       context.l10n.common_direction,
                       style: context.textTheme.labelLarge,
                     ),
-                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     SizedBox(
                       width: double.infinity,
                       child: SegmentedButton<bool>(
@@ -336,7 +336,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                             setModalState(() => tempDescending = value.first),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingLarge),
+                    SizedBox(height: context.dimensions.spacingLarge),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -351,14 +351,14 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.colors.primary,
                           foregroundColor: context.colors.onPrimary,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppTheme.spacingMedium,
+                          padding: EdgeInsets.symmetric(
+                            vertical: context.dimensions.spacingMedium,
                           ),
                         ),
                         child: Text(context.l10n.common_apply_sort),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     SizedBox(
                       width: double.infinity,
                       child: TextButton(
@@ -383,14 +383,14 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                           }
                         },
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppTheme.spacingMedium,
+                          padding: EdgeInsets.symmetric(
+                            vertical: context.dimensions.spacingMedium,
                           ),
                         ),
                         child: Text(context.l10n.common_save_default),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingMedium),
+                    SizedBox(height: context.dimensions.spacingMedium),
                   ],
                 ),
               ),

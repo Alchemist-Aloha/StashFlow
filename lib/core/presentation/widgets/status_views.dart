@@ -28,12 +28,16 @@ class ErrorStateView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(context.dimensions.spacingLarge),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: Colors.redAccent),
-            const SizedBox(height: 12),
+            Icon(
+              Icons.error_outline,
+              size: 48 * context.dimensions.fontSizeFactor,
+              color: Colors.redAccent,
+            ),
+            SizedBox(height: context.dimensions.spacingSmall * 1.5),
             Text(
               message,
               textAlign: TextAlign.center,
@@ -42,7 +46,7 @@ class ErrorStateView extends StatelessWidget {
               ),
             ),
             if (onRetry != null) ...[
-              const SizedBox(height: 24),
+              SizedBox(height: context.dimensions.spacingLarge),
               FilledButton.tonal(onPressed: onRetry, child: Text(retryLabel)),
             ],
           ],

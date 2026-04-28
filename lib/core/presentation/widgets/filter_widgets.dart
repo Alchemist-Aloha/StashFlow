@@ -19,7 +19,7 @@ class FilterSection extends StatelessWidget {
     return ExpansionTile(
       title: Text(title, style: context.textTheme.titleMedium),
       initiallyExpanded: initiallyExpanded,
-      childrenPadding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium),
+      childrenPadding: EdgeInsets.symmetric(horizontal: context.dimensions.spacingMedium),
       children: children,
     );
   }
@@ -40,7 +40,7 @@ class IntCriterionInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingSmall),
+      padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -65,7 +65,7 @@ class IntCriterionInput extends StatelessWidget {
                   );
                 }).toList(),
               ),
-              const SizedBox(width: AppTheme.spacingSmall),
+              SizedBox(width: context.dimensions.spacingSmall),
               Expanded(
                 child: TextField(
                   keyboardType: TextInputType.number,
@@ -111,7 +111,7 @@ class MultiCriterionInput<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingSmall),
+      padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -141,10 +141,10 @@ class MultiCriterionInput<T> extends StatelessWidget {
                   );
                 }).toList(),
               ),
-              const SizedBox(width: AppTheme.spacingSmall),
+              SizedBox(width: context.dimensions.spacingSmall),
               Expanded(
                 child: Wrap(
-                  spacing: 4,
+                  spacing: context.dimensions.spacingSmall / 2,
                   children: [
                     IconButton(
                       tooltip: 'Add',
@@ -190,7 +190,7 @@ class StringCriterionInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingSmall),
+      padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -222,7 +222,7 @@ class StringCriterionInput extends StatelessWidget {
                   return DropdownMenuItem(value: mod, child: Text(mod.name));
                 }).toList(),
               ),
-              const SizedBox(width: AppTheme.spacingSmall),
+              SizedBox(width: context.dimensions.spacingSmall),
               if (value?.modifier != CriterionModifier.isNull && value?.modifier != CriterionModifier.notNull)
                 Expanded(
                   child: TextFormField(
@@ -259,7 +259,7 @@ class DateCriterionInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingSmall),
+      padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -293,7 +293,7 @@ class DateCriterionInput extends StatelessWidget {
                   return DropdownMenuItem(value: mod, child: Text(mod.name));
                 }).toList(),
               ),
-              const SizedBox(width: AppTheme.spacingSmall),
+              SizedBox(width: context.dimensions.spacingSmall),
               if (value?.modifier != CriterionModifier.isNull && value?.modifier != CriterionModifier.notNull)
                 Expanded(
                   child: TextFormField(

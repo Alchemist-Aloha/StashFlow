@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
+import '../theme/app_theme.dart';
 import '../../data/auth/dio_file_service.dart';
 import '../../data/auth/auth_provider.dart';
 import '../../data/graphql/media_headers_provider.dart';
@@ -82,15 +83,15 @@ class _RetryingCachedImageState extends State<_RetryingCachedImage> {
       memCacheWidth: widget.memCacheWidth,
       memCacheHeight: widget.memCacheHeight,
       placeholder: (context, url) => Container(
-        color: Colors.grey[900],
-        child: const Center(
+        color: context.colors.surfaceVariant,
+        child: Center(
           child: SizedBox(
-            width: 48,
-            height: 48,
+            width: 48 * context.dimensions.fontSizeFactor,
+            height: 48 * context.dimensions.fontSizeFactor,
             child: _Shimmer(
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Colors.grey,
+                  color: context.colors.outline.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -104,9 +105,13 @@ class _RetryingCachedImageState extends State<_RetryingCachedImage> {
         return Container(
           width: widget.width,
           height: widget.height,
-          color: Colors.grey[800],
-          child: const Center(
-            child: Icon(Icons.broken_image, color: Colors.white54),
+          color: context.colors.surfaceVariant,
+          child: Center(
+            child: Icon(
+              Icons.broken_image,
+              color: context.colors.onSurfaceVariant,
+              size: 24 * context.dimensions.fontSizeFactor,
+            ),
           ),
         );
       },
@@ -378,15 +383,15 @@ class StashImage extends ConsumerWidget {
 
   Widget _buildPlaceholder(BuildContext context) {
     return Container(
-      color: Colors.grey[900],
-      child: const Center(
+      color: context.colors.surfaceVariant,
+      child: Center(
         child: SizedBox(
-          width: 48,
-          height: 48,
+          width: 48 * context.dimensions.fontSizeFactor,
+          height: 48 * context.dimensions.fontSizeFactor,
           child: _Shimmer(
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: Colors.grey,
+                color: context.colors.outline.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
             ),
@@ -400,9 +405,13 @@ class StashImage extends ConsumerWidget {
     return Container(
       width: width,
       height: height,
-      color: Colors.grey[800],
-      child: const Center(
-        child: Icon(Icons.broken_image, color: Colors.white54),
+      color: context.colors.surfaceVariant,
+      child: Center(
+        child: Icon(
+          Icons.broken_image,
+          color: context.colors.onSurfaceVariant,
+          size: 24 * context.dimensions.fontSizeFactor,
+        ),
       ),
     );
   }

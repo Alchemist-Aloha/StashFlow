@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -253,7 +254,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                         setDialogState(() => intervalSeconds = v);
                       },
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     Text(
                       context.l10n.images_slideshow_transition_ms(
                         transitionMs.round(),
@@ -271,7 +272,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                         setDialogState(() => transitionMs = v);
                       },
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     SegmentedButton<_SlideshowDirection>(
                       segments: [
                         ButtonSegment<_SlideshowDirection>(
@@ -290,7 +291,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                         setDialogState(() => direction = selection.first);
                       },
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
                       title: Text(context.l10n.images_slideshow_loop_title),
@@ -409,13 +410,13 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                     },
                   ),
                   if (!canRateGallery) ...[
-                    const SizedBox(height: 8),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     Text(
                       context.l10n.images_gallery_rating_unavailable,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.dimensions.spacingMedium),
                   Text(
                     context.l10n.images_rating(
                       (rating / 20).toStringAsFixed(1),
@@ -559,7 +560,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     final ratingLabel = hasRating ? (rating100 / 20).toStringAsFixed(1) : '';
 
     return Positioned(
-      top: 8,
+      top: context.dimensions.spacingSmall,
       left: 0,
       right: 0,
       child: Listener(
@@ -577,9 +578,9 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: context.dimensions.spacingSmall + 4,
+                        vertical: context.dimensions.spacingSmall + 2,
                       ),
                       decoration: BoxDecoration(
                         color: colorScheme.surface.withValues(alpha: 0.78),
@@ -597,7 +598,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                             onPressed: () => context.pop(),
                             tooltip: context.l10n.common_back,
                           ),
-                          const SizedBox(width: 10),
+                          SizedBox(width: context.dimensions.spacingSmall + 2),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -610,7 +611,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                const SizedBox(height: 2),
+                                SizedBox(height: context.dimensions.spacingSmall / 4),
                                 Text(
                                   '${_currentIndex + 1} / $totalItemCount',
                                   style: Theme.of(context).textTheme.bodySmall,
@@ -618,12 +619,12 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                               ],
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: context.dimensions.spacingSmall),
                           if (hasRating)
                             Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 6,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: context.dimensions.spacingSmall + 2,
+                                vertical: context.dimensions.spacingSmall - 2,
                               ),
                               decoration: BoxDecoration(
                                 color: colorScheme.surfaceContainerHighest
@@ -643,7 +644,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                     size: 14,
                                     color: colorScheme.tertiary,
                                   ),
-                                  const SizedBox(width: 4),
+                                  SizedBox(width: context.dimensions.spacingSmall / 2),
                                   Text(
                                     ratingLabel,
                                     style: Theme.of(context)
@@ -654,7 +655,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                 ],
                               ),
                             ),
-                          if (hasRating) const SizedBox(width: 8),
+                          if (hasRating) SizedBox(width: context.dimensions.spacingSmall),
                           IconButton.filledTonal(
                             icon: const Icon(Icons.star_rate_rounded),
                             onPressed: currentImage == null
@@ -662,7 +663,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                 : () => _showRatingDialog(currentImage),
                             tooltip: context.l10n.common_rate,
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: context.dimensions.spacingSmall),
                           IconButton.filled(
                             icon: Icon(
                               _isSlideshowPlaying
@@ -704,7 +705,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     return Positioned(
       left: 0,
       right: 0,
-      bottom: 8,
+      bottom: context.dimensions.spacingSmall,
       child: Listener(
         behavior: HitTestBehavior.translucent,
         onPointerDown: _onOverlayPointerDown,
@@ -720,9 +721,9 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 12,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: context.dimensions.spacingSmall + 6,
+                        vertical: context.dimensions.spacingSmall + 4,
                       ),
                       decoration: BoxDecoration(
                         color: colorScheme.surfaceContainerHighest.withValues(
@@ -744,7 +745,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                 ? _goToPreviousImage
                                 : null,
                           ),
-                          const SizedBox(width: 10),
+                          SizedBox(width: context.dimensions.spacingSmall + 2),
                           Expanded(
                             child: LinearProgressIndicator(
                               value: progress,
@@ -752,7 +753,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                               borderRadius: BorderRadius.circular(999),
                             ),
                           ),
-                          const SizedBox(width: 10),
+                          SizedBox(width: context.dimensions.spacingSmall + 2),
                           IconButton.filledTonal(
                             icon: const Icon(Icons.chevron_right_rounded),
                             tooltip: context.l10n.common_next,
@@ -866,7 +867,9 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                   final maxOverlayWidth = isWideLayout
                       ? 720.0
                       : constraints.maxWidth;
-                  final horizontalPadding = isWideLayout ? 24.0 : 8.0;
+                  final horizontalPadding = isWideLayout
+                      ? context.dimensions.spacingLarge
+                      : context.dimensions.spacingSmall;
 
                   return Listener(
                     behavior: HitTestBehavior.translucent,
@@ -940,19 +943,19 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                     case LoadState.failed:
                                       return GestureDetector(
                                         onTap: () => state.reLoadImage(),
-                                        child: const Center(
+                                        child: Center(
                                           child: Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               Icon(
                                                 Icons.broken_image,
                                                 color: Colors.white54,
-                                                size: 64,
+                                                size: 64 * context.dimensions.fontSizeFactor,
                                               ),
-                                              SizedBox(height: 16),
+                                              SizedBox(height: context.dimensions.spacingMedium),
                                               Text(
                                                 'Failed to load. Tap to retry.',
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                   color: Colors.white70,
                                                 ),
                                               ),

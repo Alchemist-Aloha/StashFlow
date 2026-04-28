@@ -1,7 +1,7 @@
 # Comprehensive UI Scaling Refactor Tasks
 
 - [x] Task 1: Refactor Filter Panels (Floating Panels)
-- [ ] Task 2: Refactor Remaining Settings Pages
-- [ ] Task 3: Refactor Core Presentation Widgets
-- [ ] Task 4: Refactor Key Feature Pages (Performers, Scenes, etc.)
-- [ ] Task 5: Refactor Dialogs and Bottom Sheets
+- [x] Task 2: Refactor Remaining Settings Pages
+- [x] Task 3: Refactor Core Presentation Widgets
+- [x] Task 4: Refactor Key Feature Pages (Performers, Scenes, etc.)
+- [x] Task 5: Refactor Dialogs and Bottom Sheets

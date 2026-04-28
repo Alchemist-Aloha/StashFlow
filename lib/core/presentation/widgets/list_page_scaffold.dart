@@ -39,7 +39,7 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     this.onRefresh,
     this.onFetchNextPage,
     this.floatingActionButton,
-    this.padding = const EdgeInsets.all(AppTheme.spacingMedium),
+    this.padding,
     this.hideAppBar = false,
     this.scrollController,
     this.useResponsiveGrid = true,
@@ -114,7 +114,7 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
   final Widget? floatingActionButton;
 
   /// Padding applied to the list/grid.
-  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry? padding;
 
   /// If true, the AppBar is omitted.
   final bool hideAppBar;
@@ -231,12 +231,13 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   }
 
   int _getEffectivePrefetchDistance(BuildContext context) {
+    final effectivePadding = widget.padding ?? EdgeInsets.all(context.dimensions.spacingMedium);
     final itemsInTwoScreens = GridUtils.calculateItemsPerPage(
       context: context,
       gridDelegate: widget.gridDelegate != null
           ? _getResponsiveGridDelegate(context)
           : null,
-      padding: widget.padding,
+      padding: effectivePadding,
       screens: 2.0,
       itemExtent: widget.itemExtent,
       measuredItemExtent: _measuredItemExtent,
@@ -488,9 +489,9 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                 children: [
                                   if (history.isNotEmpty)
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0,
-                                        vertical: 8.0,
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: context.dimensions.spacingMedium,
+                                        vertical: context.dimensions.spacingSmall,
                                       ),
                                       child: Row(
                                         mainAxisAlignment:
@@ -589,15 +590,18 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
           children: [
             if (_currentQuery != null)
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.dimensions.spacingMedium,
+                  vertical: context.dimensions.spacingSmall,
                 ),
                 color: context.colors.surfaceVariant,
                 child: Row(
                   children: [
-                    const Icon(Icons.search, size: 16),
-                    const SizedBox(width: 8),
+                    Icon(
+                      Icons.search,
+                      size: 16 * context.dimensions.fontSizeFactor,
+                    ),
+                    SizedBox(width: context.dimensions.spacingSmall),
                     Expanded(
                       child: Text(
                         'Searching for: "$_currentQuery"',
@@ -609,7 +613,10 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                     ),
                     IconButton(
                       tooltip: context.l10n.common_close,
-                      icon: const Icon(Icons.close, size: 20),
+                      icon: Icon(
+                        Icons.close,
+                        size: 20 * context.dimensions.fontSizeFactor,
+                      ),
                       onPressed: () {
                         setState(() {
                           _currentQuery = null;

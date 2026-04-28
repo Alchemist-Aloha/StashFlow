@@ -38,7 +38,7 @@ class MediaCard extends StatelessWidget {
               child: StashImage(imageUrl: imageUrl, fit: BoxFit.cover),
             ),
             Padding(
-              padding: const EdgeInsets.all(AppTheme.spacingSmall),
+              padding: EdgeInsets.all(context.dimensions.spacingSmall),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -52,7 +52,7 @@ class MediaCard extends StatelessWidget {
                     ),
                   ),
                   if (subtitle != null) ...[
-                    const SizedBox(height: 4),
+                    SizedBox(height: context.dimensions.spacingSmall / 2),
                     DefaultTextStyle(
                       style: context.textTheme.bodySmall!.copyWith(
                         color: context.colors.onSurfaceVariant,
@@ -98,7 +98,7 @@ class MediaHeader extends StatelessWidget {
           ),
         ),
         if (secondaryTitle != null) ...[
-          const SizedBox(height: 4),
+          SizedBox(height: context.dimensions.spacingSmall / 2),
           GestureDetector(
             onTap: onSecondaryTitleTap,
             child: Text(
