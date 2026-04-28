@@ -211,7 +211,9 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
     
     return Container(
       padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
+        // Using MediaQuery.viewInsetsOf(context) instead of MediaQuery.of(context).viewInsets
+        // to prevent unnecessary rebuilds when other MediaQuery properties change.
+        bottom: MediaQuery.viewInsetsOf(context).bottom,
       ),
       child: SingleChildScrollView(
         child: Padding(
