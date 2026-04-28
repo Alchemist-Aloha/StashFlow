@@ -68,6 +68,11 @@ class VttService {
     final List<SpriteInfo> sprites = [];
     final lines = vttBody.split('\n');
 
+    final spriteRegExp = RegExp(
+      r'^([^#]*)#xywh=(\d+),(\d+),(\d+),(\d+)$',
+      caseSensitive: false,
+    );
+
     // Robust VTT parser for Stash sprite format
     for (int i = 0; i < lines.length; i++) {
       final line = lines[i].trim();
@@ -83,15 +88,13 @@ class VttService {
             final nextLine = lines[j].trim();
             if (nextLine.isNotEmpty) {
               spriteLine = nextLine;
+              i = j; // Skip parsed lines in the outer loop
               break;
             }
           }
 
           if (spriteLine != null) {
-            final match = RegExp(
-              r'^([^#]*)#xywh=(\d+),(\d+),(\d+),(\d+)$',
-              caseSensitive: false,
-            ).firstMatch(spriteLine);
+            final match = spriteRegExp.firstMatch(spriteLine);
             if (match != null) {
               final spriteFile = match.group(1) ?? '';
               final x = double.parse(match.group(2)!);
