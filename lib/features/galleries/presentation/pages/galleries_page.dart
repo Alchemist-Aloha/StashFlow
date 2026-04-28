@@ -16,7 +16,6 @@ import '../widgets/gallery_filter_panel.dart';
 import '../../domain/entities/gallery_filter.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
-import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
@@ -315,21 +314,6 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
     );
   }
 
-  String? _getThumbnailUrl(Gallery gallery) {
-    final prefs = ref.read(sharedPreferencesProvider);
-    final storedServerUrl = prefs.getString('server_base_url')?.trim() ?? '';
-    final normalizedServerUrl = normalizeGraphqlServerUrl(storedServerUrl);
-    final endpoint = Uri.parse(
-      normalizedServerUrl.isEmpty
-          ? 'http://localhost:9999/graphql'
-          : normalizedServerUrl,
-    );
-    return resolveGraphqlMediaUrl(
-      rawUrl: gallery.coverPath ?? '/gallery/${gallery.id}/thumbnail',
-      graphqlEndpoint: endpoint,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final galleriesAsync = ref.watch(galleryListProvider);
@@ -342,10 +326,22 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
     final hasActiveFilters = filterActive || organizedFilter != OrganizedFilter.all;
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
+    // ⚡ Bolt: Hoist server endpoint calculation out of the itemBuilder/imageUrlBuilder loop.
+    // Why: Previously, _getThumbnailUrl was parsing the server URL and URI for every single item,
+    // which is expensive O(N) work during scroll events.
+    // Impact: Drastically reduces URI parsing overhead during list scrolling.
+    final serverUrl = ref.watch(serverUrlProvider);
+    final endpoint = Uri.parse(
+      serverUrl.isEmpty ? 'http://localhost:9999/graphql' : serverUrl,
+    );
+
     return ListPageScaffold<Gallery>(
       title: context.l10n.galleries_title,
       scrollController: ref.watch(galleryScrollControllerProvider),
-      imageUrlBuilder: _getThumbnailUrl,
+      imageUrlBuilder: (gallery) => resolveGraphqlMediaUrl(
+        rawUrl: gallery.coverPath ?? '/gallery/${gallery.id}/thumbnail',
+        graphqlEndpoint: endpoint,
+      ),
       actions: [
         Stack(
           children: [
@@ -418,7 +414,10 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
             gallery: gallery,
             isGrid: isGridView,
             useMasonry: isGridView,
-            thumbnailUrl: _getThumbnailUrl(gallery),
+            thumbnailUrl: resolveGraphqlMediaUrl(
+              rawUrl: gallery.coverPath ?? '/gallery/${gallery.id}/thumbnail',
+              graphqlEndpoint: endpoint,
+            ),
             memCacheWidth: memCacheWidth,
             onTap: () {
               ref
