@@ -5,6 +5,7 @@ import '../../../../core/data/auth/auth_mode.dart';
 import '../../../../core/data/auth/auth_provider.dart';
 import '../../../../core/data/preferences/secure_storage_provider.dart';
 import '../../domain/models/server_profile.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
 import '../providers/connection_provider.dart';
 import '../providers/server_profiles_provider.dart';
 
