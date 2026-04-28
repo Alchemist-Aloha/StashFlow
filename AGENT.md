@@ -22,6 +22,14 @@ Short, action-oriented guidance for agents working in this repository.
 - Simplify server URL input: prefer base URL (no `/graphql`) — update ARB keys and `server_profile_drawer.dart` hint text. See: [lib/features/setup/presentation/widgets/server_profile_drawer.dart](lib/features/setup/presentation/widgets/server_profile_drawer.dart#L1).
 - SceneCard enhancements: add thumbnail metadata overlay, desktop hover scrubbing, and configurable performer-avatar row (`maxPerformerAvatars`). See: [lib/features/scenes/presentation/widgets/scene_card.dart](lib/features/scenes/presentation/widgets/scene_card.dart#L1).
 
+## Dynamic UI Scaling — Standards
+
+- **Core Rule:** NEVER use hardcoded spacing (e.g., `EdgeInsets.all(16)`) or static `AppTheme` constants for layout dimensions.
+- **Access:** Use `context.dimensions.spacingSmall/Medium/Large` for all padding, margins, and gaps.
+- **Scaling:** All dimensions must scale with `context.dimensions.fontSizeFactor` (controlled by the global UI size slider).
+- **Component Sizes:** Use `context.dimensions.buttonHeight` and scale manual icon sizes by multiplying with `context.dimensions.fontSizeFactor`.
+- **Implementation:** When adding new UI, ensure `AppDimensions` is supported and the widget tree is responsive to theme changes.
+
 ## Actionable Checklist for Implementers/Agents
 
 - Update ARB keys and run `flutter gen-l10n`.
