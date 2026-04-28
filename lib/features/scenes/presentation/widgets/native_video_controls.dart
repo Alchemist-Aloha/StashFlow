@@ -11,8 +11,10 @@ import 'package:video_player/video_player.dart';
 import 'package:flutter/gestures.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 import 'package:go_router/go_router.dart';
+import 'package:screen_brightness/screen_brightness.dart';
 import 'video_controls/video_progress_bar.dart';
 import 'video_controls/video_playback_controls.dart';
+import 'video_controls/player_gesture_feedback.dart';
 import '../../../../core/presentation/providers/desktop_capabilities_provider.dart';
 import '../../../../core/presentation/providers/desktop_settings_provider.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
@@ -79,6 +81,15 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
   bool _volumeOverlayVisible = false;
   Timer? _volumeOverlayTimer;
   ProviderSubscription<DesktopSettings>? _desktopSettingsSubscription;
+
+  // Advanced gestures state
+  double _originalSpeed = 1.0;
+  bool _isSpeedingUp = false;
+  double _currentSpeed = 1.0;
+  IconData? _feedbackIcon;
+  String _feedbackLabel = '';
+  bool _feedbackVisible = false;
+  Timer? _feedbackTimer;
 
   @override
   void initState() {
@@ -640,6 +651,21 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     );
   }
 
+  void _showFeedback(IconData icon, String label) {
+    if (!mounted) return;
+    _feedbackTimer?.cancel();
+    setState(() {
+      _feedbackIcon = icon;
+      _feedbackLabel = label;
+      _feedbackVisible = true;
+    });
+    _feedbackTimer = Timer(const Duration(milliseconds: 1000), () {
+      if (mounted) {
+        setState(() => _feedbackVisible = false);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -864,6 +890,36 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                   widget.onFullScreenToggle?.call();
                                 }
                               : null,
+                          onLongPressStart: (_) {
+                            _originalSpeed = widget.controller.value.playbackSpeed;
+                            _currentSpeed = 2.0;
+                            widget.controller.setPlaybackSpeed(_currentSpeed);
+                            _showFeedback(Icons.fast_forward, '2.0x');
+                            setState(() => _isSpeedingUp = true);
+                          },
+                          onLongPressMoveUpdate: (details) {
+                            final dy = details.localOffsetFromOrigin.dy;
+                            if (dy < 0) {
+                              // Increase speed from 2.0x up to 10.0x
+                              final extraSpeed = (-dy / 20).clamp(0, 8);
+                              final newSpeed = 2.0 + extraSpeed;
+                              if (newSpeed != _currentSpeed) {
+                                setState(() => _currentSpeed = newSpeed);
+                                widget.controller.setPlaybackSpeed(_currentSpeed);
+                                _showFeedback(
+                                  Icons.fast_forward,
+                                  '${_currentSpeed.toStringAsFixed(1)}x',
+                                );
+                              }
+                            }
+                          },
+                          onLongPressEnd: (_) {
+                            widget.controller.setPlaybackSpeed(_originalSpeed);
+                            setState(() {
+                              _isSpeedingUp = false;
+                              _feedbackVisible = false;
+                            });
+                          },
                           onScaleStart: (details) {
                             if (details.pointerCount == 1) {
                               if (!widget.useDoubleTapSeek) {
@@ -875,6 +931,46 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                           },
                           onScaleUpdate: (details) {
                             if (details.pointerCount == 1) {
+                              // If it's a vertical swipe, handle Volume/Brightness
+                              if (details.focalPointDelta.dy.abs() >
+                                  details.focalPointDelta.dx.abs() * 1.5) {
+                                final isLeft =
+                                    details.focalPoint.dx <
+                                    constraints.maxWidth / 2;
+                                final delta =
+                                    -details.focalPointDelta.dy /
+                                    constraints.maxHeight;
+
+                                if (isLeft) {
+                                  // Brightness
+                                  ScreenBrightness().current.then((current) {
+                                    final newBrightness =
+                                        (current + delta).clamp(0.0, 1.0);
+                                    ScreenBrightness().setScreenBrightness(
+                                      newBrightness,
+                                    );
+                                    _showFeedback(
+                                      Icons.brightness_6,
+                                      '${(newBrightness * 100).round()}%',
+                                    );
+                                  });
+                                } else {
+                                  // Volume
+                                  final currentVol =
+                                      ref.read(desktopSettingsProvider).volume;
+                                  final newVol =
+                                      (currentVol + delta).clamp(0.0, 1.0);
+                                  ref
+                                      .read(playerStateProvider.notifier)
+                                      .setVolume(newVol);
+                                  _showFeedback(
+                                    Icons.volume_up,
+                                    '${(newVol * 100).round()}%',
+                                  );
+                                }
+                                return;
+                              }
+
                               if (!widget.useDoubleTapSeek) {
                                 _updateDragSeek(details, constraints.maxWidth);
                               }
@@ -913,6 +1009,14 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                           _buildSeekFeedbackOverlay(colorScheme),
                         ],
                       ),
+                    ),
+                  ),
+
+                  Positioned.fill(
+                    child: PlayerGestureFeedback(
+                      icon: _feedbackIcon ?? Icons.info,
+                      label: _feedbackLabel,
+                      visible: _feedbackVisible,
                     ),
                   ),
 
