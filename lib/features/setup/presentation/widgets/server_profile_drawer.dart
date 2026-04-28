@@ -391,6 +391,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
           border: const OutlineInputBorder(),
           suffixIcon: IconButton(
             icon: Icon(_obscureApiKey ? Icons.visibility : Icons.visibility_off),
+            tooltip: _obscureApiKey ? l10n.common_show : l10n.common_hide,
             onPressed: () => setState(() => _obscureApiKey = !_obscureApiKey),
           ),
         ),
@@ -414,6 +415,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
                 icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
+                tooltip: _obscurePassword ? l10n.common_show : l10n.common_hide,
                 onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
               ),
             ),
