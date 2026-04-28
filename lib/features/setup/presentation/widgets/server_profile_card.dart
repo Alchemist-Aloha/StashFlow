@@ -117,7 +117,7 @@ class ServerProfileCard extends ConsumerWidget {
             height: 16,
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
-          error: (_, __) => Icon(
+          error: (_, _) => Icon(
             Icons.error_outline,
             size: 16,
             color: Theme.of(context).colorScheme.error,
@@ -135,7 +135,7 @@ class ServerProfileCard extends ConsumerWidget {
                   color: status.when(
                     data: (_) => Colors.green[700],
                     loading: () => null,
-                    error: (_, __) => Theme.of(context).colorScheme.error,
+                    error: (_, _) => Theme.of(context).colorScheme.error,
                   ),                ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

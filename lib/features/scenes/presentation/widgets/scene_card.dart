@@ -349,10 +349,6 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     String apiKey,
     double? titleFontSize,
   ) {
-    final isDesktop = kIsWeb ||
-        (defaultTargetPlatform != TargetPlatform.android &&
-            defaultTargetPlatform != TargetPlatform.iOS);
-
     return InkWell(
       onTap: widget.onTap,
       onLongPress: () => _showMenu(context, ref),
@@ -436,10 +432,6 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     String apiKey,
     double? titleFontSize,
   ) {
-    final isDesktop = kIsWeb ||
-        (defaultTargetPlatform != TargetPlatform.android &&
-            defaultTargetPlatform != TargetPlatform.iOS);
-
     return InkWell(
       onTap: widget.onTap,
       onLongPress: () => _showMenu(context, ref),

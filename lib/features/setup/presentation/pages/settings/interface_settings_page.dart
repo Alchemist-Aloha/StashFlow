@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
@@ -156,7 +155,6 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final isDesktop = kIsWeb || (defaultTargetPlatform != TargetPlatform.android && defaultTargetPlatform != TargetPlatform.iOS);
 
     return SettingsPageShell(
       title: context.l10n.settings_interface_title,

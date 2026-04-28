@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/data/preferences/secure_storage_provider.dart';

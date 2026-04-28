@@ -333,28 +333,30 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
       return mode == AuthMode.apiKey || mode == AuthMode.password;
     }).toList();
 
-    return Column(
-      children: [
-        ...visibleModes.map((mode) {
-          return RadioListTile<AuthMode>(
-            title: Text(_getAuthModeLabel(mode, l10n)),
-            subtitle: Text(_getAuthModeDescription(mode, l10n)),
-            value: mode,
-            groupValue: _authMode,
-            onChanged: (value) {
-              if (value != null) {
-                setState(() => _authMode = value);
-              }
-            },
-            contentPadding: EdgeInsets.zero,
-          );
-        }),
-        if (!_showAdvancedAuth)
-          TextButton(
-            onPressed: () => setState(() => _showAdvancedAuth = true),
-            child: Text(l10n.details_show_more),
-          ),
-      ],
+    return RadioGroup<AuthMode>(
+      groupValue: _authMode,
+      onChanged: (value) {
+        if (value != null) {
+          setState(() => _authMode = value);
+        }
+      },
+      child: Column(
+        children: [
+          ...visibleModes.map((mode) {
+            return RadioListTile<AuthMode>(
+              title: Text(_getAuthModeLabel(mode, l10n)),
+              subtitle: Text(_getAuthModeDescription(mode, l10n)),
+              value: mode,
+              contentPadding: EdgeInsets.zero,
+            );
+          }),
+          if (!_showAdvancedAuth)
+            TextButton(
+              onPressed: () => setState(() => _showAdvancedAuth = true),
+              child: Text(l10n.details_show_more),
+            ),
+        ],
+      ),
     );
   }
 

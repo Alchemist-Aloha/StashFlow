@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
