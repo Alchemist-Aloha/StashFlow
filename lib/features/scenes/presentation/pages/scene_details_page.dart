@@ -339,7 +339,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         if (scene.studioName != null)
           Text(
             ' • ',
-            style: TextStyle(
+            style: context.textTheme.titleMedium?.copyWith(
               color: context.colors.onSurface.withValues(alpha: 0.5),
             ),
           ),

@@ -98,7 +98,9 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
           leading: const Icon(Icons.group_work),
           title: Text(
             group.name.isEmpty ? context.l10n.groups_unnamed : group.name,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: context.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           subtitle: Text(context.l10n.common_id(group.id.toString())),
           onTap: () => context.push('/group/${group.id}'),

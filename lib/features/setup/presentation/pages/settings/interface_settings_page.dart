@@ -697,11 +697,10 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                       ),
                       title: Text(
                         entry.value,
-                        style: TextStyle(
+                        style: context.textTheme.bodyLarge?.copyWith(
                           fontWeight: isSelected ? FontWeight.bold : null,
                         ),
-                      ),
-                      onTap: () async {
+                      ),                      onTap: () async {
                         await ref
                             .read(appLanguageProvider.notifier)
                             .setLanguage(entry.key);

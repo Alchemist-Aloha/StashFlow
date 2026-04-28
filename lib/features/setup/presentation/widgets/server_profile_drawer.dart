@@ -190,7 +190,9 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
             onPressed: () => Navigator.of(context).pop(true),
             child: Text(
               l10n.settings_server_profile_delete,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
+              style: context.textTheme.labelLarge?.copyWith(
+                color: Theme.of(context).colorScheme.error,
+              ),
             ),
           ),
         ],
@@ -272,7 +274,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
                     ),
                     child: Text(
                       _testResult!,
-                      style: TextStyle(
+                      style: context.textTheme.bodyMedium?.copyWith(
                         color: _testResult!.startsWith('Error')
                             ? Theme.of(context).colorScheme.onErrorContainer
                             : Colors.green[800],

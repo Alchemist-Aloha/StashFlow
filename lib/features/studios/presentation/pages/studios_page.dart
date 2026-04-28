@@ -392,7 +392,9 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
           onTap: () => context.push('/studios/studio/${studio.id}'),
           title: Text(
             studio.name,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: context.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           trailing: Text(
             context.l10n.nScenes(studio.sceneCount),

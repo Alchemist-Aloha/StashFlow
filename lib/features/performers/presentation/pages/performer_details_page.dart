@@ -398,7 +398,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                           ),
                           error: (err, stack) => Text(
                             context.l10n.common_error(err.toString()),
-                            style: TextStyle(
+                            style: context.textTheme.bodyMedium?.copyWith(
                               color: context.colors.onSurface.withValues(
                                 alpha: 0.7,
                               ),
@@ -450,7 +450,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                           ),
                           error: (err, stack) => Text(
                             'Failed to load galleries: $err',
-                            style: TextStyle(
+                            style: context.textTheme.bodyMedium?.copyWith(
                               color: context.colors.onSurface.withValues(
                                 alpha: 0.7,
                               ),

@@ -381,7 +381,9 @@ class _TagsPageState extends ConsumerState<TagsPage> {
           onTap: () => context.push('/tags/tag/${tag.id}'),
           title: Text(
             tag.name,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: context.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           trailing: Text(
             context.l10n.nScenes(tag.sceneCount),

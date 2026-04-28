@@ -703,7 +703,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                             children: [
                               Text(
                                 '${_currentSpeed.toStringAsFixed(1)}x Speed',
-                                style: const TextStyle(
+                                style: context.textTheme.bodyMedium?.copyWith(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -752,7 +752,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                       children: [
                         Text(
                           widget.scene.displayTitle,
-                          style: TextStyle(
+                          style: context.textTheme.headlineSmall?.copyWith(
                             color: Colors.white,
                             fontSize: context.fontSizes.xLarge,
                             fontWeight: FontWeight.bold,
@@ -773,7 +773,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                             },
                             child: Text(
                               widget.scene.studioName!,
-                              style: TextStyle(
+                              style: context.textTheme.bodyMedium?.copyWith(
                                 color: Colors.white,
                                 fontSize: context.fontSizes.body,
                                 fontWeight: FontWeight.w500,
@@ -785,7 +785,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                         const SizedBox(height: 8),
                         Text(
                           widget.scene.date.toString().split(' ')[0],
-                          style: TextStyle(
+                          style: context.textTheme.bodyMedium?.copyWith(
                             color: Colors.white70,
                             fontSize: context.fontSizes.body,
                           ),
@@ -855,7 +855,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                                   ? (widget.scene.rating100! / 20)
                                         .toStringAsFixed(1)
                                   : '-',
-                              style: TextStyle(
+                              style: context.textTheme.bodyMedium?.copyWith(
                                 color: Colors.white,
                                 fontSize: context.fontSizes.regular,
                               ),

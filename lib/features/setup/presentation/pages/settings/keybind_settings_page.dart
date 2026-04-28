@@ -25,7 +25,9 @@ class KeybindSettingsPage extends ConsumerWidget {
                 Expanded(
                   child: Text(
                       context.l10n.settings_keyboard_subtitle,
-                      style: TextStyle(fontSize: context.fontSizes.large),
+                      style: context.textTheme.bodyLarge?.copyWith(
+                        fontSize: context.fontSizes.large,
+                      ),
                     ),
                 ),
                 TextButton.icon(
@@ -34,7 +36,9 @@ class KeybindSettingsPage extends ConsumerWidget {
                   icon: const Icon(Icons.restore),
                   label: Text(
                     context.l10n.settings_keyboard_reset_defaults,
-                    style: TextStyle(fontSize: context.fontSizes.regular),
+                    style: context.textTheme.labelLarge?.copyWith(
+                      fontSize: context.fontSizes.regular,
+                    ),
                   ),
                 ),
               ],
@@ -50,11 +54,15 @@ class KeybindSettingsPage extends ConsumerWidget {
                 return ListTile(
                   title: Text(
                     _getActionLabel(action),
-                    style: TextStyle(fontSize: context.fontSizes.body),
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      fontSize: context.fontSizes.body,
+                    ),
                   ),
                   subtitle: Text(
                     _getActionDescription(action),
-                    style: TextStyle(fontSize: context.fontSizes.small),
+                    style: context.textTheme.bodySmall?.copyWith(
+                      fontSize: context.fontSizes.small,
+                    ),
                   ),
                   trailing: OutlinedButton(
                     style: OutlinedButton.styleFrom(
@@ -64,7 +72,9 @@ class KeybindSettingsPage extends ConsumerWidget {
                     onPressed: () => _showCaptureDialog(context, ref, action),
                     child: Text(
                       bind?.label ?? context.l10n.settings_keyboard_not_bound,
-                      style: TextStyle(fontSize: context.fontSizes.regular),
+                      style: context.textTheme.labelLarge?.copyWith(
+                        fontSize: context.fontSizes.regular,
+                      ),
                     ),
                   ),
                 );
@@ -236,7 +246,7 @@ class _KeyCaptureDialogState extends State<_KeyCaptureDialog> {
               ),
                 child: Text(
                 _captured?.label ?? context.l10n.settings_keyboard_not_bound,
-                style: TextStyle(
+                style: context.textTheme.displaySmall?.copyWith(
                   fontSize: context.fontSizes.display,
                   fontWeight: FontWeight.bold,
                 ),

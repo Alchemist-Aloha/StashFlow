@@ -445,7 +445,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                 const SizedBox(width: 6),
                 Text(
                   label,
-                  style: TextStyle(
+                  style: context.textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurface,
                     fontSize: context.fontSizes.medium,
                     fontWeight: FontWeight.w700,
@@ -627,7 +627,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                   isMuted
                       ? context.l10n.common_mute
                       : '${(volume * 100).round()}%',
-                  style: TextStyle(color: Colors.white, fontSize: context.fontSizes.large),
+                  style: context.textTheme.bodyMedium?.copyWith(
+                    color: Colors.white,
+                    fontSize: context.fontSizes.large,
+                  ),
                 ),
               ],
             ),
@@ -991,7 +994,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                               '${playerState.streamSource == null || playerState.streamSource!.isEmpty ? '' : '  src: ${playerState.streamSource}'}'
                               '${playerState.prewarmAttempted != true ? '' : '  prewarm: ${playerState.prewarmSucceeded == true ? 'ok' : 'fail'}${playerState.prewarmLatencyMs == null ? '' : '/${playerState.prewarmLatencyMs}ms'}'}'
                               '${playerState.startupLatencyMs == null ? '' : '  start: ${playerState.startupLatencyMs}ms'}',
-                              style: TextStyle(
+                              style: context.textTheme.bodyMedium?.copyWith(
                                 color: Colors.white70,
                                 fontSize: context.fontSizes.small,
                               ),
@@ -1025,12 +1028,12 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                               Expanded(
                                 child: Text(
                                   widget.scene.displayTitle,
-                                  style: TextStyle(
+                                  style: context.textTheme.bodyMedium?.copyWith(
                                     color: Colors.white,
                                     fontSize: context.fontSizes.body,
                                     fontWeight: FontWeight.bold,
                                     shadows: [
-                                      Shadow(
+                                      const Shadow(
                                         blurRadius: 4,
                                         color: Colors.black54,
                                         offset: Offset(0, 2),

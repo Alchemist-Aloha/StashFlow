@@ -128,7 +128,7 @@ class VideoPlaybackControls extends StatelessWidget {
         Expanded(
           child: Text(
             '$formattedCurrentTime / $formattedDuration',
-            style: TextStyle(
+            style: context.textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSurface,
               fontSize: context.fontSizes.small,
               fontWeight: FontWeight.w600,
@@ -281,7 +281,7 @@ class VideoPlaybackControls extends StatelessWidget {
               ),
               child: Text(
                 _formatSpeed(playbackSpeed),
-                style: TextStyle(
+                style: context.textTheme.bodyMedium?.copyWith(
                   color: isSpeedSliderVisible
                       ? colorScheme.primary
                       : colorScheme.onSurface,

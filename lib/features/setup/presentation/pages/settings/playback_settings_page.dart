@@ -269,8 +269,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
             Text(context.l10n.settings_playback_subtitle_size),
             Text(
               '${_subtitleFontSize.round()} px',
-              style: TextStyle(
-                fontSize: context.fontSizes.regular,
+              style: context.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -304,8 +303,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
               context.l10n.settings_playback_subtitle_pos_desc(
                 (_subtitlePositionBottomRatio * 100).round().toString(),
               ),
-              style: TextStyle(
-                fontSize: context.fontSizes.regular,
+              style: context.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -361,7 +359,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
           _useDoubleTapSeek
               ? context.l10n.settings_playback_seek_double_tap
               : context.l10n.settings_playback_seek_drag,
-          style: TextStyle(
+          style: context.textTheme.bodyMedium?.copyWith(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         );

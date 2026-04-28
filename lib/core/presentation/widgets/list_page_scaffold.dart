@@ -427,7 +427,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
               scrolledUnderElevation: 4.0,
               title: Text(
                 widget.title,
-                style: const TextStyle(
+                style: context.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   letterSpacing: -0.5,
                 ),
@@ -498,7 +498,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                         children: [
                                           Text(
                                             'Recent Searches',
-                                            style: TextStyle(
+                                            style: context.textTheme.titleSmall?.copyWith(
                                               color: context.colors.onSurface
                                                   .withValues(alpha: 0.7),
                                               fontWeight: FontWeight.bold,
@@ -601,7 +601,9 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                     Expanded(
                       child: Text(
                         'Searching for: "$_currentQuery"',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -636,7 +638,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                               widget.emptyMessage == 'No items found'
                                   ? context.l10n.common_no_items
                                   : widget.emptyMessage,
-                              style: TextStyle(
+                              style: context.textTheme.bodyMedium?.copyWith(
                                 color: context.colors.onSurface.withValues(
                                   alpha: 0.7,
                                 ),
