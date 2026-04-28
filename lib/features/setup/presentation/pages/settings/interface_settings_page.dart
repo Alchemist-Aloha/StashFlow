@@ -155,6 +155,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    
+    ref.watch(appLanguageProvider);
+    final currentLanguageKey = ref.read(sharedPreferencesProvider).getString(appLanguagePreferenceKey);
 
     return SettingsPageShell(
       title: context.l10n.settings_interface_title,
@@ -171,13 +174,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                     child: SettingsActionCard(
                       icon: Icons.translate_rounded,
                       title: context.l10n.settings_interface_app_language,
-                      subtitle:
-                          supportedLanguages[ref.watch(appLanguageProvider) ??
-                                  (ref
-                                      .watch(sharedPreferencesProvider)
-                                      .getString(appLanguagePreferenceKey)) ??
-                                  'en'] ??
-                          'English',
+                      subtitle: supportedLanguages[currentLanguageKey] ?? 'System Default',
                       onTap: () => _showLanguagePicker(context, ref),
                     ),
                   ),
@@ -652,12 +649,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
 
   void _showLanguagePicker(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
-    final currentLanguage =
-        ref.read(appLanguageProvider) ??
-        ref.read(sharedPreferencesProvider).getString(
-          appLanguagePreferenceKey,
-        ) ??
-        'en';
+    final currentLanguageKey = ref.read(sharedPreferencesProvider).getString(appLanguagePreferenceKey);
 
     showModalBottomSheet(
       context: context,
@@ -686,7 +678,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   shrinkWrap: true,
                   children:
                       supportedLanguages.entries.map((entry) {
-                        final isSelected = entry.key == currentLanguage;
+                        final isSelected = entry.key == currentLanguageKey;
                         return ListTile(
                           leading: Icon(
                             isSelected
