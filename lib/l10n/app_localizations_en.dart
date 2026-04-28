@@ -983,6 +983,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter an 8-digit ARGB hex code';
 
   @override
+  String get settings_appearance_font_size => 'Global Font Size';
+
+  @override
+  String get settings_appearance_font_size_subtitle =>
+      'Scale the text across the entire application interface';
+
+  @override
   String get settings_interface_title => 'Interface Settings';
 
   @override

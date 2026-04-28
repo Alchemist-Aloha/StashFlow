@@ -1,41 +1,61 @@
 {
   "de": [
-    "nPlays"
+    "nPlays",
+    "settings_appearance_font_size",
+    "settings_appearance_font_size_subtitle"
   ],
 
   "es": [
-    "nPlays"
+    "nPlays",
+    "settings_appearance_font_size",
+    "settings_appearance_font_size_subtitle"
   ],
 
   "fr": [
-    "nPlays"
+    "nPlays",
+    "settings_appearance_font_size",
+    "settings_appearance_font_size_subtitle"
   ],
 
   "it": [
-    "nPlays"
+    "nPlays",
+    "settings_appearance_font_size",
+    "settings_appearance_font_size_subtitle"
   ],
 
   "ja": [
-    "nPlays"
+    "nPlays",
+    "settings_appearance_font_size",
+    "settings_appearance_font_size_subtitle"
   ],
 
   "ko": [
-    "nPlays"
+    "nPlays",
+    "settings_appearance_font_size",
+    "settings_appearance_font_size_subtitle"
   ],
 
   "ru": [
-    "nPlays"
+    "nPlays",
+    "settings_appearance_font_size",
+    "settings_appearance_font_size_subtitle"
   ],
 
   "zh": [
-    "nPlays"
+    "nPlays",
+    "settings_appearance_font_size",
+    "settings_appearance_font_size_subtitle"
   ],
 
   "zh_Hans": [
-    "nPlays"
+    "nPlays",
+    "settings_appearance_font_size",
+    "settings_appearance_font_size_subtitle"
   ],
 
   "zh_Hant": [
-    "nPlays"
+    "nPlays",
+    "settings_appearance_font_size",
+    "settings_appearance_font_size_subtitle"
   ]
 }

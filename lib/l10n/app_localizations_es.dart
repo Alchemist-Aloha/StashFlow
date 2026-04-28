@@ -1004,6 +1004,13 @@ class AppLocalizationsEs extends AppLocalizations {
       'Introduce un código hexadecimal ARGB de 8 dígitos';
 
   @override
+  String get settings_appearance_font_size => 'Global Font Size';
+
+  @override
+  String get settings_appearance_font_size_subtitle =>
+      'Scale the text across the entire application interface';
+
+  @override
   String get settings_interface_title => 'Ajustes de interfaz';
 
   @override

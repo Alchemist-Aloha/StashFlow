@@ -1920,6 +1920,18 @@ abstract class AppLocalizations {
   /// **'Enter an 8-digit ARGB hex code'**
   String get settings_appearance_custom_hex_helper;
 
+  /// No description provided for @settings_appearance_font_size.
+  ///
+  /// In en, this message translates to:
+  /// **'Global Font Size'**
+  String get settings_appearance_font_size;
+
+  /// No description provided for @settings_appearance_font_size_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scale the text across the entire application interface'**
+  String get settings_appearance_font_size_subtitle;
+
   /// No description provided for @settings_interface_title.
   ///
   /// In en, this message translates to:

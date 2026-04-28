@@ -972,6 +972,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_appearance_custom_hex_helper => '8桁のARGB 16進コードを入力してください';
 
   @override
+  String get settings_appearance_font_size => 'Global Font Size';
+
+  @override
+  String get settings_appearance_font_size_subtitle =>
+      'Scale the text across the entire application interface';
+
+  @override
   String get settings_interface_title => 'インターフェース設定';
 
   @override

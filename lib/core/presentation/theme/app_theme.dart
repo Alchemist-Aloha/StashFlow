@@ -1,5 +1,7 @@
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'font_sizes.dart';
 
 /// Custom theme extension for StashFlow-specific semantic colors.
 ///
@@ -95,6 +97,45 @@ class AppColors extends ThemeExtension<AppColors> {
   }
 }
 
+@immutable
+class AppDimensions extends ThemeExtension<AppDimensions> {
+  const AppDimensions({
+    required this.performerAvatarSize,
+    required this.cardTitleFontSize,
+    required this.fontSizeFactor,
+  });
+
+  final double performerAvatarSize;
+  final double cardTitleFontSize;
+  final double fontSizeFactor;
+
+  @override
+  AppDimensions copyWith({
+    double? performerAvatarSize,
+    double? cardTitleFontSize,
+    double? fontSizeFactor,
+  }) {
+    return AppDimensions(
+      performerAvatarSize: performerAvatarSize ?? this.performerAvatarSize,
+      cardTitleFontSize: cardTitleFontSize ?? this.cardTitleFontSize,
+      fontSizeFactor: fontSizeFactor ?? this.fontSizeFactor,
+    );
+  }
+
+  @override
+  AppDimensions lerp(ThemeExtension<AppDimensions>? other, double t) {
+    if (other is! AppDimensions) return this;
+    return AppDimensions(
+      performerAvatarSize:
+          lerpDouble(performerAvatarSize, other.performerAvatarSize, t)!,
+      cardTitleFontSize:
+          lerpDouble(cardTitleFontSize, other.cardTitleFontSize, t)!,
+      fontSizeFactor:
+          lerpDouble(fontSizeFactor, other.fontSizeFactor, t)!,
+    );
+  }
+}
+
 /// The central design system for StashFlow.
 ///
 /// This class defines standard constants for spacing and border radii,
@@ -129,6 +170,9 @@ class AppTheme {
     Brightness brightness,
     Color seedColor, {
     bool useTrueBlack = false,
+    double? cardTitleFontSize,
+    double? performerAvatarSize,
+    double fontSizeFactor = 1.0,
   }) {
     final isDark = brightness == Brightness.dark;
     var colorScheme = ColorScheme.fromSeed(
@@ -151,17 +195,32 @@ class AppTheme {
       );
     }
 
+    final baseTextTheme = Typography.material2021(platform: defaultTargetPlatform)
+        .black
+        .apply(
+          bodyColor: colorScheme.onSurface,
+          displayColor: colorScheme.onSurface,
+          fontSizeFactor: fontSizeFactor,
+        );
+
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: colorScheme.surface,
-      textTheme: Typography.material2021(platform: defaultTargetPlatform)
-          .black
-          .apply(
-            bodyColor: colorScheme.onSurface,
-            displayColor: colorScheme.onSurface,
-          ),
+      textTheme: baseTextTheme.copyWith(
+        bodySmall: baseTextTheme.bodySmall?.copyWith(
+          fontSize: 12 * fontSizeFactor,
+        ),
+        labelMedium: baseTextTheme.labelMedium?.copyWith(
+          fontSize: 12 * fontSizeFactor,
+          color: colorScheme.onSurface.withValues(alpha: 0.75),
+        ),
+        labelSmall: baseTextTheme.labelSmall?.copyWith(
+          fontSize: 10 * fontSizeFactor,
+          color: colorScheme.onSurface.withValues(alpha: 0.75),
+        ),
+      ),
       appBarTheme: AppBarTheme(
         elevation: 0,
         centerTitle: false,
@@ -250,6 +309,18 @@ class AppTheme {
         ),
       ),
       extensions: [
+        FontSizes(
+          tiny: 9,
+          xSmall: 10,
+          small: 11,
+          regular: 12,
+          medium: 13,
+          body: 14,
+          large: 16,
+          xLarge: 18,
+          title: 20,
+          display: 24,
+        ),
         AppColors(
           surface: colorScheme.surface,
           onSurface: colorScheme.onSurface,
@@ -264,6 +335,11 @@ class AppTheme {
           outline: colorScheme.outline,
           cardBackground: colorScheme.surfaceContainerHighest,
           ratingColor: isDark ? Colors.amber.shade300 : Colors.amber.shade700,
+        ),
+        AppDimensions(
+          performerAvatarSize: performerAvatarSize ?? 16.0,
+          cardTitleFontSize: cardTitleFontSize ?? 12.0,
+          fontSizeFactor: fontSizeFactor,
         ),
       ],
     );
@@ -284,6 +360,12 @@ extension AppThemeX on BuildContext {
   /// Access to the [AppColors] custom theme extension.
   AppColors get colors => Theme.of(this).extension<AppColors>()!;
 
+  /// Access to the [AppDimensions] custom theme extension.
+  AppDimensions get dimensions => Theme.of(this).extension<AppDimensions>()!;
+
   /// Access to the standard [TextTheme].
   TextTheme get textTheme => Theme.of(this).textTheme;
+
+  /// Access to the configured `FontSizes` ThemeExtension.
+  FontSizes get fontSizes => Theme.of(this).extension<FontSizes>()!;
 }

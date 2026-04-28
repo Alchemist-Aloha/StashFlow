@@ -328,6 +328,8 @@
   "settings_appearance_true_black_subtitle": "Use pure black backgrounds in dark mode to save battery on OLED screens",
   "settings_appearance_custom_hex": "Custom Hex Color",
   "settings_appearance_custom_hex_helper": "Enter an 8-digit ARGB hex code",
+  "settings_appearance_font_size": "Global Font Size",
+  "settings_appearance_font_size_subtitle": "Scale the text across the entire application interface",
   "settings_interface_title": "Interface Settings",
   "settings_interface_language": "Language",
   "settings_interface_language_subtitle": "Overwrite the default system language",

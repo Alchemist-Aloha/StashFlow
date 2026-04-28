@@ -396,7 +396,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           label: 'Card Title Font Size',
                           value: _cardTitleFontSize,
                           onChanged: (value) async {
-                            setState(() => _cardTitleFontSize = value);
+                            setState(() => _cardTitleFontSize = value ?? context.fontSizes.medium);
                             await _saveSettings();
                           },
                         ),

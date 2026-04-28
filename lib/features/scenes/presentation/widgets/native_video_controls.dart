@@ -447,7 +447,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                   label,
                   style: TextStyle(
                     color: colorScheme.onSurface,
-                    fontSize: 13,
+                    fontSize: context.fontSizes.medium,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.2,
                   ),
@@ -627,7 +627,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                   isMuted
                       ? context.l10n.common_mute
                       : '${(volume * 100).round()}%',
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                  style: TextStyle(color: Colors.white, fontSize: context.fontSizes.large),
                 ),
               ],
             ),
@@ -991,9 +991,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                               '${playerState.streamSource == null || playerState.streamSource!.isEmpty ? '' : '  src: ${playerState.streamSource}'}'
                               '${playerState.prewarmAttempted != true ? '' : '  prewarm: ${playerState.prewarmSucceeded == true ? 'ok' : 'fail'}${playerState.prewarmLatencyMs == null ? '' : '/${playerState.prewarmLatencyMs}ms'}'}'
                               '${playerState.startupLatencyMs == null ? '' : '  start: ${playerState.startupLatencyMs}ms'}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.white70,
-                                fontSize: 11,
+                                fontSize: context.fontSizes.small,
                               ),
                             ),
                           ),
@@ -1025,9 +1025,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                               Expanded(
                                 child: Text(
                                   widget.scene.displayTitle,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 14,
+                                    fontSize: context.fontSizes.body,
                                     fontWeight: FontWeight.bold,
                                     shadows: [
                                       Shadow(

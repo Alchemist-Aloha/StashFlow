@@ -20,6 +20,7 @@ import 'core/presentation/theme/app_theme.dart';
 import 'core/presentation/theme/theme_mode_provider.dart';
 import 'core/presentation/theme/theme_color_provider.dart';
 import 'core/presentation/theme/true_black_provider.dart';
+import 'core/presentation/providers/layout_settings_provider.dart';
 
 import 'core/utils/environment.dart' as env;
 
@@ -131,6 +132,10 @@ class MyApp extends ConsumerWidget {
     final useTrueBlack = ref.watch(trueBlackEnabledProvider);
     final appLocale = ref.watch(appLanguageProvider);
 
+    final cardTitleFontSize = ref.watch(cardTitleFontSizeProvider);
+    final performerAvatarSize = ref.watch(performerAvatarSizeProvider);
+    final fontSizeFactor = ref.watch(appFontSizeProvider);
+
     return MaterialApp.router(
       routerConfig: router,
       title: 'StashFlow',
@@ -138,11 +143,20 @@ class MyApp extends ConsumerWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       locale: appLocale,
       themeMode: themeMode,
-      theme: AppTheme.buildTheme(Brightness.light, seedColor),
+      theme: AppTheme.buildTheme(
+        Brightness.light,
+        seedColor,
+        cardTitleFontSize: cardTitleFontSize,
+        performerAvatarSize: performerAvatarSize,
+        fontSizeFactor: fontSizeFactor,
+      ),
       darkTheme: AppTheme.buildTheme(
         Brightness.dark,
         seedColor,
         useTrueBlack: useTrueBlack,
+        cardTitleFontSize: cardTitleFontSize,
+        performerAvatarSize: performerAvatarSize,
+        fontSizeFactor: fontSizeFactor,
       ),
     );
   }

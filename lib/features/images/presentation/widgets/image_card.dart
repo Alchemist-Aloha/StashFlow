@@ -68,9 +68,8 @@ class ImageCard extends ConsumerWidget {
                         const SizedBox(width: 2),
                         Text(
                           (image.rating100! / 20).toStringAsFixed(1),
-                          style: const TextStyle(
+                          style: context.textTheme.labelSmall?.copyWith(
                             color: Colors.white,
-                            fontSize: 9,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

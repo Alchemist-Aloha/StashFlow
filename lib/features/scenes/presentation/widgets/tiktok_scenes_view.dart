@@ -752,9 +752,9 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                       children: [
                         Text(
                           widget.scene.displayTitle,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
-                            fontSize: 18,
+                            fontSize: context.fontSizes.xLarge,
                             fontWeight: FontWeight.bold,
                           ),
                           maxLines: 2,
@@ -773,9 +773,9 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                             },
                             child: Text(
                               widget.scene.studioName!,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 14,
+                                fontSize: context.fontSizes.body,
                                 fontWeight: FontWeight.w500,
                                 decoration: TextDecoration.underline,
                               ),
@@ -785,9 +785,9 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                         const SizedBox(height: 8),
                         Text(
                           widget.scene.date.toString().split(' ')[0],
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white70,
-                            fontSize: 14,
+                            fontSize: context.fontSizes.body,
                           ),
                         ),
                       ],
@@ -855,9 +855,9 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                                   ? (widget.scene.rating100! / 20)
                                         .toStringAsFixed(1)
                                   : '-',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 12,
+                                fontSize: context.fontSizes.regular,
                               ),
                             ),
                           ],

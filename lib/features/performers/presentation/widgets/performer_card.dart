@@ -51,10 +51,10 @@ class PerformerCard extends ConsumerWidget {
             const SizedBox(height: 8),
             Text(
               performer.name,
-              style: TextStyle(
-                color: context.colors.onSurface,
+              style: context.textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                fontSize: 12,
+                fontSize: context.dimensions.cardTitleFontSize *
+                    context.dimensions.fontSizeFactor,
               ),
               textAlign: TextAlign.center,
               maxLines: 1,

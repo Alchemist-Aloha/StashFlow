@@ -326,3 +326,21 @@ class CardTitleFontSize extends _$CardTitleFontSize {
   }
 }
 
+@riverpod
+class AppFontSize extends _$AppFontSize {
+  static const _storageKey = 'app_font_size_factor';
+
+  @override
+  double build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getDouble(_storageKey) ?? 1.0;
+  }
+
+  Future<void> set(double value) async {
+    if (state == value) return;
+    state = value;
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setDouble(_storageKey, value);
+  }
+}
+

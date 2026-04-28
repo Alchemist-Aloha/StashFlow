@@ -269,7 +269,10 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
             Text(context.l10n.settings_playback_subtitle_size),
             Text(
               '${_subtitleFontSize.round()} px',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: context.fontSizes.regular,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
@@ -301,7 +304,10 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
               context.l10n.settings_playback_subtitle_pos_desc(
                 (_subtitlePositionBottomRatio * 100).round().toString(),
               ),
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: context.fontSizes.regular,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),

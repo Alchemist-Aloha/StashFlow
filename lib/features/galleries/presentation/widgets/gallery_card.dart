@@ -7,7 +7,6 @@ import '../../../../core/presentation/widgets/rating_bottom_sheet.dart';
 import '../providers/gallery_list_provider.dart';
 import '../../domain/entities/gallery.dart';
 import '../providers/gallery_details_provider.dart';
-import '../../../../core/presentation/providers/layout_settings_provider.dart';
 
 /// A card widget that displays a summary of a [Gallery].
 class GalleryCard extends ConsumerWidget {
@@ -41,17 +40,15 @@ class GalleryCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final titleFontSize = ref.watch(cardTitleFontSizeProvider);
-
     double aspectRatio = 16 / 9;
     if (gallery.coverWidth != null && gallery.coverHeight != null && gallery.coverHeight! > 0) {
       aspectRatio = gallery.coverWidth! / gallery.coverHeight!;
     }
 
     if (isGrid) {
-      return _buildGridCard(context, ref, titleFontSize, aspectRatio);
+      return _buildGridCard(context, ref, aspectRatio);
     }
-    return _buildListCard(context, ref, titleFontSize, aspectRatio);
+    return _buildListCard(context, ref, aspectRatio);
   }
 
   Future<void> _showRating(BuildContext context, WidgetRef ref) async {
@@ -92,14 +89,14 @@ class GalleryCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildListCard(BuildContext context, WidgetRef ref, double? titleFontSize, double aspectRatio) {
+  Widget _buildListCard(BuildContext context, WidgetRef ref, double aspectRatio) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildThumbnail(aspectRatio.clamp(0.5, 2.5)),
+          _buildThumbnail(context, aspectRatio.clamp(0.5, 2.5)),
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: Row(
@@ -111,10 +108,10 @@ class GalleryCard extends ConsumerWidget {
                     children: [
                       Text(
                         gallery.displayName,
-                        style: TextStyle(
+                        style: context.textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.bold,
-                          fontSize: titleFontSize ?? 14,
-                          color: context.colors.onSurface,
+                          fontSize: context.dimensions.cardTitleFontSize *
+                              context.dimensions.fontSizeFactor,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -131,12 +128,7 @@ class GalleryCard extends ConsumerWidget {
                             if (gallery.date != null)
                               gallery.date!.split('-').first,
                           ].join(' • '),
-                          style: TextStyle(
-                            color: context.colors.onSurface.withValues(
-                              alpha: 0.75,
-                            ),
-                            fontSize: 12,
-                          ),
+                          style: context.textTheme.labelMedium,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -159,14 +151,14 @@ class GalleryCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildGridCard(BuildContext context, WidgetRef ref, double? titleFontSize, double aspectRatio) {
+  Widget _buildGridCard(BuildContext context, WidgetRef ref, double aspectRatio) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildThumbnail(useMasonry ? aspectRatio.clamp(0.5, 2.5) : 16 / 9),
+          _buildThumbnail(context, useMasonry ? aspectRatio.clamp(0.5, 2.5) : 16 / 9),
           Padding(
             padding: const EdgeInsets.only(top: 4.0, left: 4.0, right: 4.0),
             child: Row(
@@ -179,10 +171,10 @@ class GalleryCard extends ConsumerWidget {
                     children: [
                       Text(
                         gallery.displayName,
-                        style: TextStyle(
+                        style: context.textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.bold,
-                          fontSize: titleFontSize ?? 11,
-                          color: context.colors.onSurface,
+                          fontSize: context.dimensions.cardTitleFontSize *
+                              context.dimensions.fontSizeFactor,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -191,12 +183,7 @@ class GalleryCard extends ConsumerWidget {
                           gallery.details!.isNotEmpty)
                         Text(
                           gallery.details!,
-                          style: TextStyle(
-                            color: context.colors.onSurface.withValues(
-                              alpha: 0.75,
-                            ),
-                            fontSize: 9,
-                          ),
+                          style: context.textTheme.labelSmall,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -215,7 +202,7 @@ class GalleryCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildThumbnail(double? aspectRatio) {
+  Widget _buildThumbnail(BuildContext context, double? aspectRatio) {
     final child = Stack(
       fit: aspectRatio != null ? StackFit.expand : StackFit.loose,
       children: [
@@ -250,9 +237,11 @@ class GalleryCard extends ConsumerWidget {
                   SizedBox(width: isGrid ? 2 : 4),
                   Text(
                     (gallery.rating100! / 20).toStringAsFixed(1),
-                    style: TextStyle(
+                    style: (isGrid
+                            ? context.textTheme.labelSmall
+                            : context.textTheme.labelMedium)
+                        ?.copyWith(
                       color: Colors.white,
-                      fontSize: isGrid ? 9 : 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -276,9 +265,8 @@ class GalleryCard extends ConsumerWidget {
               child: isGrid
                   ? Text(
                       '${gallery.imageCount}',
-                      style: const TextStyle(
+                      style: context.textTheme.labelSmall?.copyWith(
                         color: Colors.white,
-                        fontSize: 10,
                       ),
                     )
                   : Row(
@@ -292,9 +280,8 @@ class GalleryCard extends ConsumerWidget {
                         const SizedBox(width: 4),
                         Text(
                           '${gallery.imageCount}',
-                          style: const TextStyle(
+                          style: context.textTheme.labelMedium?.copyWith(
                             color: Colors.white,
-                            fontSize: 12,
                           ),
                         ),
                       ],

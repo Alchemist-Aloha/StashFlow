@@ -5,6 +5,7 @@ import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/presentation/theme/theme_mode_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/theme_color_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/true_black_provider.dart';
+import 'package:stash_app_flutter/core/presentation/providers/layout_settings_provider.dart';
 import '../../widgets/settings_page_shell.dart';
 
 class AppearanceSettingsPage extends ConsumerStatefulWidget {
@@ -103,52 +104,46 @@ class _AppearanceSettingsPageState
                   SettingsSectionCard(
                     title: l10n.settings_appearance_theme_mode,
                     subtitle: l10n.settings_appearance_theme_mode_subtitle,
-                    child: Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
-                      ),
-                      padding: const EdgeInsets.all(4),
-                      child: SegmentedButton<ThemeMode>(
-                        showSelectedIcon: false,
-                        segments: [
-                          ButtonSegment<ThemeMode>(
-                            value: ThemeMode.system,
-                            icon: const Icon(Icons.brightness_auto_outlined),
-                            label: Text(l10n.settings_appearance_theme_system),
-                          ),
-                          ButtonSegment<ThemeMode>(
-                            value: ThemeMode.light,
-                            icon: const Icon(Icons.light_mode_outlined),
-                            label: Text(l10n.settings_appearance_theme_light),
-                          ),
-                          ButtonSegment<ThemeMode>(
-                            value: ThemeMode.dark,
-                            icon: const Icon(Icons.dark_mode_outlined),
-                            label: Text(l10n.settings_appearance_theme_dark),
-                          ),
-                        ],
-                        selected: {_themeMode},
-                        onSelectionChanged: (selection) {
-                          _saveThemeMode(selection.first);
-                        },
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: AppTheme.spacingLarge),
-                  SettingsSectionCard(
-                    title: l10n.settings_appearance_primary_color,
-                    subtitle: l10n.settings_appearance_primary_color_subtitle,
-                    child: _buildColorSelector(),
-                  ),
-                  const SizedBox(height: AppTheme.spacingLarge),
-                  SettingsSectionCard(
-                    title: l10n.settings_appearance_advanced_theming,
-                    subtitle:
-                        l10n.settings_appearance_advanced_theming_subtitle,
                     child: Column(
                       children: [
+                        Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primaryContainer
+                                .withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(
+                              AppTheme.radiusExtraLarge,
+                            ),
+                          ),
+                          padding: const EdgeInsets.all(4),
+                          child: SegmentedButton<ThemeMode>(
+                            showSelectedIcon: false,
+                            segments: [
+                              ButtonSegment<ThemeMode>(
+                                value: ThemeMode.system,
+                                icon: const Icon(Icons.brightness_auto_outlined),
+                                label: Text(l10n.settings_appearance_theme_system),
+                              ),
+                              ButtonSegment<ThemeMode>(
+                                value: ThemeMode.light,
+                                icon: const Icon(Icons.light_mode_outlined),
+                                label: Text(l10n.settings_appearance_theme_light),
+                              ),
+                              ButtonSegment<ThemeMode>(
+                                value: ThemeMode.dark,
+                                icon: const Icon(Icons.dark_mode_outlined),
+                                label: Text(l10n.settings_appearance_theme_dark),
+                              ),
+                            ],
+                            selected: {_themeMode},
+                            onSelectionChanged: (selection) {
+                              _saveThemeMode(selection.first);
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: AppTheme.spacingMedium),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
                           title: Text(l10n.settings_appearance_true_black),
@@ -165,9 +160,67 @@ class _AppearanceSettingsPageState
                       ],
                     ),
                   ),
+                  const SizedBox(height: AppTheme.spacingLarge),
+                  SettingsSectionCard(
+                    title: l10n.settings_appearance_primary_color,
+                    subtitle: l10n.settings_appearance_primary_color_subtitle,
+                    child: _buildColorSelector(),
+                  ),
+                  const SizedBox(height: AppTheme.spacingLarge),
+                  SettingsSectionCard(
+                    title: l10n.settings_appearance_font_size,
+                    subtitle: l10n.settings_appearance_font_size_subtitle,
+                    child: _buildFontSizeFactorSlider(l10n),
+                  ),
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildFontSizeFactorSlider(AppLocalizations l10n) {
+    final value = ref.watch(appFontSizeProvider);
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '${(value * 100).toInt()}%',
+              style: textTheme.titleMedium?.copyWith(
+                color: colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            TextButton.icon(
+              onPressed:
+                  value == 1.0
+                      ? null
+                      : () => ref.read(appFontSizeProvider.notifier).set(1.0),
+              icon: const Icon(Icons.restart_alt, size: 18),
+              label: Text(l10n.common_reset),
+              style: TextButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+              ),
+            ),
+          ],
+        ),
+        Slider(
+          value: value,
+          min: 0.8,
+          max: 1.5,
+          divisions: 14,
+          label: '${(value * 100).toInt()}%',
+          onChanged: (val) {
+            ref.read(appFontSizeProvider.notifier).set(val);
+          },
+        ),
+      ],
     );
   }
 

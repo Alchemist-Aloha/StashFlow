@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme/app_theme.dart';
 import 'stash_image.dart';
-import '../providers/layout_settings_provider.dart';
 
 /// A generic card widget for grid layouts.
 ///
@@ -53,15 +52,13 @@ class GridCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final titleFontSize = ref.watch(cardTitleFontSizeProvider);
-
     if (isGrid) {
-      return _buildGridCard(context, titleFontSize);
+      return _buildGridCard(context);
     }
-    return _buildListCard(context, titleFontSize);
+    return _buildListCard(context);
   }
 
-  Widget _buildGridCard(BuildContext context, double? titleFontSize) {
+  Widget _buildGridCard(BuildContext context) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
@@ -117,12 +114,12 @@ class GridCard extends ConsumerWidget {
               children: [
                 Text(
                   title,
-                  style: context.textTheme.titleSmall?.copyWith(
+                  style: context.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: context.colors.onSurface,
-                    fontSize: titleFontSize,
+                    fontSize: context.dimensions.cardTitleFontSize *
+                        context.dimensions.fontSizeFactor,
                   ),
-                  maxLines: 2,
+                  maxLines: isGrid ? 2 : 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 if (subtitle != null) ...[
@@ -144,7 +141,7 @@ class GridCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildListCard(BuildContext context, double? titleFontSize) {
+  Widget _buildListCard(BuildContext context) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
@@ -198,9 +195,10 @@ class GridCard extends ConsumerWidget {
               children: [
                 Text(
                   title,
-                  style: context.textTheme.titleMedium?.copyWith(
+                  style: context.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    fontSize: titleFontSize,
+                    fontSize: context.dimensions.cardTitleFontSize *
+                        context.dimensions.fontSizeFactor,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

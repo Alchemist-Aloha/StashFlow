@@ -307,7 +307,6 @@ class _SceneCardState extends ConsumerState<SceneCard> {
   @override
   Widget build(BuildContext context) {
     final apiKey = ref.watch(serverApiKeyProvider);
-    final titleFontSize = ref.watch(cardTitleFontSizeProvider);
     final duration = widget.scene.files.isNotEmpty
         ? widget.scene.files.first.duration
         : null;
@@ -332,10 +331,10 @@ class _SceneCardState extends ConsumerState<SceneCard> {
 
     if (widget.isGrid) {
       return _buildGridCard(
-          context, ref, duration, fileAspectRatio ?? 16 / 9, apiKey, titleFontSize);
+          context, ref, duration, fileAspectRatio ?? 16 / 9, apiKey);
     }
     return _buildListCard(
-        context, ref, duration, fileAspectRatio ?? 16 / 9, apiKey, titleFontSize);
+        context, ref, duration, fileAspectRatio ?? 16 / 9, apiKey);
   }
 
   /// Builds the full-width list variant of the card.
@@ -347,7 +346,6 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     double? duration,
     double aspectRatio,
     String apiKey,
-    double? titleFontSize,
   ) {
     return InkWell(
       onTap: widget.onTap,
@@ -376,23 +374,17 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                     children: [
                       Text(
                         widget.scene.displayTitle,
-                        style: TextStyle(
+                        style: context.textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.bold,
-                          fontSize: titleFontSize ?? 14,
-                          color: context.colors.onSurface,
+                          fontSize: context.dimensions.cardTitleFontSize *
+                              context.dimensions.fontSizeFactor,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
+                      ),                      const SizedBox(height: 4),
                       Text(
                         '${widget.scene.studioName ?? context.l10n.common_unknown} • ${widget.scene.date.year}',
-                        style: TextStyle(
-                          color: context.colors.onSurface.withValues(
-                            alpha: 0.75,
-                          ),
-                          fontSize: 12,
-                        ),
+                        style: context.textTheme.labelMedium,
                       ),
                       if (ref.watch(showPerformerAvatarsProvider) && widget.scene.performerNames.isNotEmpty) ...[
                         const SizedBox(height: 8),
@@ -430,7 +422,6 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     double? duration,
     double aspectRatio,
     String apiKey,
-    double? titleFontSize,
   ) {
     return InkWell(
       onTap: widget.onTap,
@@ -461,23 +452,17 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                     children: [
                       Text(
                         widget.scene.displayTitle,
-                        style: TextStyle(
+                        style: context.textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.bold,
-                          fontSize: titleFontSize ?? 12,
-                          color: context.colors.onSurface,
+                          fontSize: context.dimensions.cardTitleFontSize *
+                              context.dimensions.fontSizeFactor,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
+                      ),                      const SizedBox(height: 2),
                       Text(
                         widget.scene.studioName ?? context.l10n.common_unknown,
-                        style: TextStyle(
-                          color: context.colors.onSurface.withValues(
-                            alpha: 0.75,
-                          ),
-                          fontSize: 10,
-                        ),
+                        style: context.textTheme.labelSmall,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -539,14 +524,16 @@ class _ThumbnailMetadataOverlay extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildItem(icon, count.toString()),
+          _buildItem(context, icon, count.toString()),
           if (rating != null)
-            _buildItem(Icons.star, (rating! / 20.0).toStringAsFixed(1)),
+            _buildItem(context, Icons.star, (rating! / 20.0).toStringAsFixed(1)),
           Text(
             duration,
-            style: TextStyle(
+            style: (isGrid
+                    ? context.textTheme.labelSmall
+                    : context.textTheme.labelMedium)
+                ?.copyWith(
               color: Colors.white,
-              fontSize: isGrid ? 10 : 12,
             ),
           ),
         ],
@@ -554,7 +541,7 @@ class _ThumbnailMetadataOverlay extends StatelessWidget {
     );
   }
 
-  Widget _buildItem(IconData icon, String text) {
+  Widget _buildItem(BuildContext context, IconData icon, String text) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -562,16 +549,17 @@ class _ThumbnailMetadataOverlay extends StatelessWidget {
         const SizedBox(width: 2),
         Text(
           text,
-          style: TextStyle(
+          style: (isGrid
+                  ? context.textTheme.labelSmall
+                  : context.textTheme.labelMedium)
+              ?.copyWith(
             color: Colors.white,
-            fontSize: isGrid ? 10 : 12,
           ),
         ),
       ],
     );
   }
 }
-
 class _PerformerAvatarRow extends ConsumerWidget {
   const _PerformerAvatarRow({
     required this.performerImagePaths,
@@ -586,7 +574,7 @@ class _PerformerAvatarRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final limit = ref.watch(maxPerformerAvatarsProvider);
-    final size = ref.watch(performerAvatarSizeProvider);
+    final size = context.dimensions.performerAvatarSize;
     final count = performerImagePaths.length;
     final displayCount = count > limit ? limit : count;
     final overflow = count > limit ? count - limit : 0;
@@ -630,10 +618,8 @@ class _PerformerAvatarRow extends ConsumerWidget {
         if (overflow > 0)
           Text(
             '+$overflow',
-            style: TextStyle(
-              fontSize: 10,
+            style: context.textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.bold,
-              color: context.colors.onSurface.withValues(alpha: 0.75),
             ),
           ),
       ],

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../../../../core/utils/l10n_extensions.dart';
+import '../../../../../core/presentation/theme/app_theme.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../../../core/utils/pip_mode.dart';
@@ -129,7 +130,7 @@ class VideoPlaybackControls extends StatelessWidget {
             '$formattedCurrentTime / $formattedDuration',
             style: TextStyle(
               color: colorScheme.onSurface,
-              fontSize: 11,
+              fontSize: context.fontSizes.small,
               fontWeight: FontWeight.w600,
             ),
             maxLines: 1,
@@ -284,7 +285,7 @@ class VideoPlaybackControls extends StatelessWidget {
                   color: isSpeedSliderVisible
                       ? colorScheme.primary
                       : colorScheme.onSurface,
-                  fontSize: 12,
+                  fontSize: context.fontSizes.regular,
                   fontWeight: FontWeight.w700,
                 ),
               ),
