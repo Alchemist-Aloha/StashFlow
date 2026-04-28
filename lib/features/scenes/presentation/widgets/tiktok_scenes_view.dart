@@ -449,7 +449,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
         playDuration: durationToSave,
       );
       if (mounted) {
-        ref.invalidate(sceneDetailsProvider(widget.scene.id));
+        unawaited(ref.read(sceneDetailsProvider(widget.scene.id).notifier).refresh());
       }
     } catch (e) {
       debugPrint('TikTok failed to save scene activity: $e');
@@ -467,7 +467,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
             .incrementScenePlayCount(widget.scene.id);
         _playCountIncremented = true;
         if (mounted) {
-          ref.invalidate(sceneDetailsProvider(widget.scene.id));
+          unawaited(ref.read(sceneDetailsProvider(widget.scene.id).notifier).refresh());
         }
       } catch (e) {
         debugPrint('Failed to increment play count: $e');

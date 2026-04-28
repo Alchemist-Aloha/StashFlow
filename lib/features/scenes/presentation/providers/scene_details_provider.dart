@@ -16,4 +16,11 @@ class SceneDetails extends _$SceneDetails {
   void updateState(Scene scene) {
     state = AsyncData(scene);
   }
+
+  Future<void> refresh() async {
+    state = await AsyncValue.guard(() async {
+      final repository = ref.read(sceneRepositoryProvider);
+      return repository.getSceneById(id, refresh: true);
+    });
+  }
 }

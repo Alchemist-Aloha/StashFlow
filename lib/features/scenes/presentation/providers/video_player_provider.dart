@@ -931,7 +931,9 @@ class PlayerState extends _$PlayerState {
               .read(sceneRepositoryProvider)
               .incrementScenePlayCount(scene.id);
           _playCountIncremented = true;
-          ref.invalidate(sceneDetailsProvider(scene.id));
+          if (ref.mounted) {
+            unawaited(ref.read(sceneDetailsProvider(scene.id).notifier).refresh());
+          }
           AppLogStore.instance.add(
             'PlayerState play count incremented for scene=${scene.id}',
             source: 'player_provider',
@@ -1020,7 +1022,7 @@ class PlayerState extends _$PlayerState {
         playDuration: durationToSave,
       );
       if (ref.mounted) {
-        ref.invalidate(sceneDetailsProvider(effectiveScene.id));
+        unawaited(ref.read(sceneDetailsProvider(effectiveScene.id).notifier).refresh());
       }
     } catch (e) {
       debugPrint('Failed to save scene activity: $e');

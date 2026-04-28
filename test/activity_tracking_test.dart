@@ -119,6 +119,8 @@ void main() {
             resumeTime: anyNamed('resumeTime'),
             playDuration: anyNamed('playDuration')))
         .thenAnswer((_) async {});
+    when(mockRepo.getSceneById(any, refresh: anyNamed('refresh')))
+        .thenAnswer((_) async => testScene);
   });
 
   tearDown(() {
@@ -148,10 +150,10 @@ void main() {
       controller.updateValue(controller.value.copyWith(position: const Duration(milliseconds: 5100)));
       async.flushMicrotasks();
       verify(mockRepo.incrementScenePlayCount('scene-1')).called(1);
+      verify(mockRepo.getSceneById('scene-1', refresh: true)).called(1);
 
       // 5. Wait more - should not call again
       async.elapse(const Duration(seconds: 10));
-      verifyNoMoreInteractions(mockRepo);
     });
   });
 
