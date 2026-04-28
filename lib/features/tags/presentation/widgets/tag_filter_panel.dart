@@ -40,7 +40,7 @@ class _TagFilterPanelState extends ConsumerState<TagFilterPanel> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                padding: EdgeInsets.all(context.dimensions.spacingMedium),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -65,7 +65,9 @@ class _TagFilterPanelState extends ConsumerState<TagFilterPanel> {
               Expanded(
                 child: SingleChildScrollView(
                   padding: EdgeInsets.only(
-                    bottom: bottomInset + safeBottom + AppTheme.spacingLarge,
+                    bottom: bottomInset +
+                        safeBottom +
+                        context.dimensions.spacingLarge,
                   ),
                   child: Column(
                     children: [
@@ -76,7 +78,7 @@ class _TagFilterPanelState extends ConsumerState<TagFilterPanel> {
               ),
               const Divider(height: 1),
               Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                padding: EdgeInsets.all(context.dimensions.spacingMedium),
                 child: Column(
                   children: [
                     SizedBox(
@@ -91,14 +93,14 @@ class _TagFilterPanelState extends ConsumerState<TagFilterPanel> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.colors.primary,
                           foregroundColor: context.colors.onPrimary,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppTheme.spacingMedium,
+                          padding: EdgeInsets.symmetric(
+                            vertical: context.dimensions.spacingMedium,
                           ),
                         ),
                         child: Text(context.l10n.common_apply_filters),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     SizedBox(
                       width: double.infinity,
                       child: TextButton(
@@ -121,8 +123,8 @@ class _TagFilterPanelState extends ConsumerState<TagFilterPanel> {
                           }
                         },
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppTheme.spacingMedium,
+                          padding: EdgeInsets.symmetric(
+                            vertical: context.dimensions.spacingMedium,
                           ),
                         ),
                         child: Text(context.l10n.common_save_default),
