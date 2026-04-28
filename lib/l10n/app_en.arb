@@ -355,7 +355,7 @@
   "settings_interface_layout_default_desc": "Choose the default layout for the page",
   "settings_interface_layout_list": "List",
   "settings_interface_layout_grid": "Grid",
-  "settings_interface_layout_tiktok": "Infinite Scroll",
+  "settings_interface_layout_tiktok": "Feed",
   "settings_interface_grid_columns": "Grid Columns",
   "settings_interface_image_viewer": "Image Viewer",
   "settings_interface_image_viewer_subtitle": "Configure fullscreen image browsing behavior",
