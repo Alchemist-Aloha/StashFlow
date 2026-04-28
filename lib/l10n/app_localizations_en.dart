@@ -1079,7 +1079,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_interface_layout_grid => 'Grid';
 
   @override
-  String get settings_interface_layout_tiktok => 'Infinite Scroll';
+  String get settings_interface_layout_tiktok => 'Feed';
 
   @override
   String get settings_interface_grid_columns => 'Grid Columns';

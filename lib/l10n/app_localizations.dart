@@ -2085,7 +2085,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings_interface_layout_tiktok.
   ///
   /// In en, this message translates to:
-  /// **'Infinite Scroll'**
+  /// **'Feed'**
   String get settings_interface_layout_tiktok;
 
   /// No description provided for @settings_interface_grid_columns.

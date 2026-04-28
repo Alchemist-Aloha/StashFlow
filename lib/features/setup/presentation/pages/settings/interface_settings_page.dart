@@ -154,9 +154,11 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    
+
     ref.watch(appLanguageProvider);
-    final currentLanguageKey = ref.read(sharedPreferencesProvider).getString(appLanguagePreferenceKey);
+    final currentLanguageKey = ref
+        .read(sharedPreferencesProvider)
+        .getString(appLanguagePreferenceKey);
 
     return SettingsPageShell(
       title: context.l10n.settings_interface_title,
@@ -173,7 +175,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                     child: SettingsActionCard(
                       icon: Icons.translate_rounded,
                       title: context.l10n.settings_interface_app_language,
-                      subtitle: supportedLanguages[currentLanguageKey] ?? 'System Default',
+                      subtitle:
+                          supportedLanguages[currentLanguageKey] ??
+                          'System Default',
                       onTap: () => _showLanguagePicker(context, ref),
                     ),
                   ),
@@ -339,8 +343,16 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         const Divider(height: AppTheme.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
-                          title: Text(context.l10n.settings_interface_show_performer_avatars),
-                          subtitle: Text(context.l10n.settings_interface_show_performer_avatars_subtitle),
+                          title: Text(
+                            context
+                                .l10n
+                                .settings_interface_show_performer_avatars,
+                          ),
+                          subtitle: Text(
+                            context
+                                .l10n
+                                .settings_interface_show_performer_avatars_subtitle,
+                          ),
                           value: _showPerformerAvatars,
                           onChanged: (value) async {
                             setState(() => _showPerformerAvatars = value);
@@ -350,8 +362,12 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         if (_showPerformerAvatars) ...[
                           const Divider(height: AppTheme.spacingLarge),
                           _buildGridColumnSetting(
-                            label: context.l10n.settings_interface_max_performer_avatars,
-                            value: _maxPerformerAvatars == 3 ? null : _maxPerformerAvatars,
+                            label: context
+                                .l10n
+                                .settings_interface_max_performer_avatars,
+                            value: _maxPerformerAvatars == 3
+                                ? null
+                                : _maxPerformerAvatars,
                             onChanged: (value) async {
                               setState(() => _maxPerformerAvatars = value ?? 3);
                               await _saveSettings();
@@ -359,10 +375,14 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           ),
                           const Divider(height: AppTheme.spacingLarge),
                           _buildAvatarSizeSetting(
-                            label: context.l10n.settings_interface_performer_avatar_size,
+                            label: context
+                                .l10n
+                                .settings_interface_performer_avatar_size,
                             value: _performerAvatarSize,
                             onChanged: (value) async {
-                              setState(() => _performerAvatarSize = value ?? 16.0);
+                              setState(
+                                () => _performerAvatarSize = value ?? 16.0,
+                              );
                               await _saveSettings();
                             },
                           ),
@@ -630,7 +650,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
 
   void _showLanguagePicker(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
-    final currentLanguageKey = ref.read(sharedPreferencesProvider).getString(appLanguagePreferenceKey);
+    final currentLanguageKey = ref
+        .read(sharedPreferencesProvider)
+        .getString(appLanguagePreferenceKey);
 
     showModalBottomSheet(
       context: context,
@@ -657,31 +679,29 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
               Flexible(
                 child: ListView(
                   shrinkWrap: true,
-                  children:
-                      supportedLanguages.entries.map((entry) {
-                        final isSelected = entry.key == currentLanguageKey;
-                        return ListTile(
-                          leading: Icon(
-                            isSelected
-                                ? Icons.check_circle_rounded
-                                : Icons.circle_outlined,
-                            color: isSelected ? colorScheme.primary : null,
-                          ),
-                          title: Text(
-                            entry.value,
-                            style: TextStyle(
-                              fontWeight:
-                                  isSelected ? FontWeight.bold : null,
-                            ),
-                          ),
-                          onTap: () async {
-                            await ref
-                                .read(appLanguageProvider.notifier)
-                                .setLanguage(entry.key);
-                            if (context.mounted) Navigator.pop(context);
-                          },
-                        );
-                      }).toList(),
+                  children: supportedLanguages.entries.map((entry) {
+                    final isSelected = entry.key == currentLanguageKey;
+                    return ListTile(
+                      leading: Icon(
+                        isSelected
+                            ? Icons.check_circle_rounded
+                            : Icons.circle_outlined,
+                        color: isSelected ? colorScheme.primary : null,
+                      ),
+                      title: Text(
+                        entry.value,
+                        style: TextStyle(
+                          fontWeight: isSelected ? FontWeight.bold : null,
+                        ),
+                      ),
+                      onTap: () async {
+                        await ref
+                            .read(appLanguageProvider.notifier)
+                            .setLanguage(entry.key);
+                        if (context.mounted) Navigator.pop(context);
+                      },
+                    );
+                  }).toList(),
                 ),
               ),
             ],
@@ -827,6 +847,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
 
         return Row(
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
               child: Column(
