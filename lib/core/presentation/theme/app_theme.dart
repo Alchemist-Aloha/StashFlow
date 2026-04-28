@@ -103,22 +103,38 @@ class AppDimensions extends ThemeExtension<AppDimensions> {
     required this.performerAvatarSize,
     required this.cardTitleFontSize,
     required this.fontSizeFactor,
+    required this.spacingSmall,
+    required this.spacingMedium,
+    required this.spacingLarge,
+    required this.buttonHeight,
   });
 
   final double performerAvatarSize;
   final double cardTitleFontSize;
   final double fontSizeFactor;
+  final double spacingSmall;
+  final double spacingMedium;
+  final double spacingLarge;
+  final double buttonHeight;
 
   @override
   AppDimensions copyWith({
     double? performerAvatarSize,
     double? cardTitleFontSize,
     double? fontSizeFactor,
+    double? spacingSmall,
+    double? spacingMedium,
+    double? spacingLarge,
+    double? buttonHeight,
   }) {
     return AppDimensions(
       performerAvatarSize: performerAvatarSize ?? this.performerAvatarSize,
       cardTitleFontSize: cardTitleFontSize ?? this.cardTitleFontSize,
       fontSizeFactor: fontSizeFactor ?? this.fontSizeFactor,
+      spacingSmall: spacingSmall ?? this.spacingSmall,
+      spacingMedium: spacingMedium ?? this.spacingMedium,
+      spacingLarge: spacingLarge ?? this.spacingLarge,
+      buttonHeight: buttonHeight ?? this.buttonHeight,
     );
   }
 
@@ -132,6 +148,14 @@ class AppDimensions extends ThemeExtension<AppDimensions> {
           lerpDouble(cardTitleFontSize, other.cardTitleFontSize, t)!,
       fontSizeFactor:
           lerpDouble(fontSizeFactor, other.fontSizeFactor, t)!,
+      spacingSmall:
+          lerpDouble(spacingSmall, other.spacingSmall, t)!,
+      spacingMedium:
+          lerpDouble(spacingMedium, other.spacingMedium, t)!,
+      spacingLarge:
+          lerpDouble(spacingLarge, other.spacingLarge, t)!,
+      buttonHeight:
+          lerpDouble(buttonHeight, other.buttonHeight, t)!,
     );
   }
 }
@@ -174,6 +198,16 @@ class AppTheme {
     double? performerAvatarSize,
     double fontSizeFactor = 1.0,
   }) {
+    final dims = AppDimensions(
+      performerAvatarSize: (performerAvatarSize ?? 16.0) * fontSizeFactor,
+      cardTitleFontSize: (cardTitleFontSize ?? 12.0) * fontSizeFactor,
+      fontSizeFactor: fontSizeFactor,
+      spacingSmall: 8.0 * fontSizeFactor,
+      spacingMedium: 16.0 * fontSizeFactor,
+      spacingLarge: 24.0 * fontSizeFactor,
+      buttonHeight: 48.0 * fontSizeFactor,
+    );
+
     final isDark = brightness == Brightness.dark;
     var colorScheme = ColorScheme.fromSeed(
       seedColor: seedColor,
@@ -254,9 +288,9 @@ class AppTheme {
           borderRadius: BorderRadius.circular(radiusMedium),
           borderSide: BorderSide(color: colorScheme.primary, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: spacingMedium,
-          vertical: spacingMedium,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: dims.spacingMedium,
+          vertical: dims.spacingMedium,
         ),
       ),
       chipTheme: ChipThemeData(
@@ -274,26 +308,26 @@ class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          minimumSize: const Size.fromHeight(48),
+          minimumSize: Size.fromHeight(dims.buttonHeight),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMedium),
           ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: spacingLarge,
-            vertical: spacingMedium,
+          padding: EdgeInsets.symmetric(
+            horizontal: dims.spacingLarge,
+            vertical: dims.spacingMedium,
           ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size.fromHeight(48),
+          minimumSize: Size.fromHeight(dims.buttonHeight),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMedium),
           ),
           side: BorderSide(color: colorScheme.outline),
-          padding: const EdgeInsets.symmetric(
-            horizontal: spacingLarge,
-            vertical: spacingMedium,
+          padding: EdgeInsets.symmetric(
+            horizontal: dims.spacingLarge,
+            vertical: dims.spacingMedium,
           ),
         ),
       ),
@@ -302,9 +336,9 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMedium),
           ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: spacingMedium,
-            vertical: spacingSmall,
+          padding: EdgeInsets.symmetric(
+            horizontal: dims.spacingMedium,
+            vertical: dims.spacingSmall,
           ),
         ),
       ),
@@ -336,11 +370,7 @@ class AppTheme {
           cardBackground: colorScheme.surfaceContainerHighest,
           ratingColor: isDark ? Colors.amber.shade300 : Colors.amber.shade700,
         ),
-        AppDimensions(
-          performerAvatarSize: performerAvatarSize ?? 16.0,
-          cardTitleFontSize: cardTitleFontSize ?? 12.0,
-          fontSizeFactor: fontSizeFactor,
-        ),
+        dims,
       ],
     );
   }
