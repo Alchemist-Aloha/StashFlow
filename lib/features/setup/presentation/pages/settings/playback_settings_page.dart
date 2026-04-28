@@ -112,7 +112,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
       child: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(AppTheme.spacingLarge),
+              padding: EdgeInsets.all(context.dimensions.spacingLarge),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -137,7 +137,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                             await _saveToggleSettings();
                           },
                         ),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
                           title: Text(context.l10n.settings_playback_autoplay),
@@ -150,7 +150,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                             await _saveToggleSettings();
                           },
                         ),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
                           title: Text(
@@ -165,7 +165,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                             await _saveToggleSettings();
                           },
                         ),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
                           title: Text(context.l10n.settings_playback_pip),
@@ -178,7 +178,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                             await _saveToggleSettings();
                           },
                         ),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
                           title: Text(
@@ -198,23 +198,23 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: AppTheme.spacingLarge),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_playback_subtitles,
                     subtitle: context.l10n.settings_playback_subtitles_subtitle,
                     child: Column(
                       children: [
                         _buildDefaultSubtitleSelector(),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         _buildSubtitleSizeSlider(),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         _buildSubtitlePositionSlider(),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         _buildSubtitleAlignmentSelector(),
                       ],
                     ),
                   ),
-                  const SizedBox(height: AppTheme.spacingLarge),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_playback_seek,
                     subtitle: context.l10n.settings_playback_seek_subtitle,
@@ -224,6 +224,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
               ),
             ),
     );
+  }
   }
 
   Widget _buildDefaultSubtitleSelector() {
@@ -365,19 +366,31 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
         );
         final trailingWidget = SegmentedButton<bool>(
           showSelectedIcon: false,
-          style: const ButtonStyle(
+          style: ButtonStyle(
             visualDensity: VisualDensity.compact,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            padding: WidgetStateProperty.all(
+              EdgeInsets.symmetric(
+                horizontal: context.dimensions.spacingSmall,
+                vertical: context.dimensions.spacingSmall / 2,
+              ),
+            ),
           ),
           segments: [
             ButtonSegment<bool>(
               value: false,
-              icon: const Icon(Icons.drag_indicator),
+              icon: Icon(
+                Icons.drag_indicator,
+                size: 24 * context.dimensions.fontSizeFactor,
+              ),
               label: Text(context.l10n.settings_playback_seek_drag_label),
             ),
             ButtonSegment<bool>(
               value: true,
-              icon: const Icon(Icons.touch_app_outlined),
+              icon: Icon(
+                Icons.touch_app_outlined,
+                size: 24 * context.dimensions.fontSizeFactor,
+              ),
               label: Text(context.l10n.settings_playback_seek_double_tap_label),
             ),
           ],
@@ -390,12 +403,12 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
 
         if (isNarrow) {
           return Padding(
-            padding: const EdgeInsets.only(top: 4),
+            padding: EdgeInsets.only(top: 4 * context.dimensions.fontSizeFactor),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 subtitleWidget,
-                const SizedBox(height: 12),
+                SizedBox(height: context.dimensions.spacingMedium),
                 SizedBox(width: double.infinity, child: trailingWidget),
               ],
             ),

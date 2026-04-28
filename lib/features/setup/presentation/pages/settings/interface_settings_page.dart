@@ -165,7 +165,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
       child: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(AppTheme.spacingLarge),
+              padding: EdgeInsets.all(context.dimensions.spacingLarge),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -181,7 +181,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                       onTap: () => _showLanguagePicker(context, ref),
                     ),
                   ),
-                  const SizedBox(height: AppTheme.spacingLarge),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_interface_navigation,
                     subtitle:
@@ -204,7 +204,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                             await _saveSettings();
                           },
                         ),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
                           title: Text(
@@ -223,7 +223,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                             await _saveSettings();
                           },
                         ),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
                           title: Row(
@@ -233,11 +233,11 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                                   context.l10n.settings_interface_show_edit,
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              SizedBox(width: context.dimensions.spacingSmall),
                               Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 3,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: context.dimensions.spacingSmall,
+                                  vertical: 3 * context.dimensions.fontSizeFactor,
                                 ),
                                 decoration: BoxDecoration(
                                   color: colorScheme.surfaceContainerHighest,
@@ -263,7 +263,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                             await _saveSettings();
                           },
                         ),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         ListTile(
                           contentPadding: EdgeInsets.zero,
                           title: Text(
@@ -274,7 +274,10 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                                 .l10n
                                 .settings_interface_customize_tabs_subtitle,
                           ),
-                          trailing: const Icon(Icons.chevron_right),
+                          trailing: Icon(
+                            Icons.chevron_right,
+                            size: 24 * context.dimensions.fontSizeFactor,
+                          ),
                           onTap: () {
                             context.push('/settings/interface/navigation');
                           },
@@ -282,7 +285,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: AppTheme.spacingLarge),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_interface_scenes_layout,
                     subtitle:
@@ -334,7 +337,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           },
                         ),
                         if (_sceneGridLayout) ...[
-                          const Divider(height: AppTheme.spacingLarge),
+                          Divider(height: context.dimensions.spacingLarge),
                           _buildGridColumnSetting(
                             label: context.l10n.settings_interface_grid_columns,
                             value: _sceneGridColumns,
@@ -344,7 +347,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                             },
                           ),
                         ],
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
                           title: Text(
@@ -364,7 +367,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           },
                         ),
                         if (_showPerformerAvatars) ...[
-                          const Divider(height: AppTheme.spacingLarge),
+                          Divider(height: context.dimensions.spacingLarge),
                           _buildGridColumnSetting(
                             label: context
                                 .l10n
@@ -377,7 +380,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                               await _saveSettings();
                             },
                           ),
-                          const Divider(height: AppTheme.spacingLarge),
+                          Divider(height: context.dimensions.spacingLarge),
                           _buildAvatarSizeSetting(
                             label: context
                                 .l10n
@@ -391,7 +394,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                             },
                           ),
                         ],
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         _buildFontSizeSetting(
                           label: 'Card Title Font Size',
                           value: _cardTitleFontSize,
@@ -403,7 +406,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: AppTheme.spacingLarge),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_interface_galleries_layout,
                     subtitle: context
@@ -444,7 +447,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           },
                         ),
                         if (_galleryGridLayout) ...[
-                          const Divider(height: AppTheme.spacingLarge),
+                          Divider(height: context.dimensions.spacingLarge),
                           _buildGridColumnSetting(
                             label: context.l10n.settings_interface_grid_columns,
                             value: _galleryGridColumns,
@@ -457,7 +460,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: AppTheme.spacingLarge),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_interface_image_viewer,
                     subtitle:
@@ -503,7 +506,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                             await _saveSettings();
                           },
                         ),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         _buildGridColumnSetting(
                           label:
                               context.l10n.settings_interface_waterfall_columns,
@@ -516,7 +519,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: AppTheme.spacingLarge),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   _buildEntityLayoutsSection(
                     context: context,
                     title: context.l10n.settings_interface_performer_layouts,
@@ -539,7 +542,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                       await _saveSettings();
                     },
                   ),
-                  const SizedBox(height: AppTheme.spacingLarge),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   _buildEntityLayoutsSection(
                     context: context,
                     title: context.l10n.settings_interface_studio_layouts,
@@ -561,7 +564,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                       await _saveSettings();
                     },
                   ),
-                  const SizedBox(height: AppTheme.spacingLarge),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   _buildEntityLayoutsSection(
                     context: context,
                     title: context.l10n.settings_interface_tag_layouts,
@@ -643,7 +646,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
             },
           ),
           if (mediaGridValue || galleriesGridValue) ...[
-            const Divider(height: AppTheme.spacingLarge),
+            Divider(height: context.dimensions.spacingLarge),
             _buildGridColumnSetting(
               label: l10n.settings_interface_grid_columns,
               value: gridColumnsValue,
@@ -663,9 +666,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
 
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppTheme.radiusExtraLarge),
+          top: Radius.circular(32 * context.dimensions.fontSizeFactor),
         ),
       ),
       builder: (context) {
@@ -673,16 +676,16 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: AppTheme.spacingMedium),
+              SizedBox(height: context.dimensions.spacingMedium),
               Container(
-                width: 32,
-                height: 4,
+                width: 32 * context.dimensions.fontSizeFactor,
+                height: 4 * context.dimensions.fontSizeFactor,
                 decoration: BoxDecoration(
                   color: colorScheme.outlineVariant,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(2 * context.dimensions.fontSizeFactor),
                 ),
               ),
-              const SizedBox(height: AppTheme.spacingMedium),
+              SizedBox(height: context.dimensions.spacingMedium),
               Flexible(
                 child: ListView(
                   shrinkWrap: true,
@@ -694,13 +697,15 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                             ? Icons.check_circle_rounded
                             : Icons.circle_outlined,
                         color: isSelected ? colorScheme.primary : null,
+                        size: 24 * context.dimensions.fontSizeFactor,
                       ),
                       title: Text(
                         entry.value,
                         style: context.textTheme.bodyLarge?.copyWith(
                           fontWeight: isSelected ? FontWeight.bold : null,
                         ),
-                      ),                      onTap: () async {
+                      ),
+                      onTap: () async {
                         await ref
                             .read(appLanguageProvider.notifier)
                             .setLanguage(entry.key);
@@ -755,9 +760,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(label, style: labelStyle),
-              const SizedBox(height: 4),
+              SizedBox(height: 4 * context.dimensions.fontSizeFactor),
               Text(description, style: descriptionStyle),
-              const SizedBox(height: AppTheme.spacingMedium),
+              SizedBox(height: context.dimensions.spacingMedium),
               SizedBox(width: double.infinity, child: control),
             ],
           );
@@ -772,12 +777,12 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(label, style: labelStyle),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4 * context.dimensions.fontSizeFactor),
                   Text(description, style: descriptionStyle),
                 ],
               ),
             ),
-            const SizedBox(width: AppTheme.spacingMedium),
+            SizedBox(width: context.dimensions.spacingMedium),
             Flexible(child: control),
           ],
         );
@@ -808,11 +813,11 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   controller.open();
                 }
               },
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(20 * context.dimensions.fontSizeFactor),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
+                padding: EdgeInsets.symmetric(
+                  horizontal: 16 * context.dimensions.fontSizeFactor,
+                  vertical: 8 * context.dimensions.fontSizeFactor,
                 ),
                 decoration: ShapeDecoration(
                   color: colorScheme.primaryContainer.withValues(alpha: 0.1),
@@ -830,10 +835,11 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(width: 4),
+                    SizedBox(width: 4 * context.dimensions.fontSizeFactor),
                     Icon(
                       Icons.arrow_drop_down_rounded,
                       color: colorScheme.primary,
+                      size: 24 * context.dimensions.fontSizeFactor,
                     ),
                   ],
                 ),

@@ -54,7 +54,7 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
     return SettingsPageShell(
       title: l10n.settings_develop_title,
       child: ListView(
-        padding: const EdgeInsets.all(AppTheme.spacingMedium),
+        padding: EdgeInsets.all(context.dimensions.spacingMedium),
         children: [
           SettingsSectionCard(
             title: l10n.settings_develop_diagnostics,
@@ -97,7 +97,7 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
             ),
           ),
           if (kIsWeb) ...[
-            const SizedBox(height: AppTheme.spacingLarge),
+            SizedBox(height: context.dimensions.spacingLarge),
             SettingsSectionCard(
               title: l10n.settings_develop_web_overrides,
               subtitle: l10n.settings_develop_web_overrides_subtitle,

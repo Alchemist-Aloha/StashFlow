@@ -16,7 +16,7 @@ class SupportSettingsPage extends ConsumerWidget {
     return SettingsPageShell(
       title: l10n.settings_support_title,
       child: ListView(
-        padding: const EdgeInsets.all(AppTheme.spacingMedium),
+        padding: EdgeInsets.all(context.dimensions.spacingMedium),
         children: [
 
           // Update check section
@@ -38,9 +38,9 @@ class SupportSettingsPage extends ConsumerWidget {
                               updateInfo.latestVersion,
                             ),
                             subtitle: l10n.settings_support_update_to_subtitle,
-                            trailing: const Icon(
+                            trailing: Icon(
                               Icons.open_in_new_rounded,
-                              size: 18,
+                              size: 18 * context.dimensions.fontSizeFactor,
                             ),
                             onTap: () async {
                               final url = Uri.parse(updateInfo.releaseUrl);
@@ -55,7 +55,7 @@ class SupportSettingsPage extends ConsumerWidget {
                             },
                           ),
                         ),
-                        const SizedBox(height: AppTheme.spacingLarge),
+                        SizedBox(height: context.dimensions.spacingLarge),
                       ],
                     );
                   }
@@ -102,12 +102,15 @@ class SupportSettingsPage extends ConsumerWidget {
                         onTap: () {},
                       ),
                     ),
-                const SizedBox(height: AppTheme.spacingSmall),
+                SizedBox(height: context.dimensions.spacingSmall),
                 SettingsActionCard(
                   icon: Icons.code_rounded,
                   title: l10n.settings_support_github,
                   subtitle: l10n.settings_support_github_subtitle,
-                  trailing: const Icon(Icons.open_in_new_rounded, size: 18),
+                  trailing: Icon(
+                    Icons.open_in_new_rounded,
+                    size: 18 * context.dimensions.fontSizeFactor,
+                  ),
                   onTap: () async {
                     final url = Uri.parse(
                       'https://github.com/Alchemist-Aloha/StashFlow',

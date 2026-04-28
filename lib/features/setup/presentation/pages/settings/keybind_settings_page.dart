@@ -19,7 +19,7 @@ class KeybindSettingsPage extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.all(AppTheme.spacingMedium),
+            padding: EdgeInsets.all(context.dimensions.spacingMedium),
             child: Row(
               children: [
                 Expanded(
@@ -33,7 +33,10 @@ class KeybindSettingsPage extends ConsumerWidget {
                 TextButton.icon(
                   onPressed: () =>
                       ref.read(keybindsProvider.notifier).resetToDefaults(),
-                  icon: const Icon(Icons.restore),
+                  icon: Icon(
+                    Icons.restore,
+                    size: 24 * context.dimensions.fontSizeFactor,
+                  ),
                   label: Text(
                     context.l10n.settings_keyboard_reset_defaults,
                     style: context.textTheme.labelLarge?.copyWith(
@@ -66,8 +69,8 @@ class KeybindSettingsPage extends ConsumerWidget {
                   ),
                   trailing: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(80, 36),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      minimumSize: Size(80 * context.dimensions.fontSizeFactor, 36 * context.dimensions.fontSizeFactor),
+                      padding: EdgeInsets.symmetric(horizontal: context.dimensions.spacingMedium),
                     ),
                     onPressed: () => _showCaptureDialog(context, ref, action),
                     child: Text(
@@ -207,7 +210,7 @@ class _KeyCaptureDialogState extends State<_KeyCaptureDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(context.l10n.settings_keybind_press_any),
-          const SizedBox(height: 24),
+          SizedBox(height: context.dimensions.spacingLarge),
           Focus(
             autofocus: true,
             onKeyEvent: (node, event) {
@@ -239,10 +242,13 @@ class _KeyCaptureDialogState extends State<_KeyCaptureDialog> {
               return KeyEventResult.ignored;
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              padding: EdgeInsets.symmetric(
+                horizontal: context.dimensions.spacingLarge,
+                vertical: context.dimensions.spacingMedium,
+              ),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(8 * context.dimensions.fontSizeFactor),
               ),
                 child: Text(
                 _captured?.label ?? context.l10n.settings_keyboard_not_bound,
