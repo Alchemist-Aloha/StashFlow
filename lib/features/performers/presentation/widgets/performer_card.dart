@@ -22,7 +22,7 @@ class PerformerCard extends ConsumerWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
       child: Padding(
-        padding: const EdgeInsets.all(4.0),
+        padding: EdgeInsets.all(context.dimensions.spacingSmall / 2),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -48,7 +48,7 @@ class PerformerCard extends ConsumerWidget {
                 },
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: context.dimensions.spacingSmall),
             Text(
               performer.name,
               style: context.textTheme.bodySmall?.copyWith(

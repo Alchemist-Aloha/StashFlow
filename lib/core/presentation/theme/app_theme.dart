@@ -304,6 +304,10 @@ class AppTheme {
         style: SegmentedButton.styleFrom(
           selectedBackgroundColor: colorScheme.primaryContainer,
           selectedForegroundColor: colorScheme.onPrimaryContainer,
+          padding: EdgeInsets.symmetric(
+            horizontal: dims.spacingSmall,
+            vertical: dims.spacingSmall / 2,
+          ),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(

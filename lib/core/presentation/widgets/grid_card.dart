@@ -82,12 +82,12 @@ class GridCard extends ConsumerWidget {
                   ),
                   if (badge != null)
                     Positioned(
-                      right: 8,
-                      top: 8,
+                      right: context.dimensions.spacingSmall,
+                      top: context.dimensions.spacingSmall,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: context.dimensions.spacingSmall * 0.75,
+                          vertical: context.dimensions.spacingSmall / 4,
                         ),
                         decoration: BoxDecoration(
                           color: context.colors.primary.withValues(alpha: 0.9),
@@ -108,7 +108,7 @@ class GridCard extends ConsumerWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(context.dimensions.spacingSmall),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -123,7 +123,7 @@ class GridCard extends ConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 if (subtitle != null) ...[
-                  const SizedBox(height: 2),
+                  SizedBox(height: context.dimensions.spacingSmall / 4),
                   Text(
                     subtitle!,
                     style: context.textTheme.bodySmall?.copyWith(
@@ -163,12 +163,12 @@ class GridCard extends ConsumerWidget {
                   ),
                   if (badge != null)
                     Positioned(
-                      right: 12,
-                      top: 12,
+                      right: context.dimensions.spacingSmall * 1.5,
+                      top: context.dimensions.spacingSmall * 1.5,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: context.dimensions.spacingSmall,
+                          vertical: context.dimensions.spacingSmall / 2,
                         ),
                         decoration: BoxDecoration(
                           color: context.colors.primary.withValues(alpha: 0.9),
@@ -189,7 +189,7 @@ class GridCard extends ConsumerWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(AppTheme.spacingMedium),
+            padding: EdgeInsets.all(context.dimensions.spacingMedium),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
