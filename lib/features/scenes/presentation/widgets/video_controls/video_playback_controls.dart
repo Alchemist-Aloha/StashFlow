@@ -8,6 +8,7 @@ import 'package:video_player/video_player.dart';
 
 import '../../../../../core/utils/pip_mode.dart';
 import '../../../domain/entities/scene.dart';
+import 'cast_selection_sheet.dart';
 
 class VideoPlaybackControls extends StatelessWidget {
   const VideoPlaybackControls({
@@ -296,8 +297,26 @@ class VideoPlaybackControls extends StatelessWidget {
           const SizedBox(width: 8),
           desktopVolumeControl!,
         ],
-        const SizedBox(width: 6),
-        if (enableNativePip && !kIsWeb && Platform.isAndroid)
+        const SizedBox(width: 8),
+        IconButton(
+          tooltip: 'Cast',
+          style: _controlButtonStyle(colorScheme),
+          icon: const Icon(Icons.cast_rounded),
+          onPressed: () {
+            onInteract();
+            showModalBottomSheet(
+              context: context,
+              backgroundColor: Colors.transparent,
+              isScrollControlled: true,
+              builder: (context) => CastSelectionSheet(
+                videoUrl: controller.dataSource,
+                title: scene.displayTitle,
+              ),
+            );
+          },
+        ),
+        if (enableNativePip && !kIsWeb && Platform.isAndroid) ...[
+          const SizedBox(width: 8),
           IconButton(
             tooltip: context.l10n.common_pip,
             style: _controlButtonStyle(colorScheme),
@@ -313,6 +332,8 @@ class VideoPlaybackControls extends StatelessWidget {
               onInteract();
             },
           ),
+        ],
+        const SizedBox(width: 8),
         GestureDetector(
           onTap: () {}, // Consume tap to prevent propagation
           child: IconButton(
