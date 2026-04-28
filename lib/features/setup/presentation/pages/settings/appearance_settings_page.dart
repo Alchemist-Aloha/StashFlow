@@ -97,7 +97,7 @@ class _AppearanceSettingsPageState
       child: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(AppTheme.spacingLarge),
+              padding: EdgeInsets.all(context.dimensions.spacingLarge),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -143,7 +143,7 @@ class _AppearanceSettingsPageState
                             },
                           ),
                         ),
-                        const SizedBox(height: AppTheme.spacingMedium),
+                        SizedBox(height: context.dimensions.spacingMedium),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
                           title: Text(l10n.settings_appearance_true_black),
@@ -160,13 +160,13 @@ class _AppearanceSettingsPageState
                       ],
                     ),
                   ),
-                  const SizedBox(height: AppTheme.spacingLarge),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: l10n.settings_appearance_primary_color,
                     subtitle: l10n.settings_appearance_primary_color_subtitle,
                     child: _buildColorSelector(),
                   ),
-                  const SizedBox(height: AppTheme.spacingLarge),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: l10n.settings_appearance_font_size,
                     subtitle: l10n.settings_appearance_font_size_subtitle,
@@ -232,15 +232,15 @@ class _AppearanceSettingsPageState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Wrap(
-          spacing: AppTheme.spacingSmall,
-          runSpacing: AppTheme.spacingSmall,
+          spacing: context.dimensions.spacingSmall,
+          runSpacing: context.dimensions.spacingSmall,
           children: [
             ..._presetColors.map((color) => _buildColorSwatch(color)),
             _buildColorSwatch(null),
           ],
         ),
         if (isCustom) ...[
-          const SizedBox(height: AppTheme.spacingMedium),
+          SizedBox(height: context.dimensions.spacingMedium),
           TextField(
             controller: _customHexController,
             focusNode: _customHexFocusNode,
@@ -275,7 +275,7 @@ class _AppearanceSettingsPageState
     final displayColor = color ?? _seedColor;
 
     return Padding(
-      padding: const EdgeInsets.only(right: AppTheme.spacingSmall),
+      padding: EdgeInsets.only(right: context.dimensions.spacingSmall),
       child: InkWell(
         onTap: () {
           if (color != null) {
