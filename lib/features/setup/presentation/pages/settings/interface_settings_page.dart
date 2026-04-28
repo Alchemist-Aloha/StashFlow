@@ -508,143 +508,117 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                     ),
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
-                  SettingsSectionCard(
+                  _buildEntityLayoutsSection(
+                    context: context,
                     title: context.l10n.settings_interface_performer_layouts,
                     subtitle: context
                         .l10n
                         .settings_interface_performer_layouts_subtitle,
-                    child: Column(
-                      children: [
-                        _buildLayoutSetting(
-                          title: context.l10n.settings_interface_media_layout,
-                          subtitle: context
-                              .l10n
-                              .settings_interface_media_layout_subtitle,
-                          currentValue: _performerMediaGridLayout,
-                          onChanged: (isGrid) {
-                            setState(() => _performerMediaGridLayout = isGrid);
-                            _saveSettings();
-                          },
-                        ),
-                        const Divider(height: AppTheme.spacingLarge),
-                        _buildLayoutSetting(
-                          title: context
-                              .l10n
-                              .settings_interface_galleries_layout_item,
-                          subtitle: context
-                              .l10n
-                              .settings_interface_galleries_layout_subtitle_item,
-                          currentValue: _performerGalleriesGridLayout,
-                          onChanged: (isGrid) {
-                            setState(
-                              () => _performerGalleriesGridLayout = isGrid,
-                            );
-                            _saveSettings();
-                          },
-                        ),
-                        const Divider(height: AppTheme.spacingLarge),
-                        _buildGridColumnSetting(
-                          label: context.l10n.settings_interface_grid_columns,
-                          value: _performerGridColumns,
-                          onChanged: (value) async {
-                            setState(() => _performerGridColumns = value);
-                            await _saveSettings();
-                          },
-                        ),
-                      ],
-                    ),
+                    mediaGridValue: _performerMediaGridLayout,
+                    onMediaChanged: (isGrid) {
+                      setState(() => _performerMediaGridLayout = isGrid);
+                      _saveSettings();
+                    },
+                    galleriesGridValue: _performerGalleriesGridLayout,
+                    onGalleriesChanged: (isGrid) {
+                      setState(() => _performerGalleriesGridLayout = isGrid);
+                      _saveSettings();
+                    },
+                    gridColumnsValue: _performerGridColumns,
+                    onGridColumnsChanged: (value) async {
+                      setState(() => _performerGridColumns = value);
+                      await _saveSettings();
+                    },
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
-                  SettingsSectionCard(
+                  _buildEntityLayoutsSection(
+                    context: context,
                     title: context.l10n.settings_interface_studio_layouts,
                     subtitle:
                         context.l10n.settings_interface_studio_layouts_subtitle,
-                    child: Column(
-                      children: [
-                        _buildLayoutSetting(
-                          title: context.l10n.settings_interface_media_layout,
-                          subtitle: context
-                              .l10n
-                              .settings_interface_media_layout_subtitle,
-                          currentValue: _studioMediaGridLayout,
-                          onChanged: (isGrid) {
-                            setState(() => _studioMediaGridLayout = isGrid);
-                            _saveSettings();
-                          },
-                        ),
-                        const Divider(height: AppTheme.spacingLarge),
-                        _buildLayoutSetting(
-                          title: context
-                              .l10n
-                              .settings_interface_galleries_layout_item,
-                          subtitle: context
-                              .l10n
-                              .settings_interface_galleries_layout_subtitle_item,
-                          currentValue: _studioGalleriesGridLayout,
-                          onChanged: (isGrid) {
-                            setState(() => _studioGalleriesGridLayout = isGrid);
-                            _saveSettings();
-                          },
-                        ),
-                        const Divider(height: AppTheme.spacingLarge),
-                        _buildGridColumnSetting(
-                          label: context.l10n.settings_interface_grid_columns,
-                          value: _studioGridColumns,
-                          onChanged: (value) async {
-                            setState(() => _studioGridColumns = value);
-                            await _saveSettings();
-                          },
-                        ),
-                      ],
-                    ),
+                    mediaGridValue: _studioMediaGridLayout,
+                    onMediaChanged: (isGrid) {
+                      setState(() => _studioMediaGridLayout = isGrid);
+                      _saveSettings();
+                    },
+                    galleriesGridValue: _studioGalleriesGridLayout,
+                    onGalleriesChanged: (isGrid) {
+                      setState(() => _studioGalleriesGridLayout = isGrid);
+                      _saveSettings();
+                    },
+                    gridColumnsValue: _studioGridColumns,
+                    onGridColumnsChanged: (value) async {
+                      setState(() => _studioGridColumns = value);
+                      await _saveSettings();
+                    },
                   ),
                   const SizedBox(height: AppTheme.spacingLarge),
-                  SettingsSectionCard(
+                  _buildEntityLayoutsSection(
+                    context: context,
                     title: context.l10n.settings_interface_tag_layouts,
                     subtitle:
                         context.l10n.settings_interface_tag_layouts_subtitle,
-                    child: Column(
-                      children: [
-                        _buildLayoutSetting(
-                          title: context.l10n.settings_interface_media_layout,
-                          subtitle: context
-                              .l10n
-                              .settings_interface_media_layout_subtitle,
-                          currentValue: _tagMediaGridLayout,
-                          onChanged: (isGrid) {
-                            setState(() => _tagMediaGridLayout = isGrid);
-                            _saveSettings();
-                          },
-                        ),
-                        const Divider(height: AppTheme.spacingLarge),
-                        _buildLayoutSetting(
-                          title: context
-                              .l10n
-                              .settings_interface_galleries_layout_item,
-                          subtitle: context
-                              .l10n
-                              .settings_interface_galleries_layout_subtitle_item,
-                          currentValue: _tagGalleriesGridLayout,
-                          onChanged: (isGrid) {
-                            setState(() => _tagGalleriesGridLayout = isGrid);
-                            _saveSettings();
-                          },
-                        ),
-                        const Divider(height: AppTheme.spacingLarge),
-                        _buildGridColumnSetting(
-                          label: context.l10n.settings_interface_grid_columns,
-                          value: _tagGridColumns,
-                          onChanged: (value) async {
-                            setState(() => _tagGridColumns = value);
-                            await _saveSettings();
-                          },
-                        ),
-                      ],
-                    ),
+                    mediaGridValue: _tagMediaGridLayout,
+                    onMediaChanged: (isGrid) {
+                      setState(() => _tagMediaGridLayout = isGrid);
+                      _saveSettings();
+                    },
+                    galleriesGridValue: _tagGalleriesGridLayout,
+                    onGalleriesChanged: (isGrid) {
+                      setState(() => _tagGalleriesGridLayout = isGrid);
+                      _saveSettings();
+                    },
+                    gridColumnsValue: _tagGridColumns,
+                    onGridColumnsChanged: (value) async {
+                      setState(() => _tagGridColumns = value);
+                      await _saveSettings();
+                    },
                   ),
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildEntityLayoutsSection({
+    required BuildContext context,
+    required String title,
+    required String subtitle,
+    required bool mediaGridValue,
+    required ValueChanged<bool> onMediaChanged,
+    required bool galleriesGridValue,
+    required ValueChanged<bool> onGalleriesChanged,
+    required int? gridColumnsValue,
+    required ValueChanged<int?> onGridColumnsChanged,
+  }) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return SettingsSectionCard(
+      title: title,
+      subtitle: subtitle,
+      child: Column(
+        children: [
+          _buildLayoutSetting(
+            title: l10n.settings_interface_media_layout,
+            subtitle: l10n.settings_interface_media_layout_subtitle,
+            currentValue: mediaGridValue,
+            onChanged: onMediaChanged,
+          ),
+          const Divider(height: AppTheme.spacingLarge),
+          _buildLayoutSetting(
+            title: l10n.settings_interface_galleries_layout_item,
+            subtitle: l10n.settings_interface_galleries_layout_subtitle_item,
+            currentValue: galleriesGridValue,
+            onChanged: onGalleriesChanged,
+          ),
+          const Divider(height: AppTheme.spacingLarge),
+          _buildGridColumnSetting(
+            label: l10n.settings_interface_grid_columns,
+            value: gridColumnsValue,
+            onChanged: onGridColumnsChanged,
+          ),
+        ],
+      ),
     );
   }
 
@@ -718,82 +692,29 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     required ValueChanged<bool> onChanged,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isCompact = constraints.maxWidth < 560;
-        final segments = [
-          ButtonSegment<String>(
-            value: 'list',
-            label: Text(context.l10n.settings_interface_layout_list),
-            icon: Icon(Icons.view_list),
-          ),
-          ButtonSegment<String>(
-            value: 'grid',
-            label: Text(context.l10n.settings_interface_layout_grid),
-            icon: Icon(Icons.grid_view),
-          ),
-        ];
-
-        final segmentedButton = SegmentedButton<String>(
-          segments: segments,
-          selected: {currentValue ? 'grid' : 'list'},
-          showSelectedIcon: false,
-          onSelectionChanged: (selection) {
-            onChanged(selection.first == 'grid');
-          },
-        );
-
-        Widget control = segmentedButton;
-        if (isCompact) {
-          control = SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: segmentedButton,
-          );
-        }
-
-        if (isCompact) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: const TextStyle(fontSize: 16)),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: AppTheme.spacingMedium),
-              SizedBox(width: double.infinity, child: control),
-            ],
-          );
-        }
-
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: const TextStyle(fontSize: 16)),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: AppTheme.spacingMedium),
-            Flexible(child: control),
-          ],
-        );
+    return _buildSegmentedSetting(
+      context: context,
+      label: title,
+      description: subtitle,
+      descriptionStyle: TextStyle(
+        fontSize: 14,
+        color: colorScheme.onSurfaceVariant,
+      ),
+      segments: [
+        ButtonSegment<String>(
+          value: 'list',
+          label: Text(context.l10n.settings_interface_layout_list),
+          icon: Icon(Icons.view_list),
+        ),
+        ButtonSegment<String>(
+          value: 'grid',
+          label: Text(context.l10n.settings_interface_layout_grid),
+          icon: Icon(Icons.grid_view),
+        ),
+      ],
+      selected: {currentValue ? 'grid' : 'list'},
+      onSelectionChanged: (selection) {
+        onChanged(selection.first == 'grid');
       },
     );
   }
@@ -807,18 +728,37 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     required ValueChanged<String> onSelected,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
+    return _buildSegmentedSetting(
+      context: context,
+      label: label,
+      description: description,
+      descriptionStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+      segments: options,
+      selected: {value},
+      onSelectionChanged: (selection) {
+        if (selection.isEmpty) return;
+        onSelected(selection.first);
+      },
+    );
+  }
 
+  Widget _buildSegmentedSetting({
+    required BuildContext context,
+    required String label,
+    required String description,
+    required TextStyle descriptionStyle,
+    required List<ButtonSegment<String>> segments,
+    required Set<String> selected,
+    required ValueChanged<Set<String>> onSelectionChanged,
+  }) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 560;
         final segmentedButton = SegmentedButton<String>(
-          segments: options,
-          selected: {value},
+          segments: segments,
+          selected: selected,
           showSelectedIcon: false,
-          onSelectionChanged: (selection) {
-            if (selection.isEmpty) return;
-            onSelected(selection.first);
-          },
+          onSelectionChanged: onSelectionChanged,
         );
 
         Widget control = segmentedButton;
@@ -835,10 +775,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
             children: [
               Text(label, style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 4),
-              Text(
-                description,
-                style: TextStyle(color: colorScheme.onSurfaceVariant),
-              ),
+              Text(description, style: descriptionStyle),
               const SizedBox(height: AppTheme.spacingMedium),
               SizedBox(width: double.infinity, child: control),
             ],
@@ -855,10 +792,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                 children: [
                   Text(label, style: const TextStyle(fontSize: 16)),
                   const SizedBox(height: 4),
-                  Text(
-                    description,
-                    style: TextStyle(color: colorScheme.onSurfaceVariant),
-                  ),
+                  Text(description, style: descriptionStyle),
                 ],
               ),
             ),
