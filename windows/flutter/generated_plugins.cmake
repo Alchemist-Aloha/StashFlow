@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus
   flutter_secure_storage_windows
   fvp
+  screen_brightness_windows
   screen_retriever_windows
   url_launcher_windows
   window_manager

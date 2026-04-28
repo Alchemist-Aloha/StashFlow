@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/list_page_scaffold.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/error_state_view.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card_skeleton.dart';
 import '../../../helpers/test_helpers.dart';
 
 void main() {
@@ -20,7 +21,7 @@ void main() {
       );
 
       expect(find.text('Test Title'), findsOneWidget);
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.byType(SceneCardSkeleton), findsWidgets);
     });
 
     testWidgets('shows empty state correctly', (WidgetTester tester) async {

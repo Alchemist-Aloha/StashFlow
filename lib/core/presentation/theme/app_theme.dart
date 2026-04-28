@@ -95,6 +95,26 @@ class AppColors extends ThemeExtension<AppColors> {
       ratingColor: Color.lerp(ratingColor, other.ratingColor, t)!,
     );
   }
+
+  /// Provides default fallback colors for cases where the theme extension is missing.
+  static AppColors fallback(Brightness brightness) {
+    final isDark = brightness == Brightness.dark;
+    return AppColors(
+      surface: isDark ? const Color(0xFF1C1B1F) : const Color(0xFFFBFCFD),
+      onSurface: isDark ? const Color(0xFFE6E1E5) : const Color(0xFF1C1B1F),
+      primary: const Color(0xFF0F766E),
+      onPrimary: Colors.white,
+      secondary: const Color(0xFF0F766E).withAlpha(128),
+      onSecondary: Colors.white,
+      error: const Color(0xFFB3261E),
+      onError: Colors.white,
+      surfaceVariant: isDark ? const Color(0xFF49454F) : const Color(0xFFE7E0EC),
+      onSurfaceVariant: isDark ? const Color(0xFFCAC4D0) : const Color(0xFF49454F),
+      outline: isDark ? const Color(0xFF938F99) : const Color(0xFF79747E),
+      cardBackground: isDark ? const Color(0xFF2B2930) : const Color(0xFFF3EDF7),
+      ratingColor: isDark ? Colors.amber.shade300 : Colors.amber.shade700,
+    );
+  }
 }
 
 @immutable
@@ -146,24 +166,26 @@ class AppDimensions extends ThemeExtension<AppDimensions> {
           lerpDouble(performerAvatarSize, other.performerAvatarSize, t)!,
       cardTitleFontSize:
           lerpDouble(cardTitleFontSize, other.cardTitleFontSize, t)!,
-      fontSizeFactor:
-          lerpDouble(fontSizeFactor, other.fontSizeFactor, t)!,
-      spacingSmall:
-          lerpDouble(spacingSmall, other.spacingSmall, t)!,
-      spacingMedium:
-          lerpDouble(spacingMedium, other.spacingMedium, t)!,
-      spacingLarge:
-          lerpDouble(spacingLarge, other.spacingLarge, t)!,
-      buttonHeight:
-          lerpDouble(buttonHeight, other.buttonHeight, t)!,
+      fontSizeFactor: lerpDouble(fontSizeFactor, other.fontSizeFactor, t)!,
+      spacingSmall: lerpDouble(spacingSmall, other.spacingSmall, t)!,
+      spacingMedium: lerpDouble(spacingMedium, other.spacingMedium, t)!,
+      spacingLarge: lerpDouble(spacingLarge, other.spacingLarge, t)!,
+      buttonHeight: lerpDouble(buttonHeight, other.buttonHeight, t)!,
     );
   }
+
+  /// Provides default fallback dimensions for cases where the theme extension is missing.
+  static const fallback = AppDimensions(
+    performerAvatarSize: 16.0,
+    cardTitleFontSize: 12.0,
+    fontSizeFactor: 1.0,
+    spacingSmall: 8.0,
+    spacingMedium: 16.0,
+    spacingLarge: 24.0,
+    buttonHeight: 48.0,
+  );
 }
 
-/// The central design system for StashFlow.
-///
-/// This class defines standard constants for spacing and border radii,
-/// ensuring visual consistency across all pages and widgets.
 class AppTheme {
   /// Standard padding/margin for secondary elements (8dp).
   static const spacingSmall = 8.0;
@@ -248,34 +270,57 @@ class AppTheme {
         ),
         labelMedium: baseTextTheme.labelMedium?.copyWith(
           fontSize: 12 * fontSizeFactor,
-          color: colorScheme.onSurface.withValues(alpha: 0.75),
-        ),
-        labelSmall: baseTextTheme.labelSmall?.copyWith(
-          fontSize: 10 * fontSizeFactor,
-          color: colorScheme.onSurface.withValues(alpha: 0.75),
         ),
       ),
       appBarTheme: AppBarTheme(
-        elevation: 0,
-        centerTitle: false,
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
-        titleTextStyle: TextStyle(
-          color: colorScheme.onSurface,
-          fontSize: 20 * fontSizeFactor,
-          fontWeight: FontWeight.w600,
-        ),
+        elevation: 0,
+        centerTitle: false,
       ),
       cardTheme: CardThemeData(
         elevation: 0,
-        color: colorScheme.surfaceContainerHighest,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radiusMedium),
+        ),
+        color: colorScheme.surfaceContainerHighest,
+        clipBehavior: Clip.antiAlias,
+      ),
+      chipTheme: ChipThemeData(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusSmall),
+        ),
+        backgroundColor: colorScheme.surfaceContainerHigh,
+        side: BorderSide.none,
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        elevation: 0,
+        backgroundColor: colorScheme.surface,
+        indicatorColor: colorScheme.primaryContainer,
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return IconThemeData(color: colorScheme.onPrimaryContainer);
+          }
+          return IconThemeData(color: colorScheme.onSurfaceVariant);
+        }),
+      ),
+      navigationRailTheme: NavigationRailThemeData(
+        backgroundColor: colorScheme.surface,
+        indicatorColor: colorScheme.primaryContainer,
+        selectedIconTheme: IconThemeData(color: colorScheme.onPrimaryContainer),
+        unselectedIconTheme: IconThemeData(color: colorScheme.onSurfaceVariant),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: colorScheme.inverseSurface,
+        contentTextStyle: TextStyle(color: colorScheme.onInverseSurface),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusSmall),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: colorScheme.surfaceContainerHighest,
+        fillColor: colorScheme.surfaceContainerHigh,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusMedium),
           borderSide: BorderSide.none,
@@ -288,13 +333,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(radiusMedium),
           borderSide: BorderSide(color: colorScheme.primary, width: 2),
         ),
-        contentPadding: EdgeInsets.symmetric(
-          horizontal: dims.spacingMedium,
-          vertical: dims.spacingMedium,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: spacingMedium,
+          vertical: spacingSmall,
         ),
-      ),
-      chipTheme: ChipThemeData(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: colorScheme.primaryContainer,
@@ -305,33 +347,33 @@ class AppTheme {
           selectedBackgroundColor: colorScheme.primaryContainer,
           selectedForegroundColor: colorScheme.onPrimaryContainer,
           padding: EdgeInsets.symmetric(
-            horizontal: dims.spacingSmall,
-            vertical: dims.spacingSmall / 2,
+            horizontal: spacingSmall,
+            vertical: spacingSmall / 2,
           ),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          minimumSize: Size.fromHeight(dims.buttonHeight),
+          minimumSize: const Size.fromHeight(48),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMedium),
           ),
-          padding: EdgeInsets.symmetric(
-            horizontal: dims.spacingLarge,
-            vertical: dims.spacingMedium,
+          padding: const EdgeInsets.symmetric(
+            horizontal: spacingLarge,
+            vertical: spacingMedium,
           ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          minimumSize: Size.fromHeight(dims.buttonHeight),
+          minimumSize: const Size.fromHeight(48),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMedium),
           ),
           side: BorderSide(color: colorScheme.outline),
-          padding: EdgeInsets.symmetric(
-            horizontal: dims.spacingLarge,
-            vertical: dims.spacingMedium,
+          padding: const EdgeInsets.symmetric(
+            horizontal: spacingLarge,
+            vertical: spacingMedium,
           ),
         ),
       ),
@@ -340,9 +382,9 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMedium),
           ),
-          padding: EdgeInsets.symmetric(
-            horizontal: dims.spacingMedium,
-            vertical: dims.spacingSmall,
+          padding: const EdgeInsets.symmetric(
+            horizontal: spacingMedium,
+            vertical: spacingSmall,
           ),
         ),
       ),
@@ -392,14 +434,30 @@ class AppTheme {
 /// Extension on [BuildContext] for ergonomic access to semantic colors and text styles.
 extension AppThemeX on BuildContext {
   /// Access to the [AppColors] custom theme extension.
-  AppColors get colors => Theme.of(this).extension<AppColors>()!;
+  AppColors get colors =>
+      Theme.of(this).extension<AppColors>() ??
+      AppColors.fallback(Theme.of(this).brightness);
 
   /// Access to the [AppDimensions] custom theme extension.
-  AppDimensions get dimensions => Theme.of(this).extension<AppDimensions>()!;
+  AppDimensions get dimensions =>
+      Theme.of(this).extension<AppDimensions>() ?? AppDimensions.fallback;
 
   /// Access to the standard [TextTheme].
   TextTheme get textTheme => Theme.of(this).textTheme;
 
   /// Access to the configured `FontSizes` ThemeExtension.
-  FontSizes get fontSizes => Theme.of(this).extension<FontSizes>()!;
+  FontSizes get fontSizes =>
+      Theme.of(this).extension<FontSizes>() ??
+      FontSizes(
+        tiny: 9,
+        xSmall: 10,
+        small: 11,
+        regular: 12,
+        medium: 13,
+        body: 14,
+        large: 16,
+        xLarge: 18,
+        title: 20,
+        display: 24,
+      );
 }

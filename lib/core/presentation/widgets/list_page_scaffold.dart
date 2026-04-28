@@ -839,8 +839,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                 },
                 loading: () {
                   final isGrid = widget.gridDelegate != null;
-                  final responsiveDelegate = isGrid ? _getResponsiveGridDelegate(context) : null;
-                  final fixedDelegate = responsiveDelegate is SliverGridDelegateWithFixedCrossAxisCount ? responsiveDelegate : null;
+                  final responsiveDelegate =
+                      isGrid ? _getResponsiveGridDelegate(context) : null;
 
                   if (isGrid) {
                     return GridView.builder(

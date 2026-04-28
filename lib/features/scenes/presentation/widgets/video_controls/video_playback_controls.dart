@@ -8,6 +8,7 @@ import 'package:video_player/video_player.dart';
 
 import '../../../../../core/utils/pip_mode.dart';
 import '../../../domain/entities/scene.dart';
+import '../../../domain/entities/scene_title_utils.dart';
 import 'cast_selection_sheet.dart';
 
 class VideoPlaybackControls extends StatelessWidget {

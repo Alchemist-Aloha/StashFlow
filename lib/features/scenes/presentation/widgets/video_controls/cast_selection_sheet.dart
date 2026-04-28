@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/data/services/cast_service.dart';
-import '../../../../core/presentation/theme/app_theme.dart';
-import '../../../../core/utils/l10n_extensions.dart';
+import '../../../../../core/data/services/cast_service.dart';
+import '../../../../../core/presentation/theme/app_theme.dart';
 
 /// A bottom sheet that allows users to select a DLNA device for casting.
 class CastSelectionSheet extends ConsumerStatefulWidget {
@@ -86,21 +85,22 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
                   return ListTile(
                     leading: const Icon(Icons.tv),
                     title: Text(device.info.friendlyName),
-                    subtitle: Text(device.info.modelName ?? 'UPnP/DLNA Device'),
+                    subtitle: const Text('UPnP/DLNA Device'),
                     onTap: () async {
                       try {
-                        // Stop local playback before starting cast.
-                        // We assume the caller handles local player state.
-                        await device.setAVTransportURI(
+                        // setUrl is the method in dlna_dart 0.1.0
+                        await device.setUrl(
                           widget.videoUrl,
-                          widget.title,
+                          title: widget.title,
                         );
                         await device.play();
                         if (context.mounted) {
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Casting to ${device.info.friendlyName}'),
+                              content: Text(
+                                'Casting to ${device.info.friendlyName}',
+                              ),
                             ),
                           );
                         }

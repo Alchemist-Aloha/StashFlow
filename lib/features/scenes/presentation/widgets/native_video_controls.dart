@@ -84,7 +84,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
 
   // Advanced gestures state
   double _originalSpeed = 1.0;
-  bool _isSpeedingUp = false;
   double _currentSpeed = 1.0;
   IconData? _feedbackIcon;
   String _feedbackLabel = '';
@@ -895,7 +894,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                             _currentSpeed = 2.0;
                             widget.controller.setPlaybackSpeed(_currentSpeed);
                             _showFeedback(Icons.fast_forward, '2.0x');
-                            setState(() => _isSpeedingUp = true);
                           },
                           onLongPressMoveUpdate: (details) {
                             final dy = details.localOffsetFromOrigin.dy;
@@ -916,7 +914,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                           onLongPressEnd: (_) {
                             widget.controller.setPlaybackSpeed(_originalSpeed);
                             setState(() {
-                              _isSpeedingUp = false;
                               _feedbackVisible = false;
                             });
                           },
@@ -943,12 +940,13 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
 
                                 if (isLeft) {
                                   // Brightness
-                                  ScreenBrightness().current.then((current) {
+                                  ScreenBrightness().application.then((current) {
                                     final newBrightness =
                                         (current + delta).clamp(0.0, 1.0);
-                                    ScreenBrightness().setScreenBrightness(
-                                      newBrightness,
-                                    );
+                                    ScreenBrightness()
+                                        .setApplicationScreenBrightness(
+                                          newBrightness,
+                                        );
                                     _showFeedback(
                                       Icons.brightness_6,
                                       '${(newBrightness * 100).round()}%',

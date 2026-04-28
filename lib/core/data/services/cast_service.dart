@@ -1,4 +1,5 @@
-import 'package:dlna_dart/dlna_dart.dart';
+import 'dart:async';
+import 'package:dlna_dart/dlna.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// A service that manages the discovery and life-cycle of DLNA/UPnP devices.
@@ -7,31 +8,34 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// media players and provides a list of discovered devices.
 class CastService extends Notifier<List<DLNADevice>> {
   final _manager = DLNAManager();
+  StreamSubscription? _subscription;
+  DeviceManager? _deviceManager;
 
   @override
   List<DLNADevice> build() {
-    _manager.setRefreshedCallback(() {
-      if (mounted) {
-        state = _manager.devices.values.toList();
-      }
-    });
-
     // Automatically stop searching when the provider is disposed.
     ref.onDispose(() {
-      _manager.stopSearch();
+      _subscription?.cancel();
+      _manager.stop();
     });
 
     return [];
   }
 
-  /// Forces a fresh search for DLNA devices on the local network.
-  void startDiscovery() {
-    _manager.forceSearch();
+  /// Starts searching for DLNA devices on the local network.
+  Future<void> startDiscovery() async {
+    _subscription?.cancel();
+    _deviceManager = await _manager.start();
+    _subscription = _deviceManager?.devices.stream.listen((deviceMap) {
+      state = deviceMap.values.toList();
+    });
   }
 
   /// Stops any active DLNA discovery processes.
   void stopDiscovery() {
-    _manager.stopSearch();
+    _subscription?.cancel();
+    _manager.stop();
+    state = [];
   }
 }
 

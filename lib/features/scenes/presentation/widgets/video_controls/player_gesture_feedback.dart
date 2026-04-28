@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../../core/presentation/theme/app_theme.dart';
 
 /// A centered overlay widget that provides visual feedback for video player gestures.
 ///

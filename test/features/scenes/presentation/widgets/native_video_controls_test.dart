@@ -7,6 +7,7 @@ import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/native_video_controls.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'dart:async';
 
@@ -237,7 +238,7 @@ Scene _buildScene({
     interactive: false,
     resumeTime: null,
     playCount: 0,
-        playDuration: 0,
+    playDuration: 0,
     files: const [],
     urls: const [],
     captions: captions,
@@ -281,6 +282,8 @@ Future<void> _pumpControls(
         playbackQueueProvider.overrideWith(() => _MockPlaybackQueueNotifier()),
       ],
       child: MaterialApp(
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
         home: Scaffold(
           body: NativeVideoControls(
             controller: mockController,
