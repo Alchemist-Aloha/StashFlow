@@ -691,15 +691,10 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     required bool currentValue,
     required ValueChanged<bool> onChanged,
   }) {
-    final colorScheme = Theme.of(context).colorScheme;
     return _buildSegmentedSetting(
       context: context,
       label: title,
       description: subtitle,
-      descriptionStyle: TextStyle(
-        fontSize: 14,
-        color: colorScheme.onSurfaceVariant,
-      ),
       segments: [
         ButtonSegment<String>(
           value: 'list',
@@ -727,12 +722,10 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     required List<ButtonSegment<String>> options,
     required ValueChanged<String> onSelected,
   }) {
-    final colorScheme = Theme.of(context).colorScheme;
     return _buildSegmentedSetting(
       context: context,
       label: label,
       description: description,
-      descriptionStyle: TextStyle(color: colorScheme.onSurfaceVariant),
       segments: options,
       selected: {value},
       onSelectionChanged: (selection) {
@@ -746,11 +739,17 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     required BuildContext context,
     required String label,
     required String description,
-    required TextStyle descriptionStyle,
     required List<ButtonSegment<String>> segments,
     required Set<String> selected,
     required ValueChanged<Set<String>> onSelectionChanged,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final labelStyle = textTheme.titleSmall;
+    final descriptionStyle = textTheme.bodySmall?.copyWith(
+      color: colorScheme.onSurfaceVariant,
+    );
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 560;
@@ -773,7 +772,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: const TextStyle(fontSize: 16)),
+              Text(label, style: labelStyle),
               const SizedBox(height: 4),
               Text(description, style: descriptionStyle),
               const SizedBox(height: AppTheme.spacingMedium),
@@ -790,7 +789,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label, style: const TextStyle(fontSize: 16)),
+                  Text(label, style: labelStyle),
                   const SizedBox(height: 4),
                   Text(description, style: descriptionStyle),
                 ],
@@ -816,7 +815,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: const TextStyle(fontSize: 16)),
+        Text(label, style: textTheme.titleSmall),
         MenuAnchor(
           builder: (context, controller, child) {
             return InkWell(
@@ -890,7 +889,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: const TextStyle(fontSize: 16)),
+            Text(label, style: textTheme.titleSmall),
             Text(
               value == null ? 'Default' : '${value.toInt()} pt',
               style: textTheme.labelLarge?.copyWith(
@@ -926,7 +925,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: const TextStyle(fontSize: 16)),
+            Text(label, style: textTheme.titleSmall),
             Text(
               '${value.toInt()} px',
               style: textTheme.labelLarge?.copyWith(
