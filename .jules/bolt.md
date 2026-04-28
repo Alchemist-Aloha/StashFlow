@@ -17,3 +17,6 @@
 ## 2024-06-25 - [O(N^2) Scroll Stutter via itemBuilder lookups]
 **Learning:** Performing an `O(N)` list scan like `indexWhere` inside a Flutter `itemBuilder` callback causes massive O(N^2) scaling issues when the user scrolls through long lists. Similarly, evaluating fallbacks like `images ?? []` repeatedly causes needless GC pressure.
 **Action:** Always pre-compute a lookup map (like `{for (var i=0; i<list.length; i++) list[i].id: i}`) in the parent `build` method before passing data to `itemBuilder`, ensuring O(1) lookups during the render phase. Hoist all possible allocations out of the builder.
+## 2024-07-25 - [MediaQuery.of(context) Over-Rebuilding]
+**Learning:** Using `MediaQuery.of(context).viewInsets` binds the widget to the entire `MediaQueryData` object, triggering an unnecessary rebuild whenever any unrelated property changes (like screen size or orientation).
+**Action:** Always use granular MediaQuery methods like `MediaQuery.viewInsetsOf(context)` to isolate dependencies to only the properties the widget actually uses.
