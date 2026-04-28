@@ -1491,6 +1491,13 @@ class AppLocalizationsDe extends AppLocalizations {
       'GitHub-Link konnte nicht geöffnet werden';
 
   @override
+  String get settings_support_issues => 'Report an Issue';
+
+  @override
+  String get settings_support_issues_subtitle =>
+      'Help improve StashFlow by reporting bugs';
+
+  @override
   String get settings_develop_title => 'Entwickeln';
 
   @override

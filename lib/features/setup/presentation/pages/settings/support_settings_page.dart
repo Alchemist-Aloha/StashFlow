@@ -143,6 +143,47 @@ class SupportSettingsPage extends ConsumerWidget {
                     }
                   },
                 ),
+                SizedBox(height: context.dimensions.spacingSmall),
+                SettingsActionCard(
+                  icon: Icons.bug_report_rounded,
+                  title: l10n.settings_support_issues,
+                  subtitle: l10n.settings_support_issues_subtitle,
+                  trailing: Icon(
+                    Icons.open_in_new_rounded,
+                    size: 18 * context.dimensions.fontSizeFactor,
+                  ),
+                  onTap: () async {
+                    final url = Uri.parse(
+                      'https://github.com/Alchemist-Aloha/StashFlow/issues',
+                    );
+                    try {
+                      if (await canLaunchUrl(url)) {
+                        await launchUrl(
+                          url,
+                          mode: LaunchMode.externalApplication,
+                        );
+                      } else {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(l10n.settings_support_github_error),
+                            ),
+                          );
+                        }
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              context.l10n.common_error(e.toString()),
+                            ),
+                          ),
+                        );
+                      }
+                    }
+                  },
+                ),
               ],
             ),
           ),

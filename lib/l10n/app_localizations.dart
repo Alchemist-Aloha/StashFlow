@@ -2763,7 +2763,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings_support_github_subtitle.
   ///
   /// In en, this message translates to:
-  /// **'View source code and report issues'**
+  /// **'View source code'**
   String get settings_support_github_subtitle;
 
   /// No description provided for @settings_support_github_error.
@@ -2771,6 +2771,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not open GitHub link'**
   String get settings_support_github_error;
+
+  /// No description provided for @settings_support_issues.
+  ///
+  /// In en, this message translates to:
+  /// **'Report an Issue'**
+  String get settings_support_issues;
+
+  /// No description provided for @settings_support_issues_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help improve StashFlow by reporting bugs'**
+  String get settings_support_issues_subtitle;
 
   /// No description provided for @settings_develop_title.
   ///

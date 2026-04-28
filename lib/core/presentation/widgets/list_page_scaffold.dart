@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,6 +14,7 @@ import 'stash_image.dart';
 import '../../data/graphql/media_headers_provider.dart';
 import '../../data/preferences/search_history_provider.dart';
 import 'grid_utils.dart';
+import 'stats_floating_panel.dart';
 
 /// A standardized scaffold for all list and grid pages in StashFlow.
 ///
@@ -426,11 +428,17 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
           ? null
           : AppBar(
               scrolledUnderElevation: 4.0,
-              title: Text(
-                widget.title,
-                style: context.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: -0.5,
+              title: GestureDetector(
+                onLongPress: () {
+                  HapticFeedback.lightImpact();
+                  StatsFloatingPanel.show(context);
+                },
+                child: Text(
+                  widget.title,
+                  style: context.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: -0.5,
+                  ),
                 ),
               ),
               actions: [

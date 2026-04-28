@@ -1463,11 +1463,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_support_github => 'GitHub Repository';
 
   @override
-  String get settings_support_github_subtitle =>
-      'View source code and report issues';
+  String get settings_support_github_subtitle => 'View source code';
 
   @override
   String get settings_support_github_error => 'Could not open GitHub link';
+
+  @override
+  String get settings_support_issues => 'Report an Issue';
+
+  @override
+  String get settings_support_issues_subtitle =>
+      'Help improve StashFlow by reporting bugs';
 
   @override
   String get settings_develop_title => 'Develop';

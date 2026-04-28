@@ -2,60 +2,80 @@
   "de": [
     "nPlays",
     "settings_appearance_font_size",
-    "settings_appearance_font_size_subtitle"
+    "settings_appearance_font_size_subtitle",
+    "settings_support_issues",
+    "settings_support_issues_subtitle"
   ],
 
   "es": [
     "nPlays",
     "settings_appearance_font_size",
-    "settings_appearance_font_size_subtitle"
+    "settings_appearance_font_size_subtitle",
+    "settings_support_issues",
+    "settings_support_issues_subtitle"
   ],
 
   "fr": [
     "nPlays",
     "settings_appearance_font_size",
-    "settings_appearance_font_size_subtitle"
+    "settings_appearance_font_size_subtitle",
+    "settings_support_issues",
+    "settings_support_issues_subtitle"
   ],
 
   "it": [
     "nPlays",
     "settings_appearance_font_size",
-    "settings_appearance_font_size_subtitle"
+    "settings_appearance_font_size_subtitle",
+    "settings_support_issues",
+    "settings_support_issues_subtitle"
   ],
 
   "ja": [
     "nPlays",
     "settings_appearance_font_size",
-    "settings_appearance_font_size_subtitle"
+    "settings_appearance_font_size_subtitle",
+    "settings_support_issues",
+    "settings_support_issues_subtitle"
   ],
 
   "ko": [
     "nPlays",
     "settings_appearance_font_size",
-    "settings_appearance_font_size_subtitle"
+    "settings_appearance_font_size_subtitle",
+    "settings_support_issues",
+    "settings_support_issues_subtitle"
   ],
 
   "ru": [
     "nPlays",
     "settings_appearance_font_size",
-    "settings_appearance_font_size_subtitle"
+    "settings_appearance_font_size_subtitle",
+    "settings_support_issues",
+    "settings_support_issues_subtitle"
   ],
 
   "zh": [
     "nPlays",
     "settings_appearance_font_size",
-    "settings_appearance_font_size_subtitle"
+    "settings_appearance_font_size_subtitle",
+    "settings_support_issues",
+    "settings_support_issues_subtitle"
   ],
 
   "zh_Hans": [
     "nPlays",
     "settings_appearance_font_size",
-    "settings_appearance_font_size_subtitle"
+    "settings_appearance_font_size_subtitle",
+    "settings_support_issues",
+    "settings_support_issues_subtitle"
   ],
 
   "zh_Hant": [
     "nPlays",
     "settings_appearance_font_size",
-    "settings_appearance_font_size_subtitle"
+    "settings_appearance_font_size_subtitle",
+    "settings_support_issues",
+    "settings_support_issues_subtitle"
   ]
 }

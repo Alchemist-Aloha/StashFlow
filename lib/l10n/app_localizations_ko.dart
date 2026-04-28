@@ -1429,6 +1429,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_support_github_error => 'GitHub 링크를 열 수 없습니다';
 
   @override
+  String get settings_support_issues => 'Report an Issue';
+
+  @override
+  String get settings_support_issues_subtitle =>
+      'Help improve StashFlow by reporting bugs';
+
+  @override
   String get settings_develop_title => '개발';
 
   @override
