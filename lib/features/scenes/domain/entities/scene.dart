@@ -17,6 +17,7 @@ abstract class Scene with _$Scene {
     required bool interactive,
     @JsonKey(name: 'resume_time') required double? resumeTime,
     @JsonKey(name: 'play_count') required int playCount,
+    @JsonKey(name: 'play_duration') required double? playDuration,
     required List<SceneFile> files,
     required ScenePaths paths,
     @Default([]) List<VideoCaption> captions,

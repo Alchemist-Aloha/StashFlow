@@ -33,6 +33,7 @@ Scene createTestScene({
     interactive: false,
     resumeTime: null,
     playCount: 0,
+        playDuration: 0,
     files: [],
     paths: const ScenePaths(screenshot: null, preview: null, stream: null),
     urls: [],
@@ -102,6 +103,13 @@ class LocalMockSceneRepository implements SceneRepository {
   Future<void> incrementSceneOCounter(String id) async {}
   @override
   Future<void> incrementScenePlayCount(String id) async {}
+
+  @override
+  Future<void> saveSceneActivity(
+    String id, {
+    double? resumeTime,
+    double? playDuration,
+  }) async {}
 
   @override
   Future<List<Scraper>> listScrapers({required List<String> types}) async => [];

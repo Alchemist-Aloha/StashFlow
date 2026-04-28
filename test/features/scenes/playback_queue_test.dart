@@ -20,6 +20,7 @@ Scene mockScene({required String id, required String title}) {
     interactive: false,
     resumeTime: 0.0,
     playCount: 0,
+        playDuration: 0,
     files: [],
     paths: const ScenePaths(screenshot: '', preview: '', stream: ''),
     urls: [],

@@ -61,6 +61,23 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String nPlays(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString plays',
+      one: '1 play',
+      zero: 'no plays',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get common_reset => 'Réinitialiser';
 
   @override
@@ -1051,11 +1068,23 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settings_interface_max_performer_avatars =>
-      'Nombre maximum d\'avatars d\'acteurs (Bureau)';
+      'Max d\'avatars d\'interprètes';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      'Nombre maximum d\'avatars d\'acteurs à afficher sur la carte de la scène sur le bureau.';
+      'Nombre maximum d\'avatars d\'interprètes à afficher dans la carte de scène.';
+
+  @override
+  String get settings_interface_show_performer_avatars =>
+      'Afficher les avatars des interprètes';
+
+  @override
+  String get settings_interface_show_performer_avatars_subtitle =>
+      'Afficher les icônes des interprètes sur les cartes de scène sur toutes les plateformes.';
+
+  @override
+  String get settings_interface_performer_avatar_size =>
+      'Taille de l\'avatar de l\'interprète';
 
   @override
   String get settings_interface_layout_default => 'Disposition par défaut';
@@ -1155,11 +1184,11 @@ class AppLocalizationsFr extends AppLocalizations {
       'Configurer le point de terminaison et la méthode d\'authentification';
 
   @override
-  String get settings_server_url => 'URL du serveur GraphQL';
+  String get settings_server_url => 'URL de Stash';
 
   @override
   String get settings_server_url_helper =>
-      'Exemple de format : http(s)://hôte:port.';
+      'Entrez l\'URL de votre serveur Stash. Si un chemin personnalisé est configuré, incluez-le ici.';
 
   @override
   String get settings_server_url_example => 'http://192.168.1.100:9999';
@@ -1226,33 +1255,34 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settings_server_logout_confirm => 'Déconnecté et cookies effacés.';
 
   @override
-  String get settings_server_profile_add => 'Add Profile';
+  String get settings_server_profile_add => 'Ajouter un profil';
 
   @override
-  String get settings_server_profile_edit => 'Edit Profile';
+  String get settings_server_profile_edit => 'Modifier le profil';
 
   @override
-  String get settings_server_profile_name => 'Profile Name';
+  String get settings_server_profile_name => 'Nom du profil';
 
   @override
-  String get settings_server_profile_delete => 'Delete Profile';
+  String get settings_server_profile_delete => 'Supprimer le profil';
 
   @override
   String get settings_server_profile_delete_confirm =>
-      'Are you sure you want to delete this profile? This action cannot be undone.';
+      'Êtes-vous sûr de vouloir supprimer ce profil ? Cette action est irréversible.';
 
   @override
-  String get settings_server_profile_active => 'Active';
+  String get settings_server_profile_active => 'Actif';
 
   @override
-  String get settings_server_profile_empty => 'No server profiles configured';
+  String get settings_server_profile_empty =>
+      'Aucun profil de serveur configuré';
 
   @override
-  String get settings_server_profiles => 'Server Profiles';
+  String get settings_server_profiles => 'Profils de serveur';
 
   @override
   String get settings_server_profiles_subtitle =>
-      'Manage multiple Stash server connections';
+      'Gérer plusieurs connexions au serveur Stash';
 
   @override
   String get settings_server_auth_status_logging_in =>

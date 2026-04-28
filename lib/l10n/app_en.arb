@@ -24,6 +24,15 @@
       }
     }
   },
+  "nPlays": "{count, plural, =0{no plays} =1{1 play} other{{count} plays}}",
+  "@nPlays": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
   "common_reset": "Reset",
   "common_apply": "Apply",
   "common_save_default": "Save as Default",
@@ -355,8 +364,11 @@
   "settings_interface_scenes_layout_subtitle": "Default browsing mode for scenes",
   "settings_interface_galleries_layout": "Galleries Layout",
   "settings_interface_galleries_layout_subtitle": "Default browsing mode for galleries",
-  "settings_interface_max_performer_avatars": "Max Performer Avatars (Desktop)",
-  "settings_interface_max_performer_avatars_subtitle": "Maximum number of performer avatars to show in the scene card on desktop.",
+  "settings_interface_max_performer_avatars": "Max Performer Avatars",
+  "settings_interface_max_performer_avatars_subtitle": "Maximum number of performer avatars to show in the scene card.",
+  "settings_interface_show_performer_avatars": "Show Performer Avatars",
+  "settings_interface_show_performer_avatars_subtitle": "Display performer icons on scene cards across all platforms.",
+  "settings_interface_performer_avatar_size": "Performer Avatar Size",
   "settings_interface_layout_default": "Default Layout",
   "settings_interface_layout_default_desc": "Choose the default layout for the page",
   "settings_interface_layout_list": "List",
@@ -385,8 +397,8 @@
   "settings_server_status_subtitle": "Live connectivity against the configured server",
   "settings_server_details": "Server Details",
   "settings_server_details_subtitle": "Configure endpoint and authentication method",
-  "settings_server_url": "GraphQL server URL",
-  "settings_server_url_helper": "Example format: http(s)://host:port.",
+  "settings_server_url": "Stash URL",
+  "settings_server_url_helper": "Enter the URL of your Stash server. If configured with a custom path, include it here.",
   "settings_server_url_example": "http://192.168.1.100:9999",
   "settings_server_login_failed": "Login failed",
   "settings_server_auth_method": "Authentication Method",

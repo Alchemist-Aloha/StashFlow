@@ -142,6 +142,15 @@ class MockSceneRepository extends MockRepositoryState<Scene>
   Future<void> incrementScenePlayCount(String id) async {
     if (shouldThrow) throw Exception(errorMessage);
   }
+
+  @override
+  Future<void> saveSceneActivity(
+    String id, {
+    double? resumeTime,
+    double? playDuration,
+  }) async {
+    if (shouldThrow) throw Exception(errorMessage);
+  }
 }
 
 class MockPerformerRepository extends MockRepositoryState<Performer>

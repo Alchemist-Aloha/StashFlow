@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
@@ -46,6 +45,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   double? _cardTitleFontSize;
 
   int _maxPerformerAvatars = 3;
+  bool _showPerformerAvatars = true;
+  double _performerAvatarSize = 16.0;
 
   // New settings
   bool _performerMediaGridLayout = true;
@@ -85,6 +86,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     _cardTitleFontSize = ref.read(cardTitleFontSizeProvider);
 
     _maxPerformerAvatars = ref.read(maxPerformerAvatarsProvider);
+    _showPerformerAvatars = ref.read(showPerformerAvatarsProvider);
+    _performerAvatarSize = ref.read(performerAvatarSizeProvider);
 
     _performerMediaGridLayout = ref.read(performerMediaGridLayoutProvider);
     _performerGalleriesGridLayout = ref.read(
@@ -122,6 +125,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     ref.read(cardTitleFontSizeProvider.notifier).set(_cardTitleFontSize);
 
     ref.read(maxPerformerAvatarsProvider.notifier).set(_maxPerformerAvatars);
+    ref.read(showPerformerAvatarsProvider.notifier).set(_showPerformerAvatars);
+    ref.read(performerAvatarSizeProvider.notifier).set(_performerAvatarSize);
 
     ref
         .read(performerMediaGridLayoutProvider.notifier)
@@ -150,7 +155,6 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final isDesktop = kIsWeb || (defaultTargetPlatform != TargetPlatform.android && defaultTargetPlatform != TargetPlatform.iOS);
 
     return SettingsPageShell(
       title: context.l10n.settings_interface_title,
@@ -374,13 +378,33 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                             },
                           ),
                         ],
-                        if (isDesktop) ...[
+                        const Divider(height: AppTheme.spacingLarge),
+                        SwitchListTile.adaptive(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(context.l10n.settings_interface_show_performer_avatars),
+                          subtitle: Text(context.l10n.settings_interface_show_performer_avatars_subtitle),
+                          value: _showPerformerAvatars,
+                          onChanged: (value) async {
+                            setState(() => _showPerformerAvatars = value);
+                            await _saveSettings();
+                          },
+                        ),
+                        if (_showPerformerAvatars) ...[
                           const Divider(height: AppTheme.spacingLarge),
                           _buildGridColumnSetting(
                             label: context.l10n.settings_interface_max_performer_avatars,
                             value: _maxPerformerAvatars == 3 ? null : _maxPerformerAvatars,
                             onChanged: (value) async {
                               setState(() => _maxPerformerAvatars = value ?? 3);
+                              await _saveSettings();
+                            },
+                          ),
+                          const Divider(height: AppTheme.spacingLarge),
+                          _buildAvatarSizeSetting(
+                            label: context.l10n.settings_interface_performer_avatar_size,
+                            value: _performerAvatarSize,
+                            onChanged: (value) async {
+                              setState(() => _performerAvatarSize = value ?? 16.0);
                               await _saveSettings();
                             },
                           ),
@@ -863,6 +887,32 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
             ),
           ],
           onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAvatarSizeSetting({
+    required String label,
+    required double value,
+    required ValueChanged<double?> onChanged,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: const TextStyle(fontSize: 16)),
+        DropdownButton<double>(
+          value: value,
+          dropdownColor: colorScheme.surface,
+          items: [12.0, 16.0, 20.0, 24.0, 32.0, 40.0, 48.0].map(
+            (i) => DropdownMenuItem<double>(
+              value: i,
+              child: Text('${i.toInt()} px'),
+            ),
+          ).toList(),
+          onChanged: (val) => onChanged(val),
         ),
       ],
     );

@@ -162,6 +162,12 @@ abstract class AppLocalizations {
   /// **'{count, plural, =0{no performers} =1{1 performer} other{{count} performers}}'**
   String nPerformers(num count);
 
+  /// No description provided for @nPlays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{no plays} =1{1 play} other{{count} plays}}'**
+  String nPlays(num count);
+
   /// No description provided for @common_reset.
   ///
   /// In en, this message translates to:
@@ -2037,14 +2043,32 @@ abstract class AppLocalizations {
   /// No description provided for @settings_interface_max_performer_avatars.
   ///
   /// In en, this message translates to:
-  /// **'Max Performer Avatars (Desktop)'**
+  /// **'Max Performer Avatars'**
   String get settings_interface_max_performer_avatars;
 
   /// No description provided for @settings_interface_max_performer_avatars_subtitle.
   ///
   /// In en, this message translates to:
-  /// **'Maximum number of performer avatars to show in the scene card on desktop.'**
+  /// **'Maximum number of performer avatars to show in the scene card.'**
   String get settings_interface_max_performer_avatars_subtitle;
+
+  /// No description provided for @settings_interface_show_performer_avatars.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Performer Avatars'**
+  String get settings_interface_show_performer_avatars;
+
+  /// No description provided for @settings_interface_show_performer_avatars_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Display performer icons on scene cards across all platforms.'**
+  String get settings_interface_show_performer_avatars_subtitle;
+
+  /// No description provided for @settings_interface_performer_avatar_size.
+  ///
+  /// In en, this message translates to:
+  /// **'Performer Avatar Size'**
+  String get settings_interface_performer_avatar_size;
 
   /// No description provided for @settings_interface_layout_default.
   ///
@@ -2217,13 +2241,13 @@ abstract class AppLocalizations {
   /// No description provided for @settings_server_url.
   ///
   /// In en, this message translates to:
-  /// **'GraphQL server URL'**
+  /// **'Stash URL'**
   String get settings_server_url;
 
   /// No description provided for @settings_server_url_helper.
   ///
   /// In en, this message translates to:
-  /// **'Example format: http(s)://host:port.'**
+  /// **'Enter the URL of your Stash server. If configured with a custom path, include it here.'**
   String get settings_server_url_helper;
 
   /// No description provided for @settings_server_url_example.

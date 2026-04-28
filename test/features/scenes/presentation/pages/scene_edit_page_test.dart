@@ -36,6 +36,7 @@ void main() {
     interactive: false,
     resumeTime: null,
     playCount: 0,
+        playDuration: 0,
     files: [],
     paths: const ScenePaths(screenshot: null, preview: null, stream: null),
     urls: ['http://example.com'],

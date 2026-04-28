@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:video_player/video_player.dart';
+import 'package:vector_math/vector_math_64.dart' show Vector3;
 import 'package:window_manager/window_manager.dart';
 
 import '../../domain/entities/scene.dart';
@@ -83,11 +84,11 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     final Offset focalPoint = details.localFocalPoint;
 
     final Matrix4 matrix = Matrix4.identity()
-      ..translate(focalPoint.dx, focalPoint.dy)
+      ..translateByVector3(Vector3(focalPoint.dx, focalPoint.dy, 0))
       ..rotateZ(deltaRotation)
-      ..scale(deltaScale)
-      ..translate(-focalPoint.dx, -focalPoint.dy)
-      ..translate(details.focalPointDelta.dx, details.focalPointDelta.dy);
+      ..scaleByVector3(Vector3(deltaScale, deltaScale, 1.0))
+      ..translateByVector3(Vector3(-focalPoint.dx, -focalPoint.dy, 0))
+      ..translateByVector3(Vector3(details.focalPointDelta.dx, details.focalPointDelta.dy, 0));
 
     _transformationNotifier.value = matrix * _transformationNotifier.value;
     _lastScale = details.scale;
@@ -441,11 +442,11 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
     final Offset focalPoint = details.localFocalPoint;
 
     final Matrix4 matrix = Matrix4.identity()
-      ..translate(focalPoint.dx, focalPoint.dy)
+      ..translateByVector3(Vector3(focalPoint.dx, focalPoint.dy, 0))
       ..rotateZ(deltaRotation)
-      ..scale(deltaScale)
-      ..translate(-focalPoint.dx, -focalPoint.dy)
-      ..translate(details.focalPointDelta.dx, details.focalPointDelta.dy);
+      ..scaleByVector3(Vector3(deltaScale, deltaScale, 1.0))
+      ..translateByVector3(Vector3(-focalPoint.dx, -focalPoint.dy, 0))
+      ..translateByVector3(Vector3(details.focalPointDelta.dx, details.focalPointDelta.dy, 0));
 
     _transformationNotifier.value = matrix * _transformationNotifier.value;
     _lastScale = details.scale;

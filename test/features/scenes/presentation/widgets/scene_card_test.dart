@@ -8,6 +8,7 @@ import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
 import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
+import 'package:stash_app_flutter/core/presentation/providers/layout_settings_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 
 void main() {
@@ -31,6 +32,7 @@ void main() {
     interactive: false,
     resumeTime: null,
     playCount: 10,
+        playDuration: 0,
     urls: [],
     files: [
       const SceneFile(
@@ -119,6 +121,7 @@ void main() {
       interactive: false,
       resumeTime: null,
       playCount: 0,
+        playDuration: 0,
       urls: [],
       files: [], // empty
       paths: const ScenePaths(screenshot: null, preview: null, stream: null),
@@ -154,6 +157,7 @@ void main() {
       interactive: false,
       resumeTime: null,
       playCount: 0,
+        playDuration: 0,
       urls: [],
       files: [], // empty
       paths: const ScenePaths(screenshot: null, preview: null, stream: null),
@@ -189,6 +193,7 @@ void main() {
       interactive: false,
       resumeTime: null,
       playCount: 0,
+        playDuration: 0,
       urls: [],
       files: [], // empty
       paths: const ScenePaths(screenshot: null, preview: null, stream: null),
@@ -267,16 +272,25 @@ void main() {
     expect(find.text('2.0'), findsOneWidget); // rating100: 40 -> 40/20 = 2.0
   });
 
-  testWidgets('SceneCard shows performer avatars on desktop', (tester) async {
-    debugDefaultTargetPlatformOverride = TargetPlatform.linux;
-
+  testWidgets('SceneCard shows performer avatars when enabled', (tester) async {
     final sceneWithPerformers = defaultTestScene.copyWith(
       performerNames: ['Performer 1', 'Performer 2'],
       performerImagePaths: ['path/1', 'path/2'],
+      performerIds: ['p1', 'p2'],
     );
 
     await tester.pumpWidget(
-      buildTestWidget(SceneCard(scene: sceneWithPerformers, isGrid: false)),
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          mediaHeadersProvider.overrideWithValue(const {}),
+          showPerformerAvatarsProvider.overrideWithValue(true),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.darkTheme,
+          home: Scaffold(body: SceneCard(scene: sceneWithPerformers, isGrid: false)),
+        ),
+      ),
     );
 
     await tester.pump();
@@ -287,20 +301,27 @@ void main() {
 
     // Check if CircleAvatar is present (one for each performer)
     expect(find.byType(CircleAvatar), findsNWidgets(2));
-
-    debugDefaultTargetPlatformOverride = null;
   });
 
-  testWidgets('SceneCard hides performer avatars on mobile', (tester) async {
-    debugDefaultTargetPlatformOverride = TargetPlatform.android;
-
+  testWidgets('SceneCard hides performer avatars when disabled', (tester) async {
     final sceneWithPerformers = defaultTestScene.copyWith(
       performerNames: ['Performer 1', 'Performer 2'],
       performerImagePaths: ['path/1', 'path/2'],
+      performerIds: ['p1', 'p2'],
     );
 
     await tester.pumpWidget(
-      buildTestWidget(SceneCard(scene: sceneWithPerformers, isGrid: false)),
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          mediaHeadersProvider.overrideWithValue(const {}),
+          showPerformerAvatarsProvider.overrideWithValue(false),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.darkTheme,
+          home: Scaffold(body: SceneCard(scene: sceneWithPerformers, isGrid: false)),
+        ),
+      ),
     );
 
     await tester.pump();
@@ -310,13 +331,12 @@ void main() {
 
     // Should not find any CircleAvatar
     expect(find.byType(CircleAvatar), findsNothing);
-
-    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets('SceneCard uses dynamic aspect ratio when useMasonry is true', (
     tester,
   ) async {
+    addTearDown(() => debugDefaultTargetPlatformOverride = null);
     final portraitScene = defaultTestScene.copyWith(
       files: [
         const SceneFile(
@@ -412,10 +432,10 @@ void main() {
     );
     final detector = tester.widget<GestureDetector>(detectorFinder);
 
-    expect(detector.onPanStart, isNull);
-    expect(detector.onPanUpdate, isNull);
-    expect(detector.onPanEnd, isNull);
-    expect(detector.onPanCancel, isNull);
+    expect(detector.onHorizontalDragStart, isNull);
+    expect(detector.onHorizontalDragUpdate, isNull);
+    expect(detector.onHorizontalDragEnd, isNull);
+    expect(detector.onHorizontalDragCancel, isNull);
   });
 
   testWidgets('SceneCard pan gesture is enabled when VTT is present', (tester) async {
@@ -431,10 +451,10 @@ void main() {
     );
     final detector = tester.widget<GestureDetector>(detectorFinder);
 
-    expect(detector.onPanStart, isNotNull);
-    expect(detector.onPanUpdate, isNotNull);
-    expect(detector.onPanEnd, isNotNull);
-    expect(detector.onPanCancel, isNotNull);
+    expect(detector.onHorizontalDragStart, isNotNull);
+    expect(detector.onHorizontalDragUpdate, isNotNull);
+    expect(detector.onHorizontalDragEnd, isNotNull);
+    expect(detector.onHorizontalDragCancel, isNotNull);
   });
 }
 

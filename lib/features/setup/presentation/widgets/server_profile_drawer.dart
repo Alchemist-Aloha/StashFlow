@@ -211,7 +211,9 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
     
     return Container(
       padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
+        // Using MediaQuery.viewInsetsOf(context) instead of MediaQuery.of(context).viewInsets
+        // to prevent unnecessary rebuilds when other MediaQuery properties change.
+        bottom: MediaQuery.viewInsetsOf(context).bottom,
       ),
       child: SingleChildScrollView(
         child: Padding(
@@ -331,28 +333,30 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
       return mode == AuthMode.apiKey || mode == AuthMode.password;
     }).toList();
 
-    return Column(
-      children: [
-        ...visibleModes.map((mode) {
-          return RadioListTile<AuthMode>(
-            title: Text(_getAuthModeLabel(mode, l10n)),
-            subtitle: Text(_getAuthModeDescription(mode, l10n)),
-            value: mode,
-            groupValue: _authMode,
-            onChanged: (value) {
-              if (value != null) {
-                setState(() => _authMode = value);
-              }
-            },
-            contentPadding: EdgeInsets.zero,
-          );
-        }),
-        if (!_showAdvancedAuth)
-          TextButton(
-            onPressed: () => setState(() => _showAdvancedAuth = true),
-            child: Text(l10n.details_show_more),
-          ),
-      ],
+    return RadioGroup<AuthMode>(
+      groupValue: _authMode,
+      onChanged: (value) {
+        if (value != null) {
+          setState(() => _authMode = value);
+        }
+      },
+      child: Column(
+        children: [
+          ...visibleModes.map((mode) {
+            return RadioListTile<AuthMode>(
+              title: Text(_getAuthModeLabel(mode, l10n)),
+              subtitle: Text(_getAuthModeDescription(mode, l10n)),
+              value: mode,
+              contentPadding: EdgeInsets.zero,
+            );
+          }),
+          if (!_showAdvancedAuth)
+            TextButton(
+              onPressed: () => setState(() => _showAdvancedAuth = true),
+              child: Text(l10n.details_show_more),
+            ),
+        ],
+      ),
     );
   }
 
@@ -391,6 +395,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
           border: const OutlineInputBorder(),
           suffixIcon: IconButton(
             icon: Icon(_obscureApiKey ? Icons.visibility : Icons.visibility_off),
+            tooltip: _obscureApiKey ? l10n.common_show : l10n.common_hide,
             onPressed: () => setState(() => _obscureApiKey = !_obscureApiKey),
           ),
         ),
@@ -414,6 +419,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
                 icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
+                tooltip: _obscurePassword ? l10n.common_show : l10n.common_hide,
                 onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
               ),
             ),

@@ -50,4 +50,9 @@ abstract class SceneRepository {
   Future<void> updateSceneRating(String id, int rating100);
   Future<void> incrementSceneOCounter(String id);
   Future<void> incrementScenePlayCount(String id);
+  Future<void> saveSceneActivity(
+    String id, {
+    double? resumeTime,
+    double? playDuration,
+  });
 }

@@ -268,6 +268,42 @@ class MaxPerformerAvatars extends _$MaxPerformerAvatars {
 }
 
 @riverpod
+class ShowPerformerAvatars extends _$ShowPerformerAvatars {
+  static const _storageKey = 'show_performer_avatars';
+
+  @override
+  bool build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getBool(_storageKey) ?? true;
+  }
+
+  Future<void> set(bool value) async {
+    if (state == value) return;
+    state = value;
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setBool(_storageKey, value);
+  }
+}
+
+@riverpod
+class PerformerAvatarSize extends _$PerformerAvatarSize {
+  static const _storageKey = 'performer_avatar_size';
+
+  @override
+  double build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getDouble(_storageKey) ?? 16.0;
+  }
+
+  Future<void> set(double value) async {
+    if (state == value) return;
+    state = value;
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setDouble(_storageKey, value);
+  }
+}
+
+@riverpod
 class CardTitleFontSize extends _$CardTitleFontSize {
   static const _storageKey = 'card_title_font_size';
 

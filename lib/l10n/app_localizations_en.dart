@@ -61,6 +61,23 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String nPlays(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString plays',
+      one: '1 play',
+      zero: 'no plays',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get common_reset => 'Reset';
 
   @override
@@ -1037,11 +1054,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_interface_max_performer_avatars =>
-      'Max Performer Avatars (Desktop)';
+      'Max Performer Avatars';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      'Maximum number of performer avatars to show in the scene card on desktop.';
+      'Maximum number of performer avatars to show in the scene card.';
+
+  @override
+  String get settings_interface_show_performer_avatars =>
+      'Show Performer Avatars';
+
+  @override
+  String get settings_interface_show_performer_avatars_subtitle =>
+      'Display performer icons on scene cards across all platforms.';
+
+  @override
+  String get settings_interface_performer_avatar_size =>
+      'Performer Avatar Size';
 
   @override
   String get settings_interface_layout_default => 'Default Layout';
@@ -1138,11 +1167,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Configure endpoint and authentication method';
 
   @override
-  String get settings_server_url => 'GraphQL server URL';
+  String get settings_server_url => 'Stash URL';
 
   @override
   String get settings_server_url_helper =>
-      'Example format: http(s)://host:port.';
+      'Enter the URL of your Stash server. If configured with a custom path, include it here.';
 
   @override
   String get settings_server_url_example => 'http://192.168.1.100:9999';

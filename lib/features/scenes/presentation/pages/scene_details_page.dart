@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
@@ -67,9 +65,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   bool _tagsExpanded = false;
   bool _performersExpanded = false;
   String? _lastKnownActiveSceneId;
-  Timer? _playCountTimer;
-  String? _scheduledPlayCountSceneId;
-  final Set<String> _countedPlayScenes = <String>{};
 
   bool _isRandomSortActive() {
     return ref.read(sceneSortProvider).sort == 'random';
@@ -114,41 +109,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     return '${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
   }
 
-  void _schedulePlayCountIncrement(String sceneId) {
-    if (_countedPlayScenes.contains(sceneId)) return;
-    if (_scheduledPlayCountSceneId == sceneId) return;
-
-    _playCountTimer?.cancel();
-    _scheduledPlayCountSceneId = sceneId;
-    _playCountTimer = Timer(const Duration(seconds: 5), () async {
-      if (!mounted) return;
-      if (widget.sceneId != sceneId) return;
-
-      try {
-        await ref
-            .read(sceneRepositoryProvider)
-            .incrementScenePlayCount(sceneId);
-        _countedPlayScenes.add(sceneId);
-        _scheduledPlayCountSceneId = null;
-        ref.invalidate(sceneDetailsProvider(sceneId));
-        _invalidateSceneListUnlessRandom();
-        AppLogStore.instance.add(
-          'SceneDetailsPage auto play-count increment scene=$sceneId after 5s',
-          source: 'SceneDetailsPage',
-        );
-      } catch (e) {
-        _scheduledPlayCountSceneId = null;
-        AppLogStore.instance.add(
-          'SceneDetailsPage failed auto play-count increment scene=$sceneId error=$e',
-          source: 'SceneDetailsPage',
-        );
-      }
-    });
-  }
-
   @override
   void dispose() {
-    _playCountTimer?.cancel();
     super.dispose();
   }
 
@@ -218,8 +180,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           : null,
       body: sceneAsync.when(
         data: (scene) {
-          _schedulePlayCountIncrement(scene.id);
-
           final useTwoColumns = !Responsive.isMobile(context);
 
           if (useTwoColumns) {
@@ -424,14 +384,17 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
             '${(primaryFile!.bitRate! / 1000000).toStringAsFixed(2)} Mbps',
             icon: Icons.speed,
           ),
-        if (scene.rating100 != null)
+        _buildChip(
+          context,
+          context.l10n.nPlays(scene.playCount),
+          icon: Icons.play_arrow,
+        ),
+        if (scene.playDuration != null && scene.playDuration! > 0)
           _buildChip(
             context,
-            'Rating: ${(scene.rating100! / 20).toStringAsFixed(1)}',
-            icon: Icons.star,
-            iconColor: context.colors.ratingColor,
+            _formatDuration(scene.playDuration),
+            icon: Icons.timer_outlined,
           ),
-        _buildChip(context, '${scene.playCount} plays', icon: Icons.play_arrow),
       ],
     );
   }

@@ -8,6 +8,7 @@ fragment SlimSceneData on Scene {
   interactive
   resume_time
   play_count
+  play_duration
   files {
     path
     duration
@@ -116,6 +117,14 @@ mutation SceneAddPlay($id: ID!) {
   sceneAddPlay(id: $id) {
     count
   }
+}
+
+mutation SceneIncrementPlayCount($id: ID!) {
+  sceneIncrementPlayCount(id: $id)
+}
+
+mutation SceneSaveActivity($id: ID!, $resume_time: Float, $play_duration: Float) {
+  sceneSaveActivity(id: $id, resume_time: $resume_time, playDuration: $play_duration)
 }
 
 query ListScrapers($types: [ScrapeContentType!]!) {

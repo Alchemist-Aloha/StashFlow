@@ -1,121 +1,41 @@
 {
   "de": [
-    "settings_server_profile_add",
-    "settings_server_profile_edit",
-    "settings_server_profile_name",
-    "settings_server_profile_delete",
-    "settings_server_profile_delete_confirm",
-    "settings_server_profile_active",
-    "settings_server_profile_empty",
-    "settings_server_profiles",
-    "settings_server_profiles_subtitle"
+    "nPlays"
   ],
 
   "es": [
-    "settings_server_profile_add",
-    "settings_server_profile_edit",
-    "settings_server_profile_name",
-    "settings_server_profile_delete",
-    "settings_server_profile_delete_confirm",
-    "settings_server_profile_active",
-    "settings_server_profile_empty",
-    "settings_server_profiles",
-    "settings_server_profiles_subtitle"
+    "nPlays"
   ],
 
   "fr": [
-    "settings_server_profile_add",
-    "settings_server_profile_edit",
-    "settings_server_profile_name",
-    "settings_server_profile_delete",
-    "settings_server_profile_delete_confirm",
-    "settings_server_profile_active",
-    "settings_server_profile_empty",
-    "settings_server_profiles",
-    "settings_server_profiles_subtitle"
+    "nPlays"
   ],
 
   "it": [
-    "settings_server_profile_add",
-    "settings_server_profile_edit",
-    "settings_server_profile_name",
-    "settings_server_profile_delete",
-    "settings_server_profile_delete_confirm",
-    "settings_server_profile_active",
-    "settings_server_profile_empty",
-    "settings_server_profiles",
-    "settings_server_profiles_subtitle"
+    "nPlays"
   ],
 
   "ja": [
-    "settings_server_profile_add",
-    "settings_server_profile_edit",
-    "settings_server_profile_name",
-    "settings_server_profile_delete",
-    "settings_server_profile_delete_confirm",
-    "settings_server_profile_active",
-    "settings_server_profile_empty",
-    "settings_server_profiles",
-    "settings_server_profiles_subtitle"
+    "nPlays"
   ],
 
   "ko": [
-    "settings_server_profile_add",
-    "settings_server_profile_edit",
-    "settings_server_profile_name",
-    "settings_server_profile_delete",
-    "settings_server_profile_delete_confirm",
-    "settings_server_profile_active",
-    "settings_server_profile_empty",
-    "settings_server_profiles",
-    "settings_server_profiles_subtitle"
+    "nPlays"
   ],
 
   "ru": [
-    "settings_server_profile_add",
-    "settings_server_profile_edit",
-    "settings_server_profile_name",
-    "settings_server_profile_delete",
-    "settings_server_profile_delete_confirm",
-    "settings_server_profile_active",
-    "settings_server_profile_empty",
-    "settings_server_profiles",
-    "settings_server_profiles_subtitle"
+    "nPlays"
   ],
 
   "zh": [
-    "settings_server_profile_add",
-    "settings_server_profile_edit",
-    "settings_server_profile_name",
-    "settings_server_profile_delete",
-    "settings_server_profile_delete_confirm",
-    "settings_server_profile_active",
-    "settings_server_profile_empty",
-    "settings_server_profiles",
-    "settings_server_profiles_subtitle"
+    "nPlays"
   ],
 
   "zh_Hans": [
-    "settings_server_profile_add",
-    "settings_server_profile_edit",
-    "settings_server_profile_name",
-    "settings_server_profile_delete",
-    "settings_server_profile_delete_confirm",
-    "settings_server_profile_active",
-    "settings_server_profile_empty",
-    "settings_server_profiles",
-    "settings_server_profiles_subtitle"
+    "nPlays"
   ],
 
   "zh_Hant": [
-    "settings_server_profile_add",
-    "settings_server_profile_edit",
-    "settings_server_profile_name",
-    "settings_server_profile_delete",
-    "settings_server_profile_delete_confirm",
-    "settings_server_profile_active",
-    "settings_server_profile_empty",
-    "settings_server_profiles",
-    "settings_server_profiles_subtitle"
+    "nPlays"
   ]
 }

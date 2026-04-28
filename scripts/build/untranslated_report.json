@@ -1,6 +1,19 @@
 {
   "app_de.arb": {
-    "missing": [],
+    "missing": [
+      "settings_interface_show_performer_avatars",
+      "settings_interface_show_performer_avatars_subtitle",
+      "settings_interface_performer_avatar_size",
+      "settings_server_profile_add",
+      "settings_server_profile_edit",
+      "settings_server_profile_name",
+      "settings_server_profile_delete",
+      "settings_server_profile_delete_confirm",
+      "settings_server_profile_active",
+      "settings_server_profile_empty",
+      "settings_server_profiles",
+      "settings_server_profiles_subtitle"
+    ],
     "same_as_en": [
       "appTitle",
       "nav_studios",
@@ -36,13 +49,27 @@
       "settings_server_url_example",
       "settings_support_title",
       "settings_support_version",
+      "settings_server_auth_basic",
       "scenes_field_studio",
       "scenes_field_tags",
       "scenes_field_urls"
     ]
   },
   "app_es.arb": {
-    "missing": [],
+    "missing": [
+      "settings_interface_show_performer_avatars",
+      "settings_interface_show_performer_avatars_subtitle",
+      "settings_interface_performer_avatar_size",
+      "settings_server_profile_add",
+      "settings_server_profile_edit",
+      "settings_server_profile_name",
+      "settings_server_profile_delete",
+      "settings_server_profile_delete_confirm",
+      "settings_server_profile_active",
+      "settings_server_profile_empty",
+      "settings_server_profiles",
+      "settings_server_profiles_subtitle"
+    ],
     "same_as_en": [
       "appTitle",
       "common_error",
@@ -64,7 +91,20 @@
     ]
   },
   "app_fr.arb": {
-    "missing": [],
+    "missing": [
+      "settings_interface_show_performer_avatars",
+      "settings_interface_show_performer_avatars_subtitle",
+      "settings_interface_performer_avatar_size",
+      "settings_server_profile_add",
+      "settings_server_profile_edit",
+      "settings_server_profile_name",
+      "settings_server_profile_delete",
+      "settings_server_profile_delete_confirm",
+      "settings_server_profile_active",
+      "settings_server_profile_empty",
+      "settings_server_profiles",
+      "settings_server_profiles_subtitle"
+    ],
     "same_as_en": [
       "appTitle",
       "nav_studios",
@@ -101,7 +141,20 @@
     ]
   },
   "app_it.arb": {
-    "missing": [],
+    "missing": [
+      "settings_interface_show_performer_avatars",
+      "settings_interface_show_performer_avatars_subtitle",
+      "settings_interface_performer_avatar_size",
+      "settings_server_profile_add",
+      "settings_server_profile_edit",
+      "settings_server_profile_name",
+      "settings_server_profile_delete",
+      "settings_server_profile_delete_confirm",
+      "settings_server_profile_active",
+      "settings_server_profile_empty",
+      "settings_server_profiles",
+      "settings_server_profiles_subtitle"
+    ],
     "same_as_en": [
       "appTitle",
       "common_id",
@@ -125,7 +178,20 @@
     ]
   },
   "app_ja.arb": {
-    "missing": [],
+    "missing": [
+      "settings_interface_show_performer_avatars",
+      "settings_interface_show_performer_avatars_subtitle",
+      "settings_interface_performer_avatar_size",
+      "settings_server_profile_add",
+      "settings_server_profile_edit",
+      "settings_server_profile_name",
+      "settings_server_profile_delete",
+      "settings_server_profile_delete_confirm",
+      "settings_server_profile_active",
+      "settings_server_profile_empty",
+      "settings_server_profiles",
+      "settings_server_profiles_subtitle"
+    ],
     "same_as_en": [
       "appTitle",
       "common_id",
@@ -144,7 +210,20 @@
     ]
   },
   "app_ko.arb": {
-    "missing": [],
+    "missing": [
+      "settings_interface_show_performer_avatars",
+      "settings_interface_show_performer_avatars_subtitle",
+      "settings_interface_performer_avatar_size",
+      "settings_server_profile_add",
+      "settings_server_profile_edit",
+      "settings_server_profile_name",
+      "settings_server_profile_delete",
+      "settings_server_profile_delete_confirm",
+      "settings_server_profile_active",
+      "settings_server_profile_empty",
+      "settings_server_profiles",
+      "settings_server_profiles_subtitle"
+    ],
     "same_as_en": [
       "appTitle",
       "common_id",
@@ -163,7 +242,20 @@
     ]
   },
   "app_ru.arb": {
-    "missing": [],
+    "missing": [
+      "settings_interface_show_performer_avatars",
+      "settings_interface_show_performer_avatars_subtitle",
+      "settings_interface_performer_avatar_size",
+      "settings_server_profile_add",
+      "settings_server_profile_edit",
+      "settings_server_profile_name",
+      "settings_server_profile_delete",
+      "settings_server_profile_delete_confirm",
+      "settings_server_profile_active",
+      "settings_server_profile_empty",
+      "settings_server_profiles",
+      "settings_server_profiles_subtitle"
+    ],
     "same_as_en": [
       "appTitle",
       "common_id",
@@ -182,7 +274,20 @@
     ]
   },
   "app_zh.arb": {
-    "missing": [],
+    "missing": [
+      "settings_interface_show_performer_avatars",
+      "settings_interface_show_performer_avatars_subtitle",
+      "settings_interface_performer_avatar_size",
+      "settings_server_profile_add",
+      "settings_server_profile_edit",
+      "settings_server_profile_name",
+      "settings_server_profile_delete",
+      "settings_server_profile_delete_confirm",
+      "settings_server_profile_active",
+      "settings_server_profile_empty",
+      "settings_server_profiles",
+      "settings_server_profiles_subtitle"
+    ],
     "same_as_en": [
       "appTitle",
       "resolution_144p",
@@ -200,7 +305,20 @@
     ]
   },
   "app_zh_Hans.arb": {
-    "missing": [],
+    "missing": [
+      "settings_interface_show_performer_avatars",
+      "settings_interface_show_performer_avatars_subtitle",
+      "settings_interface_performer_avatar_size",
+      "settings_server_profile_add",
+      "settings_server_profile_edit",
+      "settings_server_profile_name",
+      "settings_server_profile_delete",
+      "settings_server_profile_delete_confirm",
+      "settings_server_profile_active",
+      "settings_server_profile_empty",
+      "settings_server_profiles",
+      "settings_server_profiles_subtitle"
+    ],
     "same_as_en": [
       "appTitle",
       "resolution_144p",
@@ -218,7 +336,20 @@
     ]
   },
   "app_zh_Hant.arb": {
-    "missing": [],
+    "missing": [
+      "settings_interface_show_performer_avatars",
+      "settings_interface_show_performer_avatars_subtitle",
+      "settings_interface_performer_avatar_size",
+      "settings_server_profile_add",
+      "settings_server_profile_edit",
+      "settings_server_profile_name",
+      "settings_server_profile_delete",
+      "settings_server_profile_delete_confirm",
+      "settings_server_profile_active",
+      "settings_server_profile_empty",
+      "settings_server_profiles",
+      "settings_server_profiles_subtitle"
+    ],
     "same_as_en": [
       "appTitle",
       "resolution_144p",

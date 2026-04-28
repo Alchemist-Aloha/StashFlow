@@ -1,9 +1,6 @@
-import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../auth/auth_headers.dart';
-import '../auth/auth_mode.dart';
 import '../auth/auth_provider.dart';
 import '../graphql/graphql_client.dart';
 

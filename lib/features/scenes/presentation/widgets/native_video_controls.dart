@@ -9,6 +9,7 @@ import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/gestures.dart';
+import 'package:vector_math/vector_math_64.dart' show Vector3;
 import 'package:go_router/go_router.dart';
 import 'video_controls/video_progress_bar.dart';
 import 'video_controls/video_playback_controls.dart';
@@ -786,11 +787,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                   ? 1.1
                                   : 0.9;
                               final matrix = Matrix4.identity()
-                                ..translate(pointerSignal.localPosition.dx,
-                                    pointerSignal.localPosition.dy)
-                                ..scale(scaleDelta)
-                                ..translate(-pointerSignal.localPosition.dx,
-                                    -pointerSignal.localPosition.dy);
+                                ..translateByVector3(Vector3(pointerSignal.localPosition.dx,
+                                    pointerSignal.localPosition.dy, 0))
+                                ..scaleByVector3(Vector3(scaleDelta, scaleDelta, 1.0))
+                                ..translateByVector3(Vector3(-pointerSignal.localPosition.dx,
+                                    -pointerSignal.localPosition.dy, 0));
                               widget.onTransformationDelta?.call(
                                 matrix,
                                 pointerSignal.localPosition,
@@ -806,11 +807,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                   ? 0.1
                                   : -0.1;
                               final matrix = Matrix4.identity()
-                                ..translate(pointerSignal.localPosition.dx,
-                                    pointerSignal.localPosition.dy)
+                                ..translateByVector3(Vector3(pointerSignal.localPosition.dx,
+                                    pointerSignal.localPosition.dy, 0))
                                 ..rotateZ(rotationDelta)
-                                ..translate(-pointerSignal.localPosition.dx,
-                                    -pointerSignal.localPosition.dy);
+                                ..translateByVector3(Vector3(-pointerSignal.localPosition.dx,
+                                    -pointerSignal.localPosition.dy, 0));
                               widget.onTransformationDelta?.call(
                                 matrix,
                                 pointerSignal.localPosition,

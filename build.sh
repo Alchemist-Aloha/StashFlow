@@ -80,11 +80,11 @@ build_platform() {
 # The user specifically requested to ignore unavailable platforms.
 
 declare -A platforms
-platforms["Android (APK)"]="flutter build apk --release --split-per-abi"
-platforms["Web"]="flutter build web --release"
-platforms["Linux"]="flutter build linux --release"
-platforms["Windows"]="flutter build windows --release"
-platforms["macOS"]="flutter build macos --release"
+platforms["Android (APK)"]="flutter build apk --split-per-abi"
+platforms["Web"]="flutter build web"
+platforms["Linux"]="flutter build linux"
+platforms["Windows"]="flutter build windows"
+platforms["macOS"]="flutter build macos"
 
 results=""
 

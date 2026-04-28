@@ -237,6 +237,7 @@ Scene _buildScene({
     interactive: false,
     resumeTime: null,
     playCount: 0,
+        playDuration: 0,
     files: const [],
     urls: const [],
     captions: captions,

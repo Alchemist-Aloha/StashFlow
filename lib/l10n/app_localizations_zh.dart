@@ -59,6 +59,23 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String nPlays(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString plays',
+      one: '1 play',
+      zero: 'no plays',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get common_reset => '重置';
 
   @override
@@ -1015,11 +1032,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_interface_galleries_layout_subtitle => '图库的默认浏览模式';
 
   @override
-  String get settings_interface_max_performer_avatars => '最多出演者头像（桌面）';
+  String get settings_interface_max_performer_avatars => '最多出演者头像';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      '在桌面场景卡上显示的出演者头像的最大数量。';
+      '在场景卡上显示的出演者头像的最大数量。';
+
+  @override
+  String get settings_interface_show_performer_avatars => '显示出演者头像';
+
+  @override
+  String get settings_interface_show_performer_avatars_subtitle =>
+      '在所有平台的场景卡上显示出演者图标。';
+
+  @override
+  String get settings_interface_performer_avatar_size => '出演者头像大小';
 
   @override
   String get settings_interface_layout_default => '默认布局';
@@ -1106,10 +1133,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_server_details_subtitle => '配置端点和身份验证方式';
 
   @override
-  String get settings_server_url => 'GraphQL 服务器 URL';
+  String get settings_server_url => 'Stash URL';
 
   @override
-  String get settings_server_url_helper => '示例格式：http(s)://host:port/graphql。';
+  String get settings_server_url_helper =>
+      '输入 Stash 服务器的 URL。如果配置了自定义路径，请在此处包含它。';
 
   @override
   String get settings_server_url_example => 'http://192.168.1.100:9999';
@@ -1173,33 +1201,31 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_server_logout_confirm => '已退出登录并清除 Cookie。';
 
   @override
-  String get settings_server_profile_add => 'Add Profile';
+  String get settings_server_profile_add => '添加配置文件';
 
   @override
-  String get settings_server_profile_edit => 'Edit Profile';
+  String get settings_server_profile_edit => '编辑配置文件';
 
   @override
-  String get settings_server_profile_name => 'Profile Name';
+  String get settings_server_profile_name => '配置文件名称';
 
   @override
-  String get settings_server_profile_delete => 'Delete Profile';
+  String get settings_server_profile_delete => '删除配置文件';
 
   @override
-  String get settings_server_profile_delete_confirm =>
-      'Are you sure you want to delete this profile? This action cannot be undone.';
+  String get settings_server_profile_delete_confirm => '您确定要删除此配置文件吗？此操作无法撤消。';
 
   @override
-  String get settings_server_profile_active => 'Active';
+  String get settings_server_profile_active => '激活';
 
   @override
-  String get settings_server_profile_empty => 'No server profiles configured';
+  String get settings_server_profile_empty => '未配置服务器配置文件';
 
   @override
-  String get settings_server_profiles => 'Server Profiles';
+  String get settings_server_profiles => '服务器配置文件';
 
   @override
-  String get settings_server_profiles_subtitle =>
-      'Manage multiple Stash server connections';
+  String get settings_server_profiles_subtitle => '管理多个 Stash 服务器连接';
 
   @override
   String get settings_server_auth_status_logging_in => '身份验证状态：正在登录...';
@@ -2652,11 +2678,21 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_interface_galleries_layout_subtitle => '图库的默认浏览模式';
 
   @override
-  String get settings_interface_max_performer_avatars => '最多出演者头像（桌面）';
+  String get settings_interface_max_performer_avatars => '最多出演者头像';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      '在桌面场景卡上显示的出演者头像的最大数量。';
+      '在场景卡上显示的出演者头像的最大数量。';
+
+  @override
+  String get settings_interface_show_performer_avatars => '显示出演者头像';
+
+  @override
+  String get settings_interface_show_performer_avatars_subtitle =>
+      '在所有平台的场景卡上显示出演者图标。';
+
+  @override
+  String get settings_interface_performer_avatar_size => '出演者头像大小';
 
   @override
   String get settings_interface_layout_default => '默认布局';
@@ -2743,10 +2779,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_server_details_subtitle => '配置端点和身份验证方式';
 
   @override
-  String get settings_server_url => 'GraphQL 服务器 URL';
+  String get settings_server_url => 'Stash URL';
 
   @override
-  String get settings_server_url_helper => '示例格式：http(s)://host:port/graphql。';
+  String get settings_server_url_helper =>
+      '输入 Stash 服务器的 URL。如果配置了自定义路径，请在此处包含它。';
 
   @override
   String get settings_server_url_example => 'http://192.168.1.100:9999';
@@ -2808,6 +2845,33 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_server_logout_confirm => '已退出登录并清除 Cookie。';
+
+  @override
+  String get settings_server_profile_add => '添加配置文件';
+
+  @override
+  String get settings_server_profile_edit => '编辑配置文件';
+
+  @override
+  String get settings_server_profile_name => '配置文件名称';
+
+  @override
+  String get settings_server_profile_delete => '删除配置文件';
+
+  @override
+  String get settings_server_profile_delete_confirm => '您确定要删除此配置文件吗？此操作无法撤消。';
+
+  @override
+  String get settings_server_profile_active => '激活';
+
+  @override
+  String get settings_server_profile_empty => '未配置服务器配置文件';
+
+  @override
+  String get settings_server_profiles => '服务器配置文件';
+
+  @override
+  String get settings_server_profiles_subtitle => '管理多个 Stash 服务器连接';
 
   @override
   String get settings_server_auth_status_logging_in => '身份验证状态：正在登录...';
@@ -4262,11 +4326,21 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_interface_galleries_layout_subtitle => '圖庫的預設瀏覽模式';
 
   @override
-  String get settings_interface_max_performer_avatars => '最多演出者頭像（桌面）';
+  String get settings_interface_max_performer_avatars => '最多演出者頭像';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      '在桌面場景卡上顯示的演出者頭像的最大數量。';
+      '在場景卡上顯示的演出者頭像的最大數量。';
+
+  @override
+  String get settings_interface_show_performer_avatars => '顯示演出者頭像';
+
+  @override
+  String get settings_interface_show_performer_avatars_subtitle =>
+      '在所有平台的場景卡上顯示演出者圖標。';
+
+  @override
+  String get settings_interface_performer_avatar_size => '演出者頭像大小';
 
   @override
   String get settings_interface_layout_default => '預設佈局';
@@ -4353,10 +4427,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_server_details_subtitle => '設定端點和驗證方式';
 
   @override
-  String get settings_server_url => 'GraphQL 伺服器網址';
+  String get settings_server_url => 'Stash URL';
 
   @override
-  String get settings_server_url_helper => '範例格式：http(s)://主機:連接埠/graphql。';
+  String get settings_server_url_helper =>
+      '輸入 Stash 伺服器的 URL。如果配置了自定義路徑，請在此處包含它。';
 
   @override
   String get settings_server_url_example => 'http://192.168.1.100:9999';
@@ -4419,6 +4494,33 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_server_logout_confirm => '已登出且 Cookie 已清除。';
+
+  @override
+  String get settings_server_profile_add => '新增設定檔';
+
+  @override
+  String get settings_server_profile_edit => '編輯設定檔';
+
+  @override
+  String get settings_server_profile_name => '設定檔名稱';
+
+  @override
+  String get settings_server_profile_delete => '刪除設定檔';
+
+  @override
+  String get settings_server_profile_delete_confirm => '您確定要刪除此設定檔嗎？此動作無法復原。';
+
+  @override
+  String get settings_server_profile_active => '使用中';
+
+  @override
+  String get settings_server_profile_empty => '未設定伺服器設定檔';
+
+  @override
+  String get settings_server_profiles => '伺服器設定檔';
+
+  @override
+  String get settings_server_profiles_subtitle => '管理多個 Stash 伺服器連線';
 
   @override
   String get settings_server_auth_status_logging_in => '驗證狀態：正在登入...';

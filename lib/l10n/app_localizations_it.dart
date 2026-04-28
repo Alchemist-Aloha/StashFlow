@@ -61,6 +61,23 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String nPlays(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString plays',
+      one: '1 play',
+      zero: 'no plays',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get common_reset => 'Ripristina';
 
   @override
@@ -1055,11 +1072,23 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get settings_interface_max_performer_avatars =>
-      'Numero massimo di avatar degli attori (Desktop)';
+      'Numero massimo di avatar degli attori';
 
   @override
   String get settings_interface_max_performer_avatars_subtitle =>
-      'Numero massimo di avatar degli attori da mostrare nella scheda della scena su desktop.';
+      'Numero massimo di avatar degli attori da mostrare nella scheda della scena.';
+
+  @override
+  String get settings_interface_show_performer_avatars =>
+      'Mostra avatar degli attori';
+
+  @override
+  String get settings_interface_show_performer_avatars_subtitle =>
+      'Visualizza le icone degli attori sulle schede delle scene su tutte le piattaforme.';
+
+  @override
+  String get settings_interface_performer_avatar_size =>
+      'Dimensioni avatar dell\'attore';
 
   @override
   String get settings_interface_layout_default => 'Layout Predefinito';
@@ -1158,11 +1187,11 @@ class AppLocalizationsIt extends AppLocalizations {
       'Configura endpoint e metodo di autenticazione';
 
   @override
-  String get settings_server_url => 'URL server GraphQL';
+  String get settings_server_url => 'URL di Stash';
 
   @override
   String get settings_server_url_helper =>
-      'Esempio formato: http(s)://host:port.';
+      'Inserisci l\'URL del tuo server Stash. Se configurato con un percorso personalizzato, includilo qui.';
 
   @override
   String get settings_server_url_example => 'http://192.168.1.100:9999';
@@ -1230,33 +1259,34 @@ class AppLocalizationsIt extends AppLocalizations {
       'Disconnessione effettuata e cookie cancellati.';
 
   @override
-  String get settings_server_profile_add => 'Add Profile';
+  String get settings_server_profile_add => 'Aggiungi profilo';
 
   @override
-  String get settings_server_profile_edit => 'Edit Profile';
+  String get settings_server_profile_edit => 'Modifica profilo';
 
   @override
-  String get settings_server_profile_name => 'Profile Name';
+  String get settings_server_profile_name => 'Nome profilo';
 
   @override
-  String get settings_server_profile_delete => 'Delete Profile';
+  String get settings_server_profile_delete => 'Elimina profilo';
 
   @override
   String get settings_server_profile_delete_confirm =>
-      'Are you sure you want to delete this profile? This action cannot be undone.';
+      'Sei sicuro di voler eliminare questo profilo? Questa azione non può essere annullata.';
 
   @override
-  String get settings_server_profile_active => 'Active';
+  String get settings_server_profile_active => 'Attivo';
 
   @override
-  String get settings_server_profile_empty => 'No server profiles configured';
+  String get settings_server_profile_empty =>
+      'Nessun profilo server configurato';
 
   @override
-  String get settings_server_profiles => 'Server Profiles';
+  String get settings_server_profiles => 'Profili server';
 
   @override
   String get settings_server_profiles_subtitle =>
-      'Manage multiple Stash server connections';
+      'Gestisci connessioni multiple al server Stash';
 
   @override
   String get settings_server_auth_status_logging_in =>
