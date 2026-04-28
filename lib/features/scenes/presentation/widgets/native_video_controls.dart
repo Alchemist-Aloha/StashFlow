@@ -57,6 +57,8 @@ class NativeVideoControls extends ConsumerStatefulWidget {
       _NativeVideoControlsState();
 }
 
+enum _DragMode { none, determining, horizontal, vertical }
+
 class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     with WidgetsBindingObserver {
   static const _controlsAutoHideDelay = Duration(milliseconds: 1000);
@@ -89,6 +91,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
   String _feedbackLabel = '';
   bool _feedbackVisible = false;
   Timer? _feedbackTimer;
+  
+  _DragMode _currentDragMode = _DragMode.none;
+  double _dragStartValue = 0.0;
+  bool _dragIsLeft = false;
 
   @override
   void initState() {
@@ -919,67 +925,68 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                           },
                           onScaleStart: (details) {
                             if (details.pointerCount == 1) {
-                              if (!widget.useDoubleTapSeek) {
-                                _beginDragSeek();
-                              }
+                              _currentDragMode = _DragMode.determining;
+                              _dragStartValue = 0.0;
+                              _dragIsLeft = false;
                             } else if (details.pointerCount >= 2) {
                               widget.onScaleStart?.call(details);
                             }
                           },
                           onScaleUpdate: (details) {
                             if (details.pointerCount == 1) {
-                              // If it's a vertical swipe, handle Volume/Brightness
-                              if (details.focalPointDelta.dy.abs() >
-                                  details.focalPointDelta.dx.abs() * 1.5) {
-                                final isLeft =
-                                    details.focalPoint.dx <
-                                    constraints.maxWidth / 2;
-                                final delta =
-                                    -details.focalPointDelta.dy /
-                                    constraints.maxHeight;
-
-                                if (isLeft) {
-                                  // Brightness
-                                  ScreenBrightness().application.then((current) {
-                                    final newBrightness =
-                                        (current + delta).clamp(0.0, 1.0);
-                                    ScreenBrightness()
-                                        .setApplicationScreenBrightness(
-                                          newBrightness,
-                                        );
-                                    _showFeedback(
-                                      Icons.brightness_6,
-                                      '${(newBrightness * 100).round()}%',
-                                    );
-                                  });
-                                } else {
-                                  // Volume
-                                  final currentVol =
-                                      ref.read(desktopSettingsProvider).volume;
-                                  final newVol =
-                                      (currentVol + delta).clamp(0.0, 1.0);
-                                  ref
-                                      .read(playerStateProvider.notifier)
-                                      .setVolume(newVol);
-                                  _showFeedback(
-                                    Icons.volume_up,
-                                    '${(newVol * 100).round()}%',
-                                  );
+                              if (_currentDragMode == _DragMode.determining) {
+                                // Determine primary drag axis
+                                if (details.focalPointDelta.dy.abs() >
+                                    details.focalPointDelta.dx.abs() * 1.5) {
+                                  _currentDragMode = _DragMode.vertical;
+                                  _dragIsLeft = details.focalPoint.dx <
+                                      constraints.maxWidth / 2;
+                                  if (_dragIsLeft) {
+                                    ScreenBrightness().application.then((val) {
+                                      if (mounted && _currentDragMode == _DragMode.vertical) {
+                                        _dragStartValue = val;
+                                      }
+                                    });
+                                  } else {
+                                    _dragStartValue = ref.read(desktopSettingsProvider).volume;
+                                  }
+                                } else if (details.focalPointDelta.dx.abs() >
+                                    details.focalPointDelta.dy.abs() * 1.5) {
+                                  _currentDragMode = _DragMode.horizontal;
+                                  if (!widget.useDoubleTapSeek) {
+                                    _beginDragSeek();
+                                  }
                                 }
-                                return;
                               }
 
-                              if (!widget.useDoubleTapSeek) {
-                                _updateDragSeek(details, constraints.maxWidth);
+                              if (_currentDragMode == _DragMode.vertical) {
+                                final delta = -details.focalPointDelta.dy /
+                                    constraints.maxHeight;
+                                _dragStartValue = (_dragStartValue + delta).clamp(0.0, 1.0);
+
+                                if (_dragIsLeft) {
+                                  // Brightness
+                                  ScreenBrightness().setApplicationScreenBrightness(_dragStartValue);
+                                  _showFeedback(Icons.brightness_6, '${(_dragStartValue * 100).round()}%');
+                                } else {
+                                  // Volume
+                                  ref.read(playerStateProvider.notifier).setVolume(_dragStartValue);
+                                  _showFeedback(Icons.volume_up, '${(_dragStartValue * 100).round()}%');
+                                }
+                              } else if (_currentDragMode == _DragMode.horizontal) {
+                                if (!widget.useDoubleTapSeek) {
+                                  _updateDragSeek(details, constraints.maxWidth);
+                                }
                               }
                             } else if (details.pointerCount >= 2) {
                               widget.onScaleUpdate?.call(details);
                             }
                           },
                           onScaleEnd: (details) {
-                            if (_dragSeekStartPosition != null) {
+                            if (_currentDragMode == _DragMode.horizontal && _dragSeekStartPosition != null) {
                               _endDragSeek();
                             }
+                            _currentDragMode = _DragMode.none;
                             widget.onScaleEnd?.call(details);
                           },
                           child: const ColoredBox(color: Colors.transparent),
