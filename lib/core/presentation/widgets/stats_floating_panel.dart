@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/stats_provider.dart';
@@ -9,21 +10,26 @@ class StatsFloatingPanel extends ConsumerWidget {
   const StatsFloatingPanel({super.key});
 
   static void show(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Stats',
-      barrierColor: Colors.black54,
-      transitionDuration: const Duration(milliseconds: 200),
+      barrierColor: colorScheme.scrim.withValues(alpha: 0.6),
+      transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) {
         return const Center(
           child: StatsFloatingPanel(),
         );
       },
       transitionBuilder: (context, anim1, anim2, child) {
-        return ScaleTransition(
-          scale: anim1,
-          child: child,
+        final curve = Curves.easeOutBack.transform(anim1.value);
+        return Transform.scale(
+          scale: curve,
+          child: Opacity(
+            opacity: anim1.value,
+            child: child,
+          ),
         );
       },
     );
@@ -34,75 +40,124 @@ class StatsFloatingPanel extends ConsumerWidget {
     final statsAsync = ref.watch(serverStatsProvider);
     final l10n = AppLocalizations.of(context)!;
     final dims = context.dimensions;
+    final colorScheme = Theme.of(context).colorScheme;
 
-    return Container(
-      width: 320 * dims.fontSizeFactor,
-      margin: EdgeInsets.all(dims.spacingLarge),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
+    return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+      child: Container(
+        width: 340 * dims.fontSizeFactor,
+        margin: EdgeInsets.all(dims.spacingLarge),
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
+          boxShadow: [
+            BoxShadow(
+              color: colorScheme.shadow.withValues(alpha: 0.4),
+              blurRadius: 24,
+              offset: const Offset(0, 8),
+            ),
+          ],
+          border: Border.all(
+            color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+            width: 1,
+          ),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildHeader(context, dims, colorScheme),
+              Flexible(
+                child: statsAsync.when(
+                  data: (stats) => _buildStatsList(context, stats, dims, l10n),
+                  loading: () => Padding(
+                    padding: EdgeInsets.all(dims.spacingLarge * 2),
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
+                  error: (err, stack) => Padding(
+                    padding: EdgeInsets.all(dims.spacingLarge),
+                    child: Text(
+                      'Error: $err',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: colorScheme.error),
+                    ),
+                  ),
+                ),
+              ),
+              _buildFooter(context, dims, ref),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context, AppDimensions dims, ColorScheme colorScheme) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        dims.spacingMedium * 1.5,
+        dims.spacingMedium * 1.5,
+        dims.spacingMedium,
+        dims.spacingSmall,
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(dims.spacingSmall),
+            decoration: BoxDecoration(
+              color: colorScheme.primaryContainer.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+            ),
+            child: Icon(
+              Icons.analytics_rounded,
+              color: colorScheme.primary,
+              size: 24 * dims.fontSizeFactor,
+            ),
+          ),
+          SizedBox(width: dims.spacingMedium),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Library Stats',
+                  style: context.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                Text(
+                  'Your Stash at a glance',
+                  style: context.textTheme.labelMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton.filledTonal(
+            icon: const Icon(Icons.close_rounded, size: 20),
+            onPressed: () => Navigator.of(context).pop(),
           ),
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: EdgeInsets.all(dims.spacingMedium),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.bar_chart_rounded,
-                    color: Theme.of(context).colorScheme.primary,
-                    size: 24 * dims.fontSizeFactor,
-                  ),
-                  SizedBox(width: dims.spacingSmall),
-                  Expanded(
-                    child: Text(
-                      'Server Statistics',
-                      style: context.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
-              ),
-            ),
-            const Divider(height: 1),
-            Flexible(
-              child: statsAsync.when(
-                data: (stats) => _buildStatsList(context, stats, dims, l10n),
-                loading: () => Padding(
-                  padding: EdgeInsets.all(dims.spacingLarge),
-                  child: const Center(child: CircularProgressIndicator()),
-                ),
-                error: (err, stack) => Padding(
-                  padding: EdgeInsets.all(dims.spacingLarge),
-                  child: Text('Error: $err'),
-                ),
-              ),
-            ),
-            const Divider(height: 1),
-            Padding(
-              padding: EdgeInsets.all(dims.spacingSmall),
-              child: TextButton(
-                onPressed: () => ref.invalidate(serverStatsProvider),
-                child: const Text('Refresh'),
-              ),
-            ),
-          ],
+    );
+  }
+
+  Widget _buildFooter(BuildContext context, AppDimensions dims, WidgetRef ref) {
+    return Padding(
+      padding: EdgeInsets.all(dims.spacingMedium),
+      child: FilledButton.tonalIcon(
+        onPressed: () => ref.invalidate(serverStatsProvider),
+        icon: const Icon(Icons.refresh_rounded, size: 18),
+        label: const Text('Refresh Statistics'),
+        style: FilledButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+          ),
         ),
       ),
     );
@@ -114,67 +169,93 @@ class StatsFloatingPanel extends ConsumerWidget {
     AppDimensions dims,
     AppLocalizations l10n,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
     return ListView(
       shrinkWrap: true,
-      padding: EdgeInsets.symmetric(vertical: dims.spacingSmall),
+      padding: EdgeInsets.symmetric(
+        horizontal: dims.spacingMedium,
+        vertical: dims.spacingSmall,
+      ),
       children: [
+        _buildSectionTitle(context, 'Content'),
         _StatItem(
-          icon: Icons.movie_outlined,
+          icon: Icons.movie_filter_rounded,
           label: 'Scenes',
           value: '${stats.sceneCount}',
           subtitle: _formatBytes(stats.scenesSize),
         ),
         _StatItem(
-          icon: Icons.image_outlined,
+          icon: Icons.photo_library_rounded,
           label: 'Images',
           value: '${stats.imageCount}',
           subtitle: _formatBytes(stats.imagesSize),
         ),
         _StatItem(
-          icon: Icons.collections_outlined,
+          icon: Icons.auto_stories_rounded,
           label: 'Galleries',
           value: '${stats.galleryCount}',
         ),
+        SizedBox(height: dims.spacingSmall),
+        _buildSectionTitle(context, 'Organization'),
         _StatItem(
-          icon: Icons.people_outline,
+          icon: Icons.face_retouching_natural_rounded,
           label: 'Performers',
           value: '${stats.performerCount}',
         ),
         _StatItem(
-          icon: Icons.business_outlined,
+          icon: Icons.storefront_rounded,
           label: 'Studios',
           value: '${stats.studioCount}',
         ),
         _StatItem(
-          icon: Icons.folder_open_outlined,
+          icon: Icons.workspaces_rounded,
           label: 'Groups',
           value: '${stats.groupCount}',
         ),
         _StatItem(
-          icon: Icons.label_outline,
+          icon: Icons.local_offer_rounded,
           label: 'Tags',
           value: '${stats.tagCount}',
         ),
-        const Divider(),
+        SizedBox(height: dims.spacingSmall),
+        _buildSectionTitle(context, 'Activity'),
         _StatItem(
-          icon: Icons.play_circle_outline,
+          icon: Icons.play_lesson_rounded,
           label: 'Total Plays',
           value: '${stats.totalPlayCount}',
-          subtitle: '${stats.scenesPlayed} unique scenes',
+          subtitle: '${stats.scenesPlayed} unique items',
         ),
         _StatItem(
-          icon: Icons.favorite_border,
+          icon: Icons.favorite_rounded,
           label: 'Total O-Count',
           value: '${stats.totalOCount}',
+          color: colorScheme.tertiary,
         ),
       ],
+    );
+  }
+
+  Widget _buildSectionTitle(BuildContext context, String title) {
+    final dims = context.dimensions;
+    return Padding(
+      padding: EdgeInsets.only(
+        left: dims.spacingSmall,
+        bottom: dims.spacingSmall,
+        top: dims.spacingSmall,
+      ),
+      child: Text(
+        title.toUpperCase(),
+        style: context.textTheme.labelSmall?.copyWith(
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
     );
   }
 
   String _formatBytes(double bytes) {
     if (bytes <= 0) return '0 B';
     const suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    // Simple log logic or loop
     int unit = 0;
     double size = bytes;
     while (size >= 1024 && unit < suffixes.length - 1) {
@@ -190,49 +271,67 @@ class _StatItem extends StatelessWidget {
   final String label;
   final String value;
   final String? subtitle;
+  final Color? color;
 
   const _StatItem({
     required this.icon,
     required this.label,
     required this.value,
     this.subtitle,
+    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
     final dims = context.dimensions;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: dims.spacingMedium,
-        vertical: dims.spacingSmall / 2,
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 20 * dims.fontSizeFactor, color: context.colors.onSurfaceVariant),
-          SizedBox(width: dims.spacingMedium),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label, style: context.textTheme.bodyMedium),
-                if (subtitle != null)
+      padding: EdgeInsets.only(bottom: dims.spacingSmall),
+      child: Container(
+        padding: EdgeInsets.all(dims.spacingMedium),
+        decoration: BoxDecoration(
+          color: colorScheme.surface.withValues(alpha: 0.4),
+          borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 22 * dims.fontSizeFactor,
+              color: color ?? colorScheme.onSurfaceVariant,
+            ),
+            SizedBox(width: dims.spacingMedium),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    subtitle!,
-                    style: context.textTheme.labelSmall?.copyWith(
-                      color: context.colors.onSurfaceVariant,
+                    label,
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-              ],
+                  if (subtitle != null)
+                    Text(
+                      subtitle!,
+                      style: context.textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                ],
+              ),
             ),
-          ),
-          Text(
-            value,
-            style: context.textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: context.colors.primary,
+            Text(
+              value,
+              style: context.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w900,
+                color: color ?? colorScheme.primary,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
