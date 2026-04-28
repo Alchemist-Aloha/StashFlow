@@ -179,7 +179,7 @@ class _AppearanceSettingsPageState
   }
 
   Widget _buildFontSizeFactorSlider(AppLocalizations l10n) {
-    final value = ref.watch(appFontSizeProvider);
+    final value = ref.watch(appGlobalScaleProvider);
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -200,7 +200,7 @@ class _AppearanceSettingsPageState
               onPressed:
                   value == 1.0
                       ? null
-                      : () => ref.read(appFontSizeProvider.notifier).set(1.0),
+                      : () => ref.read(appGlobalScaleProvider.notifier).set(1.0),
               icon: const Icon(Icons.restart_alt, size: 18),
               label: Text(l10n.common_reset),
               style: TextButton.styleFrom(
@@ -217,7 +217,7 @@ class _AppearanceSettingsPageState
           divisions: 14,
           label: '${(value * 100).toInt()}%',
           onChanged: (val) {
-            ref.read(appFontSizeProvider.notifier).set(val);
+            ref.read(appGlobalScaleProvider.notifier).set(val);
           },
         ),
       ],

@@ -134,7 +134,7 @@ class MyApp extends ConsumerWidget {
 
     final cardTitleFontSize = ref.watch(cardTitleFontSizeProvider);
     final performerAvatarSize = ref.watch(performerAvatarSizeProvider);
-    final fontSizeFactor = ref.watch(appFontSizeProvider);
+    final fontSizeFactor = ref.watch(appGlobalScaleProvider);
 
     return MaterialApp.router(
       routerConfig: router,

@@ -327,13 +327,15 @@ class CardTitleFontSize extends _$CardTitleFontSize {
 }
 
 @riverpod
-class AppFontSize extends _$AppFontSize {
-  static const _storageKey = 'app_font_size_factor';
+class AppGlobalScale extends _$AppGlobalScale {
+  static const _storageKey = 'app_global_scale_factor';
+  static const _legacyKey = 'app_font_size_factor';
 
   @override
   double build() {
     final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getDouble(_storageKey) ?? 1.0;
+    // Migration: prefer new key, fallback to legacy
+    return prefs.getDouble(_storageKey) ?? prefs.getDouble(_legacyKey) ?? 1.0;
   }
 
   Future<void> set(double value) async {
