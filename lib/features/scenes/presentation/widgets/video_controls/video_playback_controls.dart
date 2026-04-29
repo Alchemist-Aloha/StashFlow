@@ -95,6 +95,10 @@ class VideoPlaybackControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final hasCaptionPath = scene.paths.caption?.trim().isNotEmpty ?? false;
+    final hasVttPath = scene.paths.vtt?.trim().isNotEmpty ?? false;
+    final hasSubtitleSource = hasCaptionPath || hasVttPath;
+    final canSelectSubtitles = scene.captions.isNotEmpty || hasSubtitleSource;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -150,7 +154,7 @@ class VideoPlaybackControls extends StatelessWidget {
     Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (scene.captions.isNotEmpty)
+        if (canSelectSubtitles)
           PopupMenuButton<String?>(
             tooltip: context.l10n.common_select_subtitle,
             icon: Icon(
@@ -196,6 +200,33 @@ class VideoPlaybackControls extends StatelessWidget {
                   ),
                 ),
               ];
+
+              if (hasSubtitleSource) {
+                final isDefaultSelected = selectedSubtitleLanguage == 'default';
+                items.add(
+                  PopupMenuItem<String?>(
+                    value: 'default',
+                    child: Row(
+                      children: [
+                        Icon(
+                          isDefaultSelected
+                              ? Icons.check_circle
+                              : Icons.circle_outlined,
+                          size: 16,
+                          color: isDefaultSelected
+                              ? colorScheme.primary
+                              : colorScheme.onSurfaceVariant,
+                        ),
+                        Text(
+                          'Default',
+                          style: TextStyle(color: colorScheme.onSurface),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+
               for (final c in scene.captions) {
                 final selectedLang = selectedSubtitleLanguage ?? '';
                 final selectedType = selectedSubtitleType ?? '';

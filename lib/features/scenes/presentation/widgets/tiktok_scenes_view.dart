@@ -620,7 +620,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
   @override
   Widget build(BuildContext context) {
     final controller = widget.controller;
-
+    final playerState = ref.watch(playerStateProvider);
     return RepaintBoundary(
       child: Stack(
         fit: StackFit.expand,
@@ -646,6 +646,12 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                               child: Container(
                                 color: Colors.black,
                                 child: TransformableVideoSurface(
+                                  fontSize: playerState.subtitleFontSize,
+                                  textAlign: _subtitleTextAlign(
+                                    playerState.subtitleTextAlignment,
+                                  ),
+                                  bottomRatio: playerState.subtitlePositionBottomRatio,
+                                  constraints: constraints,
                                   controller: controller,
                                   aspectRatio: r,
                                   fit: (r - 1.0).abs() < 0.01
@@ -959,5 +965,16 @@ class _OverlayButton extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+TextAlign _subtitleTextAlign(String setting) {
+  switch (setting) {
+    case 'left':
+      return TextAlign.left;
+    case 'right':
+      return TextAlign.right;
+    case 'center':
+    default:
+      return TextAlign.center;
   }
 }

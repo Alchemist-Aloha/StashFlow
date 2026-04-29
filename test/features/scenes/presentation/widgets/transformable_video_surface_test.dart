@@ -24,6 +24,10 @@ void main() {
               width: 1600,
               height: 900,
               child: TransformableVideoSurface(
+                fontSize: 16,
+                textAlign: TextAlign.center,
+                bottomRatio: 0.1,
+                constraints: BoxConstraints(maxWidth: 1600, maxHeight: 900),
                 controller: controller,
                 aspectRatio: 16 / 9,
               ),

@@ -5,15 +5,26 @@ class TransformableVideoSurface extends StatefulWidget {
   const TransformableVideoSurface({
     required this.controller,
     required this.aspectRatio,
+    required this.bottomRatio,
+    required this.fontSize,
+    required this.constraints,
     this.transformationNotifier,
+    this.textAlign = TextAlign.center,
     this.fit = BoxFit.contain,
+    this.horizontalPadding = 16,
+    this.maxWidthFactor = 0.9,
     super.key,
   });
 
   final VideoController controller;
   final double aspectRatio;
   final BoxFit fit;
-  
+  final double fontSize;
+  final double bottomRatio;
+  final TextAlign textAlign;
+  final BoxConstraints constraints;
+  final double horizontalPadding;
+  final double maxWidthFactor;
   /// Optional notifier to sync transformations from external gesture detectors.
   final ValueNotifier<Matrix4>? transformationNotifier;
 
@@ -62,6 +73,16 @@ class _TransformableVideoSurfaceState extends State<TransformableVideoSurface> {
     Widget content = Video(
       controller: widget.controller,
       controls: NoVideoControls, // or just don't pass if default is no controls
+      subtitleViewConfiguration: SubtitleViewConfiguration(
+        visible: true,
+        textAlign: widget.textAlign,
+        padding: EdgeInsets.fromLTRB(widget.horizontalPadding, 0, widget.horizontalPadding, widget.bottomRatio * widget.constraints.maxHeight),
+        style:TextStyle(
+          color: Colors.white.withValues(alpha: 0.75),
+          fontSize: widget.fontSize * 4, // Scale up the font size for better visibility when transformed, and rely on the user to adjust it down if needed.
+          backgroundColor: Colors.black.withValues(alpha: 0.4),
+        ),
+      ),
     );
 
     if (widget.fit == BoxFit.fill) {

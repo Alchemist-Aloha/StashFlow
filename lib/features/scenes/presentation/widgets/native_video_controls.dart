@@ -1344,7 +1344,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                               )
                                               .setSubtitle(
                                                 lang,
-                                                captionType: type,
+                                                captionType: type.isEmpty
+                                                    ? null
+                                                    : type,
                                               );
                                         }
                                       },

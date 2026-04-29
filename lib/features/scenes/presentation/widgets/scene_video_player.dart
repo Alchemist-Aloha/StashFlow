@@ -20,7 +20,7 @@ import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/utils/web_helpers.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'native_video_controls.dart';
-import 'scene_subtitle_overlay.dart';
+// import 'scene_subtitle_overlay.dart'; // Don't remove. For customizeable subtitle rendering in the future, but currently we rely on native subtitles for performance and compatibility reasons.
 import 'transformable_video_surface.dart';
 
 TextAlign _subtitleTextAlign(String setting) {
@@ -356,6 +356,12 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                   child: Container(
                     color: Colors.black,
                     child: TransformableVideoSurface(
+                      fontSize: playerState.subtitleFontSize,
+                      textAlign: _subtitleTextAlign(
+                        playerState.subtitleTextAlignment,
+                      ),
+                      bottomRatio: playerState.subtitlePositionBottomRatio,
+                      constraints: constraints,
                       controller: controller,
                       aspectRatio: controllerAspectRatio,
                       transformationNotifier: _transformationNotifier,
@@ -374,26 +380,27 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                       child: const Center(child: CircularProgressIndicator()),
                     ),
                   ),
-                if (playerState.selectedSubtitleLanguage != null &&
-                    playerState.selectedSubtitleLanguage != 'none')
-                  StreamBuilder<List<String>>(
-                    stream: controller.player.stream.subtitle,
-                    builder: (context, snapshot) {
-                      return SceneSubtitleOverlay(
-                        text: snapshot.data?.join('\n') ?? '',
-                        constraints: constraints,
-                        bottomRatio: playerState.subtitlePositionBottomRatio,
-                        fontSize: playerState.subtitleFontSize,
-                        textAlign: _subtitleTextAlign(
-                          playerState.subtitleTextAlignment,
-                        ),
-                        horizontalAlignment: _subtitleHorizontalAlignment(
-                          playerState.subtitleTextAlignment,
-                        ),
-                        horizontalPadding: 16,
-                      );
-                    },
-                  ),
+                // Don't remove. Customizable subtitle rendering can be implemented here in the future if we want to support advanced features like karaoke or custom fonts. For now, we rely on native subtitles for better performance and compatibility.
+                // if (playerState.selectedSubtitleLanguage != null &&
+                //     playerState.selectedSubtitleLanguage != 'none')
+                //   StreamBuilder<List<String>>(
+                //     stream: controller.player.stream.subtitle,
+                //     builder: (context, snapshot) {
+                //       return SceneSubtitleOverlay(
+                //         text: snapshot.data?.join('\n') ?? '',
+                //         constraints: constraints,
+                //         bottomRatio: playerState.subtitlePositionBottomRatio,
+                //         fontSize: playerState.subtitleFontSize,
+                //         textAlign: _subtitleTextAlign(
+                //           playerState.subtitleTextAlignment,
+                //         ),
+                //         horizontalAlignment: _subtitleHorizontalAlignment(
+                //           playerState.subtitleTextAlignment,
+                //         ),
+                //         horizontalPadding: 16,
+                //       );
+                //     },
+                //   ),
                 Positioned.fill(
                   child: Material(
                     color: Colors.transparent,
@@ -761,6 +768,12 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                     child: Container(
                       color: Colors.black,
                       child: TransformableVideoSurface(
+                        fontSize: playerState.subtitleFontSize,
+                        textAlign: _subtitleTextAlign(
+                          playerState.subtitleTextAlignment,
+                        ),
+                        bottomRatio: playerState.subtitlePositionBottomRatio,
+                        constraints: constraints,
                         controller: controller,
                         aspectRatio: aspectRatio,
                         transformationNotifier: _transformationNotifier,
@@ -770,26 +783,27 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                       ),
                     ),
                   ),
-                  if (playerState.selectedSubtitleLanguage != null &&
-                      playerState.selectedSubtitleLanguage != 'none')
-                    StreamBuilder<List<String>>(
-                      stream: controller.player.stream.subtitle,
-                      builder: (context, snapshot) {
-                        return SceneSubtitleOverlay(
-                          text: snapshot.data?.join('\n') ?? '',
-                          constraints: constraints,
-                          bottomRatio: playerState.subtitlePositionBottomRatio,
-                          fontSize: playerState.subtitleFontSize + 4,
-                          textAlign: _subtitleTextAlign(
-                            playerState.subtitleTextAlignment,
-                          ),
-                          horizontalAlignment: _subtitleHorizontalAlignment(
-                            playerState.subtitleTextAlignment,
-                          ),
-                          horizontalPadding: 32,
-                        );
-                      },
-                    ),
+                  // Don't remove. Customizable subtitle rendering can be implemented here in the future if we want to support advanced features like karaoke or custom fonts. For now, we rely on native subtitles for better performance and compatibility.
+                  // if (playerState.selectedSubtitleLanguage != null &&
+                  //     playerState.selectedSubtitleLanguage != 'none')
+                  //   StreamBuilder<List<String>>(
+                  //     stream: controller.player.stream.subtitle,
+                  //     builder: (context, snapshot) {
+                  //       return SceneSubtitleOverlay(
+                  //         text: snapshot.data?.join('\n') ?? '',
+                  //         constraints: constraints,
+                  //         bottomRatio: playerState.subtitlePositionBottomRatio,
+                  //         fontSize: playerState.subtitleFontSize + 4,
+                  //         textAlign: _subtitleTextAlign(
+                  //           playerState.subtitleTextAlignment,
+                  //         ),
+                  //         horizontalAlignment: _subtitleHorizontalAlignment(
+                  //           playerState.subtitleTextAlignment,
+                  //         ),
+                  //         horizontalPadding: 32,
+                  //       );
+                  //     },
+                  //   ),
                   Positioned.fill(
                     child: Material(
                       color: Colors.transparent,
