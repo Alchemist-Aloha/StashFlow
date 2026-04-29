@@ -273,6 +273,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.7"
+  cryptography:
+    dependency: transitive
+    description:
+      name: cryptography
+      sha256: "3eda3029d34ec9095a27a198ac9785630fe525c0eb6a49f3d575272f8e792ef0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.9.0"
   csslib:
     dependency: transitive
     description:
@@ -289,6 +297,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.9"
+  dart_cast:
+    dependency: "direct main"
+    description:
+      name: dart_cast
+      sha256: "4e962a542a2880a729ee8c8b7c53db7f3dc72aa2ac360bfa70edf442951149e5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.1"
   dart_style:
     dependency: transitive
     description:
@@ -329,14 +345,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.2"
-  dlna_dart:
-    dependency: "direct main"
-    description:
-      name: dlna_dart
-      sha256: "8a4f0e4f378615c99f2af679dc9f0c72fe4a0fb2f3eea96b637fe691dfcf0649"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.0"
   extended_image:
     dependency: "direct main"
     description:
@@ -908,6 +916,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.6.4"
+  multicast_dns:
+    dependency: transitive
+    description:
+      name: multicast_dns
+      sha256: de72ada5c3db6fdd6ad4ae99452fe05fb403c4bb37c67ceb255ddd37d2b5b1eb
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.3"
   native_toolchain_c:
     dependency: transitive
     description:
@@ -1084,6 +1100,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.5"
+  protobuf:
+    dependency: transitive
+    description:
+      name: protobuf
+      sha256: "75ec242d22e950bdcc79ee38dd520ce4ee0bc491d7fadc4ea47694604d22bf06"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.0"
   pub_semver:
     dependency: "direct main"
     description:
