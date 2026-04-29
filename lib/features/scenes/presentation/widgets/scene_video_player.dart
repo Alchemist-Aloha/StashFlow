@@ -329,15 +329,20 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     }
 
     // Show loading indicator while the global controller initializes.
-    if (controller == null || controller.player.state.width == null) {
+    if (controller == null) {
       return AspectRatio(
         aspectRatio: aspectRatio,
         child: const Center(child: CircularProgressIndicator()),
       );
     }
 
-    final controllerAspectRatio = controller.player.state.width! / controller.player.state.height!;
-    
+    final videoWidth = controller.player.state.width;
+    final videoHeight = controller.player.state.height;
+    final isVideoReady = videoWidth != null && videoHeight != null && videoHeight > 0;
+    final controllerAspectRatio = isVideoReady
+        ? videoWidth! / videoHeight!
+        : aspectRatio;
+
     // Main playback surface.
     return AspectRatio(
       aspectRatio: aspectRatio,
@@ -360,11 +365,20 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                     ),
                   ),
                 ),
+                if (!isVideoReady)
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.4),
+                      ),
+                      child: const Center(child: CircularProgressIndicator()),
+                    ),
+                  ),
                 if (playerState.selectedSubtitleLanguage != null &&
                     playerState.selectedSubtitleLanguage != 'none')
-                    StreamBuilder<List<String>>(
-                      stream: controller.player.stream.subtitle,
-                      builder: (context, snapshot) {
+                  StreamBuilder<List<String>>(
+                    stream: controller.player.stream.subtitle,
+                    builder: (context, snapshot) {
                       return SceneSubtitleOverlay(
                         text: snapshot.data?.join('\n') ?? '',
                         constraints: constraints,
