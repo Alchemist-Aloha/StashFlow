@@ -247,8 +247,6 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
       if (choice == null) return;
 
       final headers = ref.read(mediaPlaybackHeadersProvider);
-      final allowBackgroundPlayback =
-          ref.read(playerStateProvider).enableBackgroundPlayback;
       final controller = MediaKitVideoControllerAdapter.networkUrl(
         Uri.parse(choice.url),
         httpHeaders: headers,

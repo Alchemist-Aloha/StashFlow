@@ -112,57 +112,55 @@ class MediaKitVideoControllerAdapter extends ValueNotifier<AppVideoValue>
 
   void _bindStreams() {
     _subscriptions.add(
-      _player.streams.playing.listen((playing) {
+      _player.stream.playing.listen((playing) {
         _isPlaying = playing;
         _emitValue();
       }),
     );
 
     _subscriptions.add(
-      _player.streams.position.listen((position) {
+      _player.stream.position.listen((position) {
         _position = position;
         _emitValue();
       }),
     );
 
     _subscriptions.add(
-      _player.streams.duration.listen((duration) {
-        _duration = duration ?? Duration.zero;
+      _player.stream.duration.listen((duration) {
+        _duration = duration;
         _emitValue();
       }),
     );
 
     _subscriptions.add(
-      _player.streams.buffer.listen((buffered) {
+      _player.stream.buffer.listen((buffered) {
         _buffered = buffered;
         _emitValue();
       }),
     );
 
     _subscriptions.add(
-      _player.streams.rate.listen((rate) {
+      _player.stream.rate.listen((rate) {
         _playbackSpeed = rate;
         _emitValue();
       }),
     );
 
     _subscriptions.add(
-      _player.streams.videoParams.listen((params) {
-        if (params != null) {
-          final width = params.w.toDouble();
-          final height = params.h.toDouble();
-          if (width > 0 && height > 0) {
-            _size = Size(width, height);
-            _aspectRatio = width / height;
-          }
+      _player.stream.videoParams.listen((params) {
+        final width = (params.w ?? 0).toDouble();
+        final height = (params.h ?? 0).toDouble();
+        if (width > 0 && height > 0) {
+          _size = Size(width, height);
+          _aspectRatio = width / height;
         }
         _emitValue();
       }),
     );
 
     _subscriptions.add(
-      _player.streams.subtitle.listen((subtitle) {
-        _captionText = subtitle?.text ?? '';
+      _player.stream.subtitle.listen((subtitle) {
+        _captionText = subtitle.join('\n');
         _emitValue();
       }),
     );
@@ -210,7 +208,8 @@ class MediaKitVideoControllerAdapter extends ValueNotifier<AppVideoValue>
   Future<void> seekTo(Duration position) => _player.seek(position);
 
   @override
-  Future<void> setLooping(bool value) => _player.setLooping(value);
+  Future<void> setLooping(bool value) =>
+      _player.setPlaylistMode(value ? PlaylistMode.loop : PlaylistMode.none);
 
   @override
   Future<void> setPlaybackSpeed(double speed) => _player.setRate(speed);

@@ -1,94 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:video_player/video_player.dart';
-import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/native_video_controls.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'dart:async';
+import 'package:stash_app_flutter/core/presentation/video/app_video_controller.dart';
 
-class FakeVideoPlayerPlatform extends VideoPlayerPlatform
-    with MockPlatformInterfaceMixin {
-  final List<String> calls = <String>[];
-
-  @override
-  Future<void> init() async {
-    calls.add('init');
-  }
-
-  @override
-  Future<void> dispose(int textureId) async {
-    calls.add('dispose');
-  }
-
-  @override
-  Future<int?> create(DataSource dataSource) async {
-    calls.add('create');
-    return 1;
-  }
+class FakeAppVideoController extends ValueNotifier<AppVideoValue>
+    implements AppVideoController {
+  FakeAppVideoController()
+      : super(
+          const AppVideoValue(
+            isInitialized: true,
+            isPlaying: false,
+            position: Duration.zero,
+            duration: Duration(seconds: 10),
+            playbackSpeed: 1.0,
+            aspectRatio: 16 / 9,
+            size: Size(100, 100),
+            captionText: '',
+            buffered: <AppDurationRange>[],
+          ),
+        );
 
   @override
-  Future<void> setLooping(int textureId, bool looping) async {
-    calls.add('setLooping');
-  }
+  String get dataSource => 'http://example.com/video.mp4';
 
   @override
-  Future<void> play(int textureId) async {
-    calls.add('play');
-  }
+  Future<void> initialize() async {}
 
   @override
-  Future<void> pause(int textureId) async {
-    calls.add('pause');
-  }
+  Future<void> play() async {}
 
   @override
-  Future<void> setVolume(int textureId, double volume) async {
-    calls.add('setVolume');
-  }
+  Future<void> pause() async {}
 
   @override
-  Future<void> setPlaybackSpeed(int textureId, double speed) async {
-    calls.add('setPlaybackSpeed');
-  }
+  Future<void> seekTo(Duration position) async {}
 
   @override
-  Future<void> seekTo(int textureId, Duration position) async {
-    calls.add('seekTo');
-  }
+  Future<void> setLooping(bool value) async {}
 
   @override
-  Future<Duration> getPosition(int textureId) async {
-    calls.add('getPosition');
-    return const Duration(seconds: 0);
-  }
+  Future<void> setPlaybackSpeed(double speed) async {}
 
   @override
-  Stream<VideoEvent> videoEventsFor(int textureId) {
-    return Stream<VideoEvent>.fromIterable(<VideoEvent>[
-      VideoEvent(
-        eventType: VideoEventType.initialized,
-        duration: const Duration(seconds: 10),
-        size: const Size(100, 100),
-      ),
-    ]);
-  }
+  Future<void> setVolume(double volume) async {}
 
   @override
-  Widget buildView(int textureId) {
-    return const SizedBox.shrink();
+  Future<void> setSubtitleUrl(String? url) async {}
+
+  @override
+  Future<void> dispose() async {
+    super.dispose();
   }
 }
 
 void main() {
-  setUp(() {
-    VideoPlayerPlatform.instance = FakeVideoPlayerPlatform();
-  });
-
   testWidgets('renders controls normally', (tester) async {
     final scene = _buildScene();
     await _pumpControls(tester, scene: scene);
@@ -266,9 +236,7 @@ Future<void> _pumpControls(
   required Scene scene,
   GlobalPlayerState? playerState,
 }) async {
-  final mockController = VideoPlayerController.networkUrl(
-    Uri.parse('http://example.com/video.mp4'),
-  );
+  final mockController = FakeAppVideoController();
   addTearDown(mockController.dispose);
 
   await tester.pumpWidget(
