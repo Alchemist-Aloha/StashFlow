@@ -18,10 +18,10 @@ import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/utils/web_helpers.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 import 'native_video_controls.dart';
 import 'scene_subtitle_overlay.dart';
 import 'transformable_video_surface.dart';
-import '../../../../core/presentation/video/app_video_controller.dart';
 
 TextAlign _subtitleTextAlign(String setting) {
   switch (setting) {
@@ -121,9 +121,9 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
 
     // If we're already active, just resume or stay as-is.
     if (playerState.activeScene?.id == widget.scene.id) {
-      if (playerState.videoPlayerController != null &&
-          !playerState.videoPlayerController!.value.isPlaying) {
-        playerState.videoPlayerController!.play();
+      if (playerState.player != null &&
+          !playerState.player!.state.playing) {
+        playerState.player!.play();
       }
       return;
     }
@@ -175,9 +175,9 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
 
   /// Returns the intended aspect ratio for the video container.
   /// Falls back to 16/9 if metadata is unavailable.
-  double _effectiveAspectRatio(AppVideoController? controller) {
-    if (controller != null && controller.value.isInitialized) {
-      final ratio = controller.value.aspectRatio;
+  double _effectiveAspectRatio(VideoController? controller) {
+    if (controller != null && controller.player.state.width != null && controller.player.state.height != null && controller.player.state.height! > 0) {
+      final ratio = controller.player.state.width! / controller.player.state.height!;
       // Force square videos to 9/16 portrait on mobile to avoid the "fat" look.
       if ((ratio - 1.0).abs() < 0.01 &&
           (defaultTargetPlatform == TargetPlatform.android ||
@@ -285,7 +285,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   @override
   Widget build(BuildContext context) {
     final playerState = ref.watch(playerStateProvider);
-    final controller = playerState.videoPlayerController;
+    final controller = playerState.videoController;
 
     final aspectRatio = _effectiveAspectRatio(controller);
 
@@ -329,13 +329,15 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     }
 
     // Show loading indicator while the global controller initializes.
-    if (controller == null || !controller.value.isInitialized) {
+    if (controller == null || controller.player.state.width == null) {
       return AspectRatio(
         aspectRatio: aspectRatio,
         child: const Center(child: CircularProgressIndicator()),
       );
     }
 
+    final controllerAspectRatio = controller.player.state.width! / controller.player.state.height!;
+    
     // Main playback surface.
     return AspectRatio(
       aspectRatio: aspectRatio,
@@ -350,9 +352,9 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                     color: Colors.black,
                     child: TransformableVideoSurface(
                       controller: controller,
-                      aspectRatio: controller.value.aspectRatio,
+                      aspectRatio: controllerAspectRatio,
                       transformationNotifier: _transformationNotifier,
-                      fit: (aspectRatio - controller.value.aspectRatio).abs() > 0.05
+                      fit: (aspectRatio - controllerAspectRatio).abs() > 0.05
                           ? BoxFit.fill
                           : BoxFit.contain,
                     ),
@@ -360,11 +362,11 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                 ),
                 if (playerState.selectedSubtitleLanguage != null &&
                     playerState.selectedSubtitleLanguage != 'none')
-                    ValueListenableBuilder(
-                      valueListenable: controller,
-                      builder: (context, value, child) {
+                    StreamBuilder<List<String>>(
+                      stream: controller.player.stream.subtitle,
+                      builder: (context, snapshot) {
                       return SceneSubtitleOverlay(
-                        text: value.captionText,
+                        text: snapshot.data?.join('\n') ?? '',
                         constraints: constraints,
                         bottomRatio: playerState.subtitlePositionBottomRatio,
                         fontSize: playerState.subtitleFontSize,
@@ -422,7 +424,8 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
   bool _isPopping = false;
   bool _wasMaximizedBeforeFullscreen = false;
   bool _wasPlayingBeforeExit = false;
-  AppVideoController? _currentListenedController;
+  VideoController? _currentListenedController;
+  final List<StreamSubscription> _subscriptions = [];
 
   final ValueNotifier<Matrix4> _transformationNotifier =
       ValueNotifier(Matrix4.identity());
@@ -459,7 +462,7 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
 
   void _onControllerUpdate() {
     if (!_isPopping && _currentListenedController != null) {
-      _wasPlayingBeforeExit = _currentListenedController!.value.isPlaying;
+      _wasPlayingBeforeExit = _currentListenedController!.player.state.playing;
     }
   }
 
@@ -480,13 +483,16 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
 
   @override
   void dispose() {
-    _currentListenedController?.removeListener(_onControllerUpdate);
+    for (final sub in _subscriptions) {
+      sub.cancel();
+    }
     super.dispose();
   }
 
   Future<void> _enterFullScreen() async {
-    final controller = ref.read(playerStateProvider).videoPlayerController;
-    final wasPlaying = controller?.value.isPlaying ?? false;
+    final playerState = ref.read(playerStateProvider);
+    final controller = playerState.videoController;
+    final wasPlaying = playerState.player?.state.playing ?? false;
 
     try {
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
@@ -513,13 +519,15 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
         // On Windows, toggling fullscreen can sometimes trigger a pause in the native player
         // due to window state changes or focus loss during the transition.
         if (wasPlaying && defaultTargetPlatform == TargetPlatform.windows) {
-          if (controller != null && !controller.value.isPlaying) {
-            unawaited(controller.play());
+          if (controller != null && !controller.player.state.playing) {
+            unawaited(controller.player.play());
           }
         }
       } else {
         final playerState = ref.read(playerStateProvider);
-        final aspectRatio = controller?.value.aspectRatio ?? 16 / 9;
+        final width = controller?.player.state.width;
+        final height = controller?.player.state.height;
+        final aspectRatio = (width != null && height != null && height > 0) ? width / height : 16 / 9;
         final allowGravity = playerState.videoGravityOrientation;
 
         List<DeviceOrientation> orientations;
@@ -543,8 +551,8 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
         // On Web, toggling fullscreen and the Hero transition can trigger a pause
         if (wasPlaying && kIsWeb) {
           Future.delayed(const Duration(milliseconds: 350), () {
-            if (controller != null && !controller.value.isPlaying) {
-              unawaited(controller.play());
+            if (controller != null && !controller.player.state.playing) {
+              unawaited(controller.player.play());
             }
           });
         }
@@ -562,7 +570,7 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
   }
 
   void _exitFullScreen() {
-    final controller = ref.read(playerStateProvider).videoPlayerController;
+    final controller = ref.read(playerStateProvider).videoController;
     final wasPlaying = _wasPlayingBeforeExit;
 
     // Reset state early so parent pages (like ShellPage) rebuild correctly.
@@ -594,8 +602,8 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
         // due to window state changes or focus loss during the transition.
         if (wasPlaying &&
             (kIsWeb || defaultTargetPlatform == TargetPlatform.windows)) {
-          if (controller != null && !controller.value.isPlaying) {
-            await controller.play();
+          if (controller != null && !controller.player.state.playing) {
+            await controller.player.play();
           }
         }
       }());
@@ -620,8 +628,8 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
           Future.delayed(const Duration(milliseconds: 350), () {
             // Do not check `mounted` here because FullscreenPlayerPage might be unmounted
             // when returning to the inline player page.
-            if (controller != null && !controller.value.isPlaying) {
-              unawaited(controller.play());
+            if (controller != null && !controller.player.state.playing) {
+              unawaited(controller.player.play());
             }
           });
         }
@@ -678,15 +686,22 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
 
     // We must have an active scene that matches the one we're trying to show.
     final scene = playerState.activeScene;
-    final controller = playerState.videoPlayerController;
+    final controller = playerState.videoController;
 
     if (controller != _currentListenedController) {
-      _currentListenedController?.removeListener(_onControllerUpdate);
+      if (_currentListenedController != null) {
+        for (final sub in _subscriptions) {
+          sub.cancel();
+        }
+        _subscriptions.clear();
+      }
       _currentListenedController = controller;
-      _currentListenedController?.addListener(_onControllerUpdate);
+      if (controller != null) {
+        _subscriptions.add(controller.player.stream.playing.listen((_) => _onControllerUpdate()));
+      }
       // Immediately hydrate the initial value.
       if (controller != null && !_isPopping) {
-        _wasPlayingBeforeExit = controller.value.isPlaying;
+        _wasPlayingBeforeExit = controller.player.state.playing;
       }
     }
 
@@ -723,6 +738,9 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
           tag: 'scene_player_${widget.sceneId}',
           child: LayoutBuilder(
             builder: (context, constraints) {
+              final width = controller.player.state.width;
+              final height = controller.player.state.height;
+              final aspectRatio = (width != null && height != null && height > 0) ? width / height : 16 / 9;
               return Stack(
                 children: [
                   Positioned.fill(
@@ -730,9 +748,9 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                       color: Colors.black,
                       child: TransformableVideoSurface(
                         controller: controller,
-                        aspectRatio: controller.value.aspectRatio,
+                        aspectRatio: aspectRatio,
                         transformationNotifier: _transformationNotifier,
-                        fit: (controller.value.aspectRatio - 1.0).abs() < 0.01
+                        fit: (aspectRatio - 1.0).abs() < 0.01
                             ? BoxFit.fill
                             : BoxFit.contain,
                       ),
@@ -740,11 +758,11 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                   ),
                   if (playerState.selectedSubtitleLanguage != null &&
                       playerState.selectedSubtitleLanguage != 'none')
-                    ValueListenableBuilder(
-                      valueListenable: controller,
-                      builder: (context, value, child) {
+                    StreamBuilder<List<String>>(
+                      stream: controller.player.stream.subtitle,
+                      builder: (context, snapshot) {
                         return SceneSubtitleOverlay(
-                        text: value.captionText,
+                          text: snapshot.data?.join('\n') ?? '',
                           constraints: constraints,
                           bottomRatio: playerState.subtitlePositionBottomRatio,
                           fontSize: playerState.subtitleFontSize + 4,

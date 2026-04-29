@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../../../../core/utils/l10n_extensions.dart';
 import '../../../../../core/presentation/theme/app_theme.dart';
-import '../../../../../core/presentation/video/app_video_controller.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 
 import '../../../../../core/utils/pip_mode.dart';
 import '../../../domain/entities/scene.dart';
@@ -36,7 +36,7 @@ class VideoPlaybackControls extends StatelessWidget {
     required this.isSpeedSliderVisible,
   });
 
-  final AppVideoController controller;
+  final VideoController controller;
   final Scene scene;
   final bool isPlaying;
   final double playbackSpeed;
@@ -314,7 +314,7 @@ class VideoPlaybackControls extends StatelessWidget {
               backgroundColor: Colors.transparent,
               isScrollControlled: true,
               builder: (context) => CastSelectionSheet(
-                videoUrl: controller.dataSource,
+                videoUrl: controller.player.state.playlist.medias.firstOrNull?.uri ?? '',
                 title: scene.displayTitle,
               ),
             );
@@ -330,9 +330,10 @@ class VideoPlaybackControls extends StatelessWidget {
                 onFullScreenToggle?.call();
                 await Future.delayed(const Duration(milliseconds: 150));
               }
-              await PipMode.enterIfAvailable(
-                aspectRatio: controller.value.aspectRatio,
-              );
+              final w = controller.player.state.width;
+              final h = controller.player.state.height;
+              final r = (w != null && h != null && h > 0) ? w / h : 16 / 9;
+              await PipMode.enterIfAvailable(aspectRatio: r);
               onInteract();
             },
           ),

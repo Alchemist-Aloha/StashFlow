@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/presentation/video/app_video_controller.dart';
-import '../../../../core/presentation/video/app_video_surface.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 
 class TransformableVideoSurface extends StatefulWidget {
   const TransformableVideoSurface({
@@ -11,7 +10,7 @@ class TransformableVideoSurface extends StatefulWidget {
     super.key,
   });
 
-  final AppVideoController controller;
+  final VideoController controller;
   final double aspectRatio;
   final BoxFit fit;
   
@@ -60,7 +59,10 @@ class _TransformableVideoSurfaceState extends State<TransformableVideoSurface> {
 
   @override
   Widget build(BuildContext context) {
-    Widget content = AppVideoSurface(controller: widget.controller);
+    Widget content = Video(
+      controller: widget.controller,
+      controls: NoVideoControls, // or just don't pass if default is no controls
+    );
 
     if (widget.fit == BoxFit.fill) {
       content = SizedBox.expand(child: content);
@@ -70,8 +72,8 @@ class _TransformableVideoSurfaceState extends State<TransformableVideoSurface> {
           fit: BoxFit.cover,
           clipBehavior: Clip.hardEdge,
           child: SizedBox(
-            width: widget.controller.value.size.width,
-            height: widget.controller.value.size.height,
+            width: widget.controller.player.state.width?.toDouble() ?? 100.0,
+            height: widget.controller.player.state.height?.toDouble() ?? 100.0,
             child: content,
           ),
         ),

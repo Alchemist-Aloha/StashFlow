@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:clock/clock.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,7 +22,6 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
 import 'transformable_video_surface.dart';
-import '../../../../core/presentation/video/app_video_controller.dart';
 
 class FullScreenMode extends Notifier<bool> {
   @override
@@ -36,7 +37,7 @@ final fullScreenModeProvider = NotifierProvider<FullScreenMode, bool>(
 
 /// A vertical-scrolling "TikTok-style" view for discovering scenes.
 ///
-/// This widget manages its own pool of [AppVideoController]s to ensure
+/// This widget manages its own pool of [VideoController]s to ensure
 /// smooth scrolling and low-latency playback as the user swipes through videos.
 ///
 /// Key responsibilities:
@@ -58,8 +59,11 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
   /// The index of the currently visible scene.
   int _currentIndex = 0;
 
+  /// Active video players indexed by scene ID.
+  final Map<String, Player> _players = {};
+
   /// Active video controllers indexed by scene ID.
-  final Map<String, AppVideoController> _controllers = {};
+  final Map<String, VideoController> _controllers = {};
 
   /// Initialization futures to prevent redundant setup calls.
   final Map<String, Future<void>> _initFutures = {};
@@ -77,19 +81,18 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
     _pageController.removeListener(_onScroll);
     _pageController.dispose();
 
-    final globalController = ref
-        .read(playerStateProvider)
-        .videoPlayerController;
-    for (final controller in _controllers.values) {
-      if (controller != globalController) {
-        controller.dispose();
+    final globalController = ref.read(playerStateProvider).videoController;
+    for (final id in _controllers.keys) {
+      if (_controllers[id] != globalController) {
+        _players[id]?.dispose();
       } else {
         AppLogStore.instance.add(
-          'TiktokScenesView: skipping dispose of promoted controller in dispose()',
+          'TiktokScenesView: skipping dispose of promoted player in dispose()',
           source: 'TiktokScenesView',
         );
       }
     }
+    _players.clear();
     _controllers.clear();
     WakelockPlus.disable();
 
@@ -167,7 +170,8 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
         .where((id) => !idsInWindow.contains(id))
         .toList();
     for (final id in idsToRemove) {
-      _controllers[id]?.dispose();
+      _players[id]?.dispose();
+      _players.remove(id);
       _controllers.remove(id);
       _initFutures.remove(id);
     }
@@ -190,9 +194,10 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
     // 1. If global player is already playing this scene, it might be returning from DetailsPage.
     // In this case, we don't want to stop it! We want to take its controller into our pool.
     if (globalPlayer.activeScene?.id == currentSceneId &&
-        globalPlayer.videoPlayerController != null &&
-        globalPlayer.videoPlayerController?.value.isInitialized == true &&
-        globalPlayer.videoPlayerController != activeTikTokController) {
+        globalPlayer.videoController != null &&
+        globalPlayer.videoController?.player.state.playlist.medias.isNotEmpty ==
+            true &&
+        globalPlayer.videoController != activeTikTokController) {
       AppLogStore.instance.add(
         'TiktokScenesView: sync global player to tiktok pool for $currentSceneId',
         source: 'TiktokScenesView',
@@ -200,17 +205,20 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
       // Take the global controller into our pool, replacing any preloaded one
       final oldLocal = _controllers[currentSceneId];
-      _controllers[currentSceneId] = globalPlayer.videoPlayerController!;
+      final oldPlayer = _players[currentSceneId];
+      _controllers[currentSceneId] = globalPlayer.videoController!;
+      _players[currentSceneId] = globalPlayer.videoController!.player;
+
       // Important: don't dispose if it was the same controller, but we checked != above
-      if (oldLocal != null && oldLocal != globalPlayer.videoPlayerController) {
-        oldLocal.dispose();
+      if (oldLocal != null && oldLocal != globalPlayer.videoController) {
+        oldPlayer?.dispose();
       }
     }
     // 2. Otherwise, if global player is idle or playing something else,
     // promote our local active controller to global so DetailsPage/MiniPlayer can use it.
     else if (globalPlayer.activeScene?.id != currentSceneId &&
         activeTikTokController != null &&
-        activeTikTokController.value.isInitialized) {
+        activeTikTokController.player.state.playlist.medias.isNotEmpty) {
       AppLogStore.instance.add(
         'TiktokScenesView: promoting local controller to global for $currentSceneId',
         source: 'TiktokScenesView',
@@ -218,6 +226,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
       unawaited(
         playerNotifier.attachController(
           scenes[_currentIndex],
+          activeTikTokController.player,
           activeTikTokController,
           streamSource: 'tiktok-promotion',
         ),
@@ -229,12 +238,12 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
       final id = entry.key;
       final controller = entry.value;
       if (id == currentSceneId) {
-        if (!controller.value.isPlaying) {
-          controller.play();
+        if (!controller.player.state.playing) {
+          controller.player.play();
         }
       } else {
-        if (controller.value.isPlaying) {
-          controller.pause();
+        if (controller.player.state.playing) {
+          controller.player.pause();
         }
       }
     }
@@ -247,17 +256,19 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
       if (choice == null) return;
 
       final headers = ref.read(mediaPlaybackHeadersProvider);
-      final controller = MediaKitVideoControllerAdapter.networkUrl(
-        Uri.parse(choice.url),
-        httpHeaders: headers,
-        subtitleUrl: null,
-      );
 
+      final player = Player();
+      final controller = VideoController(player);
+
+      _players[scene.id] = player;
       _controllers[scene.id] = controller;
-      await controller.initialize();
+
+      await player.open(Media(choice.url, httpHeaders: headers), play: false);
 
       final autoplayNext = ref.read(playerStateProvider).autoplayNext;
-      controller.setLooping(!autoplayNext);
+      await player.setPlaylistMode(
+        autoplayNext ? PlaylistMode.none : PlaylistMode.loop,
+      );
 
       if (mounted) {
         setState(() {}); // Trigger rebuild to show the first frame
@@ -267,7 +278,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
           final scenes = scenesAsync.value!;
           if (_currentIndex < scenes.length &&
               scenes[_currentIndex].id == scene.id) {
-            controller.play();
+            player.play();
           }
         }
       }
@@ -306,9 +317,9 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
             // Use global controller for the active item to ensure seamless transitions
             // to/from DetailsPage where the global player is used.
-            AppVideoController? controller;
+            VideoController? controller;
             if (isCurrent && playerState.activeScene?.id == scene.id) {
-              controller = playerState.videoPlayerController;
+              controller = playerState.videoController;
             } else {
               controller = _controllers[scene.id];
             }
@@ -332,7 +343,7 @@ class CircularProgressContext extends StatelessWidget {
 
 class TiktokSceneItem extends ConsumerStatefulWidget {
   final Scene scene;
-  final AppVideoController? controller;
+  final VideoController? controller;
 
   const TiktokSceneItem({required this.scene, this.controller, super.key});
 
@@ -352,20 +363,23 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
   DateTime? _playStartTime;
   double _accumulatedDuration = 0;
   Timer? _periodicSaveTimer;
+  StreamSubscription<bool>? _playingSub;
 
   @override
   void initState() {
     super.initState();
     _localRating = widget.scene.rating100;
-    widget.controller?.addListener(_onControllerChanged);
-    if (widget.controller?.value.isPlaying == true) {
+    _playingSub = widget.controller?.player.stream.playing.listen(
+      _onControllerChanged,
+    );
+    if (widget.controller?.player.state.playing == true) {
       _startActivityTracking();
     }
   }
 
   @override
   void dispose() {
-    widget.controller?.removeListener(_onControllerChanged);
+    _playingSub?.cancel();
     _stopActivityTracking();
     super.dispose();
   }
@@ -380,18 +394,20 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
       });
     }
     if (oldWidget.controller != widget.controller) {
-      oldWidget.controller?.removeListener(_onControllerChanged);
+      _playingSub?.cancel();
       _stopActivityTracking();
 
-      widget.controller?.addListener(_onControllerChanged);
-      if (widget.controller?.value.isPlaying == true) {
+      _playingSub = widget.controller?.player.stream.playing.listen(
+        _onControllerChanged,
+      );
+      if (widget.controller?.player.state.playing == true) {
         _startActivityTracking();
       }
     }
   }
 
-  void _onControllerChanged() {
-    if (widget.controller?.value.isPlaying == true) {
+  void _onControllerChanged(bool isPlaying) {
+    if (isPlaying) {
       _startActivityTracking();
     } else {
       _stopActivityTracking();
@@ -403,7 +419,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
 
     _startPlayCountTimer();
     _playStartTime = clock.now();
-    
+
     _periodicSaveTimer?.cancel();
     _periodicSaveTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
       _saveActivity();
@@ -440,17 +456,21 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
 
     if (durationToSave < 0.1) return;
 
-    final resumeTime = controller.value.position.inMilliseconds / 1000.0;
+    final resumeTime = controller.player.state.position.inMilliseconds / 1000.0;
     _accumulatedDuration = 0;
 
     try {
-      await ref.read(sceneRepositoryProvider).saveSceneActivity(
-        widget.scene.id,
-        resumeTime: resumeTime,
-        playDuration: durationToSave,
-      );
+      await ref
+          .read(sceneRepositoryProvider)
+          .saveSceneActivity(
+            widget.scene.id,
+            resumeTime: resumeTime,
+            playDuration: durationToSave,
+          );
       if (mounted) {
-        unawaited(ref.read(sceneDetailsProvider(widget.scene.id).notifier).refresh());
+        unawaited(
+          ref.read(sceneDetailsProvider(widget.scene.id).notifier).refresh(),
+        );
       }
     } catch (e) {
       debugPrint('TikTok failed to save scene activity: $e');
@@ -468,7 +488,9 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
             .incrementScenePlayCount(widget.scene.id);
         _playCountIncremented = true;
         if (mounted) {
-          unawaited(ref.read(sceneDetailsProvider(widget.scene.id).notifier).refresh());
+          unawaited(
+            ref.read(sceneDetailsProvider(widget.scene.id).notifier).refresh(),
+          );
         }
       } catch (e) {
         debugPrint('Failed to increment play count: $e');
@@ -553,10 +575,11 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
     final globalState = ref.read(playerStateProvider);
     final controller = widget.controller;
 
-    if (controller == null || !controller.value.isInitialized) return;
+    if (controller == null || controller.player.state.playlist.medias.isEmpty)
+      return;
 
     if (globalState.activeScene?.id != widget.scene.id ||
-        globalState.videoPlayerController != controller) {
+        globalState.videoController != controller) {
       AppLogStore.instance.add(
         'TiktokSceneItem: handing off to global player for ${widget.scene.id}',
         source: 'TiktokScenesView',
@@ -567,6 +590,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
 
       await playerNotifier.attachController(
         widget.scene,
+        controller.player,
         controller,
         streamMimeType: choice?.mimeType,
         streamLabel: choice?.label,
@@ -604,11 +628,18 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
           // Video background
           Container(
             color: Colors.black,
-            child: (controller != null && controller.value.isInitialized)
+            child:
+                (controller != null &&
+                    controller.player.state.playlist.medias.isNotEmpty)
                 ? Hero(
                     tag: 'scene_player_${widget.scene.id}',
                     child: LayoutBuilder(
                       builder: (context, constraints) {
+                        final w = controller.player.state.width;
+                        final h = controller.player.state.height;
+                        final r = (w != null && h != null && h > 0)
+                            ? w / h
+                            : 16 / 9;
                         return Stack(
                           children: [
                             Positioned.fill(
@@ -616,12 +647,12 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                                 color: Colors.black,
                                 child: TransformableVideoSurface(
                                   controller: controller,
-                                  aspectRatio: controller.value.aspectRatio,
-                                  fit: (controller.value.aspectRatio - 1.0).abs() < 0.01
+                                  aspectRatio: r,
+                                  fit: (r - 1.0).abs() < 0.01
                                       ? BoxFit.fill
-                                      : (controller.value.aspectRatio < 1.0
-                                          ? BoxFit.cover
-                                          : BoxFit.contain),
+                                      : (r < 1.0
+                                            ? BoxFit.cover
+                                            : BoxFit.contain),
                                 ),
                               ),
                             ),
@@ -633,7 +664,8 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                 : const Center(child: CircularProgressIndicator()),
           ),
 
-          if (controller != null && controller.value.isInitialized)
+          if (controller != null &&
+              controller.player.state.playlist.medias.isNotEmpty)
             TweenAnimationBuilder<double>(
               tween: Tween(begin: 0.0, end: 1.0),
               duration: const Duration(milliseconds: 400),
@@ -647,16 +679,16 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                   Positioned.fill(
                     child: GestureDetector(
                       onTap: () {
-                        if (controller.value.isPlaying) {
-                          controller.pause();
+                        if (controller.player.state.playing) {
+                          controller.player.pause();
                         } else {
-                          controller.play();
+                          controller.player.play();
                         }
                       },
                       onLongPressStart: (_) {
-                        _originalSpeed = controller.value.playbackSpeed;
+                        _originalSpeed = controller.player.state.rate;
                         _currentSpeed = 5.0;
-                        controller.setPlaybackSpeed(_currentSpeed);
+                        controller.player.setRate(_currentSpeed);
                         setState(() => _isSpeedingUp = true);
                       },
                       onLongPressMoveUpdate: (details) {
@@ -667,12 +699,12 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                           final newSpeed = 5.0 + extraSpeed;
                           if (newSpeed != _currentSpeed) {
                             setState(() => _currentSpeed = newSpeed);
-                            controller.setPlaybackSpeed(_currentSpeed);
+                            controller.player.setRate(_currentSpeed);
                           }
                         }
                       },
                       onLongPressEnd: (_) {
-                        controller.setPlaybackSpeed(_originalSpeed);
+                        controller.player.setRate(_originalSpeed);
                         setState(() => _isSpeedingUp = false);
                       },
                     ),
@@ -810,17 +842,28 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                       ),
                       child: SizedBox(
                         height: 24, // Larger tap target
-                        child: ListenableBuilder(
-                          listenable: controller,
-                          builder: (context, child) {
-                            final value = controller.value;
-                            final duration = value.duration.inMilliseconds.toDouble();
-                            final position = value.position.inMilliseconds.toDouble();
+                        child: StreamBuilder<Duration>(
+                          stream: controller.player.stream.position,
+                          builder: (context, snapshot) {
+                            final duration = controller
+                                .player
+                                .state
+                                .duration
+                                .inMilliseconds
+                                .toDouble();
+                            final position = controller
+                                .player
+                                .state
+                                .position
+                                .inMilliseconds
+                                .toDouble();
                             return Slider(
                               value: position.clamp(0.0, duration),
                               max: duration > 0 ? duration : 1.0,
                               onChanged: (val) {
-                                controller.seekTo(Duration(milliseconds: val.toInt()));
+                                controller.player.seek(
+                                  Duration(milliseconds: val.toInt()),
+                                );
                               },
                             );
                           },
@@ -910,10 +953,7 @@ class _OverlayButton extends StatelessWidget {
             color: Colors.white,
             size: 28,
             shadows: [
-              Shadow(
-                color: Colors.black.withValues(alpha: 0.5),
-                blurRadius: 8,
-              ),
+              Shadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 8),
             ],
           ),
         ),
