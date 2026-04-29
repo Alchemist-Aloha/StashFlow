@@ -83,7 +83,7 @@ class StorageSettingsPage extends ConsumerWidget {
                 ],
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (_, __) => const Text('Error loading sizes'),
+              error: (err, stack) => const Text('Error loading sizes'),
             ),
           ),
           SizedBox(height: context.dimensions.spacingMedium),
@@ -93,7 +93,7 @@ class StorageSettingsPage extends ConsumerWidget {
             child: Column(
               children: [
                 DropdownButtonFormField<int>(
-                  value: ref.watch(maxImageCacheSizeProvider),
+                  initialValue: ref.watch(maxImageCacheSizeProvider),
                   decoration: const InputDecoration(labelText: 'Max Image Cache (MB)'),
                   items: const [
                     DropdownMenuItem(value: 100, child: Text('100 MB')),
@@ -110,7 +110,7 @@ class StorageSettingsPage extends ConsumerWidget {
                 ),
                 SizedBox(height: context.dimensions.spacingMedium),
                 DropdownButtonFormField<int>(
-                  value: ref.watch(maxVideoCacheSizeProvider),
+                  initialValue: ref.watch(maxVideoCacheSizeProvider),
                   decoration: const InputDecoration(labelText: 'Max Video Cache (MB)'),
                   items: const [
                     DropdownMenuItem(value: 500, child: Text('500 MB')),

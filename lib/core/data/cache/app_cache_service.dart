@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:extended_image/extended_image.dart' as extended_image;
-import '../graphql/graphql_client.dart';
 import '../../presentation/widgets/stash_image.dart';
 
 final appCacheServiceProvider = Provider<AppCacheService>((ref) {
