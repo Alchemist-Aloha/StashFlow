@@ -25,6 +25,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
     super.initState();
     // Start discovery when the sheet is opened.
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      debugPrint('CastSelectionSheet: start discovery');
       ref.read(castServiceProvider.notifier).startDiscovery();
     });
   }
@@ -36,6 +37,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
 
   void _showConnectingDialog(String deviceName) {
     if (mounted) {
+      debugPrint('CastSelectionSheet: connecting to $deviceName');
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -96,6 +98,9 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
   }
 
   Future<void> _connectToDevice(dc.CastDevice device) async {
+    debugPrint(
+      'CastSelectionSheet: selected ${device.name} (${device.protocol.name})',
+    );
     // Show a connecting dialog
     _showConnectingDialog(device.name);
 
@@ -105,9 +110,11 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
       dc.CastSession session;
 
       if (device.protocol == dc.CastProtocol.dlna) {
+        debugPrint('CastSelectionSheet: using DLNA session');
         session = dc.DlnaSession.fromDevice(device);
         await session.connect();
       } else {
+        debugPrint('CastSelectionSheet: connecting via castService');
         session = await appCastService.castService.connect(device);
       }
 
@@ -116,6 +123,9 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
 
       // Load media
       final mediaType = _detectMediaType(widget.videoUrl);
+      debugPrint(
+        'CastSelectionSheet: loading media type ${mediaType.name} url=${widget.videoUrl}',
+      );
       final media = dc.CastMedia(
         url: widget.videoUrl,
         type: mediaType,
@@ -123,6 +133,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
       );
 
       await session.loadMedia(media);
+      debugPrint('CastSelectionSheet: load media complete');
 
       if (mounted) {
         Navigator.pop(context);
@@ -133,6 +144,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
         );
       }
     } on dc.NeedsPairingException catch (_) {
+      debugPrint('CastSelectionSheet: AirPlay pairing required');
       // Dismiss connecting dialog
       if (mounted) Navigator.of(context).pop();
 
@@ -143,6 +155,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
       // Show PIN dialog
       final pin = await _showPinDialog();
       if (pin != null && pin.length == 4) {
+        debugPrint('CastSelectionSheet: pairing with PIN');
         // Re-show connecting dialog
         _showConnectingDialog(device.name);
         try {
@@ -153,12 +166,16 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
           await session.connect();
 
           final mediaType = _detectMediaType(widget.videoUrl);
+          debugPrint(
+            'CastSelectionSheet: loading media type ${mediaType.name} url=${widget.videoUrl}',
+          );
           final media = dc.CastMedia(
             url: widget.videoUrl,
             type: mediaType,
             title: widget.title,
           );
           await session.loadMedia(media);
+          debugPrint('CastSelectionSheet: load media complete');
 
           // Dismiss connecting dialog
           if (mounted) Navigator.of(context).pop();
@@ -172,6 +189,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
             );
           }
         } catch (e) {
+          debugPrint('CastSelectionSheet: pairing failed: $e');
           // Dismiss connecting dialog
           if (mounted) Navigator.of(context).pop();
 
@@ -183,6 +201,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
         }
       }
     } catch (e) {
+      debugPrint('CastSelectionSheet: cast failed: $e');
       // Dismiss connecting dialog
       if (mounted) Navigator.of(context).pop();
 
@@ -239,8 +258,12 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.refresh),
-                  onPressed: () =>
-                      ref.read(castServiceProvider.notifier).startDiscovery(),
+                    onPressed: () {
+                      debugPrint('CastSelectionSheet: refresh discovery');
+                      ref
+                          .read(castServiceProvider.notifier)
+                          .startDiscovery();
+                    },
                 ),
               ],
             ),

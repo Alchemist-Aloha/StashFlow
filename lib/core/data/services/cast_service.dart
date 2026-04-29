@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:dart_cast/dart_cast.dart' as dc;
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AppCastService extends Notifier<List<dc.CastDevice>> {
@@ -28,8 +29,10 @@ class AppCastService extends Notifier<List<dc.CastDevice>> {
         }
       },
     );
+    debugPrint('CastService: initialized with Chromecast/AirPlay/DLNA providers');
 
     ref.onDispose(() {
+      debugPrint('CastService: disposing');
       _subscription?.cancel();
       _castService.dispose();
     });
@@ -40,20 +43,27 @@ class AppCastService extends Notifier<List<dc.CastDevice>> {
   dc.CastService get castService => _castService;
 
   void startDiscovery() {
+    debugPrint('CastService: start discovery');
     _subscription?.cancel();
     state = [];
     _subscription = _castService
         .startDiscovery(timeout: const Duration(seconds: 15))
         .listen(
       (devices) {
+        debugPrint('CastService: discovered ${devices.length} device(s)');
         state = devices;
       },
-      onDone: () {},
-      onError: (error) {},
+      onDone: () {
+        debugPrint('CastService: discovery completed');
+      },
+      onError: (error) {
+        debugPrint('CastService: discovery error: $error');
+      },
     );
   }
 
   void stopDiscovery() {
+    debugPrint('CastService: stop discovery');
     _subscription?.cancel();
     _castService.stopDiscovery();
     state = [];
