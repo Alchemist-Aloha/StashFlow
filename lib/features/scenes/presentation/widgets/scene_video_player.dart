@@ -844,7 +844,9 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                         transformationNotifier: _transformationNotifier,
                         fit: (aspectRatio - 1.0).abs() < 0.01
                             ? BoxFit.fill
-                            : BoxFit.contain,
+                                      : (aspectRatio < 1.0
+                                            ? BoxFit.cover
+                                            : BoxFit.contain),
                       ),
                     ),
                   ),
