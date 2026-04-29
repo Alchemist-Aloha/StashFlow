@@ -201,31 +201,32 @@ class VideoPlaybackControls extends StatelessWidget {
                 ),
               ];
 
-              if (hasSubtitleSource) {
-                final isDefaultSelected = selectedSubtitleLanguage == 'default';
-                items.add(
-                  PopupMenuItem<String?>(
-                    value: 'default',
-                    child: Row(
-                      children: [
-                        Icon(
-                          isDefaultSelected
-                              ? Icons.check_circle
-                              : Icons.circle_outlined,
-                          size: 16,
-                          color: isDefaultSelected
-                              ? colorScheme.primary
-                              : colorScheme.onSurfaceVariant,
-                        ),
-                        Text(
-                          'Default',
-                          style: TextStyle(color: colorScheme.onSurface),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }
+              // The "Default" option is a bit tricky since it depends on the player's internal subtitle source selection logic, which may not be directly exposed. For simplicity, we can choose to show it only when there's a VTT path available, as that is a common case where the player might auto-select subtitles.
+              // if (hasSubtitleSource) {
+              //   final isDefaultSelected = selectedSubtitleLanguage == 'default';
+              //   items.add(
+              //     PopupMenuItem<String?>(
+              //       value: 'default',
+              //       child: Row(
+              //         children: [
+              //           Icon(
+              //             isDefaultSelected
+              //                 ? Icons.check_circle
+              //                 : Icons.circle_outlined,
+              //             size: 16,
+              //             color: isDefaultSelected
+              //                 ? colorScheme.primary
+              //                 : colorScheme.onSurfaceVariant,
+              //           ),
+              //           Text(
+              //             'Default',
+              //             style: TextStyle(color: colorScheme.onSurface),
+              //           ),
+              //         ],
+              //       ),
+              //     ),
+              //   );
+              // }
 
               for (final c in scene.captions) {
                 final selectedLang = selectedSubtitleLanguage ?? '';

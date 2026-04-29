@@ -35,17 +35,18 @@ TextAlign _subtitleTextAlign(String setting) {
   }
 }
 
-Alignment _subtitleHorizontalAlignment(String setting) {
-  switch (setting) {
-    case 'left':
-      return Alignment.centerLeft;
-    case 'right':
-      return Alignment.centerRight;
-    case 'center':
-    default:
-      return Alignment.center;
-  }
-}
+// We can add horizontal alignment for subtitle in the future if needed, but for now we'll just use TextAlign for simplicity and rely on padding to achieve the desired horizontal positioning.
+// Alignment _subtitleHorizontalAlignment(String setting) {
+//   switch (setting) {
+//     case 'left':
+//       return Alignment.centerLeft;
+//     case 'right':
+//       return Alignment.centerRight;
+//     case 'center':
+//     default:
+//       return Alignment.center;
+//   }
+// }
 
 /// A comprehensive video player for Stash scenes.
 ///
@@ -66,8 +67,9 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   /// Local state to track initial player startup for UI feedback.
   bool _isStarting = false;
 
-  final ValueNotifier<Matrix4> _transformationNotifier =
-      ValueNotifier(Matrix4.identity());
+  final ValueNotifier<Matrix4> _transformationNotifier = ValueNotifier(
+    Matrix4.identity(),
+  );
   double _lastScale = 1.0;
   double _lastRotation = 0.0;
 
@@ -88,7 +90,9 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       ..rotateZ(deltaRotation)
       ..scaleByVector3(Vector3(deltaScale, deltaScale, 1.0))
       ..translateByVector3(Vector3(-focalPoint.dx, -focalPoint.dy, 0))
-      ..translateByVector3(Vector3(details.focalPointDelta.dx, details.focalPointDelta.dy, 0));
+      ..translateByVector3(
+        Vector3(details.focalPointDelta.dx, details.focalPointDelta.dy, 0),
+      );
 
     _transformationNotifier.value = matrix * _transformationNotifier.value;
     _lastScale = details.scale;
@@ -121,8 +125,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
 
     // If we're already active, just resume or stay as-is.
     if (playerState.activeScene?.id == widget.scene.id) {
-      if (playerState.player != null &&
-          !playerState.player!.state.playing) {
+      if (playerState.player != null && !playerState.player!.state.playing) {
         playerState.player!.play();
       }
       return;
@@ -176,8 +179,12 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   /// Returns the intended aspect ratio for the video container.
   /// Falls back to 16/9 if metadata is unavailable.
   double _effectiveAspectRatio(VideoController? controller) {
-    if (controller != null && controller.player.state.width != null && controller.player.state.height != null && controller.player.state.height! > 0) {
-      final ratio = controller.player.state.width! / controller.player.state.height!;
+    if (controller != null &&
+        controller.player.state.width != null &&
+        controller.player.state.height != null &&
+        controller.player.state.height! > 0) {
+      final ratio =
+          controller.player.state.width! / controller.player.state.height!;
       // Force square videos to 9/16 portrait on mobile to avoid the "fat" look.
       if ((ratio - 1.0).abs() < 0.01 &&
           (defaultTargetPlatform == TargetPlatform.android ||
@@ -311,7 +318,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                 child: _isStarting
                     ? const CircularProgressIndicator()
                     : IconButton.filledTonal(
-                          tooltip: context.l10n.common_play,
+                        tooltip: context.l10n.common_play,
                         style: IconButton.styleFrom(
                           backgroundColor: colorScheme.surfaceContainerHigh
                               .withValues(alpha: 0.92),
@@ -338,9 +345,10 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
 
     final videoWidth = controller.player.state.width;
     final videoHeight = controller.player.state.height;
-    final isVideoReady = videoWidth != null && videoHeight != null && videoHeight > 0;
+    final isVideoReady =
+        videoWidth != null && videoHeight != null && videoHeight > 0;
     final controllerAspectRatio = isVideoReady
-        ? videoWidth! / videoHeight!
+        ? videoWidth / videoHeight
         : aspectRatio;
 
     // Main playback surface.
@@ -375,7 +383,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                   Positioned.fill(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.4),
+                        color: Colors.black.withValues(alpha: 0.4),
                       ),
                       child: const Center(child: CircularProgressIndicator()),
                     ),
@@ -448,8 +456,9 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
   VideoController? _currentListenedController;
   final List<StreamSubscription> _subscriptions = [];
 
-  final ValueNotifier<Matrix4> _transformationNotifier =
-      ValueNotifier(Matrix4.identity());
+  final ValueNotifier<Matrix4> _transformationNotifier = ValueNotifier(
+    Matrix4.identity(),
+  );
   double _lastScale = 1.0;
   double _lastRotation = 0.0;
 
@@ -470,7 +479,9 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
       ..rotateZ(deltaRotation)
       ..scaleByVector3(Vector3(deltaScale, deltaScale, 1.0))
       ..translateByVector3(Vector3(-focalPoint.dx, -focalPoint.dy, 0))
-      ..translateByVector3(Vector3(details.focalPointDelta.dx, details.focalPointDelta.dy, 0));
+      ..translateByVector3(
+        Vector3(details.focalPointDelta.dx, details.focalPointDelta.dy, 0),
+      );
 
     _transformationNotifier.value = matrix * _transformationNotifier.value;
     _lastScale = details.scale;
@@ -548,7 +559,9 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
         final playerState = ref.read(playerStateProvider);
         final width = controller?.player.state.width;
         final height = controller?.player.state.height;
-        final aspectRatio = (width != null && height != null && height > 0) ? width / height : 16 / 9;
+        final aspectRatio = (width != null && height != null && height > 0)
+            ? width / height
+            : 16 / 9;
         final allowGravity = playerState.videoGravityOrientation;
 
         List<DeviceOrientation> orientations;
@@ -718,7 +731,9 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
       }
       _currentListenedController = controller;
       if (controller != null) {
-        _subscriptions.add(controller.player.stream.playing.listen((_) => _onControllerUpdate()));
+        _subscriptions.add(
+          controller.player.stream.playing.listen((_) => _onControllerUpdate()),
+        );
       }
       // Immediately hydrate the initial value.
       if (controller != null && !_isPopping) {
@@ -761,7 +776,10 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
             builder: (context, constraints) {
               final width = controller.player.state.width;
               final height = controller.player.state.height;
-              final aspectRatio = (width != null && height != null && height > 0) ? width / height : 16 / 9;
+              final aspectRatio =
+                  (width != null && height != null && height > 0)
+                  ? width / height
+                  : 16 / 9;
               return Stack(
                 children: [
                   Positioned.fill(
