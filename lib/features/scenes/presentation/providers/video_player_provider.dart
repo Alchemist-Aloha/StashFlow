@@ -499,8 +499,8 @@ class PlayerState extends _$PlayerState {
     if (currentIndex == -1 || sequence.isEmpty) return;
 
     // Window size: how many scenes ahead to prewarm.
-    // 5 is a good balance between responsiveness and resource usage.
-    const windowSize = 5;
+    // 3 is a good balance between responsiveness and resource usage.
+    const windowSize = 3;
     final startIndex = currentIndex + 1;
     final endIndex = (currentIndex + 1 + windowSize).clamp(0, sequence.length);
 

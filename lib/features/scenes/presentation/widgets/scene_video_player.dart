@@ -241,7 +241,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       }
       final headers = ref.read(mediaPlaybackHeadersProvider);
       
-      // Use the centralized prewarmer which uses Byte-Range GET (0-2048KB)
+      // Use the centralized prewarmer which uses Byte-Range GET (0-10MB)
       // and keeps the connection alive in a pool.
       await prewarmer.prewarm(scene, choice.url, headers: headers);
 

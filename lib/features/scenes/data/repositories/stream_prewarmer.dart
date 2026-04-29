@@ -34,13 +34,13 @@ class StreamPrewarmer extends _$StreamPrewarmer {
 
   /// Initiates a Byte-Range GET request for the given [scene] and [url].
   ///
-  /// [rangeBytes] defaults to 2MB, which is usually enough to fetch
+  /// [rangeBytes] defaults to 10MB, which is usually enough to fetch
   /// the video headers (moov atom) and start the initial buffer.
   Future<void> prewarm(
     Scene scene,
     String url, {
     Map<String, String>? headers,
-    int rangeBytes = 2 * 1024 * 1024,
+    int rangeBytes = 10 * 1024 * 1024,
   }) async {
     if (_activeRequests.containsKey(scene.id)) return;
 
