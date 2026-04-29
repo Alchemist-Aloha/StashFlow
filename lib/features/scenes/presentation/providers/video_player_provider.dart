@@ -55,6 +55,15 @@ class GlobalPlayerState {
   /// Source identifier for the current stream.
   final String? streamSource;
 
+  /// Whether the player is currently buffering.
+  final bool isBuffering;
+
+  /// The width of the video track.
+  final int? videoWidth;
+
+  /// The height of the video track.
+  final int? videoHeight;
+
   /// Latency in milliseconds from initialization start to first frame.
   final int? startupLatencyMs;
 
@@ -113,6 +122,9 @@ class GlobalPlayerState {
     this.streamMimeType,
     this.streamLabel,
     this.streamSource,
+    this.isBuffering = false,
+    this.videoWidth,
+    this.videoHeight,
     this.startupLatencyMs,
     this.prewarmAttempted,
     this.prewarmSucceeded,
@@ -143,6 +155,9 @@ class GlobalPlayerState {
     String? streamMimeType,
     String? streamLabel,
     String? streamSource,
+    bool? isBuffering,
+    int? videoWidth,
+    int? videoHeight,
     int? startupLatencyMs,
     bool? prewarmAttempted,
     bool? prewarmSucceeded,
@@ -176,6 +191,9 @@ class GlobalPlayerState {
           : (streamMimeType ?? this.streamMimeType),
       streamLabel: clearActive ? null : (streamLabel ?? this.streamLabel),
       streamSource: clearActive ? null : (streamSource ?? this.streamSource),
+      isBuffering: isBuffering ?? this.isBuffering,
+      videoWidth: clearActive ? null : (videoWidth ?? this.videoWidth),
+      videoHeight: clearActive ? null : (videoHeight ?? this.videoHeight),
       startupLatencyMs: clearActive
           ? null
           : (startupLatencyMs ?? this.startupLatencyMs),
@@ -722,6 +740,11 @@ class PlayerState extends _$PlayerState {
       _subscriptions.add(
         player.stream.duration.listen((_) => _videoListener()),
       );
+      _subscriptions.add(
+        player.stream.buffering.listen((_) => _videoListener()),
+      );
+      _subscriptions.add(player.stream.width.listen((_) => _videoListener()));
+      _subscriptions.add(player.stream.height.listen((_) => _videoListener()));
       unawaited(player.play());
 
       // Prepare for the next scene in the queue
@@ -827,6 +850,9 @@ class PlayerState extends _$PlayerState {
     _subscriptions.add(player.stream.playing.listen((_) => _videoListener()));
     _subscriptions.add(player.stream.position.listen((_) => _videoListener()));
     _subscriptions.add(player.stream.duration.listen((_) => _videoListener()));
+    _subscriptions.add(player.stream.buffering.listen((_) => _videoListener()));
+    _subscriptions.add(player.stream.width.listen((_) => _videoListener()));
+    _subscriptions.add(player.stream.height.listen((_) => _videoListener()));
 
     if (player.state.playing) {
       _startActivityTracking();
@@ -1079,30 +1105,40 @@ class PlayerState extends _$PlayerState {
         );
       }
 
-      if (player.state.playing != _lastIsPlaying) {
+      final isPlayingNow = player.state.playing;
+      final isBufferingNow = player.state.buffering;
+      final currentWidth = player.state.width;
+      final currentHeight = player.state.height;
+
+      if (isPlayingNow != _lastIsPlaying ||
+          isBufferingNow != state.isBuffering ||
+          currentWidth != state.videoWidth ||
+          currentHeight != state.videoHeight) {
         final wasPlaying = _lastIsPlaying ?? false;
-        final isPlayingNow = player.state.playing;
         _lastIsPlaying = isPlayingNow;
 
-        state = state.copyWith(isPlaying: isPlayingNow);
+        state = state.copyWith(
+          isPlaying: isPlayingNow,
+          isBuffering: isBufferingNow,
+          videoWidth: currentWidth,
+          videoHeight: currentHeight,
+        );
 
-        if (isPlayingNow) {
+        if (isPlayingNow && !wasPlaying) {
           _startActivityTracking();
-        } else if (wasPlaying) {
+        } else if (!isPlayingNow && wasPlaying) {
           _stopActivityTracking();
         }
 
         if (!isTestMode) {
           unawaited(
-            player.state.playing
-                ? WakelockPlus.enable()
-                : WakelockPlus.disable(),
+            isPlayingNow ? WakelockPlus.enable() : WakelockPlus.disable(),
           );
         }
       }
 
       mediaHandler?.updatePlaybackState(
-        isPlaying: player.state.playing,
+        isPlaying: isPlayingNow,
         position: player.state.position,
         bufferedPosition: player.state.buffer,
         speed: player.state.rate,

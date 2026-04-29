@@ -343,13 +343,17 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       );
     }
 
-    final videoWidth = controller.player.state.width;
-    final videoHeight = controller.player.state.height;
+    final videoWidth = playerState.videoWidth;
+    final videoHeight = playerState.videoHeight;
     final isVideoReady =
         videoWidth != null && videoHeight != null && videoHeight > 0;
     final controllerAspectRatio = isVideoReady
         ? videoWidth / videoHeight
         : aspectRatio;
+
+    // Show loading indicator if buffering or if dimensions aren't ready and not playing.
+    final showLoadingIndicator =
+        playerState.isBuffering || (!isVideoReady && !playerState.isPlaying);
 
     // Main playback surface.
     return AspectRatio(
@@ -372,14 +376,14 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                       constraints: constraints,
                       controller: controller,
                       aspectRatio: controllerAspectRatio,
-                      transformationNotifier: _transformationNotifier,
                       fit: (aspectRatio - controllerAspectRatio).abs() > 0.05
                           ? BoxFit.fill
                           : BoxFit.contain,
+                      transformationNotifier: _transformationNotifier,
                     ),
                   ),
                 ),
-                if (!isVideoReady)
+                if (showLoadingIndicator)
                   Positioned.fill(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
@@ -774,12 +778,17 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
           tag: 'scene_player_${widget.sceneId}',
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final width = controller.player.state.width;
-              final height = controller.player.state.height;
-              final aspectRatio =
-                  (width != null && height != null && height > 0)
-                  ? width / height
+              final videoWidth = playerState.videoWidth;
+              final videoHeight = playerState.videoHeight;
+              final isVideoReady =
+                  videoWidth != null && videoHeight != null && videoHeight > 0;
+              final aspectRatio = isVideoReady
+                  ? videoWidth / videoHeight
                   : 16 / 9;
+
+              final showLoadingIndicator = playerState.isBuffering ||
+                  (!isVideoReady && !playerState.isPlaying);
+
               return Stack(
                 children: [
                   Positioned.fill(
@@ -801,6 +810,15 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                       ),
                     ),
                   ),
+                  if (showLoadingIndicator)
+                    Positioned.fill(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.4),
+                        ),
+                        child: const Center(child: CircularProgressIndicator()),
+                      ),
+                    ),
                   // Don't remove. Customizable subtitle rendering can be implemented here in the future if we want to support advanced features like karaoke or custom fonts. For now, we rely on native subtitles for better performance and compatibility.
                   // if (playerState.selectedSubtitleLanguage != null &&
                   //     playerState.selectedSubtitleLanguage != 'none')
