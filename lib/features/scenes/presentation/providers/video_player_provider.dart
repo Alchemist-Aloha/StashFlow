@@ -386,61 +386,40 @@ class PlayerState extends _$PlayerState {
   }
 
   Future<void> setSubtitle(String? languageCode, {String? captionType}) async {
-    if (!ref.mounted) return;
+  if (!ref.mounted) return;
     final scene = state.activeScene;
-    if (scene == null) return;
-
-    if (state.selectedSubtitleLanguage == languageCode &&
-        state.selectedSubtitleType == captionType) {
-      return;
-    }
-
+    if (scene == null || state.player == null) return;
     AppLogStore.instance.add(
       'PlayerState setSubtitle: $languageCode (type=$captionType)',
       source: 'player_provider',
     );
+    // 1. Update the UI state first
+    final isNone = languageCode == null || languageCode == 'none';
+    state = state.copyWith(
+      selectedSubtitleLanguage: isNone ? 'none' : languageCode,
+      selectedSubtitleType: captionType,
+    );
 
-    // If we're disabling subtitles, we set it to 'none' to distinguish from
-    // the null (unselected) state which triggers default auto-selection.
-    if (languageCode == null || languageCode == 'none') {
-      state = state.copyWith(
-        selectedSubtitleLanguage: 'none',
-        selectedSubtitleType: null,
-      );
+    // 2. Switch the track dynamically
+    final player = state.player!;
+    
+    if (isNone) {
+      // Disable subtitles
+      await player.setSubtitleTrack(SubtitleTrack.no());
     } else {
-      state = state.copyWith(
-        selectedSubtitleLanguage: languageCode,
-        selectedSubtitleType: captionType,
-      );
-    }
-
-    // Reload the current scene to apply subtitle change
-    final player = state.player;
-    if (player != null) {
-      final currentPosition = player.state.position;
-      final isPlaying = player.state.playing;
-      final streamUrl = player.state.playlist.medias.isNotEmpty
-          ? player.state.playlist.medias.first.uri
-          : '';
-
-      // We re-run playScene which will handle creating a new controller with the correct subtitle.
-      // We pass the current state fields to preserve them.
-      await playScene(
-        scene,
-        streamUrl,
-        mimeType: state.streamMimeType,
-        streamLabel: state.streamLabel,
-        streamSource: state.streamSource,
-        httpHeaders: ref.read(mediaPlaybackHeadersProvider),
-        prewarmAttempted: state.prewarmAttempted,
-        prewarmSucceeded: state.prewarmSucceeded,
-        prewarmLatencyMs: state.prewarmLatencyMs,
-        initialPosition: currentPosition,
-        force: true,
-      );
-
-      if (!isPlaying) {
-        state.player?.pause();
+      // Find the track that matches your languageCode
+      // Note: You might need to map languageCode to the actual Track ID 
+      // available in player.state.tracks.subtitle
+      try {
+        final availableTracks = player.state.tracks.subtitle;
+        final targetTrack = availableTracks.firstWhere(
+          (t) => t.language == languageCode || t.title == languageCode,
+          orElse: () => SubtitleTrack.auto(),
+        );
+        
+        await player.setSubtitleTrack(targetTrack);
+      } catch (e) {
+        AppLogStore.instance.add('Failed to switch track: $e');
       }
     }
   }
