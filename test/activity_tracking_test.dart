@@ -97,16 +97,15 @@ void main() {
       streamMimeType: 'video/mp4',
       streamLabel: 'Direct',
       streamSource: 'source1',
-      autoplayNext: true,
-    );
-    
-    final newState = state.copyWith(clearActive: true);
-    
-    expect(newState.activeScene, isNull);
-    expect(newState.streamMimeType, isNull);
-    expect(newState.streamLabel, isNull);
-    expect(newState.streamSource, isNull);
-    // User preferences should remain
-    expect(newState.autoplayNext, isTrue);
-  });
-}
+      playEndBehavior: VideoEndBehavior.next,
+      );
+
+      final newState = state.copyWith(clearActive: true);
+
+      expect(newState.activeScene, isNull);
+      expect(newState.streamMimeType, isNull);
+      expect(newState.streamLabel, isNull);
+      expect(newState.streamSource, isNull);
+      // User preferences should remain
+      expect(newState.playEndBehavior, VideoEndBehavior.next);
+      });}

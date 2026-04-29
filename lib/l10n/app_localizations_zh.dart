@@ -1266,6 +1266,21 @@ class AppLocalizationsZh extends AppLocalizations {
       '关闭时，播放将直接使用 paths.stream';
 
   @override
+  String get settings_playback_end_behavior => '播放结束行为';
+
+  @override
+  String get settings_playback_end_behavior_subtitle => '当前视频播放结束时的操作';
+
+  @override
+  String get settings_playback_end_behavior_stop => '停止';
+
+  @override
+  String get settings_playback_end_behavior_loop => '循环播放当前场景';
+
+  @override
+  String get settings_playback_end_behavior_next => '播放下一个场景';
+
+  @override
   String get settings_playback_autoplay => '自动播放下一个场景';
 
   @override
@@ -2911,6 +2926,21 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get settings_playback_prefer_streams_subtitle =>
       '关闭时，播放将直接使用 paths.stream';
+
+  @override
+  String get settings_playback_end_behavior => '播放结束行为';
+
+  @override
+  String get settings_playback_end_behavior_subtitle => '当前视频播放结束时的操作';
+
+  @override
+  String get settings_playback_end_behavior_stop => '停止';
+
+  @override
+  String get settings_playback_end_behavior_loop => '循环播放当前场景';
+
+  @override
+  String get settings_playback_end_behavior_next => '播放下一个场景';
 
   @override
   String get settings_playback_autoplay => '自动播放下一个场景';

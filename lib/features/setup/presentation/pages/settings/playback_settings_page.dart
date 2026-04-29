@@ -16,7 +16,7 @@ class PlaybackSettingsPage extends ConsumerStatefulWidget {
 
 class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   static const _preferSceneStreamsKey = 'prefer_scene_streams';
-  static const _autoplayNextKey = 'autoplay_next';
+  static const _playEndBehaviorKey = 'video_play_end_behavior';
   static const _useDoubleTapSeekKey = 'video_use_double_tap_seek';
   static const _enableBackgroundPlaybackKey = 'video_background_playback';
   static const _enableNativePipKey = 'video_native_pip';
@@ -28,7 +28,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   static const _subtitleTextAlignmentKey = 'subtitle_text_alignment';
 
   bool _preferSceneStreams = true;
-  bool _autoplayNext = false;
+  VideoEndBehavior _playEndBehavior = VideoEndBehavior.stop;
   bool _useDoubleTapSeek = true;
   bool _enableBackgroundPlayback = false;
   bool _enableNativePip = false;
@@ -48,7 +48,20 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   Future<void> _load() async {
     final prefs = ref.read(sharedPreferencesProvider);
     _preferSceneStreams = prefs.getBool(_preferSceneStreamsKey) ?? true;
-    _autoplayNext = prefs.getBool(_autoplayNextKey) ?? false;
+
+    final endBehaviorStr = prefs.getString(_playEndBehaviorKey);
+    if (endBehaviorStr != null) {
+      _playEndBehavior = VideoEndBehavior.values.firstWhere(
+        (e) => e.name == endBehaviorStr,
+        orElse: () => VideoEndBehavior.stop,
+      );
+    } else {
+      // Migrate from autoplayNext
+      final autoplayNext = prefs.getBool('autoplay_next') ?? false;
+      _playEndBehavior =
+          autoplayNext ? VideoEndBehavior.next : VideoEndBehavior.stop;
+    }
+
     _useDoubleTapSeek = prefs.getBool(_useDoubleTapSeekKey) ?? true;
     _enableBackgroundPlayback =
         prefs.getBool(_enableBackgroundPlaybackKey) ?? false;
@@ -69,7 +82,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   Future<void> _saveToggleSettings() async {
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setBool(_preferSceneStreamsKey, _preferSceneStreams);
-    await prefs.setBool(_autoplayNextKey, _autoplayNext);
+    await prefs.setString(_playEndBehaviorKey, _playEndBehavior.name);
     await prefs.setBool(_useDoubleTapSeekKey, _useDoubleTapSeek);
     await prefs.setBool(
       _enableBackgroundPlaybackKey,
@@ -92,7 +105,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     await prefs.setString(_subtitleTextAlignmentKey, _subtitleTextAlignment);
 
     final playerStateNotifier = ref.read(playerStateProvider.notifier);
-    playerStateNotifier.setAutoplayNext(_autoplayNext);
+    playerStateNotifier.setPlayEndBehavior(_playEndBehavior);
     playerStateNotifier.setUseDoubleTapSeek(_useDoubleTapSeek);
     playerStateNotifier.setEnableBackgroundPlayback(_enableBackgroundPlayback);
     playerStateNotifier.setEnableNativePip(_enableNativePip);
@@ -138,18 +151,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                           },
                         ),
                         Divider(height: context.dimensions.spacingLarge),
-                        SwitchListTile.adaptive(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(context.l10n.settings_playback_autoplay),
-                          subtitle: Text(
-                            context.l10n.settings_playback_autoplay_subtitle,
-                          ),
-                          value: _autoplayNext,
-                          onChanged: (value) async {
-                            setState(() => _autoplayNext = value);
-                            await _saveToggleSettings();
-                          },
-                        ),
+                        _buildEndBehaviorSelector(),
                         Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
@@ -223,6 +225,32 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildEndBehaviorSelector() {
+    final behaviors = [
+      (VideoEndBehavior.stop, context.l10n.settings_playback_end_behavior_stop),
+      (VideoEndBehavior.loop, context.l10n.settings_playback_end_behavior_loop),
+      (VideoEndBehavior.next, context.l10n.settings_playback_end_behavior_next),
+    ];
+
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(context.l10n.settings_playback_end_behavior),
+      subtitle: Text(context.l10n.settings_playback_end_behavior_subtitle),
+      trailing: DropdownButton<VideoEndBehavior>(
+        value: _playEndBehavior,
+        onChanged: (value) async {
+          if (value != null) {
+            setState(() => _playEndBehavior = value);
+            await _saveToggleSettings();
+          }
+        },
+        items: behaviors
+            .map((b) => DropdownMenuItem(value: b.$1, child: Text(b.$2)))
+            .toList(),
+      ),
     );
   }
 

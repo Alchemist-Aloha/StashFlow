@@ -1309,6 +1309,22 @@ class AppLocalizationsEn extends AppLocalizations {
       'When off, playback directly uses paths.stream';
 
   @override
+  String get settings_playback_end_behavior => 'Play End Behavior';
+
+  @override
+  String get settings_playback_end_behavior_subtitle =>
+      'What to do when current playback ends';
+
+  @override
+  String get settings_playback_end_behavior_stop => 'Stop';
+
+  @override
+  String get settings_playback_end_behavior_loop => 'Loop current scene';
+
+  @override
+  String get settings_playback_end_behavior_next => 'Play next scene';
+
+  @override
   String get settings_playback_autoplay => 'Autoplay Next Scene';
 
   @override

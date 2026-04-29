@@ -2490,6 +2490,36 @@ abstract class AppLocalizations {
   /// **'When off, playback directly uses paths.stream'**
   String get settings_playback_prefer_streams_subtitle;
 
+  /// No description provided for @settings_playback_end_behavior.
+  ///
+  /// In en, this message translates to:
+  /// **'Play End Behavior'**
+  String get settings_playback_end_behavior;
+
+  /// No description provided for @settings_playback_end_behavior_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What to do when current playback ends'**
+  String get settings_playback_end_behavior_subtitle;
+
+  /// No description provided for @settings_playback_end_behavior_stop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get settings_playback_end_behavior_stop;
+
+  /// No description provided for @settings_playback_end_behavior_loop.
+  ///
+  /// In en, this message translates to:
+  /// **'Loop current scene'**
+  String get settings_playback_end_behavior_loop;
+
+  /// No description provided for @settings_playback_end_behavior_next.
+  ///
+  /// In en, this message translates to:
+  /// **'Play next scene'**
+  String get settings_playback_end_behavior_next;
+
   /// No description provided for @settings_playback_autoplay.
   ///
   /// In en, this message translates to:

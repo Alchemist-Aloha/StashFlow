@@ -47,7 +47,7 @@ void main() {
       expect(state.prewarmAttempted, isNull);
       expect(state.prewarmSucceeded, isNull);
       expect(state.prewarmLatencyMs, isNull);
-      expect(state.autoplayNext, isFalse);
+      expect(state.playEndBehavior, VideoEndBehavior.stop);
       expect(state.showVideoDebugInfo, isFalse);
       expect(state.useDoubleTapSeek, isTrue);
       expect(state.enableBackgroundPlayback, isFalse);
@@ -70,7 +70,7 @@ void main() {
         prewarmAttempted: true,
         prewarmSucceeded: true,
         prewarmLatencyMs: 50,
-        autoplayNext: true,
+        playEndBehavior: VideoEndBehavior.next,
         showVideoDebugInfo: true,
         useDoubleTapSeek: false,
         enableBackgroundPlayback: true,
@@ -89,6 +89,7 @@ void main() {
       expect(state.prewarmAttempted, isTrue);
       expect(state.prewarmSucceeded, isTrue);
       expect(state.prewarmLatencyMs, equals(50));
+      expect(state.playEndBehavior, VideoEndBehavior.next);
       expect(state.autoplayNext, isTrue);
       expect(state.showVideoDebugInfo, isTrue);
       expect(state.useDoubleTapSeek, isFalse);
@@ -104,7 +105,7 @@ void main() {
           activeScene: scene,
           isPlaying: true,
           streamMimeType: 'video/mp4',
-          autoplayNext: true,
+          playEndBehavior: VideoEndBehavior.next,
         );
 
         final newState = state.copyWith();
@@ -112,6 +113,7 @@ void main() {
         expect(newState.activeScene, equals(scene));
         expect(newState.isPlaying, isTrue);
         expect(newState.streamMimeType, equals('video/mp4'));
+        expect(newState.playEndBehavior, VideoEndBehavior.next);
         expect(newState.autoplayNext, isTrue);
       });
 
@@ -143,7 +145,7 @@ void main() {
           prewarmAttempted: true,
           prewarmSucceeded: true,
           prewarmLatencyMs: 50,
-          autoplayNext: true, // Should remain true
+          playEndBehavior: VideoEndBehavior.next, // Should remain next
         );
 
         final newState = state.copyWith(clearActive: true);
@@ -162,6 +164,7 @@ void main() {
 
         // Retained fields
         expect(newState.isPlaying, isTrue);
+        expect(newState.playEndBehavior, VideoEndBehavior.next);
         expect(newState.autoplayNext, isTrue);
       });
     });

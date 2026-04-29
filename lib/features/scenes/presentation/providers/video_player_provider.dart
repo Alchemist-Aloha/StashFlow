@@ -24,6 +24,12 @@ import 'package:media_kit_video/media_kit_video.dart';
 
 part 'video_player_provider.g.dart';
 
+enum VideoEndBehavior {
+  stop,
+  loop,
+  next,
+}
+
 /// Represents the global state of the video player.
 ///
 /// This state is shared across the entire application, allowing the mini-player,
@@ -77,8 +83,8 @@ class GlobalPlayerState {
   /// Latency of the prewarm attempt in milliseconds.
   final int? prewarmLatencyMs;
 
-  /// User preference: whether to automatically play the next scene when current ends.
-  final bool autoplayNext;
+  /// User preference: how to behave when current playback ends.
+  final VideoEndBehavior playEndBehavior;
 
   /// User preference: whether to show technical overlays on the video.
   final bool showVideoDebugInfo;
@@ -130,7 +136,7 @@ class GlobalPlayerState {
     this.prewarmAttempted,
     this.prewarmSucceeded,
     this.prewarmLatencyMs,
-    this.autoplayNext = false,
+    this.playEndBehavior = VideoEndBehavior.stop,
     this.showVideoDebugInfo = false,
     this.useDoubleTapSeek = true,
     this.enableBackgroundPlayback = false,
@@ -143,6 +149,10 @@ class GlobalPlayerState {
     this.subtitlePositionBottomRatio = 0.15,
     this.subtitleTextAlignment = 'center',
   });
+
+  /// User preference: whether to automatically play the next scene when current ends.
+  /// (Deprecated: Use [playEndBehavior] instead)
+  bool get autoplayNext => playEndBehavior == VideoEndBehavior.next;
 
   /// Creates a copy of the state with updated fields.
   /// Use [clearActive] to explicitly reset the active scene and controller.
@@ -163,6 +173,7 @@ class GlobalPlayerState {
     bool? prewarmAttempted,
     bool? prewarmSucceeded,
     int? prewarmLatencyMs,
+    VideoEndBehavior? playEndBehavior,
     bool? autoplayNext,
     bool? showVideoDebugInfo,
     bool? useDoubleTapSeek,
@@ -207,7 +218,11 @@ class GlobalPlayerState {
       prewarmLatencyMs: clearActive
           ? null
           : (prewarmLatencyMs ?? this.prewarmLatencyMs),
-      autoplayNext: autoplayNext ?? this.autoplayNext,
+      playEndBehavior:
+          playEndBehavior ??
+          (autoplayNext != null
+              ? (autoplayNext ? VideoEndBehavior.next : VideoEndBehavior.stop)
+              : this.playEndBehavior),
       showVideoDebugInfo: showVideoDebugInfo ?? this.showVideoDebugInfo,
       useDoubleTapSeek: useDoubleTapSeek ?? this.useDoubleTapSeek,
       enableBackgroundPlayback:
@@ -242,6 +257,7 @@ class GlobalPlayerState {
 @riverpod
 class PlayerState extends _$PlayerState {
   static const _autoplayNextKey = 'autoplay_next';
+  static const _playEndBehaviorKey = 'video_play_end_behavior';
   static const _showVideoDebugInfoKey = 'show_video_debug_info';
   static const _useDoubleTapSeekKey = 'video_use_double_tap_seek';
   static const _enableBackgroundPlaybackKey = 'video_background_playback';
@@ -324,8 +340,24 @@ class PlayerState extends _$PlayerState {
     };
 
     final prefs = ref.read(sharedPreferencesProvider);
+
+    // Initial load of preferences
+    final autoplayNext = prefs.getBool(_autoplayNextKey) ?? false;
+    final endBehaviorStr = prefs.getString(_playEndBehaviorKey);
+    VideoEndBehavior playEndBehavior;
+    if (endBehaviorStr != null) {
+      playEndBehavior = VideoEndBehavior.values.firstWhere(
+        (e) => e.name == endBehaviorStr,
+        orElse: () => VideoEndBehavior.stop,
+      );
+    } else {
+      // Migrate from autoplayNext
+      playEndBehavior =
+          autoplayNext ? VideoEndBehavior.next : VideoEndBehavior.stop;
+    }
+
     return GlobalPlayerState(
-      autoplayNext: prefs.getBool(_autoplayNextKey) ?? false,
+      playEndBehavior: playEndBehavior,
       showVideoDebugInfo: prefs.getBool(_showVideoDebugInfoKey) ?? false,
       useDoubleTapSeek: prefs.getBool(_useDoubleTapSeekKey) ?? true,
       enableBackgroundPlayback:
@@ -349,9 +381,15 @@ class PlayerState extends _$PlayerState {
   }
 
   void setAutoplayNext(bool value) {
-    state = state.copyWith(autoplayNext: value);
+    setPlayEndBehavior(value ? VideoEndBehavior.next : VideoEndBehavior.stop);
+  }
+
+  void setPlayEndBehavior(VideoEndBehavior behavior) {
+    state = state.copyWith(playEndBehavior: behavior);
     final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setBool(_autoplayNextKey, value);
+    prefs.setString(_playEndBehaviorKey, behavior.name);
+    // Sync legacy key
+    prefs.setBool(_autoplayNextKey, behavior == VideoEndBehavior.next);
   }
 
   void setShowVideoDebugInfo(bool value) {
@@ -679,7 +717,7 @@ class PlayerState extends _$PlayerState {
       prewarmAttempted: prewarmAttempted,
       prewarmSucceeded: prewarmSucceeded,
       prewarmLatencyMs: prewarmLatencyMs,
-      autoplayNext: state.autoplayNext,
+      playEndBehavior: state.playEndBehavior,
       showVideoDebugInfo: state.showVideoDebugInfo,
       useDoubleTapSeek: state.useDoubleTapSeek,
       enableBackgroundPlayback: state.enableBackgroundPlayback,
@@ -922,7 +960,7 @@ class PlayerState extends _$PlayerState {
     if (!ref.mounted) return;
 
     state = GlobalPlayerState(
-      autoplayNext: state.autoplayNext,
+      playEndBehavior: state.playEndBehavior,
       showVideoDebugInfo: state.showVideoDebugInfo,
       useDoubleTapSeek: state.useDoubleTapSeek,
       enableBackgroundPlayback: state.enableBackgroundPlayback,
@@ -1174,14 +1212,26 @@ class PlayerState extends _$PlayerState {
 
   void _handleVideoFinished() {
     AppLogStore.instance.add(
-      'PlayerState _handleVideoFinished: active=${state.activeScene?.id} autoplay=${state.autoplayNext}',
+      'PlayerState _handleVideoFinished: active=${state.activeScene?.id} behavior=${state.playEndBehavior}',
       source: 'player_provider',
     );
-    if (state.isFullScreen) {
-      setFullScreen(false);
-    }
-    if (state.autoplayNext) {
-      playNext();
+
+    switch (state.playEndBehavior) {
+      case VideoEndBehavior.stop:
+        if (state.isFullScreen) {
+          setFullScreen(false);
+        }
+        break;
+      case VideoEndBehavior.loop:
+        state.player?.seek(Duration.zero);
+        state.player?.play();
+        break;
+      case VideoEndBehavior.next:
+        if (state.isFullScreen) {
+          setFullScreen(false);
+        }
+        playNext();
+        break;
     }
   }
 

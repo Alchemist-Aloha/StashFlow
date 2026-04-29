@@ -1278,6 +1278,22 @@ class AppLocalizationsKo extends AppLocalizations {
       '꺼져 있으면 재생 시 paths.stream을 직접 사용합니다';
 
   @override
+  String get settings_playback_end_behavior => 'Play End Behavior';
+
+  @override
+  String get settings_playback_end_behavior_subtitle =>
+      'What to do when current playback ends';
+
+  @override
+  String get settings_playback_end_behavior_stop => 'Stop';
+
+  @override
+  String get settings_playback_end_behavior_loop => 'Loop current scene';
+
+  @override
+  String get settings_playback_end_behavior_next => 'Play next scene';
+
+  @override
   String get settings_playback_autoplay => '다음 장면 자동 재생';
 
   @override

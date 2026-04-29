@@ -240,9 +240,11 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
       await player.open(Media(choice.url, httpHeaders: headers), play: false);
 
-      final autoplayNext = ref.read(playerStateProvider).autoplayNext;
+      final endBehavior = ref.read(playerStateProvider).playEndBehavior;
       await player.setPlaylistMode(
-        autoplayNext ? PlaylistMode.none : PlaylistMode.loop,
+        endBehavior == VideoEndBehavior.loop
+            ? PlaylistMode.loop
+            : PlaylistMode.none,
       );
 
       if (mounted) {
