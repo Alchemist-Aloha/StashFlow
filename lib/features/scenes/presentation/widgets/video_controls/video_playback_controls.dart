@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../../../../core/utils/l10n_extensions.dart';
 import '../../../../../core/presentation/theme/app_theme.dart';
-import 'package:video_player/video_player.dart';
+import '../../../../../core/presentation/video/app_video_controller.dart';
 
 import '../../../../../core/utils/pip_mode.dart';
 import '../../../domain/entities/scene.dart';
@@ -36,7 +36,7 @@ class VideoPlaybackControls extends StatelessWidget {
     required this.isSpeedSliderVisible,
   });
 
-  final VideoPlayerController controller;
+  final AppVideoController controller;
   final Scene scene;
   final bool isPlaying;
   final double playbackSpeed;

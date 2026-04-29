@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:clock/clock.dart';
-import 'package:video_player/video_player.dart';
+import 'package:video_player/video_player.dart' as vp;
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:http/http.dart' as http;
 import '../../domain/entities/scene.dart';
@@ -22,6 +22,7 @@ import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/presentation/providers/desktop_settings_provider.dart';
+import '../../../../core/presentation/video/app_video_controller.dart';
 
 part 'video_player_provider.g.dart';
 
@@ -33,8 +34,8 @@ class GlobalPlayerState {
   /// The scene that is currently loaded or playing.
   final Scene? activeScene;
 
-  /// The underlying controller from the `video_player` package.
-  final VideoPlayerController? videoPlayerController;
+  /// The underlying video controller.
+  final AppVideoController? videoPlayerController;
 
   /// Whether the video is currently playing.
   final bool isPlaying;
@@ -133,7 +134,7 @@ class GlobalPlayerState {
   /// Use [clearActive] to explicitly reset the active scene and controller.
   GlobalPlayerState copyWith({
     Scene? activeScene,
-    VideoPlayerController? videoPlayerController,
+    AppVideoController? videoPlayerController,
     bool? isPlaying,
     bool? isFullScreen,
     bool? isInPipMode,
@@ -231,7 +232,7 @@ class PlayerState extends _$PlayerState {
   static const _subtitleTextAlignmentKey = 'subtitle_text_alignment';
 
   /// Internal reference used during disposal to ensure we clean up the right controller.
-  VideoPlayerController? _videoControllerRef;
+  AppVideoController? _videoControllerRef;
 
   /// Internal reference used during disposal to ensure we clean up the right scene activity.
   Scene? _activeSceneRef;
@@ -564,7 +565,7 @@ class PlayerState extends _$PlayerState {
 
     // ...
     // Later in playScene, when creating the controller:
-    Future<ClosedCaptionFile>? closedCaptionFile;
+    Future<vp.ClosedCaptionFile>? closedCaptionFile;
     if (effectiveSubtitleLanguage != null &&
         effectiveSubtitleLanguage != 'none' &&
         hasSubtitleSource) {
@@ -622,14 +623,12 @@ class PlayerState extends _$PlayerState {
       await _disposeControllers();
     }
 
-    final videoController = VideoPlayerController.networkUrl(
+    final videoController = VideoPlayerControllerAdapter.networkUrl(
       Uri.parse(effectiveStreamUrl),
       httpHeaders: httpHeaders ?? const <String, String>{},
-      videoPlayerOptions: VideoPlayerOptions(
-        allowBackgroundPlayback: allowBackgroundPlayback,
-        mixWithOthers: true,
-      ),
       closedCaptionFile: closedCaptionFile,
+      allowBackgroundPlayback: allowBackgroundPlayback,
+      mixWithOthers: true,
     );
     _videoControllerRef = videoController;
     _activeSceneRef = scene;
@@ -733,12 +732,12 @@ class PlayerState extends _$PlayerState {
     }
   }
 
-  /// Takes over an existing [VideoPlayerController] for a given [Scene].
+  /// Takes over an existing [AppVideoController] for a given [Scene].
   ///
   /// This is used for seamless handoff from TikTok view to immersive views.
   Future<void> attachController(
     Scene scene,
-    VideoPlayerController controller, {
+    AppVideoController controller, {
     String? streamMimeType,
     String? streamLabel,
     String? streamSource,
@@ -875,7 +874,7 @@ class PlayerState extends _$PlayerState {
 
   Future<void> _disposeControllers({
     Scene? scene,
-    VideoPlayerController? controller,
+    AppVideoController? controller,
     SceneRepository? repository,
   }) async {
     // Save final activity before disposing
@@ -961,7 +960,7 @@ class PlayerState extends _$PlayerState {
 
   Future<void> _stopActivityTracking({
     Scene? scene,
-    VideoPlayerController? controller,
+    AppVideoController? controller,
     SceneRepository? repository,
   }) async {
     _playCountTimer?.cancel();
@@ -987,7 +986,7 @@ class PlayerState extends _$PlayerState {
 
   Future<void> _saveActivity({
     Scene? scene,
-    VideoPlayerController? controller,
+    AppVideoController? controller,
     SceneRepository? repository,
   }) async {
     final effectiveScene = scene ?? (ref.mounted ? state.activeScene : null);
@@ -1106,7 +1105,7 @@ class PlayerState extends _$PlayerState {
     }
   }
 
-  Future<ClosedCaptionFile> _loadSubtitles(
+  Future<vp.ClosedCaptionFile> _loadSubtitles(
     String url, {
     String? fallbackVttUrl,
   }) async {
@@ -1183,7 +1182,7 @@ class PlayerState extends _$PlayerState {
             'PlayerState _loadSubtitles: received empty body bytes',
             source: 'player_provider',
           );
-          return WebVTTCaptionFile('');
+          return vp.WebVTTCaptionFile('');
         }
 
         // Use utf8.decode with allowMalformed: true to be resilient
@@ -1194,7 +1193,7 @@ class PlayerState extends _$PlayerState {
             'PlayerState _loadSubtitles: received only whitespace',
             source: 'player_provider',
           );
-          return WebVTTCaptionFile('');
+          return vp.WebVTTCaptionFile('');
         }
 
         // Filter out thumbnail/storyboard lines (e.g. sprite.jpg#xywh=...)
@@ -1213,19 +1212,19 @@ class PlayerState extends _$PlayerState {
         // SRT often starts with 1 and a newline, or has --> but not WEBVTT
         final isSrt = !isVtt && content.contains('-->');
 
-        ClosedCaptionFile captionFile;
+        vp.ClosedCaptionFile captionFile;
         if (isSrt) {
           AppLogStore.instance.add(
             'PlayerState _loadSubtitles: detected SRT format',
             source: 'player_provider',
           );
-          captionFile = SubRipCaptionFile(content);
+          captionFile = vp.SubRipCaptionFile(content);
         } else {
           AppLogStore.instance.add(
             'PlayerState _loadSubtitles: detected VTT format',
             source: 'player_provider',
           );
-          captionFile = WebVTTCaptionFile(content);
+          captionFile = vp.WebVTTCaptionFile(content);
         }
 
         AppLogStore.instance.add(
@@ -1243,7 +1242,7 @@ class PlayerState extends _$PlayerState {
         source: 'player_provider',
       );
       // Return empty file on error to avoid breaking playback
-      return WebVTTCaptionFile('');
+      return vp.WebVTTCaptionFile('');
     }
   }
 

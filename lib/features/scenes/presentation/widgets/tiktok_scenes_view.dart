@@ -5,7 +5,6 @@ import 'package:clock/clock.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:video_player/video_player.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -21,6 +20,7 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
 import 'transformable_video_surface.dart';
+import '../../../../core/presentation/video/app_video_controller.dart';
 
 class FullScreenMode extends Notifier<bool> {
   @override
@@ -36,7 +36,7 @@ final fullScreenModeProvider = NotifierProvider<FullScreenMode, bool>(
 
 /// A vertical-scrolling "TikTok-style" view for discovering scenes.
 ///
-/// This widget manages its own pool of [VideoPlayerController]s to ensure
+/// This widget manages its own pool of [AppVideoController]s to ensure
 /// smooth scrolling and low-latency playback as the user swipes through videos.
 ///
 /// Key responsibilities:
@@ -59,7 +59,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
   int _currentIndex = 0;
 
   /// Active video controllers indexed by scene ID.
-  final Map<String, VideoPlayerController> _controllers = {};
+  final Map<String, AppVideoController> _controllers = {};
 
   /// Initialization futures to prevent redundant setup calls.
   final Map<String, Future<void>> _initFutures = {};
@@ -249,13 +249,11 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
       final headers = ref.read(mediaPlaybackHeadersProvider);
       final allowBackgroundPlayback =
           ref.read(playerStateProvider).enableBackgroundPlayback;
-      final controller = VideoPlayerController.networkUrl(
+      final controller = VideoPlayerControllerAdapter.networkUrl(
         Uri.parse(choice.url),
         httpHeaders: headers,
-        videoPlayerOptions: VideoPlayerOptions(
-          allowBackgroundPlayback: allowBackgroundPlayback,
-          mixWithOthers: true,
-        ),
+        allowBackgroundPlayback: allowBackgroundPlayback,
+        mixWithOthers: true,
       );
 
       _controllers[scene.id] = controller;
@@ -311,7 +309,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
             // Use global controller for the active item to ensure seamless transitions
             // to/from DetailsPage where the global player is used.
-            VideoPlayerController? controller;
+            AppVideoController? controller;
             if (isCurrent && playerState.activeScene?.id == scene.id) {
               controller = playerState.videoPlayerController;
             } else {
@@ -337,7 +335,7 @@ class CircularProgressContext extends StatelessWidget {
 
 class TiktokSceneItem extends ConsumerStatefulWidget {
   final Scene scene;
-  final VideoPlayerController? controller;
+  final AppVideoController? controller;
 
   const TiktokSceneItem({required this.scene, this.controller, super.key});
 

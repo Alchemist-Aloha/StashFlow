@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
+import '../../../../core/presentation/video/app_video_controller.dart';
+import '../../../../core/presentation/video/app_video_surface.dart';
 
 class TransformableVideoSurface extends StatefulWidget {
   const TransformableVideoSurface({
@@ -10,7 +11,7 @@ class TransformableVideoSurface extends StatefulWidget {
     super.key,
   });
 
-  final VideoPlayerController controller;
+  final AppVideoController controller;
   final double aspectRatio;
   final BoxFit fit;
   
@@ -59,7 +60,7 @@ class _TransformableVideoSurfaceState extends State<TransformableVideoSurface> {
 
   @override
   Widget build(BuildContext context) {
-    Widget content = VideoPlayer(widget.controller);
+    Widget content = AppVideoSurface(controller: widget.controller);
 
     if (widget.fit == BoxFit.fill) {
       content = SizedBox.expand(child: content);

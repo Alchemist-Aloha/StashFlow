@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:video_player/video_player.dart';
 import 'package:flutter/gestures.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 import 'package:go_router/go_router.dart';
@@ -27,6 +26,7 @@ import '../providers/video_player_provider.dart';
 import '../providers/playback_queue_provider.dart';
 import 'scrubbing_preview.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
+import '../../../../core/presentation/video/app_video_controller.dart';
 
 class NativeVideoControls extends ConsumerStatefulWidget {
   const NativeVideoControls({
@@ -42,7 +42,7 @@ class NativeVideoControls extends ConsumerStatefulWidget {
     super.key,
   });
 
-  final VideoPlayerController controller;
+  final AppVideoController controller;
   final bool useDoubleTapSeek;
   final bool enableNativePip;
   final VoidCallback? onFullScreenToggle;

@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:video_player/video_player.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 import 'package:window_manager/window_manager.dart';
 
@@ -22,6 +21,7 @@ import '../../../../core/utils/web_helpers.dart';
 import 'native_video_controls.dart';
 import 'scene_subtitle_overlay.dart';
 import 'transformable_video_surface.dart';
+import '../../../../core/presentation/video/app_video_controller.dart';
 
 TextAlign _subtitleTextAlign(String setting) {
   switch (setting) {
@@ -175,7 +175,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
 
   /// Returns the intended aspect ratio for the video container.
   /// Falls back to 16/9 if metadata is unavailable.
-  double _effectiveAspectRatio(VideoPlayerController? controller) {
+  double _effectiveAspectRatio(AppVideoController? controller) {
     if (controller != null && controller.value.isInitialized) {
       final ratio = controller.value.aspectRatio;
       // Force square videos to 9/16 portrait on mobile to avoid the "fat" look.
@@ -360,11 +360,11 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                 ),
                 if (playerState.selectedSubtitleLanguage != null &&
                     playerState.selectedSubtitleLanguage != 'none')
-                  ValueListenableBuilder(
-                    valueListenable: controller,
-                    builder: (context, value, child) {
+                    ValueListenableBuilder(
+                      valueListenable: controller,
+                      builder: (context, value, child) {
                       return SceneSubtitleOverlay(
-                        text: value.caption.text,
+                        text: value.captionText,
                         constraints: constraints,
                         bottomRatio: playerState.subtitlePositionBottomRatio,
                         fontSize: playerState.subtitleFontSize,
@@ -422,7 +422,7 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
   bool _isPopping = false;
   bool _wasMaximizedBeforeFullscreen = false;
   bool _wasPlayingBeforeExit = false;
-  VideoPlayerController? _currentListenedController;
+  AppVideoController? _currentListenedController;
 
   final ValueNotifier<Matrix4> _transformationNotifier =
       ValueNotifier(Matrix4.identity());
@@ -744,7 +744,7 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                       valueListenable: controller,
                       builder: (context, value, child) {
                         return SceneSubtitleOverlay(
-                          text: value.caption.text,
+                        text: value.captionText,
                           constraints: constraints,
                           bottomRatio: playerState.subtitlePositionBottomRatio,
                           fontSize: playerState.subtitleFontSize + 4,
