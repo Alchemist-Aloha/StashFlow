@@ -96,8 +96,19 @@ class VideoPlaybackControls extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Row(
-      children: [
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minWidth: constraints.maxWidth),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
         IconButton(
           tooltip: isPlaying ? 'Pause' : 'Play',
           style: _controlButtonStyle(colorScheme),
@@ -111,7 +122,6 @@ class VideoPlaybackControls extends StatelessWidget {
           },
         ),
         if (nextScene != null && !isFullScreen) ...[
-          const SizedBox(width: 4),
           IconButton(
             tooltip: context.l10n.common_skip_next,
             style: _controlButtonStyle(colorScheme),
@@ -123,8 +133,8 @@ class VideoPlaybackControls extends StatelessWidget {
             },
           ),
         ],
-        const SizedBox(width: 4),
-        Expanded(
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Text(
             '$formattedCurrentTime / $formattedDuration',
             style: context.textTheme.bodyMedium?.copyWith(
@@ -132,11 +142,14 @@ class VideoPlaybackControls extends StatelessWidget {
               fontSize: context.fontSizes.small,
               fontWeight: FontWeight.w600,
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
         ),
-        const SizedBox(width: 4),
+      ],
+    ),
+    const SizedBox(width: 8), // Padding between left and right groups
+    Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
         if (scene.captions.isNotEmpty)
           PopupMenuButton<String?>(
             tooltip: context.l10n.common_select_subtitle,
@@ -175,7 +188,6 @@ class VideoPlaybackControls extends StatelessWidget {
                             ? colorScheme.primary
                             : colorScheme.onSurfaceVariant,
                       ),
-                      const SizedBox(width: 4),
                       Text(
                         context.l10n.common_none,
                         style: TextStyle(color: colorScheme.onSurface),
@@ -215,7 +227,6 @@ class VideoPlaybackControls extends StatelessWidget {
                               ? colorScheme.primary
                               : colorScheme.onSurfaceVariant,
                         ),
-                        const SizedBox(width: 4),
                         Text(
                           label,
                           style: TextStyle(color: colorScheme.onSurface),
@@ -228,7 +239,6 @@ class VideoPlaybackControls extends StatelessWidget {
               return items;
             },
           ),
-        const SizedBox(width: 4),
         PopupMenuButton<double>(
           tooltip: context.l10n.common_playback_speed,
           initialValue: playbackSpeed,
@@ -254,7 +264,6 @@ class VideoPlaybackControls extends StatelessWidget {
                               ? colorScheme.primary
                               : colorScheme.onSurfaceVariant,
                         ),
-                        const SizedBox(width: 4),
                         Text(
                           _formatSpeed(speed),
                           style: TextStyle(color: colorScheme.onSurface),
@@ -272,7 +281,7 @@ class VideoPlaybackControls extends StatelessWidget {
               alignment: Alignment.center,
               padding: const EdgeInsets.symmetric(horizontal: 8),
               decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.62),
+                color: Colors.transparent,
                 borderRadius: BorderRadius.circular(10),
                 border: isSpeedSliderVisible
                     ? Border.all(color: colorScheme.primary, width: 1.5)
@@ -292,10 +301,8 @@ class VideoPlaybackControls extends StatelessWidget {
           ),
         ),
         if (desktopVolumeControl != null) ...[
-          const SizedBox(width: 4),
           desktopVolumeControl!,
         ],
-        const SizedBox(width: 4),
         IconButton(
           tooltip: 'Cast',
           style: _controlButtonStyle(colorScheme),
@@ -314,7 +321,6 @@ class VideoPlaybackControls extends StatelessWidget {
           },
         ),
         if (enableNativePip && !kIsWeb && Platform.isAndroid) ...[
-          const SizedBox(width: 4),
           IconButton(
             tooltip: context.l10n.common_pip,
             style: _controlButtonStyle(colorScheme),
@@ -331,7 +337,6 @@ class VideoPlaybackControls extends StatelessWidget {
             },
           ),
         ],
-        const SizedBox(width: 4),
         GestureDetector(
           onTap: () {}, // Consume tap to prevent propagation
           child: IconButton(
@@ -348,7 +353,13 @@ class VideoPlaybackControls extends StatelessWidget {
             },
           ),
         ),
-      ],
+              ],
+            ),
+          ],
+        ),
+      ),
     );
+  },
+);
   }
 }
