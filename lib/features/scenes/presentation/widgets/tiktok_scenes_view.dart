@@ -71,14 +71,12 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
   @override
   void initState() {
     super.initState();
-    _pageController.addListener(_onScroll);
     WakelockPlus.enable();
   }
 
   @override
   void dispose() {
     _manageTimer?.cancel();
-    _pageController.removeListener(_onScroll);
     _pageController.dispose();
 
     final globalController = ref.read(playerStateProvider).videoController;
@@ -115,32 +113,6 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
   Timer? _manageTimer;
 
-  void _onScroll() {
-    if (!_pageController.hasClients) return;
-
-    final page = _pageController.page;
-    if (page == null) return;
-
-    final newIndex = page.round();
-    if (newIndex != _currentIndex) {
-      // PERFORMANCE: Avoid calling setState() if we are just scrolling.
-      // We only update _currentIndex and global state when a new page is centered.
-      _currentIndex = newIndex;
-
-      // Sync with global playback queue (non-UI update)
-      ref.read(playbackQueueProvider.notifier).setIndex(newIndex, notify: false);
-
-      // Debounce controller management and UI refresh until the swipe settles
-      _manageTimer?.cancel();
-      _manageTimer = Timer(const Duration(milliseconds: 100), () {
-        if (mounted) {
-          setState(() {}); // One final rebuild when settled
-          _manageControllers();
-        }
-      });
-    }
-  }
-
   Future<void> _manageControllers() async {
     final scenesAsync = ref.read(sceneListProvider);
     if (!scenesAsync.hasValue || !mounted) return;
@@ -155,12 +127,13 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
     if (scenes.isEmpty) return;
 
     // Load next page if nearing the end
-    if (_currentIndex >= scenes.length - 3) {
+    if (_currentIndex >= scenes.length - 2) {
       ref.read(sceneListProvider.notifier).fetchNextPage();
     }
 
+    // Window size: current-1 to current+1 (reduced from +2 to save CPU/RAM)
     final windowStart = (_currentIndex - 1).clamp(0, scenes.length - 1);
-    final windowEnd = (_currentIndex + 2).clamp(0, scenes.length - 1);
+    final windowEnd = (_currentIndex + 1).clamp(0, scenes.length - 1);
 
     final idsInWindow = <String>{};
     for (int i = windowStart; i <= windowEnd; i++) {
@@ -309,25 +282,55 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
           });
         }
 
-        return PageView.builder(
-          controller: _pageController,
-          scrollDirection: Axis.vertical,
-          itemCount: scenes.length,
-          itemBuilder: (context, index) {
-            final scene = scenes[index];
-            final isCurrent = index == _currentIndex;
-
-            // Use global controller for the active item to ensure seamless transitions
-            // to/from DetailsPage where the global player is used.
-            VideoController? controller;
-            if (isCurrent && playerState.activeScene?.id == scene.id) {
-              controller = playerState.videoController;
-            } else {
-              controller = _controllers[scene.id];
+        return NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            if (notification is ScrollEndNotification) {
+              // Only trigger full management when scrolling has completely stopped.
+              _manageTimer?.cancel();
+              _manageTimer = Timer(const Duration(milliseconds: 50), () {
+                if (mounted) _manageControllers();
+              });
             }
-
-            return TiktokSceneItem(scene: scene, controller: controller);
+            return false;
           },
+          child: PageView.builder(
+            controller: _pageController,
+            scrollDirection: Axis.vertical,
+            onPageChanged: (index) {
+              // Immediately update current index for UI responsiveness
+              if (index != _currentIndex) {
+                setState(() {
+                  _currentIndex = index;
+                });
+                
+                // Immediately try to play the NEW current if we already have its controller
+                final newSceneId = scenes[index].id;
+                final existingController = _controllers[newSceneId];
+                if (existingController != null) {
+                  existingController.player.play();
+                  // Pause the previous one immediately
+                  final prevSceneId = scenes[index > _currentIndex ? index - 1 : index + 1].id;
+                  _controllers[prevSceneId]?.player.pause();
+                }
+              }
+            },
+            itemCount: scenes.length,
+            itemBuilder: (context, index) {
+              final scene = scenes[index];
+              final isCurrent = index == _currentIndex;
+
+              // Use global controller for the active item to ensure seamless transitions
+              // to/from DetailsPage where the global player is used.
+              VideoController? controller;
+              if (isCurrent && playerState.activeScene?.id == scene.id) {
+                controller = playerState.videoController;
+              } else {
+                controller = _controllers[scene.id];
+              }
+
+              return TiktokSceneItem(scene: scene, controller: controller);
+            },
+          ),
         );
       },
       loading: () => const Center(child: CircularProgressContext()),
