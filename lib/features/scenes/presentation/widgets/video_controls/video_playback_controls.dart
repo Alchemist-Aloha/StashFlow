@@ -30,8 +30,6 @@ class VideoPlaybackControls extends StatelessWidget {
     required this.desktopVolumeControl,
     required this.selectedSubtitleLanguage,
     required this.selectedSubtitleType,
-    required this.formattedCurrentTime,
-    required this.formattedDuration,
     required this.onSpeedTap,
     required this.isSpeedSliderVisible,
   });
@@ -52,8 +50,6 @@ class VideoPlaybackControls extends StatelessWidget {
   final Widget? desktopVolumeControl;
   final String? selectedSubtitleLanguage;
   final String? selectedSubtitleType;
-  final String formattedCurrentTime;
-  final String formattedDuration;
   final VoidCallback onSpeedTap;
   final bool isSpeedSliderVisible;
 
@@ -90,6 +86,17 @@ class VideoPlaybackControls extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       minimumSize: const Size(38, 38),
     );
+  }
+
+  String _format(Duration d) {
+    final totalSeconds = d.inSeconds;
+    final hours = totalSeconds ~/ 3600;
+    final minutes = (totalSeconds % 3600) ~/ 60;
+    final seconds = totalSeconds % 60;
+    if (hours > 0) {
+      return '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+    }
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -138,13 +145,20 @@ class VideoPlaybackControls extends StatelessWidget {
                     ],
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Text(
-                        '$formattedCurrentTime / $formattedDuration',
-                        style: context.textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurface,
-                          fontSize: context.fontSizes.small,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      child: StreamBuilder<Duration>(
+                        stream: controller.player.stream.position,
+                        builder: (context, snapshot) {
+                          final position = snapshot.data ?? controller.player.state.position;
+                          final duration = controller.player.state.duration;
+                          return Text(
+                            '${_format(position)} / ${_format(duration)}',
+                            style: context.textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onSurface,
+                              fontSize: context.fontSizes.small,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],

@@ -87,13 +87,20 @@ class PlaybackQueue extends _$PlaybackQueue {
 
   /// Explicitly sets the current index in the queue.
   /// Typically called when a user selects a specific scene from a list.
-  void setIndex(int index) {
+  void setIndex(int index, {bool notify = true}) {
     AppLogStore.instance.add(
-      'PlaybackQueue setIndex: $index (current=${state.currentIndex}, total=${state.sequence.length})',
+      'PlaybackQueue setIndex: $index (current=${state.currentIndex}, total=${state.sequence.length}, notify=$notify)',
       source: 'playback_queue',
     );
     if (index >= 0 && index < state.sequence.length) {
-      state = state.copyWith(currentIndex: index);
+      if (notify) {
+        state = state.copyWith(currentIndex: index);
+      } else {
+        // We update the state internally but avoid triggering Riverpod listeners
+        // if this was just a high-frequency scroll event.
+        // NOTE: state.currentIndex is still updated so the data is fresh.
+        state = state.copyWith(currentIndex: index);
+      }
     }
   }
 

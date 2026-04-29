@@ -116,7 +116,6 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
   Timer? _manageTimer;
 
   void _onScroll() {
-    // Determine the most prominent page
     if (!_pageController.hasClients) return;
 
     final page = _pageController.page;
@@ -124,17 +123,20 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
     final newIndex = page.round();
     if (newIndex != _currentIndex) {
-      setState(() {
-        _currentIndex = newIndex;
-      });
+      // PERFORMANCE: Avoid calling setState() if we are just scrolling.
+      // We only update _currentIndex and global state when a new page is centered.
+      _currentIndex = newIndex;
 
-      // Sync with global playback queue
-      ref.read(playbackQueueProvider.notifier).setIndex(newIndex);
+      // Sync with global playback queue (non-UI update)
+      ref.read(playbackQueueProvider.notifier).setIndex(newIndex, notify: false);
 
-      // Debounce controller management to wait for the swipe to settle
+      // Debounce controller management and UI refresh until the swipe settles
       _manageTimer?.cancel();
-      _manageTimer = Timer(const Duration(milliseconds: 150), () {
-        if (mounted) _manageControllers();
+      _manageTimer = Timer(const Duration(milliseconds: 100), () {
+        if (mounted) {
+          setState(() {}); // One final rebuild when settled
+          _manageControllers();
+        }
       });
     }
   }
@@ -365,6 +367,11 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
   Timer? _periodicSaveTimer;
   StreamSubscription<bool>? _playingSub;
 
+  // Scrubbing state
+  bool _isScrubbing = false;
+  double _scrubMs = 0;
+  bool _wasPlayingBeforeScrub = false;
+
   @override
   void initState() {
     super.initState();
@@ -575,8 +582,9 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
     final globalState = ref.read(playerStateProvider);
     final controller = widget.controller;
 
-    if (controller == null || controller.player.state.playlist.medias.isEmpty)
+    if (controller == null || controller.player.state.playlist.medias.isEmpty) {
       return;
+    }
 
     if (globalState.activeScene?.id != widget.scene.id ||
         globalState.videoController != controller) {
@@ -775,155 +783,189 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                     ),
                   ),
 
-                  // Metadata overlay
-                  Positioned(
-                    bottom: 20,
-                    left: 16,
-                    right: 80, // Space for right buttons
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.scene.displayTitle,
-                          style: context.textTheme.headlineSmall?.copyWith(
-                            color: Colors.white,
-                            fontSize: context.fontSizes.xLarge,
-                            fontWeight: FontWeight.bold,
+                  // Metadata and Buttons in a RepaintBoundary
+                  Positioned.fill(
+                    child: RepaintBoundary(
+                      child: Stack(
+                        children: [
+                          // Metadata overlay
+                          Positioned(
+                            bottom: 20,
+                            left: 16,
+                            right: 80, // Space for right buttons
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  widget.scene.displayTitle,
+                                  style: context.textTheme.headlineSmall?.copyWith(
+                                    color: Colors.white,
+                                    fontSize: context.fontSizes.xLarge,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                if (widget.scene.studioName != null &&
+                                    widget.scene.studioName!.isNotEmpty) ...[
+                                  const SizedBox(height: 4),
+                                  GestureDetector(
+                                    onTap: () {
+                                      if (widget.scene.studioId != null) {
+                                        context.push(
+                                          '/studios/studio/${widget.scene.studioId}',
+                                        );
+                                      }
+                                    },
+                                    child: Text(
+                                      widget.scene.studioName!,
+                                      style: context.textTheme.bodyMedium?.copyWith(
+                                        color: Colors.white,
+                                        fontSize: context.fontSizes.body,
+                                        fontWeight: FontWeight.w500,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                                const SizedBox(height: 8),
+                                Text(
+                                  widget.scene.date.toString().split(' ')[0],
+                                  style: context.textTheme.bodyMedium?.copyWith(
+                                    color: Colors.white70,
+                                    fontSize: context.fontSizes.body,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (widget.scene.studioName != null &&
-                            widget.scene.studioName!.isNotEmpty) ...[
-                          const SizedBox(height: 4),
-                          GestureDetector(
-                            onTap: () {
-                              if (widget.scene.studioId != null) {
-                                context.push(
-                                  '/studios/studio/${widget.scene.studioId}',
-                                );
-                              }
-                            },
-                            child: Text(
-                              widget.scene.studioName!,
-                              style: context.textTheme.bodyMedium?.copyWith(
-                                color: Colors.white,
-                                fontSize: context.fontSizes.body,
-                                fontWeight: FontWeight.w500,
-                                decoration: TextDecoration.underline,
-                              ),
+
+                          // Right side buttons
+                          Positioned(
+                            bottom: 20,
+                            right: 8,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Column(
+                                  children: [
+                                    _OverlayButton(
+                                      icon: (widget.scene.rating100 ?? 0) > 0
+                                          ? Icons.star
+                                          : Icons.star_border,
+                                      onTap: _showRatingPicker,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      (widget.scene.rating100 ?? 0) > 0
+                                          ? (widget.scene.rating100! / 20)
+                                                .toStringAsFixed(1)
+                                          : '-',
+                                      style: context.textTheme.bodyMedium?.copyWith(
+                                        color: Colors.white,
+                                        fontSize: context.fontSizes.regular,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+                                _OverlayButton(
+                                  icon: Icons.fullscreen,
+                                  tooltip: context.l10n.common_toggle_fullscreen,
+                                  onTap: _toggleFullScreen,
+                                ),
+                                const SizedBox(height: 16),
+                                _OverlayButton(
+                                  icon: Icons.info_outline,
+                                  tooltip: context.l10n.details_scene,
+                                  onTap: () async {
+                                    await _handoffToGlobalPlayer();
+                                    if (context.mounted) {
+                                      context.push('/scenes/scene/${widget.scene.id}');
+                                    }
+                                  },
+                                ),
+                              ],
                             ),
                           ),
                         ],
-                        const SizedBox(height: 8),
-                        Text(
-                          widget.scene.date.toString().split(' ')[0],
-                          style: context.textTheme.bodyMedium?.copyWith(
-                            color: Colors.white70,
-                            fontSize: context.fontSizes.body,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
 
-                  // Progress Bar
+                  // Progress Bar in its own RepaintBoundary to isolate slider updates
                   Positioned(
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    child: SliderTheme(
-                      data: SliderTheme.of(context).copyWith(
-                        trackHeight: 4,
-                        thumbShape: const RoundSliderThumbShape(
-                          enabledThumbRadius: 6,
-                          elevation: 2,
-                          pressedElevation: 4,
+                    child: RepaintBoundary(
+                      child: SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          trackHeight: 4,
+                          thumbShape: const RoundSliderThumbShape(
+                            enabledThumbRadius: 6,
+                            elevation: 2,
+                            pressedElevation: 4,
+                          ),
+                          overlayShape: SliderComponentShape.noOverlay,
+                          activeTrackColor: Colors.white,
+                          inactiveTrackColor: Colors.white.withValues(alpha: 0.3),
+                          thumbColor: Colors.white,
+                          trackShape: const RectangularSliderTrackShape(),
                         ),
-                        overlayShape: SliderComponentShape.noOverlay,
-                        activeTrackColor: Colors.white,
-                        inactiveTrackColor: Colors.white.withValues(alpha: 0.3),
-                        thumbColor: Colors.white,
-                        trackShape: const RectangularSliderTrackShape(),
+                        child: SizedBox(
+                          height: 24, // Larger tap target
+                          child: StreamBuilder<Duration>(
+                            stream: controller.player.stream.position,
+                            builder: (context, snapshot) {
+                              final duration = controller
+                                  .player
+                                  .state
+                                  .duration
+                                  .inMilliseconds
+                                  .toDouble();
+                              final position = _isScrubbing
+                                  ? _scrubMs
+                                  : (snapshot.data?.inMilliseconds.toDouble() ??
+                                      controller
+                                          .player
+                                          .state
+                                          .position
+                                          .inMilliseconds
+                                          .toDouble());
+                              return Slider(
+                                value: position.clamp(0.0, duration),
+                                max: duration > 0 ? duration : 1.0,
+                                onChangeStart: (val) {
+                                  _wasPlayingBeforeScrub =
+                                      controller.player.state.playing;
+                                  setState(() {
+                                    _isScrubbing = true;
+                                    _scrubMs = val;
+                                  });
+                                },
+                                onChanged: (val) {
+                                  setState(() {
+                                    _scrubMs = val;
+                                  });
+                                },
+                                onChangeEnd: (val) {
+                                  controller.player.seek(
+                                    Duration(milliseconds: val.toInt()),
+                                  );
+                                  if (_wasPlayingBeforeScrub &&
+                                      !controller.player.state.playing) {
+                                    controller.player.play();
+                                  }
+                                  setState(() {
+                                    _isScrubbing = false;
+                                  });
+                                },
+                              );
+                            },
+                          ),
+                        ),
                       ),
-                      child: SizedBox(
-                        height: 24, // Larger tap target
-                        child: StreamBuilder<Duration>(
-                          stream: controller.player.stream.position,
-                          builder: (context, snapshot) {
-                            final duration = controller
-                                .player
-                                .state
-                                .duration
-                                .inMilliseconds
-                                .toDouble();
-                            final position = controller
-                                .player
-                                .state
-                                .position
-                                .inMilliseconds
-                                .toDouble();
-                            return Slider(
-                              value: position.clamp(0.0, duration),
-                              max: duration > 0 ? duration : 1.0,
-                              onChanged: (val) {
-                                controller.player.seek(
-                                  Duration(milliseconds: val.toInt()),
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // Right side buttons
-                  Positioned(
-                    bottom: 20,
-                    right: 8,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Column(
-                          children: [
-                            _OverlayButton(
-                              icon: (widget.scene.rating100 ?? 0) > 0
-                                  ? Icons.star
-                                  : Icons.star_border,
-                              onTap: _showRatingPicker,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              (widget.scene.rating100 ?? 0) > 0
-                                  ? (widget.scene.rating100! / 20)
-                                        .toStringAsFixed(1)
-                                  : '-',
-                              style: context.textTheme.bodyMedium?.copyWith(
-                                color: Colors.white,
-                                fontSize: context.fontSizes.regular,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        _OverlayButton(
-                          icon: Icons.fullscreen,
-                          tooltip: context.l10n.common_toggle_fullscreen,
-                          onTap: _toggleFullScreen,
-                        ),
-                        const SizedBox(height: 16),
-                        _OverlayButton(
-                          icon: Icons.info_outline,
-                          tooltip: context.l10n.details_scene,
-                          onTap: () async {
-                            await _handoffToGlobalPlayer();
-                            if (context.mounted) {
-                              context.push('/scenes/scene/${widget.scene.id}');
-                            }
-                          },
-                        ),
-                      ],
                     ),
                   ),
                 ],

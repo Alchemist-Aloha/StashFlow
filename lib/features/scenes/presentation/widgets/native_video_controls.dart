@@ -203,17 +203,25 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     if (!isActive) return;
 
     final isPlaying = widget.controller.player.state.playing;
-    if (isPlaying != _wasPlaying) {
+    final playingChanged = isPlaying != _wasPlaying;
+    
+    if (playingChanged) {
       _wasPlaying = isPlaying;
       if (isPlaying) {
         _scheduleAutoHide();
       } else {
         _cancelAutoHide();
         setState(() => _controlsVisible = true);
+        return;
       }
     }
 
-    if (_isScrubbing) return;
+    // Performance Optimization: If controls are hidden and we aren't scrubbing, 
+    // there's no need to trigger a rebuild for position updates.
+    if (!_controlsVisible && !_isScrubbing && !playingChanged) return;
+
+    // Further optimization: Even if visible, only rebuild if we are scrubbing 
+    // or if enough time has passed (throttling UI updates to ~10fps is plenty for labels).
     setState(() {});
   }
 
@@ -319,8 +327,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     if (!isActive) return;
 
     final startPosition = _dragSeekStartPosition;
-    if (widget.controller.player.state.width == null || startPosition == null)
+    if (widget.controller.player.state.width == null || startPosition == null) {
       return;
+    }
     if (dragAreaWidth <= 0) return;
 
     final duration = widget.controller.player.state.duration;
@@ -407,17 +416,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
         GoRouter.of(context).pushReplacement('/scenes/scene/${prev.id}');
       }
     }
-  }
-
-  String _format(Duration d) {
-    final totalSeconds = d.inSeconds;
-    final hours = totalSeconds ~/ 3600;
-    final minutes = (totalSeconds % 3600) ~/ 60;
-    final seconds = totalSeconds % 60;
-    if (hours > 0) {
-      return '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-    }
-    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
   ButtonStyle _controlButtonStyle(ColorScheme colorScheme) {
@@ -717,11 +715,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
             queueState.currentIndex < queueState.sequence.length - 1)
         ? queueState.sequence[queueState.currentIndex + 1]
         : null;
-
-    final currentMs = _isScrubbing
-        ? _scrubMs
-        : value.position.inMilliseconds.toDouble();
-    final sliderValue = currentMs.clamp(0, durationMs.toDouble()).toDouble();
 
     final isDesktop = ref.watch(desktopCapabilitiesProvider);
     final keybinds = ref.watch(keybindsProvider);
@@ -1240,10 +1233,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                         child: AnimatedOpacity(
                           opacity: _controlsVisible ? 1 : 0,
                           duration: const Duration(milliseconds: 180),
-                          child: GestureDetector(
-                            onTap: () {},
-                            behavior: HitTestBehavior.opaque,
-                            child: RepaintBoundary(
+                          child: RepaintBoundary(
+                            child: GestureDetector(
+                              onTap: () {},
+                              behavior: HitTestBehavior.opaque,
                               child: Container(
                                 margin: const EdgeInsets.fromLTRB(6, 0, 6, 6),
                                 padding: const EdgeInsets.fromLTRB(
@@ -1273,7 +1266,12 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                     ),
                                     VideoProgressBar(
                                       durationMs: durationMs,
-                                      sliderValue: sliderValue,
+                                      positionStream:
+                                          widget.controller.player.stream.position,
+                                      initialPositionMs:
+                                          value.position.inMilliseconds.toDouble(),
+                                      isScrubbing: _isScrubbing,
+                                      currentScrubValue: _scrubMs,
                                       onChangeStart: (v) {
                                         _wasPlayingBeforeScrub = value.playing;
                                         _cancelAutoHide();
@@ -1370,12 +1368,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                           playerState.selectedSubtitleLanguage,
                                       selectedSubtitleType:
                                           playerState.selectedSubtitleType,
-                                      formattedCurrentTime: _format(
-                                        Duration(
-                                          milliseconds: sliderValue.round(),
-                                        ),
-                                      ),
-                                      formattedDuration: _format(duration),
                                       onSpeedTap: () {
                                         setState(
                                           () => _showSpeedSlider =
