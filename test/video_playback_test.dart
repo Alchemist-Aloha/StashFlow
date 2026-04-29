@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
@@ -105,6 +106,11 @@ class MockStreamResolver extends StreamResolver {
 }
 
 void main() {
+  setUpAll(() {
+    MediaKit.ensureInitialized();
+    SharedPreferences.setMockInitialValues({});
+  });
+
   testWidgets('Video Playback Startup Test', (tester) async {
     // Set a larger window size to avoid hit test issues
     tester.view.physicalSize = const Size(800, 1200);

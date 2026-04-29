@@ -272,6 +272,10 @@ class PlayerState extends _$PlayerState {
     // Keep player state alive across route transitions to avoid restarting media.
     ref.keepAlive();
 
+    // Ensure MediaKit is initialized before any Player instances are created.
+    // This is called here instead of main() to improve initial app startup performance.
+    MediaKit.ensureInitialized();
+
     final repository = ref.read(sceneRepositoryProvider);
     ref.onDispose(() {
       PipMode.isInPipMode.removeListener(_onPipModeChanged);

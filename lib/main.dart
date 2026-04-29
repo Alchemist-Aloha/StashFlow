@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:media_kit/media_kit.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,7 +31,6 @@ StashMediaHandler _buildMediaHandler() => StashMediaHandler();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  MediaKit.ensureInitialized();
 
   if (!kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.windows ||
