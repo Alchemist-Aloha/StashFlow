@@ -394,7 +394,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
       return TextFormField(
         controller: _apiKeyController,
         decoration: InputDecoration(
-          labelText: _authMode == AuthMode.apiKey ? l10n.settings_server_auth_apikey : 'Token',
+          labelText: _authMode == AuthMode.apiKey ? l10n.settings_server_auth_apikey : l10n.common_token,
           border: const OutlineInputBorder(),
           suffixIcon: IconButton(
             icon: Icon(_obscureApiKey ? Icons.visibility : Icons.visibility_off),
