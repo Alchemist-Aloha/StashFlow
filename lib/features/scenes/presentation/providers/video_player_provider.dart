@@ -9,6 +9,7 @@ import 'playback_queue_provider.dart';
 import 'scene_details_provider.dart';
 import 'scene_list_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
+import '../../data/repositories/stream_prewarmer.dart';
 import '../../../../core/utils/pip_mode.dart';
 import '../../../../main.dart'; // To access mediaHandler
 import '../../../../core/data/auth/auth_provider.dart';
@@ -488,23 +489,43 @@ class PlayerState extends _$PlayerState {
     }
   }
 
-  /// Proactively resolve the stream URL for the next scene in the queue
-  /// and store it in the StreamResolver cache.
-  void _prewarmNext() {
+  /// Proactively resolve and warm the stream URLs for the next several scenes
+  /// in the playback queue to ensure near-instant startup when navigating.
+  void _prewarmQueue() {
     final queue = ref.read(playbackQueueProvider);
-    final nextIndex = queue.currentIndex + 1;
-    if (nextIndex < queue.sequence.length) {
-      final nextScene = queue.sequence[nextIndex];
-      AppLogStore.instance.add(
-        'PlayerState prewarming next scene=${nextScene.id} at index=$nextIndex',
-        source: 'player_provider',
-      );
-      // Fire and forget resolution into cache
-      unawaited(
-        ref
-            .read(streamResolverProvider.notifier)
-            .resolvePreferredStream(nextScene),
-      );
+    final currentIndex = queue.currentIndex;
+    final sequence = queue.sequence;
+
+    if (currentIndex == -1 || sequence.isEmpty) return;
+
+    // Window size: how many scenes ahead to prewarm.
+    // 5 is a good balance between responsiveness and resource usage.
+    const windowSize = 5;
+    final startIndex = currentIndex + 1;
+    final endIndex = (currentIndex + 1 + windowSize).clamp(0, sequence.length);
+
+    final nextScenes = <Scene>[];
+    for (int i = startIndex; i < endIndex; i++) {
+      nextScenes.add(sequence[i]);
+    }
+
+    final prewarmer = ref.read(streamPrewarmerProvider.notifier);
+    final resolver = ref.read(streamResolverProvider.notifier);
+    final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
+
+    // Cancel any active prewarms for scenes that are no longer in our current "next N" window.
+    final nextSceneIds = nextScenes.map((s) => s.id).toSet();
+    prewarmer.cancelAllExcept(nextSceneIds);
+
+    for (final scene in nextScenes) {
+      unawaited(() async {
+        // Resolve URL (hits cache if already resolved)
+        final choice = await resolver.resolvePreferredStream(scene);
+        if (choice != null) {
+          // Perform network-level prewarming
+          await prewarmer.prewarm(scene, choice.url, headers: mediaHeaders);
+        }
+      }());
     }
   }
 
@@ -740,15 +761,13 @@ class PlayerState extends _$PlayerState {
       _subscriptions.add(
         player.stream.duration.listen((_) => _videoListener()),
       );
-      _subscriptions.add(
-        player.stream.buffering.listen((_) => _videoListener()),
-      );
+      _subscriptions.add(player.stream.buffering.listen((_) => _videoListener()));
       _subscriptions.add(player.stream.width.listen((_) => _videoListener()));
       _subscriptions.add(player.stream.height.listen((_) => _videoListener()));
       unawaited(player.play());
 
       // Prepare for the next scene in the queue
-      _prewarmNext();
+      _prewarmQueue();
     } catch (e) {
       debugPrint('Error initializing video player: $e');
       AppLogStore.instance.add(
@@ -859,7 +878,7 @@ class PlayerState extends _$PlayerState {
     }
 
     // Prepare for the next scene in the queue
-    _prewarmNext();
+    _prewarmQueue();
   }
 
   void togglePlayPause() {

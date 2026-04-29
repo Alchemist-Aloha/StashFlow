@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
@@ -11,6 +10,7 @@ import 'package:window_manager/window_manager.dart';
 
 import '../../domain/entities/scene.dart';
 import '../providers/video_player_provider.dart';
+import '../../data/repositories/stream_prewarmer.dart';
 import '../../../setup/presentation/providers/main_page_orientation_provider.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
@@ -66,6 +66,11 @@ class SceneVideoPlayer extends ConsumerStatefulWidget {
 class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   /// Local state to track initial player startup for UI feedback.
   bool _isStarting = false;
+
+  /// Timer to debounce the buffering spinner.
+  /// Seeking triggers a brief buffering state that we want to ignore.
+  Timer? _bufferingDisplayTimer;
+  bool _showBufferingSpinner = false;
 
   final ValueNotifier<Matrix4> _transformationNotifier = ValueNotifier(
     Matrix4.identity(),
@@ -209,45 +214,41 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     return 16 / 9;
   }
 
-  /// Attempts to "warm up" the stream by making a lightweight HEAD or GET
-  /// request to ensure the URL is valid and the server is responsive.
+  /// Attempts to "warm up" the stream by making a partial GET request
+  /// to ensure the URL is valid, the server is responsive, and the connection
+  /// pipe is ready for playback.
   Future<_PrewarmResult> _prewarmStream(Scene scene) async {
     if (kIsWeb) {
       return const _PrewarmResult(attempted: false, succeeded: false);
     }
 
     final stopwatch = Stopwatch()..start();
-    final client = HttpClient();
-    client.connectionTimeout = const Duration(seconds: 5);
 
     try {
       if (!mounted) {
         return const _PrewarmResult(attempted: false, succeeded: false);
       }
       final resolver = ref.read(streamResolverProvider.notifier);
+      final prewarmer = ref.read(streamPrewarmerProvider.notifier);
+      
       final choice = await resolver.resolvePreferredStream(scene);
       if (choice == null) {
         return const _PrewarmResult(attempted: false, succeeded: false);
       }
 
-      final uri = Uri.parse(choice.url);
-      // Use HEAD request instead of GET for lightweight connection prewarm.
-      final request = await client.headUrl(uri);
-
       if (!mounted) {
         return const _PrewarmResult(attempted: false, succeeded: false);
       }
       final headers = ref.read(mediaPlaybackHeadersProvider);
-      headers.forEach((key, value) {
-        request.headers.add(key, value);
-      });
+      
+      // Use the centralized prewarmer which uses Byte-Range GET (0-512KB)
+      // and keeps the connection alive in a pool.
+      await prewarmer.prewarm(scene, choice.url, headers: headers);
 
-      final response = await request.close();
-      // No longer need to drain as HEAD response body is empty.
       stopwatch.stop();
       return _PrewarmResult(
         attempted: true,
-        succeeded: response.statusCode < 400,
+        succeeded: true, // We assume success if no exception was thrown during request setup
         latencyMs: stopwatch.elapsedMilliseconds,
       );
     } catch (_) {
@@ -257,8 +258,6 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
         succeeded: false,
         latencyMs: stopwatch.elapsedMilliseconds,
       );
-    } finally {
-      client.close(force: true);
     }
   }
 
@@ -351,9 +350,26 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
         ? videoWidth / videoHeight
         : aspectRatio;
 
-    // Show loading indicator if buffering or if dimensions aren't ready and not playing.
+    // Debounce the buffering spinner to avoid flicker during quick seeks or minor network jitters.
+    if (playerState.isBuffering && !_showBufferingSpinner) {
+      _bufferingDisplayTimer ??= Timer(const Duration(milliseconds: 500), () {
+        if (mounted) setState(() => _showBufferingSpinner = true);
+      });
+    } else if (!playerState.isBuffering && _showBufferingSpinner) {
+      _bufferingDisplayTimer?.cancel();
+      _bufferingDisplayTimer = null;
+      // We wrap this in a microtask to avoid setState during build.
+      Future.microtask(() {
+        if (mounted) setState(() => _showBufferingSpinner = false);
+      });
+    } else if (!playerState.isBuffering) {
+      _bufferingDisplayTimer?.cancel();
+      _bufferingDisplayTimer = null;
+    }
+
+    // Show loading indicator if buffering (after debounce), or if dimensions aren't ready and not playing.
     final showLoadingIndicator =
-        playerState.isBuffering || (!isVideoReady && !playerState.isPlaying);
+        _showBufferingSpinner || (!isVideoReady && !playerState.isPlaying);
 
     // Main playback surface.
     return AspectRatio(
@@ -459,6 +475,10 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
   bool _wasPlayingBeforeExit = false;
   VideoController? _currentListenedController;
   final List<StreamSubscription> _subscriptions = [];
+
+  // Timer to debounce the buffering spinner.
+  Timer? _bufferingDisplayTimer;
+  bool _showBufferingSpinner = false;
 
   final ValueNotifier<Matrix4> _transformationNotifier = ValueNotifier(
     Matrix4.identity(),
@@ -786,7 +806,25 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                   ? videoWidth / videoHeight
                   : 16 / 9;
 
-              final showLoadingIndicator = playerState.isBuffering ||
+              // Use the same debouncing logic as the inline player
+              if (playerState.isBuffering && !_showBufferingSpinner) {
+                _bufferingDisplayTimer ??=
+                    Timer(const Duration(milliseconds: 500), () {
+                      if (mounted) setState(() => _showBufferingSpinner = true);
+                    });
+              } else if (!playerState.isBuffering && _showBufferingSpinner) {
+                _bufferingDisplayTimer?.cancel();
+                _bufferingDisplayTimer = null;
+                Future.microtask(() {
+                  if (mounted) setState(() => _showBufferingSpinner = false);
+                });
+              } else if (!playerState.isBuffering) {
+                _bufferingDisplayTimer?.cancel();
+                _bufferingDisplayTimer = null;
+              }
+
+              final showLoadingIndicator =
+                  _showBufferingSpinner ||
                   (!isVideoReady && !playerState.isPlaying);
 
               return Stack(
