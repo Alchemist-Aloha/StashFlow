@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart' as vp;
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 
 class AppDurationRange {
   final Duration start;
@@ -43,92 +46,196 @@ abstract class AppVideoController implements ValueListenable<AppVideoValue> {
   Future<void> setLooping(bool value);
   Future<void> setPlaybackSpeed(double speed);
   Future<void> setVolume(double volume);
+  Future<void> setSubtitleUrl(String? url);
   Future<void> dispose();
 }
 
-class VideoPlayerControllerAdapter extends ValueNotifier<AppVideoValue>
+class MediaKitVideoControllerAdapter extends ValueNotifier<AppVideoValue>
     implements AppVideoController {
-  final vp.VideoPlayerController _controller;
+  final Player _player;
+  final VideoController _videoController;
+  final String _dataSource;
+  final Map<String, String> _httpHeaders;
+  String? _subtitleUrl;
 
-  VideoPlayerControllerAdapter._(this._controller)
-      : super(_mapValue(_controller.value)) {
-    _controller.addListener(_syncValue);
+  final List<StreamSubscription<dynamic>> _subscriptions = [];
+
+  bool _isInitialized = false;
+  bool _isPlaying = false;
+  Duration _position = Duration.zero;
+  Duration _duration = Duration.zero;
+  Duration _buffered = Duration.zero;
+  double _playbackSpeed = 1.0;
+  double _aspectRatio = 16 / 9;
+  Size _size = const Size(1, 1);
+  String _captionText = '';
+
+  MediaKitVideoControllerAdapter._(
+    this._player,
+    this._videoController,
+    this._dataSource,
+    this._httpHeaders,
+    this._subtitleUrl,
+  ) : super(
+          const AppVideoValue(
+            isInitialized: false,
+            isPlaying: false,
+            position: Duration.zero,
+            duration: Duration.zero,
+            playbackSpeed: 1.0,
+            aspectRatio: 16 / 9,
+            size: Size(1, 1),
+            captionText: '',
+            buffered: <AppDurationRange>[],
+          ),
+        ) {
+    _bindStreams();
   }
 
-  factory VideoPlayerControllerAdapter.networkUrl(
+  factory MediaKitVideoControllerAdapter.networkUrl(
     Uri url, {
     Map<String, String> httpHeaders = const <String, String>{},
-    Future<vp.ClosedCaptionFile>? closedCaptionFile,
-    bool allowBackgroundPlayback = false,
-    bool mixWithOthers = true,
+    String? subtitleUrl,
   }) {
-    final controller = vp.VideoPlayerController.networkUrl(
-      url,
-      httpHeaders: httpHeaders,
-      closedCaptionFile: closedCaptionFile,
-      videoPlayerOptions: vp.VideoPlayerOptions(
-        allowBackgroundPlayback: allowBackgroundPlayback,
-        mixWithOthers: mixWithOthers,
-      ),
-    );
-
-    return VideoPlayerControllerAdapter._(controller);
-  }
-
-  static AppVideoValue _mapValue(vp.VideoPlayerValue value) {
-    return AppVideoValue(
-      isInitialized: value.isInitialized,
-      isPlaying: value.isPlaying,
-      position: value.position,
-      duration: value.duration,
-      playbackSpeed: value.playbackSpeed,
-      aspectRatio: value.aspectRatio,
-      size: value.size,
-      captionText: value.caption.text,
-      buffered: value.buffered
-          .map((range) => AppDurationRange(
-                start: range.start,
-                end: range.end,
-              ))
-          .toList(growable: false),
+    final player = Player();
+    final videoController = VideoController(player);
+    return MediaKitVideoControllerAdapter._(
+      player,
+      videoController,
+      url.toString(),
+      httpHeaders,
+      subtitleUrl,
     );
   }
 
-  void _syncValue() {
-    value = _mapValue(_controller.value);
+  VideoController get videoController => _videoController;
+
+  void _bindStreams() {
+    _subscriptions.add(
+      _player.streams.playing.listen((playing) {
+        _isPlaying = playing;
+        _emitValue();
+      }),
+    );
+
+    _subscriptions.add(
+      _player.streams.position.listen((position) {
+        _position = position;
+        _emitValue();
+      }),
+    );
+
+    _subscriptions.add(
+      _player.streams.duration.listen((duration) {
+        _duration = duration ?? Duration.zero;
+        _emitValue();
+      }),
+    );
+
+    _subscriptions.add(
+      _player.streams.buffer.listen((buffered) {
+        _buffered = buffered;
+        _emitValue();
+      }),
+    );
+
+    _subscriptions.add(
+      _player.streams.rate.listen((rate) {
+        _playbackSpeed = rate;
+        _emitValue();
+      }),
+    );
+
+    _subscriptions.add(
+      _player.streams.videoParams.listen((params) {
+        if (params != null) {
+          final width = params.w.toDouble();
+          final height = params.h.toDouble();
+          if (width > 0 && height > 0) {
+            _size = Size(width, height);
+            _aspectRatio = width / height;
+          }
+        }
+        _emitValue();
+      }),
+    );
+
+    _subscriptions.add(
+      _player.streams.subtitle.listen((subtitle) {
+        _captionText = subtitle?.text ?? '';
+        _emitValue();
+      }),
+    );
   }
 
-  vp.VideoPlayerController get rawController => _controller;
+  void _emitValue() {
+    value = AppVideoValue(
+      isInitialized: _isInitialized,
+      isPlaying: _isPlaying,
+      position: _position,
+      duration: _duration,
+      playbackSpeed: _playbackSpeed,
+      aspectRatio: _aspectRatio,
+      size: _size,
+      captionText: _captionText,
+      buffered: _buffered > Duration.zero
+          ? <AppDurationRange>[
+              AppDurationRange(start: Duration.zero, end: _buffered),
+            ]
+          : const <AppDurationRange>[],
+    );
+  }
 
   @override
-  String get dataSource => _controller.dataSource;
+  String get dataSource => _dataSource;
 
   @override
-  Future<void> initialize() => _controller.initialize();
+  Future<void> initialize() async {
+    await _player.open(
+      Media(_dataSource, httpHeaders: _httpHeaders),
+      play: false,
+    );
+    _isInitialized = true;
+    await setSubtitleUrl(_subtitleUrl);
+    _emitValue();
+  }
 
   @override
-  Future<void> play() => _controller.play();
+  Future<void> play() => _player.play();
 
   @override
-  Future<void> pause() => _controller.pause();
+  Future<void> pause() => _player.pause();
 
   @override
-  Future<void> seekTo(Duration position) => _controller.seekTo(position);
+  Future<void> seekTo(Duration position) => _player.seek(position);
 
   @override
-  Future<void> setLooping(bool value) => _controller.setLooping(value);
+  Future<void> setLooping(bool value) => _player.setLooping(value);
 
   @override
-  Future<void> setPlaybackSpeed(double speed) =>
-      _controller.setPlaybackSpeed(speed);
+  Future<void> setPlaybackSpeed(double speed) => _player.setRate(speed);
 
   @override
-  Future<void> setVolume(double volume) => _controller.setVolume(volume);
+  Future<void> setVolume(double volume) => _player.setVolume(volume * 100.0);
+
+  @override
+  Future<void> setSubtitleUrl(String? url) async {
+    _subtitleUrl = url;
+    if (!_isInitialized) return;
+    if (url == null || url.isEmpty) {
+      await _player.setSubtitleTrack(SubtitleTrack.no());
+      return;
+    }
+    await _player.setSubtitleTrack(SubtitleTrack.uri(url));
+  }
 
   @override
   Future<void> dispose() async {
-    _controller.removeListener(_syncValue);
-    await _controller.dispose();
+    for (final subscription in _subscriptions) {
+      await subscription.cancel();
+    }
+    _subscriptions.clear();
+    await _player.dispose();
     super.dispose();
   }
 }

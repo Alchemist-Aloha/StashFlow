@@ -1,12 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:clock/clock.dart';
-import 'package:video_player/video_player.dart' as vp;
 import 'package:wakelock_plus/wakelock_plus.dart';
-import 'package:http/http.dart' as http;
 import '../../domain/entities/scene.dart';
 import '../../domain/repositories/scene_repository.dart';
 import 'playback_queue_provider.dart';
@@ -508,8 +504,6 @@ class PlayerState extends _$PlayerState {
     Duration? initialPosition,
     bool force = false,
   }) async {
-    final allowBackgroundPlayback = state.enableBackgroundPlayback;
-
     AppLogStore.instance.add(
       'provider playScene begin scene=${scene.id} source=${streamSource ?? '-'} mime=${mimeType ?? '-'} initialPos=${initialPosition?.inMilliseconds}ms force=$force',
       source: 'player_provider',
@@ -565,7 +559,7 @@ class PlayerState extends _$PlayerState {
 
     // ...
     // Later in playScene, when creating the controller:
-    Future<vp.ClosedCaptionFile>? closedCaptionFile;
+    String? subtitleUrl;
     if (effectiveSubtitleLanguage != null &&
         effectiveSubtitleLanguage != 'none' &&
         hasSubtitleSource) {
@@ -588,14 +582,12 @@ class PlayerState extends _$PlayerState {
         captionUrl = scene.paths.vtt!.trim();
       }
 
-      AppLogStore.instance.add(
-        'provider playScene: loading subtitles lang=$lang type=$type final=$captionUrl',
-        source: 'player_provider',
-      );
+      final apiKey = ref.read(serverApiKeyProvider);
+      subtitleUrl = appendApiKey(captionUrl, apiKey);
 
-      closedCaptionFile = _loadSubtitles(
-        captionUrl,
-        fallbackVttUrl: hasVttPath ? scene.paths.vtt!.trim() : null,
+      AppLogStore.instance.add(
+        'provider playScene: subtitle url=$subtitleUrl lang=$lang type=$type',
+        source: 'player_provider',
       );
     } else if (effectiveSubtitleLanguage != null) {
       AppLogStore.instance.add(
@@ -623,12 +615,10 @@ class PlayerState extends _$PlayerState {
       await _disposeControllers();
     }
 
-    final videoController = VideoPlayerControllerAdapter.networkUrl(
+    final videoController = MediaKitVideoControllerAdapter.networkUrl(
       Uri.parse(effectiveStreamUrl),
       httpHeaders: httpHeaders ?? const <String, String>{},
-      closedCaptionFile: closedCaptionFile,
-      allowBackgroundPlayback: allowBackgroundPlayback,
-      mixWithOthers: true,
+      subtitleUrl: subtitleUrl,
     );
     _videoControllerRef = videoController;
     _activeSceneRef = scene;
@@ -1103,164 +1093,6 @@ class PlayerState extends _$PlayerState {
     if (state.autoplayNext) {
       playNext();
     }
-  }
-
-  Future<vp.ClosedCaptionFile> _loadSubtitles(
-    String url, {
-    String? fallbackVttUrl,
-  }) async {
-    final apiKey = ref.read(serverApiKeyProvider);
-    final headers = ref.read(mediaPlaybackHeadersProvider);
-    final authenticatedUrl = appendApiKey(url, apiKey);
-
-    AppLogStore.instance.add(
-      'PlayerState _loadSubtitles: downloading $authenticatedUrl',
-      source: 'player_provider',
-    );
-
-    try {
-      final requestHeaders = {...headers, 'Accept': 'text/vtt, */*'};
-
-      var response = await http.get(
-        Uri.parse(authenticatedUrl),
-        headers: requestHeaders,
-      );
-
-      AppLogStore.instance.add(
-        'PlayerState _loadSubtitles: status=${response.statusCode} len=${response.bodyBytes.length} type=${response.headers['content-type']}',
-        source: 'player_provider',
-      );
-
-      // Fallback 1: If lang=00 returned empty, try without lang parameter
-      if (response.statusCode == 200 &&
-          response.bodyBytes.isEmpty &&
-          authenticatedUrl.contains('lang=00')) {
-        final uri = Uri.parse(authenticatedUrl);
-        final params = Map<String, String>.from(uri.queryParameters);
-        params.remove('lang');
-        final fallbackUrl = uri.replace(queryParameters: params).toString();
-
-        AppLogStore.instance.add(
-          'PlayerState _loadSubtitles: empty response for lang=00, trying fallback: $fallbackUrl',
-          source: 'player_provider',
-        );
-        response = await http.get(
-          Uri.parse(fallbackUrl),
-          headers: requestHeaders,
-        );
-
-        AppLogStore.instance.add(
-          'PlayerState _loadSubtitles fallback: status=${response.statusCode} len=${response.bodyBytes.length}',
-          source: 'player_provider',
-        );
-      }
-
-      // Fallback 2: If still empty and we have a vtt path, try that
-      if (response.statusCode == 200 &&
-          response.bodyBytes.isEmpty &&
-          fallbackVttUrl != null &&
-          fallbackVttUrl != url) {
-        final authFallbackVtt = appendApiKey(fallbackVttUrl, apiKey);
-        AppLogStore.instance.add(
-          'PlayerState _loadSubtitles: empty response, trying vtt fallback: $authFallbackVtt',
-          source: 'player_provider',
-        );
-        response = await http.get(
-          Uri.parse(authFallbackVtt),
-          headers: requestHeaders,
-        );
-        AppLogStore.instance.add(
-          'PlayerState _loadSubtitles vtt fallback: status=${response.statusCode} len=${response.bodyBytes.length}',
-          source: 'player_provider',
-        );
-      }
-
-      if (response.statusCode == 200) {
-        final bytes = response.bodyBytes;
-        if (bytes.isEmpty) {
-          AppLogStore.instance.add(
-            'PlayerState _loadSubtitles: received empty body bytes',
-            source: 'player_provider',
-          );
-          return vp.WebVTTCaptionFile('');
-        }
-
-        // Use utf8.decode with allowMalformed: true to be resilient
-        var content = utf8.decode(bytes, allowMalformed: true);
-
-        if (content.trim().isEmpty) {
-          AppLogStore.instance.add(
-            'PlayerState _loadSubtitles: received only whitespace',
-            source: 'player_provider',
-          );
-          return vp.WebVTTCaptionFile('');
-        }
-
-        // Filter out thumbnail/storyboard lines (e.g. sprite.jpg#xywh=...)
-        content = _filterSubtitleContent(content);
-
-        final preview = content.length > 100
-            ? content.substring(0, 100).replaceAll('\n', ' ')
-            : content.replaceAll('\n', ' ');
-
-        AppLogStore.instance.add(
-          'PlayerState _loadSubtitles: success, length=${content.length}, preview="$preview"',
-          source: 'player_provider',
-        );
-
-        final isVtt = content.contains('WEBVTT');
-        // SRT often starts with 1 and a newline, or has --> but not WEBVTT
-        final isSrt = !isVtt && content.contains('-->');
-
-        vp.ClosedCaptionFile captionFile;
-        if (isSrt) {
-          AppLogStore.instance.add(
-            'PlayerState _loadSubtitles: detected SRT format',
-            source: 'player_provider',
-          );
-          captionFile = vp.SubRipCaptionFile(content);
-        } else {
-          AppLogStore.instance.add(
-            'PlayerState _loadSubtitles: detected VTT format',
-            source: 'player_provider',
-          );
-          captionFile = vp.WebVTTCaptionFile(content);
-        }
-
-        AppLogStore.instance.add(
-          'PlayerState _loadSubtitles: parsed ${captionFile.captions.length} captions',
-          source: 'player_provider',
-        );
-
-        return captionFile;
-      } else {
-        throw Exception('Failed to load subtitles: ${response.statusCode}');
-      }
-    } catch (e) {
-      AppLogStore.instance.add(
-        'PlayerState _loadSubtitles error: $e',
-        source: 'player_provider',
-      );
-      // Return empty file on error to avoid breaking playback
-      return vp.WebVTTCaptionFile('');
-    }
-  }
-
-  /// Filters out common storyboard/thumbnail lines (like sprite.jpg#xywh=...)
-  /// from VTT/SRT content to prevent them from being rendered as text captions.
-  String _filterSubtitleContent(String content) {
-    if (!content.contains('#xywh')) return content;
-
-    final lines = content.split('\n');
-    final filteredLines = lines.where((line) {
-      final trimmed = line.trim();
-      // Filter out lines containing the storyboard fragment identifier.
-      // These are typically of the form: "thumbnail.jpg#xywh=0,0,160,90"
-      if (trimmed.contains('#xywh')) return false;
-      return true;
-    });
-
-    return filteredLines.join('\n');
   }
 
   Future<void> playNext() async {

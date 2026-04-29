@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart' as vp;
+import 'package:media_kit_video/media_kit_video.dart';
 import 'app_video_controller.dart';
 
 class AppVideoSurface extends StatelessWidget {
@@ -9,9 +9,9 @@ class AppVideoSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (controller is VideoPlayerControllerAdapter) {
-      final raw = (controller as VideoPlayerControllerAdapter).rawController;
-      return vp.VideoPlayer(raw);
+    if (controller is MediaKitVideoControllerAdapter) {
+      final raw = (controller as MediaKitVideoControllerAdapter).videoController;
+      return Video(controller: raw);
     }
 
     return const SizedBox.shrink();
