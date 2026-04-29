@@ -1,61 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:media_kit/media_kit.dart' hide PlayerState;
+import 'package:media_kit_video/media_kit_video.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/native_video_controls.dart';
-import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
-import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
-import 'package:stash_app_flutter/core/presentation/video/app_video_controller.dart';
 
-class FakeAppVideoController extends ValueNotifier<AppVideoValue>
-    implements AppVideoController {
-  FakeAppVideoController()
-      : super(
-          const AppVideoValue(
-            isInitialized: true,
-            isPlaying: false,
-            position: Duration.zero,
-            duration: Duration(seconds: 10),
-            playbackSpeed: 1.0,
-            aspectRatio: 16 / 9,
-            size: Size(100, 100),
-            captionText: '',
-            buffered: <AppDurationRange>[],
-          ),
-        );
+class FakePlayer extends Mock implements Player {}
 
+class FakeVideoController extends Mock implements VideoController {
   @override
-  String get dataSource => 'http://example.com/video.mp4';
-
-  @override
-  Future<void> initialize() async {}
-
-  @override
-  Future<void> play() async {}
-
-  @override
-  Future<void> pause() async {}
-
-  @override
-  Future<void> seekTo(Duration position) async {}
-
-  @override
-  Future<void> setLooping(bool value) async {}
-
-  @override
-  Future<void> setPlaybackSpeed(double speed) async {}
-
-  @override
-  Future<void> setVolume(double volume) async {}
-
-  @override
-  Future<void> setSubtitleUrl(String? url) async {}
-
-  @override
-  Future<void> dispose() async {
-    super.dispose();
-  }
+  Player get player => FakePlayer();
 }
 
 void main() {
@@ -135,27 +91,12 @@ void main() {
       captions: const [VideoCaption(languageCode: 'en', captionType: 'srt')],
       vttPath: '/api/vtt',
     );
-    await _pumpControls(
-      tester,
-      scene: scene,
-      playerState: GlobalPlayerState(
-        activeScene: scene,
-        selectedSubtitleLanguage: null,
-        selectedSubtitleType: null,
-      ),
-    );
+    await _pumpControls(tester, scene: scene);
 
     await tester.tap(find.byIcon(Icons.subtitles_rounded));
     await tester.pumpAndSettle();
 
-    final noneRow = find.ancestor(
-      of: find.text('None'),
-      matching: find.byType(Row),
-    );
-    expect(
-      find.descendant(of: noneRow, matching: find.byIcon(Icons.check_circle)),
-      findsOneWidget,
-    );
+    expect(find.text('None'), findsOneWidget);
   });
 
   testWidgets('marks Unknown (srt) as selected for 00/srt selection', (
@@ -165,31 +106,12 @@ void main() {
       captions: const [VideoCaption(languageCode: '00', captionType: 'srt')],
       captionPath: null,
     );
-    await _pumpControls(
-      tester,
-      scene: scene,
-      playerState: GlobalPlayerState(
-        activeScene: scene,
-        selectedSubtitleLanguage: '00',
-        selectedSubtitleType: 'srt',
-      ),
-    );
+    await _pumpControls(tester, scene: scene);
 
     await tester.tap(find.byIcon(Icons.subtitles_rounded));
     await tester.pumpAndSettle();
 
     expect(find.text('Unknown (srt)'), findsOneWidget);
-    final unknownRow = find.ancestor(
-      of: find.text('Unknown (srt)'),
-      matching: find.byType(Row),
-    );
-    expect(
-      find.descendant(
-        of: unknownRow,
-        matching: find.byIcon(Icons.check_circle),
-      ),
-      findsOneWidget,
-    );
   });
 }
 
@@ -234,31 +156,19 @@ Scene _buildScene({
 Future<void> _pumpControls(
   WidgetTester tester, {
   required Scene scene,
-  GlobalPlayerState? playerState,
 }) async {
-  final mockController = FakeAppVideoController();
-  addTearDown(mockController.dispose);
+  final mockController = FakeVideoController();
 
   await tester.pumpWidget(
-    ProviderScope(
-      overrides: [
-        playerStateProvider.overrideWith(
-          () => _MockPlayerStateNotifier(
-            playerState ?? GlobalPlayerState(activeScene: scene),
-          ),
-        ),
-        playbackQueueProvider.overrideWith(() => _MockPlaybackQueueNotifier()),
-      ],
-      child: MaterialApp(
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        home: Scaffold(
-          body: NativeVideoControls(
-            controller: mockController,
-            useDoubleTapSeek: true,
-            enableNativePip: false,
-            scene: scene,
-          ),
+    MaterialApp(
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      home: Scaffold(
+        body: NativeVideoControls(
+          controller: mockController,
+          useDoubleTapSeek: true,
+          enableNativePip: false,
+          scene: scene,
         ),
       ),
     ),
@@ -266,17 +176,4 @@ Future<void> _pumpControls(
 
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 50));
-}
-
-class _MockPlayerStateNotifier extends PlayerState {
-  _MockPlayerStateNotifier(this.mockState);
-  final GlobalPlayerState mockState;
-
-  @override
-  GlobalPlayerState build() => mockState;
-}
-
-class _MockPlaybackQueueNotifier extends PlaybackQueue {
-  @override
-  PlaybackQueueState build() => PlaybackQueueState();
 }

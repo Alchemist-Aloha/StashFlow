@@ -35,7 +35,8 @@ void main() {
       final state = GlobalPlayerState();
 
       expect(state.activeScene, isNull);
-      expect(state.videoPlayerController, isNull);
+      expect(state.videoController, isNull);
+      expect(state.player, isNull);
       expect(state.isPlaying, isFalse);
       expect(state.isFullScreen, isFalse);
       expect(state.isInPipMode, isFalse);
@@ -149,7 +150,8 @@ void main() {
 
         // Cleared fields
         expect(newState.activeScene, isNull);
-        expect(newState.videoPlayerController, isNull);
+        expect(newState.videoController, isNull);
+        expect(newState.player, isNull);
         expect(newState.streamMimeType, isNull);
         expect(newState.streamLabel, isNull);
         expect(newState.streamSource, isNull);
