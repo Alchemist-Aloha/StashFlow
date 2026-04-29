@@ -120,6 +120,36 @@ abstract class AppLocalizations {
   /// **'StashFlow'**
   String get appTitle;
 
+  /// No description provided for @common_token.
+  ///
+  /// In en, this message translates to:
+  /// **'Token'**
+  String get common_token;
+
+  /// No description provided for @filter_value.
+  ///
+  /// In en, this message translates to:
+  /// **'Value'**
+  String get filter_value;
+
+  /// No description provided for @common_yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get common_yes;
+
+  /// No description provided for @common_no.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get common_no;
+
+  /// No description provided for @common_clear_history.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear History'**
+  String get common_clear_history;
+
   /// No description provided for @nav_scenes.
   ///
   /// In en, this message translates to:
@@ -1445,12 +1475,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Modifier'**
   String get filter_modifier;
-
-  /// No description provided for @filter_value.
-  ///
-  /// In en, this message translates to:
-  /// **'Value'**
-  String get filter_value;
 
   /// No description provided for @filter_equals.
   ///

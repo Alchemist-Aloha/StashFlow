@@ -1,59 +1,99 @@
 {
   "de": [
+    "common_token",
+    "common_yes",
+    "common_no",
+    "common_clear_history",
     "nPlays",
     "settings_appearance_font_size",
     "settings_appearance_font_size_subtitle"
   ],
 
   "es": [
+    "common_token",
+    "common_yes",
+    "common_no",
+    "common_clear_history",
     "nPlays",
     "settings_appearance_font_size",
     "settings_appearance_font_size_subtitle"
   ],
 
   "fr": [
+    "common_token",
+    "common_yes",
+    "common_no",
+    "common_clear_history",
     "nPlays",
     "settings_appearance_font_size",
     "settings_appearance_font_size_subtitle"
   ],
 
   "it": [
+    "common_token",
+    "common_yes",
+    "common_no",
+    "common_clear_history",
     "nPlays",
     "settings_appearance_font_size",
     "settings_appearance_font_size_subtitle"
   ],
 
   "ja": [
+    "common_token",
+    "common_yes",
+    "common_no",
+    "common_clear_history",
     "nPlays",
     "settings_appearance_font_size",
     "settings_appearance_font_size_subtitle"
   ],
 
   "ko": [
+    "common_token",
+    "common_yes",
+    "common_no",
+    "common_clear_history",
     "nPlays",
     "settings_appearance_font_size",
     "settings_appearance_font_size_subtitle"
   ],
 
   "ru": [
+    "common_token",
+    "common_yes",
+    "common_no",
+    "common_clear_history",
     "nPlays",
     "settings_appearance_font_size",
     "settings_appearance_font_size_subtitle"
   ],
 
   "zh": [
+    "common_token",
+    "common_yes",
+    "common_no",
+    "common_clear_history",
     "nPlays",
     "settings_appearance_font_size",
     "settings_appearance_font_size_subtitle"
   ],
 
   "zh_Hans": [
+    "common_token",
+    "common_yes",
+    "common_no",
+    "common_clear_history",
     "nPlays",
     "settings_appearance_font_size",
     "settings_appearance_font_size_subtitle"
   ],
 
   "zh_Hant": [
+    "common_token",
+    "common_yes",
+    "common_no",
+    "common_clear_history",
     "nPlays",
     "settings_appearance_font_size",
     "settings_appearance_font_size_subtitle"

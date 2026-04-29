@@ -1,6 +1,11 @@
 {
   "@@locale": "en",
   "appTitle": "StashFlow",
+  "common_token": "Token",
+  "filter_value": "Value",
+  "common_yes": "Yes",
+  "common_no": "No",
+  "common_clear_history": "Clear History",
   "nav_scenes": "Scenes",
   "nav_performers": "Performers",
   "nav_studios": "Studios",

@@ -1,3 +1,4 @@
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../../domain/entities/criterion.dart';
@@ -69,7 +70,7 @@ class IntCriterionInput extends StatelessWidget {
               Expanded(
                 child: TextField(
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(hintText: 'Value'),
+                  decoration: InputDecoration(hintText: context.l10n.filter_value),
                   onChanged: (val) {
                     final intVal = int.tryParse(val);
                     if (intVal != null) {
@@ -227,7 +228,7 @@ class StringCriterionInput extends StatelessWidget {
                 Expanded(
                   child: TextFormField(
                     initialValue: value?.value ?? '',
-                    decoration: const InputDecoration(hintText: 'Value'),
+                    decoration: InputDecoration(hintText: context.l10n.filter_value),
                     onChanged: (val) {
                       onChanged(StringCriterion(
                         value: val,
@@ -298,7 +299,7 @@ class DateCriterionInput extends StatelessWidget {
                 Expanded(
                   child: TextFormField(
                     initialValue: value?.value ?? '',
-                    decoration: const InputDecoration(hintText: 'YYYY-MM-DD'),
+                    decoration: InputDecoration(hintText: 'YYYY-MM-DD'),
                     onChanged: (val) {
                       onChanged(DateCriterion(
                         value: val,

@@ -12,6 +12,21 @@ class AppLocalizationsDe extends AppLocalizations {
   String get appTitle => 'StashFlow';
 
   @override
+  String get common_token => 'Token';
+
+  @override
+  String get filter_value => 'Wert';
+
+  @override
+  String get common_yes => 'Yes';
+
+  @override
+  String get common_no => 'No';
+
+  @override
+  String get common_clear_history => 'Clear History';
+
+  @override
   String get nav_scenes => 'Szenen';
 
   @override
@@ -737,9 +752,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get filter_modifier => 'Modifikator';
-
-  @override
-  String get filter_value => 'Wert';
 
   @override
   String get filter_equals => 'Gleich';
