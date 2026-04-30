@@ -36,6 +36,8 @@ class StudioMediaGridPage extends ConsumerWidget {
       onRefresh: () => ref.refresh(studioMediaGridProvider(studioId).future),
       onFetchNextPage: () =>
           ref.read(studioMediaGridProvider(studioId).notifier).fetchNextPage(),
+      loadingItemBuilder: (context, isGrid, index) =>
+          SceneCard.skeleton(isGrid: isGrid, useMasonry: isGrid),
       gridDelegate: isGridView
           ? GridUtils.createDelegate(crossAxisCount: gridColumns ?? 2)
           : null,

@@ -40,6 +40,8 @@ class PerformerGalleriesGridPage extends ConsumerWidget {
       onFetchNextPage: () => ref
           .read(performerGalleriesGridProvider(performerId).notifier)
           .fetchNextPage(),
+      loadingItemBuilder: (context, isGrid, index) =>
+          GalleryCard.skeleton(isGrid: isGrid, useMasonry: isGrid),
       gridDelegate: isGridView
           ? GridUtils.createDelegate(crossAxisCount: gridColumns ?? 2)
           : null,
@@ -52,9 +54,7 @@ class PerformerGalleriesGridPage extends ConsumerWidget {
           useMasonry: isGridView,
           memCacheWidth: memCacheWidth,
           onTap: () {
-            ref
-                .read(imageFilterStateProvider.notifier)
-                .setGalleryId(item.id);
+            ref.read(imageFilterStateProvider.notifier).setGalleryId(item.id);
             context.push('/galleries/images');
           },
         );

@@ -431,14 +431,17 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     final isFullScreen = ref.watch(fullScreenModeProvider);
     final scrollController = ref.watch(sceneScrollControllerProvider);
 
-    final hasActiveFilters = filterActive || organizedFilter != OrganizedFilter.all;
+    final hasActiveFilters =
+        filterActive || organizedFilter != OrganizedFilter.all;
 
     // ⚡ Bolt: Hoist scene lookup map out of the itemBuilder loop.
     // Why: Previously, every item built during scrolling performed an O(N) indexWhere lookup,
     // causing O(N^2) complexity and potential frame drops.
     // Impact: Reduces lookup from O(N) to O(1), significantly improving scrolling performance.
     final scenes = scenesAsync.value ?? [];
-    final sceneIndexMap = {for (var i = 0; i < scenes.length; i++) scenes[i].id: i};
+    final sceneIndexMap = {
+      for (var i = 0; i < scenes.length; i++) scenes[i].id: i,
+    };
 
     return ListPageScaffold<Scene>(
       title: context.l10n.appTitle,
@@ -467,6 +470,8 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
           ref.read(sceneListProvider.notifier).fetchNextPage(),
       onPageSizeChanged: (pageSize) =>
           ref.read(sceneListProvider.notifier).setPerPage(pageSize),
+      loadingItemBuilder: (context, isGrid, index) =>
+          SceneCard.skeleton(isGrid: isGrid, useMasonry: isGrid),
       actions: [
         Stack(
           children: [

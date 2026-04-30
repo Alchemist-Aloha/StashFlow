@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../domain/entities/scene.dart';
@@ -25,6 +26,60 @@ import '../../../../core/utils/vtt_service.dart';
 /// * Consistent "BoxFit.cover" and "double.infinity" dimensions to ensure images
 ///   perfectly fill their allocated AspectRatio containers.
 class SceneCard extends ConsumerStatefulWidget {
+  SceneCard.skeleton({
+    this.isGrid = false,
+    this.useMasonry = false,
+    this.showPerformers = false,
+    this.onTap,
+    this.memCacheWidth,
+    this.memCacheHeight,
+    super.key,
+  }) : scene = Scene(
+         id: 'skeleton',
+         title: 'Loading',
+         details: null,
+         path: null,
+         date: DateTime(1970),
+         rating100: null,
+         oCounter: 0,
+         organized: false,
+         interactive: false,
+         resumeTime: null,
+         playCount: 0,
+         playDuration: null,
+         files: const [
+           SceneFile(
+             format: null,
+             width: null,
+             height: null,
+             videoCodec: null,
+             audioCodec: null,
+             bitRate: null,
+             duration: null,
+             frameRate: null,
+           ),
+         ],
+         paths: const ScenePaths(
+           screenshot: null,
+           preview: null,
+           stream: null,
+           caption: null,
+           vtt: null,
+           sprite: null,
+         ),
+         captions: const [],
+         urls: const [],
+         studioId: null,
+         studioName: null,
+         studioImagePath: null,
+         performerIds: const [],
+         performerNames: const [],
+         performerImagePaths: const [],
+         tagIds: const [],
+         tagNames: const [],
+       ),
+       skeletonize = true;
+
   const SceneCard({
     required this.scene,
     this.isGrid = false,
@@ -33,6 +88,7 @@ class SceneCard extends ConsumerStatefulWidget {
     this.onTap,
     this.memCacheWidth,
     this.memCacheHeight,
+    this.skeletonize = false,
     super.key,
   });
 
@@ -56,6 +112,9 @@ class SceneCard extends ConsumerStatefulWidget {
 
   /// Optional memory cache height for image optimization.
   final int? memCacheHeight;
+
+  /// Whether to render this card using skeleton placeholders.
+  final bool skeletonize;
 
   @override
   ConsumerState<SceneCard> createState() => _SceneCardState();
@@ -131,7 +190,8 @@ class _SceneCardState extends ConsumerState<SceneCard> {
 
     if (!mounted || widget.scene.id != sceneId) return;
 
-    final hasUsableSprite = sprites != null &&
+    final hasUsableSprite =
+        sprites != null &&
         sprites.isNotEmpty &&
         sprites.any(
           (sprite) =>
@@ -141,8 +201,9 @@ class _SceneCardState extends ConsumerState<SceneCard> {
         );
 
     setState(() {
-      _spriteAvailability =
-          hasUsableSprite ? _SpriteAvailability.valid : _SpriteAvailability.invalid;
+      _spriteAvailability = hasUsableSprite
+          ? _SpriteAvailability.valid
+          : _SpriteAvailability.invalid;
     });
   }
 
@@ -178,7 +239,8 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     double aspectRatio,
     String apiKey,
   ) {
-    final isDesktop = kIsWeb ||
+    final isDesktop =
+        kIsWeb ||
         (defaultTargetPlatform != TargetPlatform.android &&
             defaultTargetPlatform != TargetPlatform.iOS);
     final headers = ref.watch(mediaHeadersProvider);
@@ -279,7 +341,10 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                 if (_isScrubbing) {
                   final box = context.findRenderObject() as RenderBox;
                   final relativePos =
-                      (details.localPosition.dx / box.size.width).clamp(0.0, 1.0);
+                      (details.localPosition.dx / box.size.width).clamp(
+                        0.0,
+                        1.0,
+                      );
                   setState(() {
                     _scrubTime = relativePos * totalDuration;
                   });
@@ -300,10 +365,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                 });
               }
             : null,
-        child: Material(
-          color: Colors.transparent,
-          child: content,
-        ),
+        child: Material(color: Colors.transparent, child: content),
       ),
     );
   }
@@ -318,11 +380,12 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     // Use primary file's aspect ratio if available, default to 16/9.
     // This ensures the image container in List view adapts to the media,
     // preventing black bars or forced cropping of portrait/square content.
-    double? fileAspectRatio = (widget.scene.files.isNotEmpty &&
+    double? fileAspectRatio =
+        (widget.scene.files.isNotEmpty &&
             widget.scene.files.first.width != null &&
             widget.scene.files.first.height != null)
         ? widget.scene.files.first.width!.toDouble() /
-            widget.scene.files.first.height!.toDouble()
+              widget.scene.files.first.height!.toDouble()
         : null;
 
     // Force square videos to 9/16 portrait on mobile to avoid the "fat" look.
@@ -335,10 +398,20 @@ class _SceneCardState extends ConsumerState<SceneCard> {
 
     if (widget.isGrid) {
       return _buildGridCard(
-          context, ref, duration, fileAspectRatio ?? 16 / 9, apiKey);
+        context,
+        ref,
+        duration,
+        fileAspectRatio ?? 16 / 9,
+        apiKey,
+      );
     }
     return _buildListCard(
-        context, ref, duration, fileAspectRatio ?? 16 / 9, apiKey);
+      context,
+      ref,
+      duration,
+      fileAspectRatio ?? 16 / 9,
+      apiKey,
+    );
   }
 
   /// Builds the full-width list variant of the card.
@@ -351,74 +424,80 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     double aspectRatio,
     String apiKey,
   ) {
-    return Material(
-      color:
-          Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.1),
-      borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: widget.onTap,
-        onLongPress: () => _showMenu(context, ref),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AspectRatio(
-              // Clamp aspect ratio to prevent extremely tall or wide items from
-              // breaking the list layout flow.
-              aspectRatio: aspectRatio.clamp(0.5, 2.5),
-              child: _buildThumbnail(context, duration, aspectRatio, apiKey),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.scene.displayTitle,
-                          style: context.textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: context.dimensions.cardTitleFontSize *
-                                context.dimensions.fontSizeFactor,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${widget.scene.studioName ?? context.l10n.common_unknown} • ${widget.scene.date.year}',
-                          style: context.textTheme.labelMedium?.copyWith(
-                            color: context.colors.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        if (widget.showPerformers && ref.watch(showPerformerAvatarsProvider) &&
-                            widget.scene.performerNames.isNotEmpty) ...[
-                          const SizedBox(height: 8),
-                          _PerformerAvatarRow(
-                            performerImagePaths:
-                                widget.scene.performerImagePaths,
-                            performerNames: widget.scene.performerNames,
-                            performerIds: widget.scene.performerIds,
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    tooltip: 'More',
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    onPressed: () => _showMenu(context, ref),
-                    icon: const Icon(Icons.more_vert, size: 20, color: null),
-                  ),
-                ],
+    return Skeletonizer(
+      enabled: widget.skeletonize,
+      child: Material(
+        color: Theme.of(
+          context,
+        ).colorScheme.primaryContainer.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: widget.onTap,
+          onLongPress: () => _showMenu(context, ref),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AspectRatio(
+                // Clamp aspect ratio to prevent extremely tall or wide items from
+                // breaking the list layout flow.
+                aspectRatio: aspectRatio.clamp(0.5, 2.5),
+                child: _buildThumbnail(context, duration, aspectRatio, apiKey),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.scene.displayTitle,
+                            style: context.textTheme.bodySmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  context.dimensions.cardTitleFontSize *
+                                  context.dimensions.fontSizeFactor,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${widget.scene.studioName ?? context.l10n.common_unknown} • ${widget.scene.date.year}',
+                            style: context.textTheme.labelMedium?.copyWith(
+                              color: context.colors.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          if (widget.showPerformers &&
+                              ref.watch(showPerformerAvatarsProvider) &&
+                              widget.scene.performerNames.isNotEmpty) ...[
+                            const SizedBox(height: 8),
+                            _PerformerAvatarRow(
+                              performerImagePaths:
+                                  widget.scene.performerImagePaths,
+                              performerNames: widget.scene.performerNames,
+                              performerIds: widget.scene.performerIds,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: 'More',
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      onPressed: () => _showMenu(context, ref),
+                      icon: const Icon(Icons.more_vert, size: 20, color: null),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -435,90 +514,94 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     double aspectRatio,
     String apiKey,
   ) {
-    return Material(
-      color:
-          Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.1),
-      borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: widget.onTap,
-        onLongPress: () => _showMenu(context, ref),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AspectRatio(
-              aspectRatio:
+    return Skeletonizer(
+      enabled: widget.skeletonize,
+      child: Material(
+        color: Theme.of(
+          context,
+        ).colorScheme.primaryContainer.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: widget.onTap,
+          onLongPress: () => _showMenu(context, ref),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AspectRatio(
+                aspectRatio: widget.useMasonry
+                    ? aspectRatio.clamp(0.5, 2.5)
+                    : 16 / 9,
+                child: _buildThumbnail(
+                  context,
+                  duration,
                   widget.useMasonry ? aspectRatio.clamp(0.5, 2.5) : 16 / 9,
-              child: _buildThumbnail(
-                context,
-                duration,
-                widget.useMasonry ? aspectRatio.clamp(0.5, 2.5) : 16 / 9,
-                apiKey,
+                  apiKey,
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.scene.displayTitle,
-                          style: context.textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: context.dimensions.cardTitleFontSize *
-                                context.dimensions.fontSizeFactor,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.scene.displayTitle,
+                            style: context.textTheme.bodySmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  context.dimensions.cardTitleFontSize *
+                                  context.dimensions.fontSizeFactor,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          widget.scene.studioName ?? context.l10n.common_unknown,
-                          style: context.textTheme.labelSmall?.copyWith(
-                            color: context.colors.primary,
-                            fontWeight: FontWeight.bold,
+                          const SizedBox(height: 2),
+                          Text(
+                            widget.scene.studioName ??
+                                context.l10n.common_unknown,
+                            style: context.textTheme.labelSmall?.copyWith(
+                              color: context.colors.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (widget.showPerformers && ref.watch(showPerformerAvatarsProvider) &&
-                            widget.scene.performerNames.isNotEmpty) ...[
-                          const SizedBox(height: 4),
-                          _PerformerAvatarRow(
-                            performerImagePaths:
-                                widget.scene.performerImagePaths,
-                            performerNames: widget.scene.performerNames,
-                            performerIds: widget.scene.performerIds,
-                          ),
+                          if (widget.showPerformers &&
+                              ref.watch(showPerformerAvatarsProvider) &&
+                              widget.scene.performerNames.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            _PerformerAvatarRow(
+                              performerImagePaths:
+                                  widget.scene.performerImagePaths,
+                              performerNames: widget.scene.performerNames,
+                              performerIds: widget.scene.performerIds,
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    tooltip: 'More',
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    onPressed: () => _showMenu(context, ref),
-                    icon: const Icon(Icons.more_vert, size: 16, color: null),
-                  ),
-                ],
+                    IconButton(
+                      tooltip: 'More',
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      onPressed: () => _showMenu(context, ref),
+                      icon: const Icon(Icons.more_vert, size: 16, color: null),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-enum _SpriteAvailability {
-  unknown,
-  valid,
-  invalid,
-}
+enum _SpriteAvailability { unknown, valid, invalid }
 
 class _ThumbnailMetadataOverlay extends StatelessWidget {
   const _ThumbnailMetadataOverlay({
@@ -539,23 +622,24 @@ class _ThumbnailMetadataOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.6),
-      ),
+      decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.6)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _buildItem(context, icon, count.toString()),
           if (rating != null)
-            _buildItem(context, Icons.star, (rating! / 20.0).toStringAsFixed(1)),
+            _buildItem(
+              context,
+              Icons.star,
+              (rating! / 20.0).toStringAsFixed(1),
+            ),
           Text(
             duration,
-            style: (isGrid
-                    ? context.textTheme.labelSmall
-                    : context.textTheme.labelMedium)
-                ?.copyWith(
-              color: Colors.white,
-            ),
+            style:
+                (isGrid
+                        ? context.textTheme.labelSmall
+                        : context.textTheme.labelMedium)
+                    ?.copyWith(color: Colors.white),
           ),
         ],
       ),
@@ -570,17 +654,17 @@ class _ThumbnailMetadataOverlay extends StatelessWidget {
         const SizedBox(width: 2),
         Text(
           text,
-          style: (isGrid
-                  ? context.textTheme.labelSmall
-                  : context.textTheme.labelMedium)
-              ?.copyWith(
-            color: Colors.white,
-          ),
+          style:
+              (isGrid
+                      ? context.textTheme.labelSmall
+                      : context.textTheme.labelMedium)
+                  ?.copyWith(color: Colors.white),
         ),
       ],
     );
   }
 }
+
 class _PerformerAvatarRow extends ConsumerWidget {
   const _PerformerAvatarRow({
     required this.performerImagePaths,
@@ -617,9 +701,11 @@ class _PerformerAvatarRow extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(size / 2),
                   child: CircleAvatar(
                     radius: size / 2,
-                    backgroundColor:
-                        Theme.of(context).colorScheme.surfaceContainerHighest,
-                    child: performerImagePaths[i] != null &&
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
+                    child:
+                        performerImagePaths[i] != null &&
                             performerImagePaths[i]!.isNotEmpty &&
                             !performerImagePaths[i]!.contains('default=true')
                         ? ClipOval(

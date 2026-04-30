@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
@@ -10,6 +11,17 @@ import '../providers/gallery_details_provider.dart';
 
 /// A card widget that displays a summary of a [Gallery].
 class GalleryCard extends ConsumerWidget {
+  const GalleryCard.skeleton({
+    required this.isGrid,
+    this.useMasonry = false,
+    this.onTap,
+    this.thumbnailUrl,
+    this.memCacheWidth,
+    this.memCacheHeight,
+    super.key,
+  }) : gallery = const Gallery(id: 'skeleton', title: 'Loading'),
+       skeletonize = true;
+
   const GalleryCard({
     required this.gallery,
     this.isGrid = true,
@@ -18,6 +30,7 @@ class GalleryCard extends ConsumerWidget {
     this.thumbnailUrl,
     this.memCacheWidth,
     this.memCacheHeight,
+    this.skeletonize = false,
     super.key,
   });
 
@@ -38,13 +51,19 @@ class GalleryCard extends ConsumerWidget {
 
   /// Optional memory cache width for image optimization.
   final int? memCacheWidth;
+
   /// Optional memory cache height for image optimization.
   final int? memCacheHeight;
+
+  /// Whether to render this card using skeleton placeholders.
+  final bool skeletonize;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     double aspectRatio = 16 / 9;
-    if (gallery.coverWidth != null && gallery.coverHeight != null && gallery.coverHeight! > 0) {
+    if (gallery.coverWidth != null &&
+        gallery.coverHeight != null &&
+        gallery.coverHeight! > 0) {
       aspectRatio = gallery.coverWidth! / gallery.coverHeight!;
     }
 
@@ -92,145 +111,164 @@ class GalleryCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildListCard(BuildContext context, WidgetRef ref, double aspectRatio) {
-    return Material(
-      color:
-          Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.1),
-      borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildThumbnail(context, aspectRatio.clamp(0.5, 2.5)),
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          gallery.displayName,
-                          style: context.textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: context.dimensions.cardTitleFontSize *
-                                context.dimensions.fontSizeFactor,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if ((gallery.details != null &&
-                                gallery.details!.isNotEmpty) ||
-                            gallery.date != null) ...[
-                          const SizedBox(height: 4),
+  Widget _buildListCard(
+    BuildContext context,
+    WidgetRef ref,
+    double aspectRatio,
+  ) {
+    return Skeletonizer(
+      enabled: skeletonize,
+      child: Material(
+        color: Theme.of(
+          context,
+        ).colorScheme.primaryContainer.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildThumbnail(context, aspectRatio.clamp(0.5, 2.5)),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
-                            [
-                              if (gallery.details != null &&
-                                  gallery.details!.isNotEmpty)
-                                gallery.details,
-                              if (gallery.date != null)
-                                gallery.date!.split('-').first,
-                            ].join(' • '),
-                            style: context.textTheme.labelMedium?.copyWith(
-                              color: context.colors.primary,
+                            gallery.displayName,
+                            style: context.textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.bold,
+                              fontSize:
+                                  context.dimensions.cardTitleFontSize *
+                                  context.dimensions.fontSizeFactor,
                             ),
-                            maxLines: 1,
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
+                          if ((gallery.details != null &&
+                                  gallery.details!.isNotEmpty) ||
+                              gallery.date != null) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              [
+                                if (gallery.details != null &&
+                                    gallery.details!.isNotEmpty)
+                                  gallery.details,
+                                if (gallery.date != null)
+                                  gallery.date!.split('-').first,
+                              ].join(' • '),
+                              style: context.textTheme.labelMedium?.copyWith(
+                                color: context.colors.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    tooltip: 'More',
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    onPressed: () => _showRating(context, ref),
-                    icon: const Icon(Icons.more_vert, size: 20),
-                  ),
-                ],
+                    IconButton(
+                      tooltip: 'More',
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      onPressed: () => _showRating(context, ref),
+                      icon: const Icon(Icons.more_vert, size: 20),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildGridCard(BuildContext context, WidgetRef ref, double aspectRatio) {
-    return Material(
-      color:
-          Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.1),
-      borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildThumbnail(
-                context, useMasonry ? aspectRatio.clamp(0.5, 2.5) : 16 / 9),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          gallery.displayName,
-                          style: context.textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: context.dimensions.cardTitleFontSize *
-                                context.dimensions.fontSizeFactor,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (gallery.details != null &&
-                            gallery.details!.isNotEmpty) ...[
-                          const SizedBox(height: 2),
+  Widget _buildGridCard(
+    BuildContext context,
+    WidgetRef ref,
+    double aspectRatio,
+  ) {
+    return Skeletonizer(
+      enabled: skeletonize,
+      child: Material(
+        color: Theme.of(
+          context,
+        ).colorScheme.primaryContainer.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildThumbnail(
+                context,
+                useMasonry ? aspectRatio.clamp(0.5, 2.5) : 16 / 9,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
                           Text(
-                            gallery.details!,
-                            style: context.textTheme.labelSmall?.copyWith(
-                              color: context.colors.primary,
+                            gallery.displayName,
+                            style: context.textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.bold,
+                              fontSize:
+                                  context.dimensions.cardTitleFontSize *
+                                  context.dimensions.fontSizeFactor,
                             ),
-                            maxLines: 1,
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
+                          if (gallery.details != null &&
+                              gallery.details!.isNotEmpty) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              gallery.details!,
+                              style: context.textTheme.labelSmall?.copyWith(
+                                color: context.colors.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    tooltip: 'More',
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    onPressed: () => _showRating(context, ref),
-                    icon: const Icon(Icons.more_vert, size: 14),
-                  ),
-                ],
+                    IconButton(
+                      tooltip: 'More',
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      onPressed: () => _showRating(context, ref),
+                      icon: const Icon(Icons.more_vert, size: 14),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildThumbnail(BuildContext context, double? aspectRatio) {
-    final imageUrl = thumbnailUrl ??
-        gallery.coverPath ??
-        '/gallery/${gallery.id}/thumbnail';
+    final imageUrl =
+        thumbnailUrl ?? gallery.coverPath ?? '/gallery/${gallery.id}/thumbnail';
 
     final child = Stack(
       fit: aspectRatio != null ? StackFit.expand : StackFit.loose,
@@ -259,21 +297,18 @@ class GalleryCard extends ConsumerWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.star,
-                    color: Colors.amber,
-                    size: isGrid ? 10 : 14,
-                  ),
+                  Icon(Icons.star, color: Colors.amber, size: isGrid ? 10 : 14),
                   SizedBox(width: isGrid ? 2 : 4),
                   Text(
                     (gallery.rating100! / 20).toStringAsFixed(1),
-                    style: (isGrid
-                            ? context.textTheme.labelSmall
-                            : context.textTheme.labelMedium)
-                        ?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style:
+                        (isGrid
+                                ? context.textTheme.labelSmall
+                                : context.textTheme.labelMedium)
+                            ?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                   ),
                 ],
               ),
@@ -284,10 +319,7 @@ class GalleryCard extends ConsumerWidget {
             bottom: isGrid ? 4 : 8,
             right: isGrid ? 4 : 8,
             child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 4,
-                vertical: 2,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               decoration: BoxDecoration(
                 color: Colors.black.withAlpha(200),
                 borderRadius: BorderRadius.circular(2),
@@ -322,11 +354,7 @@ class GalleryCard extends ConsumerWidget {
     );
 
     return aspectRatio != null
-        ? AspectRatio(
-            aspectRatio: aspectRatio,
-            child: child,
-          )
+        ? AspectRatio(aspectRatio: aspectRatio, child: child)
         : child;
   }
 }
-

@@ -323,7 +323,8 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
       galleryFilterStateProvider.select((s) => s != GalleryFilter.empty()),
     );
     final organizedFilter = ref.watch(galleryOrganizedOnlyProvider);
-    final hasActiveFilters = filterActive || organizedFilter != OrganizedFilter.all;
+    final hasActiveFilters =
+        filterActive || organizedFilter != OrganizedFilter.all;
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     // ⚡ Bolt: Hoist server endpoint calculation out of the itemBuilder/imageUrlBuilder loop.
@@ -414,6 +415,8 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
           ref.read(galleryListProvider.notifier).fetchNextPage(),
       onPageSizeChanged: (pageSize) =>
           ref.read(galleryListProvider.notifier).setPerPage(pageSize),
+      loadingItemBuilder: (context, isGrid, index) =>
+          GalleryCard.skeleton(isGrid: isGrid, useMasonry: isGrid),
       gridDelegate: isGridView
           ? GridUtils.createDelegate(crossAxisCount: gridColumns ?? 2)
           : null,

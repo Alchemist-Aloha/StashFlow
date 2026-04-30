@@ -27,7 +27,9 @@ class TagMediaGridPage extends ConsumerWidget {
     final gridColumns = ref.watch(tagGridColumnsProvider);
 
     return ListPageScaffold<Scene>(
-      title: context.l10n.studios_media_title, // Assuming tag media uses similar title or check l10n
+      title: context
+          .l10n
+          .studios_media_title, // Assuming tag media uses similar title or check l10n
       searchHint: context.l10n.common_search_placeholder,
       onSearchChanged: (_) {},
       provider: mediaAsync,
@@ -35,6 +37,8 @@ class TagMediaGridPage extends ConsumerWidget {
       onRefresh: () => ref.refresh(tagMediaGridProvider(tagId).future),
       onFetchNextPage: () =>
           ref.read(tagMediaGridProvider(tagId).notifier).fetchNextPage(),
+      loadingItemBuilder: (context, isGrid, index) =>
+          SceneCard.skeleton(isGrid: isGrid, useMasonry: isGrid),
       gridDelegate: isGridView
           ? GridUtils.createDelegate(crossAxisCount: gridColumns ?? 2)
           : null,

@@ -32,6 +32,8 @@ class TagGalleriesGridPage extends ConsumerWidget {
       onRefresh: () => ref.refresh(tagGalleriesGridProvider(tagId).future),
       onFetchNextPage: () =>
           ref.read(tagGalleriesGridProvider(tagId).notifier).fetchNextPage(),
+      loadingItemBuilder: (context, isGrid, index) =>
+          GalleryCard.skeleton(isGrid: isGrid, useMasonry: isGrid),
       gridDelegate: isGridView
           ? GridUtils.createDelegate(crossAxisCount: gridColumns ?? 2)
           : null,
@@ -44,9 +46,7 @@ class TagGalleriesGridPage extends ConsumerWidget {
           useMasonry: isGridView,
           memCacheWidth: memCacheWidth,
           onTap: () {
-            ref
-                .read(imageFilterStateProvider.notifier)
-                .setGalleryId(item.id);
+            ref.read(imageFilterStateProvider.notifier).setGalleryId(item.id);
             context.push('/galleries/images');
           },
         );

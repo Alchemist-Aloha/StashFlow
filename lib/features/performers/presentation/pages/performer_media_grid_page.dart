@@ -38,6 +38,8 @@ class PerformerMediaGridPage extends ConsumerWidget {
       onFetchNextPage: () => ref
           .read(performerMediaGridProvider(performerId).notifier)
           .fetchNextPage(),
+      loadingItemBuilder: (context, isGrid, index) =>
+          SceneCard.skeleton(isGrid: isGrid, useMasonry: isGrid),
       gridDelegate: isGridView
           ? GridUtils.createDelegate(crossAxisCount: gridColumns ?? 2)
           : null,
