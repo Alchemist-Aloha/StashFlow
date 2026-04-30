@@ -517,6 +517,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
   ) {
     return Skeletonizer(
       enabled: widget.skeletonize,
+      effect: const ShimmerEffect(duration: Duration(seconds: 2)),
       child: Material(
         color: Theme.of(
           context,
