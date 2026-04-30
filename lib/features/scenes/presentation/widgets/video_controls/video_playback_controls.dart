@@ -11,7 +11,10 @@ import '../../../domain/entities/scene.dart';
 import '../../../domain/entities/scene_title_utils.dart';
 import 'cast_selection_sheet.dart';
 
-class VideoPlaybackControls extends StatelessWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../../core/data/services/cast_service.dart';
+
+class VideoPlaybackControls extends ConsumerWidget {
   const VideoPlaybackControls({
     super.key,
     required this.controller,
@@ -32,6 +35,7 @@ class VideoPlaybackControls extends StatelessWidget {
     required this.selectedSubtitleType,
     required this.onSpeedTap,
     required this.isSpeedSliderVisible,
+    this.onStopCast,
   });
 
   final VideoController controller;
@@ -52,6 +56,7 @@ class VideoPlaybackControls extends StatelessWidget {
   final String? selectedSubtitleType;
   final VoidCallback onSpeedTap;
   final bool isSpeedSliderVisible;
+  final VoidCallback? onStopCast;
 
   static const _playbackSpeeds = <double>[
     0.25,
@@ -84,25 +89,15 @@ class VideoPlaybackControls extends StatelessWidget {
         alpha: 0.55,
       ),
       padding: const EdgeInsets.all(8),
-      minimumSize: const Size(38, 38),
+      minimumSize: const Size(32, 32),
     );
   }
 
-  String _format(Duration d) {
-    final totalSeconds = d.inSeconds;
-    final hours = totalSeconds ~/ 3600;
-    final minutes = (totalSeconds % 3600) ~/ 60;
-    final seconds = totalSeconds % 60;
-    if (hours > 0) {
-      return '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-    }
-    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-  }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final canSelectSubtitles = scene.captions.isNotEmpty;
+    final castState = ref.watch(castServiceProvider);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -143,28 +138,10 @@ class VideoPlaybackControls extends StatelessWidget {
                         },
                       ),
                     ],
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: StreamBuilder<Duration>(
-                        stream: controller.player.stream.position,
-                        builder: (context, snapshot) {
-                          final position = snapshot.data ?? controller.player.state.position;
-                          final duration = controller.player.state.duration;
-                          return Text(
-                            '${_format(position)} / ${_format(duration)}',
-                            style: context.textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onSurface,
-                              fontSize: context.fontSizes.small,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
                   ],
                 ),
                 const SizedBox(
-                  width: 8,
+                  width: 4,
                 ), // Padding between left and right groups
                 Row(
                   mainAxisSize: MainAxisSize.min,
@@ -308,11 +285,11 @@ class VideoPlaybackControls extends StatelessWidget {
                         onTap: onSpeedTap,
                         child: Container(
                           constraints: const BoxConstraints(
-                            minWidth: 38,
-                            minHeight: 38,
+                            minWidth: 32,
+                            minHeight: 32,
                           ),
                           alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
                           decoration: BoxDecoration(
                             color: Colors.transparent,
                             borderRadius: BorderRadius.circular(10),
@@ -329,7 +306,7 @@ class VideoPlaybackControls extends StatelessWidget {
                               color: isSpeedSliderVisible
                                   ? colorScheme.primary
                                   : colorScheme.onSurface,
-                              fontSize: context.fontSizes.regular,
+                              fontSize: context.fontSizes.small,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -339,36 +316,54 @@ class VideoPlaybackControls extends StatelessWidget {
                     if (desktopVolumeControl != null) ...[
                       desktopVolumeControl!,
                     ],
-                    IconButton(
-                      tooltip: 'Cast',
-                      style: _controlButtonStyle(colorScheme),
-                      icon: const Icon(Icons.cast_rounded),
-                      onPressed: () {
-                        onInteract();
-                        showModalBottomSheet(
-                          context: context,
-                          backgroundColor: Colors.transparent,
-                          isScrollControlled: true,
-                          builder: (context) => CastSelectionSheet(
-                            videoUrl:
-                                controller
-                                    .player
-                                    .state
-                                    .playlist
-                                    .medias
-                                    .firstOrNull
-                                    ?.uri ??
-                                '',
-                            title: scene.displayTitle,
-                          ),
-                        );
-                      },
-                    ),
+                    if (castState.isCasting)
+                      IconButton(
+                        tooltip: 'Stop Casting',
+                        style: _controlButtonStyle(colorScheme),
+                        icon: Icon(
+                          Icons.cast_connected_rounded,
+                          size: 20,
+                          color: colorScheme.primary,
+                        ),
+                        onPressed: () {
+                          onInteract();
+                          onStopCast?.call();
+                        },
+                      )
+                    else
+                      IconButton(
+                        tooltip: 'Cast',
+                        style: _controlButtonStyle(colorScheme),
+                        icon: const Icon(Icons.cast_rounded, size: 20),
+                        onPressed: () {
+                          onInteract();
+                          showModalBottomSheet(
+                            context: context,
+                            backgroundColor: Colors.transparent,
+                            isScrollControlled: true,
+                            builder: (context) => CastSelectionSheet(
+                              videoUrl:
+                                  controller
+                                      .player
+                                      .state
+                                      .playlist
+                                      .medias
+                                      .firstOrNull
+                                      ?.uri ??
+                                  '',
+                              title: scene.displayTitle,
+                            ),
+                          );
+                        },
+                      ),
                     if (enableNativePip && !kIsWeb && Platform.isAndroid) ...[
                       IconButton(
                         tooltip: context.l10n.common_pip,
                         style: _controlButtonStyle(colorScheme),
-                        icon: const Icon(Icons.picture_in_picture_alt_outlined),
+                        icon: const Icon(
+                          Icons.picture_in_picture_alt_outlined,
+                          size: 20,
+                        ),
                         onPressed: () async {
                           if (!isFullScreen) {
                             onFullScreenToggle?.call();
@@ -395,6 +390,7 @@ class VideoPlaybackControls extends StatelessWidget {
                           isFullScreen
                               ? Icons.fullscreen_exit_rounded
                               : Icons.fullscreen_rounded,
+                          size: 20,
                         ),
                         onPressed: () {
                           onFullScreenToggle?.call();

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/data/services/cast_service.dart';
 import '../../../../../core/presentation/theme/app_theme.dart';
+import '../../providers/video_player_provider.dart';
 
 /// A bottom sheet that allows users to select a device for casting.
 class CastSelectionSheet extends ConsumerStatefulWidget {
@@ -104,7 +105,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
     // Show a connecting dialog
     _showConnectingDialog(device.name);
 
-    final appCastService = ref.read(castServiceProvider.notifier);
+    final appCastServiceNotifier = ref.read(castServiceProvider.notifier);
 
     try {
       dc.CastSession session;
@@ -115,7 +116,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
         await session.connect();
       } else {
         debugPrint('CastSelectionSheet: connecting via castService');
-        session = await appCastService.castService.connect(device);
+        session = await appCastServiceNotifier.castService.connect(device);
       }
 
       // Close the connecting dialog
@@ -133,6 +134,16 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
       );
 
       await session.loadMedia(media);
+      
+      // Get current local position to sync
+      final playerState = ref.read(playerStateProvider);
+      final currentPos = playerState.player?.state.position ?? Duration.zero;
+      if (currentPos > Duration.zero) {
+        debugPrint('CastSelectionSheet: seeking cast to $currentPos');
+        await session.seek(currentPos);
+      }
+
+      await appCastServiceNotifier.setActiveSession(session);
       debugPrint('CastSelectionSheet: load media complete');
 
       if (mounted) {
@@ -175,6 +186,16 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
             title: widget.title,
           );
           await session.loadMedia(media);
+
+          // Get current local position to sync
+          final playerState = ref.read(playerStateProvider);
+          final currentPos = playerState.player?.state.position ?? Duration.zero;
+          if (currentPos > Duration.zero) {
+            debugPrint('CastSelectionSheet: seeking cast to $currentPos');
+            await session.seek(currentPos);
+          }
+
+          await appCastServiceNotifier.setActiveSession(session);
           debugPrint('CastSelectionSheet: load media complete');
 
           // Dismiss connecting dialog
@@ -232,7 +253,8 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final devices = ref.watch(castServiceProvider);
+    final castState = ref.watch(castServiceProvider);
+    final devices = castState.discoveredDevices;
 
     return Container(
       padding: EdgeInsets.only(

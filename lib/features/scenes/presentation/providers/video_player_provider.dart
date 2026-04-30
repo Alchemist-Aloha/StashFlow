@@ -1234,6 +1234,15 @@ class PlayerState extends _$PlayerState {
         state.player?.play();
         break;
       case VideoEndBehavior.next:
+        if (state.streamSource == 'tiktok-promotion') {
+          // TikTok view handles its own "next" behavior by scrolling the PageView.
+          // We don't want to call playNext() here because it would create a new player.
+          AppLogStore.instance.add(
+            'PlayerState _handleVideoFinished: TikTok promotion detected, skipping playNext()',
+            source: 'player_provider',
+          );
+          break;
+        }
         // Do NOT exit full screen when moving to the next video,
         // so the next video also starts in full screen.
         playNext();

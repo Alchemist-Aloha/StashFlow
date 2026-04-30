@@ -23,6 +23,10 @@ import 'native_video_controls.dart';
 // import 'scene_subtitle_overlay.dart'; // Don't remove. For customizeable subtitle rendering in the future, but currently we rely on native subtitles for performance and compatibility reasons.
 import 'transformable_video_surface.dart';
 
+import '../../../../core/data/graphql/url_resolver.dart';
+import '../../../../core/data/graphql/graphql_client.dart';
+import '../../../../core/data/services/cast_service.dart';
+
 TextAlign _subtitleTextAlign(String setting) {
   switch (setting) {
     case 'left':
@@ -291,6 +295,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   @override
   Widget build(BuildContext context) {
     final playerState = ref.watch(playerStateProvider);
+    final castState = ref.watch(castServiceProvider);
     final controller = playerState.videoController;
 
     final aspectRatio = _effectiveAspectRatio(controller);
@@ -383,23 +388,41 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                 Positioned.fill(
                   child: Container(
                     color: Colors.black,
-                    child: TransformableVideoSurface(
-                      fontSize: playerState.subtitleFontSize,
-                      textAlign: _subtitleTextAlign(
-                        playerState.subtitleTextAlignment,
-                      ),
-                      bottomRatio: playerState.subtitlePositionBottomRatio,
-                      constraints: constraints,
-                      controller: controller,
-                      aspectRatio: controllerAspectRatio,
-                      fit: (aspectRatio - controllerAspectRatio).abs() > 0.05
-                          ? BoxFit.fill
-                          : BoxFit.contain,
-                      transformationNotifier: _transformationNotifier,
-                    ),
+                    child: castState.isCasting
+                        ? Image.network(
+                            appendApiKey(
+                              widget.scene.paths.screenshot ?? '',
+                              ref.read(serverApiKeyProvider),
+                            ),
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Center(
+                              child: Icon(
+                                Icons.cast,
+                                size: 64,
+                                color: Colors.white24,
+                              ),
+                            ),
+                          )
+                        : TransformableVideoSurface(
+                            fontSize: playerState.subtitleFontSize,
+                            textAlign: _subtitleTextAlign(
+                              playerState.subtitleTextAlignment,
+                            ),
+                            bottomRatio:
+                                playerState.subtitlePositionBottomRatio,
+                            constraints: constraints,
+                            controller: controller,
+                            aspectRatio: controllerAspectRatio,
+                            fit: (aspectRatio - controllerAspectRatio).abs() >
+                                    0.05
+                                ? BoxFit.fill
+                                : BoxFit.contain,
+                            transformationNotifier: _transformationNotifier,
+                          ),
                   ),
                 ),
-                if (showLoadingIndicator)
+                if (showLoadingIndicator && !castState.isCasting)
                   Positioned.fill(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
@@ -408,27 +431,32 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                       child: const Center(child: CircularProgressIndicator()),
                     ),
                   ),
-                // Don't remove. Customizable subtitle rendering can be implemented here in the future if we want to support advanced features like karaoke or custom fonts. For now, we rely on native subtitles for better performance and compatibility.
-                // if (playerState.selectedSubtitleLanguage != null &&
-                //     playerState.selectedSubtitleLanguage != 'none')
-                //   StreamBuilder<List<String>>(
-                //     stream: controller.player.stream.subtitle,
-                //     builder: (context, snapshot) {
-                //       return SceneSubtitleOverlay(
-                //         text: snapshot.data?.join('\n') ?? '',
-                //         constraints: constraints,
-                //         bottomRatio: playerState.subtitlePositionBottomRatio,
-                //         fontSize: playerState.subtitleFontSize,
-                //         textAlign: _subtitleTextAlign(
-                //           playerState.subtitleTextAlignment,
-                //         ),
-                //         horizontalAlignment: _subtitleHorizontalAlignment(
-                //           playerState.subtitleTextAlignment,
-                //         ),
-                //         horizontalPadding: 16,
-                //       );
-                //     },
-                //   ),
+                if (castState.isCasting)
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.black.withValues(alpha: 0.4),
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.cast_connected,
+                              color: Colors.white,
+                              size: 48,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Casting to ${castState.activeSession?.device.name ?? 'Device'}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 Positioned.fill(
                   child: Material(
                     color: Colors.transparent,
@@ -720,6 +748,7 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
     final isInFullscreenPath = currentPath.endsWith('/fullscreen');
 
     final playerState = ref.watch(playerStateProvider);
+    final castState = ref.watch(castServiceProvider);
 
     // Automatically exit fullscreen if the global player state indicates it's no longer fullscreen
     // This handles scenarios like the video ending and the player state reset.
@@ -832,25 +861,42 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                   Positioned.fill(
                     child: Container(
                       color: Colors.black,
-                      child: TransformableVideoSurface(
-                        fontSize: playerState.subtitleFontSize,
-                        textAlign: _subtitleTextAlign(
-                          playerState.subtitleTextAlignment,
-                        ),
-                        bottomRatio: playerState.subtitlePositionBottomRatio,
-                        constraints: constraints,
-                        controller: controller,
-                        aspectRatio: aspectRatio,
-                        transformationNotifier: _transformationNotifier,
-                        fit: (aspectRatio - 1.0).abs() < 0.01
-                            ? BoxFit.fill
-                                      : (aspectRatio < 1.0
-                                            ? BoxFit.cover
-                                            : BoxFit.contain),
-                      ),
+                      child: castState.isCasting
+                          ? Image.network(
+                              appendApiKey(
+                                scene.paths.screenshot ?? '',
+                                ref.read(serverApiKeyProvider),
+                              ),
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Center(
+                                child: Icon(
+                                  Icons.cast,
+                                  size: 64,
+                                  color: Colors.white24,
+                                ),
+                              ),
+                            )
+                          : TransformableVideoSurface(
+                              fontSize: playerState.subtitleFontSize,
+                              textAlign: _subtitleTextAlign(
+                                playerState.subtitleTextAlignment,
+                              ),
+                              bottomRatio:
+                                  playerState.subtitlePositionBottomRatio,
+                              constraints: constraints,
+                              controller: controller,
+                              aspectRatio: aspectRatio,
+                              transformationNotifier: _transformationNotifier,
+                              fit: (aspectRatio - 1.0).abs() < 0.01
+                                  ? BoxFit.fill
+                                  : (aspectRatio < 1.0
+                                      ? BoxFit.cover
+                                      : BoxFit.contain),
+                            ),
                     ),
                   ),
-                  if (showLoadingIndicator)
+                  if (showLoadingIndicator && !castState.isCasting)
                     Positioned.fill(
                       child: DecoratedBox(
                         decoration: BoxDecoration(
@@ -859,27 +905,32 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                         child: const Center(child: CircularProgressIndicator()),
                       ),
                     ),
-                  // Don't remove. Customizable subtitle rendering can be implemented here in the future if we want to support advanced features like karaoke or custom fonts. For now, we rely on native subtitles for better performance and compatibility.
-                  // if (playerState.selectedSubtitleLanguage != null &&
-                  //     playerState.selectedSubtitleLanguage != 'none')
-                  //   StreamBuilder<List<String>>(
-                  //     stream: controller.player.stream.subtitle,
-                  //     builder: (context, snapshot) {
-                  //       return SceneSubtitleOverlay(
-                  //         text: snapshot.data?.join('\n') ?? '',
-                  //         constraints: constraints,
-                  //         bottomRatio: playerState.subtitlePositionBottomRatio,
-                  //         fontSize: playerState.subtitleFontSize + 4,
-                  //         textAlign: _subtitleTextAlign(
-                  //           playerState.subtitleTextAlignment,
-                  //         ),
-                  //         horizontalAlignment: _subtitleHorizontalAlignment(
-                  //           playerState.subtitleTextAlignment,
-                  //         ),
-                  //         horizontalPadding: 32,
-                  //       );
-                  //     },
-                  //   ),
+                  if (castState.isCasting)
+                    Positioned.fill(
+                      child: Container(
+                        color: Colors.black.withValues(alpha: 0.4),
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.cast_connected,
+                                color: Colors.white,
+                                size: 48,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Casting to ${castState.activeSession?.device.name ?? 'Device'}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   Positioned.fill(
                     child: Material(
                       color: Colors.transparent,

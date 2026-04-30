@@ -213,6 +213,14 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
       final id = entry.key;
       final controller = entry.value;
       if (id == currentSceneId) {
+        final endBehavior = ref.read(playerStateProvider).playEndBehavior;
+        final targetMode = endBehavior == VideoEndBehavior.loop
+            ? PlaylistMode.loop
+            : PlaylistMode.none;
+        if (controller.player.state.playlistMode != targetMode) {
+          controller.player.setPlaylistMode(targetMode);
+        }
+
         if (!controller.player.state.playing) {
           controller.player.play();
         }
@@ -246,6 +254,33 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
             ? PlaylistMode.loop
             : PlaylistMode.none,
       );
+
+      player.stream.completed.listen((completed) {
+        if (completed && mounted) {
+          final behavior = ref.read(playerStateProvider).playEndBehavior;
+          if (behavior == VideoEndBehavior.next) {
+            final scenesAsync = ref.read(sceneListProvider);
+            if (scenesAsync.hasValue) {
+              final scenes = scenesAsync.value!;
+              if (_currentIndex < scenes.length &&
+                  scenes[_currentIndex].id == scene.id) {
+                // It's the current one, scroll to next if possible
+                if (_currentIndex < scenes.length - 1) {
+                  AppLogStore.instance.add(
+                    'TiktokScenesView: auto-scrolling to next scene due to end behavior',
+                    source: 'TiktokScenesView',
+                  );
+                  _pageController.animateToPage(
+                    _currentIndex + 1,
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeInOut,
+                  );
+                }
+              }
+            }
+          }
+        }
+      });
 
       if (mounted) {
         setState(() {}); // Trigger rebuild to show the first frame
