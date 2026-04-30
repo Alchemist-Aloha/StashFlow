@@ -338,6 +338,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get common_play => 'reproducir';
 
   @override
+  String get common_refresh => 'Refresh';
+
+  @override
   String get common_close => 'cerrar';
 
   @override

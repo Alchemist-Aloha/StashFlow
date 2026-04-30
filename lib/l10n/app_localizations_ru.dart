@@ -334,6 +334,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get common_play => 'играть';
 
   @override
+  String get common_refresh => 'Refresh';
+
+  @override
   String get common_close => 'закрыть';
 
   @override

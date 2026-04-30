@@ -660,6 +660,12 @@ abstract class AppLocalizations {
   /// **'Play'**
   String get common_play;
 
+  /// No description provided for @common_refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get common_refresh;
+
   /// No description provided for @common_close.
   ///
   /// In en, this message translates to:
