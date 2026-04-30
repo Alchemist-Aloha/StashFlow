@@ -1294,12 +1294,12 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                               onTap: () {},
                               behavior: HitTestBehavior.opaque,
                               child: Container(
-                                margin: const EdgeInsets.fromLTRB(6, 0, 6, 6),
+                                margin: const EdgeInsets.fromLTRB(4, 0, 4, 4),
                                 padding: const EdgeInsets.fromLTRB(
-                                  10,
                                   8,
-                                  10,
-                                  6,
+                                  4,
+                                  8,
+                                  2,
                                 ),
                                 decoration: BoxDecoration(
                                   color: colorScheme.surface.withValues(
@@ -1324,7 +1324,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                       alignment: Alignment.centerRight,
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
+                                          horizontal: 16,
                                         ),
                                         child: StreamBuilder<Duration>(
                                           stream: widget
