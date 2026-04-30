@@ -89,7 +89,7 @@ class VideoPlaybackControls extends ConsumerWidget {
         alpha: 0.55,
       ),
       padding: const EdgeInsets.all(8),
-      minimumSize: const Size(38, 38),
+      minimumSize: const Size(32, 32),
     );
   }
 
@@ -141,7 +141,7 @@ class VideoPlaybackControls extends ConsumerWidget {
                   ],
                 ),
                 const SizedBox(
-                  width: 8,
+                  width: 4,
                 ), // Padding between left and right groups
                 Row(
                   mainAxisSize: MainAxisSize.min,
@@ -285,11 +285,11 @@ class VideoPlaybackControls extends ConsumerWidget {
                         onTap: onSpeedTap,
                         child: Container(
                           constraints: const BoxConstraints(
-                            minWidth: 38,
-                            minHeight: 38,
+                            minWidth: 32,
+                            minHeight: 32,
                           ),
                           alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
                           decoration: BoxDecoration(
                             color: Colors.transparent,
                             borderRadius: BorderRadius.circular(10),
@@ -306,7 +306,7 @@ class VideoPlaybackControls extends ConsumerWidget {
                               color: isSpeedSliderVisible
                                   ? colorScheme.primary
                                   : colorScheme.onSurface,
-                              fontSize: context.fontSizes.regular,
+                              fontSize: context.fontSizes.small,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -322,6 +322,7 @@ class VideoPlaybackControls extends ConsumerWidget {
                         style: _controlButtonStyle(colorScheme),
                         icon: Icon(
                           Icons.cast_connected_rounded,
+                          size: 20,
                           color: colorScheme.primary,
                         ),
                         onPressed: () {
@@ -333,7 +334,7 @@ class VideoPlaybackControls extends ConsumerWidget {
                       IconButton(
                         tooltip: 'Cast',
                         style: _controlButtonStyle(colorScheme),
-                        icon: const Icon(Icons.cast_rounded),
+                        icon: const Icon(Icons.cast_rounded, size: 20),
                         onPressed: () {
                           onInteract();
                           showModalBottomSheet(
@@ -359,7 +360,10 @@ class VideoPlaybackControls extends ConsumerWidget {
                       IconButton(
                         tooltip: context.l10n.common_pip,
                         style: _controlButtonStyle(colorScheme),
-                        icon: const Icon(Icons.picture_in_picture_alt_outlined),
+                        icon: const Icon(
+                          Icons.picture_in_picture_alt_outlined,
+                          size: 20,
+                        ),
                         onPressed: () async {
                           if (!isFullScreen) {
                             onFullScreenToggle?.call();
@@ -386,6 +390,7 @@ class VideoPlaybackControls extends ConsumerWidget {
                           isFullScreen
                               ? Icons.fullscreen_exit_rounded
                               : Icons.fullscreen_rounded,
+                          size: 20,
                         ),
                         onPressed: () {
                           onFullScreenToggle?.call();
