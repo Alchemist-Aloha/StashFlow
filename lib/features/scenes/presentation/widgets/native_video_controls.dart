@@ -83,8 +83,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
   bool _dragSeekShouldResumePlayback = false;
   int? _seekFeedbackSeconds;
   Timer? _seekFeedbackTimer;
-  bool _volumeOverlayVisible = false;
-  Timer? _volumeOverlayTimer;
   ProviderSubscription<DesktopSettings>? _desktopSettingsSubscription;
 
   // Advanced gestures state
@@ -169,7 +167,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     WidgetsBinding.instance.removeObserver(this);
     _cancelAutoHide();
     _seekFeedbackTimer?.cancel();
-    _volumeOverlayTimer?.cancel();
     _desktopSettingsSubscription?.close();
     for (final sub in _subscriptions) {
       sub.cancel();
@@ -496,45 +493,53 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
 
     return IgnorePointer(
       child: AnimatedOpacity(
-        opacity: isVisible ? 1 : 0,
-        duration: const Duration(milliseconds: 170),
+        opacity: isVisible ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 200),
         curve: Curves.easeOutCubic,
         child: AnimatedScale(
-          scale: isVisible ? 1 : 0.94,
-          duration: const Duration(milliseconds: 170),
-          curve: Curves.easeOutCubic,
+          scale: isVisible ? 1.0 : 0.8,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.elasticOut,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            decoration: ShapeDecoration(
-              color: colorScheme.surfaceContainerHighest.withValues(
-                alpha: 0.92,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            decoration: BoxDecoration(
+              color: Colors.black.withAlpha(160),
+              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+              border: Border.all(
+                color: Colors.white.withAlpha(40),
+                width: 1,
               ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18),
-                side: BorderSide(
-                  color: colorScheme.outlineVariant.withValues(alpha: 0.65),
-                ),
-              ),
-              shadows: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.22),
-                  blurRadius: 18,
-                  offset: const Offset(0, 8),
-                ),
-              ],
             ),
-            child: Row(
+            child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(icon, size: 18, color: colorScheme.primary),
-                const SizedBox(width: 6),
+                Icon(
+                  icon,
+                  color: Colors.white,
+                  size: 32,
+                  shadows: const [
+                    Shadow(
+                      blurRadius: 8,
+                      color: Colors.black26,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
                 Text(
                   label,
-                  style: context.textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurface,
-                    fontSize: context.fontSizes.medium,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.2,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                    shadows: [
+                      Shadow(
+                        blurRadius: 6,
+                        color: Colors.black26,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -614,12 +619,21 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
 
   void _showVolumeOverlay() {
     if (!mounted) return;
-    _volumeOverlayTimer?.cancel();
-    setState(() => _volumeOverlayVisible = true);
-    _volumeOverlayTimer = Timer(const Duration(milliseconds: 1000), () {
-      if (!mounted) return;
-      setState(() => _volumeOverlayVisible = false);
-    });
+    final desktopSettings = ref.read(desktopSettingsProvider);
+    final volume = desktopSettings.volume;
+    final isMuted = desktopSettings.isMuted;
+
+    IconData iconData = Icons.volume_up_rounded;
+    if (isMuted || volume == 0) {
+      iconData = Icons.volume_off_rounded;
+    } else if (volume < 0.5) {
+      iconData = Icons.volume_down_rounded;
+    }
+
+    _showFeedback(
+      iconData,
+      isMuted ? context.l10n.common_mute : '${(volume * 100).round()}%',
+    );
   }
 
   Widget _buildSpeedSliderPanel(ColorScheme colorScheme, double playbackSpeed) {
@@ -676,51 +690,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
             },
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildVolumeOverlay(ColorScheme colorScheme) {
-    final desktopSettings = ref.watch(desktopSettingsProvider);
-    final volume = desktopSettings.volume;
-    final isMuted = desktopSettings.isMuted;
-
-    IconData iconData = Icons.volume_up_rounded;
-    if (isMuted || volume == 0) {
-      iconData = Icons.volume_off_rounded;
-    } else if (volume < 0.5) {
-      iconData = Icons.volume_down_rounded;
-    }
-
-    return IgnorePointer(
-      child: AnimatedOpacity(
-        opacity: _volumeOverlayVisible ? 1 : 0,
-        duration: const Duration(milliseconds: 200),
-        child: Center(
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.black.withAlpha(150),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(iconData, color: Colors.white, size: 48),
-                const SizedBox(height: 8),
-                Text(
-                  isMuted
-                      ? context.l10n.common_mute
-                      : '${(volume * 100).round()}%',
-                  style: context.textTheme.bodyMedium?.copyWith(
-                    color: Colors.white,
-                    fontSize: context.fontSizes.large,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -1140,8 +1109,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                       visible: _feedbackVisible,
                     ),
                   ),
-
-                  Positioned.fill(child: _buildVolumeOverlay(colorScheme)),
 
                   // Layer: Scrubbing Preview (Floating above the slider)
                   if (_isScrubbing &&

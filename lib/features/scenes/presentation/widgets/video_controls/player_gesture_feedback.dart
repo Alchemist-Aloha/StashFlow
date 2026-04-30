@@ -30,10 +30,10 @@ class PlayerGestureFeedback extends StatelessWidget {
           curve: Curves.elasticOut,
           child: Center(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               decoration: BoxDecoration(
                 color: Colors.black.withAlpha(160),
-                borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                 border: Border.all(
                   color: Colors.white.withAlpha(40),
                   width: 1,
@@ -45,26 +45,26 @@ class PlayerGestureFeedback extends StatelessWidget {
                   Icon(
                     icon,
                     color: Colors.white,
-                    size: 48,
+                    size: 32,
                     shadows: const [
                       Shadow(
-                        blurRadius: 10,
+                        blurRadius: 8,
                         color: Colors.black26,
-                        offset: Offset(0, 4),
+                        offset: Offset(0, 3),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
                   Text(
                     label,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 20,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 0.5,
                       shadows: [
                         Shadow(
-                          blurRadius: 8,
+                          blurRadius: 6,
                           color: Colors.black26,
                           offset: Offset(0, 2),
                         ),
