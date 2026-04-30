@@ -2,7 +2,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
@@ -337,26 +336,14 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
 
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
-    // Hoist invariant layout calculations out of the itemBuilder loop
-    // to prevent O(N) redundant calculations during scroll events.
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final memCacheWidth = (screenWidth / crossAxisCount * 1.5).toInt();
-
-    // ⚡ Bolt: Hoist fallback list allocation out of the itemBuilder.
-    // Why: Prevents creating a new empty list or evaluating the null-aware operator
-    // for every item during scroll layout passes.
-    // Impact: Reduces GC pressure and speeds up grid rendering.
-    final items = imagesAsync.value ?? [];
-
     return ListPageScaffold<entity.Image>(
       title: context.l10n.images_title,
-      imageUrlBuilder: (img) => img.paths.thumbnail,
-      // Pass the actual column count to the scaffold so scroll-sensed prefetch works correctly.
-      // We use a dummy gridDelegate just to signal to ListPageScaffold that it's a grid.
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: crossAxisCount,
       ),
       useResponsiveGrid: false,
+      useMasonry: true,
+      imageUrlBuilder: (img) => img.paths.thumbnail,
       actions: [
         Stack(
           children: [
@@ -406,6 +393,11 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
       searchHint: context.l10n.common_search_placeholder,
       onSearchChanged: _onSearchChanged,
       provider: imagesAsync,
+        itemBuilder: (context, image, memCacheWidth, memCacheHeight) =>
+          ImageCard(image: image, memCacheWidth: memCacheWidth),
+        loadingItemBuilder: (context, isGrid, index) => ImageCard.skeleton(
+        memCacheWidth: 300,
+        ),
       onRefresh: () => ref.read(imageListProvider.notifier).refresh(),
       onFetchNextPage: () =>
           ref.read(imageListProvider.notifier).fetchNextPage(),
@@ -439,30 +431,8 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
               ),
             )
           : null,
-      customBody: CustomScrollView(
-        controller: ref.watch(imageScrollControllerProvider),
-        slivers: [
-          SliverPadding(
-            padding: EdgeInsets.all(context.dimensions.spacingSmall),
-            sliver: SliverMasonryGrid.count(
-              crossAxisCount: crossAxisCount,
-              mainAxisSpacing: context.dimensions.spacingSmall,
-              crossAxisSpacing: context.dimensions.spacingSmall,
-              itemBuilder: (context, index) {
-                if (index >= items.length) return const SizedBox.shrink();
-
-                return RepaintBoundary(
-                  child: ImageCard(
-                    image: items[index],
-                    memCacheWidth: memCacheWidth,
-                  ),
-                );
-              },
-              childCount: imagesAsync.value?.length ?? 0,
-            ),
-          ),
-        ],
-      ),
+      scrollController: ref.watch(imageScrollControllerProvider),
+      padding: EdgeInsets.all(context.dimensions.spacingSmall),
     );
   }
 }

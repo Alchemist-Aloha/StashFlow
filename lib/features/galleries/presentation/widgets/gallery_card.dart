@@ -118,6 +118,7 @@ class GalleryCard extends ConsumerWidget {
   ) {
     return Skeletonizer(
       enabled: skeletonize,
+      effect: const ShimmerEffect(duration: Duration(seconds: 2)),
       child: Material(
         color: Theme.of(
           context,
@@ -197,6 +198,7 @@ class GalleryCard extends ConsumerWidget {
   ) {
     return Skeletonizer(
       enabled: skeletonize,
+      effect: const ShimmerEffect(duration: Duration(seconds: 2)),
       child: Material(
         color: Theme.of(
           context,

@@ -444,6 +444,9 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
           onTap: () => context.push('/performers/performer/${performer.id}'),
         );
       },
+      loadingItemBuilder: (context, isGrid, index) => PerformerCard.skeleton(
+        memCacheWidth: 300,
+      ),
 
       floatingActionButton: randomNavigationEnabled
           ? performersAsync.maybeWhen(

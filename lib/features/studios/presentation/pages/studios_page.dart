@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../../domain/entities/studio_filter.dart';
 import '../providers/studio_list_provider.dart';
 import '../widgets/studio_filter_panel.dart';
@@ -402,6 +403,28 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
           trailing: Text(
             context.l10n.nScenes(studio.sceneCount),
             style: context.textTheme.bodySmall,
+          ),
+        ),
+      ),
+      loadingItemBuilder: (context, isGrid, index) => Skeletonizer(
+        enabled: true,
+        effect: const ShimmerEffect(duration: Duration(seconds: 2)),
+        child: Card(
+          margin: EdgeInsets.symmetric(
+            horizontal: context.dimensions.spacingMedium,
+            vertical: 4,
+          ),
+          color: Theme.of(context).colorScheme.primaryContainer.withValues(
+            alpha: 0.1,
+          ),
+          child: ListTile(
+            title: Text(
+              'Loading',
+              style: context.textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            trailing: Text('0', style: context.textTheme.bodySmall),
           ),
         ),
       ),
