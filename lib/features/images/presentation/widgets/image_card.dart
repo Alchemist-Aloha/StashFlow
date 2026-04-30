@@ -47,20 +47,22 @@ class ImageCard extends ConsumerWidget {
     return Skeletonizer(
       enabled: image.id == 'skeleton',
       effect: const ShimmerEffect(duration: Duration(seconds: 2)),
-      child: InkWell(
-        onTap: onTap ?? () => context.push('/galleries/images/${image.id}'),
-        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-        child: Card(
-          margin: EdgeInsets.zero,
-          clipBehavior: Clip.antiAlias,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-          ),
-          child: AspectRatio(
-            aspectRatio: aspectRatio.clamp(0.5, 2.0),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: InkWell(
+          onTap: onTap ?? () => context.push('/galleries/images/${image.id}'),
+          borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+          child: Card(
+            margin: EdgeInsets.zero,
+            clipBehavior: Clip.antiAlias,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+            ),
+            child: AspectRatio(
+              aspectRatio: aspectRatio.clamp(0.5, 2.0),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
                 StashImage(
                   imageUrl: image.paths.thumbnail ?? image.paths.preview,
                   width: double.infinity,
@@ -101,6 +103,7 @@ class ImageCard extends ConsumerWidget {
             ),
           ),
         ),
+      ),
       ),
     );
   }
