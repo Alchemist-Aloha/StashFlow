@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:video_player/video_player.dart';
 import 'package:flutter/gestures.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 import 'package:go_router/go_router.dart';
@@ -27,6 +26,7 @@ import '../providers/video_player_provider.dart';
 import '../providers/playback_queue_provider.dart';
 import 'scrubbing_preview.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 
 class NativeVideoControls extends ConsumerStatefulWidget {
   const NativeVideoControls({
@@ -42,7 +42,7 @@ class NativeVideoControls extends ConsumerStatefulWidget {
     super.key,
   });
 
-  final VideoPlayerController controller;
+  final VideoController controller;
   final bool useDoubleTapSeek;
   final bool enableNativePip;
   final VoidCallback? onFullScreenToggle;
@@ -65,6 +65,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
   static const _gestureSeekSeconds = 10;
   static const _dragSeekSensitivity = 0.30;
   static const _dragSeekCurveExponent = 1.6;
+
+  final List<StreamSubscription> _subscriptions = [];
 
   bool _isScrubbing = false;
   double _scrubMs = 0;
@@ -91,7 +93,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
   String _feedbackLabel = '';
   bool _feedbackVisible = false;
   Timer? _feedbackTimer;
-  
+
   _DragMode _currentDragMode = _DragMode.none;
   double _dragStartValue = 0.0;
   bool _dragIsLeft = false;
@@ -104,8 +106,18 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       source: 'NativeVideoControls',
     );
     WidgetsBinding.instance.addObserver(this);
-    widget.controller.addListener(_onVideoTick);
-    _wasPlaying = widget.controller.value.isPlaying;
+
+    _subscriptions.add(
+      widget.controller.player.stream.playing.listen((_) => _onVideoTick()),
+    );
+    _subscriptions.add(
+      widget.controller.player.stream.position.listen((_) => _onVideoTick()),
+    );
+    _subscriptions.add(
+      widget.controller.player.stream.duration.listen((_) => _onVideoTick()),
+    );
+
+    _wasPlaying = widget.controller.player.state.playing;
     if (_wasPlaying) {
       _scheduleAutoHide();
     }
@@ -131,8 +143,19 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
         'NativeVideoControls didUpdateWidget controllerChange scene=${widget.scene.id}',
         source: 'NativeVideoControls',
       );
-      oldWidget.controller.removeListener(_onVideoTick);
-      widget.controller.addListener(_onVideoTick);
+      for (final sub in _subscriptions) {
+        sub.cancel();
+      }
+      _subscriptions.clear();
+      _subscriptions.add(
+        widget.controller.player.stream.playing.listen((_) => _onVideoTick()),
+      );
+      _subscriptions.add(
+        widget.controller.player.stream.position.listen((_) => _onVideoTick()),
+      );
+      _subscriptions.add(
+        widget.controller.player.stream.duration.listen((_) => _onVideoTick()),
+      );
     }
   }
 
@@ -147,7 +170,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     _seekFeedbackTimer?.cancel();
     _volumeOverlayTimer?.cancel();
     _desktopSettingsSubscription?.close();
-    widget.controller.removeListener(_onVideoTick);
+    for (final sub in _subscriptions) {
+      sub.cancel();
+    }
     super.dispose();
   }
 
@@ -157,14 +182,17 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     if (state != AppLifecycleState.paused) return;
 
     final controller = widget.controller;
-    if (!controller.value.isPlaying) return;
+    if (!controller.player.state.playing) return;
 
     final isFullScreen = ref.read(playerStateProvider).isFullScreen;
     if (!isFullScreen) return;
 
-    unawaited(
-      PipMode.enterIfAvailable(aspectRatio: controller.value.aspectRatio),
-    );
+    final width = controller.player.state.width;
+    final height = controller.player.state.height;
+    final aspect = (width != null && height != null && height > 0)
+        ? width / height
+        : 16 / 9;
+    unawaited(PipMode.enterIfAvailable(aspectRatio: aspect));
   }
 
   void _onVideoTick() {
@@ -174,18 +202,26 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
         ref.read(playerStateProvider).activeScene?.id == widget.scene.id;
     if (!isActive) return;
 
-    final isPlaying = widget.controller.value.isPlaying;
-    if (isPlaying != _wasPlaying) {
+    final isPlaying = widget.controller.player.state.playing;
+    final playingChanged = isPlaying != _wasPlaying;
+    
+    if (playingChanged) {
       _wasPlaying = isPlaying;
       if (isPlaying) {
         _scheduleAutoHide();
       } else {
         _cancelAutoHide();
         setState(() => _controlsVisible = true);
+        return;
       }
     }
 
-    if (_isScrubbing) return;
+    // Performance Optimization: If controls are hidden and we aren't scrubbing, 
+    // there's no need to trigger a rebuild for position updates.
+    if (!_controlsVisible && !_isScrubbing && !playingChanged) return;
+
+    // Further optimization: Even if visible, only rebuild if we are scrubbing 
+    // or if enough time has passed (throttling UI updates to ~10fps is plenty for labels).
     setState(() {});
   }
 
@@ -196,12 +232,12 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
 
   void _scheduleAutoHide() {
     _cancelAutoHide();
-    final isPlaying = widget.controller.value.isPlaying;
+    final isPlaying = widget.controller.player.state.playing;
     if (!isPlaying || _isScrubbing) return;
 
     _hideControlsTimer = Timer(_controlsAutoHideDelay, () {
       if (!mounted) return;
-      final stillPlaying = widget.controller.value.isPlaying;
+      final stillPlaying = widget.controller.player.state.playing;
       if (!stillPlaying || _isScrubbing || !_controlsVisible) return;
       setState(() => _controlsVisible = false);
     });
@@ -227,10 +263,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
   }
 
   void _seekRelativeSeconds(int seconds) {
-    if (!widget.controller.value.isInitialized) return;
-    final current = widget.controller.value.position;
-    final duration = widget.controller.value.duration;
-    final wasPlaying = widget.controller.value.isPlaying;
+    if (widget.controller.player.state.width == null) return;
+    final current = widget.controller.player.state.position;
+    final duration = widget.controller.player.state.duration;
+    final wasPlaying = widget.controller.player.state.playing;
     var target = current + Duration(seconds: seconds);
     if (target < Duration.zero) target = Duration.zero;
     if (target > duration) target = duration;
@@ -242,10 +278,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     Duration target, {
     required bool keepPlayingAfterSeek,
   }) async {
-    await widget.controller.seekTo(target);
+    await widget.controller.player.seek(target);
     if (!mounted || !keepPlayingAfterSeek) return;
-    if (!widget.controller.value.isPlaying) {
-      await widget.controller.play();
+    if (!widget.controller.player.state.playing) {
+      await widget.controller.player.play();
     }
   }
 
@@ -272,11 +308,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
         ref.read(playerStateProvider).activeScene?.id == widget.scene.id;
     if (!isActive) return;
 
-    if (!widget.controller.value.isInitialized) return;
-    _dragSeekStartPosition = widget.controller.value.position;
+    if (widget.controller.player.state.width == null) return;
+    _dragSeekStartPosition = widget.controller.player.state.position;
     _dragSeekTarget = null;
     _dragSeekAccumulatedDx = 0;
-    _dragSeekShouldResumePlayback = widget.controller.value.isPlaying;
+    _dragSeekShouldResumePlayback = widget.controller.player.state.playing;
     _seekFeedbackTimer?.cancel();
 
     AppLogStore.instance.add(
@@ -291,10 +327,12 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     if (!isActive) return;
 
     final startPosition = _dragSeekStartPosition;
-    if (!widget.controller.value.isInitialized || startPosition == null) return;
+    if (widget.controller.player.state.width == null || startPosition == null) {
+      return;
+    }
     if (dragAreaWidth <= 0) return;
 
-    final duration = widget.controller.value.duration;
+    final duration = widget.controller.player.state.duration;
     if (duration <= Duration.zero) return;
 
     _dragSeekAccumulatedDx += details.focalPointDelta.dx;
@@ -333,8 +371,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
         ),
       );
     } else if (_dragSeekShouldResumePlayback &&
-        !widget.controller.value.isPlaying) {
-      unawaited(widget.controller.play());
+        !widget.controller.player.state.playing) {
+      unawaited(widget.controller.player.play());
     }
 
     _seekFeedbackTimer?.cancel();
@@ -350,10 +388,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
   }
 
   void _togglePlay() {
-    if (widget.controller.value.isPlaying) {
-      widget.controller.pause();
+    if (widget.controller.player.state.playing) {
+      widget.controller.player.pause();
     } else {
-      widget.controller.play();
+      widget.controller.player.play();
     }
     _showControlsTemporarily();
   }
@@ -378,17 +416,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
         GoRouter.of(context).pushReplacement('/scenes/scene/${prev.id}');
       }
     }
-  }
-
-  String _format(Duration d) {
-    final totalSeconds = d.inSeconds;
-    final hours = totalSeconds ~/ 3600;
-    final minutes = (totalSeconds % 3600) ~/ 60;
-    final seconds = totalSeconds % 60;
-    if (hours > 0) {
-      return '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-    }
-    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
   ButtonStyle _controlButtonStyle(ColorScheme colorScheme) {
@@ -563,7 +590,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
             iconSize: 20,
             icon: const Icon(Icons.refresh_rounded),
             onPressed: () {
-              widget.controller.setPlaybackSpeed(1.0);
+              widget.controller.player.setRate(1.0);
               _showControlsTemporarily();
             },
           ),
@@ -586,7 +613,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                 max: 3.0,
                 divisions: 11,
                 onChanged: (v) {
-                  widget.controller.setPlaybackSpeed(v);
+                  widget.controller.player.setRate(v);
                   _showControlsTemporarily();
                 },
               ),
@@ -677,10 +704,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       return const SizedBox.shrink();
     }
 
-    final value = widget.controller.value;
+    final value = widget.controller.player.state;
     final duration = value.duration;
     final durationMs = math.max(1, duration.inMilliseconds);
-    final playbackSpeed = value.playbackSpeed;
+    final playbackSpeed = value.rate;
     final isFullScreen = playerState.isFullScreen;
     final queueState = ref.watch(playbackQueueProvider);
     final nextScene =
@@ -688,11 +715,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
             queueState.currentIndex < queueState.sequence.length - 1)
         ? queueState.sequence[queueState.currentIndex + 1]
         : null;
-
-    final currentMs = _isScrubbing
-        ? _scrubMs
-        : value.position.inMilliseconds.toDouble();
-    final sliderValue = currentMs.clamp(0, durationMs.toDouble()).toDouble();
 
     final isDesktop = ref.watch(desktopCapabilitiesProvider);
     final keybinds = ref.watch(keybindsProvider);
@@ -740,9 +762,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
         case KeybindAction.togglePip:
           callback = () {
             if (widget.enableNativePip && !kIsWeb && Platform.isAndroid) {
-              PipMode.enterIfAvailable(
-                aspectRatio: widget.controller.value.aspectRatio,
-              );
+              final w = widget.controller.player.state.width;
+              final h = widget.controller.player.state.height;
+              final r = (w != null && h != null && h > 0) ? w / h : 16 / 9;
+              PipMode.enterIfAvailable(aspectRatio: r);
             }
           };
           break;
@@ -754,18 +777,18 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
           break;
         case KeybindAction.speedUp:
           callback = () {
-            final currentSpeed = widget.controller.value.playbackSpeed;
-            widget.controller.setPlaybackSpeed(currentSpeed + 0.25);
+            final currentSpeed = widget.controller.player.state.rate;
+            widget.controller.player.setRate(currentSpeed + 0.25);
           };
           break;
         case KeybindAction.speedDown:
           callback = () {
-            final currentSpeed = widget.controller.value.playbackSpeed;
-            widget.controller.setPlaybackSpeed(currentSpeed - 0.25);
+            final currentSpeed = widget.controller.player.state.rate;
+            widget.controller.player.setRate(currentSpeed - 0.25);
           };
           break;
         case KeybindAction.resetSpeed:
-          callback = () => widget.controller.setPlaybackSpeed(1.0);
+          callback = () => widget.controller.player.setRate(1.0);
           break;
         case KeybindAction.closePlayer:
           callback = () => ref.read(playerStateProvider.notifier).stop();
@@ -805,24 +828,33 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                       child: Listener(
                         onPointerSignal: (pointerSignal) {
                           if (pointerSignal is PointerScrollEvent) {
-                            final isCtrlPressed = HardwareKeyboard.instance
-                                .isControlPressed;
-                            final isAltPressed = HardwareKeyboard.instance
-                                .isAltPressed;
+                            final isCtrlPressed =
+                                HardwareKeyboard.instance.isControlPressed;
+                            final isAltPressed =
+                                HardwareKeyboard.instance.isAltPressed;
 
                             if (isCtrlPressed) {
                               // Zoom logic: Scroll up (dy < 0) zooms in
-                              final double scaleDelta = pointerSignal
-                                          .scrollDelta.dy <
-                                      0
-                                  ? 1.1
-                                  : 0.9;
+                              final double scaleDelta =
+                                  pointerSignal.scrollDelta.dy < 0 ? 1.1 : 0.9;
                               final matrix = Matrix4.identity()
-                                ..translateByVector3(Vector3(pointerSignal.localPosition.dx,
-                                    pointerSignal.localPosition.dy, 0))
-                                ..scaleByVector3(Vector3(scaleDelta, scaleDelta, 1.0))
-                                ..translateByVector3(Vector3(-pointerSignal.localPosition.dx,
-                                    -pointerSignal.localPosition.dy, 0));
+                                ..translateByVector3(
+                                  Vector3(
+                                    pointerSignal.localPosition.dx,
+                                    pointerSignal.localPosition.dy,
+                                    0,
+                                  ),
+                                )
+                                ..scaleByVector3(
+                                  Vector3(scaleDelta, scaleDelta, 1.0),
+                                )
+                                ..translateByVector3(
+                                  Vector3(
+                                    -pointerSignal.localPosition.dx,
+                                    -pointerSignal.localPosition.dy,
+                                    0,
+                                  ),
+                                );
                               widget.onTransformationDelta?.call(
                                 matrix,
                                 pointerSignal.localPosition,
@@ -832,17 +864,24 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
 
                             if (isAltPressed) {
                               // Rotate logic: Scroll dy determines direction
-                              final double rotationDelta = pointerSignal
-                                          .scrollDelta.dy <
-                                      0
-                                  ? 0.1
-                                  : -0.1;
+                              final double rotationDelta =
+                                  pointerSignal.scrollDelta.dy < 0 ? 0.1 : -0.1;
                               final matrix = Matrix4.identity()
-                                ..translateByVector3(Vector3(pointerSignal.localPosition.dx,
-                                    pointerSignal.localPosition.dy, 0))
+                                ..translateByVector3(
+                                  Vector3(
+                                    pointerSignal.localPosition.dx,
+                                    pointerSignal.localPosition.dy,
+                                    0,
+                                  ),
+                                )
                                 ..rotateZ(rotationDelta)
-                                ..translateByVector3(Vector3(-pointerSignal.localPosition.dx,
-                                    -pointerSignal.localPosition.dy, 0));
+                                ..translateByVector3(
+                                  Vector3(
+                                    -pointerSignal.localPosition.dx,
+                                    -pointerSignal.localPosition.dy,
+                                    0,
+                                  ),
+                                );
                               widget.onTransformationDelta?.call(
                                 matrix,
                                 pointerSignal.localPosition,
@@ -893,9 +932,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                 }
                               : null,
                           onLongPressStart: (_) {
-                            _originalSpeed = widget.controller.value.playbackSpeed;
+                            _originalSpeed =
+                                widget.controller.player.state.rate;
                             _currentSpeed = 2.0;
-                            widget.controller.setPlaybackSpeed(_currentSpeed);
+                            widget.controller.player.setRate(_currentSpeed);
                             _showFeedback(Icons.fast_forward, '2.0x');
                           },
                           onLongPressMoveUpdate: (details) {
@@ -906,7 +946,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                               final newSpeed = 2.0 + extraSpeed;
                               if (newSpeed != _currentSpeed) {
                                 setState(() => _currentSpeed = newSpeed);
-                                widget.controller.setPlaybackSpeed(_currentSpeed);
+                                widget.controller.player.setRate(_currentSpeed);
                                 _showFeedback(
                                   Icons.fast_forward,
                                   '${_currentSpeed.toStringAsFixed(1)}x',
@@ -915,7 +955,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                             }
                           },
                           onLongPressEnd: (_) {
-                            widget.controller.setPlaybackSpeed(_originalSpeed);
+                            widget.controller.player.setRate(_originalSpeed);
                             setState(() {
                               _feedbackVisible = false;
                             });
@@ -936,16 +976,21 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                 if (details.focalPointDelta.dy.abs() >
                                     details.focalPointDelta.dx.abs() * 1.5) {
                                   _currentDragMode = _DragMode.vertical;
-                                  _dragIsLeft = details.focalPoint.dx <
+                                  _dragIsLeft =
+                                      details.focalPoint.dx <
                                       constraints.maxWidth / 2;
                                   if (_dragIsLeft) {
                                     ScreenBrightness().application.then((val) {
-                                      if (mounted && _currentDragMode == _DragMode.vertical) {
+                                      if (mounted &&
+                                          _currentDragMode ==
+                                              _DragMode.vertical) {
                                         _dragStartValue = val;
                                       }
                                     });
                                   } else {
-                                    _dragStartValue = ref.read(desktopSettingsProvider).volume;
+                                    _dragStartValue = ref
+                                        .read(desktopSettingsProvider)
+                                        .volume;
                                   }
                                 } else if (details.focalPointDelta.dx.abs() >
                                     details.focalPointDelta.dy.abs() * 1.5) {
@@ -957,22 +1002,39 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                               }
 
                               if (_currentDragMode == _DragMode.vertical) {
-                                final delta = -details.focalPointDelta.dy /
+                                final delta =
+                                    -details.focalPointDelta.dy /
                                     constraints.maxHeight;
-                                _dragStartValue = (_dragStartValue + delta).clamp(0.0, 1.0);
+                                _dragStartValue = (_dragStartValue + delta)
+                                    .clamp(0.0, 1.0);
 
                                 if (_dragIsLeft) {
                                   // Brightness
-                                  ScreenBrightness().setApplicationScreenBrightness(_dragStartValue);
-                                  _showFeedback(Icons.brightness_6, '${(_dragStartValue * 100).round()}%');
+                                  ScreenBrightness()
+                                      .setApplicationScreenBrightness(
+                                        _dragStartValue,
+                                      );
+                                  _showFeedback(
+                                    Icons.brightness_6,
+                                    '${(_dragStartValue * 100).round()}%',
+                                  );
                                 } else {
                                   // Volume
-                                  ref.read(playerStateProvider.notifier).setVolume(_dragStartValue);
-                                  _showFeedback(Icons.volume_up, '${(_dragStartValue * 100).round()}%');
+                                  ref
+                                      .read(playerStateProvider.notifier)
+                                      .setVolume(_dragStartValue);
+                                  _showFeedback(
+                                    Icons.volume_up,
+                                    '${(_dragStartValue * 100).round()}%',
+                                  );
                                 }
-                              } else if (_currentDragMode == _DragMode.horizontal) {
+                              } else if (_currentDragMode ==
+                                  _DragMode.horizontal) {
                                 if (!widget.useDoubleTapSeek) {
-                                  _updateDragSeek(details, constraints.maxWidth);
+                                  _updateDragSeek(
+                                    details,
+                                    constraints.maxWidth,
+                                  );
                                 }
                               }
                             } else if (details.pointerCount >= 2) {
@@ -980,7 +1042,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                             }
                           },
                           onScaleEnd: (details) {
-                            if (_currentDragMode == _DragMode.horizontal && _dragSeekStartPosition != null) {
+                            if (_currentDragMode == _DragMode.horizontal &&
+                                _dragSeekStartPosition != null) {
                               _endDragSeek();
                             }
                             _currentDragMode = _DragMode.none;
@@ -1170,10 +1233,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                         child: AnimatedOpacity(
                           opacity: _controlsVisible ? 1 : 0,
                           duration: const Duration(milliseconds: 180),
-                          child: GestureDetector(
-                            onTap: () {},
-                            behavior: HitTestBehavior.opaque,
-                            child: RepaintBoundary(
+                          child: RepaintBoundary(
+                            child: GestureDetector(
+                              onTap: () {},
+                              behavior: HitTestBehavior.opaque,
                               child: Container(
                                 margin: const EdgeInsets.fromLTRB(6, 0, 6, 6),
                                 padding: const EdgeInsets.fromLTRB(
@@ -1203,10 +1266,14 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                     ),
                                     VideoProgressBar(
                                       durationMs: durationMs,
-                                      sliderValue: sliderValue,
+                                      positionStream:
+                                          widget.controller.player.stream.position,
+                                      initialPositionMs:
+                                          value.position.inMilliseconds.toDouble(),
+                                      isScrubbing: _isScrubbing,
+                                      currentScrubValue: _scrubMs,
                                       onChangeStart: (v) {
-                                        _wasPlayingBeforeScrub =
-                                            value.isPlaying;
+                                        _wasPlayingBeforeScrub = value.playing;
                                         _cancelAutoHide();
                                         setState(() {
                                           _isScrubbing = true;
@@ -1240,15 +1307,15 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                     VideoPlaybackControls(
                                       controller: widget.controller,
                                       scene: widget.scene,
-                                      isPlaying: value.isPlaying,
+                                      isPlaying: value.playing,
                                       playbackSpeed: playbackSpeed,
                                       nextScene: nextScene,
                                       isFullScreen: isFullScreen,
                                       onPlayPause: () {
-                                        if (value.isPlaying) {
-                                          widget.controller.pause();
+                                        if (value.playing) {
+                                          widget.controller.player.pause();
                                         } else {
-                                          widget.controller.play();
+                                          widget.controller.player.play();
                                         }
                                       },
                                       onSkipNext: () {
@@ -1275,13 +1342,16 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                               )
                                               .setSubtitle(
                                                 lang,
-                                                captionType: type,
+                                                captionType: type.isEmpty
+                                                    ? null
+                                                    : type,
                                               );
                                         }
                                       },
                                       onSpeedSelected: (speed) async {
-                                        await widget.controller
-                                            .setPlaybackSpeed(speed);
+                                        await widget.controller.player.setRate(
+                                          speed,
+                                        );
                                       },
                                       onFullScreenToggle:
                                           widget.onFullScreenToggle,
@@ -1298,12 +1368,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                           playerState.selectedSubtitleLanguage,
                                       selectedSubtitleType:
                                           playerState.selectedSubtitleType,
-                                      formattedCurrentTime: _format(
-                                        Duration(
-                                          milliseconds: sliderValue.round(),
-                                        ),
-                                      ),
-                                      formattedDuration: _format(duration),
                                       onSpeedTap: () {
                                         setState(
                                           () => _showSpeedSlider =

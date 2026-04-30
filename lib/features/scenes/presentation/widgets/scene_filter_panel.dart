@@ -537,7 +537,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
             for (var stars = 0; stars <= 5; stars++)
               ChoiceChip(
                 label: stars == 0
-                    ? const Text('Any')
+                    ? Text(context.l10n.common_any)
                     : Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -611,21 +611,21 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
           spacing: context.dimensions.spacingSmall,
           children: [
             ChoiceChip(
-              label: const Text('Any'),
+              label: Text(context.l10n.common_any),
               selected: value == null,
               onSelected: (selected) {
                 if (selected) onChanged(null);
               },
             ),
             ChoiceChip(
-              label: const Text('Yes'),
+              label: Text(context.l10n.common_yes),
               selected: value == true,
               onSelected: (selected) {
                 if (selected) onChanged(true);
               },
             ),
             ChoiceChip(
-              label: const Text('No'),
+              label: Text(context.l10n.common_no),
               selected: value == false,
               onSelected: (selected) {
                 if (selected) onChanged(false);

@@ -524,7 +524,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                                   )
                                                   .clearAll();
                                             },
-                                            child: const Text('Clear History'),
+                                            child: Text(context.l10n.common_clear_history),
                                           ),
                                         ],
                                       ),

@@ -63,6 +63,13 @@ class SettingsHubPage extends ConsumerWidget {
                 ),
                 SizedBox(height: context.dimensions.spacingMedium),
                 SettingsActionCard(
+                  icon: Icons.storage_rounded,
+                  title: 'Storage & Cache',
+                  subtitle: 'Manage local caches and storage limits',
+                  onTap: () => context.push('/settings/storage'),
+                ),
+                SizedBox(height: context.dimensions.spacingMedium),
+                SettingsActionCard(
                   icon: Icons.help_outline_rounded,
                   title: l10n.settings_support,
                   subtitle: l10n.settings_support_subtitle,

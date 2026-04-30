@@ -4,6 +4,7 @@ import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/data/preferences/secure_storage_provider.dart';
 import '../../../../core/data/auth/auth_mode.dart';
 import '../../domain/models/server_profile.dart';
+import 'profile_credentials_provider.dart';
 
 part 'server_profiles_provider.g.dart';
 
@@ -92,6 +93,12 @@ class ServerProfiles extends _$ServerProfiles {
     if (password != null) {
       await secureStorage.write(key: 'profile_${profileId}_password', value: password);
     }
+
+    // Invalidate the credential providers to ensure they pick up the new values
+    ref.invalidate(profileApiKeyProvider(profileId));
+    ref.invalidate(profileUsernameProvider(profileId));
+    ref.invalidate(profilePasswordProvider(profileId));
+    ref.invalidate(profileCookieHeaderProvider(profileId));
   }
 
   Future<void> removeProfile(String id) async {

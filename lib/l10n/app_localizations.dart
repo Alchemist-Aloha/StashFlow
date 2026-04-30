@@ -120,6 +120,36 @@ abstract class AppLocalizations {
   /// **'StashFlow'**
   String get appTitle;
 
+  /// No description provided for @common_token.
+  ///
+  /// In en, this message translates to:
+  /// **'Token'**
+  String get common_token;
+
+  /// No description provided for @filter_value.
+  ///
+  /// In en, this message translates to:
+  /// **'Value'**
+  String get filter_value;
+
+  /// No description provided for @common_yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get common_yes;
+
+  /// No description provided for @common_no.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get common_no;
+
+  /// No description provided for @common_clear_history.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear History'**
+  String get common_clear_history;
+
   /// No description provided for @nav_scenes.
   ///
   /// In en, this message translates to:
@@ -1446,12 +1476,6 @@ abstract class AppLocalizations {
   /// **'Modifier'**
   String get filter_modifier;
 
-  /// No description provided for @filter_value.
-  ///
-  /// In en, this message translates to:
-  /// **'Value'**
-  String get filter_value;
-
   /// No description provided for @filter_equals.
   ///
   /// In en, this message translates to:
@@ -2465,6 +2489,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'When off, playback directly uses paths.stream'**
   String get settings_playback_prefer_streams_subtitle;
+
+  /// No description provided for @settings_playback_end_behavior.
+  ///
+  /// In en, this message translates to:
+  /// **'Play End Behavior'**
+  String get settings_playback_end_behavior;
+
+  /// No description provided for @settings_playback_end_behavior_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What to do when current playback ends'**
+  String get settings_playback_end_behavior_subtitle;
+
+  /// No description provided for @settings_playback_end_behavior_stop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get settings_playback_end_behavior_stop;
+
+  /// No description provided for @settings_playback_end_behavior_loop.
+  ///
+  /// In en, this message translates to:
+  /// **'Loop current scene'**
+  String get settings_playback_end_behavior_loop;
+
+  /// No description provided for @settings_playback_end_behavior_next.
+  ///
+  /// In en, this message translates to:
+  /// **'Play next scene'**
+  String get settings_playback_end_behavior_next;
 
   /// No description provided for @settings_playback_autoplay.
   ///

@@ -5,7 +5,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:fvp/fvp.dart' as fvp;
 import 'features/navigation/presentation/router.dart';
 import 'core/data/preferences/secure_storage_provider.dart';
 import 'core/data/preferences/shared_preferences_provider.dart';
@@ -37,11 +36,6 @@ Future<void> main() async {
       (defaultTargetPlatform == TargetPlatform.windows ||
           defaultTargetPlatform == TargetPlatform.linux ||
           defaultTargetPlatform == TargetPlatform.macOS)) {
-    fvp.registerWith(
-      options: {
-        'platforms': ['windows', 'linux', 'macos'],
-      },
-    );
     await windowManager.ensureInitialized();
   }
 

@@ -148,6 +148,17 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
     if (!_formKey.currentState!.validate()) return;
 
     final id = widget.profile?.id ?? DateTime.now().millisecondsSinceEpoch.toString();
+    
+    final notifier = ref.read(serverProfilesProvider.notifier);
+
+    // Write credentials FIRST to ensure they are available when the profile list updates
+    await notifier.updateProfileCredentials(
+      profileId: id,
+      apiKey: _apiKeyController.text,
+      username: _usernameController.text,
+      password: _passwordController.text,
+    );
+
     final profile = ServerProfile(
       id: id,
       name: _nameController.text.isEmpty ? null : _nameController.text,
@@ -156,19 +167,11 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
       allowWebPasswordLogin: _allowWebPasswordLogin,
     );
 
-    final notifier = ref.read(serverProfilesProvider.notifier);
     if (widget.profile == null) {
       await notifier.addProfile(profile);
     } else {
       await notifier.updateProfile(profile);
     }
-
-    await notifier.updateProfileCredentials(
-      profileId: id,
-      apiKey: _apiKeyController.text,
-      username: _usernameController.text,
-      password: _passwordController.text,
-    );
 
     if (mounted) {
       Navigator.of(context).pop();
@@ -394,7 +397,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
       return TextFormField(
         controller: _apiKeyController,
         decoration: InputDecoration(
-          labelText: _authMode == AuthMode.apiKey ? l10n.settings_server_auth_apikey : 'Token',
+          labelText: _authMode == AuthMode.apiKey ? l10n.settings_server_auth_apikey : l10n.common_token,
           border: const OutlineInputBorder(),
           suffixIcon: IconButton(
             icon: Icon(_obscureApiKey ? Icons.visibility : Icons.visibility_off),

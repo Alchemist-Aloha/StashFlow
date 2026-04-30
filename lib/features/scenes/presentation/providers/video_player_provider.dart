@@ -1,18 +1,15 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:clock/clock.dart';
-import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
-import 'package:http/http.dart' as http;
 import '../../domain/entities/scene.dart';
 import '../../domain/repositories/scene_repository.dart';
 import 'playback_queue_provider.dart';
 import 'scene_details_provider.dart';
 import 'scene_list_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
+import '../../data/repositories/stream_prewarmer.dart';
 import '../../../../core/utils/pip_mode.dart';
 import '../../../../main.dart'; // To access mediaHandler
 import '../../../../core/data/auth/auth_provider.dart';
@@ -22,8 +19,16 @@ import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/presentation/providers/desktop_settings_provider.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 
 part 'video_player_provider.g.dart';
+
+enum VideoEndBehavior {
+  stop,
+  loop,
+  next,
+}
 
 /// Represents the global state of the video player.
 ///
@@ -33,8 +38,11 @@ class GlobalPlayerState {
   /// The scene that is currently loaded or playing.
   final Scene? activeScene;
 
-  /// The underlying controller from the `video_player` package.
-  final VideoPlayerController? videoPlayerController;
+  /// The underlying Player.
+  final Player? player;
+
+  /// The underlying VideoController.
+  final VideoController? videoController;
 
   /// Whether the video is currently playing.
   final bool isPlaying;
@@ -54,6 +62,15 @@ class GlobalPlayerState {
   /// Source identifier for the current stream.
   final String? streamSource;
 
+  /// Whether the player is currently buffering.
+  final bool isBuffering;
+
+  /// The width of the video track.
+  final int? videoWidth;
+
+  /// The height of the video track.
+  final int? videoHeight;
+
   /// Latency in milliseconds from initialization start to first frame.
   final int? startupLatencyMs;
 
@@ -66,8 +83,8 @@ class GlobalPlayerState {
   /// Latency of the prewarm attempt in milliseconds.
   final int? prewarmLatencyMs;
 
-  /// User preference: whether to automatically play the next scene when current ends.
-  final bool autoplayNext;
+  /// User preference: how to behave when current playback ends.
+  final VideoEndBehavior playEndBehavior;
 
   /// User preference: whether to show technical overlays on the video.
   final bool showVideoDebugInfo;
@@ -104,18 +121,22 @@ class GlobalPlayerState {
 
   GlobalPlayerState({
     this.activeScene,
-    this.videoPlayerController,
+    this.player,
+    this.videoController,
     this.isPlaying = false,
     this.isFullScreen = false,
     this.isInPipMode = false,
     this.streamMimeType,
     this.streamLabel,
     this.streamSource,
+    this.isBuffering = false,
+    this.videoWidth,
+    this.videoHeight,
     this.startupLatencyMs,
     this.prewarmAttempted,
     this.prewarmSucceeded,
     this.prewarmLatencyMs,
-    this.autoplayNext = false,
+    this.playEndBehavior = VideoEndBehavior.stop,
     this.showVideoDebugInfo = false,
     this.useDoubleTapSeek = true,
     this.enableBackgroundPlayback = false,
@@ -129,21 +150,30 @@ class GlobalPlayerState {
     this.subtitleTextAlignment = 'center',
   });
 
+  /// User preference: whether to automatically play the next scene when current ends.
+  /// (Deprecated: Use [playEndBehavior] instead)
+  bool get autoplayNext => playEndBehavior == VideoEndBehavior.next;
+
   /// Creates a copy of the state with updated fields.
   /// Use [clearActive] to explicitly reset the active scene and controller.
   GlobalPlayerState copyWith({
     Scene? activeScene,
-    VideoPlayerController? videoPlayerController,
+    Player? player,
+    VideoController? videoController,
     bool? isPlaying,
     bool? isFullScreen,
     bool? isInPipMode,
     String? streamMimeType,
     String? streamLabel,
     String? streamSource,
+    bool? isBuffering,
+    int? videoWidth,
+    int? videoHeight,
     int? startupLatencyMs,
     bool? prewarmAttempted,
     bool? prewarmSucceeded,
     int? prewarmLatencyMs,
+    VideoEndBehavior? playEndBehavior,
     bool? autoplayNext,
     bool? showVideoDebugInfo,
     bool? useDoubleTapSeek,
@@ -161,9 +191,10 @@ class GlobalPlayerState {
   }) {
     return GlobalPlayerState(
       activeScene: clearActive ? null : (activeScene ?? this.activeScene),
-      videoPlayerController: clearActive
+      player: clearActive ? null : (player ?? this.player),
+      videoController: clearActive
           ? null
-          : (videoPlayerController ?? this.videoPlayerController),
+          : (videoController ?? this.videoController),
       isPlaying: isPlaying ?? this.isPlaying,
       isFullScreen: isFullScreen ?? this.isFullScreen,
       isInPipMode: isInPipMode ?? this.isInPipMode,
@@ -172,6 +203,9 @@ class GlobalPlayerState {
           : (streamMimeType ?? this.streamMimeType),
       streamLabel: clearActive ? null : (streamLabel ?? this.streamLabel),
       streamSource: clearActive ? null : (streamSource ?? this.streamSource),
+      isBuffering: isBuffering ?? this.isBuffering,
+      videoWidth: clearActive ? null : (videoWidth ?? this.videoWidth),
+      videoHeight: clearActive ? null : (videoHeight ?? this.videoHeight),
       startupLatencyMs: clearActive
           ? null
           : (startupLatencyMs ?? this.startupLatencyMs),
@@ -184,7 +218,11 @@ class GlobalPlayerState {
       prewarmLatencyMs: clearActive
           ? null
           : (prewarmLatencyMs ?? this.prewarmLatencyMs),
-      autoplayNext: autoplayNext ?? this.autoplayNext,
+      playEndBehavior:
+          playEndBehavior ??
+          (autoplayNext != null
+              ? (autoplayNext ? VideoEndBehavior.next : VideoEndBehavior.stop)
+              : this.playEndBehavior),
       showVideoDebugInfo: showVideoDebugInfo ?? this.showVideoDebugInfo,
       useDoubleTapSeek: useDoubleTapSeek ?? this.useDoubleTapSeek,
       enableBackgroundPlayback:
@@ -219,6 +257,7 @@ class GlobalPlayerState {
 @riverpod
 class PlayerState extends _$PlayerState {
   static const _autoplayNextKey = 'autoplay_next';
+  static const _playEndBehaviorKey = 'video_play_end_behavior';
   static const _showVideoDebugInfoKey = 'show_video_debug_info';
   static const _useDoubleTapSeekKey = 'video_use_double_tap_seek';
   static const _enableBackgroundPlaybackKey = 'video_background_playback';
@@ -230,8 +269,14 @@ class PlayerState extends _$PlayerState {
       'subtitle_position_bottom_ratio';
   static const _subtitleTextAlignmentKey = 'subtitle_text_alignment';
 
+  /// Internal reference used during disposal to ensure we clean up the right player.
+  Player? _playerRef;
+
   /// Internal reference used during disposal to ensure we clean up the right controller.
-  VideoPlayerController? _videoControllerRef;
+  VideoController? _videoControllerRef;
+
+  /// Subscriptions to the player's event streams.
+  final List<StreamSubscription> _subscriptions = [];
 
   /// Internal reference used during disposal to ensure we clean up the right scene activity.
   Scene? _activeSceneRef;
@@ -262,15 +307,21 @@ class PlayerState extends _$PlayerState {
     // Keep player state alive across route transitions to avoid restarting media.
     ref.keepAlive();
 
+    // Ensure MediaKit is initialized before any Player instances are created.
+    // This is called here instead of main() to improve initial app startup performance.
+    MediaKit.ensureInitialized();
+
     final repository = ref.read(sceneRepositoryProvider);
     ref.onDispose(() {
       PipMode.isInPipMode.removeListener(_onPipModeChanged);
-      
-      unawaited(_disposeControllers(
-        scene: _activeSceneRef,
-        controller: _videoControllerRef,
-        repository: repository,
-      ));
+
+      unawaited(
+        _disposeControllers(
+          scene: _activeSceneRef,
+          controller: _videoControllerRef,
+          repository: repository,
+        ),
+      );
     });
 
     PipMode.isInPipMode.addListener(_onPipModeChanged);
@@ -279,8 +330,7 @@ class PlayerState extends _$PlayerState {
     mediaHandler?.onPlayCallback = () async => togglePlayPause();
     mediaHandler?.onPauseCallback = () async => togglePlayPause();
     mediaHandler?.onStopCallback = () async => stop();
-    mediaHandler?.onSeekCallback = (pos) async =>
-        state.videoPlayerController?.seekTo(pos);
+    mediaHandler?.onSeekCallback = (pos) async => state.player?.seek(pos);
     mediaHandler?.onSkipToNextCallback = () async {
       AppLogStore.instance.add(
         'PlayerState mediaHandler.onSkipToNextCallback',
@@ -290,8 +340,24 @@ class PlayerState extends _$PlayerState {
     };
 
     final prefs = ref.read(sharedPreferencesProvider);
+
+    // Initial load of preferences
+    final autoplayNext = prefs.getBool(_autoplayNextKey) ?? false;
+    final endBehaviorStr = prefs.getString(_playEndBehaviorKey);
+    VideoEndBehavior playEndBehavior;
+    if (endBehaviorStr != null) {
+      playEndBehavior = VideoEndBehavior.values.firstWhere(
+        (e) => e.name == endBehaviorStr,
+        orElse: () => VideoEndBehavior.stop,
+      );
+    } else {
+      // Migrate from autoplayNext
+      playEndBehavior =
+          autoplayNext ? VideoEndBehavior.next : VideoEndBehavior.stop;
+    }
+
     return GlobalPlayerState(
-      autoplayNext: prefs.getBool(_autoplayNextKey) ?? false,
+      playEndBehavior: playEndBehavior,
       showVideoDebugInfo: prefs.getBool(_showVideoDebugInfoKey) ?? false,
       useDoubleTapSeek: prefs.getBool(_useDoubleTapSeekKey) ?? true,
       enableBackgroundPlayback:
@@ -315,9 +381,15 @@ class PlayerState extends _$PlayerState {
   }
 
   void setAutoplayNext(bool value) {
-    state = state.copyWith(autoplayNext: value);
+    setPlayEndBehavior(value ? VideoEndBehavior.next : VideoEndBehavior.stop);
+  }
+
+  void setPlayEndBehavior(VideoEndBehavior behavior) {
+    state = state.copyWith(playEndBehavior: behavior);
     final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setBool(_autoplayNextKey, value);
+    prefs.setString(_playEndBehaviorKey, behavior.name);
+    // Sync legacy key
+    prefs.setBool(_autoplayNextKey, behavior == VideoEndBehavior.next);
   }
 
   void setShowVideoDebugInfo(bool value) {
@@ -375,59 +447,40 @@ class PlayerState extends _$PlayerState {
   }
 
   Future<void> setSubtitle(String? languageCode, {String? captionType}) async {
-    if (!ref.mounted) return;
+  if (!ref.mounted) return;
     final scene = state.activeScene;
-    if (scene == null) return;
-
-    if (state.selectedSubtitleLanguage == languageCode &&
-        state.selectedSubtitleType == captionType) {
-      return;
-    }
-
+    if (scene == null || state.player == null) return;
     AppLogStore.instance.add(
       'PlayerState setSubtitle: $languageCode (type=$captionType)',
       source: 'player_provider',
     );
+    // 1. Update the UI state first
+    final isNone = languageCode == null || languageCode == 'none';
+    state = state.copyWith(
+      selectedSubtitleLanguage: isNone ? 'none' : languageCode,
+      selectedSubtitleType: captionType,
+    );
 
-    // If we're disabling subtitles, we set it to 'none' to distinguish from
-    // the null (unselected) state which triggers default auto-selection.
-    if (languageCode == null || languageCode == 'none') {
-      state = state.copyWith(
-        selectedSubtitleLanguage: 'none',
-        selectedSubtitleType: null,
-      );
+    // 2. Switch the track dynamically
+    final player = state.player!;
+    
+    if (isNone) {
+      // Disable subtitles
+      await player.setSubtitleTrack(SubtitleTrack.no());
     } else {
-      state = state.copyWith(
-        selectedSubtitleLanguage: languageCode,
-        selectedSubtitleType: captionType,
-      );
-    }
-
-    // Reload the current scene to apply subtitle change
-    final controller = state.videoPlayerController;
-    if (controller != null) {
-      final currentPosition = controller.value.position;
-      final isPlaying = controller.value.isPlaying;
-      final streamUrl = controller.dataSource;
-
-      // We re-run playScene which will handle creating a new controller with the correct subtitle.
-      // We pass the current state fields to preserve them.
-      await playScene(
-        scene,
-        streamUrl,
-        mimeType: state.streamMimeType,
-        streamLabel: state.streamLabel,
-        streamSource: state.streamSource,
-        httpHeaders: ref.read(mediaPlaybackHeadersProvider),
-        prewarmAttempted: state.prewarmAttempted,
-        prewarmSucceeded: state.prewarmSucceeded,
-        prewarmLatencyMs: state.prewarmLatencyMs,
-        initialPosition: currentPosition,
-        force: true,
-      );
-
-      if (!isPlaying) {
-        state.videoPlayerController?.pause();
+      // Find the track that matches your languageCode
+      // Note: You might need to map languageCode to the actual Track ID 
+      // available in player.state.tracks.subtitle
+      try {
+        final availableTracks = player.state.tracks.subtitle;
+        final targetTrack = availableTracks.firstWhere(
+          (t) => t.language == languageCode || t.title == languageCode,
+          orElse: () => SubtitleTrack.auto(),
+        );
+        
+        await player.setSubtitleTrack(targetTrack);
+      } catch (e) {
+        AppLogStore.instance.add('Failed to switch track: $e');
       }
     }
   }
@@ -455,10 +508,10 @@ class PlayerState extends _$PlayerState {
   Future<void> setVolume(double volume) async {
     await ref.read(desktopSettingsProvider.notifier).setVolume(volume);
     final desktopSettings = ref.read(desktopSettingsProvider);
-    final controller = state.videoPlayerController;
-    if (controller != null) {
-      await controller.setVolume(
-        desktopSettings.isMuted ? 0 : desktopSettings.volume,
+    final player = state.player;
+    if (player != null) {
+      await player.setVolume(
+        desktopSettings.isMuted ? 0 : desktopSettings.volume * 100.0,
       );
     }
   }
@@ -466,31 +519,51 @@ class PlayerState extends _$PlayerState {
   Future<void> toggleMute() async {
     await ref.read(desktopSettingsProvider.notifier).toggleMute();
     final desktopSettings = ref.read(desktopSettingsProvider);
-    final controller = state.videoPlayerController;
-    if (controller != null) {
-      await controller.setVolume(
-        desktopSettings.isMuted ? 0 : desktopSettings.volume,
+    final player = state.player;
+    if (player != null) {
+      await player.setVolume(
+        desktopSettings.isMuted ? 0 : desktopSettings.volume * 100.0,
       );
     }
   }
 
-  /// Proactively resolve the stream URL for the next scene in the queue
-  /// and store it in the StreamResolver cache.
-  void _prewarmNext() {
+  /// Proactively resolve and warm the stream URLs for the next several scenes
+  /// in the playback queue to ensure near-instant startup when navigating.
+  void _prewarmQueue() {
     final queue = ref.read(playbackQueueProvider);
-    final nextIndex = queue.currentIndex + 1;
-    if (nextIndex < queue.sequence.length) {
-      final nextScene = queue.sequence[nextIndex];
-      AppLogStore.instance.add(
-        'PlayerState prewarming next scene=${nextScene.id} at index=$nextIndex',
-        source: 'player_provider',
-      );
-      // Fire and forget resolution into cache
-      unawaited(
-        ref
-            .read(streamResolverProvider.notifier)
-            .resolvePreferredStream(nextScene),
-      );
+    final currentIndex = queue.currentIndex;
+    final sequence = queue.sequence;
+
+    if (currentIndex == -1 || sequence.isEmpty) return;
+
+    // Window size: how many scenes ahead to prewarm.
+    // 3 is a good balance between responsiveness and resource usage.
+    const windowSize = 3;
+    final startIndex = currentIndex + 1;
+    final endIndex = (currentIndex + 1 + windowSize).clamp(0, sequence.length);
+
+    final nextScenes = <Scene>[];
+    for (int i = startIndex; i < endIndex; i++) {
+      nextScenes.add(sequence[i]);
+    }
+
+    final prewarmer = ref.read(streamPrewarmerProvider.notifier);
+    final resolver = ref.read(streamResolverProvider.notifier);
+    final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
+
+    // Cancel any active prewarms for scenes that are no longer in our current "next N" window.
+    final nextSceneIds = nextScenes.map((s) => s.id).toSet();
+    prewarmer.cancelAllExcept(nextSceneIds);
+
+    for (final scene in nextScenes) {
+      unawaited(() async {
+        // Resolve URL (hits cache if already resolved)
+        final choice = await resolver.resolvePreferredStream(scene);
+        if (choice != null) {
+          // Perform network-level prewarming
+          await prewarmer.prewarm(scene, choice.url, headers: mediaHeaders);
+        }
+      }());
     }
   }
 
@@ -507,8 +580,6 @@ class PlayerState extends _$PlayerState {
     Duration? initialPosition,
     bool force = false,
   }) async {
-    final allowBackgroundPlayback = state.enableBackgroundPlayback;
-
     AppLogStore.instance.add(
       'provider playScene begin scene=${scene.id} source=${streamSource ?? '-'} mime=${mimeType ?? '-'} initialPos=${initialPosition?.inMilliseconds}ms force=$force',
       source: 'player_provider',
@@ -564,7 +635,7 @@ class PlayerState extends _$PlayerState {
 
     // ...
     // Later in playScene, when creating the controller:
-    Future<ClosedCaptionFile>? closedCaptionFile;
+    String? subtitleUrl;
     if (effectiveSubtitleLanguage != null &&
         effectiveSubtitleLanguage != 'none' &&
         hasSubtitleSource) {
@@ -587,14 +658,12 @@ class PlayerState extends _$PlayerState {
         captionUrl = scene.paths.vtt!.trim();
       }
 
-      AppLogStore.instance.add(
-        'provider playScene: loading subtitles lang=$lang type=$type final=$captionUrl',
-        source: 'player_provider',
-      );
+      final apiKey = ref.read(serverApiKeyProvider);
+      subtitleUrl = appendApiKey(captionUrl, apiKey);
 
-      closedCaptionFile = _loadSubtitles(
-        captionUrl,
-        fallbackVttUrl: hasVttPath ? scene.paths.vtt!.trim() : null,
+      AppLogStore.instance.add(
+        'provider playScene: subtitle url=$subtitleUrl lang=$lang type=$type',
+        source: 'player_provider',
       );
     } else if (effectiveSubtitleLanguage != null) {
       AppLogStore.instance.add(
@@ -618,19 +687,14 @@ class PlayerState extends _$PlayerState {
       );
     }
 
-    if (state.videoPlayerController != null) {
+    if (state.player != null) {
       await _disposeControllers();
     }
 
-    final videoController = VideoPlayerController.networkUrl(
-      Uri.parse(effectiveStreamUrl),
-      httpHeaders: httpHeaders ?? const <String, String>{},
-      videoPlayerOptions: VideoPlayerOptions(
-        allowBackgroundPlayback: allowBackgroundPlayback,
-        mixWithOthers: true,
-      ),
-      closedCaptionFile: closedCaptionFile,
-    );
+    final player = Player();
+    final videoController = VideoController(player);
+
+    _playerRef = player;
     _videoControllerRef = videoController;
     _activeSceneRef = scene;
     _firstFrameLoggedSceneId = null;
@@ -640,7 +704,8 @@ class PlayerState extends _$PlayerState {
 
     state = GlobalPlayerState(
       activeScene: scene,
-      videoPlayerController: videoController,
+      player: player,
+      videoController: videoController,
       isPlaying: false,
       isFullScreen:
           state.isFullScreen, // Preserve fullscreen state across scenes
@@ -652,7 +717,7 @@ class PlayerState extends _$PlayerState {
       prewarmAttempted: prewarmAttempted,
       prewarmSucceeded: prewarmSucceeded,
       prewarmLatencyMs: prewarmLatencyMs,
-      autoplayNext: state.autoplayNext,
+      playEndBehavior: state.playEndBehavior,
       showVideoDebugInfo: state.showVideoDebugInfo,
       useDoubleTapSeek: state.useDoubleTapSeek,
       enableBackgroundPlayback: state.enableBackgroundPlayback,
@@ -667,20 +732,33 @@ class PlayerState extends _$PlayerState {
     );
 
     try {
-      await videoController.initialize();
+      await player.open(
+        Media(
+          effectiveStreamUrl,
+          httpHeaders: httpHeaders ?? const <String, String>{},
+        ),
+        play: false,
+      );
+
+      if (subtitleUrl != null && subtitleUrl.isNotEmpty) {
+        await player.setSubtitleTrack(SubtitleTrack.uri(subtitleUrl));
+      } else {
+        await player.setSubtitleTrack(SubtitleTrack.no());
+      }
+
       if (!ref.mounted) {
         await _disposeControllers();
         return;
       }
 
       if (initialPosition != null) {
-        await videoController.seekTo(initialPosition);
+        await player.seek(initialPosition);
       }
 
       stopwatch.stop();
       final initializeElapsedMs = stopwatch.elapsedMilliseconds;
       AppLogStore.instance.add(
-        'provider initialize done scene=${scene.id} elapsed=${initializeElapsedMs}ms duration=${videoController.value.duration.inMilliseconds}ms size=${videoController.value.size.width.toStringAsFixed(0)}x${videoController.value.size.height.toStringAsFixed(0)}',
+        'provider initialize done scene=${scene.id} elapsed=${initializeElapsedMs}ms duration=${player.state.duration.inMilliseconds}ms size=${player.state.width ?? 0}x${player.state.height ?? 0}',
         source: 'player_provider',
       );
 
@@ -697,7 +775,7 @@ class PlayerState extends _$PlayerState {
           scene.paths.screenshot ?? '',
           ref.read(serverApiKeyProvider),
         ),
-        duration: videoController.value.duration,
+        duration: player.state.duration,
       );
 
       AppLogStore.instance.add(
@@ -710,15 +788,31 @@ class PlayerState extends _$PlayerState {
       }
 
       final desktopSettings = ref.read(desktopSettingsProvider);
-      await videoController.setVolume(
-        desktopSettings.isMuted ? 0 : desktopSettings.volume,
+      await player.setVolume(
+        desktopSettings.isMuted ? 0 : desktopSettings.volume * 100.0,
       );
 
-      videoController.addListener(_videoListener);
-      unawaited(videoController.play());
+      _subscriptions.add(player.stream.playing.listen((_) => _videoListener()));
+      _subscriptions.add(
+        player.stream.position.listen((_) => _videoListener()),
+      );
+      _subscriptions.add(
+        player.stream.duration.listen((_) => _videoListener()),
+      );
+      _subscriptions.add(
+        player.stream.completed.listen((completed) {
+          if (completed) {
+            _handleVideoFinished();
+          }
+        }),
+      );
+      _subscriptions.add(player.stream.buffering.listen((_) => _videoListener()));
+      _subscriptions.add(player.stream.width.listen((_) => _videoListener()));
+      _subscriptions.add(player.stream.height.listen((_) => _videoListener()));
+      unawaited(player.play());
 
       // Prepare for the next scene in the queue
-      _prewarmNext();
+      _prewarmQueue();
     } catch (e) {
       debugPrint('Error initializing video player: $e');
       AppLogStore.instance.add(
@@ -733,12 +827,13 @@ class PlayerState extends _$PlayerState {
     }
   }
 
-  /// Takes over an existing [VideoPlayerController] for a given [Scene].
+  /// Takes over an existing [AppVideoController] for a given [Scene].
   ///
   /// This is used for seamless handoff from TikTok view to immersive views.
   Future<void> attachController(
     Scene scene,
-    VideoPlayerController controller, {
+    Player player,
+    VideoController controller, {
     String? streamMimeType,
     String? streamLabel,
     String? streamSource,
@@ -752,13 +847,14 @@ class PlayerState extends _$PlayerState {
 
     // If already active, just reuse
     if (state.activeScene?.id == scene.id &&
-        state.videoPlayerController == controller) {
+        state.player == player &&
+        state.videoController == controller) {
       return;
     }
 
     // Stop current, but don't dispose the one we are about to attach!
     if (state.activeScene != null &&
-        state.videoPlayerController != controller) {
+        (state.player != player || state.videoController != controller)) {
       await _disposeControllers();
     }
 
@@ -768,6 +864,7 @@ class PlayerState extends _$PlayerState {
       _accumulatedDuration = 0;
     }
 
+    _playerRef = player;
     _videoControllerRef = controller;
     _activeSceneRef = scene;
     _firstFrameLoggedSceneId = null;
@@ -776,8 +873,9 @@ class PlayerState extends _$PlayerState {
 
     state = state.copyWith(
       activeScene: scene,
-      videoPlayerController: controller,
-      isPlaying: controller.value.isPlaying,
+      player: player,
+      videoController: controller,
+      isPlaying: player.state.playing,
       isFullScreen: state.isFullScreen, // Preserve fullscreen
       isInPipMode: state.isInPipMode, // Preserve PiP
       streamMimeType: streamMimeType,
@@ -794,7 +892,7 @@ class PlayerState extends _$PlayerState {
         scene.paths.screenshot ?? '',
         ref.read(serverApiKeyProvider),
       ),
-      duration: controller.value.duration,
+      duration: player.state.duration,
     );
 
     if (!isTestMode) {
@@ -803,33 +901,49 @@ class PlayerState extends _$PlayerState {
 
     final desktopSettings = ref.read(desktopSettingsProvider);
     unawaited(
-      controller.setVolume(
-        desktopSettings.isMuted ? 0 : desktopSettings.volume,
+      player.setVolume(
+        desktopSettings.isMuted ? 0 : desktopSettings.volume * 100.0,
       ),
     );
 
-    controller.removeListener(_videoListener);
-    controller.addListener(_videoListener);
+    for (final sub in _subscriptions) {
+      await sub.cancel();
+    }
+    _subscriptions.clear();
 
-    if (controller.value.isPlaying) {
+    _subscriptions.add(player.stream.playing.listen((_) => _videoListener()));
+    _subscriptions.add(player.stream.position.listen((_) => _videoListener()));
+    _subscriptions.add(player.stream.duration.listen((_) => _videoListener()));
+    _subscriptions.add(
+      player.stream.completed.listen((completed) {
+        if (completed) {
+          _handleVideoFinished();
+        }
+      }),
+    );
+    _subscriptions.add(player.stream.buffering.listen((_) => _videoListener()));
+    _subscriptions.add(player.stream.width.listen((_) => _videoListener()));
+    _subscriptions.add(player.stream.height.listen((_) => _videoListener()));
+
+    if (player.state.playing) {
       _startActivityTracking();
     }
 
     // Prepare for the next scene in the queue
-    _prewarmNext();
+    _prewarmQueue();
   }
 
   void togglePlayPause() {
-    final controller = state.videoPlayerController;
-    if (controller != null) {
-      if (controller.value.isPlaying) {
-        controller.pause();
+    final player = state.player;
+    if (player != null) {
+      if (player.state.playing) {
+        player.pause();
         state = state.copyWith(isPlaying: false);
         if (!isTestMode) {
           unawaited(WakelockPlus.disable());
         }
       } else {
-        controller.play();
+        player.play();
         state = state.copyWith(isPlaying: true);
         if (!isTestMode) {
           unawaited(WakelockPlus.enable());
@@ -839,15 +953,15 @@ class PlayerState extends _$PlayerState {
   }
 
   void seekRelative(Duration delta) {
-    final controller = state.videoPlayerController;
-    if (controller == null || !controller.value.isInitialized) return;
+    final player = state.player;
+    if (player == null) return;
 
-    final current = controller.value.position;
-    final duration = controller.value.duration;
+    final current = player.state.position;
+    final duration = player.state.duration;
     var target = current + delta;
     if (target < Duration.zero) target = Duration.zero;
     if (target > duration) target = duration;
-    controller.seekTo(target);
+    player.seek(target);
   }
 
   void stop() {
@@ -860,7 +974,7 @@ class PlayerState extends _$PlayerState {
     if (!ref.mounted) return;
 
     state = GlobalPlayerState(
-      autoplayNext: state.autoplayNext,
+      playEndBehavior: state.playEndBehavior,
       showVideoDebugInfo: state.showVideoDebugInfo,
       useDoubleTapSeek: state.useDoubleTapSeek,
       enableBackgroundPlayback: state.enableBackgroundPlayback,
@@ -875,31 +989,36 @@ class PlayerState extends _$PlayerState {
 
   Future<void> _disposeControllers({
     Scene? scene,
-    VideoPlayerController? controller,
+    Player? player,
+    VideoController? controller,
     SceneRepository? repository,
   }) async {
     // Save final activity before disposing
     await _stopActivityTracking(
       scene: scene,
-      controller: controller,
+      player: player,
       repository: repository,
     );
 
     if (isTestMode) {
+      _playerRef = null;
       _videoControllerRef = null;
       _isUsingBorrowedController = false;
       return;
     }
 
-    final videoController =
-        _videoControllerRef ??
-        controller ??
-        (ref.mounted ? state.videoPlayerController : null);
+    for (final sub in _subscriptions) {
+      await sub.cancel();
+    }
+    _subscriptions.clear();
+
+    final prevPlayer =
+        _playerRef ?? player ?? (ref.mounted ? state.player : null);
+
+    _playerRef = null;
     _videoControllerRef = null;
 
-    if (videoController != null) {
-      videoController.removeListener(_videoListener);
-
+    if (prevPlayer != null) {
       if (_isUsingBorrowedController) {
         AppLogStore.instance.add(
           'provider skipping dispose of borrowed controller',
@@ -907,7 +1026,7 @@ class PlayerState extends _$PlayerState {
         );
         _isUsingBorrowedController = false;
       } else {
-        await videoController.dispose();
+        await prevPlayer.dispose();
       }
     }
 
@@ -937,7 +1056,9 @@ class PlayerState extends _$PlayerState {
               .incrementScenePlayCount(scene.id);
           _playCountIncremented = true;
           if (ref.mounted) {
-            unawaited(ref.read(sceneDetailsProvider(scene.id).notifier).refresh());
+            unawaited(
+              ref.read(sceneDetailsProvider(scene.id).notifier).refresh(),
+            );
           }
           AppLogStore.instance.add(
             'PlayerState play count incremented for scene=${scene.id}',
@@ -961,7 +1082,7 @@ class PlayerState extends _$PlayerState {
 
   Future<void> _stopActivityTracking({
     Scene? scene,
-    VideoPlayerController? controller,
+    Player? player,
     SceneRepository? repository,
   }) async {
     _playCountTimer?.cancel();
@@ -977,25 +1098,23 @@ class PlayerState extends _$PlayerState {
     }
 
     if (_accumulatedDuration > 0) {
-      await _saveActivity(
-        scene: scene,
-        controller: controller,
-        repository: repository,
-      );
+      await _saveActivity(scene: scene, player: player, repository: repository);
     }
   }
 
   Future<void> _saveActivity({
     Scene? scene,
-    VideoPlayerController? controller,
+    Player? player,
     SceneRepository? repository,
   }) async {
     final effectiveScene = scene ?? (ref.mounted ? state.activeScene : null);
-    final effectiveController =
-        controller ?? (ref.mounted ? state.videoPlayerController : null);
-    final effectiveRepo = repository ?? (ref.mounted ? ref.read(sceneRepositoryProvider) : null);
+    final effectivePlayer = player ?? (ref.mounted ? state.player : null);
+    final effectiveRepo =
+        repository ?? (ref.mounted ? ref.read(sceneRepositoryProvider) : null);
 
-    if (effectiveScene == null || effectiveController == null || effectiveRepo == null) {
+    if (effectiveScene == null ||
+        effectivePlayer == null ||
+        effectiveRepo == null) {
       return;
     }
 
@@ -1008,11 +1127,12 @@ class PlayerState extends _$PlayerState {
       _playStartTime = now;
     }
 
-    if (durationToSave < 0.1 && effectiveController.value.position == Duration.zero) {
+    if (durationToSave < 0.1 &&
+        effectivePlayer.state.position == Duration.zero) {
       return;
     }
 
-    final resumeTime = effectiveController.value.position.inMilliseconds / 1000.0;
+    final resumeTime = effectivePlayer.state.position.inMilliseconds / 1000.0;
     _accumulatedDuration = 0;
 
     AppLogStore.instance.add(
@@ -1027,7 +1147,9 @@ class PlayerState extends _$PlayerState {
         playDuration: durationToSave,
       );
       if (ref.mounted) {
-        unawaited(ref.read(sceneDetailsProvider(effectiveScene.id).notifier).refresh());
+        unawaited(
+          ref.read(sceneDetailsProvider(effectiveScene.id).notifier).refresh(),
+        );
       }
     } catch (e) {
       debugPrint('Failed to save scene activity: $e');
@@ -1039,229 +1161,84 @@ class PlayerState extends _$PlayerState {
   void _videoListener() {
     if (!ref.mounted) return;
 
-    final controller = state.videoPlayerController;
-    if (controller != null) {
+    final player = state.player;
+    if (player != null) {
       final activeSceneId = state.activeScene?.id;
+      final isInitialized = player.state.width != null;
       if (activeSceneId != null &&
           _firstFrameLoggedSceneId != activeSceneId &&
-          controller.value.isInitialized &&
-          controller.value.position > Duration.zero) {
+          isInitialized &&
+          player.state.position > Duration.zero) {
         _firstFrameLoggedSceneId = activeSceneId;
         AppLogStore.instance.add(
-          'provider first-frame scene=$activeSceneId position=${controller.value.position.inMilliseconds}ms buffered=${controller.value.buffered.length}',
+          'provider first-frame scene=$activeSceneId position=${player.state.position.inMilliseconds}ms buffered=${player.state.buffer.inMilliseconds}ms',
           source: 'player_provider',
         );
       }
 
-      if (controller.value.isPlaying != _lastIsPlaying) {
+      final isPlayingNow = player.state.playing;
+      final isBufferingNow = player.state.buffering;
+      final currentWidth = player.state.width;
+      final currentHeight = player.state.height;
+
+      if (isPlayingNow != _lastIsPlaying ||
+          isBufferingNow != state.isBuffering ||
+          currentWidth != state.videoWidth ||
+          currentHeight != state.videoHeight) {
         final wasPlaying = _lastIsPlaying ?? false;
-        final isPlayingNow = controller.value.isPlaying;
         _lastIsPlaying = isPlayingNow;
 
-        state = state.copyWith(isPlaying: isPlayingNow);
+        state = state.copyWith(
+          isPlaying: isPlayingNow,
+          isBuffering: isBufferingNow,
+          videoWidth: currentWidth,
+          videoHeight: currentHeight,
+        );
 
-        if (isPlayingNow) {
+        if (isPlayingNow && !wasPlaying) {
           _startActivityTracking();
-        } else if (wasPlaying) {
+        } else if (!isPlayingNow && wasPlaying) {
           _stopActivityTracking();
         }
 
         if (!isTestMode) {
           unawaited(
-            controller.value.isPlaying
-                ? WakelockPlus.enable()
-                : WakelockPlus.disable(),
+            isPlayingNow ? WakelockPlus.enable() : WakelockPlus.disable(),
           );
         }
       }
 
       mediaHandler?.updatePlaybackState(
-        isPlaying: controller.value.isPlaying,
-        position: controller.value.position,
-        bufferedPosition: controller.value.buffered.isNotEmpty
-            ? controller.value.buffered.last.end
-            : Duration.zero,
-        speed: controller.value.playbackSpeed,
+        isPlaying: isPlayingNow,
+        position: player.state.position,
+        bufferedPosition: player.state.buffer,
+        speed: player.state.rate,
       );
-
-      // Check if finished
-      if (controller.value.position >= controller.value.duration &&
-          controller.value.duration > Duration.zero &&
-          !controller.value.isPlaying) {
-        _handleVideoFinished();
-      }
     }
   }
 
   void _handleVideoFinished() {
     AppLogStore.instance.add(
-      'PlayerState _handleVideoFinished: active=${state.activeScene?.id} autoplay=${state.autoplayNext}',
-      source: 'player_provider',
-    );
-    if (state.isFullScreen) {
-      setFullScreen(false);
-    }
-    if (state.autoplayNext) {
-      playNext();
-    }
-  }
-
-  Future<ClosedCaptionFile> _loadSubtitles(
-    String url, {
-    String? fallbackVttUrl,
-  }) async {
-    final apiKey = ref.read(serverApiKeyProvider);
-    final headers = ref.read(mediaPlaybackHeadersProvider);
-    final authenticatedUrl = appendApiKey(url, apiKey);
-
-    AppLogStore.instance.add(
-      'PlayerState _loadSubtitles: downloading $authenticatedUrl',
+      'PlayerState _handleVideoFinished: active=${state.activeScene?.id} behavior=${state.playEndBehavior}',
       source: 'player_provider',
     );
 
-    try {
-      final requestHeaders = {...headers, 'Accept': 'text/vtt, */*'};
-
-      var response = await http.get(
-        Uri.parse(authenticatedUrl),
-        headers: requestHeaders,
-      );
-
-      AppLogStore.instance.add(
-        'PlayerState _loadSubtitles: status=${response.statusCode} len=${response.bodyBytes.length} type=${response.headers['content-type']}',
-        source: 'player_provider',
-      );
-
-      // Fallback 1: If lang=00 returned empty, try without lang parameter
-      if (response.statusCode == 200 &&
-          response.bodyBytes.isEmpty &&
-          authenticatedUrl.contains('lang=00')) {
-        final uri = Uri.parse(authenticatedUrl);
-        final params = Map<String, String>.from(uri.queryParameters);
-        params.remove('lang');
-        final fallbackUrl = uri.replace(queryParameters: params).toString();
-
-        AppLogStore.instance.add(
-          'PlayerState _loadSubtitles: empty response for lang=00, trying fallback: $fallbackUrl',
-          source: 'player_provider',
-        );
-        response = await http.get(
-          Uri.parse(fallbackUrl),
-          headers: requestHeaders,
-        );
-
-        AppLogStore.instance.add(
-          'PlayerState _loadSubtitles fallback: status=${response.statusCode} len=${response.bodyBytes.length}',
-          source: 'player_provider',
-        );
-      }
-
-      // Fallback 2: If still empty and we have a vtt path, try that
-      if (response.statusCode == 200 &&
-          response.bodyBytes.isEmpty &&
-          fallbackVttUrl != null &&
-          fallbackVttUrl != url) {
-        final authFallbackVtt = appendApiKey(fallbackVttUrl, apiKey);
-        AppLogStore.instance.add(
-          'PlayerState _loadSubtitles: empty response, trying vtt fallback: $authFallbackVtt',
-          source: 'player_provider',
-        );
-        response = await http.get(
-          Uri.parse(authFallbackVtt),
-          headers: requestHeaders,
-        );
-        AppLogStore.instance.add(
-          'PlayerState _loadSubtitles vtt fallback: status=${response.statusCode} len=${response.bodyBytes.length}',
-          source: 'player_provider',
-        );
-      }
-
-      if (response.statusCode == 200) {
-        final bytes = response.bodyBytes;
-        if (bytes.isEmpty) {
-          AppLogStore.instance.add(
-            'PlayerState _loadSubtitles: received empty body bytes',
-            source: 'player_provider',
-          );
-          return WebVTTCaptionFile('');
+    switch (state.playEndBehavior) {
+      case VideoEndBehavior.stop:
+        if (state.isFullScreen) {
+          setFullScreen(false);
         }
-
-        // Use utf8.decode with allowMalformed: true to be resilient
-        var content = utf8.decode(bytes, allowMalformed: true);
-
-        if (content.trim().isEmpty) {
-          AppLogStore.instance.add(
-            'PlayerState _loadSubtitles: received only whitespace',
-            source: 'player_provider',
-          );
-          return WebVTTCaptionFile('');
-        }
-
-        // Filter out thumbnail/storyboard lines (e.g. sprite.jpg#xywh=...)
-        content = _filterSubtitleContent(content);
-
-        final preview = content.length > 100
-            ? content.substring(0, 100).replaceAll('\n', ' ')
-            : content.replaceAll('\n', ' ');
-
-        AppLogStore.instance.add(
-          'PlayerState _loadSubtitles: success, length=${content.length}, preview="$preview"',
-          source: 'player_provider',
-        );
-
-        final isVtt = content.contains('WEBVTT');
-        // SRT often starts with 1 and a newline, or has --> but not WEBVTT
-        final isSrt = !isVtt && content.contains('-->');
-
-        ClosedCaptionFile captionFile;
-        if (isSrt) {
-          AppLogStore.instance.add(
-            'PlayerState _loadSubtitles: detected SRT format',
-            source: 'player_provider',
-          );
-          captionFile = SubRipCaptionFile(content);
-        } else {
-          AppLogStore.instance.add(
-            'PlayerState _loadSubtitles: detected VTT format',
-            source: 'player_provider',
-          );
-          captionFile = WebVTTCaptionFile(content);
-        }
-
-        AppLogStore.instance.add(
-          'PlayerState _loadSubtitles: parsed ${captionFile.captions.length} captions',
-          source: 'player_provider',
-        );
-
-        return captionFile;
-      } else {
-        throw Exception('Failed to load subtitles: ${response.statusCode}');
-      }
-    } catch (e) {
-      AppLogStore.instance.add(
-        'PlayerState _loadSubtitles error: $e',
-        source: 'player_provider',
-      );
-      // Return empty file on error to avoid breaking playback
-      return WebVTTCaptionFile('');
+        break;
+      case VideoEndBehavior.loop:
+        state.player?.seek(Duration.zero);
+        state.player?.play();
+        break;
+      case VideoEndBehavior.next:
+        // Do NOT exit full screen when moving to the next video,
+        // so the next video also starts in full screen.
+        playNext();
+        break;
     }
-  }
-
-  /// Filters out common storyboard/thumbnail lines (like sprite.jpg#xywh=...)
-  /// from VTT/SRT content to prevent them from being rendered as text captions.
-  String _filterSubtitleContent(String content) {
-    if (!content.contains('#xywh')) return content;
-
-    final lines = content.split('\n');
-    final filteredLines = lines.where((line) {
-      final trimmed = line.trim();
-      // Filter out lines containing the storyboard fragment identifier.
-      // These are typically of the form: "thumbnail.jpg#xywh=0,0,160,90"
-      if (trimmed.contains('#xywh')) return false;
-      return true;
-    });
-
-    return filteredLines.join('\n');
   }
 
   Future<void> playNext() async {

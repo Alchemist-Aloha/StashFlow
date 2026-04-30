@@ -12,6 +12,21 @@ class AppLocalizationsDe extends AppLocalizations {
   String get appTitle => 'StashFlow';
 
   @override
+  String get common_token => 'Token';
+
+  @override
+  String get filter_value => 'Wert';
+
+  @override
+  String get common_yes => 'Yes';
+
+  @override
+  String get common_no => 'No';
+
+  @override
+  String get common_clear_history => 'Clear History';
+
+  @override
   String get nav_scenes => 'Szenen';
 
   @override
@@ -739,9 +754,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get filter_modifier => 'Modifikator';
 
   @override
-  String get filter_value => 'Wert';
-
-  @override
   String get filter_equals => 'Gleich';
 
   @override
@@ -1309,6 +1321,22 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get settings_playback_prefer_streams_subtitle =>
       'Wenn deaktiviert, wird die Wiedergabe direkt über paths.stream ausgeführt';
+
+  @override
+  String get settings_playback_end_behavior => 'Play End Behavior';
+
+  @override
+  String get settings_playback_end_behavior_subtitle =>
+      'What to do when current playback ends';
+
+  @override
+  String get settings_playback_end_behavior_stop => 'Stop';
+
+  @override
+  String get settings_playback_end_behavior_loop => 'Loop current scene';
+
+  @override
+  String get settings_playback_end_behavior_next => 'Play next scene';
 
   @override
   String get settings_playback_autoplay =>

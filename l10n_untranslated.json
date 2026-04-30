@@ -1,61 +1,128 @@
 {
   "de": [
+    "common_token",
+    "common_yes",
+    "common_no",
+    "common_clear_history",
     "nPlays",
     "settings_appearance_font_size",
     "settings_appearance_font_size_subtitle",
+    "settings_playback_end_behavior",
+    "settings_playback_end_behavior_subtitle",
+    "settings_playback_end_behavior_stop",
+    "settings_playback_end_behavior_loop",
+    "settings_playback_end_behavior_next",
     "settings_support_issues",
     "settings_support_issues_subtitle"
   ],
 
   "es": [
+    "common_token",
+    "common_yes",
+    "common_no",
+    "common_clear_history",
     "nPlays",
     "settings_appearance_font_size",
     "settings_appearance_font_size_subtitle",
+    "settings_playback_end_behavior",
+    "settings_playback_end_behavior_subtitle",
+    "settings_playback_end_behavior_stop",
+    "settings_playback_end_behavior_loop",
+    "settings_playback_end_behavior_next",
     "settings_support_issues",
     "settings_support_issues_subtitle"
   ],
 
   "fr": [
+    "common_token",
+    "common_yes",
+    "common_no",
+    "common_clear_history",
     "nPlays",
     "settings_appearance_font_size",
     "settings_appearance_font_size_subtitle",
+    "settings_playback_end_behavior",
+    "settings_playback_end_behavior_subtitle",
+    "settings_playback_end_behavior_stop",
+    "settings_playback_end_behavior_loop",
+    "settings_playback_end_behavior_next",
     "settings_support_issues",
     "settings_support_issues_subtitle"
   ],
 
   "it": [
+    "common_token",
+    "common_yes",
+    "common_no",
+    "common_clear_history",
     "nPlays",
     "settings_appearance_font_size",
     "settings_appearance_font_size_subtitle",
+    "settings_playback_end_behavior",
+    "settings_playback_end_behavior_subtitle",
+    "settings_playback_end_behavior_stop",
+    "settings_playback_end_behavior_loop",
+    "settings_playback_end_behavior_next",
     "settings_support_issues",
     "settings_support_issues_subtitle"
   ],
 
   "ja": [
+    "common_token",
+    "common_yes",
+    "common_no",
+    "common_clear_history",
     "nPlays",
     "settings_appearance_font_size",
     "settings_appearance_font_size_subtitle",
+    "settings_playback_end_behavior",
+    "settings_playback_end_behavior_subtitle",
+    "settings_playback_end_behavior_stop",
+    "settings_playback_end_behavior_loop",
+    "settings_playback_end_behavior_next",
     "settings_support_issues",
     "settings_support_issues_subtitle"
   ],
 
   "ko": [
+    "common_token",
+    "common_yes",
+    "common_no",
+    "common_clear_history",
     "nPlays",
     "settings_appearance_font_size",
     "settings_appearance_font_size_subtitle",
+    "settings_playback_end_behavior",
+    "settings_playback_end_behavior_subtitle",
+    "settings_playback_end_behavior_stop",
+    "settings_playback_end_behavior_loop",
+    "settings_playback_end_behavior_next",
     "settings_support_issues",
     "settings_support_issues_subtitle"
   ],
 
   "ru": [
+    "common_token",
+    "common_yes",
+    "common_no",
+    "common_clear_history",
     "nPlays",
     "settings_appearance_font_size",
     "settings_appearance_font_size_subtitle",
+    "settings_playback_end_behavior",
+    "settings_playback_end_behavior_subtitle",
+    "settings_playback_end_behavior_stop",
+    "settings_playback_end_behavior_loop",
+    "settings_playback_end_behavior_next",
     "settings_support_issues",
     "settings_support_issues_subtitle"
   ],
 
   "zh": [
+    "common_token",
+    "common_yes",
+    "common_no",
+    "common_clear_history",
     "nPlays",
     "settings_appearance_font_size",
     "settings_appearance_font_size_subtitle",
@@ -64,6 +131,10 @@
   ],
 
   "zh_Hans": [
+    "common_token",
+    "common_yes",
+    "common_no",
+    "common_clear_history",
     "nPlays",
     "settings_appearance_font_size",
     "settings_appearance_font_size_subtitle",
@@ -72,9 +143,18 @@
   ],
 
   "zh_Hant": [
+    "common_token",
+    "common_yes",
+    "common_no",
+    "common_clear_history",
     "nPlays",
     "settings_appearance_font_size",
     "settings_appearance_font_size_subtitle",
+    "settings_playback_end_behavior",
+    "settings_playback_end_behavior_subtitle",
+    "settings_playback_end_behavior_stop",
+    "settings_playback_end_behavior_loop",
+    "settings_playback_end_behavior_next",
     "settings_support_issues",
     "settings_support_issues_subtitle"
   ]

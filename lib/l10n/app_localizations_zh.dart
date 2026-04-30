@@ -12,6 +12,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appTitle => 'StashFlow';
 
   @override
+  String get common_token => 'Token';
+
+  @override
+  String get filter_value => '值';
+
+  @override
+  String get common_yes => 'Yes';
+
+  @override
+  String get common_no => 'No';
+
+  @override
+  String get common_clear_history => 'Clear History';
+
+  @override
   String get nav_scenes => '场景';
 
   @override
@@ -727,9 +742,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get filter_modifier => '修饰符';
 
   @override
-  String get filter_value => '值';
-
-  @override
   String get filter_equals => '等于';
 
   @override
@@ -1254,6 +1266,21 @@ class AppLocalizationsZh extends AppLocalizations {
       '关闭时，播放将直接使用 paths.stream';
 
   @override
+  String get settings_playback_end_behavior => '播放结束行为';
+
+  @override
+  String get settings_playback_end_behavior_subtitle => '当前视频播放结束时的操作';
+
+  @override
+  String get settings_playback_end_behavior_stop => '停止';
+
+  @override
+  String get settings_playback_end_behavior_loop => '循环播放当前场景';
+
+  @override
+  String get settings_playback_end_behavior_next => '播放下一个场景';
+
+  @override
   String get settings_playback_autoplay => '自动播放下一个场景';
 
   @override
@@ -1681,6 +1708,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get appTitle => 'StashFlow';
+
+  @override
+  String get filter_value => '值';
 
   @override
   String get nav_scenes => '场景';
@@ -2381,9 +2411,6 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get filter_modifier => '修饰符';
 
   @override
-  String get filter_value => '值';
-
-  @override
   String get filter_equals => '等于';
 
   @override
@@ -2901,6 +2928,21 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
       '关闭时，播放将直接使用 paths.stream';
 
   @override
+  String get settings_playback_end_behavior => '播放结束行为';
+
+  @override
+  String get settings_playback_end_behavior_subtitle => '当前视频播放结束时的操作';
+
+  @override
+  String get settings_playback_end_behavior_stop => '停止';
+
+  @override
+  String get settings_playback_end_behavior_loop => '循环播放当前场景';
+
+  @override
+  String get settings_playback_end_behavior_next => '播放下一个场景';
+
+  @override
   String get settings_playback_autoplay => '自动播放下一个场景';
 
   @override
@@ -3321,6 +3363,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get appTitle => 'StashFlow';
+
+  @override
+  String get filter_value => '值';
 
   @override
   String get nav_scenes => '場景';
@@ -4021,9 +4066,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get filter_modifier => '修饰符';
-
-  @override
-  String get filter_value => '值';
 
   @override
   String get filter_equals => '等于';
