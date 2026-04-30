@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_details_page.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_video_player.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
@@ -126,6 +127,40 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.water_drop_outlined));
     await tester.pump(const Duration(milliseconds: 500));
+  });
+
+  testWidgets('SceneDetailsPage constrains video height', (tester) async {
+    // Set a specific screen size
+    const screenWidth = 1000.0;
+    const screenHeight = 2000.0;
+    tester.view.physicalSize = const Size(screenWidth, screenHeight);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final mockRepo = MockSceneRepository()..withData([testScene]);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [
+        sceneRepositoryProvider.overrideWithValue(mockRepo),
+      ],
+      child: SceneDetailsPage(sceneId: testScene.id),
+    );
+    await tester.pumpAndSettle();
+
+    // SceneDetailsPage has an AppBar (height 56) and we added 20px margin.
+    // safeMaxHeight = 2000 - topPadding - 56 - 20;
+    // topPadding is 0 in tests unless specified.
+    // So safeMaxHeight should be 1924.
+
+    final playerFinder = find.byType(SceneVideoPlayer);
+    final constrainedBoxFinder = find.ancestor(
+      of: playerFinder,
+      matching: find.byType(ConstrainedBox),
+    ).first;
+    final constrainedBox = tester.widget<ConstrainedBox>(constrainedBoxFinder);
+    expect(constrainedBox.constraints.maxHeight, equals(1924.0));
   });
 
   testWidgets('SceneCard three-dot opens scene info page', (tester) async {
