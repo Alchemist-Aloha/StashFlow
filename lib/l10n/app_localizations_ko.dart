@@ -326,6 +326,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get common_play => '재생';
 
   @override
+  String get common_refresh => 'Refresh';
+
+  @override
   String get common_close => '닫기';
 
   @override

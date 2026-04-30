@@ -328,6 +328,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get common_play => '再生';
 
   @override
+  String get common_refresh => 'Refresh';
+
+  @override
   String get common_close => '閉じる';
 
   @override

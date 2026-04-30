@@ -326,6 +326,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get common_play => '播放';
 
   @override
+  String get common_refresh => 'Refresh';
+
+  @override
   String get common_close => '关闭';
 
   @override
