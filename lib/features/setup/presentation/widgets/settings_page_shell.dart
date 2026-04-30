@@ -150,7 +150,7 @@ class _SettingsActionCardState extends State<SettingsActionCard> {
       child: Card(
         clipBehavior: Clip.antiAlias,
         elevation: 0,
-        color: colorScheme.primaryContainer.withValues(alpha: 0.1),
+        color: colorScheme.primaryContainer.withValues(alpha: 0.3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
         ),

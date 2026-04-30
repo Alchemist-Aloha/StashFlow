@@ -820,7 +820,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   vertical: 8 * context.dimensions.fontSizeFactor,
                 ),
                 decoration: ShapeDecoration(
-                  color: colorScheme.primaryContainer.withValues(alpha: 0.1),
+                  color: colorScheme.primaryContainer.withValues(alpha: 0.3),
                   shape: StadiumBorder(
                     side: BorderSide(color: colorScheme.outlineVariant),
                   ),

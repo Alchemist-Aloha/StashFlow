@@ -122,7 +122,7 @@ class GalleryCard extends ConsumerWidget {
       child: Material(
         color: Theme.of(
           context,
-        ).colorScheme.primaryContainer.withValues(alpha: 0.1),
+        ).colorScheme.primaryContainer.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
@@ -202,7 +202,7 @@ class GalleryCard extends ConsumerWidget {
       child: Material(
         color: Theme.of(
           context,
-        ).colorScheme.primaryContainer.withValues(alpha: 0.1),
+        ).colorScheme.primaryContainer.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
         clipBehavior: Clip.antiAlias,
         child: InkWell(

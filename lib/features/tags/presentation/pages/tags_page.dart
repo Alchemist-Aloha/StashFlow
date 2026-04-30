@@ -380,7 +380,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
         ),
         color: Theme.of(
           context,
-        ).colorScheme.primaryContainer.withValues(alpha: 0.1),
+        ).colorScheme.primaryContainer.withValues(alpha: 0.3),
         child: ListTile(
           onTap: () => context.push('/tags/tag/${tag.id}'),
           title: Text(
@@ -405,7 +405,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
           ),
           color: Theme.of(
             context,
-          ).colorScheme.primaryContainer.withValues(alpha: 0.1),
+          ).colorScheme.primaryContainer.withValues(alpha: 0.3),
           child: ListTile(
             title: Text(
               'Loading',
