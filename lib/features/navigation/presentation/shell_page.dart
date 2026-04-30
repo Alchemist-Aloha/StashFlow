@@ -312,10 +312,16 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         )
         .toList();
 
-    Widget bodyContent = Column(
+    Widget bodyContent = Stack(
       children: [
-        Expanded(child: RepaintBoundary(child: navigationShell)),
-        if (!hideMiniPlayer) const MiniPlayer(),
+        Positioned.fill(child: RepaintBoundary(child: navigationShell)),
+        if (!hideMiniPlayer)
+          const Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: MiniPlayer(),
+          ),
       ],
     );
 
