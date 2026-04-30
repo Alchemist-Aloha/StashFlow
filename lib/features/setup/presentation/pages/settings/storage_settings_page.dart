@@ -35,8 +35,21 @@ class StorageSettingsPage extends ConsumerWidget {
                         children: [
                           ElevatedButton(
                             onPressed: () async {
-                              await service.clearImageCache();
-                              ref.invalidate(cacheSizesProvider);
+                              final scaffoldMessenger = ScaffoldMessenger.of(context);
+                              scaffoldMessenger.showSnackBar(
+                                const SnackBar(content: Text('Clearing image cache...')),
+                              );
+                              try {
+                                await service.clearImageCache();
+                                ref.invalidate(cacheSizesProvider);
+                                scaffoldMessenger.showSnackBar(
+                                  const SnackBar(content: Text('Image cache cleared')),
+                                );
+                              } catch (e) {
+                                scaffoldMessenger.showSnackBar(
+                                  SnackBar(content: Text('Error: $e')),
+                                );
+                              }
                             },
                             child: const Text('Clear'),
                           ),
@@ -53,8 +66,21 @@ class StorageSettingsPage extends ConsumerWidget {
                         children: [
                           ElevatedButton(
                             onPressed: () async {
-                              await service.clearVideoCache();
-                              ref.invalidate(cacheSizesProvider);
+                              final scaffoldMessenger = ScaffoldMessenger.of(context);
+                              scaffoldMessenger.showSnackBar(
+                                const SnackBar(content: Text('Clearing video cache...')),
+                              );
+                              try {
+                                await service.clearVideoCache();
+                                ref.invalidate(cacheSizesProvider);
+                                scaffoldMessenger.showSnackBar(
+                                  const SnackBar(content: Text('Video cache cleared')),
+                                );
+                              } catch (e) {
+                                scaffoldMessenger.showSnackBar(
+                                  SnackBar(content: Text('Error: $e')),
+                                );
+                              }
                             },
                             child: const Text('Clear'),
                           ),
@@ -71,8 +97,21 @@ class StorageSettingsPage extends ConsumerWidget {
                         children: [
                           ElevatedButton(
                             onPressed: () async {
-                              await service.clearDatabaseCache();
-                              ref.invalidate(cacheSizesProvider);
+                              final scaffoldMessenger = ScaffoldMessenger.of(context);
+                              scaffoldMessenger.showSnackBar(
+                                const SnackBar(content: Text('Clearing database cache...')),
+                              );
+                              try {
+                                await service.clearDatabaseCache();
+                                ref.invalidate(cacheSizesProvider);
+                                scaffoldMessenger.showSnackBar(
+                                  const SnackBar(content: Text('Database cache cleared')),
+                                );
+                              } catch (e) {
+                                scaffoldMessenger.showSnackBar(
+                                  SnackBar(content: Text('Error: $e')),
+                                );
+                              }
                             },
                             child: const Text('Clear'),
                           ),
