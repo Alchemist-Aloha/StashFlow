@@ -799,6 +799,13 @@ class PlayerState extends _$PlayerState {
       _subscriptions.add(
         player.stream.duration.listen((_) => _videoListener()),
       );
+      _subscriptions.add(
+        player.stream.completed.listen((completed) {
+          if (completed) {
+            _handleVideoFinished();
+          }
+        }),
+      );
       _subscriptions.add(player.stream.buffering.listen((_) => _videoListener()));
       _subscriptions.add(player.stream.width.listen((_) => _videoListener()));
       _subscriptions.add(player.stream.height.listen((_) => _videoListener()));
@@ -907,6 +914,13 @@ class PlayerState extends _$PlayerState {
     _subscriptions.add(player.stream.playing.listen((_) => _videoListener()));
     _subscriptions.add(player.stream.position.listen((_) => _videoListener()));
     _subscriptions.add(player.stream.duration.listen((_) => _videoListener()));
+    _subscriptions.add(
+      player.stream.completed.listen((completed) {
+        if (completed) {
+          _handleVideoFinished();
+        }
+      }),
+    );
     _subscriptions.add(player.stream.buffering.listen((_) => _videoListener()));
     _subscriptions.add(player.stream.width.listen((_) => _videoListener()));
     _subscriptions.add(player.stream.height.listen((_) => _videoListener()));
@@ -1200,13 +1214,6 @@ class PlayerState extends _$PlayerState {
         bufferedPosition: player.state.buffer,
         speed: player.state.rate,
       );
-
-      // Check if finished
-      if (player.state.position >= player.state.duration &&
-          player.state.duration > Duration.zero &&
-          !player.state.playing) {
-        _handleVideoFinished();
-      }
     }
   }
 
@@ -1227,9 +1234,8 @@ class PlayerState extends _$PlayerState {
         state.player?.play();
         break;
       case VideoEndBehavior.next:
-        if (state.isFullScreen) {
-          setFullScreen(false);
-        }
+        // Do NOT exit full screen when moving to the next video,
+        // so the next video also starts in full screen.
         playNext();
         break;
     }
