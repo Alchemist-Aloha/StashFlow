@@ -26,6 +26,7 @@ import '../providers/video_player_provider.dart';
 import '../providers/playback_queue_provider.dart';
 import 'scrubbing_preview.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
+import '../../../../core/data/services/cast_service.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
 class NativeVideoControls extends ConsumerStatefulWidget {
@@ -278,10 +279,38 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     Duration target, {
     required bool keepPlayingAfterSeek,
   }) async {
+    final castState = ref.read(castServiceProvider);
+    if (castState.isCasting) {
+      await ref.read(castServiceProvider.notifier).seek(target);
+    }
+
     await widget.controller.player.seek(target);
     if (!mounted || !keepPlayingAfterSeek) return;
     if (!widget.controller.player.state.playing) {
+      await _play();
+    }
+  }
+
+  Future<void> _stopCast() async {
+    final castState = ref.read(castServiceProvider);
+    if (!castState.isCasting) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+
+    // TODO: Get real remote position if supported by protocol
+    // For now we rely on the local player being in sync
+    final currentPos = widget.controller.player.state.position;
+
+    await ref.read(castServiceProvider.notifier).stopCasting();
+
+    if (mounted) {
+      // Ensure local player is at the same position and playing
+      await widget.controller.player.seek(currentPos);
       await widget.controller.player.play();
+
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Cast stopped, resuming locally')),
+      );
     }
   }
 
@@ -372,7 +401,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       );
     } else if (_dragSeekShouldResumePlayback &&
         !widget.controller.player.state.playing) {
-      unawaited(widget.controller.player.play());
+      unawaited(_play());
     }
 
     _seekFeedbackTimer?.cancel();
@@ -387,11 +416,27 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     _dragSeekShouldResumePlayback = false;
   }
 
+  Future<void> _play() async {
+    final castState = ref.read(castServiceProvider);
+    await widget.controller.player.play();
+    if (castState.isCasting) {
+      await ref.read(castServiceProvider.notifier).play();
+    }
+  }
+
+  Future<void> _pause() async {
+    final castState = ref.read(castServiceProvider);
+    await widget.controller.player.pause();
+    if (castState.isCasting) {
+      await ref.read(castServiceProvider.notifier).pause();
+    }
+  }
+
   void _togglePlay() {
     if (widget.controller.player.state.playing) {
-      widget.controller.player.pause();
+      _pause();
     } else {
-      widget.controller.player.play();
+      _play();
     }
     _showControlsTemporarily();
   }
@@ -1313,11 +1358,12 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                       isFullScreen: isFullScreen,
                                       onPlayPause: () {
                                         if (value.playing) {
-                                          widget.controller.player.pause();
+                                          _pause();
                                         } else {
-                                          widget.controller.player.play();
+                                          _play();
                                         }
                                       },
+                                      onStopCast: _stopCast,
                                       onSkipNext: () {
                                         ref
                                             .read(playerStateProvider.notifier)

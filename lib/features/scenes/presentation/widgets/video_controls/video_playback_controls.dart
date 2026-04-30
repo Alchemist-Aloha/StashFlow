@@ -11,7 +11,10 @@ import '../../../domain/entities/scene.dart';
 import '../../../domain/entities/scene_title_utils.dart';
 import 'cast_selection_sheet.dart';
 
-class VideoPlaybackControls extends StatelessWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../../core/data/services/cast_service.dart';
+
+class VideoPlaybackControls extends ConsumerWidget {
   const VideoPlaybackControls({
     super.key,
     required this.controller,
@@ -32,6 +35,7 @@ class VideoPlaybackControls extends StatelessWidget {
     required this.selectedSubtitleType,
     required this.onSpeedTap,
     required this.isSpeedSliderVisible,
+    this.onStopCast,
   });
 
   final VideoController controller;
@@ -52,6 +56,7 @@ class VideoPlaybackControls extends StatelessWidget {
   final String? selectedSubtitleType;
   final VoidCallback onSpeedTap;
   final bool isSpeedSliderVisible;
+  final VoidCallback? onStopCast;
 
   static const _playbackSpeeds = <double>[
     0.25,
@@ -100,9 +105,10 @@ class VideoPlaybackControls extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final canSelectSubtitles = scene.captions.isNotEmpty;
+    final castState = ref.watch(castServiceProvider);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -339,31 +345,45 @@ class VideoPlaybackControls extends StatelessWidget {
                     if (desktopVolumeControl != null) ...[
                       desktopVolumeControl!,
                     ],
-                    IconButton(
-                      tooltip: 'Cast',
-                      style: _controlButtonStyle(colorScheme),
-                      icon: const Icon(Icons.cast_rounded),
-                      onPressed: () {
-                        onInteract();
-                        showModalBottomSheet(
-                          context: context,
-                          backgroundColor: Colors.transparent,
-                          isScrollControlled: true,
-                          builder: (context) => CastSelectionSheet(
-                            videoUrl:
-                                controller
-                                    .player
-                                    .state
-                                    .playlist
-                                    .medias
-                                    .firstOrNull
-                                    ?.uri ??
-                                '',
-                            title: scene.displayTitle,
-                          ),
-                        );
-                      },
-                    ),
+                    if (castState.isCasting)
+                      IconButton(
+                        tooltip: 'Stop Casting',
+                        style: _controlButtonStyle(colorScheme),
+                        icon: Icon(
+                          Icons.cast_connected_rounded,
+                          color: colorScheme.primary,
+                        ),
+                        onPressed: () {
+                          onInteract();
+                          onStopCast?.call();
+                        },
+                      )
+                    else
+                      IconButton(
+                        tooltip: 'Cast',
+                        style: _controlButtonStyle(colorScheme),
+                        icon: const Icon(Icons.cast_rounded),
+                        onPressed: () {
+                          onInteract();
+                          showModalBottomSheet(
+                            context: context,
+                            backgroundColor: Colors.transparent,
+                            isScrollControlled: true,
+                            builder: (context) => CastSelectionSheet(
+                              videoUrl:
+                                  controller
+                                      .player
+                                      .state
+                                      .playlist
+                                      .medias
+                                      .firstOrNull
+                                      ?.uri ??
+                                  '',
+                              title: scene.displayTitle,
+                            ),
+                          );
+                        },
+                      ),
                     if (enableNativePip && !kIsWeb && Platform.isAndroid) ...[
                       IconButton(
                         tooltip: context.l10n.common_pip,
