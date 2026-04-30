@@ -590,6 +590,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                 widget.scrollController != null &&
                 widget.scrollController!.hasClients &&
                 widget.scrollController!.position.pixels <= 0 &&
+                pointerSignal.kind == PointerDeviceKind.trackpad &&
                 pointerSignal.scrollDelta.dy < -50) {
               widget.onRefresh!();
             }
