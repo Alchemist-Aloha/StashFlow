@@ -238,14 +238,15 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
     );
   }
 
-  int _getEffectivePrefetchDistance(BuildContext context) {
+  int _getEffectivePrefetchDistance(
+    BuildContext context,
+    SliverGridDelegate? responsiveDelegate,
+  ) {
     final effectivePadding =
         widget.padding ?? EdgeInsets.all(context.dimensions.spacingMedium);
     final itemsInTwoScreens = GridUtils.calculateItemsPerPage(
       context: context,
-      gridDelegate: widget.gridDelegate != null
-          ? _getResponsiveGridDelegate(context)
-          : null,
+      gridDelegate: responsiveDelegate,
       padding: effectivePadding,
       screens: 2.0,
       itemExtent: widget.itemExtent,
@@ -257,7 +258,11 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
         : widget.prefetchDistance;
   }
 
-  void _handleInitialPrefetch(List<T> items) {
+  void _handleInitialPrefetch(
+    List<T> items,
+    SliverGridDelegate? responsiveDelegate,
+    double screenWidth,
+  ) {
     if (_didPrefetchInitial ||
         items.isEmpty ||
         widget.imageUrlBuilder == null ||
@@ -269,7 +274,10 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
 
-      final prefetchDistance = _getEffectivePrefetchDistance(context);
+      final prefetchDistance = _getEffectivePrefetchDistance(
+        context,
+        responsiveDelegate,
+      );
 
       if (widget.onPageSizeChanged != null) {
         widget.onPageSizeChanged!(prefetchDistance);
@@ -285,11 +293,9 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
       if (widget.memCacheWidthBuilder != null) {
         memCacheWidth = widget.memCacheWidthBuilder!(context, isGrid);
       } else {
-        final screenWidth = MediaQuery.sizeOf(context).width;
         if (isGrid) {
           final delegate =
-              _getResponsiveGridDelegate(context)
-                  as SliverGridDelegateWithFixedCrossAxisCount;
+              responsiveDelegate as SliverGridDelegateWithFixedCrossAxisCount;
           // Target roughly 1.5x the display width in pixels for the cache to balance
           // quality and memory. We assume a typical device pixel ratio of 2.0-3.0.
           memCacheWidth = (screenWidth / delegate.crossAxisCount * 1.5).toInt();
@@ -313,24 +319,30 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
     });
   }
 
-  void _handleScrollPrefetch(ScrollNotification scrollInfo, List<T> items) {
+  void _handleScrollPrefetch(
+    ScrollNotification scrollInfo,
+    List<T> items,
+    SliverGridDelegate? responsiveDelegate,
+    double screenWidth,
+  ) {
     if (widget.imageUrlBuilder == null || items.isEmpty || !mounted) return;
     if (scrollInfo.metrics.axis != Axis.vertical) return;
 
     final offset = scrollInfo.metrics.pixels;
     final isGrid = widget.gridDelegate != null;
     final headers = ref.read(mediaHeadersProvider);
-    final prefetchDistance = _getEffectivePrefetchDistance(context);
+    final prefetchDistance = _getEffectivePrefetchDistance(
+      context,
+      responsiveDelegate,
+    );
 
     int? memCacheWidth;
     if (widget.memCacheWidthBuilder != null) {
       memCacheWidth = widget.memCacheWidthBuilder!(context, isGrid);
     } else {
-      final screenWidth = MediaQuery.sizeOf(context).width;
       if (isGrid) {
         final delegate =
-            _getResponsiveGridDelegate(context)
-                as SliverGridDelegateWithFixedCrossAxisCount;
+            responsiveDelegate as SliverGridDelegateWithFixedCrossAxisCount;
         memCacheWidth = (screenWidth / delegate.crossAxisCount * 1.5).toInt();
       } else {
         memCacheWidth = screenWidth > 600 ? 600 : screenWidth.toInt();
@@ -339,13 +351,12 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
 
     if (isGrid) {
       final delegate =
-          _getResponsiveGridDelegate(context)
-              as SliverGridDelegateWithFixedCrossAxisCount;
+          responsiveDelegate as SliverGridDelegateWithFixedCrossAxisCount;
       final crossAxisCount = delegate.crossAxisCount;
       final padding = widget.padding is EdgeInsets
           ? (widget.padding as EdgeInsets).horizontal
           : 0.0;
-      final availableWidth = MediaQuery.sizeOf(context).width - padding;
+      final availableWidth = screenWidth - padding;
       final itemWidth =
           (availableWidth -
               (delegate.crossAxisSpacing * (crossAxisCount - 1))) /
@@ -429,6 +440,20 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   @override
   Widget build(BuildContext context) {
     final isDesktop = ref.watch(desktopCapabilitiesProvider);
+
+    // ⚡ Bolt: Hoist screenWidth and responsiveDelegate out of the build sub-trees and scroll callbacks.
+    // Why: Previously, MediaQuery.sizeOf and _getResponsiveGridDelegate were queried repeatedly
+    // during layout and scroll operations.
+    // Impact: Avoids multiple O(1) inherited widget lookups and redundant layout mathematics per frame.
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final isGrid = widget.gridDelegate != null;
+    final responsiveDelegate = isGrid
+        ? _getResponsiveGridDelegate(context)
+        : null;
+    final fixedDelegate =
+        responsiveDelegate is SliverGridDelegateWithFixedCrossAxisCount
+        ? responsiveDelegate
+        : null;
 
     return Scaffold(
       appBar: widget.hideAppBar
@@ -654,7 +679,11 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
             Expanded(
               child: widget.provider.when(
                 data: (items) {
-                  _handleInitialPrefetch(items);
+                  _handleInitialPrefetch(
+                    items,
+                    responsiveDelegate,
+                    screenWidth,
+                  );
 
                   if (items.isEmpty && widget.customBody == null) {
                     return RefreshIndicator(
@@ -680,16 +709,6 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                     );
                   }
 
-                  final isGrid = widget.gridDelegate != null;
-                  final responsiveDelegate = isGrid
-                      ? _getResponsiveGridDelegate(context)
-                      : null;
-                  final fixedDelegate =
-                      responsiveDelegate
-                          is SliverGridDelegateWithFixedCrossAxisCount
-                      ? responsiveDelegate
-                      : null;
-
                   int? memCacheWidth;
                   if (widget.itemBuilder != null) {
                     if (widget.memCacheWidthBuilder != null) {
@@ -698,7 +717,6 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                         isGrid,
                       );
                     } else {
-                      final screenWidth = MediaQuery.sizeOf(context).width;
                       if (fixedDelegate != null) {
                         memCacheWidth =
                             (screenWidth / fixedDelegate.crossAxisCount * 1.5)
@@ -862,17 +880,18 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                       if (shouldLoadNextPage(scrollInfo.metrics)) {
                         widget.onFetchNextPage?.call();
                       }
-                      _handleScrollPrefetch(scrollInfo, items);
+                      _handleScrollPrefetch(
+                        scrollInfo,
+                        items,
+                        responsiveDelegate,
+                        screenWidth,
+                      );
                       return false;
                     },
                     child: body,
                   );
                 },
                 loading: () {
-                  final isGrid = widget.gridDelegate != null;
-                  final responsiveDelegate = isGrid
-                      ? _getResponsiveGridDelegate(context)
-                      : null;
                   final loadingItemBuilder = widget.loadingItemBuilder;
 
                   if (isGrid) {

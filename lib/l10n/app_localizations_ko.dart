@@ -12,19 +12,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get appTitle => 'StashFlow';
 
   @override
-  String get common_token => 'Token';
+  String get common_token => '토큰';
 
   @override
   String get filter_value => '값';
 
   @override
-  String get common_yes => 'Yes';
+  String get common_yes => '예';
 
   @override
-  String get common_no => 'No';
+  String get common_no => '아니요';
 
   @override
-  String get common_clear_history => 'Clear History';
+  String get common_clear_history => '기록 지우기';
 
   @override
   String get nav_scenes => '장면';
@@ -326,7 +326,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get common_play => '재생';
 
   @override
-  String get common_refresh => 'Refresh';
+  String get common_refresh => '새로 고치다';
 
   @override
   String get common_close => '닫기';
@@ -987,11 +987,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_appearance_custom_hex_helper => '8자리 ARGB 헥스 코드를 입력하세요';
 
   @override
-  String get settings_appearance_font_size => 'Global UI Scale';
+  String get settings_appearance_font_size => '글로벌 UI 규모';
 
   @override
-  String get settings_appearance_font_size_subtitle =>
-      'Scale typography and spacing proportionally';
+  String get settings_appearance_font_size_subtitle => '타이포그래피와 간격을 비례적으로 조정';
 
   @override
   String get settings_interface_title => '인터페이스 설정';
@@ -1281,20 +1280,20 @@ class AppLocalizationsKo extends AppLocalizations {
       '꺼져 있으면 재생 시 paths.stream을 직접 사용합니다';
 
   @override
-  String get settings_playback_end_behavior => 'Play End Behavior';
+  String get settings_playback_end_behavior => '재생 종료 동작';
 
   @override
   String get settings_playback_end_behavior_subtitle =>
-      'What to do when current playback ends';
+      '현재 재생이 끝나면 어떻게 해야 할까요?';
 
   @override
-  String get settings_playback_end_behavior_stop => 'Stop';
+  String get settings_playback_end_behavior_stop => '멈추다';
 
   @override
-  String get settings_playback_end_behavior_loop => 'Loop current scene';
+  String get settings_playback_end_behavior_loop => '현재 장면 반복';
 
   @override
-  String get settings_playback_end_behavior_next => 'Play next scene';
+  String get settings_playback_end_behavior_next => '다음 장면 재생';
 
   @override
   String get settings_playback_autoplay => '다음 장면 자동 재생';
@@ -1460,11 +1459,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_support_github_error => 'GitHub 링크를 열 수 없습니다';
 
   @override
-  String get settings_support_issues => 'Report an Issue';
+  String get settings_support_issues => '문제 신고';
 
   @override
   String get settings_support_issues_subtitle =>
-      'Help improve StashFlow by reporting bugs';
+      '버그를 보고하여 StashFlow 개선에 도움을 주세요.';
 
   @override
   String get settings_develop_title => '개발';
@@ -1726,43 +1725,43 @@ class AppLocalizationsKo extends AppLocalizations {
   String get scrape_results_scraped => '스크랩된 결과';
 
   @override
-  String get stats_refresh_statistics => 'Refresh Statistics';
+  String get stats_refresh_statistics => '통계 새로 고침';
 
   @override
-  String get stats_library_stats => 'Library Stats';
+  String get stats_library_stats => '도서관 통계';
 
   @override
-  String get stats_stash_glance => 'Your Stash at a glance';
+  String get stats_stash_glance => '귀하의 보관함을 한 눈에 살펴보세요';
 
   @override
-  String get stats_content => 'Content';
+  String get stats_content => '콘텐츠';
 
   @override
-  String get stats_organization => 'Organization';
+  String get stats_organization => '조직';
 
   @override
-  String get stats_activity => 'Activity';
+  String get stats_activity => '활동';
 
   @override
-  String get stats_scenes => 'Scenes';
+  String get stats_scenes => '장면';
 
   @override
-  String get stats_galleries => 'Galleries';
+  String get stats_galleries => '갤러리';
 
   @override
-  String get stats_performers => 'Performers';
+  String get stats_performers => '출연자';
 
   @override
-  String get stats_studios => 'Studios';
+  String get stats_studios => '스튜디오';
 
   @override
-  String get stats_groups => 'Groups';
+  String get stats_groups => '여러 떼';
 
   @override
-  String get stats_tags => 'Tags';
+  String get stats_tags => '태그';
 
   @override
-  String get stats_total_plays => 'Total Plays';
+  String get stats_total_plays => '총 플레이 횟수';
 
   @override
   String stats_unique_items(int count) {
@@ -1770,16 +1769,16 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get stats_total_o_count => 'Total O-Count';
+  String get stats_total_o_count => '총 O-카운트';
 
   @override
-  String get cast_airplay_pairing => 'AirPlay Pairing';
+  String get cast_airplay_pairing => 'AirPlay 페어링';
 
   @override
-  String get cast_enter_pin => 'Enter the 4-digit PIN shown on your TV';
+  String get cast_enter_pin => 'TV에 표시된 4자리 PIN을 입력하세요.';
 
   @override
-  String get cast_pair => 'Pair';
+  String get cast_pair => '쌍';
 
   @override
   String cast_connecting_to(String deviceName) {
@@ -1802,43 +1801,43 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get cast_searching => 'Searching for devices...';
+  String get cast_searching => '기기 검색 중...';
 
   @override
-  String get cast_cast_to_device => 'Cast to Device';
+  String get cast_cast_to_device => '기기로 전송';
 
   @override
-  String get settings_storage_images => 'Images';
+  String get settings_storage_images => '이미지';
 
   @override
-  String get settings_storage_videos => 'Videos';
+  String get settings_storage_videos => '비디오';
 
   @override
-  String get settings_storage_database => 'Database';
+  String get settings_storage_database => '데이터 베이스';
 
   @override
-  String get settings_storage_clearing_image => 'Clearing image cache...';
+  String get settings_storage_clearing_image => '이미지 캐시를 지우는 중...';
 
   @override
-  String get settings_storage_clearing_video => 'Clearing video cache...';
+  String get settings_storage_clearing_video => '비디오 캐시를 지우는 중...';
 
   @override
-  String get settings_storage_clearing_database => 'Clearing database cache...';
+  String get settings_storage_clearing_database => '데이터베이스 캐시를 지우는 중...';
 
   @override
-  String get settings_storage_cleared_image => 'Image cache cleared';
+  String get settings_storage_cleared_image => '이미지 캐시가 삭제되었습니다.';
 
   @override
-  String get settings_storage_cleared_video => 'Video cache cleared';
+  String get settings_storage_cleared_video => '비디오 캐시가 삭제되었습니다.';
 
   @override
-  String get settings_storage_cleared_database => 'Database cache cleared';
+  String get settings_storage_cleared_database => '데이터베이스 캐시가 지워졌습니다.';
 
   @override
-  String get settings_storage_clear => 'Clear';
+  String get settings_storage_clear => '분명한';
 
   @override
-  String get settings_storage_error_loading => 'Error loading sizes';
+  String get settings_storage_error_loading => '크기를 로드하는 중에 오류가 발생했습니다.';
 
   @override
   String settings_storage_mb(num value) {
@@ -1851,29 +1850,29 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get settings_storage_100_mb => '100 MB';
+  String get settings_storage_100_mb => '100MB';
 
   @override
-  String get settings_storage_500_mb => '500 MB';
+  String get settings_storage_500_mb => '500MB';
 
   @override
-  String get settings_storage_1_gb => '1 GB';
+  String get settings_storage_1_gb => '1GB';
 
   @override
-  String get settings_storage_2_gb => '2 GB';
+  String get settings_storage_2_gb => '2GB';
 
   @override
-  String get settings_storage_unlimited => 'Unlimited';
+  String get settings_storage_unlimited => '제한 없는';
 
   @override
-  String get settings_storage_limits => 'Limits';
+  String get settings_storage_limits => '제한';
 
   @override
-  String get settings_storage_limits_subtitle => 'Set maximum cache sizes';
+  String get settings_storage_limits_subtitle => '최대 캐시 크기 설정';
 
   @override
-  String get settings_storage_max_image_cache => 'Max Image Cache (MB)';
+  String get settings_storage_max_image_cache => '최대 이미지 캐시(MB)';
 
   @override
-  String get settings_storage_max_video_cache => 'Max Video Cache (MB)';
+  String get settings_storage_max_video_cache => '최대 비디오 캐시(MB)';
 }

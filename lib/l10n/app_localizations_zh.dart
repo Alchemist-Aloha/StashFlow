@@ -12,19 +12,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appTitle => 'StashFlow';
 
   @override
-  String get common_token => 'Token';
+  String get common_token => '代币';
 
   @override
   String get filter_value => '值';
 
   @override
-  String get common_yes => 'Yes';
+  String get common_yes => '是的';
 
   @override
-  String get common_no => 'No';
+  String get common_no => '不';
 
   @override
-  String get common_clear_history => 'Clear History';
+  String get common_clear_history => '清除历史记录';
 
   @override
   String get nav_scenes => '场景';
@@ -326,7 +326,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get common_play => '播放';
 
   @override
-  String get common_refresh => 'Refresh';
+  String get common_refresh => '刷新';
 
   @override
   String get common_close => '关闭';
@@ -985,11 +985,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_appearance_custom_hex_helper => '输入 8 位 ARGB hex 代码';
 
   @override
-  String get settings_appearance_font_size => 'Global UI Scale';
+  String get settings_appearance_font_size => '全球用户界面规模';
 
   @override
-  String get settings_appearance_font_size_subtitle =>
-      'Scale typography and spacing proportionally';
+  String get settings_appearance_font_size_subtitle => '按比例缩放版式和间距';
 
   @override
   String get settings_interface_title => '界面设置';
@@ -1442,11 +1441,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_support_github_error => '无法打开 GitHub 链接';
 
   @override
-  String get settings_support_issues => 'Report an Issue';
+  String get settings_support_issues => '报告问题';
 
   @override
-  String get settings_support_issues_subtitle =>
-      'Help improve StashFlow by reporting bugs';
+  String get settings_support_issues_subtitle => '通过报告错误帮助改进 StashFlow';
 
   @override
   String get settings_develop_title => '开发';
@@ -1705,43 +1703,43 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scrape_results_scraped => '已抓取';
 
   @override
-  String get stats_refresh_statistics => 'Refresh Statistics';
+  String get stats_refresh_statistics => '刷新统计数据';
 
   @override
-  String get stats_library_stats => 'Library Stats';
+  String get stats_library_stats => '图书馆统计';
 
   @override
-  String get stats_stash_glance => 'Your Stash at a glance';
+  String get stats_stash_glance => '您的藏品一目了然';
 
   @override
-  String get stats_content => 'Content';
+  String get stats_content => '内容';
 
   @override
-  String get stats_organization => 'Organization';
+  String get stats_organization => '组织';
 
   @override
-  String get stats_activity => 'Activity';
+  String get stats_activity => '活动';
 
   @override
-  String get stats_scenes => 'Scenes';
+  String get stats_scenes => '场景';
 
   @override
-  String get stats_galleries => 'Galleries';
+  String get stats_galleries => '画廊';
 
   @override
-  String get stats_performers => 'Performers';
+  String get stats_performers => '表演者';
 
   @override
-  String get stats_studios => 'Studios';
+  String get stats_studios => '工作室';
 
   @override
-  String get stats_groups => 'Groups';
+  String get stats_groups => '团体';
 
   @override
-  String get stats_tags => 'Tags';
+  String get stats_tags => '标签';
 
   @override
-  String get stats_total_plays => 'Total Plays';
+  String get stats_total_plays => '总播放次数';
 
   @override
   String stats_unique_items(int count) {
@@ -1749,16 +1747,16 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get stats_total_o_count => 'Total O-Count';
+  String get stats_total_o_count => '总 O 计数';
 
   @override
-  String get cast_airplay_pairing => 'AirPlay Pairing';
+  String get cast_airplay_pairing => '隔空播放配对';
 
   @override
-  String get cast_enter_pin => 'Enter the 4-digit PIN shown on your TV';
+  String get cast_enter_pin => '输入电视上显示的 4 位 PIN 码';
 
   @override
-  String get cast_pair => 'Pair';
+  String get cast_pair => '一对';
 
   @override
   String cast_connecting_to(String deviceName) {
@@ -1781,43 +1779,43 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get cast_searching => 'Searching for devices...';
+  String get cast_searching => '正在搜索设备...';
 
   @override
-  String get cast_cast_to_device => 'Cast to Device';
+  String get cast_cast_to_device => '投射到设备';
 
   @override
-  String get settings_storage_images => 'Images';
+  String get settings_storage_images => '图片';
 
   @override
-  String get settings_storage_videos => 'Videos';
+  String get settings_storage_videos => '视频';
 
   @override
-  String get settings_storage_database => 'Database';
+  String get settings_storage_database => '数据库';
 
   @override
-  String get settings_storage_clearing_image => 'Clearing image cache...';
+  String get settings_storage_clearing_image => '正在清除图像缓存...';
 
   @override
-  String get settings_storage_clearing_video => 'Clearing video cache...';
+  String get settings_storage_clearing_video => '清除视频缓存...';
 
   @override
-  String get settings_storage_clearing_database => 'Clearing database cache...';
+  String get settings_storage_clearing_database => '清除数据库缓存...';
 
   @override
-  String get settings_storage_cleared_image => 'Image cache cleared';
+  String get settings_storage_cleared_image => '图像缓存已清除';
 
   @override
-  String get settings_storage_cleared_video => 'Video cache cleared';
+  String get settings_storage_cleared_video => '视频缓存已清除';
 
   @override
-  String get settings_storage_cleared_database => 'Database cache cleared';
+  String get settings_storage_cleared_database => '数据库缓存已清除';
 
   @override
-  String get settings_storage_clear => 'Clear';
+  String get settings_storage_clear => '清除';
 
   @override
-  String get settings_storage_error_loading => 'Error loading sizes';
+  String get settings_storage_error_loading => '加载尺寸时出错';
 
   @override
   String settings_storage_mb(num value) {
@@ -1830,31 +1828,31 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get settings_storage_100_mb => '100 MB';
+  String get settings_storage_100_mb => '100MB';
 
   @override
-  String get settings_storage_500_mb => '500 MB';
+  String get settings_storage_500_mb => '500MB';
 
   @override
-  String get settings_storage_1_gb => '1 GB';
+  String get settings_storage_1_gb => '1GB';
 
   @override
-  String get settings_storage_2_gb => '2 GB';
+  String get settings_storage_2_gb => '2GB';
 
   @override
-  String get settings_storage_unlimited => 'Unlimited';
+  String get settings_storage_unlimited => '无限';
 
   @override
-  String get settings_storage_limits => 'Limits';
+  String get settings_storage_limits => '限制';
 
   @override
-  String get settings_storage_limits_subtitle => 'Set maximum cache sizes';
+  String get settings_storage_limits_subtitle => '设置最大缓存大小';
 
   @override
-  String get settings_storage_max_image_cache => 'Max Image Cache (MB)';
+  String get settings_storage_max_image_cache => '最大图像缓存 (MB)';
 
   @override
-  String get settings_storage_max_video_cache => 'Max Video Cache (MB)';
+  String get settings_storage_max_video_cache => '最大视频缓存 (MB)';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -1865,7 +1863,19 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get appTitle => 'StashFlow';
 
   @override
+  String get common_token => '代币';
+
+  @override
   String get filter_value => '值';
+
+  @override
+  String get common_yes => '是的';
+
+  @override
+  String get common_no => '不';
+
+  @override
+  String get common_clear_history => '清除历史记录';
 
   @override
   String get nav_scenes => '场景';
@@ -1910,6 +1920,23 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
       locale: localeName,
       other: '$countString 位演职人员',
       zero: '无演职人员',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nPlays(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString plays',
+      one: '1 play',
+      zero: 'no plays',
     );
     return '$_temp0';
   }
@@ -2150,6 +2177,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get common_play => '播放';
 
   @override
+  String get common_refresh => '刷新';
+
+  @override
   String get common_close => '关闭';
 
   @override
@@ -2806,6 +2836,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_appearance_custom_hex_helper => '输入 8 位 ARGB hex 代码';
 
   @override
+  String get settings_appearance_font_size => '全球用户界面规模';
+
+  @override
+  String get settings_appearance_font_size_subtitle => '按比例缩放版式和间距';
+
+  @override
   String get settings_interface_title => '界面设置';
 
   @override
@@ -3256,6 +3292,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_support_github_error => '无法打开 GitHub 链接';
 
   @override
+  String get settings_support_issues => '报告问题';
+
+  @override
+  String get settings_support_issues_subtitle => '通过报告错误帮助改进 StashFlow';
+
+  @override
   String get settings_develop_title => '开发';
 
   @override
@@ -3510,6 +3552,158 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get scrape_results_scraped => '已抓取';
+
+  @override
+  String get stats_refresh_statistics => '刷新统计数据';
+
+  @override
+  String get stats_library_stats => '图书馆统计';
+
+  @override
+  String get stats_stash_glance => '您的藏品一目了然';
+
+  @override
+  String get stats_content => '内容';
+
+  @override
+  String get stats_organization => '组织';
+
+  @override
+  String get stats_activity => '活动';
+
+  @override
+  String get stats_scenes => '场景';
+
+  @override
+  String get stats_galleries => '画廊';
+
+  @override
+  String get stats_performers => '表演者';
+
+  @override
+  String get stats_studios => '工作室';
+
+  @override
+  String get stats_groups => '团体';
+
+  @override
+  String get stats_tags => '标签';
+
+  @override
+  String get stats_total_plays => '总播放次数';
+
+  @override
+  String stats_unique_items(int count) {
+    return '$count unique items';
+  }
+
+  @override
+  String get stats_total_o_count => '总 O 计数';
+
+  @override
+  String get cast_airplay_pairing => '隔空播放配对';
+
+  @override
+  String get cast_enter_pin => '输入电视上显示的 4 位 PIN 码';
+
+  @override
+  String get cast_pair => '一对';
+
+  @override
+  String cast_connecting_to(String deviceName) {
+    return 'Connecting to $deviceName...';
+  }
+
+  @override
+  String cast_casting_to(String deviceName) {
+    return 'Casting to $deviceName';
+  }
+
+  @override
+  String cast_pairing_failed(String error) {
+    return 'Pairing failed: $error';
+  }
+
+  @override
+  String cast_failed_to_cast(String error) {
+    return 'Failed to cast: $error';
+  }
+
+  @override
+  String get cast_searching => '正在搜索设备...';
+
+  @override
+  String get cast_cast_to_device => '投射到设备';
+
+  @override
+  String get settings_storage_images => '图片';
+
+  @override
+  String get settings_storage_videos => '视频';
+
+  @override
+  String get settings_storage_database => '数据库';
+
+  @override
+  String get settings_storage_clearing_image => '正在清除图像缓存...';
+
+  @override
+  String get settings_storage_clearing_video => '清除视频缓存...';
+
+  @override
+  String get settings_storage_clearing_database => '清除数据库缓存...';
+
+  @override
+  String get settings_storage_cleared_image => '图像缓存已清除';
+
+  @override
+  String get settings_storage_cleared_video => '视频缓存已清除';
+
+  @override
+  String get settings_storage_cleared_database => '数据库缓存已清除';
+
+  @override
+  String get settings_storage_clear => '清除';
+
+  @override
+  String get settings_storage_error_loading => '加载尺寸时出错';
+
+  @override
+  String settings_storage_mb(num value) {
+    return '$value MB';
+  }
+
+  @override
+  String settings_storage_gb(num value) {
+    return '$value GB';
+  }
+
+  @override
+  String get settings_storage_100_mb => '100MB';
+
+  @override
+  String get settings_storage_500_mb => '500MB';
+
+  @override
+  String get settings_storage_1_gb => '1GB';
+
+  @override
+  String get settings_storage_2_gb => '2GB';
+
+  @override
+  String get settings_storage_unlimited => '无限';
+
+  @override
+  String get settings_storage_limits => '限制';
+
+  @override
+  String get settings_storage_limits_subtitle => '设置最大缓存大小';
+
+  @override
+  String get settings_storage_max_image_cache => '最大图像缓存 (MB)';
+
+  @override
+  String get settings_storage_max_video_cache => '最大视频缓存 (MB)';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -3520,7 +3714,19 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get appTitle => 'StashFlow';
 
   @override
+  String get common_token => '代幣';
+
+  @override
   String get filter_value => '值';
+
+  @override
+  String get common_yes => '是的';
+
+  @override
+  String get common_no => '不';
+
+  @override
+  String get common_clear_history => '清除歷史記錄';
 
   @override
   String get nav_scenes => '場景';
@@ -3567,6 +3773,23 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       other: '$countString 位演出者',
       one: '1 位演出者',
       zero: '沒有演出者',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nPlays(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString plays',
+      one: '1 play',
+      zero: 'no plays',
     );
     return '$_temp0';
   }
@@ -3805,6 +4028,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get common_play => '播放';
+
+  @override
+  String get common_refresh => '重新整理';
 
   @override
   String get common_close => '關閉';
@@ -4463,6 +4689,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_appearance_custom_hex_helper => '輸入 8 位數 ARGB hex 代碼';
 
   @override
+  String get settings_appearance_font_size => '全球使用者介面規模';
+
+  @override
+  String get settings_appearance_font_size_subtitle => '按比例縮放版式和間距';
+
+  @override
   String get settings_interface_title => '介面設定';
 
   @override
@@ -4741,6 +4973,21 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       '關閉時，播放將直接使用 paths.stream';
 
   @override
+  String get settings_playback_end_behavior => '播放結束行為';
+
+  @override
+  String get settings_playback_end_behavior_subtitle => '目前播放結束後該怎麼辦';
+
+  @override
+  String get settings_playback_end_behavior_stop => '停止';
+
+  @override
+  String get settings_playback_end_behavior_loop => '循環當前場景';
+
+  @override
+  String get settings_playback_end_behavior_next => '播放下一個場景';
+
+  @override
   String get settings_playback_autoplay => '自動播放下一個場景';
 
   @override
@@ -4898,6 +5145,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_support_github_error => '無法開啟 GitHub 連結';
+
+  @override
+  String get settings_support_issues => '報告問題';
+
+  @override
+  String get settings_support_issues_subtitle => '透過報告錯誤幫助改進 StashFlow';
 
   @override
   String get settings_develop_title => '開發';
@@ -5154,4 +5407,156 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get scrape_results_scraped => '已抓取';
+
+  @override
+  String get stats_refresh_statistics => '重新整理統計數據';
+
+  @override
+  String get stats_library_stats => '圖書館統計';
+
+  @override
+  String get stats_stash_glance => '您的藏品一目了然';
+
+  @override
+  String get stats_content => '內容';
+
+  @override
+  String get stats_organization => '組織';
+
+  @override
+  String get stats_activity => '活動';
+
+  @override
+  String get stats_scenes => '場景';
+
+  @override
+  String get stats_galleries => '畫廊';
+
+  @override
+  String get stats_performers => '表演者';
+
+  @override
+  String get stats_studios => '工作室';
+
+  @override
+  String get stats_groups => '團體';
+
+  @override
+  String get stats_tags => '標籤';
+
+  @override
+  String get stats_total_plays => '總播放次數';
+
+  @override
+  String stats_unique_items(int count) {
+    return '$count unique items';
+  }
+
+  @override
+  String get stats_total_o_count => '總 O 計數';
+
+  @override
+  String get cast_airplay_pairing => '隔空播放配對';
+
+  @override
+  String get cast_enter_pin => '輸入電視上顯示的 4 位 PIN 碼';
+
+  @override
+  String get cast_pair => '一對';
+
+  @override
+  String cast_connecting_to(String deviceName) {
+    return 'Connecting to $deviceName...';
+  }
+
+  @override
+  String cast_casting_to(String deviceName) {
+    return 'Casting to $deviceName';
+  }
+
+  @override
+  String cast_pairing_failed(String error) {
+    return 'Pairing failed: $error';
+  }
+
+  @override
+  String cast_failed_to_cast(String error) {
+    return 'Failed to cast: $error';
+  }
+
+  @override
+  String get cast_searching => '正在搜尋設備...';
+
+  @override
+  String get cast_cast_to_device => '投射到設備';
+
+  @override
+  String get settings_storage_images => '圖片';
+
+  @override
+  String get settings_storage_videos => '影片';
+
+  @override
+  String get settings_storage_database => '資料庫';
+
+  @override
+  String get settings_storage_clearing_image => '正在清除圖像快取...';
+
+  @override
+  String get settings_storage_clearing_video => '清除視訊快取...';
+
+  @override
+  String get settings_storage_clearing_database => '清除資料庫快取...';
+
+  @override
+  String get settings_storage_cleared_image => '影像快取已清除';
+
+  @override
+  String get settings_storage_cleared_video => '視訊快取已清除';
+
+  @override
+  String get settings_storage_cleared_database => '資料庫快取已清除';
+
+  @override
+  String get settings_storage_clear => '清除';
+
+  @override
+  String get settings_storage_error_loading => '加載尺寸時出錯';
+
+  @override
+  String settings_storage_mb(num value) {
+    return '$value MB';
+  }
+
+  @override
+  String settings_storage_gb(num value) {
+    return '$value GB';
+  }
+
+  @override
+  String get settings_storage_100_mb => '100MB';
+
+  @override
+  String get settings_storage_500_mb => '500MB';
+
+  @override
+  String get settings_storage_1_gb => '1GB';
+
+  @override
+  String get settings_storage_2_gb => '2GB';
+
+  @override
+  String get settings_storage_unlimited => '無限';
+
+  @override
+  String get settings_storage_limits => '限制';
+
+  @override
+  String get settings_storage_limits_subtitle => '設定最大快取大小';
+
+  @override
+  String get settings_storage_max_image_cache => '最大圖像快取 (MB)';
+
+  @override
+  String get settings_storage_max_video_cache => '最大視訊快取 (MB)';
 }

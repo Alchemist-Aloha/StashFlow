@@ -24,3 +24,7 @@
 ## 2024-08-01 - [MediaQuery.of(context) Over-Rebuilding in Padding]
 **Learning:** Using `MediaQuery.of(context).padding.bottom` binds the widget to the entire `MediaQueryData` object, triggering an unnecessary rebuild whenever any unrelated property changes (like text scale factor, orientation, screen size).
 **Action:** Always use granular MediaQuery methods like `MediaQuery.paddingOf(context).bottom` to isolate dependencies to only the properties the widget actually uses.
+
+## 2024-05-30 - [Hoist MediaQuery & Delegates from Scroll Handlers]
+**Learning:** Querying `MediaQuery.sizeOf(context)` or recalculating `SliverGridDelegate` inside `NotificationListener<ScrollNotification>` callbacks or list `builder` methods forces the framework to perform redundant O(1) inherited widget lookups and layout math on every single frame during a scroll event.
+**Action:** Always hoist `screenWidth`, `isGrid`, and delegate calculations to the very top of the `build` method, caching them into local variables. Then pass these cached variables down into your scroll handlers (like `_handleScrollPrefetch`) or builder methods to guarantee O(1) performance and reduce GC pressure during rapid scrolling.
