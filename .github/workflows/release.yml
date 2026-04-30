@@ -5,7 +5,7 @@ on:
     # branches:
     #   - main
     tags:
-      - 'v*'
+      - "v*"
   workflow_dispatch:
 
 jobs:
@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [android, windows, linux, web, macos]
+        target: [ android, windows, linux, web, macos ]
         include:
           - target: android
             os: ubuntu-latest
@@ -36,23 +36,23 @@ jobs:
           - target: macos
             os: macos-latest
             artifact_name: macos
-    
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        
+
       - name: Setup Java
         if: matrix.target == 'android'
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
-          java-version: '17'
-          
+          distribution: "zulu"
+          java-version: "17"
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
-          
+          channel: "stable"
+
       - name: Install dependencies
         run: flutter pub get
 
@@ -74,7 +74,20 @@ jobs:
         if: matrix.target == 'linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev libsecret-1-dev
+          sudo apt-get install -y \
+            clang \
+            cmake \
+            ninja-build \
+            pkg-config \
+            libgtk-3-dev \
+            liblzma-dev \
+            libstdc++-12-dev \
+            libsecret-1-dev \
+            libmpv-dev \
+            libavcodec-dev \
+            libavformat-dev \
+            libavutil-dev \
+            libswresample-dev
 
       - name: Build
         run: |
@@ -118,8 +131,8 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/web
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
+          user_name: "github-actions[bot]"
+          user_email: "github-actions[bot]@users.noreply.github.com"
           commit_message: "Deploy to GitHub Pages: ${{ github.sha }}"
 
       - name: Package macOS
