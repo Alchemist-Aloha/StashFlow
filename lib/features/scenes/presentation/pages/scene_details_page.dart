@@ -188,7 +188,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           : null,
       body: LayoutBuilder(
         builder: (context, constraints) {
-          // Subtract 24px margin from the body height to ensure video is fully visible
+          // Subtract 8px margin from the body height to ensure video is fully visible
           final safeMaxHeight = constraints.maxHeight - 8;
 
           return sceneAsync.when(
