@@ -390,7 +390,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
           vertical: 4,
         ),
         color: Theme.of(context).colorScheme.primaryContainer.withValues(
-          alpha: 0.1,
+          alpha: 0.3,
         ),
         child: ListTile(
           onTap: () => context.push('/studios/studio/${studio.id}'),
@@ -415,7 +415,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
             vertical: 4,
           ),
           color: Theme.of(context).colorScheme.primaryContainer.withValues(
-            alpha: 0.1,
+            alpha: 0.3,
           ),
           child: ListTile(
             title: Text(

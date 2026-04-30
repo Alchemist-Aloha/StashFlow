@@ -109,7 +109,7 @@ class StatsFloatingPanel extends ConsumerWidget {
           Container(
             padding: EdgeInsets.all(dims.spacingSmall),
             decoration: BoxDecoration(
-              color: colorScheme.primaryContainer.withValues(alpha: 0.5),
+              color: colorScheme.primaryContainer.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
             ),
             child: Icon(
