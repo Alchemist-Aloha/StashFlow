@@ -258,7 +258,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
 
     return Container(
       padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).padding.bottom + AppTheme.spacingMedium,
+        bottom: MediaQuery.paddingOf(context).bottom + AppTheme.spacingMedium,
       ),
       decoration: BoxDecoration(
         color: context.colors.surface,
