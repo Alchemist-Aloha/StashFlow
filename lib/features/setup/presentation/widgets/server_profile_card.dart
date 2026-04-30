@@ -18,9 +18,13 @@ class ServerProfileCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final activeId = ref.watch(activeServerProfileIdProvider);
-    final isActive = activeId == profile.id;
-    final connectionStatus = ref.watch(connectionStatusProvider(profile));
+    final activeProfile = ref.watch(activeProfileProvider);
+    final isActive = activeProfile?.id == profile.id;
+    
+    // Only watch connection status for the active profile.
+    // This makes the connection check more robust by focusing on the selected server
+    // and ensuring a fresh check happens when a profile becomes active.
+    final connectionStatus = isActive ? ref.watch(connectionStatusProvider(profile)) : null;
 
     return Card(
       elevation: isActive ? 4 : 1,
@@ -61,8 +65,10 @@ class ServerProfileCard extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 8),
-                    _buildStatusRow(context, connectionStatus, l10n),
+                    if (isActive) ...[
+                      const SizedBox(height: 8),
+                      _buildStatusRow(context, connectionStatus!, l10n),
+                    ],
                   ],
                 ),
               ),

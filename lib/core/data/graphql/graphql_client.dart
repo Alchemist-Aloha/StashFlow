@@ -10,6 +10,7 @@ import '../preferences/shared_preferences_provider.dart';
 import '../preferences/secure_storage_provider.dart';
 import '../../../features/setup/domain/models/server_profile.dart';
 import '../../../features/setup/presentation/providers/server_profiles_provider.dart';
+import '../../../features/setup/presentation/providers/profile_credentials_provider.dart';
 import '../../utils/environment.dart' as env;
 
 part 'graphql_client.g.dart';
@@ -63,12 +64,6 @@ class ServerUrl extends _$ServerUrl {
 }
 
 @riverpod
-Future<String> profileApiKey(Ref ref, String profileId) async {
-  final secureStorage = ref.read(secureStorageProvider);
-  return await secureStorage.read(key: 'profile_${profileId}_api_key') ?? '';
-}
-
-@riverpod
 class ServerApiKey extends _$ServerApiKey {
   @override
   String build() {
@@ -85,24 +80,6 @@ final proxyAuthModesEnabledProvider = Provider<bool>((ref) {
   final prefs = ref.watch(sharedPreferencesProvider);
   return prefs.getBool('enable_proxy_auth_modes') ?? false;
 });
-
-@riverpod
-Future<String> profileUsername(Ref ref, String profileId) async {
-  final secureStorage = ref.read(secureStorageProvider);
-  return await secureStorage.read(key: 'profile_${profileId}_username') ?? '';
-}
-
-@riverpod
-Future<String> profilePassword(Ref ref, String profileId) async {
-  final secureStorage = ref.read(secureStorageProvider);
-  return await secureStorage.read(key: 'profile_${profileId}_password') ?? '';
-}
-
-@riverpod
-Future<String> profileCookieHeader(Ref ref, String profileId) async {
-  final secureStorage = ref.read(secureStorageProvider);
-  return await secureStorage.read(key: 'profile_${profileId}_cookie_header') ?? '';
-}
 
 @riverpod
 Future<GraphQLClient> profileGraphqlClient(Ref ref, ServerProfile profile) async {

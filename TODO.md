@@ -1,3 +1,7 @@
-Improve the cast feature. make video and audio play pause in app during cast. the video player control should still work to control the cast player but on the local video player will show video thumbnail only. add stop cast button to return to local play (return to the last play location of the remost cast). 
-make sure the play end behavior of the video player match the setting entry   
-Add cache cleaning feature. Add maximum cache setting.
+# Plan
+
+- Improve the cast feature. make video and audio play pause in app during cast. the video player control should still work to control the cast player but on the local video player will show video thumbnail only. add stop cast button to return to local play (return to the last play location of the remost cast)
+
+- make sure the play end behavior of the video player match the setting entry
+
+- Add cache cleaning feature. Add maximum cache setting
