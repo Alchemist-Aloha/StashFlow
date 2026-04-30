@@ -5,13 +5,14 @@ import '../../../../core/utils/l10n_extensions.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/grid_utils.dart';
-import '../../../../core/presentation/widgets/grid_card.dart';
+import '../../../scenes/presentation/widgets/scene_card.dart';
+import '../../../scenes/domain/entities/scene.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../providers/performer_media_provider.dart';
 
 /// A grid page showing all media (scenes) for a specific performer.
 ///
-/// Uses [ListPageScaffold] for consistent layout and [GridCard] for
+/// Uses [ListPageScaffold] for consistent layout and [SceneCard] for
 /// unified item representation.
 class PerformerMediaGridPage extends ConsumerWidget {
   const PerformerMediaGridPage({required this.performerId, super.key});
@@ -25,13 +26,13 @@ class PerformerMediaGridPage extends ConsumerWidget {
     final isGridView = ref.watch(performerMediaGridLayoutProvider);
     final gridColumns = ref.watch(performerGridColumnsProvider);
 
-    return ListPageScaffold<PerformerMediaItem>(
+    return ListPageScaffold<Scene>(
       title: context.l10n.performers_media_title,
       searchHint: context.l10n.common_search_placeholder,
       // Currently, search is not implemented on the provider for this specific view.
       onSearchChanged: (_) {},
       provider: mediaAsync,
-      imageUrlBuilder: (item) => item.thumbnailUrl,
+      imageUrlBuilder: (item) => item.paths.screenshot,
       onRefresh: () =>
           ref.refresh(performerMediaGridProvider(performerId).future),
       onFetchNextPage: () => ref
@@ -43,18 +44,13 @@ class PerformerMediaGridPage extends ConsumerWidget {
       useMasonry: isGridView,
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, item, memCacheWidth, memCacheHeight) {
-        double? ratio;
-        if (item.width != null && item.height != null && item.height! > 0) {
-          ratio = item.width!.toDouble() / item.height!.toDouble();
-        }
-        return GridCard(
-          title: item.title,
-          imageUrl: item.thumbnailUrl,
+        return SceneCard(
+          scene: item,
           isGrid: isGridView,
           useMasonry: isGridView,
-          aspectRatio: ratio,
           memCacheWidth: memCacheWidth,
-          onTap: () => context.push('/scenes/scene/${item.sceneId}'),
+          memCacheHeight: memCacheHeight,
+          onTap: () => context.push('/scenes/scene/${item.id}'),
         );
       },
     );

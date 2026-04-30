@@ -1,48 +1,21 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../galleries/presentation/providers/gallery_list_provider.dart';
-import '../../../../core/data/graphql/url_resolver.dart';
-import '../../../../core/data/preferences/shared_preferences_provider.dart';
-import '../../../../core/data/graphql/graphql_client.dart';
-import '../../../performers/presentation/providers/performer_galleries_provider.dart';
+import '../../../galleries/domain/entities/gallery.dart';
 
 part 'studio_galleries_provider.g.dart';
 
 @riverpod
-FutureOr<List<PerformerGalleryItem>> studioGalleries(
+FutureOr<List<Gallery>> studioGalleries(
   Ref ref,
   String studioId,
 ) async {
   ref.keepAlive();
   final repository = ref.read(galleryRepositoryProvider);
 
-  final galleries = await repository.findGalleries(
+  return repository.findGalleries(
     perPage: 24,
     studioId: studioId,
   );
-
-  final prefs = ref.read(sharedPreferencesProvider);
-  final storedServerUrl = prefs.getString('server_base_url')?.trim() ?? '';
-  final normalizedServerUrl = normalizeGraphqlServerUrl(storedServerUrl);
-  final endpoint = Uri.parse(
-    normalizedServerUrl.isEmpty
-        ? 'http://localhost:9999/graphql'
-        : normalizedServerUrl,
-  );
-
-  return galleries
-      .map(
-        (gallery) => PerformerGalleryItem(
-          galleryId: gallery.id,
-          title: gallery.displayName,
-          thumbnailUrl: resolveGraphqlMediaUrl(
-            rawUrl: gallery.coverPath ?? '/gallery/${gallery.id}/thumbnail',
-            graphqlEndpoint: endpoint,
-          ),
-          width: gallery.coverWidth,
-          height: gallery.coverHeight,
-        ),
-      )
-      .toList();
 }
 
 @riverpod
@@ -54,49 +27,17 @@ class StudioGalleriesGrid extends _$StudioGalleriesGrid {
   String? _studioId;
 
   @override
-  FutureOr<List<PerformerGalleryItem>> build(String studioId) async {
+  FutureOr<List<Gallery>> build(String studioId) async {
     ref.keepAlive();
     _studioId = studioId;
     _currentPage = 1;
     _hasMore = true;
-    return _fetchPage(studioId, _currentPage);
-  }
-
-  Future<List<PerformerGalleryItem>> _fetchPage(
-    String studioId,
-    int page,
-  ) async {
     final repository = ref.read(galleryRepositoryProvider);
-
-    final galleries = await repository.findGalleries(
-      page: page,
+    return repository.findGalleries(
+      page: _currentPage,
       perPage: _perPage,
       studioId: studioId,
     );
-
-    final prefs = ref.read(sharedPreferencesProvider);
-    final storedServerUrl = prefs.getString('server_base_url')?.trim() ?? '';
-    final normalizedServerUrl = normalizeGraphqlServerUrl(storedServerUrl);
-    final endpoint = Uri.parse(
-      normalizedServerUrl.isEmpty
-          ? 'http://localhost:9999/graphql'
-          : normalizedServerUrl,
-    );
-
-    return galleries
-        .map(
-          (gallery) => PerformerGalleryItem(
-            galleryId: gallery.id,
-            title: gallery.displayName,
-            thumbnailUrl: resolveGraphqlMediaUrl(
-              rawUrl: gallery.coverPath ?? '/gallery/${gallery.id}/thumbnail',
-              graphqlEndpoint: endpoint,
-            ),
-            width: gallery.coverWidth,
-            height: gallery.coverHeight,
-          ),
-        )
-        .toList();
   }
 
   Future<void> fetchNextPage() async {
@@ -104,15 +45,20 @@ class StudioGalleriesGrid extends _$StudioGalleriesGrid {
 
     _isLoadingMore = true;
     try {
+      final repository = ref.read(galleryRepositoryProvider);
       final nextPage = _currentPage + 1;
-      final nextItems = await _fetchPage(_studioId!, nextPage);
+      final nextItems = await repository.findGalleries(
+        page: nextPage,
+        perPage: _perPage,
+        studioId: _studioId,
+      );
 
       if (nextItems.isEmpty) {
         _hasMore = false;
       } else {
         _currentPage = nextPage;
         state = AsyncData([
-          ...(state.value ?? <PerformerGalleryItem>[]),
+          ...(state.value ?? <Gallery>[]),
           ...nextItems,
         ]);
       }

@@ -5,14 +5,15 @@ import '../../../../core/utils/l10n_extensions.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/grid_utils.dart';
-import '../../../../core/presentation/widgets/grid_card.dart';
+import '../../../galleries/presentation/widgets/gallery_card.dart';
+import '../../../galleries/domain/entities/gallery.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../providers/performer_galleries_provider.dart';
 import '../../../images/presentation/providers/image_list_provider.dart';
 
 /// A grid page showing all galleries for a specific performer.
 ///
-/// Uses [ListPageScaffold] for consistent layout and [GridCard] for
+/// Uses [ListPageScaffold] for consistent layout and [GalleryCard] for
 /// unified item representation.
 class PerformerGalleriesGridPage extends ConsumerWidget {
   const PerformerGalleriesGridPage({required this.performerId, super.key});
@@ -28,13 +29,12 @@ class PerformerGalleriesGridPage extends ConsumerWidget {
     final isGridView = ref.watch(performerGalleriesGridLayoutProvider);
     final gridColumns = ref.watch(performerGridColumnsProvider);
 
-    return ListPageScaffold<PerformerGalleryItem>(
+    return ListPageScaffold<Gallery>(
       title: context.l10n.performers_galleries_title,
       searchHint: context.l10n.common_search_placeholder,
-      // Currently, search is not implemented on the provider for this specific view.
       onSearchChanged: (_) {},
       provider: galleriesAsync,
-      imageUrlBuilder: (item) => item.thumbnailUrl,
+      imageUrlBuilder: (item) => item.coverPath,
       onRefresh: () =>
           ref.refresh(performerGalleriesGridProvider(performerId).future),
       onFetchNextPage: () => ref
@@ -46,21 +46,15 @@ class PerformerGalleriesGridPage extends ConsumerWidget {
       useMasonry: isGridView,
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, item, memCacheWidth, memCacheHeight) {
-        double? ratio;
-        if (item.width != null && item.height != null && item.height! > 0) {
-          ratio = item.width!.toDouble() / item.height!.toDouble();
-        }
-        return GridCard(
-          title: item.title,
-          imageUrl: item.thumbnailUrl,
+        return GalleryCard(
+          gallery: item,
           isGrid: isGridView,
           useMasonry: isGridView,
-          aspectRatio: ratio,
           memCacheWidth: memCacheWidth,
           onTap: () {
             ref
                 .read(imageFilterStateProvider.notifier)
-                .setGalleryId(item.galleryId);
+                .setGalleryId(item.id);
             context.push('/galleries/images');
           },
         );

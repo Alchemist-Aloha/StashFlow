@@ -184,7 +184,6 @@ class CustomPlayerStream extends Mock implements mk.PlayerStream {
   Stream<int?> get height => const Stream.empty();
   @override
   Stream<String> get error => const Stream.empty();
-  @override
   Stream<List<mk.SubtitleTrack>> get subtitleTracks => const Stream.empty();
 
   CustomPlayerStream(

@@ -3,8 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
+import '../../../scenes/domain/entities/scene.dart';
 import '../providers/studio_media_provider.dart';
 import '../providers/studio_details_provider.dart';
 import '../providers/studio_galleries_provider.dart';
@@ -12,12 +12,13 @@ import '../../../images/presentation/providers/image_list_provider.dart';
 
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/utils/l10n_extensions.dart';
-import '../../../../core/presentation/widgets/media_strip.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../providers/studio_list_provider.dart';
 import '../../../setup/presentation/providers/scrape_customization_provider.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_strip.dart';
+import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_strip.dart';
 
 class StudioDetailsPage extends ConsumerWidget {
   final String studioId;
@@ -44,7 +45,6 @@ class StudioDetailsPage extends ConsumerWidget {
     final studioAsync = ref.watch(studioDetailsProvider(studioId));
     final mediaAsync = ref.watch(studioMediaProvider(studioId));
     final galleriesAsync = ref.watch(studioGalleriesProvider(studioId));
-    final mediaHeaders = ref.watch(mediaHeadersProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final scrapeEnabled = ref.watch(scrapeEnabledProvider);
 
@@ -136,8 +136,8 @@ class StudioDetailsPage extends ConsumerWidget {
                           ),
                         ),
                         mediaAsync.when(
-                          data: (mediaItems) {
-                            if (mediaItems.isEmpty) {
+                          data: (scenes) {
+                            if (scenes.isEmpty) {
                               return Padding(
                                 padding: const EdgeInsets.only(
                                   top: AppTheme.spacingSmall,
@@ -150,22 +150,14 @@ class StudioDetailsPage extends ConsumerWidget {
                                 ),
                               );
                             }
-                            final shuffledItems = [...mediaItems]
+                            final List<Scene> sceneList = scenes;
+                            final shuffledItems = sceneList.toList()
                               ..shuffle(Random(studio.id.hashCode));
-                            return MediaStrip(
-                              items: shuffledItems
-                                  .map(
-                                    (item) => MediaStripItem(
-                                      id: item.sceneId,
-                                      title: item.title,
-                                      thumbnailUrl: item.thumbnailUrl,
-                                      onTap: () => context.push(
-                                        '/scenes/scene/${item.sceneId}',
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                              headers: mediaHeaders,
+                            return SceneStrip(
+                              scenes: shuffledItems,
+                              onTap: (scene) => context.push(
+                                '/scenes/scene/${scene.id}',
+                              ),
                             );
                           },
                           loading: () => const SizedBox(
@@ -182,8 +174,8 @@ class StudioDetailsPage extends ConsumerWidget {
                           ),
                         ),
                         galleriesAsync.when(
-                          data: (galleryItems) {
-                            if (galleryItems.isEmpty) {
+                          data: (galleries) {
+                            if (galleries.isEmpty) {
                               return const SizedBox.shrink();
                             }
                             return Column(
@@ -196,26 +188,16 @@ class StudioDetailsPage extends ConsumerWidget {
                                     '/studios/studio/${studio.id}/galleries',
                                   ),
                                 ),
-                                MediaStrip(
-                                  items: galleryItems
-                                      .map(
-                                        (item) => MediaStripItem(
-                                          id: item.galleryId,
-                                          title: item.title,
-                                          thumbnailUrl: item.thumbnailUrl,
-                                          onTap: () {
-                                            ref
-                                                .read(
-                                                  imageFilterStateProvider
-                                                      .notifier,
-                                                )
-                                                .setGalleryId(item.galleryId);
-                                            context.push('/galleries/images');
-                                          },
-                                        ),
-                                      )
-                                      .toList(),
-                                  headers: mediaHeaders,
+                                GalleryStrip(
+                                  galleries: galleries,
+                                  onTap: (gallery) {
+                                    ref
+                                        .read(
+                                          imageFilterStateProvider.notifier,
+                                        )
+                                        .setGalleryId(gallery.id);
+                                    context.push('/galleries/images');
+                                  },
                                 ),
                               ],
                             );

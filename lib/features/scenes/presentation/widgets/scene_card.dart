@@ -29,6 +29,7 @@ class SceneCard extends ConsumerStatefulWidget {
     required this.scene,
     this.isGrid = false,
     this.useMasonry = false,
+    this.showPerformers = true,
     this.onTap,
     this.memCacheWidth,
     this.memCacheHeight,
@@ -43,6 +44,9 @@ class SceneCard extends ConsumerStatefulWidget {
 
   /// Whether to use dynamic aspect ratio in grid mode (for masonry layouts).
   final bool useMasonry;
+
+  /// Whether to show performer avatars if available.
+  final bool showPerformers;
 
   /// Callback triggered when the card is tapped.
   final VoidCallback? onTap;
@@ -391,7 +395,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        if (ref.watch(showPerformerAvatarsProvider) &&
+                        if (widget.showPerformers && ref.watch(showPerformerAvatarsProvider) &&
                             widget.scene.performerNames.isNotEmpty) ...[
                           const SizedBox(height: 8),
                           _PerformerAvatarRow(
@@ -480,7 +484,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        if (ref.watch(showPerformerAvatarsProvider) &&
+                        if (widget.showPerformers && ref.watch(showPerformerAvatarsProvider) &&
                             widget.scene.performerNames.isNotEmpty) ...[
                           const SizedBox(height: 4),
                           _PerformerAvatarRow(

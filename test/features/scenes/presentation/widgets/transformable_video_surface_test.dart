@@ -62,22 +62,16 @@ class MockPlayerStream extends Fake implements mk.PlayerStream {
   @override
   Stream<mk.VideoParams> get videoParams => const Stream.empty();
 
-  @override
   Stream<List<mk.AudioTrack>> get audioTracks => const Stream.empty();
 
-  @override
   Stream<List<mk.VideoTrack>> get videoTracks => const Stream.empty();
 
-  @override
   Stream<List<mk.SubtitleTrack>> get subtitleTracks => const Stream.empty();
 
-  @override
   Stream<mk.AudioTrack> get audioTrack => const Stream.empty();
 
-  @override
   Stream<mk.VideoTrack> get videoTrack => const Stream.empty();
 
-  @override
   Stream<mk.SubtitleTrack> get subtitleTrack => const Stream.empty();
 
   @override

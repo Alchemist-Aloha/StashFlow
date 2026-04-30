@@ -5,20 +5,21 @@ import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
+import '../../../scenes/domain/entities/scene.dart';
 import '../providers/performer_media_provider.dart';
 import '../providers/performer_details_provider.dart';
 import '../providers/performer_galleries_provider.dart';
 import 'package:stash_app_flutter/features/images/presentation/providers/image_list_provider.dart';
 
 import '../../../../core/presentation/widgets/section_header.dart';
-import '../../../../core/presentation/widgets/media_strip.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../providers/performer_list_provider.dart';
 import '../../../setup/presentation/providers/scrape_customization_provider.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_strip.dart';
+import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_strip.dart';
 
 class PerformerDetailsPage extends ConsumerWidget {
   final String performerId;
@@ -64,7 +65,6 @@ class PerformerDetailsPage extends ConsumerWidget {
     final performerAsync = ref.watch(performerDetailsProvider(performerId));
     final mediaAsync = ref.watch(performerMediaProvider(performerId));
     final galleriesAsync = ref.watch(performerGalleriesProvider(performerId));
-    final mediaHeaders = ref.watch(mediaHeadersProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final scrapeEnabled = ref.watch(scrapeEnabledProvider);
 
@@ -247,7 +247,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                                 onPressed: () {
                                   if (index < performer.tagIds.length) {
                                     context.push(
-                                      '/tag/${performer.tagIds[index]}',
+                                      '/tags/tag/${performer.tagIds[index]}',
                                     );
                                   }
                                 },
@@ -360,8 +360,8 @@ class PerformerDetailsPage extends ConsumerWidget {
                           ),
                         ),
                         mediaAsync.when(
-                          data: (mediaItems) {
-                            if (mediaItems.isEmpty) {
+                          data: (scenes) {
+                            if (scenes.isEmpty) {
                               return Padding(
                                 padding: const EdgeInsets.only(
                                   top: AppTheme.spacingSmall,
@@ -374,22 +374,14 @@ class PerformerDetailsPage extends ConsumerWidget {
                                 ),
                               );
                             }
-                            final shuffledItems = [...mediaItems]
+                            final List<Scene> sceneList = scenes;
+                            final shuffledItems = sceneList.toList()
                               ..shuffle(Random(performer.id.hashCode));
-                            return MediaStrip(
-                              items: shuffledItems
-                                  .map(
-                                    (item) => MediaStripItem(
-                                      id: item.sceneId,
-                                      title: item.title,
-                                      thumbnailUrl: item.thumbnailUrl,
-                                      onTap: () => context.push(
-                                        '/scenes/scene/${item.sceneId}',
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                              headers: mediaHeaders,
+                            return SceneStrip(
+                              scenes: shuffledItems,
+                              onTap: (scene) => context.push(
+                                '/scenes/scene/${scene.id}',
+                              ),
                             );
                           },
                           loading: () => const SizedBox(
@@ -406,8 +398,8 @@ class PerformerDetailsPage extends ConsumerWidget {
                           ),
                         ),
                         galleriesAsync.when(
-                          data: (galleryItems) {
-                            if (galleryItems.isEmpty) {
+                          data: (galleries) {
+                            if (galleries.isEmpty) {
                               return const SizedBox.shrink();
                             }
                             return Column(
@@ -420,26 +412,16 @@ class PerformerDetailsPage extends ConsumerWidget {
                                     '/performers/performer/${performer.id}/galleries',
                                   ),
                                 ),
-                                MediaStrip(
-                                  items: galleryItems
-                                      .map(
-                                        (item) => MediaStripItem(
-                                          id: item.galleryId,
-                                          title: item.title,
-                                          thumbnailUrl: item.thumbnailUrl,
-                                          onTap: () {
-                                            ref
-                                                .read(
-                                                  imageFilterStateProvider
-                                                      .notifier,
-                                                )
-                                                .setGalleryId(item.galleryId);
-                                            context.push('/galleries/images');
-                                          },
-                                        ),
-                                      )
-                                      .toList(),
-                                  headers: mediaHeaders,
+                                GalleryStrip(
+                                  galleries: galleries,
+                                  onTap: (gallery) {
+                                    ref
+                                        .read(
+                                          imageFilterStateProvider.notifier,
+                                        )
+                                        .setGalleryId(gallery.id);
+                                    context.push('/galleries/images');
+                                  },
                                 ),
                               ],
                             );

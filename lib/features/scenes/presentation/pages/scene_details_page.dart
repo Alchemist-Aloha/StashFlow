@@ -10,9 +10,8 @@ import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
-import '../../../../core/presentation/widgets/media_strip.dart';
-import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
+import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../domain/entities/scene_title_utils.dart';
 import '../../../studios/presentation/providers/studio_media_provider.dart';
@@ -23,6 +22,7 @@ import '../../../setup/presentation/providers/navigation_customization_provider.
 import '../../../setup/presentation/providers/scrape_customization_provider.dart';
 import '../../domain/entities/scene.dart';
 import '../widgets/scene_video_player.dart';
+import '../widgets/scene_strip.dart';
 
 /// A detailed view for a single scene,
 ///
@@ -718,15 +718,15 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     final canOpenStudio =
         scene.studioId != null && (scene.studioName ?? '').trim().isNotEmpty;
     final studioMediaAsync = ref.watch(studioMediaProvider(scene.studioId!));
-    final mediaHeaders = ref.watch(mediaHeadersProvider);
 
     return studioMediaAsync.when(
-      data: (mediaItems) {
-        final shuffled =
-            mediaItems.where((item) => item.sceneId != scene.id).toList()
+      data: (scenes) {
+        final List<Scene> sceneList = scenes;
+        final filtered =
+            sceneList.where((item) => item.id != scene.id).toList()
               ..shuffle(Random(scene.id.hashCode));
 
-        if (shuffled.isEmpty) {
+        if (filtered.isEmpty) {
           return const SizedBox.shrink();
         }
 
@@ -742,19 +742,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               padding: EdgeInsets.zero,
             ),
             const SizedBox(height: AppTheme.spacingSmall),
-            MediaStrip(
-              items: shuffled
-                  .map(
-                    (item) => MediaStripItem(
-                      id: item.sceneId,
-                      title: item.title,
-                      thumbnailUrl: item.thumbnailUrl,
-                      onTap: () =>
-                          context.push('/scenes/scene/${item.sceneId}'),
-                    ),
-                  )
-                  .toList(),
-              headers: mediaHeaders,
+            SceneStrip(
+              scenes: filtered,
+              onTap: (selectedScene) =>
+                  context.push('/scenes/scene/${selectedScene.id}'),
             ),
           ],
         );

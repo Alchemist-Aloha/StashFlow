@@ -53,7 +53,7 @@ void main() {
 
     // Update credentials
     when(secureStorage.write(key: 'profile_${profileId}_api_key', value: updatedApiKey))
-        .thenAnswer((_) async => null);
+        .thenAnswer((_) async {});
     when(secureStorage.read(key: 'profile_${profileId}_api_key'))
         .thenAnswer((_) async => updatedApiKey);
 
@@ -89,9 +89,9 @@ void main() {
 
     // Update
     when(secureStorage.write(key: 'profile_${profileId}_username', value: updatedUser))
-        .thenAnswer((_) async => null);
+        .thenAnswer((_) async {});
     when(secureStorage.write(key: 'profile_${profileId}_password', value: updatedPass))
-        .thenAnswer((_) async => null);
+        .thenAnswer((_) async {});
     when(secureStorage.read(key: 'profile_${profileId}_username'))
         .thenAnswer((_) async => updatedUser);
     when(secureStorage.read(key: 'profile_${profileId}_password'))
