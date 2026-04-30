@@ -38,6 +38,8 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   double _subtitlePositionBottomRatio = 0.15;
   String _subtitleTextAlignment = 'center';
   bool _loading = true;
+  static const _directPlayOnNavigationKey = 'video_direct_play_on_navigation';
+  bool _directPlayOnNavigation = false;
 
   @override
   void initState() {
@@ -75,6 +77,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
         prefs.getDouble(_subtitlePositionBottomRatioKey) ?? 0.15;
     _subtitleTextAlignment =
         prefs.getString(_subtitleTextAlignmentKey) ?? 'center';
+    _directPlayOnNavigation = prefs.getBool(_directPlayOnNavigationKey) ?? true;
 
     setState(() => _loading = false);
   }
@@ -103,6 +106,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
       _subtitlePositionBottomRatio,
     );
     await prefs.setString(_subtitleTextAlignmentKey, _subtitleTextAlignment);
+    await prefs.setBool(_directPlayOnNavigationKey, _directPlayOnNavigation);
 
     final playerStateNotifier = ref.read(playerStateProvider.notifier);
     playerStateNotifier.setPlayEndBehavior(_playEndBehavior);
@@ -177,6 +181,18 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                           value: _enableNativePip,
                           onChanged: (value) async {
                             setState(() => _enableNativePip = value);
+                            await _saveToggleSettings();
+                          },
+                        ),
+                        Divider(height: context.dimensions.spacingLarge),
+                        SwitchListTile.adaptive(
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text('Direct-play on scene navigation'),
+                          subtitle: const Text(
+                              'When navigating from another playing scene, directly play the new scene'),
+                          value: _directPlayOnNavigation,
+                          onChanged: (value) async {
+                            setState(() => _directPlayOnNavigation = value);
                             await _saveToggleSettings();
                           },
                         ),

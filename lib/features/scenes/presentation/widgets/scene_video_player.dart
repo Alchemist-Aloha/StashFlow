@@ -10,6 +10,7 @@ import 'package:window_manager/window_manager.dart';
 
 import '../../domain/entities/scene.dart';
 import '../providers/video_player_provider.dart';
+import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../data/repositories/stream_prewarmer.dart';
 import '../../../setup/presentation/providers/main_page_orientation_provider.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
@@ -58,10 +59,21 @@ TextAlign _subtitleTextAlign(String setting) {
 /// It uses the global [PlayerState] to maintain session continuity during
 /// navigation.
 class SceneVideoPlayer extends ConsumerStatefulWidget {
-  const SceneVideoPlayer({required this.scene, super.key});
+  const SceneVideoPlayer({
+    required this.scene,
+    this.autoPlayOnMount = false,
+    this.maxHeight,
+    super.key,
+  });
 
   /// The scene to be played.
   final Scene scene;
+
+  /// Whether this mount should force playback even if another scene is active.
+  final bool autoPlayOnMount;
+
+  /// Optional maximum height for the video player container.
+  final double? maxHeight;
 
   @override
   ConsumerState<SceneVideoPlayer> createState() => _SceneVideoPlayerState();
@@ -117,7 +129,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     super.initState();
     // Prewarm the stream if this scene is not yet active.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _startPlaybackIfNeeded();
+      _startPlaybackIfNeeded(force: widget.autoPlayOnMount);
     });
   }
 
@@ -141,7 +153,11 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     }
 
     // Only auto-play if we are forcing it or if no other video is playing.
-    if (!force && playerState.activeScene != null) {
+    // Users can opt into "direct-play on navigation" which allows a scene
+    // details page to start playback even when another scene is already active.
+    final prefs = ref.read(sharedPreferencesProvider);
+    final directPlayOnNavigation = prefs.getBool('video_direct_play_on_navigation') ?? false;
+    if (!force && playerState.activeScene != null && !directPlayOnNavigation) {
       return;
     }
 
@@ -188,12 +204,12 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   /// Returns the intended aspect ratio for the video container.
   /// Falls back to 16/9 if metadata is unavailable.
   double _effectiveAspectRatio(VideoController? controller) {
-    if (controller != null &&
-        controller.player.state.width != null &&
-        controller.player.state.height != null &&
-        controller.player.state.height! > 0) {
-      final ratio =
-          controller.player.state.width! / controller.player.state.height!;
+    // 1. Try using the provider's video dimensions first as they are updated via streams.
+    final playerState = ref.read(playerStateProvider);
+    if (playerState.videoWidth != null &&
+        playerState.videoHeight != null &&
+        playerState.videoHeight! > 0) {
+      final ratio = playerState.videoWidth! / playerState.videoHeight!;
       // Force square videos to 9/16 portrait on mobile to avoid the "fat" look.
       if ((ratio - 1.0).abs() < 0.01 &&
           (defaultTargetPlatform == TargetPlatform.android ||
@@ -202,7 +218,23 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       }
       return ratio;
     }
-    // Try using scene file metadata if the controller is still loading.
+
+    // 2. Fallback to the raw controller state if available.
+    if (controller != null &&
+        controller.player.state.width != null &&
+        controller.player.state.height != null &&
+        controller.player.state.height! > 0) {
+      final ratio =
+          controller.player.state.width! / controller.player.state.height!;
+      if ((ratio - 1.0).abs() < 0.01 &&
+          (defaultTargetPlatform == TargetPlatform.android ||
+              defaultTargetPlatform == TargetPlatform.iOS)) {
+        return 9 / 16;
+      }
+      return ratio;
+    }
+
+    // 3. Fallback to scene file metadata if the controller is still loading.
     if (widget.scene.files.isNotEmpty) {
       final f = widget.scene.files.first;
       if (f.width != null && f.height != null && f.height! > 0) {
@@ -215,6 +247,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
         return ratio;
       }
     }
+
     return 16 / 9;
   }
 
@@ -377,106 +410,121 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
         _showBufferingSpinner || (!isVideoReady && !playerState.isPlaying);
 
     // Main playback surface.
-    return AspectRatio(
-      aspectRatio: aspectRatio,
-      child: Hero(
-        tag: 'scene_player_${widget.scene.id}',
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return Stack(
-              children: [
-                Positioned.fill(
-                  child: Container(
-                    color: Colors.black,
-                    child: castState.isCasting
-                        ? Image.network(
-                            appendApiKey(
-                              widget.scene.paths.screenshot ?? '',
-                              ref.read(serverApiKeyProvider),
-                            ),
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Center(
-                              child: Icon(
-                                Icons.cast,
-                                size: 64,
-                                color: Colors.white24,
+    return LayoutBuilder(
+      builder: (context, layoutConstraints) {
+        final availableWidth = layoutConstraints.maxWidth;
+        final intendedHeight = availableWidth / aspectRatio;
+
+        Widget player = AspectRatio(
+          aspectRatio: aspectRatio,
+          child: Hero(
+            tag: 'scene_player_${widget.scene.id}',
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Container(
+                        color: Colors.black,
+                        child: castState.isCasting
+                            ? Image.network(
+                                appendApiKey(
+                                  widget.scene.paths.screenshot ?? '',
+                                  ref.read(serverApiKeyProvider),
+                                ),
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Center(
+                                  child: Icon(
+                                    Icons.cast,
+                                    size: 64,
+                                    color: Colors.white24,
+                                  ),
+                                ),
+                              )
+                            : TransformableVideoSurface(
+                                fontSize: playerState.subtitleFontSize,
+                                textAlign: _subtitleTextAlign(
+                                  playerState.subtitleTextAlignment,
+                                ),
+                                bottomRatio:
+                                    playerState.subtitlePositionBottomRatio,
+                                constraints: constraints,
+                                controller: controller,
+                                aspectRatio: controllerAspectRatio,
+                                fit: BoxFit.contain,
+                                transformationNotifier: _transformationNotifier,
                               ),
-                            ),
-                          )
-                        : TransformableVideoSurface(
-                            fontSize: playerState.subtitleFontSize,
-                            textAlign: _subtitleTextAlign(
-                              playerState.subtitleTextAlignment,
-                            ),
-                            bottomRatio:
-                                playerState.subtitlePositionBottomRatio,
-                            constraints: constraints,
-                            controller: controller,
-                            aspectRatio: controllerAspectRatio,
-                            fit: (aspectRatio - controllerAspectRatio).abs() >
-                                    0.05
-                                ? BoxFit.fill
-                                : BoxFit.contain,
-                            transformationNotifier: _transformationNotifier,
-                          ),
-                  ),
-                ),
-                if (showLoadingIndicator && !castState.isCasting)
-                  Positioned.fill(
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.4),
                       ),
-                      child: const Center(child: CircularProgressIndicator()),
                     ),
-                  ),
-                if (castState.isCasting)
-                  Positioned.fill(
-                    child: Container(
-                      color: Colors.black.withValues(alpha: 0.4),
-                      child: Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.cast_connected,
-                              color: Colors.white,
-                              size: 48,
+                    if (showLoadingIndicator && !castState.isCasting)
+                      Positioned.fill(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.4),
+                          ),
+                          child:
+                              const Center(child: CircularProgressIndicator()),
+                        ),
+                      ),
+                    if (castState.isCasting)
+                      Positioned.fill(
+                        child: Container(
+                          color: Colors.black.withValues(alpha: 0.4),
+                          child: Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.cast_connected,
+                                  color: Colors.white,
+                                  size: 48,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Casting to ${castState.activeSession?.device.name ?? 'Device'}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Casting to ${castState.activeSession?.device.name ?? 'Device'}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
+                          ),
+                        ),
+                      ),
+                    Positioned.fill(
+                      child: Material(
+                        color: Colors.transparent,
+                        child: NativeVideoControls(
+                          controller: controller,
+                          useDoubleTapSeek: playerState.useDoubleTapSeek,
+                          enableNativePip: playerState.enableNativePip,
+                          onFullScreenToggle: _toggleFullScreen,
+                          scene: widget.scene,
+                          onScaleStart: _onScaleStart,
+                          onScaleUpdate: _onScaleUpdate,
+                          onTransformationDelta: _onTransformationDelta,
                         ),
                       ),
                     ),
-                  ),
-                Positioned.fill(
-                  child: Material(
-                    color: Colors.transparent,
-                    child: NativeVideoControls(
-                      controller: controller,
-                      useDoubleTapSeek: playerState.useDoubleTapSeek,
-                      enableNativePip: playerState.enableNativePip,
-                      onFullScreenToggle: _toggleFullScreen,
-                      scene: widget.scene,
-                      onScaleStart: _onScaleStart,
-                      onScaleUpdate: _onScaleUpdate,
-                      onTransformationDelta: _onTransformationDelta,
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-      ),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+
+        if (widget.maxHeight != null && intendedHeight > widget.maxHeight!) {
+          player = SizedBox(
+            height: widget.maxHeight!,
+            width: widget.maxHeight! * aspectRatio,
+            child: player,
+          );
+        }
+
+        return Center(child: player);
+      },
     );
   }
 }
@@ -890,9 +938,7 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                               transformationNotifier: _transformationNotifier,
                               fit: (aspectRatio - 1.0).abs() < 0.01
                                   ? BoxFit.fill
-                                  : (aspectRatio < 1.0
-                                      ? BoxFit.cover
-                                      : BoxFit.contain),
+                                  : BoxFit.contain,
                             ),
                     ),
                   ),

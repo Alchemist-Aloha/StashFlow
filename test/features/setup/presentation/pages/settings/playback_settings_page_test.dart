@@ -48,4 +48,26 @@ void main() {
     expect(tester.widget<Switch>(gravitySwitch).value, isFalse);
     expect(prefs.getBool('video_gravity_orientation'), isFalse);
   });
+
+  testWidgets('PlaybackSettingsPage defaults direct-play-on-navigation to enabled', (tester) async {
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: const PlaybackSettingsPage(),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Direct-play on scene navigation'), findsOneWidget);
+
+    final directPlaySwitch = find.descendant(
+      of: find.widgetWithText(SwitchListTile, 'Direct-play on scene navigation'),
+      matching: find.byType(Switch),
+    );
+
+    expect(tester.widget<Switch>(directPlaySwitch).value, isTrue);
+  });
 }
