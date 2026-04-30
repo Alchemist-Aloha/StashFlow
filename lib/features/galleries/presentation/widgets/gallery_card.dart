@@ -17,6 +17,7 @@ class GalleryCard extends ConsumerWidget {
     this.onTap,
     this.thumbnailUrl,
     this.memCacheWidth,
+    this.memCacheHeight,
     super.key,
   });
 
@@ -37,6 +38,8 @@ class GalleryCard extends ConsumerWidget {
 
   /// Optional memory cache width for image optimization.
   final int? memCacheWidth;
+  /// Optional memory cache height for image optimization.
+  final int? memCacheHeight;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -225,15 +228,20 @@ class GalleryCard extends ConsumerWidget {
   }
 
   Widget _buildThumbnail(BuildContext context, double? aspectRatio) {
+    final imageUrl = thumbnailUrl ??
+        gallery.coverPath ??
+        '/gallery/${gallery.id}/thumbnail';
+
     final child = Stack(
       fit: aspectRatio != null ? StackFit.expand : StackFit.loose,
       children: [
         StashImage(
-          imageUrl: thumbnailUrl,
+          imageUrl: imageUrl,
           width: double.infinity,
           height: aspectRatio != null ? double.infinity : null,
           fit: aspectRatio != null ? BoxFit.cover : BoxFit.contain,
           memCacheWidth: memCacheWidth,
+          memCacheHeight: memCacheHeight,
         ),
         if (gallery.rating100 != null && gallery.rating100! > 0)
           Positioned(
