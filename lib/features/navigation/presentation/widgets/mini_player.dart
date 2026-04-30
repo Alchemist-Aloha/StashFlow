@@ -41,17 +41,17 @@ class MiniPlayer extends ConsumerWidget {
         child: RepaintBoundary(
           child: Row(
             children: [
-              AspectRatio(
-                aspectRatio: 16 / 9,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(AppTheme.radiusLarge),
-                    bottomLeft: Radius.circular(AppTheme.radiusLarge),
-                  ),
-                  child: StashImage(
-                    imageUrl: activeScene.paths.screenshot ?? '',
-                    fit: BoxFit.cover,
-                    memCacheWidth: 320,
+              Padding(
+                padding: const EdgeInsets.all(6),
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                    child: StashImage(
+                      imageUrl: activeScene.paths.screenshot ?? '',
+                      fit: BoxFit.cover,
+                      memCacheWidth: 320,
+                    ),
                   ),
                 ),
               ),
@@ -73,7 +73,8 @@ class MiniPlayer extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: context.textTheme.bodySmall?.copyWith(
-                        color: context.colors.onSurface.withValues(alpha: 0.75),
+                        color: context.colors.primary,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
