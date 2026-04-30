@@ -660,5 +660,100 @@
   "details_scene_fingerprint_query": "Query by Fingerprint",
   "scenes_available_scrapers": "Available Scrapers",
   "scrape_results_existing": "Existing",
-  "scrape_results_scraped": "Scraped"
+  "scrape_results_scraped": "Scraped",
+  "stats_refresh_statistics": "Refresh Statistics",
+  "stats_library_stats": "Library Stats",
+  "stats_stash_glance": "Your Stash at a glance",
+  "stats_content": "Content",
+  "stats_organization": "Organization",
+  "stats_activity": "Activity",
+  "stats_scenes": "Scenes",
+  "stats_galleries": "Galleries",
+  "stats_performers": "Performers",
+  "stats_studios": "Studios",
+  "stats_groups": "Groups",
+  "stats_tags": "Tags",
+  "stats_total_plays": "Total Plays",
+  "stats_unique_items": "{count} unique items",
+  "@stats_unique_items": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stats_total_o_count": "Total O-Count",
+  "cast_airplay_pairing": "AirPlay Pairing",
+  "cast_enter_pin": "Enter the 4-digit PIN shown on your TV",
+  "cast_pair": "Pair",
+  "cast_connecting_to": "Connecting to {deviceName}...",
+  "@cast_connecting_to": {
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "cast_casting_to": "Casting to {deviceName}",
+  "@cast_casting_to": {
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "cast_pairing_failed": "Pairing failed: {error}",
+  "@cast_pairing_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "cast_failed_to_cast": "Failed to cast: {error}",
+  "@cast_failed_to_cast": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "cast_searching": "Searching for devices...",
+  "cast_cast_to_device": "Cast to Device",
+  "settings_storage_images": "Images",
+  "settings_storage_videos": "Videos",
+  "settings_storage_database": "Database",
+  "settings_storage_clearing_image": "Clearing image cache...",
+  "settings_storage_clearing_video": "Clearing video cache...",
+  "settings_storage_clearing_database": "Clearing database cache...",
+  "settings_storage_cleared_image": "Image cache cleared",
+  "settings_storage_cleared_video": "Video cache cleared",
+  "settings_storage_cleared_database": "Database cache cleared",
+  "settings_storage_clear": "Clear",
+  "settings_storage_error_loading": "Error loading sizes",
+  "settings_storage_mb": "{value} MB",
+  "@settings_storage_mb": {
+    "placeholders": {
+      "value": {
+        "type": "num"
+      }
+    }
+  },
+  "settings_storage_gb": "{value} GB",
+  "@settings_storage_gb": {
+    "placeholders": {
+      "value": {
+        "type": "num"
+      }
+    }
+  },
+  "settings_storage_100_mb": "100 MB",
+  "settings_storage_500_mb": "500 MB",
+  "settings_storage_1_gb": "1 GB",
+  "settings_storage_2_gb": "2 GB",
+  "settings_storage_unlimited": "Unlimited",
+  "settings_storage_limits": "Limits",
+  "settings_storage_limits_subtitle": "Set maximum cache sizes",
+  "settings_storage_max_image_cache": "Max Image Cache (MB)",
+  "settings_storage_max_video_cache": "Max Video Cache (MB)"
 }

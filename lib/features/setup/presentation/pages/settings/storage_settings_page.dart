@@ -5,6 +5,7 @@ import '../../../../../core/data/cache/app_cache_service.dart';
 import '../../../../../core/data/cache/cache_state_provider.dart';
 import '../../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../widgets/settings_page_shell.dart';
+import '../../../../../core/utils/l10n_extensions.dart';
 
 class StorageSettingsPage extends ConsumerWidget {
   const StorageSettingsPage({super.key});
@@ -27,93 +28,96 @@ class StorageSettingsPage extends ConsumerWidget {
               data: (sizes) => Column(
                 children: [
                   ListTile(
-                    title: const Text('Images'),
-                    trailing: Text('${sizes.imageMb} MB'),
+                    title: Text(context.l10n.settings_storage_images),
+                    trailing: Text(context.l10n.settings_storage_mb(sizes.imageMb)),
                     subtitle: Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Row(
                         children: [
                           ElevatedButton(
                             onPressed: () async {
+                              final l10n = context.l10n;
                               final scaffoldMessenger = ScaffoldMessenger.of(context);
                               scaffoldMessenger.showSnackBar(
-                                const SnackBar(content: Text('Clearing image cache...')),
+                                SnackBar(content: Text(l10n.settings_storage_clearing_image)),
                               );
                               try {
                                 await service.clearImageCache();
                                 ref.invalidate(cacheSizesProvider);
                                 scaffoldMessenger.showSnackBar(
-                                  const SnackBar(content: Text('Image cache cleared')),
+                                  SnackBar(content: Text(l10n.settings_storage_cleared_image)),
                                 );
                               } catch (e) {
                                 scaffoldMessenger.showSnackBar(
-                                  SnackBar(content: Text('Error: $e')),
+                                  SnackBar(content: Text(l10n.common_error(e.toString()))),
                                 );
                               }
                             },
-                            child: const Text('Clear'),
+                            child: Text(context.l10n.settings_storage_clear),
                           ),
                         ],
                       ),
                     ),
                   ),
                   ListTile(
-                    title: const Text('Videos'),
-                    trailing: Text('${sizes.videoMb} MB'),
+                    title: Text(context.l10n.settings_storage_videos),
+                    trailing: Text(context.l10n.settings_storage_mb(sizes.videoMb)),
                     subtitle: Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Row(
                         children: [
                           ElevatedButton(
                             onPressed: () async {
+                              final l10n = context.l10n;
                               final scaffoldMessenger = ScaffoldMessenger.of(context);
                               scaffoldMessenger.showSnackBar(
-                                const SnackBar(content: Text('Clearing video cache...')),
+                                SnackBar(content: Text(l10n.settings_storage_clearing_video)),
                               );
                               try {
                                 await service.clearVideoCache();
                                 ref.invalidate(cacheSizesProvider);
                                 scaffoldMessenger.showSnackBar(
-                                  const SnackBar(content: Text('Video cache cleared')),
+                                  SnackBar(content: Text(l10n.settings_storage_cleared_video)),
                                 );
                               } catch (e) {
                                 scaffoldMessenger.showSnackBar(
-                                  SnackBar(content: Text('Error: $e')),
+                                  SnackBar(content: Text(l10n.common_error(e.toString()))),
                                 );
                               }
                             },
-                            child: const Text('Clear'),
+                            child: Text(context.l10n.settings_storage_clear),
                           ),
                         ],
                       ),
                     ),
                   ),
                   ListTile(
-                    title: const Text('Database'),
-                    trailing: Text('${sizes.dbMb} MB'),
+                    title: Text(context.l10n.settings_storage_database),
+                    trailing: Text(context.l10n.settings_storage_mb(sizes.dbMb)),
                     subtitle: Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Row(
                         children: [
                           ElevatedButton(
                             onPressed: () async {
+                              final l10n = context.l10n;
                               final scaffoldMessenger = ScaffoldMessenger.of(context);
                               scaffoldMessenger.showSnackBar(
-                                const SnackBar(content: Text('Clearing database cache...')),
+                                SnackBar(content: Text(l10n.settings_storage_clearing_database)),
                               );
                               try {
                                 await service.clearDatabaseCache();
                                 ref.invalidate(cacheSizesProvider);
                                 scaffoldMessenger.showSnackBar(
-                                  const SnackBar(content: Text('Database cache cleared')),
+                                  SnackBar(content: Text(l10n.settings_storage_cleared_database)),
                                 );
                               } catch (e) {
                                 scaffoldMessenger.showSnackBar(
-                                  SnackBar(content: Text('Error: $e')),
+                                  SnackBar(content: Text(l10n.common_error(e.toString()))),
                                 );
                               }
                             },
-                            child: const Text('Clear'),
+                            child: Text(context.l10n.settings_storage_clear),
                           ),
                         ],
                       ),
@@ -122,7 +126,7 @@ class StorageSettingsPage extends ConsumerWidget {
                 ],
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) => const Text('Error loading sizes'),
+              error: (err, stack) => Text(context.l10n.settings_storage_error_loading),
             ),
           ),
           SizedBox(height: context.dimensions.spacingMedium),
