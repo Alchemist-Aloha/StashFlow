@@ -8,9 +8,9 @@
 
 - **MediaKit Video Engine Migration**: Completely refactored the video player integration to use `media_kit`. This migration provides significantly better performance, broader codec support, and a more stable playback experience.
 - **Advanced Video Controls & Gestures**:
-    - **Side-swipes**: Introduced intuitive side-swipe gestures for controlling volume and brightness directly on the video player.
-    - **Improved Controls Layout**: Redesigned video controls with better spacing, refined button sizes, and a more consistent aesthetic.
-    - **Speed Control Enhancements**: The speed widget now includes 0.25x and 0.5x options, a slider for precise adjustment, and a one-tap reset to 1x.
+  - **Side-swipes**: Introduced intuitive side-swipe gestures for controlling volume and brightness directly on the video player.
+  - **Improved Controls Layout**: Redesigned video controls with better spacing, refined button sizes, and a more consistent aesthetic.
+  - **Speed Control Enhancements**: The speed widget now includes 0.25x and 0.5x options, a slider for precise adjustment, and a one-tap reset to 1x.
 - **Casting (DLNA/Chromecast)**: Migrated to `dart_cast` for more reliable device discovery and playback control. Casting is now fully integrated into the native video controls UI.
 - **Cache & Storage Management**: Added a new Storage Settings page where users can monitor cache sizes and clear application cache with a single tap.
 - **Stream Prewarming**: Implemented a sophisticated prewarming mechanism that starts downloading the next video's data before playback begins, ensuring near-instant transitions between scenes.

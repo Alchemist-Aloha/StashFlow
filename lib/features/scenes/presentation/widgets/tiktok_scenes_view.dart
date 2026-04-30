@@ -15,7 +15,6 @@ import '../../domain/entities/scene_title_utils.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/video_player_provider.dart';
-import '../providers/playback_queue_provider.dart';
 import '../../../setup/presentation/providers/main_page_orientation_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
