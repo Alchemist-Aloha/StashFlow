@@ -26,10 +26,10 @@ class MiniPlayer extends ConsumerWidget {
       onTap: () => context.push('/scenes/scene/${activeScene.id}'),
       child: Container(
         height: 66, // Increased height by 10% (from 60)
-        margin: const EdgeInsets.all(8), // Make it floating
+        // margin: const EdgeInsets.all(8), // Make it floating
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+          // borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.1),

@@ -25,6 +25,23 @@ class PerformerDetailsPage extends ConsumerWidget {
   final String performerId;
   const PerformerDetailsPage({required this.performerId, super.key});
 
+  Widget _buildSectionContainer(BuildContext context, Widget child) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
+      elevation: 0,
+      color: Theme.of(context).colorScheme.primaryContainer.withValues(
+        alpha: 0.1,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.spacingMedium),
+        child: child,
+      ),
+    );
+  }
+
   Future<void> _openRandomPerformer(BuildContext context, WidgetRef ref) async {
     final randomPerformer = await ref
         .read(performerListProvider.notifier)
@@ -224,177 +241,217 @@ class PerformerDetailsPage extends ConsumerWidget {
                           ],
                         ),
                         if (performer.tagNames.isNotEmpty) ...[
-                          const Divider(height: 32, color: Colors.grey),
-                          SectionHeader(
-                            title: context.l10n.details_tags,
-                            padding: EdgeInsets.zero,
-                          ),
-                          const SizedBox(height: AppTheme.spacingSmall),
-                          Wrap(
-                            spacing: AppTheme.spacingSmall,
-                            runSpacing: AppTheme.spacingSmall,
-                            children: List.generate(performer.tagNames.length, (
-                              index,
-                            ) {
-                              return ActionChip(
-                                label: Text(
-                                  performer.tagNames[index],
-                                  style: context.textTheme.bodySmall,
+                          _buildSectionContainer(
+                            context,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SectionHeader(
+                                  title: context.l10n.details_tags,
+                                  padding: EdgeInsets.zero,
                                 ),
-                                backgroundColor: context.colors.surfaceVariant,
-                                side: BorderSide.none,
-                                visualDensity: VisualDensity.compact,
-                                onPressed: () {
-                                  if (index < performer.tagIds.length) {
-                                    context.push(
-                                      '/tags/tag/${performer.tagIds[index]}',
-                                    );
-                                  }
-                                },
-                              );
-                            }),
+                                const SizedBox(height: AppTheme.spacingSmall),
+                                Wrap(
+                                  spacing: AppTheme.spacingSmall,
+                                  runSpacing: AppTheme.spacingSmall,
+                                  children: List.generate(
+                                    performer.tagNames.length,
+                                    (index) {
+                                      return ActionChip(
+                                        label: Text(
+                                          performer.tagNames[index],
+                                          style: context.textTheme.bodySmall,
+                                        ),
+                                        backgroundColor:
+                                            context.colors.surfaceVariant,
+                                        side: BorderSide.none,
+                                        visualDensity: VisualDensity.compact,
+                                        onPressed: () {
+                                          if (index < performer.tagIds.length) {
+                                            context.push(
+                                              '/tags/tag/${performer.tagIds[index]}',
+                                            );
+                                          }
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                         if (performer.urls.isNotEmpty) ...[
-                          const Divider(height: 32, color: Colors.grey),
-                          SectionHeader(
-                            title: context.l10n.details_links,
-                            padding: EdgeInsets.zero,
-                          ),
-                          const SizedBox(height: AppTheme.spacingSmall),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: performer.urls.map((url) {
-                              return Padding(
-                                padding: const EdgeInsets.only(
-                                  bottom: AppTheme.spacingSmall,
+                          _buildSectionContainer(
+                            context,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SectionHeader(
+                                  title: context.l10n.details_links,
+                                  padding: EdgeInsets.zero,
                                 ),
-                                child: InkWell(
-                                  onTap: () async {
-                                    final uri = Uri.tryParse(url);
-                                    if (uri == null) return;
-                                    try {
-                                      if (await canLaunchUrl(uri)) {
-                                        await launchUrl(
-                                          uri,
-                                          mode: LaunchMode.externalApplication,
-                                        );
-                                      } else {
-                                        if (context.mounted) {
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                context.l10n.common_error(url),
+                                const SizedBox(height: AppTheme.spacingSmall),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: performer.urls.map((url) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: AppTheme.spacingSmall,
+                                      ),
+                                      child: InkWell(
+                                        onTap: () async {
+                                          final uri = Uri.tryParse(url);
+                                          if (uri == null) return;
+                                          try {
+                                            if (await canLaunchUrl(uri)) {
+                                              await launchUrl(
+                                                uri,
+                                                mode: LaunchMode.externalApplication,
+                                              );
+                                            } else {
+                                              if (context.mounted) {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      context.l10n.common_error(url),
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                            }
+                                          } catch (e) {
+                                            if (context.mounted) {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    context.l10n.common_error(
+                                                      e.toString(),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          }
+                                        },
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.link,
+                                              size: 16,
+                                              color: context.colors.primary,
+                                            ),
+                                            const SizedBox(
+                                              width: AppTheme.spacingSmall,
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                url,
+                                                style: context.textTheme.bodyMedium
+                                                    ?.copyWith(
+                                                      color: context.colors.primary,
+                                                      decoration:
+                                                          TextDecoration.underline,
+                                                    ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
                                             ),
-                                          );
-                                        }
-                                      }
-                                    } catch (e) {
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              context.l10n.common_error(
-                                                e.toString(),
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                    }
-                                  },
-                                  borderRadius: BorderRadius.circular(4),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.link,
-                                        size: 16,
-                                        color: context.colors.primary,
-                                      ),
-                                      const SizedBox(
-                                        width: AppTheme.spacingSmall,
-                                      ),
-                                      Expanded(
-                                        child: Text(
-                                          url,
-                                          style: context.textTheme.bodyMedium
-                                              ?.copyWith(
-                                                color: context.colors.primary,
-                                                decoration:
-                                                    TextDecoration.underline,
-                                              ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
+                                          ],
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    );
+                                  }).toList(),
                                 ),
-                              );
-                            }).toList(),
+                              ],
+                            ),
                           ),
                         ],
                         if (performer.details != null &&
                             performer.details!.trim().isNotEmpty) ...[
-                          const Divider(height: 32, color: Colors.grey),
-                          SectionHeader(title: context.l10n.common_details),
-                          Text(
-                            performer.details!,
-                            style: context.textTheme.bodyMedium?.copyWith(
-                              color: context.colors.onSurface.withValues(
-                                alpha: 0.8,
-                              ),
+                          _buildSectionContainer(
+                            context,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SectionHeader(
+                                  title: context.l10n.common_details,
+                                  padding: EdgeInsets.zero,
+                                ),
+                                const SizedBox(height: AppTheme.spacingSmall),
+                                Text(
+                                  performer.details!,
+                                  style: context.textTheme.bodyMedium?.copyWith(
+                                    color: context.colors.onSurface.withValues(
+                                      alpha: 0.8,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
-                        const Divider(height: 32, color: Colors.grey),
-                        SectionHeader(
-                          title: context.l10n.details_media,
-                          onViewAll: () => context.push(
-                            '/performers/performer/${performer.id}/media',
-                          ),
-                        ),
-                        mediaAsync.when(
-                          data: (scenes) {
-                            if (scenes.isEmpty) {
-                              return Padding(
-                                padding: const EdgeInsets.only(
-                                  top: AppTheme.spacingSmall,
+                        _buildSectionContainer(
+                          context,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SectionHeader(
+                                title: context.l10n.details_media,
+                                onViewAll: () => context.push(
+                                  '/performers/performer/${performer.id}/media',
                                 ),
-                                child: Text(
-                                  context.l10n.common_no_media_found,
-                                  style: context.textTheme.bodySmall?.copyWith(
-                                    color: context.colors.onSurfaceVariant,
+                                padding: EdgeInsets.zero,
+                              ),
+                              mediaAsync.when(
+                                data: (scenes) {
+                                  if (scenes.isEmpty) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: AppTheme.spacingSmall,
+                                      ),
+                                      child: Text(
+                                        context.l10n.common_no_media_found,
+                                        style: context.textTheme.bodySmall
+                                            ?.copyWith(
+                                              color: context
+                                                  .colors
+                                                  .onSurfaceVariant,
+                                            ),
+                                      ),
+                                    );
+                                  }
+                                  final List<Scene> sceneList = scenes;
+                                  final shuffledItems = sceneList.toList()
+                                    ..shuffle(Random(performer.id.hashCode));
+                                  return SceneStrip(
+                                    scenes: shuffledItems,
+                                    onTap: (scene) => context.push(
+                                      '/scenes/scene/${scene.id}',
+                                    ),
+                                  );
+                                },
+                                loading: () => const SizedBox(
+                                  height: 100,
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
                                   ),
                                 ),
-                              );
-                            }
-                            final List<Scene> sceneList = scenes;
-                            final shuffledItems = sceneList.toList()
-                              ..shuffle(Random(performer.id.hashCode));
-                            return SceneStrip(
-                              scenes: shuffledItems,
-                              onTap: (scene) => context.push(
-                                '/scenes/scene/${scene.id}',
+                                error: (err, stack) => Text(
+                                  context.l10n.common_error(err.toString()),
+                                  style: context.textTheme.bodyMedium
+                                      ?.copyWith(
+                                        color: context.colors.onSurface
+                                            .withValues(alpha: 0.7),
+                                      ),
+                                ),
                               ),
-                            );
-                          },
-                          loading: () => const SizedBox(
-                            height: 100,
-                            child: Center(child: CircularProgressIndicator()),
-                          ),
-                          error: (err, stack) => Text(
-                            context.l10n.common_error(err.toString()),
-                            style: context.textTheme.bodyMedium?.copyWith(
-                              color: context.colors.onSurface.withValues(
-                                alpha: 0.7,
-                              ),
-                            ),
+                            ],
                           ),
                         ),
                         galleriesAsync.when(
@@ -402,28 +459,31 @@ class PerformerDetailsPage extends ConsumerWidget {
                             if (galleries.isEmpty) {
                               return const SizedBox.shrink();
                             }
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: AppTheme.spacingMedium),
-                                SectionHeader(
-                                  title: context.l10n.details_galleries,
-                                  onViewAll: () => context.push(
-                                    '/performers/performer/${performer.id}/galleries',
+                            return _buildSectionContainer(
+                              context,
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SectionHeader(
+                                    title: context.l10n.details_galleries,
+                                    onViewAll: () => context.push(
+                                      '/performers/performer/${performer.id}/galleries',
+                                    ),
+                                    padding: EdgeInsets.zero,
                                   ),
-                                ),
-                                GalleryStrip(
-                                  galleries: galleries,
-                                  onTap: (gallery) {
-                                    ref
-                                        .read(
-                                          imageFilterStateProvider.notifier,
-                                        )
-                                        .setGalleryId(gallery.id);
-                                    context.push('/galleries/images');
-                                  },
-                                ),
-                              ],
+                                  GalleryStrip(
+                                    galleries: galleries,
+                                    onTap: (gallery) {
+                                      ref
+                                          .read(
+                                            imageFilterStateProvider.notifier,
+                                          )
+                                          .setGalleryId(gallery.id);
+                                      context.push('/galleries/images');
+                                    },
+                                  ),
+                                ],
+                              ),
                             );
                           },
                           loading: () => const SizedBox(

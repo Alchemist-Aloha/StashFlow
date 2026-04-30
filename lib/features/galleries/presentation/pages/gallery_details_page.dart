@@ -12,6 +12,23 @@ class GalleryDetailsPage extends ConsumerWidget {
 
   const GalleryDetailsPage({required this.galleryId, super.key});
 
+  Widget _buildSectionContainer(BuildContext context, Widget child) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
+      elevation: 0,
+      color: Theme.of(context).colorScheme.primaryContainer.withValues(
+        alpha: 0.1,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.spacingMedium),
+        child: child,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final galleryAsync = ref.watch(galleryDetailsProvider(galleryId));
@@ -81,23 +98,28 @@ class GalleryDetailsPage extends ConsumerWidget {
                             ),
                         ],
                       ),
+                      const SizedBox(height: AppTheme.spacingMedium),
                       if (gallery.details != null &&
                           gallery.details!.isNotEmpty) ...[
-                        Divider(
-                          height: 32,
-                          color: context.colors.outline.withValues(alpha: 0.2),
-                        ),
-                        SectionHeader(
-                          title: context.l10n.common_details,
-                          padding: EdgeInsets.zero,
-                        ),
-                        const SizedBox(height: AppTheme.spacingSmall),
-                        Text(
-                          gallery.details!,
-                          style: context.textTheme.bodyMedium?.copyWith(
-                            color: context.colors.onSurface.withValues(
-                              alpha: 0.8,
-                            ),
+                        _buildSectionContainer(
+                          context,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SectionHeader(
+                                title: context.l10n.common_details,
+                                padding: EdgeInsets.zero,
+                              ),
+                              const SizedBox(height: AppTheme.spacingSmall),
+                              Text(
+                                gallery.details!,
+                                style: context.textTheme.bodyMedium?.copyWith(
+                                  color: context.colors.onSurface.withValues(
+                                    alpha: 0.8,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],

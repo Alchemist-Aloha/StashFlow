@@ -23,6 +23,23 @@ class TagDetailsPage extends ConsumerWidget {
   final String tagId;
   const TagDetailsPage({required this.tagId, super.key});
 
+  Widget _buildSectionContainer(BuildContext context, Widget child) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
+      elevation: 0,
+      color: Theme.of(context).colorScheme.primaryContainer.withValues(
+        alpha: 0.1,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.spacingMedium),
+        child: child,
+      ),
+    );
+  }
+
   Future<void> _openRandomTag(BuildContext context, WidgetRef ref) async {
     final randomTag = await ref
         .read(tagListProvider.notifier)
@@ -101,57 +118,83 @@ class TagDetailsPage extends ConsumerWidget {
                         if (tag.description != null &&
                             tag.description!.trim().isNotEmpty) ...[
                           const SizedBox(height: AppTheme.spacingMedium),
-                          Text(
-                            tag.description!,
-                            style: context.textTheme.bodyMedium?.copyWith(
-                              color: context.colors.onSurface.withValues(
-                                alpha: 0.8,
-                              ),
+                          _buildSectionContainer(
+                            context,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SectionHeader(
+                                  title: context.l10n.common_details,
+                                  padding: EdgeInsets.zero,
+                                ),
+                                const SizedBox(height: AppTheme.spacingSmall),
+                                Text(
+                                  tag.description!,
+                                  style: context.textTheme.bodyMedium
+                                      ?.copyWith(
+                                        color: context.colors.onSurface
+                                            .withValues(alpha: 0.8),
+                                      ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
-                        const Divider(height: 32, color: Colors.grey),
-                        SectionHeader(
-                          title: context.l10n.details_media,
-                          onViewAll: () =>
-                              context.push('/tags/tag/${tag.id}/media'),
-                        ),
-                        mediaAsync.when(
-                          data: (scenes) {
-                            if (scenes.isEmpty) {
-                              return Padding(
-                                padding: const EdgeInsets.all(
-                                  AppTheme.spacingSmall,
-                                ),
-                                child: Text(
-                                  context.l10n.common_no_media_found,
-                                  style: context.textTheme.bodySmall?.copyWith(
-                                    color: context.colors.onSurfaceVariant,
+                        _buildSectionContainer(
+                          context,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SectionHeader(
+                                title: context.l10n.details_media,
+                                onViewAll: () =>
+                                    context.push('/tags/tag/${tag.id}/media'),
+                                padding: EdgeInsets.zero,
+                              ),
+                              mediaAsync.when(
+                                data: (scenes) {
+                                  if (scenes.isEmpty) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(
+                                        AppTheme.spacingSmall,
+                                      ),
+                                      child: Text(
+                                        context.l10n.common_no_media_found,
+                                        style: context.textTheme.bodySmall
+                                            ?.copyWith(
+                                              color: context
+                                                  .colors
+                                                  .onSurfaceVariant,
+                                            ),
+                                      ),
+                                    );
+                                  }
+                                  final List<Scene> sceneList = scenes;
+                                  final shuffledItems = sceneList.toList()
+                                    ..shuffle(Random(tag.id.hashCode));
+                                  return SceneStrip(
+                                    scenes: shuffledItems,
+                                    onTap: (scene) => context.push(
+                                      '/scenes/scene/${scene.id}',
+                                    ),
+                                  );
+                                },
+                                loading: () => const SizedBox(
+                                  height: 100,
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
                                   ),
                                 ),
-                              );
-                            }
-                            final List<Scene> sceneList = scenes;
-                            final shuffledItems = sceneList.toList()
-                              ..shuffle(Random(tag.id.hashCode));
-                            return SceneStrip(
-                              scenes: shuffledItems,
-                              onTap: (scene) => context.push(
-                                '/scenes/scene/${scene.id}',
+                                error: (err, stack) => Text(
+                                  context.l10n.common_error(err.toString()),
+                                  style: context.textTheme.bodyMedium
+                                      ?.copyWith(
+                                        color: context.colors.onSurface
+                                            .withValues(alpha: 0.7),
+                                      ),
+                                ),
                               ),
-                            );
-                          },
-                          loading: () => const SizedBox(
-                            height: 100,
-                            child: Center(child: CircularProgressIndicator()),
-                          ),
-                          error: (err, stack) => Text(
-                            context.l10n.common_error(err.toString()),
-                            style: context.textTheme.bodyMedium?.copyWith(
-                              color: context.colors.onSurface.withValues(
-                                alpha: 0.7,
-                              ),
-                            ),
+                            ],
                           ),
                         ),
                         galleriesAsync.when(
@@ -159,28 +202,31 @@ class TagDetailsPage extends ConsumerWidget {
                             if (galleries.isEmpty) {
                               return const SizedBox.shrink();
                             }
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: AppTheme.spacingMedium),
-                                SectionHeader(
-                                  title: context.l10n.galleries_title,
-                                  onViewAll: () => context.push(
-                                    '/tags/tag/${tag.id}/galleries',
+                            return _buildSectionContainer(
+                              context,
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SectionHeader(
+                                    title: context.l10n.galleries_title,
+                                    onViewAll: () => context.push(
+                                      '/tags/tag/${tag.id}/galleries',
+                                    ),
+                                    padding: EdgeInsets.zero,
                                   ),
-                                ),
-                                GalleryStrip(
-                                  galleries: galleries,
-                                  onTap: (gallery) {
-                                    ref
-                                        .read(
-                                          imageFilterStateProvider.notifier,
-                                        )
-                                        .setGalleryId(gallery.id);
-                                    context.push('/galleries/images');
-                                  },
-                                ),
-                              ],
+                                  GalleryStrip(
+                                    galleries: galleries,
+                                    onTap: (gallery) {
+                                      ref
+                                          .read(
+                                            imageFilterStateProvider.notifier,
+                                          )
+                                          .setGalleryId(gallery.id);
+                                      context.push('/galleries/images');
+                                    },
+                                  ),
+                                ],
+                              ),
                             );
                           },
                           loading: () => const SizedBox(
