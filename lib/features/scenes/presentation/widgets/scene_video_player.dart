@@ -10,6 +10,7 @@ import 'package:window_manager/window_manager.dart';
 
 import '../../domain/entities/scene.dart';
 import '../providers/video_player_provider.dart';
+import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../data/repositories/stream_prewarmer.dart';
 import '../../../setup/presentation/providers/main_page_orientation_provider.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
@@ -58,10 +59,17 @@ TextAlign _subtitleTextAlign(String setting) {
 /// It uses the global [PlayerState] to maintain session continuity during
 /// navigation.
 class SceneVideoPlayer extends ConsumerStatefulWidget {
-  const SceneVideoPlayer({required this.scene, super.key});
+  const SceneVideoPlayer({
+    required this.scene,
+    this.autoPlayOnMount = false,
+    super.key,
+  });
 
   /// The scene to be played.
   final Scene scene;
+
+  /// Whether this mount should force playback even if another scene is active.
+  final bool autoPlayOnMount;
 
   @override
   ConsumerState<SceneVideoPlayer> createState() => _SceneVideoPlayerState();
@@ -117,7 +125,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     super.initState();
     // Prewarm the stream if this scene is not yet active.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _startPlaybackIfNeeded();
+      _startPlaybackIfNeeded(force: widget.autoPlayOnMount);
     });
   }
 
@@ -141,7 +149,11 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     }
 
     // Only auto-play if we are forcing it or if no other video is playing.
-    if (!force && playerState.activeScene != null) {
+    // Users can opt into "direct-play on navigation" which allows a scene
+    // details page to start playback even when another scene is already active.
+    final prefs = ref.read(sharedPreferencesProvider);
+    final directPlayOnNavigation = prefs.getBool('video_direct_play_on_navigation') ?? false;
+    if (!force && playerState.activeScene != null && !directPlayOnNavigation) {
       return;
     }
 

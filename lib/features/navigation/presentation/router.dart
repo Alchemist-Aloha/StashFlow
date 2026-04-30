@@ -82,6 +82,8 @@ GoRouter router(Ref ref) {
                       key: state.pageKey,
                       child: SceneDetailsPage(
                         sceneId: state.pathParameters['id']!,
+                        autoPlayOnMount:
+                            state.extra is bool ? state.extra as bool : false,
                       ),
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) =>
@@ -113,6 +115,8 @@ GoRouter router(Ref ref) {
                           }
                           return SceneDetailsPage(
                             sceneId: state.pathParameters['id']!,
+                            autoPlayOnMount:
+                                state.extra is bool ? state.extra as bool : false,
                           );
                         },
                       ),
@@ -268,8 +272,10 @@ GoRouter router(Ref ref) {
       // Backward-compatible aliases for legacy absolute detail paths.
       GoRoute(
         path: '/scene/:id',
-        builder: (context, state) =>
-            SceneDetailsPage(sceneId: state.pathParameters['id']!),
+        builder: (context, state) => SceneDetailsPage(
+          sceneId: state.pathParameters['id']!,
+          autoPlayOnMount: state.extra is bool ? state.extra as bool : false,
+        ),
       ),
       GoRoute(
         path: '/performer/:id',

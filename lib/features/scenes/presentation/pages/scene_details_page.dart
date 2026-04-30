@@ -50,7 +50,12 @@ bool shouldRouteToNextScene(
 
 class SceneDetailsPage extends ConsumerStatefulWidget {
   final String sceneId;
-  const SceneDetailsPage({required this.sceneId, super.key});
+  final bool autoPlayOnMount;
+  const SceneDetailsPage({
+    required this.sceneId,
+    this.autoPlayOnMount = false,
+    super.key,
+  });
 
   @override
   ConsumerState<SceneDetailsPage> createState() => _SceneDetailsPageState();
@@ -94,7 +99,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       return;
     }
 
-    context.push('/scenes/scene/${randomScene.id}');
+    context.push('/scenes/scene/${randomScene.id}', extra: true);
   }
 
   String _formatDuration(double? seconds) {
@@ -134,7 +139,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         );
 
         if (nextScene != null) {
-          context.pushReplacement('/scenes/scene/${nextScene.id}');
+          context.pushReplacement(
+            '/scenes/scene/${nextScene.id}',
+            extra: true,
+          );
         }
       }
 
@@ -210,7 +218,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                               constraints: BoxConstraints(
                                 maxHeight: safeMaxHeight,
                               ),
-                              child: SceneVideoPlayer(scene: scene),
+                              child: SceneVideoPlayer(
+                                scene: scene,
+                                autoPlayOnMount: widget.autoPlayOnMount,
+                              ),
                             ),
                           ),
                           Padding(
@@ -271,7 +282,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                   Center(
                     child: ConstrainedBox(
                       constraints: BoxConstraints(maxHeight: safeMaxHeight),
-                      child: SceneVideoPlayer(scene: scene),
+                      child: SceneVideoPlayer(
+                        scene: scene,
+                        autoPlayOnMount: widget.autoPlayOnMount,
+                      ),
                     ),
                   ),
                   Padding(
@@ -781,8 +795,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               const SizedBox(height: AppTheme.spacingSmall),
               SceneStrip(
                 scenes: filtered,
-                onTap: (selectedScene) =>
-                    context.push('/scenes/scene/${selectedScene.id}'),
+                onTap: (selectedScene) => context.push(
+                  '/scenes/scene/${selectedScene.id}',
+                  extra: true,
+                ),
               ),
             ],
           ),
