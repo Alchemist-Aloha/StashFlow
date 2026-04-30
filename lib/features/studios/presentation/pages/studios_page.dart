@@ -388,6 +388,9 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
           horizontal: context.dimensions.spacingMedium,
           vertical: 4,
         ),
+        color: Theme.of(context).colorScheme.primaryContainer.withValues(
+          alpha: 0.1,
+        ),
         child: ListTile(
           onTap: () => context.push('/studios/studio/${studio.id}'),
           title: Text(

@@ -377,6 +377,9 @@ class _TagsPageState extends ConsumerState<TagsPage> {
           horizontal: AppTheme.spacingMedium,
           vertical: 4,
         ),
+        color: Theme.of(context).colorScheme.primaryContainer.withValues(
+          alpha: 0.1,
+        ),
         child: ListTile(
           onTap: () => context.push('/tags/tag/${tag.id}'),
           title: Text(
