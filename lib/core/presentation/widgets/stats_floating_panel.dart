@@ -124,13 +124,13 @@ class StatsFloatingPanel extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Library Stats',
+                  AppLocalizations.of(context)!.stats_library_stats,
                   style: context.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w900,
                   ),
                 ),
                 Text(
-                  'Your Stash at a glance',
+                  AppLocalizations.of(context)!.stats_stash_glance,
                   style: context.textTheme.labelMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -153,7 +153,7 @@ class StatsFloatingPanel extends ConsumerWidget {
       child: FilledButton.tonalIcon(
         onPressed: () => ref.invalidate(serverStatsProvider),
         icon: const Icon(Icons.refresh_rounded, size: 18),
-        label: const Text('Refresh Statistics'),
+        label: Text(AppLocalizations.of(context)!.stats_refresh_statistics),
         style: FilledButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
@@ -177,57 +177,57 @@ class StatsFloatingPanel extends ConsumerWidget {
         vertical: dims.spacingSmall,
       ),
       children: [
-        _buildSectionTitle(context, 'Content'),
+        _buildSectionTitle(context, l10n.stats_content),
         _StatItem(
           icon: Icons.movie_filter_rounded,
-          label: 'Scenes',
+          label: l10n.stats_scenes,
           value: '${stats.sceneCount}',
           subtitle: _formatBytes(stats.scenesSize),
         ),
         _StatItem(
           icon: Icons.photo_library_rounded,
-          label: 'Images',
+          label: l10n.images_title,
           value: '${stats.imageCount}',
           subtitle: _formatBytes(stats.imagesSize),
         ),
         _StatItem(
           icon: Icons.auto_stories_rounded,
-          label: 'Galleries',
+          label: l10n.stats_galleries,
           value: '${stats.galleryCount}',
         ),
         SizedBox(height: dims.spacingSmall),
-        _buildSectionTitle(context, 'Organization'),
+        _buildSectionTitle(context, l10n.stats_organization),
         _StatItem(
           icon: Icons.face_retouching_natural_rounded,
-          label: 'Performers',
+          label: l10n.stats_performers,
           value: '${stats.performerCount}',
         ),
         _StatItem(
           icon: Icons.storefront_rounded,
-          label: 'Studios',
+          label: l10n.stats_studios,
           value: '${stats.studioCount}',
         ),
         _StatItem(
           icon: Icons.workspaces_rounded,
-          label: 'Groups',
+          label: l10n.stats_groups,
           value: '${stats.groupCount}',
         ),
         _StatItem(
           icon: Icons.local_offer_rounded,
-          label: 'Tags',
+          label: l10n.stats_tags,
           value: '${stats.tagCount}',
         ),
         SizedBox(height: dims.spacingSmall),
-        _buildSectionTitle(context, 'Activity'),
+        _buildSectionTitle(context, l10n.stats_activity),
         _StatItem(
           icon: Icons.play_lesson_rounded,
-          label: 'Total Plays',
+          label: l10n.stats_total_plays,
           value: '${stats.totalPlayCount}',
-          subtitle: '${stats.scenesPlayed} unique items',
+          subtitle: l10n.stats_unique_items(stats.scenesPlayed),
         ),
         _StatItem(
           icon: Icons.favorite_rounded,
-          label: 'Total O-Count',
+          label: l10n.stats_total_o_count,
           value: '${stats.totalOCount}',
           color: colorScheme.tertiary,
         ),

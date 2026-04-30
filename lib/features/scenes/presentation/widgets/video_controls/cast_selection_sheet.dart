@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/data/services/cast_service.dart';
 import '../../../../../core/presentation/theme/app_theme.dart';
 import '../../providers/video_player_provider.dart';
+import '../../../../../core/utils/l10n_extensions.dart';
 
 /// A bottom sheet that allows users to select a device for casting.
 class CastSelectionSheet extends ConsumerStatefulWidget {
@@ -48,7 +49,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
               const CircularProgressIndicator(),
               const SizedBox(width: 24),
               Expanded(
-                child: Text('Connecting to $deviceName...'),
+                child: Text(context.l10n.cast_connecting_to(deviceName)),
               ),
             ],
           ),
@@ -63,11 +64,11 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('AirPlay Pairing'),
+        title: Text(context.l10n.cast_airplay_pairing),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Enter the 4-digit PIN shown on your TV'),
+            Text(context.l10n.cast_enter_pin),
             const SizedBox(height: 16),
             TextField(
               controller: pinController,
@@ -86,12 +87,12 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.common_cancel),
           ),
           FilledButton(
             onPressed: () =>
                 Navigator.of(dialogContext).pop(pinController.text),
-            child: const Text('Pair'),
+            child: Text(context.l10n.cast_pair),
           ),
         ],
       ),
@@ -150,7 +151,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Casting to ${device.name}'),
+            content: Text(context.l10n.cast_casting_to(device.name)),
           ),
         );
       }
@@ -205,7 +206,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Casting to ${device.name}'),
+                content: Text(context.l10n.cast_casting_to(device.name)),
               ),
             );
           }
@@ -216,7 +217,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
 
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Pairing failed: $e')),
+              SnackBar(content: Text(context.l10n.cast_pairing_failed(e.toString()))),
             );
           }
         }
@@ -229,7 +230,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to cast: $e'),
+            content: Text(context.l10n.cast_failed_to_cast(e.toString())),
             backgroundColor: context.colors.error,
           ),
         );
@@ -273,7 +274,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Cast to Device',
+                  context.l10n.cast_cast_to_device,
                   style: context.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -291,14 +292,14 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
             ),
           ),
           if (devices.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 40),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 40),
               child: Center(
                 child: Column(
                   children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 16),
-                    Text('Searching for devices...'),
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    Text(context.l10n.cast_searching),
                   ],
                 ),
               ),
