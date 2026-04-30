@@ -150,6 +150,12 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final scrapeEnabled = ref.watch(scrapeEnabledProvider);
 
+    final mediaQuery = MediaQuery.of(context);
+    final topPadding = mediaQuery.padding.top;
+    final appBarHeight = AppBar().preferredSize.height;
+    final safeMaxHeight =
+        mediaQuery.size.height - topPadding - appBarHeight - 20;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.details_scene),
@@ -199,7 +205,14 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SceneVideoPlayer(scene: scene),
+                          Center(
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxHeight: safeMaxHeight,
+                              ),
+                              child: SceneVideoPlayer(scene: scene),
+                            ),
+                          ),
                           Padding(
                             padding: const EdgeInsets.all(
                               AppTheme.spacingMedium,
@@ -255,7 +268,12 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SceneVideoPlayer(scene: scene),
+                  Center(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxHeight: safeMaxHeight),
+                      child: SceneVideoPlayer(scene: scene),
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(AppTheme.spacingMedium),
                     child: Column(
