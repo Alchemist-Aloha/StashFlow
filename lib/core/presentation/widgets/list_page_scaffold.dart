@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,7 +13,9 @@ import '../../utils/pagination.dart';
 import 'stash_image.dart';
 import '../../data/graphql/media_headers_provider.dart';
 import '../../data/preferences/search_history_provider.dart';
+import '../../../features/scenes/presentation/widgets/scene_card.dart';
 import 'grid_utils.dart';
+import 'stats_floating_panel.dart';
 
 /// A standardized scaffold for all list and grid pages in StashFlow.
 ///
@@ -39,7 +42,7 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     this.onRefresh,
     this.onFetchNextPage,
     this.floatingActionButton,
-    this.padding = const EdgeInsets.all(AppTheme.spacingMedium),
+    this.padding,
     this.hideAppBar = false,
     this.scrollController,
     this.useResponsiveGrid = true,
@@ -53,6 +56,7 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     this.prefetchDistance = StashImage.defaultPrefetchDistance,
     this.itemExtent,
     this.onPageSizeChanged,
+    this.loadingItemBuilder,
   });
 
   /// The page title displayed in the AppBar.
@@ -114,7 +118,7 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
   final Widget? floatingActionButton;
 
   /// Padding applied to the list/grid.
-  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry? padding;
 
   /// If true, the AppBar is omitted.
   final bool hideAppBar;
@@ -146,6 +150,10 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
 
   /// Triggered when the calculated page size (fitting 2 screens) changes.
   final ValueChanged<int>? onPageSizeChanged;
+
+  /// Optional builder used for loading placeholders.
+  final Widget Function(BuildContext context, bool isGrid, int index)?
+  loadingItemBuilder;
 
   @override
   ConsumerState<ListPageScaffold<T>> createState() =>
@@ -231,12 +239,14 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   }
 
   int _getEffectivePrefetchDistance(BuildContext context) {
+    final effectivePadding =
+        widget.padding ?? EdgeInsets.all(context.dimensions.spacingMedium);
     final itemsInTwoScreens = GridUtils.calculateItemsPerPage(
       context: context,
       gridDelegate: widget.gridDelegate != null
           ? _getResponsiveGridDelegate(context)
           : null,
-      padding: widget.padding,
+      padding: effectivePadding,
       screens: 2.0,
       itemExtent: widget.itemExtent,
       measuredItemExtent: _measuredItemExtent,
@@ -425,11 +435,17 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
           ? null
           : AppBar(
               scrolledUnderElevation: 4.0,
-              title: Text(
-                widget.title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: -0.5,
+              title: GestureDetector(
+                onLongPress: () {
+                  HapticFeedback.lightImpact();
+                  StatsFloatingPanel.show(context);
+                },
+                child: Text(
+                  widget.title,
+                  style: context.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: -0.5,
+                  ),
                 ),
               ),
               actions: [
@@ -488,9 +504,11 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                 children: [
                                   if (history.isNotEmpty)
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0,
-                                        vertical: 8.0,
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal:
+                                            context.dimensions.spacingMedium,
+                                        vertical:
+                                            context.dimensions.spacingSmall,
                                       ),
                                       child: Row(
                                         mainAxisAlignment:
@@ -498,11 +516,14 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                         children: [
                                           Text(
                                             'Recent Searches',
-                                            style: TextStyle(
-                                              color: context.colors.onSurface
-                                                  .withValues(alpha: 0.7),
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                            style: context.textTheme.titleSmall
+                                                ?.copyWith(
+                                                  color: context
+                                                      .colors
+                                                      .onSurface
+                                                      .withValues(alpha: 0.7),
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                           ),
                                           TextButton(
                                             onPressed: () {
@@ -514,7 +535,9 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                                   )
                                                   .clearAll();
                                             },
-                                            child: const Text('Clear History'),
+                                            child: Text(
+                                              context.l10n.common_clear_history,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -580,6 +603,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                 widget.scrollController != null &&
                 widget.scrollController!.hasClients &&
                 widget.scrollController!.position.pixels <= 0 &&
+                pointerSignal.kind == PointerDeviceKind.trackpad &&
                 pointerSignal.scrollDelta.dy < -50) {
               widget.onRefresh!();
             }
@@ -589,25 +613,33 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
           children: [
             if (_currentQuery != null)
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.dimensions.spacingMedium,
+                  vertical: context.dimensions.spacingSmall,
                 ),
                 color: context.colors.surfaceVariant,
                 child: Row(
                   children: [
-                    const Icon(Icons.search, size: 16),
-                    const SizedBox(width: 8),
+                    Icon(
+                      Icons.search,
+                      size: 16 * context.dimensions.fontSizeFactor,
+                    ),
+                    SizedBox(width: context.dimensions.spacingSmall),
                     Expanded(
                       child: Text(
                         'Searching for: "$_currentQuery"',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     IconButton(
                       tooltip: context.l10n.common_close,
-                      icon: const Icon(Icons.close, size: 20),
+                      icon: Icon(
+                        Icons.close,
+                        size: 20 * context.dimensions.fontSizeFactor,
+                      ),
                       onPressed: () {
                         setState(() {
                           _currentQuery = null;
@@ -636,7 +668,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                               widget.emptyMessage == 'No items found'
                                   ? context.l10n.common_no_items
                                   : widget.emptyMessage,
-                              style: TextStyle(
+                              style: context.textTheme.bodyMedium?.copyWith(
                                 color: context.colors.onSurface.withValues(
                                   alpha: 0.7,
                                 ),
@@ -649,8 +681,14 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                   }
 
                   final isGrid = widget.gridDelegate != null;
-                  final responsiveDelegate = isGrid ? _getResponsiveGridDelegate(context) : null;
-                  final fixedDelegate = responsiveDelegate is SliverGridDelegateWithFixedCrossAxisCount ? responsiveDelegate : null;
+                  final responsiveDelegate = isGrid
+                      ? _getResponsiveGridDelegate(context)
+                      : null;
+                  final fixedDelegate =
+                      responsiveDelegate
+                          is SliverGridDelegateWithFixedCrossAxisCount
+                      ? responsiveDelegate
+                      : null;
 
                   int? memCacheWidth;
                   if (widget.itemBuilder != null) {
@@ -673,94 +711,105 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                     }
                   }
 
-                  Widget body = widget.customBody ??
+                  Widget body =
+                      widget.customBody ??
                       (isGrid
                           ? (widget.useMasonry
-                              ? MasonryGridView.builder(
-                                  controller: widget.scrollController,
-                                  padding: widget.padding,
-                                  gridDelegate:
-                                      SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: fixedDelegate?.crossAxisCount ?? 1,
-                                      ),
-                                  mainAxisSpacing: fixedDelegate?.mainAxisSpacing ?? 0.0,
-                                  crossAxisSpacing: fixedDelegate?.crossAxisSpacing ?? 0.0,
-                                  itemCount: items.length,
-                                  itemBuilder: (context, index) {
-                                    if (index == 0 &&
-                                        widget.imageUrlBuilder != null &&
-                                        _measuredItemExtent == null) {
-                                      WidgetsBinding.instance
-                                          .addPostFrameCallback((_) {
-                                            if (_measuredItemExtent == null &&
-                                                _firstItemKey.currentContext !=
-                                                    null) {
-                                              final size = _firstItemKey
-                                                  .currentContext!
-                                                  .size;
-                                              if (size != null) {
-                                                setState(() {
-                                                  _measuredItemExtent =
-                                                      size.height;
-                                                });
-                                              }
-                                            }
-                                          });
-                                    }
-
-                                    return RepaintBoundary(
-                                      child: KeyedSubtree(
-                                        key: index == 0 ? _firstItemKey : null,
-                                        child: widget.itemBuilder!(
-                                          context,
-                                          items[index],
-                                          memCacheWidth,
-                                          null,
+                                ? MasonryGridView.builder(
+                                    controller: widget.scrollController,
+                                    padding: widget.padding,
+                                    gridDelegate:
+                                        SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount:
+                                              fixedDelegate?.crossAxisCount ??
+                                              1,
                                         ),
-                                      ),
-                                    );
-                                  },
-                                )
-                              : GridView.builder(
-                                  controller: widget.scrollController,
-                                  padding: widget.padding,
-                                  gridDelegate: responsiveDelegate!,
-                                  itemCount: items.length,
-                                  itemBuilder: (context, index) {
-                                    if (index == 0 &&
-                                        widget.imageUrlBuilder != null &&
-                                        _measuredItemExtent == null) {
-                                      WidgetsBinding.instance
-                                          .addPostFrameCallback((_) {
-                                            if (_measuredItemExtent == null &&
-                                                _firstItemKey.currentContext !=
-                                                    null) {
-                                              final size = _firstItemKey
-                                                  .currentContext!
-                                                  .size;
-                                              if (size != null) {
-                                                setState(() {
-                                                  _measuredItemExtent =
-                                                      size.height;
-                                                });
+                                    mainAxisSpacing:
+                                        fixedDelegate?.mainAxisSpacing ?? 0.0,
+                                    crossAxisSpacing:
+                                        fixedDelegate?.crossAxisSpacing ?? 0.0,
+                                    itemCount: items.length,
+                                    itemBuilder: (context, index) {
+                                      if (index == 0 &&
+                                          widget.imageUrlBuilder != null &&
+                                          _measuredItemExtent == null) {
+                                        WidgetsBinding.instance
+                                            .addPostFrameCallback((_) {
+                                              if (_measuredItemExtent == null &&
+                                                  _firstItemKey
+                                                          .currentContext !=
+                                                      null) {
+                                                final size = _firstItemKey
+                                                    .currentContext!
+                                                    .size;
+                                                if (size != null) {
+                                                  setState(() {
+                                                    _measuredItemExtent =
+                                                        size.height;
+                                                  });
+                                                }
                                               }
-                                            }
-                                          });
-                                    }
+                                            });
+                                      }
 
-                                    return RepaintBoundary(
-                                      child: KeyedSubtree(
-                                        key: index == 0 ? _firstItemKey : null,
-                                        child: widget.itemBuilder!(
-                                          context,
-                                          items[index],
-                                          memCacheWidth,
-                                          null,
+                                      return RepaintBoundary(
+                                        child: KeyedSubtree(
+                                          key: index == 0
+                                              ? _firstItemKey
+                                              : null,
+                                          child: widget.itemBuilder!(
+                                            context,
+                                            items[index],
+                                            memCacheWidth,
+                                            null,
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  },
-                                ))
+                                      );
+                                    },
+                                  )
+                                : GridView.builder(
+                                    controller: widget.scrollController,
+                                    padding: widget.padding,
+                                    gridDelegate: responsiveDelegate!,
+                                    itemCount: items.length,
+                                    itemBuilder: (context, index) {
+                                      if (index == 0 &&
+                                          widget.imageUrlBuilder != null &&
+                                          _measuredItemExtent == null) {
+                                        WidgetsBinding.instance
+                                            .addPostFrameCallback((_) {
+                                              if (_measuredItemExtent == null &&
+                                                  _firstItemKey
+                                                          .currentContext !=
+                                                      null) {
+                                                final size = _firstItemKey
+                                                    .currentContext!
+                                                    .size;
+                                                if (size != null) {
+                                                  setState(() {
+                                                    _measuredItemExtent =
+                                                        size.height;
+                                                  });
+                                                }
+                                              }
+                                            });
+                                      }
+
+                                      return RepaintBoundary(
+                                        child: KeyedSubtree(
+                                          key: index == 0
+                                              ? _firstItemKey
+                                              : null,
+                                          child: widget.itemBuilder!(
+                                            context,
+                                            items[index],
+                                            memCacheWidth,
+                                            null,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ))
                           : ListView.builder(
                               controller: widget.scrollController,
                               padding: widget.padding,
@@ -819,7 +868,32 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                     child: body,
                   );
                 },
-                loading: () => const Center(child: CircularProgressIndicator()),
+                loading: () {
+                  final isGrid = widget.gridDelegate != null;
+                  final responsiveDelegate = isGrid
+                      ? _getResponsiveGridDelegate(context)
+                      : null;
+                  final loadingItemBuilder = widget.loadingItemBuilder;
+
+                  if (isGrid) {
+                    return GridView.builder(
+                      padding: widget.padding,
+                      gridDelegate: responsiveDelegate!,
+                      itemCount: 8,
+                      itemBuilder: (context, index) =>
+                          loadingItemBuilder != null
+                          ? loadingItemBuilder(context, true, index)
+                          : SceneCard.skeleton(isGrid: true),
+                    );
+                  }
+                  return ListView.builder(
+                    padding: widget.padding,
+                    itemCount: 5,
+                    itemBuilder: (context, index) => loadingItemBuilder != null
+                        ? loadingItemBuilder(context, false, index)
+                        : SceneCard.skeleton(isGrid: false),
+                  );
+                },
                 error: (err, stack) => ErrorStateView(
                   message: context.l10n.common_error(err.toString()),
                   onRetry: widget.onRefresh,

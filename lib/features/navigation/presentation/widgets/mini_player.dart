@@ -25,25 +25,32 @@ class MiniPlayer extends ConsumerWidget {
     return GestureDetector(
       onTap: () => context.push('/scenes/scene/${activeScene.id}'),
       child: Container(
-        height: 60,
+        height: 66, // Increased height by 10% (from 60)
         decoration: BoxDecoration(
           color: context.colors.surface,
-          border: Border(
-            top: BorderSide(
-              color: context.colors.outline.withValues(alpha: 0.5),
-              width: 0.5,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
             ),
-          ),
+          ],
         ),
         child: RepaintBoundary(
           child: Row(
             children: [
-              AspectRatio(
-                aspectRatio: 16 / 9,
-                child: StashImage(
-                  imageUrl: activeScene.paths.screenshot ?? '',
-                  fit: BoxFit.cover,
-                  memCacheWidth: 320,
+              Padding(
+                padding: const EdgeInsets.all(6),
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                    child: StashImage(
+                      imageUrl: activeScene.paths.screenshot ?? '',
+                      fit: BoxFit.cover,
+                      memCacheWidth: 320,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -64,7 +71,8 @@ class MiniPlayer extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: context.textTheme.bodySmall?.copyWith(
-                        color: context.colors.onSurface.withValues(alpha: 0.75),
+                        color: context.colors.primary,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],

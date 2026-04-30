@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../providers/tag_list_provider.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../widgets/tag_filter_panel.dart';
@@ -377,15 +378,42 @@ class _TagsPageState extends ConsumerState<TagsPage> {
           horizontal: AppTheme.spacingMedium,
           vertical: 4,
         ),
+        color: Theme.of(
+          context,
+        ).colorScheme.primaryContainer.withValues(alpha: 0.3),
         child: ListTile(
           onTap: () => context.push('/tags/tag/${tag.id}'),
           title: Text(
             tag.name,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: context.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           trailing: Text(
             context.l10n.nScenes(tag.sceneCount),
             style: context.textTheme.bodySmall,
+          ),
+        ),
+      ),
+      loadingItemBuilder: (context, isGrid, index) => Skeletonizer(
+        enabled: true,
+        effect: const ShimmerEffect(duration: Duration(seconds: 2)),
+        child: Card(
+          margin: const EdgeInsets.symmetric(
+            horizontal: AppTheme.spacingMedium,
+            vertical: 4,
+          ),
+          color: Theme.of(
+            context,
+          ).colorScheme.primaryContainer.withValues(alpha: 0.3),
+          child: ListTile(
+            title: Text(
+              'Loading',
+              style: context.textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            trailing: Text('0', style: context.textTheme.bodySmall),
           ),
         ),
       ),

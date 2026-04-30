@@ -1,63 +1,21 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../galleries/presentation/providers/gallery_list_provider.dart';
-import '../../../../core/data/graphql/url_resolver.dart';
-import '../../../../core/data/preferences/shared_preferences_provider.dart';
-import '../../../../core/data/graphql/graphql_client.dart';
+import '../../../galleries/domain/entities/gallery.dart';
 
 part 'performer_galleries_provider.g.dart';
 
-class PerformerGalleryItem {
-  const PerformerGalleryItem({
-    required this.galleryId,
-    required this.title,
-    required this.thumbnailUrl,
-    this.width,
-    this.height,
-  });
-
-  final String galleryId;
-  final String title;
-  final String thumbnailUrl;
-  final int? width;
-  final int? height;
-}
-
 @riverpod
-FutureOr<List<PerformerGalleryItem>> performerGalleries(
+FutureOr<List<Gallery>> performerGalleries(
   Ref ref,
   String performerId,
 ) async {
   ref.keepAlive();
   final repository = ref.read(galleryRepositoryProvider);
 
-  final galleries = await repository.findGalleries(
+  return repository.findGalleries(
     perPage: 24,
     performerId: performerId,
   );
-
-  final prefs = ref.read(sharedPreferencesProvider);
-  final storedServerUrl = prefs.getString('server_base_url')?.trim() ?? '';
-  final normalizedServerUrl = normalizeGraphqlServerUrl(storedServerUrl);
-  final endpoint = Uri.parse(
-    normalizedServerUrl.isEmpty
-        ? 'http://localhost:9999/graphql'
-        : normalizedServerUrl,
-  );
-
-  return galleries
-      .map(
-        (gallery) => PerformerGalleryItem(
-          galleryId: gallery.id,
-          title: gallery.displayName,
-          thumbnailUrl: resolveGraphqlMediaUrl(
-            rawUrl: gallery.coverPath ?? '/gallery/${gallery.id}/thumbnail',
-            graphqlEndpoint: endpoint,
-          ),
-          width: gallery.coverWidth,
-          height: gallery.coverHeight,
-        ),
-      )
-      .toList();
 }
 
 @riverpod
@@ -69,49 +27,17 @@ class PerformerGalleriesGrid extends _$PerformerGalleriesGrid {
   String? _performerId;
 
   @override
-  FutureOr<List<PerformerGalleryItem>> build(String performerId) async {
+  FutureOr<List<Gallery>> build(String performerId) async {
     ref.keepAlive();
     _performerId = performerId;
     _currentPage = 1;
     _hasMore = true;
-    return _fetchPage(performerId, _currentPage);
-  }
-
-  Future<List<PerformerGalleryItem>> _fetchPage(
-    String performerId,
-    int page,
-  ) async {
     final repository = ref.read(galleryRepositoryProvider);
-
-    final galleries = await repository.findGalleries(
-      page: page,
+    return repository.findGalleries(
+      page: _currentPage,
       perPage: _perPage,
       performerId: performerId,
     );
-
-    final prefs = ref.read(sharedPreferencesProvider);
-    final storedServerUrl = prefs.getString('server_base_url')?.trim() ?? '';
-    final normalizedServerUrl = normalizeGraphqlServerUrl(storedServerUrl);
-    final endpoint = Uri.parse(
-      normalizedServerUrl.isEmpty
-          ? 'http://localhost:9999/graphql'
-          : normalizedServerUrl,
-    );
-
-    return galleries
-        .map(
-          (gallery) => PerformerGalleryItem(
-            galleryId: gallery.id,
-            title: gallery.displayName,
-            thumbnailUrl: resolveGraphqlMediaUrl(
-              rawUrl: gallery.coverPath ?? '/gallery/${gallery.id}/thumbnail',
-              graphqlEndpoint: endpoint,
-            ),
-            width: gallery.coverWidth,
-            height: gallery.coverHeight,
-          ),
-        )
-        .toList();
   }
 
   Future<void> fetchNextPage() async {
@@ -119,15 +45,20 @@ class PerformerGalleriesGrid extends _$PerformerGalleriesGrid {
 
     _isLoadingMore = true;
     try {
+      final repository = ref.read(galleryRepositoryProvider);
       final nextPage = _currentPage + 1;
-      final nextItems = await _fetchPage(_performerId!, nextPage);
+      final nextItems = await repository.findGalleries(
+        page: nextPage,
+        perPage: _perPage,
+        performerId: _performerId,
+      );
 
       if (nextItems.isEmpty) {
         _hasMore = false;
       } else {
         _currentPage = nextPage;
         state = AsyncData([
-          ...(state.value ?? <PerformerGalleryItem>[]),
+          ...(state.value ?? <Gallery>[]),
           ...nextItems,
         ]);
       }

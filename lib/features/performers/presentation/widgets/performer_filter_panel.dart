@@ -46,7 +46,7 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                padding: EdgeInsets.all(context.dimensions.spacingMedium),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -71,7 +71,7 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
               Expanded(
                 child: SingleChildScrollView(
                   padding: EdgeInsets.only(
-                    bottom: bottomInset + safeBottom + AppTheme.spacingLarge,
+                    bottom: bottomInset + safeBottom + context.dimensions.spacingLarge,
                   ),
                   child: Column(
                     children: [
@@ -86,7 +86,7 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
               ),
               const Divider(height: 1),
               Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                padding: EdgeInsets.all(context.dimensions.spacingMedium),
                 child: Column(
                   children: [
                     SizedBox(
@@ -101,14 +101,14 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.colors.primary,
                           foregroundColor: context.colors.onPrimary,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppTheme.spacingMedium,
+                          padding: EdgeInsets.symmetric(
+                            vertical: context.dimensions.spacingMedium,
                           ),
                         ),
                         child: Text(context.l10n.common_apply_filters),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     SizedBox(
                       width: double.infinity,
                       child: TextButton(
@@ -129,8 +129,8 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
                           }
                         },
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppTheme.spacingMedium,
+                          padding: EdgeInsets.symmetric(
+                            vertical: context.dimensions.spacingMedium,
                           ),
                         ),
                         child: Text(context.l10n.common_save_default),
@@ -241,18 +241,21 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
           style: context.textTheme.labelLarge,
         ),
         Wrap(
-          spacing: 4,
+          spacing: context.dimensions.spacingSmall / 2,
           children: [
             for (var stars = 0; stars <= 5; stars++)
               ChoiceChip(
                 label: stars == 0
-                    ? const Text('Any')
+                    ? Text(context.l10n.common_any)
                     : Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text('$stars'),
-                          const SizedBox(width: 4),
-                          const Icon(Icons.star, size: 16),
+                          SizedBox(width: context.dimensions.spacingSmall / 2),
+                          Icon(
+                            Icons.star,
+                            size: 16 * context.dimensions.fontSizeFactor,
+                          ),
                         ],
                       ),
                 selected: (stars == 0 && _tempFilter.rating100 == null) ||
@@ -431,24 +434,24 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
       children: [
         Text(label, style: context.textTheme.labelLarge),
         Wrap(
-          spacing: 8,
+          spacing: context.dimensions.spacingSmall,
           children: [
             ChoiceChip(
-              label: const Text('Any'),
+              label: Text(context.l10n.common_any),
               selected: value == null,
               onSelected: (selected) {
                 if (selected) onChanged(null);
               },
             ),
             ChoiceChip(
-              label: const Text('Yes'),
+              label: Text(context.l10n.common_yes),
               selected: value == true,
               onSelected: (selected) {
                 if (selected) onChanged(true);
               },
             ),
             ChoiceChip(
-              label: const Text('No'),
+              label: Text(context.l10n.common_no),
               selected: value == false,
               onSelected: (selected) {
                 if (selected) onChanged(false);
@@ -467,7 +470,7 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
       children: [
         Text(context.l10n.performers_gender, style: context.textTheme.labelLarge),
         Wrap(
-          spacing: 4,
+          spacing: context.dimensions.spacingSmall / 2,
           children: genders.map((g) {
             final isSelected = _tempFilter.gender?.value.contains(g) ?? false;
             return FilterChip(
@@ -500,7 +503,7 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
       children: [
         Text(context.l10n.performers_circumcised, style: context.textTheme.labelLarge),
         Wrap(
-          spacing: 4,
+          spacing: context.dimensions.spacingSmall / 2,
           children: values.map((v) => ChoiceChip(
             label: Text(v),
             selected: _tempFilter.circumcised == v,
@@ -523,7 +526,7 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
     final List<String> selectedIds = criterion?.value ?? [];
     
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -568,7 +571,7 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
           ),
           if (selectedIds.isNotEmpty)
             Wrap(
-              spacing: 4,
+              spacing: context.dimensions.spacingSmall / 2,
               children: selectedIds.map((id) => Chip(
                 label: Text(id),
                 onDeleted: () {

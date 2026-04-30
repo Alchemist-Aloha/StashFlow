@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
 
 /// A centered loading indicator for asynchronous operations.
 class LoadingStateView extends StatelessWidget {
@@ -25,23 +26,36 @@ class ErrorStateView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final dims = theme.extension<AppDimensions>();
+    final colors = theme.extension<AppColors>();
+    
+    // Fallback values if theme extensions are missing (e.g. in some tests)
+    final spacingLarge = dims?.spacingLarge ?? 24.0;
+    final spacingSmall = dims?.spacingSmall ?? 8.0;
+    final fontSizeFactor = dims?.fontSizeFactor ?? 1.0;
+
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(spacingLarge),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: Colors.redAccent),
-            const SizedBox(height: 12),
+            Icon(
+              Icons.error_outline,
+              size: 48 * fontSizeFactor,
+              color: colors?.error ?? Colors.redAccent,
+            ),
+            SizedBox(height: spacingSmall * 1.5),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             if (onRetry != null) ...[
-              const SizedBox(height: 24),
+              SizedBox(height: spacingLarge),
               FilledButton.tonal(onPressed: onRetry, child: Text(retryLabel)),
             ],
           ],

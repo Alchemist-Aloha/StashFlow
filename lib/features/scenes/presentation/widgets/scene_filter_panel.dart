@@ -51,7 +51,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                padding: EdgeInsets.all(context.dimensions.spacingMedium),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -77,7 +77,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
               Expanded(
                 child: SingleChildScrollView(
                   padding: EdgeInsets.only(
-                    bottom: bottomInset + safeBottom + AppTheme.spacingLarge,
+                    bottom: bottomInset + safeBottom + context.dimensions.spacingLarge,
                   ),
                   child: Column(
                     children: [
@@ -94,7 +94,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
               ),
               const Divider(height: 1),
               Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                padding: EdgeInsets.all(context.dimensions.spacingMedium),
                 child: Column(
                   children: [
                     SizedBox(
@@ -112,14 +112,14 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.colors.primary,
                           foregroundColor: context.colors.onPrimary,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppTheme.spacingMedium,
+                          padding: EdgeInsets.symmetric(
+                            vertical: context.dimensions.spacingMedium,
                           ),
                         ),
                         child: Text(context.l10n.common_apply_filters),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     SizedBox(
                       width: double.infinity,
                       child: TextButton(
@@ -148,8 +148,8 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                           }
                         },
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppTheme.spacingMedium,
+                          padding: EdgeInsets.symmetric(
+                            vertical: context.dimensions.spacingMedium,
                           ),
                         ),
                         child: Text(context.l10n.common_save_default),
@@ -491,7 +491,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
       children: [
         Text(context.l10n.scenes_duplicated, style: context.textTheme.labelLarge),
         Wrap(
-          spacing: 4,
+          spacing: context.dimensions.spacingSmall / 2,
           children: options.map((opt) {
             final isSelected =
                 _tempFilter.duplicated?.value.contains(opt) ?? false;
@@ -532,18 +532,21 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
           style: context.textTheme.labelLarge,
         ),
         Wrap(
-          spacing: 4,
+          spacing: context.dimensions.spacingSmall / 2,
           children: [
             for (var stars = 0; stars <= 5; stars++)
               ChoiceChip(
                 label: stars == 0
-                    ? const Text('Any')
+                    ? Text(context.l10n.common_any)
                     : Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text('$stars'),
-                          const SizedBox(width: 4),
-                          const Icon(Icons.star, size: 16),
+                          SizedBox(width: context.dimensions.spacingSmall / 2),
+                          Icon(
+                            Icons.star,
+                            size: 16 * context.dimensions.fontSizeFactor,
+                          ),
                         ],
                       ),
                 selected: (stars == 0 && _tempFilter.rating100 == null) ||
@@ -578,7 +581,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
       children: [
         Text(context.l10n.common_organized, style: context.textTheme.labelLarge),
         Wrap(
-          spacing: 8,
+          spacing: context.dimensions.spacingSmall,
           children: OrganizedFilter.values.map((option) {
             return ChoiceChip(
               label: Text(option.name.toUpperCase()),
@@ -605,24 +608,24 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
       children: [
         Text(label, style: context.textTheme.labelLarge),
         Wrap(
-          spacing: 8,
+          spacing: context.dimensions.spacingSmall,
           children: [
             ChoiceChip(
-              label: const Text('Any'),
+              label: Text(context.l10n.common_any),
               selected: value == null,
               onSelected: (selected) {
                 if (selected) onChanged(null);
               },
             ),
             ChoiceChip(
-              label: const Text('Yes'),
+              label: Text(context.l10n.common_yes),
               selected: value == true,
               onSelected: (selected) {
                 if (selected) onChanged(true);
               },
             ),
             ChoiceChip(
-              label: const Text('No'),
+              label: Text(context.l10n.common_no),
               selected: value == false,
               onSelected: (selected) {
                 if (selected) onChanged(false);
@@ -641,7 +644,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
       children: [
         Text(context.l10n.images_resolution_title, style: context.textTheme.labelLarge),
         Wrap(
-          spacing: 4,
+          spacing: context.dimensions.spacingSmall / 2,
           children: resolutions.map((res) {
             final isSelected =
                 _tempFilter.resolutions?.value.contains(res) ?? false;
@@ -679,7 +682,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
       children: [
         Text(context.l10n.common_orientation, style: context.textTheme.labelLarge),
         Wrap(
-          spacing: 4,
+          spacing: context.dimensions.spacingSmall / 2,
           children: orientations.map((ori) {
             final isSelected =
                 _tempFilter.orientations?.value.contains(ori) ?? false;
@@ -720,7 +723,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
     final List<String> selectedIds = criterion?.value ?? [];
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -730,7 +733,10 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
               Text(label, style: context.textTheme.labelLarge),
               IconButton(
                 tooltip: 'Add',
-                icon: const Icon(Icons.add_circle_outline),
+                icon: Icon(
+                  Icons.add_circle_outline,
+                  size: 24 * context.dimensions.fontSizeFactor,
+                ),
                 onPressed: () async {
                   final result = await showDialog<List<T>>(
                     context: context,
@@ -772,7 +778,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
           ),
           if (selectedIds.isNotEmpty)
             Wrap(
-              spacing: 4,
+              spacing: context.dimensions.spacingSmall / 2,
               children: selectedIds
                   .map(
                     (id) => Chip(

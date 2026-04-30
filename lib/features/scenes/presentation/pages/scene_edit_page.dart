@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/scene.dart';
@@ -432,10 +431,12 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
         actions: [
           if (scrapeEnabled)
             if (_isScraping)
-              const Center(
+              Center(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: SizedBox(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: context.dimensions.spacingMedium,
+                  ),
+                  child: const SizedBox(
                     width: 20,
                     height: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
@@ -471,13 +472,15 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppTheme.spacingMedium),
+        padding: EdgeInsets.all(context.dimensions.spacingMedium),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (_scrapedImage != null)
               Padding(
-                padding: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
+                padding: EdgeInsets.only(
+                  bottom: context.dimensions.spacingMedium,
+                ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: _scrapedImage!.startsWith('data:')
@@ -497,47 +500,47 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
               ),
             TextField(
               controller: _titleController,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.common_title,
+              decoration: const InputDecoration(
+                labelText: 'Title',
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: AppTheme.spacingMedium),
+            SizedBox(height: context.dimensions.spacingMedium),
             TextField(
               controller: _detailsController,
               maxLines: 5,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.common_details,
+              decoration: const InputDecoration(
+                labelText: 'Details',
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: AppTheme.spacingMedium),
+            SizedBox(height: context.dimensions.spacingMedium),
             TextField(
               controller: _dateController,
               readOnly: true,
               onTap: _pickDate,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.common_release_date,
+              decoration: const InputDecoration(
+                labelText: 'Release Date',
                 border: OutlineInputBorder(),
                 suffixIcon: Icon(Icons.calendar_today),
               ),
             ),
-            const SizedBox(height: AppTheme.spacingMedium),
+            SizedBox(height: context.dimensions.spacingMedium),
 
             // Studio
             Text(
               context.l10n.scenes_field_studio,
               style: Theme.of(context).textTheme.labelLarge,
             ),
-            const SizedBox(height: AppTheme.spacingSmall),
+            SizedBox(height: context.dimensions.spacingSmall),
             InkWell(
               onTap: _pickStudio,
               child: InputDecorator(
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
+                    horizontal: context.dimensions.spacingMedium,
+                    vertical: context.dimensions.spacingSmall,
                   ),
                 ),
                 child: Row(
@@ -566,7 +569,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                 ),
               ),
             ),
-            const SizedBox(height: AppTheme.spacingMedium),
+            SizedBox(height: context.dimensions.spacingMedium),
 
             // Performers
             Row(
@@ -584,7 +587,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
               ],
             ),
             Wrap(
-              spacing: 8,
+              spacing: context.dimensions.spacingSmall,
               children: [
                 for (int i = 0; i < _selectedPerformerIds.length; i++)
                   InputChip(
@@ -598,7 +601,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                   ),
               ],
             ),
-            const SizedBox(height: AppTheme.spacingSmall),
+            SizedBox(height: context.dimensions.spacingSmall),
 
             // Tags
             Row(
@@ -616,7 +619,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
               ],
             ),
             Wrap(
-              spacing: 8,
+              spacing: context.dimensions.spacingSmall,
               children: [
                 for (int i = 0; i < _selectedTagIds.length; i++)
                   InputChip(
@@ -630,7 +633,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                   ),
               ],
             ),
-            const SizedBox(height: AppTheme.spacingMedium),
+            SizedBox(height: context.dimensions.spacingMedium),
 
             Row(
               children: [
@@ -650,14 +653,16 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
               final index = entry.key;
               final controller = entry.value;
               return Padding(
-                padding: const EdgeInsets.only(bottom: AppTheme.spacingSmall),
+                padding: EdgeInsets.only(
+                  bottom: context.dimensions.spacingSmall,
+                ),
                 child: Row(
                   children: [
                     Expanded(
                       child: TextField(
                         controller: controller,
-                        decoration: InputDecoration(
-                          labelText: AppLocalizations.of(context)!.common_url,
+                        decoration: const InputDecoration(
+                          labelText: 'URL',
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -672,7 +677,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
               );
             }),
             if (unmatchedScrapedTags.isNotEmpty) ...[
-              const SizedBox(height: AppTheme.spacingMedium),
+              SizedBox(height: context.dimensions.spacingMedium),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -680,12 +685,12 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
-              const SizedBox(height: AppTheme.spacingSmall),
+              SizedBox(height: context.dimensions.spacingSmall),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
+                  spacing: context.dimensions.spacingSmall * 0.75,
+                  runSpacing: context.dimensions.spacingSmall * 0.75,
                   children: unmatchedScrapedTags
                       .map(
                         (t) => Chip(
@@ -700,7 +705,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
               ),
             ],
             if (unmatchedScrapedPerformers.isNotEmpty) ...[
-              const SizedBox(height: AppTheme.spacingMedium),
+              SizedBox(height: context.dimensions.spacingMedium),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -708,7 +713,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
-              const SizedBox(height: AppTheme.spacingSmall),
+              SizedBox(height: context.dimensions.spacingSmall),
               Column(
                 children: unmatchedScrapedPerformers
                     .map(

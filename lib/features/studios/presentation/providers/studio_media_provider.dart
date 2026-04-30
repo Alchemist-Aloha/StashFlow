@@ -1,79 +1,20 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../../core/data/graphql/graphql_client.dart';
-import '../../../../core/data/graphql/schema.graphql.dart';
-import '../../../../core/data/graphql/url_resolver.dart';
-import '../../../../core/data/preferences/shared_preferences_provider.dart';
-import '../../../scenes/data/graphql/scenes.graphql.dart';
-import '../../../scenes/domain/entities/scene_title_utils.dart';
+import '../../../scenes/domain/entities/scene.dart';
+import '../../../scenes/presentation/providers/scene_list_provider.dart';
 
 part 'studio_media_provider.g.dart';
 
-class StudioMediaItem {
-  const StudioMediaItem({
-    required this.sceneId,
-    required this.title,
-    required this.thumbnailUrl,
-    this.width,
-    this.height,
-  });
-
-  final String sceneId;
-  final String title;
-  final String thumbnailUrl;
-  final int? width;
-  final int? height;
-}
-
 @riverpod
-FutureOr<List<StudioMediaItem>> studioMedia(Ref ref, String studioId) async {
+FutureOr<List<Scene>> studioMedia(Ref ref, String studioId) async {
   ref.keepAlive();
-  final client = ref.read(graphqlClientProvider);
+  final repository = ref.read(sceneRepositoryProvider);
 
-  final result = await client.query$FindScenes(
-    Options$Query$FindScenes(
-      variables: Variables$Query$FindScenes(
-        filter: Input$FindFilterType(page: 1, per_page: 24),
-        scene_filter: Input$SceneFilterType(
-          studios: Input$HierarchicalMultiCriterionInput(
-            value: <String>[studioId],
-            modifier: Enum$CriterionModifier.INCLUDES,
-          ),
-        ),
-      ),
-    ),
+  return repository.findScenes(
+    page: 1,
+    perPage: 24,
+    studioId: studioId,
   );
-
-  if (result.hasException) throw result.exception!;
-
-  final prefs = ref.read(sharedPreferencesProvider);
-  final storedServerUrl = prefs.getString('server_base_url')?.trim() ?? '';
-  final normalizedServerUrl = normalizeGraphqlServerUrl(storedServerUrl);
-  final endpoint = Uri.parse(
-    normalizedServerUrl.isEmpty
-        ? 'http://localhost:9999/graphql'
-        : normalizedServerUrl,
-  );
-
-  return result.parsedData!.findScenes.scenes
-      .map(
-        (scene) => StudioMediaItem(
-            sceneId: scene.id,
-            title: buildSceneDisplayTitle(
-              title: scene.title,
-              filePath: scene.files.isNotEmpty ? scene.files.first.path : null,
-              streamPath: scene.paths.stream,
-            ),
-            thumbnailUrl: resolveGraphqlMediaUrl(
-              rawUrl: scene.paths.screenshot ?? scene.paths.preview,
-              graphqlEndpoint: endpoint,
-            ),
-            width: scene.files.isNotEmpty ? scene.files.first.width : null,
-            height: scene.files.isNotEmpty ? scene.files.first.height : null,
-          ),
-      )
-      .where((item) => item.thumbnailUrl.isNotEmpty)
-      .toList();
 }
 
 @riverpod
@@ -85,61 +26,17 @@ class StudioMediaGrid extends _$StudioMediaGrid {
   String? _studioId;
 
   @override
-  FutureOr<List<StudioMediaItem>> build(String studioId) async {
+  FutureOr<List<Scene>> build(String studioId) async {
     ref.keepAlive();
     _studioId = studioId;
     _currentPage = 1;
     _hasMore = true;
-    return _fetchPage(studioId, _currentPage);
-  }
-
-  Future<List<StudioMediaItem>> _fetchPage(String studioId, int page) async {
-    final client = ref.read(graphqlClientProvider);
-
-    final result = await client.query$FindScenes(
-      Options$Query$FindScenes(
-        variables: Variables$Query$FindScenes(
-          filter: Input$FindFilterType(page: page, per_page: _perPage),
-          scene_filter: Input$SceneFilterType(
-            studios: Input$HierarchicalMultiCriterionInput(
-              value: <String>[studioId],
-              modifier: Enum$CriterionModifier.INCLUDES,
-            ),
-          ),
-        ),
-      ),
+    final repository = ref.read(sceneRepositoryProvider);
+    return repository.findScenes(
+      page: _currentPage,
+      perPage: _perPage,
+      studioId: studioId,
     );
-
-    if (result.hasException) throw result.exception!;
-
-    final prefs = ref.read(sharedPreferencesProvider);
-    final storedServerUrl = prefs.getString('server_base_url')?.trim() ?? '';
-    final normalizedServerUrl = normalizeGraphqlServerUrl(storedServerUrl);
-    final endpoint = Uri.parse(
-      normalizedServerUrl.isEmpty
-          ? 'http://localhost:9999/graphql'
-          : normalizedServerUrl,
-    );
-
-    return result.parsedData!.findScenes.scenes
-        .map(
-          (scene) => StudioMediaItem(
-            sceneId: scene.id,
-            title: buildSceneDisplayTitle(
-              title: scene.title,
-              filePath: scene.files.isNotEmpty ? scene.files.first.path : null,
-              streamPath: scene.paths.stream,
-            ),
-            thumbnailUrl: resolveGraphqlMediaUrl(
-              rawUrl: scene.paths.screenshot ?? scene.paths.preview,
-              graphqlEndpoint: endpoint,
-            ),
-            width: scene.files.isNotEmpty ? scene.files.first.width : null,
-            height: scene.files.isNotEmpty ? scene.files.first.height : null,
-          ),
-        )
-        .where((item) => item.thumbnailUrl.isNotEmpty)
-        .toList();
   }
 
   Future<void> fetchNextPage() async {
@@ -147,15 +44,20 @@ class StudioMediaGrid extends _$StudioMediaGrid {
 
     _isLoadingMore = true;
     try {
+      final repository = ref.read(sceneRepositoryProvider);
       final nextPage = _currentPage + 1;
-      final nextItems = await _fetchPage(_studioId!, nextPage);
+      final nextItems = await repository.findScenes(
+        page: nextPage,
+        perPage: _perPage,
+        studioId: _studioId,
+      );
 
       if (nextItems.isEmpty) {
         _hasMore = false;
       } else {
         _currentPage = nextPage;
         state = AsyncData([
-          ...(state.value ?? <StudioMediaItem>[]),
+          ...(state.value ?? <Scene>[]),
           ...nextItems,
         ]);
       }

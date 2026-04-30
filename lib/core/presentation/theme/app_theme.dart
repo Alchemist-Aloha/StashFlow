@@ -1,5 +1,7 @@
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'font_sizes.dart';
 
 /// Custom theme extension for StashFlow-specific semantic colors.
 ///
@@ -93,12 +95,97 @@ class AppColors extends ThemeExtension<AppColors> {
       ratingColor: Color.lerp(ratingColor, other.ratingColor, t)!,
     );
   }
+
+  /// Provides default fallback colors for cases where the theme extension is missing.
+  static AppColors fallback(Brightness brightness) {
+    final isDark = brightness == Brightness.dark;
+    return AppColors(
+      surface: isDark ? const Color(0xFF1C1B1F) : const Color(0xFFFBFCFD),
+      onSurface: isDark ? const Color(0xFFE6E1E5) : const Color(0xFF1C1B1F),
+      primary: const Color(0xFF0F766E),
+      onPrimary: Colors.white,
+      secondary: const Color(0xFF0F766E).withAlpha(128),
+      onSecondary: Colors.white,
+      error: const Color(0xFFB3261E),
+      onError: Colors.white,
+      surfaceVariant: isDark ? const Color(0xFF49454F) : const Color(0xFFE7E0EC),
+      onSurfaceVariant: isDark ? const Color(0xFFCAC4D0) : const Color(0xFF49454F),
+      outline: isDark ? const Color(0xFF938F99) : const Color(0xFF79747E),
+      cardBackground: isDark ? const Color(0xFF2B2930) : const Color(0xFFF3EDF7),
+      ratingColor: isDark ? Colors.amber.shade300 : Colors.amber.shade700,
+    );
+  }
 }
 
-/// The central design system for StashFlow.
-///
-/// This class defines standard constants for spacing and border radii,
-/// ensuring visual consistency across all pages and widgets.
+@immutable
+class AppDimensions extends ThemeExtension<AppDimensions> {
+  const AppDimensions({
+    required this.performerAvatarSize,
+    required this.cardTitleFontSize,
+    required this.fontSizeFactor,
+    required this.spacingSmall,
+    required this.spacingMedium,
+    required this.spacingLarge,
+    required this.buttonHeight,
+  });
+
+  final double performerAvatarSize;
+  final double cardTitleFontSize;
+  final double fontSizeFactor;
+  final double spacingSmall;
+  final double spacingMedium;
+  final double spacingLarge;
+  final double buttonHeight;
+
+  @override
+  AppDimensions copyWith({
+    double? performerAvatarSize,
+    double? cardTitleFontSize,
+    double? fontSizeFactor,
+    double? spacingSmall,
+    double? spacingMedium,
+    double? spacingLarge,
+    double? buttonHeight,
+  }) {
+    return AppDimensions(
+      performerAvatarSize: performerAvatarSize ?? this.performerAvatarSize,
+      cardTitleFontSize: cardTitleFontSize ?? this.cardTitleFontSize,
+      fontSizeFactor: fontSizeFactor ?? this.fontSizeFactor,
+      spacingSmall: spacingSmall ?? this.spacingSmall,
+      spacingMedium: spacingMedium ?? this.spacingMedium,
+      spacingLarge: spacingLarge ?? this.spacingLarge,
+      buttonHeight: buttonHeight ?? this.buttonHeight,
+    );
+  }
+
+  @override
+  AppDimensions lerp(ThemeExtension<AppDimensions>? other, double t) {
+    if (other is! AppDimensions) return this;
+    return AppDimensions(
+      performerAvatarSize:
+          lerpDouble(performerAvatarSize, other.performerAvatarSize, t)!,
+      cardTitleFontSize:
+          lerpDouble(cardTitleFontSize, other.cardTitleFontSize, t)!,
+      fontSizeFactor: lerpDouble(fontSizeFactor, other.fontSizeFactor, t)!,
+      spacingSmall: lerpDouble(spacingSmall, other.spacingSmall, t)!,
+      spacingMedium: lerpDouble(spacingMedium, other.spacingMedium, t)!,
+      spacingLarge: lerpDouble(spacingLarge, other.spacingLarge, t)!,
+      buttonHeight: lerpDouble(buttonHeight, other.buttonHeight, t)!,
+    );
+  }
+
+  /// Provides default fallback dimensions for cases where the theme extension is missing.
+  static const fallback = AppDimensions(
+    performerAvatarSize: 16.0,
+    cardTitleFontSize: 12.0,
+    fontSizeFactor: 1.0,
+    spacingSmall: 8.0,
+    spacingMedium: 16.0,
+    spacingLarge: 24.0,
+    buttonHeight: 48.0,
+  );
+}
+
 class AppTheme {
   /// Standard padding/margin for secondary elements (8dp).
   static const spacingSmall = 8.0;
@@ -129,7 +216,20 @@ class AppTheme {
     Brightness brightness,
     Color seedColor, {
     bool useTrueBlack = false,
+    double? cardTitleFontSize,
+    double? performerAvatarSize,
+    double fontSizeFactor = 1.0,
   }) {
+    final dims = AppDimensions(
+      performerAvatarSize: (performerAvatarSize ?? 16.0) * fontSizeFactor,
+      cardTitleFontSize: (cardTitleFontSize ?? 12.0) * fontSizeFactor,
+      fontSizeFactor: fontSizeFactor,
+      spacingSmall: 8.0 * fontSizeFactor,
+      spacingMedium: 16.0 * fontSizeFactor,
+      spacingLarge: 24.0 * fontSizeFactor,
+      buttonHeight: 48.0 * fontSizeFactor,
+    );
+
     final isDark = brightness == Brightness.dark;
     var colorScheme = ColorScheme.fromSeed(
       seedColor: seedColor,
@@ -151,38 +251,76 @@ class AppTheme {
       );
     }
 
+    final baseTextTheme = Typography.material2021(platform: defaultTargetPlatform)
+        .black
+        .apply(
+          bodyColor: colorScheme.onSurface,
+          displayColor: colorScheme.onSurface,
+          fontSizeFactor: fontSizeFactor,
+        );
+
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: colorScheme.surface,
-      textTheme: Typography.material2021(platform: defaultTargetPlatform)
-          .black
-          .apply(
-            bodyColor: colorScheme.onSurface,
-            displayColor: colorScheme.onSurface,
-          ),
+      textTheme: baseTextTheme.copyWith(
+        bodySmall: baseTextTheme.bodySmall?.copyWith(
+          fontSize: 12 * fontSizeFactor,
+        ),
+        labelMedium: baseTextTheme.labelMedium?.copyWith(
+          fontSize: 12 * fontSizeFactor,
+        ),
+      ),
       appBarTheme: AppBarTheme(
-        elevation: 0,
-        centerTitle: false,
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
-        titleTextStyle: TextStyle(
-          color: colorScheme.onSurface,
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-        ),
+        elevation: 0,
+        centerTitle: false,
       ),
       cardTheme: CardThemeData(
         elevation: 0,
-        color: colorScheme.surfaceContainerHighest,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radiusMedium),
+        ),
+        color: colorScheme.surfaceContainerHighest,
+        clipBehavior: Clip.antiAlias,
+      ),
+      chipTheme: ChipThemeData(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusSmall),
+        ),
+        backgroundColor: colorScheme.surfaceContainerHigh,
+        side: BorderSide.none,
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        elevation: 0,
+        backgroundColor: colorScheme.surface,
+        indicatorColor: colorScheme.primaryContainer,
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return IconThemeData(color: colorScheme.onPrimaryContainer);
+          }
+          return IconThemeData(color: colorScheme.onSurfaceVariant);
+        }),
+      ),
+      navigationRailTheme: NavigationRailThemeData(
+        backgroundColor: colorScheme.surface,
+        indicatorColor: colorScheme.primaryContainer,
+        selectedIconTheme: IconThemeData(color: colorScheme.onPrimaryContainer),
+        unselectedIconTheme: IconThemeData(color: colorScheme.onSurfaceVariant),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: colorScheme.inverseSurface,
+        contentTextStyle: TextStyle(color: colorScheme.onInverseSurface),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusSmall),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: colorScheme.surfaceContainerHighest,
+        fillColor: colorScheme.surfaceContainerHigh,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusMedium),
           borderSide: BorderSide.none,
@@ -197,11 +335,8 @@ class AppTheme {
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: spacingMedium,
-          vertical: spacingMedium,
+          vertical: spacingSmall,
         ),
-      ),
-      chipTheme: ChipThemeData(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: colorScheme.primaryContainer,
@@ -211,6 +346,10 @@ class AppTheme {
         style: SegmentedButton.styleFrom(
           selectedBackgroundColor: colorScheme.primaryContainer,
           selectedForegroundColor: colorScheme.onPrimaryContainer,
+          padding: EdgeInsets.symmetric(
+            horizontal: spacingSmall,
+            vertical: spacingSmall / 2,
+          ),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
@@ -250,6 +389,18 @@ class AppTheme {
         ),
       ),
       extensions: [
+        FontSizes(
+          tiny: 9 * fontSizeFactor,
+          xSmall: 10 * fontSizeFactor,
+          small: 11 * fontSizeFactor,
+          regular: 12 * fontSizeFactor,
+          medium: 13 * fontSizeFactor,
+          body: 14 * fontSizeFactor,
+          large: 16 * fontSizeFactor,
+          xLarge: 18 * fontSizeFactor,
+          title: 20 * fontSizeFactor,
+          display: 24 * fontSizeFactor,
+        ),
         AppColors(
           surface: colorScheme.surface,
           onSurface: colorScheme.onSurface,
@@ -265,6 +416,7 @@ class AppTheme {
           cardBackground: colorScheme.surfaceContainerHighest,
           ratingColor: isDark ? Colors.amber.shade300 : Colors.amber.shade700,
         ),
+        dims,
       ],
     );
   }
@@ -282,8 +434,30 @@ class AppTheme {
 /// Extension on [BuildContext] for ergonomic access to semantic colors and text styles.
 extension AppThemeX on BuildContext {
   /// Access to the [AppColors] custom theme extension.
-  AppColors get colors => Theme.of(this).extension<AppColors>()!;
+  AppColors get colors =>
+      Theme.of(this).extension<AppColors>() ??
+      AppColors.fallback(Theme.of(this).brightness);
+
+  /// Access to the [AppDimensions] custom theme extension.
+  AppDimensions get dimensions =>
+      Theme.of(this).extension<AppDimensions>() ?? AppDimensions.fallback;
 
   /// Access to the standard [TextTheme].
   TextTheme get textTheme => Theme.of(this).textTheme;
+
+  /// Access to the configured `FontSizes` ThemeExtension.
+  FontSizes get fontSizes =>
+      Theme.of(this).extension<FontSizes>() ??
+      FontSizes(
+        tiny: 9,
+        xSmall: 10,
+        small: 11,
+        regular: 12,
+        medium: 13,
+        body: 14,
+        large: 16,
+        xLarge: 18,
+        title: 20,
+        display: 24,
+      );
 }

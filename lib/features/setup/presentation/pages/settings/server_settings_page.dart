@@ -119,13 +119,17 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.dns_rounded, size: 64, color: Colors.grey),
-                  const SizedBox(height: 16),
+                  Icon(
+                    Icons.dns_rounded,
+                    size: 64 * context.dimensions.fontSizeFactor,
+                    color: Colors.grey,
+                  ),
+                  SizedBox(height: context.dimensions.spacingMedium),
                   Text(
                     l10n.settings_server_profile_empty,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   ElevatedButton.icon(
                     onPressed: () => _showProfileDrawer(),
                     icon: const Icon(Icons.add),
@@ -135,7 +139,7 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
               ),
             )
           : ListView.builder(
-              padding: const EdgeInsets.all(AppTheme.spacingMedium),
+              padding: EdgeInsets.all(context.dimensions.spacingMedium),
               itemCount: profiles.length,
               itemBuilder: (context, index) {
                 final profile = profiles[index];

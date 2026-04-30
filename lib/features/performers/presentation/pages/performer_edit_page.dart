@@ -315,23 +315,23 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppTheme.spacingMedium),
+        padding: EdgeInsets.all(context.dimensions.spacingMedium),
         child: Column(
           children: [
             if (_scrapedImage != null)
               Padding(
-                padding: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
+                padding: EdgeInsets.only(bottom: context.dimensions.spacingMedium),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
                   child: _scrapedImage!.startsWith('data:')
                       ? Image.memory(base64Decode(_scrapedImage!.split(',').last), height: 200, width: double.infinity, fit: BoxFit.cover)
                       : Image.network(_scrapedImage!, height: 200, width: double.infinity, fit: BoxFit.cover),
                 ),
               ),
             TextField(controller: _nameController, decoration: InputDecoration(labelText: context.l10n.common_name, border: const OutlineInputBorder())),
-            const SizedBox(height: 16),
+            SizedBox(height: context.dimensions.spacingMedium),
             TextField(controller: _disambiguationController, decoration: InputDecoration(labelText: context.l10n.performers_field_disambiguation, border: const OutlineInputBorder())),
-            const SizedBox(height: 16),
+            SizedBox(height: context.dimensions.spacingMedium),
             DropdownButtonFormField<String>(
               initialValue: _selectedGender,
               decoration: InputDecoration(labelText: context.l10n.performers_gender, border: const OutlineInputBorder()),
@@ -345,7 +345,7 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
               ],
               onChanged: (val) => setState(() => _selectedGender = val),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.dimensions.spacingMedium),
             Row(
               children: [
                 Expanded(
@@ -359,7 +359,7 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
                     },
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: context.dimensions.spacingMedium),
                 Expanded(
                   child: TextField(
                     readOnly: true,
@@ -373,21 +373,21 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.dimensions.spacingMedium),
             Row(
               children: [
                 Expanded(child: TextField(controller: _heightController, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: context.l10n.performers_field_height_cm, border: const OutlineInputBorder()))),
-                const SizedBox(width: 16),
+                SizedBox(width: context.dimensions.spacingMedium),
                 Expanded(child: TextField(controller: _weightController, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: context.l10n.performers_field_weight_kg, border: const OutlineInputBorder()))),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.dimensions.spacingMedium),
             TextField(controller: _measurementsController, decoration: InputDecoration(labelText: context.l10n.performers_field_measurements, border: const OutlineInputBorder())),
-            const SizedBox(height: 16),
+            SizedBox(height: context.dimensions.spacingMedium),
             TextField(controller: _fakeTitsController, decoration: InputDecoration(labelText: context.l10n.performers_field_fake_tits, border: const OutlineInputBorder())),
-            const SizedBox(height: 16),
+            SizedBox(height: context.dimensions.spacingMedium),
             TextField(controller: _penisLengthController, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: context.l10n.performers_field_penis_length, border: const OutlineInputBorder())),
-            const SizedBox(height: 16),
+            SizedBox(height: context.dimensions.spacingMedium),
             DropdownButtonFormField<String>(
               initialValue: _selectedCircumcised,
               decoration: InputDecoration(labelText: context.l10n.performers_circumcised, border: const OutlineInputBorder()),
@@ -397,35 +397,35 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
               ],
               onChanged: (val) => setState(() => _selectedCircumcised = val),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.dimensions.spacingMedium),
             TextField(controller: _ethnicityController, decoration: InputDecoration(labelText: context.l10n.performers_field_ethnicity, border: const OutlineInputBorder())),
-            const SizedBox(height: 16),
+            SizedBox(height: context.dimensions.spacingMedium),
             TextField(controller: _countryController, decoration: InputDecoration(labelText: context.l10n.performers_field_country, border: const OutlineInputBorder())),
-            const SizedBox(height: 16),
+            SizedBox(height: context.dimensions.spacingMedium),
             Row(
               children: [
                 Expanded(child: TextField(controller: _eyeColorController, decoration: InputDecoration(labelText: context.l10n.performers_field_eye_color, border: const OutlineInputBorder()))),
-                const SizedBox(width: 16),
+                SizedBox(width: context.dimensions.spacingMedium),
                 Expanded(child: TextField(controller: _hairColorController, decoration: InputDecoration(labelText: context.l10n.performers_field_hair_color, border: const OutlineInputBorder()))),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.dimensions.spacingMedium),
             Row(
               children: [
                 Expanded(child: TextField(controller: _careerStartController, decoration: InputDecoration(labelText: context.l10n.performers_field_career_start, border: const OutlineInputBorder()))),
-                const SizedBox(width: 16),
+                SizedBox(width: context.dimensions.spacingMedium),
                 Expanded(child: TextField(controller: _careerEndController, decoration: InputDecoration(labelText: context.l10n.performers_field_career_end, border: const OutlineInputBorder()))),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.dimensions.spacingMedium),
             TextField(controller: _tattoosController, decoration: InputDecoration(labelText: context.l10n.performers_field_tattoos, border: const OutlineInputBorder())),
-            const SizedBox(height: 16),
+            SizedBox(height: context.dimensions.spacingMedium),
             TextField(controller: _piercingsController, decoration: InputDecoration(labelText: context.l10n.performers_field_piercings, border: const OutlineInputBorder())),
-            const SizedBox(height: 16),
+            SizedBox(height: context.dimensions.spacingMedium),
             TextField(controller: _detailsController, maxLines: 5, decoration: InputDecoration(labelText: context.l10n.common_details, border: const OutlineInputBorder())),
-            const SizedBox(height: 16),
+            SizedBox(height: context.dimensions.spacingMedium),
             _buildListField(context.l10n.performers_field_aliases, _aliasControllers, () => setState(() => _aliasControllers.add(TextEditingController())), (i) => setState(() { _aliasControllers[i].dispose(); _aliasControllers.removeAt(i); if (_aliasControllers.isEmpty) _aliasControllers.add(TextEditingController()); })),
-            const SizedBox(height: 16),
+            SizedBox(height: context.dimensions.spacingMedium),
             _buildListField(context.l10n.scenes_field_urls, _urlControllers, () => setState(() => _urlControllers.add(TextEditingController())), (i) => setState(() { _urlControllers[i].dispose(); _urlControllers.removeAt(i); if (_urlControllers.isEmpty) _urlControllers.add(TextEditingController()); })),
           ],
         ),
@@ -439,7 +439,7 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
       children: [
         Row(children: [Text(label, style: Theme.of(context).textTheme.titleMedium), const Spacer(), IconButton(tooltip: 'Add', onPressed: onAdd, icon: const Icon(Icons.add_circle_outline))]),
         ...controllers.asMap().entries.map((e) => Padding(
-          padding: const EdgeInsets.only(bottom: 8),
+          padding: EdgeInsets.only(bottom: context.dimensions.spacingSmall),
           child: Row(children: [
             Expanded(child: TextField(controller: e.value, decoration: InputDecoration(labelText: label, border: const OutlineInputBorder()))),
             IconButton(tooltip: 'Remove', onPressed: () => onRemove(e.key), icon: const Icon(Icons.remove_circle_outline)),

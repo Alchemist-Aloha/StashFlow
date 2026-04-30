@@ -12,6 +12,21 @@ class AppLocalizationsKo extends AppLocalizations {
   String get appTitle => 'StashFlow';
 
   @override
+  String get common_token => 'Token';
+
+  @override
+  String get filter_value => '값';
+
+  @override
+  String get common_yes => 'Yes';
+
+  @override
+  String get common_no => 'No';
+
+  @override
+  String get common_clear_history => 'Clear History';
+
+  @override
   String get nav_scenes => '장면';
 
   @override
@@ -309,6 +324,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get common_play => '재생';
+
+  @override
+  String get common_refresh => 'Refresh';
 
   @override
   String get common_close => '닫기';
@@ -727,9 +745,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get filter_modifier => '수정자';
 
   @override
-  String get filter_value => '값';
-
-  @override
   String get filter_equals => '같음';
 
   @override
@@ -970,6 +985,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settings_appearance_custom_hex_helper => '8자리 ARGB 헥스 코드를 입력하세요';
+
+  @override
+  String get settings_appearance_font_size => 'Global UI Scale';
+
+  @override
+  String get settings_appearance_font_size_subtitle =>
+      'Scale typography and spacing proportionally';
 
   @override
   String get settings_interface_title => '인터페이스 설정';
@@ -1259,6 +1281,22 @@ class AppLocalizationsKo extends AppLocalizations {
       '꺼져 있으면 재생 시 paths.stream을 직접 사용합니다';
 
   @override
+  String get settings_playback_end_behavior => 'Play End Behavior';
+
+  @override
+  String get settings_playback_end_behavior_subtitle =>
+      'What to do when current playback ends';
+
+  @override
+  String get settings_playback_end_behavior_stop => 'Stop';
+
+  @override
+  String get settings_playback_end_behavior_loop => 'Loop current scene';
+
+  @override
+  String get settings_playback_end_behavior_next => 'Play next scene';
+
+  @override
   String get settings_playback_autoplay => '다음 장면 자동 재생';
 
   @override
@@ -1420,6 +1458,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settings_support_github_error => 'GitHub 링크를 열 수 없습니다';
+
+  @override
+  String get settings_support_issues => 'Report an Issue';
+
+  @override
+  String get settings_support_issues_subtitle =>
+      'Help improve StashFlow by reporting bugs';
 
   @override
   String get settings_develop_title => '개발';
@@ -1679,4 +1724,156 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get scrape_results_scraped => '스크랩된 결과';
+
+  @override
+  String get stats_refresh_statistics => 'Refresh Statistics';
+
+  @override
+  String get stats_library_stats => 'Library Stats';
+
+  @override
+  String get stats_stash_glance => 'Your Stash at a glance';
+
+  @override
+  String get stats_content => 'Content';
+
+  @override
+  String get stats_organization => 'Organization';
+
+  @override
+  String get stats_activity => 'Activity';
+
+  @override
+  String get stats_scenes => 'Scenes';
+
+  @override
+  String get stats_galleries => 'Galleries';
+
+  @override
+  String get stats_performers => 'Performers';
+
+  @override
+  String get stats_studios => 'Studios';
+
+  @override
+  String get stats_groups => 'Groups';
+
+  @override
+  String get stats_tags => 'Tags';
+
+  @override
+  String get stats_total_plays => 'Total Plays';
+
+  @override
+  String stats_unique_items(int count) {
+    return '$count unique items';
+  }
+
+  @override
+  String get stats_total_o_count => 'Total O-Count';
+
+  @override
+  String get cast_airplay_pairing => 'AirPlay Pairing';
+
+  @override
+  String get cast_enter_pin => 'Enter the 4-digit PIN shown on your TV';
+
+  @override
+  String get cast_pair => 'Pair';
+
+  @override
+  String cast_connecting_to(String deviceName) {
+    return 'Connecting to $deviceName...';
+  }
+
+  @override
+  String cast_casting_to(String deviceName) {
+    return 'Casting to $deviceName';
+  }
+
+  @override
+  String cast_pairing_failed(String error) {
+    return 'Pairing failed: $error';
+  }
+
+  @override
+  String cast_failed_to_cast(String error) {
+    return 'Failed to cast: $error';
+  }
+
+  @override
+  String get cast_searching => 'Searching for devices...';
+
+  @override
+  String get cast_cast_to_device => 'Cast to Device';
+
+  @override
+  String get settings_storage_images => 'Images';
+
+  @override
+  String get settings_storage_videos => 'Videos';
+
+  @override
+  String get settings_storage_database => 'Database';
+
+  @override
+  String get settings_storage_clearing_image => 'Clearing image cache...';
+
+  @override
+  String get settings_storage_clearing_video => 'Clearing video cache...';
+
+  @override
+  String get settings_storage_clearing_database => 'Clearing database cache...';
+
+  @override
+  String get settings_storage_cleared_image => 'Image cache cleared';
+
+  @override
+  String get settings_storage_cleared_video => 'Video cache cleared';
+
+  @override
+  String get settings_storage_cleared_database => 'Database cache cleared';
+
+  @override
+  String get settings_storage_clear => 'Clear';
+
+  @override
+  String get settings_storage_error_loading => 'Error loading sizes';
+
+  @override
+  String settings_storage_mb(num value) {
+    return '$value MB';
+  }
+
+  @override
+  String settings_storage_gb(num value) {
+    return '$value GB';
+  }
+
+  @override
+  String get settings_storage_100_mb => '100 MB';
+
+  @override
+  String get settings_storage_500_mb => '500 MB';
+
+  @override
+  String get settings_storage_1_gb => '1 GB';
+
+  @override
+  String get settings_storage_2_gb => '2 GB';
+
+  @override
+  String get settings_storage_unlimited => 'Unlimited';
+
+  @override
+  String get settings_storage_limits => 'Limits';
+
+  @override
+  String get settings_storage_limits_subtitle => 'Set maximum cache sizes';
+
+  @override
+  String get settings_storage_max_image_cache => 'Max Image Cache (MB)';
+
+  @override
+  String get settings_storage_max_video_cache => 'Max Video Cache (MB)';
 }

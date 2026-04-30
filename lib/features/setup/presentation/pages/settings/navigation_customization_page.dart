@@ -15,7 +15,7 @@ class NavigationCustomizationPage extends ConsumerWidget {
     return SettingsPageShell(
       title: context.l10n.settings_interface_customize_tabs,
       child: ReorderableListView(
-        padding: const EdgeInsets.all(AppTheme.spacingMedium),
+        padding: EdgeInsets.all(context.dimensions.spacingMedium),
         onReorder: (oldIndex, newIndex) {
           ref.read(navigationTabsProvider.notifier).reorder(oldIndex, newIndex);
         },
@@ -23,7 +23,10 @@ class NavigationCustomizationPage extends ConsumerWidget {
           for (final tab in tabs)
             ListTile(
               key: ValueKey(tab.type.id),
-              leading: const Icon(Icons.drag_handle),
+              leading: Icon(
+                Icons.drag_handle,
+                size: 24 * context.dimensions.fontSizeFactor,
+              ),
               title: Text(tab.type.label),
               trailing: Switch.adaptive(
                 value: tab.visible,

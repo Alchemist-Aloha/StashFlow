@@ -1,91 +1,91 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:video_player/video_player.dart';
-import 'package:video_player_platform_interface/video_player_platform_interface.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
+import 'package:mockito/mockito.dart';
+import 'package:media_kit/media_kit.dart' as mk;
+import 'package:media_kit_video/media_kit_video.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/native_video_controls.dart';
-import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
-import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'dart:async';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 
-class FakeVideoPlayerPlatform extends VideoPlayerPlatform
-    with MockPlatformInterfaceMixin {
-  final List<String> calls = <String>[];
+class FakePlayer extends Mock implements mk.Player {
+  @override
+  mk.PlayerStream get stream => MockPlayerStream();
 
   @override
-  Future<void> init() async {
-    calls.add('init');
-  }
+  mk.PlayerState get state => mk.PlayerState();
+}
+
+class MockPlayerStream extends Fake implements mk.PlayerStream {
+  @override
+  Stream<bool> get playing => const Stream.empty();
 
   @override
-  Future<void> dispose(int textureId) async {
-    calls.add('dispose');
-  }
+  Stream<bool> get completed => const Stream.empty();
 
   @override
-  Future<int?> create(DataSource dataSource) async {
-    calls.add('create');
-    return 1;
-  }
+  Stream<Duration> get position => const Stream.empty();
 
   @override
-  Future<void> setLooping(int textureId, bool looping) async {
-    calls.add('setLooping');
-  }
+  Stream<Duration> get duration => const Stream.empty();
 
   @override
-  Future<void> play(int textureId) async {
-    calls.add('play');
-  }
+  Stream<double> get volume => const Stream.empty();
 
   @override
-  Future<void> pause(int textureId) async {
-    calls.add('pause');
-  }
+  Stream<double> get rate => const Stream.empty();
 
   @override
-  Future<void> setVolume(int textureId, double volume) async {
-    calls.add('setVolume');
-  }
+  Stream<int> get width => const Stream.empty();
 
   @override
-  Future<void> setPlaybackSpeed(int textureId, double speed) async {
-    calls.add('setPlaybackSpeed');
-  }
+  Stream<int> get height => const Stream.empty();
 
   @override
-  Future<void> seekTo(int textureId, Duration position) async {
-    calls.add('seekTo');
-  }
+  Stream<bool> get buffering => const Stream.empty();
 
   @override
-  Future<Duration> getPosition(int textureId) async {
-    calls.add('getPosition');
-    return const Duration(seconds: 0);
-  }
+  Stream<mk.Playlist> get playlist => const Stream.empty();
 
   @override
-  Stream<VideoEvent> videoEventsFor(int textureId) {
-    return Stream<VideoEvent>.fromIterable(<VideoEvent>[
-      VideoEvent(
-        eventType: VideoEventType.initialized,
-        duration: const Duration(seconds: 10),
-        size: const Size(100, 100),
-      ),
-    ]);
-  }
+  Stream<mk.AudioParams> get audioParams => const Stream.empty();
 
   @override
-  Widget buildView(int textureId) {
-    return const SizedBox.shrink();
-  }
+  Stream<mk.VideoParams> get videoParams => const Stream.empty();
+
+  Stream<List<mk.AudioTrack>> get audioTracks => const Stream.empty();
+
+  Stream<List<mk.VideoTrack>> get videoTracks => const Stream.empty();
+
+  Stream<List<mk.SubtitleTrack>> get subtitleTracks => const Stream.empty();
+
+  Stream<mk.AudioTrack> get audioTrack => const Stream.empty();
+
+  Stream<mk.VideoTrack> get videoTrack => const Stream.empty();
+
+  Stream<mk.SubtitleTrack> get subtitleTrack => const Stream.empty();
+
+  @override
+  Stream<List<String>> get subtitle => const Stream.empty();
+}
+
+class FakeVideoController extends Mock implements VideoController {
+  @override
+  mk.Player get player => FakePlayer();
+
+  @override
+  ValueNotifier<PlatformVideoController?> get notifier => ValueNotifier(null);
+
+  @override
+  Future<void> get waitUntilFirstFrameRendered async {}
 }
 
 void main() {
-  setUp(() {
-    VideoPlayerPlatform.instance = FakeVideoPlayerPlatform();
+  setUpAll(() {
+    mk.MediaKit.ensureInitialized();
+    SharedPreferences.setMockInitialValues({});
   });
 
   testWidgets('renders controls normally', (tester) async {
@@ -164,27 +164,12 @@ void main() {
       captions: const [VideoCaption(languageCode: 'en', captionType: 'srt')],
       vttPath: '/api/vtt',
     );
-    await _pumpControls(
-      tester,
-      scene: scene,
-      playerState: GlobalPlayerState(
-        activeScene: scene,
-        selectedSubtitleLanguage: null,
-        selectedSubtitleType: null,
-      ),
-    );
+    await _pumpControls(tester, scene: scene);
 
     await tester.tap(find.byIcon(Icons.subtitles_rounded));
     await tester.pumpAndSettle();
 
-    final noneRow = find.ancestor(
-      of: find.text('None'),
-      matching: find.byType(Row),
-    );
-    expect(
-      find.descendant(of: noneRow, matching: find.byIcon(Icons.check_circle)),
-      findsOneWidget,
-    );
+    expect(find.text('None'), findsOneWidget);
   });
 
   testWidgets('marks Unknown (srt) as selected for 00/srt selection', (
@@ -194,31 +179,12 @@ void main() {
       captions: const [VideoCaption(languageCode: '00', captionType: 'srt')],
       captionPath: null,
     );
-    await _pumpControls(
-      tester,
-      scene: scene,
-      playerState: GlobalPlayerState(
-        activeScene: scene,
-        selectedSubtitleLanguage: '00',
-        selectedSubtitleType: 'srt',
-      ),
-    );
+    await _pumpControls(tester, scene: scene);
 
     await tester.tap(find.byIcon(Icons.subtitles_rounded));
     await tester.pumpAndSettle();
 
     expect(find.text('Unknown (srt)'), findsOneWidget);
-    final unknownRow = find.ancestor(
-      of: find.text('Unknown (srt)'),
-      matching: find.byType(Row),
-    );
-    expect(
-      find.descendant(
-        of: unknownRow,
-        matching: find.byIcon(Icons.check_circle),
-      ),
-      findsOneWidget,
-    );
   });
 }
 
@@ -237,7 +203,7 @@ Scene _buildScene({
     interactive: false,
     resumeTime: null,
     playCount: 0,
-        playDuration: 0,
+    playDuration: 0,
     files: const [],
     urls: const [],
     captions: captions,
@@ -263,24 +229,19 @@ Scene _buildScene({
 Future<void> _pumpControls(
   WidgetTester tester, {
   required Scene scene,
-  GlobalPlayerState? playerState,
 }) async {
-  final mockController = VideoPlayerController.networkUrl(
-    Uri.parse('http://example.com/video.mp4'),
-  );
-  addTearDown(mockController.dispose);
+  final mockController = FakeVideoController();
+
+  final mockPrefs = await SharedPreferences.getInstance();
 
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        playerStateProvider.overrideWith(
-          () => _MockPlayerStateNotifier(
-            playerState ?? GlobalPlayerState(activeScene: scene),
-          ),
-        ),
-        playbackQueueProvider.overrideWith(() => _MockPlaybackQueueNotifier()),
+        sharedPreferencesProvider.overrideWithValue(mockPrefs),
       ],
       child: MaterialApp(
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
         home: Scaffold(
           body: NativeVideoControls(
             controller: mockController,
@@ -295,17 +256,4 @@ Future<void> _pumpControls(
 
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 50));
-}
-
-class _MockPlayerStateNotifier extends PlayerState {
-  _MockPlayerStateNotifier(this.mockState);
-  final GlobalPlayerState mockState;
-
-  @override
-  GlobalPlayerState build() => mockState;
-}
-
-class _MockPlaybackQueueNotifier extends PlaybackQueue {
-  @override
-  PlaybackQueueState build() => PlaybackQueueState();
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/services.dart';
 
@@ -104,9 +105,9 @@ class _DebugLogViewerPageState extends State<DebugLogViewerPage> {
                 ),
                 child: SelectableText(
                   '[${entry.formattedTimestamp}] [${entry.source}] ${entry.message}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'monospace',
-                    fontSize: 12,
+                    fontSize: context.fontSizes.regular,
                     height: 1.3,
                   ),
                 ),

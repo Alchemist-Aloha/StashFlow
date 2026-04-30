@@ -12,6 +12,23 @@ class GroupDetailsPage extends ConsumerWidget {
 
   const GroupDetailsPage({required this.groupId, super.key});
 
+  Widget _buildSectionContainer(BuildContext context, Widget child) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
+      elevation: 0,
+      color: Theme.of(context).colorScheme.primaryContainer.withValues(
+        alpha: 0.1,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.spacingMedium),
+        child: child,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final groupAsync = ref.watch(groupDetailsProvider(groupId));
@@ -79,23 +96,28 @@ class GroupDetailsPage extends ConsumerWidget {
                             ),
                         ],
                       ),
+                      const SizedBox(height: AppTheme.spacingMedium),
                       if (group.synopsis != null &&
                           group.synopsis!.isNotEmpty) ...[
-                        Divider(
-                          height: 32,
-                          color: context.colors.outline.withValues(alpha: 0.2),
-                        ),
-                        SectionHeader(
-                          title: context.l10n.details_synopsis,
-                          padding: EdgeInsets.zero,
-                        ),
-                        const SizedBox(height: AppTheme.spacingSmall),
-                        Text(
-                          group.synopsis!,
-                          style: context.textTheme.bodyMedium?.copyWith(
-                            color: context.colors.onSurface.withValues(
-                              alpha: 0.8,
-                            ),
+                        _buildSectionContainer(
+                          context,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SectionHeader(
+                                title: context.l10n.details_synopsis,
+                                padding: EdgeInsets.zero,
+                              ),
+                              const SizedBox(height: AppTheme.spacingSmall),
+                              Text(
+                                group.synopsis!,
+                                style: context.textTheme.bodyMedium?.copyWith(
+                                  color: context.colors.onSurface.withValues(
+                                    alpha: 0.8,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],

@@ -16,7 +16,6 @@ import '../widgets/gallery_filter_panel.dart';
 import '../../domain/entities/gallery_filter.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
-import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
@@ -151,7 +150,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
           builder: (context, setModalState) {
             return SafeArea(
               child: Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingLarge),
+                padding: EdgeInsets.all(context.dimensions.spacingLarge),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,12 +175,12 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: AppTheme.spacingMedium),
+                    SizedBox(height: context.dimensions.spacingMedium),
                     Text(
                       context.l10n.common_sort_method,
                       style: context.textTheme.labelLarge,
                     ),
-                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     Flexible(
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
@@ -192,12 +191,12 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
                         child: Scrollbar(
                           thumbVisibility: true,
                           child: SingleChildScrollView(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: AppTheme.spacingSmall,
+                            padding: EdgeInsets.symmetric(
+                              vertical: context.dimensions.spacingSmall,
                             ),
                             child: Wrap(
-                              spacing: AppTheme.spacingSmall,
-                              runSpacing: AppTheme.spacingSmall,
+                              spacing: context.dimensions.spacingSmall,
+                              runSpacing: context.dimensions.spacingSmall,
                               children: _GallerySortOption.values
                                   .map(
                                     (option) => ChoiceChip(
@@ -217,12 +216,12 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingMedium),
+                    SizedBox(height: context.dimensions.spacingMedium),
                     Text(
                       context.l10n.common_direction,
                       style: context.textTheme.labelLarge,
                     ),
-                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     SizedBox(
                       width: double.infinity,
                       child: SegmentedButton<bool>(
@@ -243,7 +242,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
                             setModalState(() => tempDescending = value.first),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingLarge),
+                    SizedBox(height: context.dimensions.spacingLarge),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -258,14 +257,14 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.colors.primary,
                           foregroundColor: context.colors.onPrimary,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppTheme.spacingMedium,
+                          padding: EdgeInsets.symmetric(
+                            vertical: context.dimensions.spacingMedium,
                           ),
                         ),
                         child: Text(context.l10n.common_apply_sort),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     SizedBox(
                       width: double.infinity,
                       child: TextButton(
@@ -288,14 +287,14 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
                           }
                         },
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppTheme.spacingMedium,
+                          padding: EdgeInsets.symmetric(
+                            vertical: context.dimensions.spacingMedium,
                           ),
                         ),
                         child: Text(context.l10n.common_save_default),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingMedium),
+                    SizedBox(height: context.dimensions.spacingMedium),
                   ],
                 ),
               ),
@@ -315,21 +314,6 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
     );
   }
 
-  String? _getThumbnailUrl(Gallery gallery) {
-    final prefs = ref.read(sharedPreferencesProvider);
-    final storedServerUrl = prefs.getString('server_base_url')?.trim() ?? '';
-    final normalizedServerUrl = normalizeGraphqlServerUrl(storedServerUrl);
-    final endpoint = Uri.parse(
-      normalizedServerUrl.isEmpty
-          ? 'http://localhost:9999/graphql'
-          : normalizedServerUrl,
-    );
-    return resolveGraphqlMediaUrl(
-      rawUrl: gallery.coverPath ?? '/gallery/${gallery.id}/thumbnail',
-      graphqlEndpoint: endpoint,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final galleriesAsync = ref.watch(galleryListProvider);
@@ -339,13 +323,26 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
       galleryFilterStateProvider.select((s) => s != GalleryFilter.empty()),
     );
     final organizedFilter = ref.watch(galleryOrganizedOnlyProvider);
-    final hasActiveFilters = filterActive || organizedFilter != OrganizedFilter.all;
+    final hasActiveFilters =
+        filterActive || organizedFilter != OrganizedFilter.all;
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
+
+    // ⚡ Bolt: Hoist server endpoint calculation out of the itemBuilder/imageUrlBuilder loop.
+    // Why: Previously, _getThumbnailUrl was parsing the server URL and URI for every single item,
+    // which is expensive O(N) work during scroll events.
+    // Impact: Drastically reduces URI parsing overhead during list scrolling.
+    final serverUrl = ref.watch(serverUrlProvider);
+    final endpoint = Uri.parse(
+      serverUrl.isEmpty ? 'http://localhost:9999/graphql' : serverUrl,
+    );
 
     return ListPageScaffold<Gallery>(
       title: context.l10n.galleries_title,
       scrollController: ref.watch(galleryScrollControllerProvider),
-      imageUrlBuilder: _getThumbnailUrl,
+      imageUrlBuilder: (gallery) => resolveGraphqlMediaUrl(
+        rawUrl: gallery.coverPath ?? '/gallery/${gallery.id}/thumbnail',
+        graphqlEndpoint: endpoint,
+      ),
       actions: [
         Stack(
           children: [
@@ -356,15 +353,20 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
             ),
             if (_sortOption != _GallerySortOption.path || _sortDescending)
               Positioned(
-                right: 8,
-                top: 8,
+                right: context.dimensions.spacingSmall,
+                top: context.dimensions.spacingSmall,
                 child: Container(
-                  padding: const EdgeInsets.all(2),
+                  padding: EdgeInsets.all(
+                    context.dimensions.spacingSmall * 0.25,
+                  ),
                   decoration: BoxDecoration(
                     color: context.colors.secondary,
                     shape: BoxShape.circle,
                   ),
-                  constraints: const BoxConstraints(minWidth: 8, minHeight: 8),
+                  constraints: BoxConstraints(
+                    minWidth: context.dimensions.spacingSmall,
+                    minHeight: context.dimensions.spacingSmall,
+                  ),
                 ),
               ),
           ],
@@ -378,15 +380,20 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
             ),
             if (hasActiveFilters)
               Positioned(
-                right: 8,
-                top: 8,
+                right: context.dimensions.spacingSmall,
+                top: context.dimensions.spacingSmall,
                 child: Container(
-                  padding: const EdgeInsets.all(2),
+                  padding: EdgeInsets.all(
+                    context.dimensions.spacingSmall * 0.25,
+                  ),
                   decoration: BoxDecoration(
                     color: context.colors.secondary,
                     shape: BoxShape.circle,
                   ),
-                  constraints: const BoxConstraints(minWidth: 8, minHeight: 8),
+                  constraints: BoxConstraints(
+                    minWidth: context.dimensions.spacingSmall,
+                    minHeight: context.dimensions.spacingSmall,
+                  ),
                 ),
               ),
           ],
@@ -408,6 +415,8 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
           ref.read(galleryListProvider.notifier).fetchNextPage(),
       onPageSizeChanged: (pageSize) =>
           ref.read(galleryListProvider.notifier).setPerPage(pageSize),
+      loadingItemBuilder: (context, isGrid, index) =>
+          GalleryCard.skeleton(isGrid: isGrid, useMasonry: isGrid),
       gridDelegate: isGridView
           ? GridUtils.createDelegate(crossAxisCount: gridColumns ?? 2)
           : null,
@@ -418,7 +427,10 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
             gallery: gallery,
             isGrid: isGridView,
             useMasonry: isGridView,
-            thumbnailUrl: _getThumbnailUrl(gallery),
+            thumbnailUrl: resolveGraphqlMediaUrl(
+              rawUrl: gallery.coverPath ?? '/gallery/${gallery.id}/thumbnail',
+              graphqlEndpoint: endpoint,
+            ),
             memCacheWidth: memCacheWidth,
             onTap: () {
               ref

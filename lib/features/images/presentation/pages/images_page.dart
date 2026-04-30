@@ -2,7 +2,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
@@ -155,7 +154,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
           builder: (context, setModalState) {
             return SafeArea(
               child: Padding(
-                padding: const EdgeInsets.all(AppTheme.spacingLarge),
+                padding: EdgeInsets.all(context.dimensions.spacingLarge),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,12 +179,12 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: AppTheme.spacingMedium),
+                    SizedBox(height: context.dimensions.spacingMedium),
                     Text(
                       context.l10n.common_sort_method,
                       style: context.textTheme.labelLarge,
                     ),
-                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     Flexible(
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
@@ -196,12 +195,12 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                         child: Scrollbar(
                           thumbVisibility: true,
                           child: SingleChildScrollView(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: AppTheme.spacingSmall,
+                            padding: EdgeInsets.symmetric(
+                              vertical: context.dimensions.spacingSmall,
                             ),
                             child: Wrap(
-                              spacing: AppTheme.spacingSmall,
-                              runSpacing: AppTheme.spacingSmall,
+                              spacing: context.dimensions.spacingSmall,
+                              runSpacing: context.dimensions.spacingSmall,
                               children: _ImageSortOption.values
                                   .map(
                                     (option) => ChoiceChip(
@@ -221,12 +220,12 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingMedium),
+                    SizedBox(height: context.dimensions.spacingMedium),
                     Text(
                       context.l10n.common_direction,
                       style: context.textTheme.labelLarge,
                     ),
-                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     SizedBox(
                       width: double.infinity,
                       child: SegmentedButton<bool>(
@@ -247,7 +246,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                             setModalState(() => tempDescending = value.first),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingLarge),
+                    SizedBox(height: context.dimensions.spacingLarge),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -262,14 +261,14 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.colors.primary,
                           foregroundColor: context.colors.onPrimary,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppTheme.spacingMedium,
+                          padding: EdgeInsets.symmetric(
+                            vertical: context.dimensions.spacingMedium,
                           ),
                         ),
                         child: Text(context.l10n.common_apply_sort),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(height: context.dimensions.spacingSmall),
                     SizedBox(
                       width: double.infinity,
                       child: TextButton(
@@ -292,14 +291,14 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                           }
                         },
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppTheme.spacingMedium,
+                          padding: EdgeInsets.symmetric(
+                            vertical: context.dimensions.spacingMedium,
                           ),
                         ),
                         child: Text(context.l10n.common_save_default),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.spacingMedium),
+                    SizedBox(height: context.dimensions.spacingMedium),
                   ],
                 ),
               ),
@@ -337,26 +336,14 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
 
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
-    // Hoist invariant layout calculations out of the itemBuilder loop
-    // to prevent O(N) redundant calculations during scroll events.
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final memCacheWidth = (screenWidth / crossAxisCount * 1.5).toInt();
-
-    // ⚡ Bolt: Hoist fallback list allocation out of the itemBuilder.
-    // Why: Prevents creating a new empty list or evaluating the null-aware operator
-    // for every item during scroll layout passes.
-    // Impact: Reduces GC pressure and speeds up grid rendering.
-    final items = imagesAsync.value ?? [];
-
     return ListPageScaffold<entity.Image>(
       title: context.l10n.images_title,
-      imageUrlBuilder: (img) => img.paths.thumbnail,
-      // Pass the actual column count to the scaffold so scroll-sensed prefetch works correctly.
-      // We use a dummy gridDelegate just to signal to ListPageScaffold that it's a grid.
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: crossAxisCount,
       ),
       useResponsiveGrid: false,
+      useMasonry: true,
+      imageUrlBuilder: (img) => img.paths.thumbnail,
       actions: [
         Stack(
           children: [
@@ -406,6 +393,11 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
       searchHint: context.l10n.common_search_placeholder,
       onSearchChanged: _onSearchChanged,
       provider: imagesAsync,
+        itemBuilder: (context, image, memCacheWidth, memCacheHeight) =>
+          ImageCard(image: image, memCacheWidth: memCacheWidth),
+        loadingItemBuilder: (context, isGrid, index) => ImageCard.skeleton(
+        memCacheWidth: 300,
+        ),
       onRefresh: () => ref.read(imageListProvider.notifier).refresh(),
       onFetchNextPage: () =>
           ref.read(imageListProvider.notifier).fetchNextPage(),
@@ -421,9 +413,9 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
           : null,
       sortBar: filterState.galleryId != null
           ? Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppTheme.spacingMedium,
-                vertical: AppTheme.spacingSmall,
+              padding: EdgeInsets.symmetric(
+                horizontal: context.dimensions.spacingMedium,
+                vertical: context.dimensions.spacingSmall,
               ),
               child: Row(
                 children: [
@@ -439,30 +431,8 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
               ),
             )
           : null,
-      customBody: CustomScrollView(
-        controller: ref.watch(imageScrollControllerProvider),
-        slivers: [
-          SliverPadding(
-            padding: const EdgeInsets.all(AppTheme.spacingSmall),
-            sliver: SliverMasonryGrid.count(
-              crossAxisCount: crossAxisCount,
-              mainAxisSpacing: AppTheme.spacingSmall,
-              crossAxisSpacing: AppTheme.spacingSmall,
-              itemBuilder: (context, index) {
-                if (index >= items.length) return const SizedBox.shrink();
-
-                return RepaintBoundary(
-                  child: ImageCard(
-                    image: items[index],
-                    memCacheWidth: memCacheWidth,
-                  ),
-                );
-              },
-              childCount: imagesAsync.value?.length ?? 0,
-            ),
-          ),
-        ],
-      ),
+      scrollController: ref.watch(imageScrollControllerProvider),
+      padding: EdgeInsets.all(context.dimensions.spacingSmall),
     );
   }
 }

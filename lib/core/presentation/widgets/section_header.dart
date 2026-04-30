@@ -7,20 +7,21 @@ class SectionHeader extends StatelessWidget {
     super.key,
     required this.title,
     this.onViewAll,
-    this.padding = const EdgeInsets.symmetric(
-      horizontal: AppTheme.spacingMedium,
-      vertical: AppTheme.spacingSmall,
-    ),
+    this.padding,
   });
 
   final String title;
   final VoidCallback? onViewAll;
-  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: padding,
+      padding: padding ??
+          EdgeInsets.symmetric(
+            horizontal: context.dimensions.spacingMedium,
+            vertical: context.dimensions.spacingSmall,
+          ),
       child: Row(
         children: [
           Text(

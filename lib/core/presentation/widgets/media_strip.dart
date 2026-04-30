@@ -33,9 +33,12 @@ class MediaStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveHeight = height * context.dimensions.fontSizeFactor;
+    final effectiveItemWidth = itemWidth * context.dimensions.fontSizeFactor;
+
     if (items.isEmpty) {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium),
+        padding: EdgeInsets.symmetric(horizontal: context.dimensions.spacingMedium),
         child: Text(context.l10n.common_no_media),
       );
     }
@@ -54,13 +57,13 @@ class MediaStrip extends StatelessWidget {
           context,
           imageUrl: items[i].thumbnailUrl,
           headers: headers,
-          memCacheWidth: (itemWidth * 2).toInt(),
+          memCacheWidth: (effectiveItemWidth * 2).toInt(),
         );
       }
     });
 
     return SizedBox(
-      height: height,
+      height: effectiveHeight,
       child: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
           if (notification.metrics.axis != Axis.horizontal || items.isEmpty) {
@@ -69,9 +72,9 @@ class MediaStrip extends StatelessWidget {
 
           final offset = notification.metrics.pixels;
           // Account for left padding and separator width to compute the item stride.
-          final contentPadding = AppTheme.spacingMedium;
-          final separatorWidth = AppTheme.spacingSmall;
-          final stride = itemWidth + separatorWidth;
+          final contentPadding = context.dimensions.spacingMedium;
+          final separatorWidth = context.dimensions.spacingSmall;
+          final stride = effectiveItemWidth + separatorWidth;
           final visibleIndex = ((offset + contentPadding) / stride)
               .floor()
               .clamp(0, items.length - 1);
@@ -83,7 +86,7 @@ class MediaStrip extends StatelessWidget {
                 context,
                 imageUrl: items[ahead].thumbnailUrl,
                 headers: headers,
-                memCacheWidth: (itemWidth * 2).toInt(),
+                memCacheWidth: (effectiveItemWidth * 2).toInt(),
               );
             }
             final behind = visibleIndex - i;
@@ -92,20 +95,20 @@ class MediaStrip extends StatelessWidget {
                 context,
                 imageUrl: items[behind].thumbnailUrl,
                 headers: headers,
-                memCacheWidth: (itemWidth * 2).toInt(),
+                memCacheWidth: (effectiveItemWidth * 2).toInt(),
               );
             }
           }
           return false;
         },
         child: ListView.separated(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppTheme.spacingMedium,
+          padding: EdgeInsets.symmetric(
+            horizontal: context.dimensions.spacingMedium,
           ),
           scrollDirection: Axis.horizontal,
           itemCount: items.length,
           separatorBuilder: (_, _) =>
-              const SizedBox(width: AppTheme.spacingSmall),
+              SizedBox(width: context.dimensions.spacingSmall),
           itemBuilder: (context, index) {
             final item = items[index];
 
@@ -117,25 +120,27 @@ class MediaStrip extends StatelessWidget {
             return RepaintBoundary(
               child: InkWell(
                 onTap: item.onTap,
-                borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                borderRadius: BorderRadius.circular(
+                  AppTheme.radiusMedium * context.dimensions.fontSizeFactor,
+                ),
                 child: SizedBox(
-                  width: itemWidth,
+                  width: effectiveItemWidth,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(
-                          AppTheme.radiusMedium,
+                          AppTheme.radiusMedium * context.dimensions.fontSizeFactor,
                         ),
                         child: StashImage(
                           imageUrl: item.thumbnailUrl,
-                          width: itemWidth,
-                          height: itemWidth * (9 / 16),
+                          width: effectiveItemWidth,
+                          height: effectiveItemWidth * (9 / 16),
                           fit: BoxFit.cover,
-                          memCacheWidth: (itemWidth * 2).toInt(),
+                          memCacheWidth: (effectiveItemWidth * 2).toInt(),
                         ),
                       ),
-                      const SizedBox(height: AppTheme.spacingSmall),
+                      SizedBox(height: context.dimensions.spacingSmall),
                       Text(
                         item.title,
                         maxLines: 2,

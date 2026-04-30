@@ -20,3 +20,7 @@
 ## 2024-07-25 - [MediaQuery.of(context) Over-Rebuilding]
 **Learning:** Using `MediaQuery.of(context).viewInsets` binds the widget to the entire `MediaQueryData` object, triggering an unnecessary rebuild whenever any unrelated property changes (like screen size or orientation).
 **Action:** Always use granular MediaQuery methods like `MediaQuery.viewInsetsOf(context)` to isolate dependencies to only the properties the widget actually uses.
+
+## 2024-08-01 - [MediaQuery.of(context) Over-Rebuilding in Padding]
+**Learning:** Using `MediaQuery.of(context).padding.bottom` binds the widget to the entire `MediaQueryData` object, triggering an unnecessary rebuild whenever any unrelated property changes (like text scale factor, orientation, screen size).
+**Action:** Always use granular MediaQuery methods like `MediaQuery.paddingOf(context).bottom` to isolate dependencies to only the properties the widget actually uses.

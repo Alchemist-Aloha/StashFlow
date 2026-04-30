@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../../domain/entities/studio_filter.dart';
 import '../providers/studio_list_provider.dart';
 import '../widgets/studio_filter_panel.dart';
@@ -125,7 +126,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
       builder: (context) => StatefulBuilder(
         builder: (context, setModalState) {
           return Container(
-            padding: const EdgeInsets.all(AppTheme.spacingMedium),
+            padding: EdgeInsets.all(context.dimensions.spacingMedium),
             decoration: BoxDecoration(
               color: context.colors.surface,
               borderRadius: const BorderRadius.vertical(
@@ -156,12 +157,12 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: AppTheme.spacingMedium),
+                SizedBox(height: context.dimensions.spacingMedium),
                 Text(
                   context.l10n.common_sort_method,
                   style: context.textTheme.labelLarge,
                 ),
-                const SizedBox(height: AppTheme.spacingSmall),
+                SizedBox(height: context.dimensions.spacingSmall),
                 Flexible(
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
@@ -172,12 +173,12 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                     child: Scrollbar(
                       thumbVisibility: true,
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: AppTheme.spacingSmall,
+                        padding: EdgeInsets.symmetric(
+                          vertical: context.dimensions.spacingSmall,
                         ),
                         child: Wrap(
-                          spacing: AppTheme.spacingSmall,
-                          runSpacing: AppTheme.spacingSmall,
+                          spacing: context.dimensions.spacingSmall,
+                          runSpacing: context.dimensions.spacingSmall,
                           children: _StudioSortOption.values
                               .map(
                                 (option) => ChoiceChip(
@@ -197,12 +198,12 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: AppTheme.spacingMedium),
+                SizedBox(height: context.dimensions.spacingMedium),
                 Text(
                   context.l10n.common_direction,
                   style: context.textTheme.labelLarge,
                 ),
-                const SizedBox(height: AppTheme.spacingSmall),
+                SizedBox(height: context.dimensions.spacingSmall),
                 SizedBox(
                   width: double.infinity,
                   child: SegmentedButton<bool>(
@@ -223,7 +224,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                         setModalState(() => tempDescending = value.first),
                   ),
                 ),
-                const SizedBox(height: AppTheme.spacingLarge),
+                SizedBox(height: context.dimensions.spacingLarge),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -238,14 +239,14 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: context.colors.primary,
                       foregroundColor: context.colors.onPrimary,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppTheme.spacingMedium,
+                      padding: EdgeInsets.symmetric(
+                        vertical: context.dimensions.spacingMedium,
                       ),
                     ),
                     child: Text(context.l10n.common_apply_sort),
                   ),
                 ),
-                const SizedBox(height: AppTheme.spacingSmall),
+                SizedBox(height: context.dimensions.spacingSmall),
                 SizedBox(
                   width: double.infinity,
                   child: TextButton(
@@ -268,14 +269,14 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                       }
                     },
                     style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppTheme.spacingMedium,
+                      padding: EdgeInsets.symmetric(
+                        vertical: context.dimensions.spacingMedium,
                       ),
                     ),
                     child: Text(context.l10n.common_save_default),
                   ),
                 ),
-                const SizedBox(height: AppTheme.spacingMedium),
+                SizedBox(height: context.dimensions.spacingMedium),
               ],
             ),
           );
@@ -382,21 +383,48 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
           ],
         ),
       ],
-      padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingSmall),
+      padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
       itemBuilder: (context, studio, memCacheWidth, memCacheHeight) => Card(
-        margin: const EdgeInsets.symmetric(
-          horizontal: AppTheme.spacingMedium,
+        margin: EdgeInsets.symmetric(
+          horizontal: context.dimensions.spacingMedium,
           vertical: 4,
+        ),
+        color: Theme.of(context).colorScheme.primaryContainer.withValues(
+          alpha: 0.3,
         ),
         child: ListTile(
           onTap: () => context.push('/studios/studio/${studio.id}'),
           title: Text(
             studio.name,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: context.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           trailing: Text(
             context.l10n.nScenes(studio.sceneCount),
             style: context.textTheme.bodySmall,
+          ),
+        ),
+      ),
+      loadingItemBuilder: (context, isGrid, index) => Skeletonizer(
+        enabled: true,
+        effect: const ShimmerEffect(duration: Duration(seconds: 2)),
+        child: Card(
+          margin: EdgeInsets.symmetric(
+            horizontal: context.dimensions.spacingMedium,
+            vertical: 4,
+          ),
+          color: Theme.of(context).colorScheme.primaryContainer.withValues(
+            alpha: 0.3,
+          ),
+          child: ListTile(
+            title: Text(
+              'Loading',
+              style: context.textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            trailing: Text('0', style: context.textTheme.bodySmall),
           ),
         ),
       ),

@@ -59,13 +59,13 @@ class SettingsSectionCard extends StatelessWidget {
     required this.child,
     this.title,
     this.subtitle,
-    this.padding = const EdgeInsets.all(AppTheme.spacingMedium),
+    this.padding,
   });
 
   final Widget child;
   final String? title;
   final String? subtitle;
-  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
@@ -73,14 +73,16 @@ class SettingsSectionCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 32.0),
+      padding: EdgeInsets.only(
+        bottom: 32.0 * context.dimensions.fontSizeFactor,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (title != null) ...[
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppTheme.spacingSmall,
+              padding: EdgeInsets.symmetric(
+                horizontal: context.dimensions.spacingSmall,
               ),
               child: Text(
                 title!,
@@ -92,10 +94,10 @@ class SettingsSectionCard extends StatelessWidget {
             ),
           ],
           if (subtitle != null) ...[
-            const SizedBox(height: 4),
+            SizedBox(height: 4 * context.dimensions.fontSizeFactor),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppTheme.spacingSmall,
+              padding: EdgeInsets.symmetric(
+                horizontal: context.dimensions.spacingSmall,
               ),
               child: Text(
                 subtitle!,
@@ -106,7 +108,7 @@ class SettingsSectionCard extends StatelessWidget {
             ),
           ],
           if (title != null || subtitle != null)
-            const SizedBox(height: AppTheme.spacingMedium),
+            SizedBox(height: context.dimensions.spacingMedium),
           child,
         ],
       ),
@@ -148,7 +150,7 @@ class _SettingsActionCardState extends State<SettingsActionCard> {
       child: Card(
         clipBehavior: Clip.antiAlias,
         elevation: 0,
-        color: colorScheme.primaryContainer.withValues(alpha: 0.1),
+        color: colorScheme.primaryContainer.withValues(alpha: 0.3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
         ),
@@ -158,24 +160,30 @@ class _SettingsActionCardState extends State<SettingsActionCard> {
           onTapCancel: () => setState(() => _isPressed = false),
           onTap: widget.onTap,
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacingMedium,
-              vertical: AppTheme.spacingMedium,
+            padding: EdgeInsets.symmetric(
+              horizontal: context.dimensions.spacingMedium,
+              vertical: context.dimensions.spacingMedium,
             ),
             child: Row(
               children: [
                 Container(
-                  width: 48,
-                  height: 48,
+                  width: 48 * context.dimensions.fontSizeFactor,
+                  height: 48 * context.dimensions.fontSizeFactor,
                   decoration: ShapeDecoration(
                     color: colorScheme.secondaryContainer,
                     shape: ContinuousRectangleBorder(
-                      borderRadius: BorderRadius.circular(32),
+                      borderRadius: BorderRadius.circular(
+                        32 * context.dimensions.fontSizeFactor,
+                      ),
                     ),
                   ),
-                  child: Icon(widget.icon, color: colorScheme.primary, size: 24),
+                  child: Icon(
+                    widget.icon,
+                    color: colorScheme.primary,
+                    size: 24 * context.dimensions.fontSizeFactor,
+                  ),
                 ),
-                const SizedBox(width: AppTheme.spacingMedium),
+                SizedBox(width: context.dimensions.spacingMedium),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,7 +195,7 @@ class _SettingsActionCardState extends State<SettingsActionCard> {
                           color: colorScheme.onSurface,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      SizedBox(height: 2 * context.dimensions.fontSizeFactor),
                       Text(
                         widget.subtitle,
                         style: textTheme.labelMedium?.copyWith(
@@ -198,11 +206,11 @@ class _SettingsActionCardState extends State<SettingsActionCard> {
                     ],
                   ),
                 ),
-                const SizedBox(width: AppTheme.spacingSmall),
+                SizedBox(width: context.dimensions.spacingSmall),
                 widget.trailing ??
                     Icon(
                       Icons.arrow_forward_ios_rounded,
-                      size: 14,
+                      size: 14 * context.dimensions.fontSizeFactor,
                       color: colorScheme.outline,
                     ),
               ],

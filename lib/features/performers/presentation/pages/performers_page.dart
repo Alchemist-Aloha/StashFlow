@@ -194,7 +194,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
       builder: (context) => StatefulBuilder(
         builder: (context, setModalState) {
           return Container(
-            padding: const EdgeInsets.all(AppTheme.spacingMedium),
+            padding: EdgeInsets.all(context.dimensions.spacingMedium),
             decoration: BoxDecoration(
               color: context.colors.surface,
               borderRadius: const BorderRadius.vertical(
@@ -225,12 +225,12 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: AppTheme.spacingMedium),
+                SizedBox(height: context.dimensions.spacingMedium),
                 Text(
                   context.l10n.common_sort_method,
                   style: context.textTheme.labelLarge,
                 ),
-                const SizedBox(height: AppTheme.spacingSmall),
+                SizedBox(height: context.dimensions.spacingSmall),
                 Flexible(
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
@@ -241,12 +241,12 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                     child: Scrollbar(
                       thumbVisibility: true,
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: AppTheme.spacingSmall,
+                        padding: EdgeInsets.symmetric(
+                          vertical: context.dimensions.spacingSmall,
                         ),
                         child: Wrap(
-                          spacing: AppTheme.spacingSmall,
-                          runSpacing: AppTheme.spacingSmall,
+                          spacing: context.dimensions.spacingSmall,
+                          runSpacing: context.dimensions.spacingSmall,
                           children: _PerformerSortOption.values
                               .map(
                                 (option) => ChoiceChip(
@@ -292,7 +292,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                         setModalState(() => tempDescending = value.first),
                   ),
                 ),
-                const SizedBox(height: AppTheme.spacingLarge),
+                SizedBox(height: context.dimensions.spacingLarge),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -307,14 +307,14 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: context.colors.primary,
                       foregroundColor: context.colors.onPrimary,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppTheme.spacingMedium,
+                      padding: EdgeInsets.symmetric(
+                        vertical: context.dimensions.spacingMedium,
                       ),
                     ),
                     child: Text(context.l10n.common_apply_sort),
                   ),
                 ),
-                const SizedBox(height: AppTheme.spacingSmall),
+                SizedBox(height: context.dimensions.spacingSmall),
                 SizedBox(
                   width: double.infinity,
                   child: TextButton(
@@ -335,14 +335,14 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                       }
                     },
                     style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppTheme.spacingMedium,
+                      padding: EdgeInsets.symmetric(
+                        vertical: context.dimensions.spacingMedium,
                       ),
                     ),
                     child: Text(context.l10n.common_save_default),
                   ),
                 ),
-                const SizedBox(height: AppTheme.spacingMedium),
+                SizedBox(height: context.dimensions.spacingMedium),
               ],
             ),
           );
@@ -431,8 +431,8 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
       ],
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: gridColumns ?? 3,
-        crossAxisSpacing: AppTheme.spacingSmall,
-        mainAxisSpacing: AppTheme.spacingSmall,
+        crossAxisSpacing: context.dimensions.spacingSmall,
+        mainAxisSpacing: context.dimensions.spacingSmall,
         childAspectRatio: 0.85,
       ),
       mobileCrossAxisCount: gridColumns ?? 3,
@@ -444,6 +444,9 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
           onTap: () => context.push('/performers/performer/${performer.id}'),
         );
       },
+      loadingItemBuilder: (context, isGrid, index) => PerformerCard.skeleton(
+        memCacheWidth: 300,
+      ),
 
       floatingActionButton: randomNavigationEnabled
           ? performersAsync.maybeWhen(

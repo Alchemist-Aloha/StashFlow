@@ -120,6 +120,36 @@ abstract class AppLocalizations {
   /// **'StashFlow'**
   String get appTitle;
 
+  /// No description provided for @common_token.
+  ///
+  /// In en, this message translates to:
+  /// **'Token'**
+  String get common_token;
+
+  /// No description provided for @filter_value.
+  ///
+  /// In en, this message translates to:
+  /// **'Value'**
+  String get filter_value;
+
+  /// No description provided for @common_yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get common_yes;
+
+  /// No description provided for @common_no.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get common_no;
+
+  /// No description provided for @common_clear_history.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear History'**
+  String get common_clear_history;
+
   /// No description provided for @nav_scenes.
   ///
   /// In en, this message translates to:
@@ -629,6 +659,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Play'**
   String get common_play;
+
+  /// No description provided for @common_refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get common_refresh;
 
   /// No description provided for @common_close.
   ///
@@ -1446,12 +1482,6 @@ abstract class AppLocalizations {
   /// **'Modifier'**
   String get filter_modifier;
 
-  /// No description provided for @filter_value.
-  ///
-  /// In en, this message translates to:
-  /// **'Value'**
-  String get filter_value;
-
   /// No description provided for @filter_equals.
   ///
   /// In en, this message translates to:
@@ -1920,6 +1950,18 @@ abstract class AppLocalizations {
   /// **'Enter an 8-digit ARGB hex code'**
   String get settings_appearance_custom_hex_helper;
 
+  /// No description provided for @settings_appearance_font_size.
+  ///
+  /// In en, this message translates to:
+  /// **'Global UI Scale'**
+  String get settings_appearance_font_size;
+
+  /// No description provided for @settings_appearance_font_size_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scale typography and spacing proportionally'**
+  String get settings_appearance_font_size_subtitle;
+
   /// No description provided for @settings_interface_title.
   ///
   /// In en, this message translates to:
@@ -2085,7 +2127,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings_interface_layout_tiktok.
   ///
   /// In en, this message translates to:
-  /// **'Infinite Scroll'**
+  /// **'Feed'**
   String get settings_interface_layout_tiktok;
 
   /// No description provided for @settings_interface_grid_columns.
@@ -2454,6 +2496,36 @@ abstract class AppLocalizations {
   /// **'When off, playback directly uses paths.stream'**
   String get settings_playback_prefer_streams_subtitle;
 
+  /// No description provided for @settings_playback_end_behavior.
+  ///
+  /// In en, this message translates to:
+  /// **'Play End Behavior'**
+  String get settings_playback_end_behavior;
+
+  /// No description provided for @settings_playback_end_behavior_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What to do when current playback ends'**
+  String get settings_playback_end_behavior_subtitle;
+
+  /// No description provided for @settings_playback_end_behavior_stop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get settings_playback_end_behavior_stop;
+
+  /// No description provided for @settings_playback_end_behavior_loop.
+  ///
+  /// In en, this message translates to:
+  /// **'Loop current scene'**
+  String get settings_playback_end_behavior_loop;
+
+  /// No description provided for @settings_playback_end_behavior_next.
+  ///
+  /// In en, this message translates to:
+  /// **'Play next scene'**
+  String get settings_playback_end_behavior_next;
+
   /// No description provided for @settings_playback_autoplay.
   ///
   /// In en, this message translates to:
@@ -2751,7 +2823,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings_support_github_subtitle.
   ///
   /// In en, this message translates to:
-  /// **'View source code and report issues'**
+  /// **'View source code'**
   String get settings_support_github_subtitle;
 
   /// No description provided for @settings_support_github_error.
@@ -2759,6 +2831,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not open GitHub link'**
   String get settings_support_github_error;
+
+  /// No description provided for @settings_support_issues.
+  ///
+  /// In en, this message translates to:
+  /// **'Report an Issue'**
+  String get settings_support_issues;
+
+  /// No description provided for @settings_support_issues_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help improve StashFlow by reporting bugs'**
+  String get settings_support_issues_subtitle;
 
   /// No description provided for @settings_develop_title.
   ///
@@ -3239,6 +3323,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scraped'**
   String get scrape_results_scraped;
+
+  /// No description provided for @stats_refresh_statistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh Statistics'**
+  String get stats_refresh_statistics;
+
+  /// No description provided for @stats_library_stats.
+  ///
+  /// In en, this message translates to:
+  /// **'Library Stats'**
+  String get stats_library_stats;
+
+  /// No description provided for @stats_stash_glance.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Stash at a glance'**
+  String get stats_stash_glance;
+
+  /// No description provided for @stats_content.
+  ///
+  /// In en, this message translates to:
+  /// **'Content'**
+  String get stats_content;
+
+  /// No description provided for @stats_organization.
+  ///
+  /// In en, this message translates to:
+  /// **'Organization'**
+  String get stats_organization;
+
+  /// No description provided for @stats_activity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get stats_activity;
+
+  /// No description provided for @stats_scenes.
+  ///
+  /// In en, this message translates to:
+  /// **'Scenes'**
+  String get stats_scenes;
+
+  /// No description provided for @stats_galleries.
+  ///
+  /// In en, this message translates to:
+  /// **'Galleries'**
+  String get stats_galleries;
+
+  /// No description provided for @stats_performers.
+  ///
+  /// In en, this message translates to:
+  /// **'Performers'**
+  String get stats_performers;
+
+  /// No description provided for @stats_studios.
+  ///
+  /// In en, this message translates to:
+  /// **'Studios'**
+  String get stats_studios;
+
+  /// No description provided for @stats_groups.
+  ///
+  /// In en, this message translates to:
+  /// **'Groups'**
+  String get stats_groups;
+
+  /// No description provided for @stats_tags.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get stats_tags;
+
+  /// No description provided for @stats_total_plays.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Plays'**
+  String get stats_total_plays;
+
+  /// No description provided for @stats_unique_items.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} unique items'**
+  String stats_unique_items(int count);
+
+  /// No description provided for @stats_total_o_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Total O-Count'**
+  String get stats_total_o_count;
+
+  /// No description provided for @cast_airplay_pairing.
+  ///
+  /// In en, this message translates to:
+  /// **'AirPlay Pairing'**
+  String get cast_airplay_pairing;
+
+  /// No description provided for @cast_enter_pin.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 4-digit PIN shown on your TV'**
+  String get cast_enter_pin;
+
+  /// No description provided for @cast_pair.
+  ///
+  /// In en, this message translates to:
+  /// **'Pair'**
+  String get cast_pair;
+
+  /// No description provided for @cast_connecting_to.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting to {deviceName}...'**
+  String cast_connecting_to(String deviceName);
+
+  /// No description provided for @cast_casting_to.
+  ///
+  /// In en, this message translates to:
+  /// **'Casting to {deviceName}'**
+  String cast_casting_to(String deviceName);
+
+  /// No description provided for @cast_pairing_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Pairing failed: {error}'**
+  String cast_pairing_failed(String error);
+
+  /// No description provided for @cast_failed_to_cast.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to cast: {error}'**
+  String cast_failed_to_cast(String error);
+
+  /// No description provided for @cast_searching.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching for devices...'**
+  String get cast_searching;
+
+  /// No description provided for @cast_cast_to_device.
+  ///
+  /// In en, this message translates to:
+  /// **'Cast to Device'**
+  String get cast_cast_to_device;
+
+  /// No description provided for @settings_storage_images.
+  ///
+  /// In en, this message translates to:
+  /// **'Images'**
+  String get settings_storage_images;
+
+  /// No description provided for @settings_storage_videos.
+  ///
+  /// In en, this message translates to:
+  /// **'Videos'**
+  String get settings_storage_videos;
+
+  /// No description provided for @settings_storage_database.
+  ///
+  /// In en, this message translates to:
+  /// **'Database'**
+  String get settings_storage_database;
+
+  /// No description provided for @settings_storage_clearing_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Clearing image cache...'**
+  String get settings_storage_clearing_image;
+
+  /// No description provided for @settings_storage_clearing_video.
+  ///
+  /// In en, this message translates to:
+  /// **'Clearing video cache...'**
+  String get settings_storage_clearing_video;
+
+  /// No description provided for @settings_storage_clearing_database.
+  ///
+  /// In en, this message translates to:
+  /// **'Clearing database cache...'**
+  String get settings_storage_clearing_database;
+
+  /// No description provided for @settings_storage_cleared_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Image cache cleared'**
+  String get settings_storage_cleared_image;
+
+  /// No description provided for @settings_storage_cleared_video.
+  ///
+  /// In en, this message translates to:
+  /// **'Video cache cleared'**
+  String get settings_storage_cleared_video;
+
+  /// No description provided for @settings_storage_cleared_database.
+  ///
+  /// In en, this message translates to:
+  /// **'Database cache cleared'**
+  String get settings_storage_cleared_database;
+
+  /// No description provided for @settings_storage_clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get settings_storage_clear;
+
+  /// No description provided for @settings_storage_error_loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading sizes'**
+  String get settings_storage_error_loading;
+
+  /// No description provided for @settings_storage_mb.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} MB'**
+  String settings_storage_mb(num value);
+
+  /// No description provided for @settings_storage_gb.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} GB'**
+  String settings_storage_gb(num value);
+
+  /// No description provided for @settings_storage_100_mb.
+  ///
+  /// In en, this message translates to:
+  /// **'100 MB'**
+  String get settings_storage_100_mb;
+
+  /// No description provided for @settings_storage_500_mb.
+  ///
+  /// In en, this message translates to:
+  /// **'500 MB'**
+  String get settings_storage_500_mb;
+
+  /// No description provided for @settings_storage_1_gb.
+  ///
+  /// In en, this message translates to:
+  /// **'1 GB'**
+  String get settings_storage_1_gb;
+
+  /// No description provided for @settings_storage_2_gb.
+  ///
+  /// In en, this message translates to:
+  /// **'2 GB'**
+  String get settings_storage_2_gb;
+
+  /// No description provided for @settings_storage_unlimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited'**
+  String get settings_storage_unlimited;
+
+  /// No description provided for @settings_storage_limits.
+  ///
+  /// In en, this message translates to:
+  /// **'Limits'**
+  String get settings_storage_limits;
+
+  /// No description provided for @settings_storage_limits_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set maximum cache sizes'**
+  String get settings_storage_limits_subtitle;
+
+  /// No description provided for @settings_storage_max_image_cache.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Image Cache (MB)'**
+  String get settings_storage_max_image_cache;
+
+  /// No description provided for @settings_storage_max_video_cache.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Video Cache (MB)'**
+  String get settings_storage_max_video_cache;
 }
 
 class _AppLocalizationsDelegate

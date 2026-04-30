@@ -16,7 +16,7 @@ class PlaybackSettingsPage extends ConsumerStatefulWidget {
 
 class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   static const _preferSceneStreamsKey = 'prefer_scene_streams';
-  static const _autoplayNextKey = 'autoplay_next';
+  static const _playEndBehaviorKey = 'video_play_end_behavior';
   static const _useDoubleTapSeekKey = 'video_use_double_tap_seek';
   static const _enableBackgroundPlaybackKey = 'video_background_playback';
   static const _enableNativePipKey = 'video_native_pip';
@@ -28,7 +28,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   static const _subtitleTextAlignmentKey = 'subtitle_text_alignment';
 
   bool _preferSceneStreams = true;
-  bool _autoplayNext = false;
+  VideoEndBehavior _playEndBehavior = VideoEndBehavior.stop;
   bool _useDoubleTapSeek = true;
   bool _enableBackgroundPlayback = false;
   bool _enableNativePip = false;
@@ -48,7 +48,20 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   Future<void> _load() async {
     final prefs = ref.read(sharedPreferencesProvider);
     _preferSceneStreams = prefs.getBool(_preferSceneStreamsKey) ?? true;
-    _autoplayNext = prefs.getBool(_autoplayNextKey) ?? false;
+
+    final endBehaviorStr = prefs.getString(_playEndBehaviorKey);
+    if (endBehaviorStr != null) {
+      _playEndBehavior = VideoEndBehavior.values.firstWhere(
+        (e) => e.name == endBehaviorStr,
+        orElse: () => VideoEndBehavior.stop,
+      );
+    } else {
+      // Migrate from autoplayNext
+      final autoplayNext = prefs.getBool('autoplay_next') ?? false;
+      _playEndBehavior =
+          autoplayNext ? VideoEndBehavior.next : VideoEndBehavior.stop;
+    }
+
     _useDoubleTapSeek = prefs.getBool(_useDoubleTapSeekKey) ?? true;
     _enableBackgroundPlayback =
         prefs.getBool(_enableBackgroundPlaybackKey) ?? false;
@@ -69,7 +82,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   Future<void> _saveToggleSettings() async {
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setBool(_preferSceneStreamsKey, _preferSceneStreams);
-    await prefs.setBool(_autoplayNextKey, _autoplayNext);
+    await prefs.setString(_playEndBehaviorKey, _playEndBehavior.name);
     await prefs.setBool(_useDoubleTapSeekKey, _useDoubleTapSeek);
     await prefs.setBool(
       _enableBackgroundPlaybackKey,
@@ -92,7 +105,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     await prefs.setString(_subtitleTextAlignmentKey, _subtitleTextAlignment);
 
     final playerStateNotifier = ref.read(playerStateProvider.notifier);
-    playerStateNotifier.setAutoplayNext(_autoplayNext);
+    playerStateNotifier.setPlayEndBehavior(_playEndBehavior);
     playerStateNotifier.setUseDoubleTapSeek(_useDoubleTapSeek);
     playerStateNotifier.setEnableBackgroundPlayback(_enableBackgroundPlayback);
     playerStateNotifier.setEnableNativePip(_enableNativePip);
@@ -112,7 +125,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
       child: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(AppTheme.spacingLarge),
+              padding: EdgeInsets.all(context.dimensions.spacingLarge),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -137,20 +150,9 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                             await _saveToggleSettings();
                           },
                         ),
-                        const Divider(height: AppTheme.spacingLarge),
-                        SwitchListTile.adaptive(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(context.l10n.settings_playback_autoplay),
-                          subtitle: Text(
-                            context.l10n.settings_playback_autoplay_subtitle,
-                          ),
-                          value: _autoplayNext,
-                          onChanged: (value) async {
-                            setState(() => _autoplayNext = value);
-                            await _saveToggleSettings();
-                          },
-                        ),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
+                        _buildEndBehaviorSelector(),
+                        Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
                           title: Text(
@@ -165,7 +167,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                             await _saveToggleSettings();
                           },
                         ),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
                           title: Text(context.l10n.settings_playback_pip),
@@ -178,7 +180,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                             await _saveToggleSettings();
                           },
                         ),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
                           title: Text(
@@ -198,23 +200,23 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: AppTheme.spacingLarge),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_playback_subtitles,
                     subtitle: context.l10n.settings_playback_subtitles_subtitle,
                     child: Column(
                       children: [
                         _buildDefaultSubtitleSelector(),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         _buildSubtitleSizeSlider(),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         _buildSubtitlePositionSlider(),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         _buildSubtitleAlignmentSelector(),
                       ],
                     ),
                   ),
-                  const SizedBox(height: AppTheme.spacingLarge),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_playback_seek,
                     subtitle: context.l10n.settings_playback_seek_subtitle,
@@ -223,6 +225,32 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildEndBehaviorSelector() {
+    final behaviors = [
+      (VideoEndBehavior.stop, context.l10n.settings_playback_end_behavior_stop),
+      (VideoEndBehavior.loop, context.l10n.settings_playback_end_behavior_loop),
+      (VideoEndBehavior.next, context.l10n.settings_playback_end_behavior_next),
+    ];
+
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(context.l10n.settings_playback_end_behavior),
+      subtitle: Text(context.l10n.settings_playback_end_behavior_subtitle),
+      trailing: DropdownButton<VideoEndBehavior>(
+        value: _playEndBehavior,
+        onChanged: (value) async {
+          if (value != null) {
+            setState(() => _playEndBehavior = value);
+            await _saveToggleSettings();
+          }
+        },
+        items: behaviors
+            .map((b) => DropdownMenuItem(value: b.$1, child: Text(b.$2)))
+            .toList(),
+      ),
     );
   }
 
@@ -269,7 +297,9 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
             Text(context.l10n.settings_playback_subtitle_size),
             Text(
               '${_subtitleFontSize.round()} px',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: context.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
@@ -301,7 +331,9 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
               context.l10n.settings_playback_subtitle_pos_desc(
                 (_subtitlePositionBottomRatio * 100).round().toString(),
               ),
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: context.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
@@ -355,25 +387,37 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
           _useDoubleTapSeek
               ? context.l10n.settings_playback_seek_double_tap
               : context.l10n.settings_playback_seek_drag,
-          style: TextStyle(
+          style: context.textTheme.bodyMedium?.copyWith(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         );
         final trailingWidget = SegmentedButton<bool>(
           showSelectedIcon: false,
-          style: const ButtonStyle(
+          style: ButtonStyle(
             visualDensity: VisualDensity.compact,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            padding: WidgetStateProperty.all(
+              EdgeInsets.symmetric(
+                horizontal: context.dimensions.spacingSmall,
+                vertical: context.dimensions.spacingSmall / 2,
+              ),
+            ),
           ),
           segments: [
             ButtonSegment<bool>(
               value: false,
-              icon: const Icon(Icons.drag_indicator),
+              icon: Icon(
+                Icons.drag_indicator,
+                size: 24 * context.dimensions.fontSizeFactor,
+              ),
               label: Text(context.l10n.settings_playback_seek_drag_label),
             ),
             ButtonSegment<bool>(
               value: true,
-              icon: const Icon(Icons.touch_app_outlined),
+              icon: Icon(
+                Icons.touch_app_outlined,
+                size: 24 * context.dimensions.fontSizeFactor,
+              ),
               label: Text(context.l10n.settings_playback_seek_double_tap_label),
             ),
           ],
@@ -386,12 +430,12 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
 
         if (isNarrow) {
           return Padding(
-            padding: const EdgeInsets.only(top: 4),
+            padding: EdgeInsets.only(top: 4 * context.dimensions.fontSizeFactor),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 subtitleWidget,
-                const SizedBox(height: 12),
+                SizedBox(height: context.dimensions.spacingMedium),
                 SizedBox(width: double.infinity, child: trailingWidget),
               ],
             ),

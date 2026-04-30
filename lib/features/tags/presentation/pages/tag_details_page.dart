@@ -4,23 +4,41 @@ import 'package:flutter/material.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
+import '../../../scenes/domain/entities/scene.dart';
 import '../providers/tag_media_provider.dart';
 import '../providers/tag_details_provider.dart';
 import '../providers/tag_galleries_provider.dart';
 import '../../../images/presentation/providers/image_list_provider.dart';
 
 import '../../../../core/presentation/widgets/section_header.dart';
-import '../../../../core/presentation/widgets/media_strip.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../providers/tag_list_provider.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_strip.dart';
+import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_strip.dart';
 
 class TagDetailsPage extends ConsumerWidget {
   final String tagId;
   const TagDetailsPage({required this.tagId, super.key});
+
+  Widget _buildSectionContainer(BuildContext context, Widget child) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
+      elevation: 0,
+      color: Theme.of(context).colorScheme.primaryContainer.withValues(
+        alpha: 0.1,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.spacingMedium),
+        child: child,
+      ),
+    );
+  }
 
   Future<void> _openRandomTag(BuildContext context, WidgetRef ref) async {
     final randomTag = await ref
@@ -43,7 +61,6 @@ class TagDetailsPage extends ConsumerWidget {
     final tagAsync = ref.watch(tagDetailsProvider(tagId));
     final mediaAsync = ref.watch(tagMediaProvider(tagId));
     final galleriesAsync = ref.watch(tagGalleriesProvider(tagId));
-    final mediaHeaders = ref.watch(mediaHeadersProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return Scaffold(
@@ -101,104 +118,115 @@ class TagDetailsPage extends ConsumerWidget {
                         if (tag.description != null &&
                             tag.description!.trim().isNotEmpty) ...[
                           const SizedBox(height: AppTheme.spacingMedium),
-                          Text(
-                            tag.description!,
-                            style: context.textTheme.bodyMedium?.copyWith(
-                              color: context.colors.onSurface.withValues(
-                                alpha: 0.8,
-                              ),
+                          _buildSectionContainer(
+                            context,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SectionHeader(
+                                  title: context.l10n.common_details,
+                                  padding: EdgeInsets.zero,
+                                ),
+                                const SizedBox(height: AppTheme.spacingSmall),
+                                Text(
+                                  tag.description!,
+                                  style: context.textTheme.bodyMedium
+                                      ?.copyWith(
+                                        color: context.colors.onSurface
+                                            .withValues(alpha: 0.8),
+                                      ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
-                        const Divider(height: 32, color: Colors.grey),
-                        SectionHeader(
-                          title: context.l10n.details_media,
-                          onViewAll: () =>
-                              context.push('/tags/tag/${tag.id}/media'),
-                        ),
-                        mediaAsync.when(
-                          data: (mediaItems) {
-                            if (mediaItems.isEmpty) {
-                              return Padding(
-                                padding: const EdgeInsets.only(
-                                  top: AppTheme.spacingSmall,
-                                ),
-                                child: Text(
-                                  context.l10n.common_no_media_found,
-                                  style: context.textTheme.bodySmall?.copyWith(
-                                    color: context.colors.onSurfaceVariant,
+                        _buildSectionContainer(
+                          context,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SectionHeader(
+                                title: context.l10n.details_media,
+                                onViewAll: () =>
+                                    context.push('/tags/tag/${tag.id}/media'),
+                                padding: EdgeInsets.zero,
+                              ),
+                              mediaAsync.when(
+                                data: (scenes) {
+                                  if (scenes.isEmpty) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(
+                                        AppTheme.spacingSmall,
+                                      ),
+                                      child: Text(
+                                        context.l10n.common_no_media_found,
+                                        style: context.textTheme.bodySmall
+                                            ?.copyWith(
+                                              color: context
+                                                  .colors
+                                                  .onSurfaceVariant,
+                                            ),
+                                      ),
+                                    );
+                                  }
+                                  final List<Scene> sceneList = scenes;
+                                  final shuffledItems = sceneList.toList()
+                                    ..shuffle(Random(tag.id.hashCode));
+                                  return SceneStrip(
+                                    scenes: shuffledItems,
+                                    onTap: (scene) => context.push(
+                                      '/scenes/scene/${scene.id}',
+                                    ),
+                                  );
+                                },
+                                loading: () => const SizedBox(
+                                  height: 100,
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
                                   ),
                                 ),
-                              );
-                            }
-                            final shuffledItems = [...mediaItems]
-                              ..shuffle(Random(tag.id.hashCode));
-                            return MediaStrip(
-                              items: shuffledItems
-                                  .map(
-                                    (item) => MediaStripItem(
-                                      id: item.sceneId,
-                                      title: item.title,
-                                      thumbnailUrl: item.thumbnailUrl,
-                                      onTap: () => context.push(
-                                        '/scenes/scene/${item.sceneId}',
+                                error: (err, stack) => Text(
+                                  context.l10n.common_error(err.toString()),
+                                  style: context.textTheme.bodyMedium
+                                      ?.copyWith(
+                                        color: context.colors.onSurface
+                                            .withValues(alpha: 0.7),
                                       ),
-                                    ),
-                                  )
-                                  .toList(),
-                              headers: mediaHeaders,
-                            );
-                          },
-                          loading: () => const SizedBox(
-                            height: 100,
-                            child: Center(child: CircularProgressIndicator()),
-                          ),
-                          error: (err, stack) => Text(
-                            context.l10n.common_error(err.toString()),
-                            style: TextStyle(
-                              color: context.colors.onSurface.withValues(
-                                alpha: 0.7,
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                         ),
                         galleriesAsync.when(
-                          data: (galleryItems) {
-                            if (galleryItems.isEmpty) {
+                          data: (galleries) {
+                            if (galleries.isEmpty) {
                               return const SizedBox.shrink();
                             }
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: AppTheme.spacingMedium),
-                                SectionHeader(
-                                  title: context.l10n.galleries_title,
-                                  onViewAll: () => context.push(
-                                    '/tags/tag/${tag.id}/galleries',
+                            return _buildSectionContainer(
+                              context,
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SectionHeader(
+                                    title: context.l10n.galleries_title,
+                                    onViewAll: () => context.push(
+                                      '/tags/tag/${tag.id}/galleries',
+                                    ),
+                                    padding: EdgeInsets.zero,
                                   ),
-                                ),
-                                MediaStrip(
-                                  items: galleryItems
-                                      .map(
-                                        (item) => MediaStripItem(
-                                          id: item.galleryId,
-                                          title: item.title,
-                                          thumbnailUrl: item.thumbnailUrl,
-                                          onTap: () {
-                                            ref
-                                                .read(
-                                                  imageFilterStateProvider
-                                                      .notifier,
-                                                )
-                                                .setGalleryId(item.galleryId);
-                                            context.push('/galleries/images');
-                                          },
-                                        ),
-                                      )
-                                      .toList(),
-                                  headers: mediaHeaders,
-                                ),
-                              ],
+                                  GalleryStrip(
+                                    galleries: galleries,
+                                    onTap: (gallery) {
+                                      ref
+                                          .read(
+                                            imageFilterStateProvider.notifier,
+                                          )
+                                          .setGalleryId(gallery.id);
+                                      context.push('/galleries/images');
+                                    },
+                                  ),
+                                ],
+                              ),
                             );
                           },
                           loading: () => const SizedBox(
@@ -207,7 +235,7 @@ class TagDetailsPage extends ConsumerWidget {
                           ),
                           error: (err, stack) => Text(
                             context.l10n.common_error(err.toString()),
-                            style: TextStyle(
+                            style: context.textTheme.bodyMedium?.copyWith(
                               color: context.colors.onSurface.withValues(
                                 alpha: 0.7,
                               ),

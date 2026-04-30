@@ -19,20 +19,30 @@ class KeybindSettingsPage extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.all(AppTheme.spacingMedium),
+            padding: EdgeInsets.all(context.dimensions.spacingMedium),
             child: Row(
               children: [
                 Expanded(
                   child: Text(
-                    context.l10n.settings_keyboard_subtitle,
-                    style: TextStyle(fontSize: 16),
-                  ),
+                      context.l10n.settings_keyboard_subtitle,
+                      style: context.textTheme.bodyLarge?.copyWith(
+                        fontSize: context.fontSizes.large,
+                      ),
+                    ),
                 ),
                 TextButton.icon(
                   onPressed: () =>
                       ref.read(keybindsProvider.notifier).resetToDefaults(),
-                  icon: const Icon(Icons.restore),
-                  label: Text(context.l10n.settings_keyboard_reset_defaults),
+                  icon: Icon(
+                    Icons.restore,
+                    size: 24 * context.dimensions.fontSizeFactor,
+                  ),
+                  label: Text(
+                    context.l10n.settings_keyboard_reset_defaults,
+                    style: context.textTheme.labelLarge?.copyWith(
+                      fontSize: context.fontSizes.regular,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -45,15 +55,30 @@ class KeybindSettingsPage extends ConsumerWidget {
                 final action = KeybindAction.values[index];
                 final bind = keybinds.binds[action];
                 return ListTile(
-                  title: Text(_getActionLabel(action)),
-                  subtitle: Text(_getActionDescription(action)),
+                  title: Text(
+                    _getActionLabel(action),
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      fontSize: context.fontSizes.body,
+                    ),
+                  ),
+                  subtitle: Text(
+                    _getActionDescription(action),
+                    style: context.textTheme.bodySmall?.copyWith(
+                      fontSize: context.fontSizes.small,
+                    ),
+                  ),
                   trailing: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(80, 36),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      minimumSize: Size(80 * context.dimensions.fontSizeFactor, 36 * context.dimensions.fontSizeFactor),
+                      padding: EdgeInsets.symmetric(horizontal: context.dimensions.spacingMedium),
                     ),
                     onPressed: () => _showCaptureDialog(context, ref, action),
-                    child: Text(bind?.label ?? context.l10n.settings_keyboard_not_bound),
+                    child: Text(
+                      bind?.label ?? context.l10n.settings_keyboard_not_bound,
+                      style: context.textTheme.labelLarge?.copyWith(
+                        fontSize: context.fontSizes.regular,
+                      ),
+                    ),
                   ),
                 );
               },
@@ -185,7 +210,7 @@ class _KeyCaptureDialogState extends State<_KeyCaptureDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(context.l10n.settings_keybind_press_any),
-          const SizedBox(height: 24),
+          SizedBox(height: context.dimensions.spacingLarge),
           Focus(
             autofocus: true,
             onKeyEvent: (node, event) {
@@ -217,15 +242,18 @@ class _KeyCaptureDialogState extends State<_KeyCaptureDialog> {
               return KeyEventResult.ignored;
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              padding: EdgeInsets.symmetric(
+                horizontal: context.dimensions.spacingLarge,
+                vertical: context.dimensions.spacingMedium,
+              ),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(8 * context.dimensions.fontSizeFactor),
               ),
-              child: Text(
+                child: Text(
                 _captured?.label ?? context.l10n.settings_keyboard_not_bound,
-                style: const TextStyle(
-                  fontSize: 24,
+                style: context.textTheme.displaySmall?.copyWith(
+                  fontSize: context.fontSizes.display,
                   fontWeight: FontWeight.bold,
                 ),
               ),

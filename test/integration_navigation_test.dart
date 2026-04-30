@@ -534,4 +534,59 @@ void main() {
       );
     },
   );
+
+  testWidgets('Integration: Shell Branch Navigation (Tabs)', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
+    final mockRepo = LocalMockSceneRepository(testScenes);
+    final mockPerformerRepo = MockPerformerRepository()..withData([]);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [
+        sceneRepositoryProvider.overrideWithValue(mockRepo),
+        performerRepositoryProvider.overrideWithValue(mockPerformerRepo),
+        sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
+        sceneGridLayoutProvider.overrideWith(TestSceneGridLayout.new),
+      ],
+      child: Consumer(
+        builder: (context, ref, _) {
+          final goRouter = ref.watch(routerProvider);
+          return MaterialApp.router(
+            routerConfig: goRouter,
+            theme: AppTheme.darkTheme,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          );
+        },
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Verify initial load
+    expect(find.text('Scenes').last, findsOneWidget);
+
+    // Tap Performers Tab
+    await tester.tap(find.text('Performers').last);
+    await tester.pumpAndSettle();
+    
+    // Tap Studios Tab
+    await tester.tap(find.text('Studios').last);
+    await tester.pumpAndSettle();
+    
+    // Tap Tags Tab
+    await tester.tap(find.text('Tags').last);
+    await tester.pumpAndSettle();
+    
+    // Tap Galleries Tab
+    await tester.tap(find.text('Galleries').last);
+    await tester.pumpAndSettle();
+  });
 }
+

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme/app_theme.dart';
 import 'stash_image.dart';
-import '../providers/layout_settings_provider.dart';
 
 /// A generic card widget for grid layouts.
 ///
@@ -53,15 +52,13 @@ class GridCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final titleFontSize = ref.watch(cardTitleFontSizeProvider);
-
     if (isGrid) {
-      return _buildGridCard(context, titleFontSize);
+      return _buildGridCard(context);
     }
-    return _buildListCard(context, titleFontSize);
+    return _buildListCard(context);
   }
 
-  Widget _buildGridCard(BuildContext context, double? titleFontSize) {
+  Widget _buildGridCard(BuildContext context) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
@@ -85,12 +82,12 @@ class GridCard extends ConsumerWidget {
                   ),
                   if (badge != null)
                     Positioned(
-                      right: 8,
-                      top: 8,
+                      right: context.dimensions.spacingSmall,
+                      top: context.dimensions.spacingSmall,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: context.dimensions.spacingSmall * 0.75,
+                          vertical: context.dimensions.spacingSmall / 4,
                         ),
                         decoration: BoxDecoration(
                           color: context.colors.primary.withValues(alpha: 0.9),
@@ -111,22 +108,22 @@ class GridCard extends ConsumerWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(context.dimensions.spacingSmall),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: context.textTheme.titleSmall?.copyWith(
+                  style: context.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: context.colors.onSurface,
-                    fontSize: titleFontSize,
+                    fontSize: context.dimensions.cardTitleFontSize *
+                        context.dimensions.fontSizeFactor,
                   ),
-                  maxLines: 2,
+                  maxLines: isGrid ? 2 : 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 if (subtitle != null) ...[
-                  const SizedBox(height: 2),
+                  SizedBox(height: context.dimensions.spacingSmall / 4),
                   Text(
                     subtitle!,
                     style: context.textTheme.bodySmall?.copyWith(
@@ -144,7 +141,7 @@ class GridCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildListCard(BuildContext context, double? titleFontSize) {
+  Widget _buildListCard(BuildContext context) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
@@ -166,12 +163,12 @@ class GridCard extends ConsumerWidget {
                   ),
                   if (badge != null)
                     Positioned(
-                      right: 12,
-                      top: 12,
+                      right: context.dimensions.spacingSmall * 1.5,
+                      top: context.dimensions.spacingSmall * 1.5,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: context.dimensions.spacingSmall,
+                          vertical: context.dimensions.spacingSmall / 2,
                         ),
                         decoration: BoxDecoration(
                           color: context.colors.primary.withValues(alpha: 0.9),
@@ -192,15 +189,16 @@ class GridCard extends ConsumerWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(AppTheme.spacingMedium),
+            padding: EdgeInsets.all(context.dimensions.spacingMedium),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: context.textTheme.titleMedium?.copyWith(
+                  style: context.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    fontSize: titleFontSize,
+                    fontSize: context.dimensions.cardTitleFontSize *
+                        context.dimensions.fontSizeFactor,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

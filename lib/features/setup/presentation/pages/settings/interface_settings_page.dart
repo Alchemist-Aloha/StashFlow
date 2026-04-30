@@ -154,16 +154,18 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    
+
     ref.watch(appLanguageProvider);
-    final currentLanguageKey = ref.read(sharedPreferencesProvider).getString(appLanguagePreferenceKey);
+    final currentLanguageKey = ref
+        .read(sharedPreferencesProvider)
+        .getString(appLanguagePreferenceKey);
 
     return SettingsPageShell(
       title: context.l10n.settings_interface_title,
       child: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(AppTheme.spacingLarge),
+              padding: EdgeInsets.all(context.dimensions.spacingLarge),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -173,11 +175,13 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                     child: SettingsActionCard(
                       icon: Icons.translate_rounded,
                       title: context.l10n.settings_interface_app_language,
-                      subtitle: supportedLanguages[currentLanguageKey] ?? 'System Default',
+                      subtitle:
+                          supportedLanguages[currentLanguageKey] ??
+                          'System Default',
                       onTap: () => _showLanguagePicker(context, ref),
                     ),
                   ),
-                  const SizedBox(height: AppTheme.spacingLarge),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_interface_navigation,
                     subtitle:
@@ -200,7 +204,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                             await _saveSettings();
                           },
                         ),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
                           title: Text(
@@ -219,7 +223,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                             await _saveSettings();
                           },
                         ),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
                           title: Row(
@@ -229,11 +233,11 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                                   context.l10n.settings_interface_show_edit,
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              SizedBox(width: context.dimensions.spacingSmall),
                               Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 3,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: context.dimensions.spacingSmall,
+                                  vertical: 3 * context.dimensions.fontSizeFactor,
                                 ),
                                 decoration: BoxDecoration(
                                   color: colorScheme.surfaceContainerHighest,
@@ -259,7 +263,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                             await _saveSettings();
                           },
                         ),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         ListTile(
                           contentPadding: EdgeInsets.zero,
                           title: Text(
@@ -270,7 +274,10 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                                 .l10n
                                 .settings_interface_customize_tabs_subtitle,
                           ),
-                          trailing: const Icon(Icons.chevron_right),
+                          trailing: Icon(
+                            Icons.chevron_right,
+                            size: 24 * context.dimensions.fontSizeFactor,
+                          ),
                           onTap: () {
                             context.push('/settings/interface/navigation');
                           },
@@ -278,23 +285,21 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: AppTheme.spacingLarge),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_interface_scenes_layout,
                     subtitle:
                         context.l10n.settings_interface_scenes_layout_subtitle,
                     child: Column(
                       children: [
-                        _buildLayoutRow(
-                          context,
-                          label: context.l10n.settings_interface_layout_default,
+                        _buildSegmentedSetting(
+                          context: context,
+                          label:
+                              context.l10n.settings_interface_layout_default,
                           description: context
                               .l10n
                               .settings_interface_layout_default_desc,
-                          value: _sceneTiktokLayout
-                              ? 'tiktok'
-                              : (_sceneGridLayout ? 'grid' : 'list'),
-                          options: [
+                          segments: [
                             ButtonSegment<String>(
                               value: 'list',
                               label: Text(
@@ -317,16 +322,22 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                               icon: Icon(Icons.swipe_up),
                             ),
                           ],
-                          onSelected: (value) async {
+                          selected: {
+                            _sceneTiktokLayout
+                                ? 'tiktok'
+                                : (_sceneGridLayout ? 'grid' : 'list'),
+                          },
+                          onSelectionChanged: (selection) async {
+                            if (selection.isEmpty) return;
                             setState(() {
-                              _sceneTiktokLayout = value == 'tiktok';
-                              _sceneGridLayout = value == 'grid';
+                              _sceneTiktokLayout = selection.first == 'tiktok';
+                              _sceneGridLayout = selection.first == 'grid';
                             });
                             await _saveSettings();
                           },
                         ),
                         if (_sceneGridLayout) ...[
-                          const Divider(height: AppTheme.spacingLarge),
+                          Divider(height: context.dimensions.spacingLarge),
                           _buildGridColumnSetting(
                             label: context.l10n.settings_interface_grid_columns,
                             value: _sceneGridColumns,
@@ -336,11 +347,19 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                             },
                           ),
                         ],
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
-                          title: Text(context.l10n.settings_interface_show_performer_avatars),
-                          subtitle: Text(context.l10n.settings_interface_show_performer_avatars_subtitle),
+                          title: Text(
+                            context
+                                .l10n
+                                .settings_interface_show_performer_avatars,
+                          ),
+                          subtitle: Text(
+                            context
+                                .l10n
+                                .settings_interface_show_performer_avatars_subtitle,
+                          ),
                           value: _showPerformerAvatars,
                           onChanged: (value) async {
                             setState(() => _showPerformerAvatars = value);
@@ -348,38 +367,46 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           },
                         ),
                         if (_showPerformerAvatars) ...[
-                          const Divider(height: AppTheme.spacingLarge),
+                          Divider(height: context.dimensions.spacingLarge),
                           _buildGridColumnSetting(
-                            label: context.l10n.settings_interface_max_performer_avatars,
-                            value: _maxPerformerAvatars == 3 ? null : _maxPerformerAvatars,
+                            label: context
+                                .l10n
+                                .settings_interface_max_performer_avatars,
+                            value: _maxPerformerAvatars == 3
+                                ? null
+                                : _maxPerformerAvatars,
                             onChanged: (value) async {
                               setState(() => _maxPerformerAvatars = value ?? 3);
                               await _saveSettings();
                             },
                           ),
-                          const Divider(height: AppTheme.spacingLarge),
+                          Divider(height: context.dimensions.spacingLarge),
                           _buildAvatarSizeSetting(
-                            label: context.l10n.settings_interface_performer_avatar_size,
+                            label: context
+                                .l10n
+                                .settings_interface_performer_avatar_size,
                             value: _performerAvatarSize,
                             onChanged: (value) async {
-                              setState(() => _performerAvatarSize = value ?? 16.0);
+                              setState(
+                                () => _performerAvatarSize = value ?? 16.0,
+                              );
                               await _saveSettings();
                             },
                           ),
                         ],
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         _buildFontSizeSetting(
                           label: 'Card Title Font Size',
                           value: _cardTitleFontSize,
                           onChanged: (value) async {
-                            setState(() => _cardTitleFontSize = value);
+                            setState(() => _cardTitleFontSize = value ?? context.fontSizes.medium);
                             await _saveSettings();
                           },
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: AppTheme.spacingLarge),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_interface_galleries_layout,
                     subtitle: context
@@ -387,14 +414,14 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         .settings_interface_galleries_layout_subtitle,
                     child: Column(
                       children: [
-                        _buildLayoutRow(
-                          context,
-                          label: context.l10n.settings_interface_layout_default,
+                        _buildSegmentedSetting(
+                          context: context,
+                          label:
+                              context.l10n.settings_interface_layout_default,
                           description: context
                               .l10n
                               .settings_interface_galleries_layout_subtitle_item,
-                          value: _galleryGridLayout ? 'grid' : 'list',
-                          options: [
+                          segments: [
                             ButtonSegment<String>(
                               value: 'list',
                               label: Text(
@@ -410,15 +437,17 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                               icon: Icon(Icons.grid_view),
                             ),
                           ],
-                          onSelected: (value) async {
+                          selected: {_galleryGridLayout ? 'grid' : 'list'},
+                          onSelectionChanged: (selection) async {
+                            if (selection.isEmpty) return;
                             setState(() {
-                              _galleryGridLayout = value == 'grid';
+                              _galleryGridLayout = selection.first == 'grid';
                             });
                             await _saveSettings();
                           },
                         ),
                         if (_galleryGridLayout) ...[
-                          const Divider(height: AppTheme.spacingLarge),
+                          Divider(height: context.dimensions.spacingLarge),
                           _buildGridColumnSetting(
                             label: context.l10n.settings_interface_grid_columns,
                             value: _galleryGridColumns,
@@ -431,24 +460,21 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: AppTheme.spacingLarge),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_interface_image_viewer,
                     subtitle:
                         context.l10n.settings_interface_image_viewer_subtitle,
                     child: Column(
                       children: [
-                        _buildLayoutRow(
-                          context,
+                        _buildSegmentedSetting(
+                          context: context,
                           label:
                               context.l10n.settings_interface_swipe_direction,
                           description: context
                               .l10n
                               .settings_interface_swipe_direction_desc,
-                          value: _imageFullscreenVerticalSwipe
-                              ? 'vertical'
-                              : 'horizontal',
-                          options: [
+                          segments: [
                             ButtonSegment<String>(
                               value: 'vertical',
                               label: Text(
@@ -466,15 +492,21 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                               icon: Icon(Icons.swap_horiz_rounded),
                             ),
                           ],
-                          onSelected: (value) async {
+                          selected: {
+                            _imageFullscreenVerticalSwipe
+                                ? 'vertical'
+                                : 'horizontal',
+                          },
+                          onSelectionChanged: (selection) async {
+                            if (selection.isEmpty) return;
                             setState(() {
                               _imageFullscreenVerticalSwipe =
-                                  value == 'vertical';
+                                  selection.first == 'vertical';
                             });
                             await _saveSettings();
                           },
                         ),
-                        const Divider(height: AppTheme.spacingLarge),
+                        Divider(height: context.dimensions.spacingLarge),
                         _buildGridColumnSetting(
                           label:
                               context.l10n.settings_interface_waterfall_columns,
@@ -487,140 +519,72 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: AppTheme.spacingLarge),
-                  SettingsSectionCard(
+                  SizedBox(height: context.dimensions.spacingLarge),
+                  _buildEntityLayoutsSection(
+                    context: context,
                     title: context.l10n.settings_interface_performer_layouts,
                     subtitle: context
                         .l10n
                         .settings_interface_performer_layouts_subtitle,
-                    child: Column(
-                      children: [
-                        _buildLayoutSetting(
-                          title: context.l10n.settings_interface_media_layout,
-                          subtitle: context
-                              .l10n
-                              .settings_interface_media_layout_subtitle,
-                          currentValue: _performerMediaGridLayout,
-                          onChanged: (isGrid) {
-                            setState(() => _performerMediaGridLayout = isGrid);
-                            _saveSettings();
-                          },
-                        ),
-                        const Divider(height: AppTheme.spacingLarge),
-                        _buildLayoutSetting(
-                          title: context
-                              .l10n
-                              .settings_interface_galleries_layout_item,
-                          subtitle: context
-                              .l10n
-                              .settings_interface_galleries_layout_subtitle_item,
-                          currentValue: _performerGalleriesGridLayout,
-                          onChanged: (isGrid) {
-                            setState(
-                              () => _performerGalleriesGridLayout = isGrid,
-                            );
-                            _saveSettings();
-                          },
-                        ),
-                        const Divider(height: AppTheme.spacingLarge),
-                        _buildGridColumnSetting(
-                          label: context.l10n.settings_interface_grid_columns,
-                          value: _performerGridColumns,
-                          onChanged: (value) async {
-                            setState(() => _performerGridColumns = value);
-                            await _saveSettings();
-                          },
-                        ),
-                      ],
-                    ),
+                    mediaGridValue: _performerMediaGridLayout,
+                    onMediaChanged: (isGrid) {
+                      setState(() => _performerMediaGridLayout = isGrid);
+                      _saveSettings();
+                    },
+                    galleriesGridValue: _performerGalleriesGridLayout,
+                    onGalleriesChanged: (isGrid) {
+                      setState(() => _performerGalleriesGridLayout = isGrid);
+                      _saveSettings();
+                    },
+                    gridColumnsValue: _performerGridColumns,
+                    onGridColumnsChanged: (value) async {
+                      setState(() => _performerGridColumns = value);
+                      await _saveSettings();
+                    },
                   ),
-                  const SizedBox(height: AppTheme.spacingLarge),
-                  SettingsSectionCard(
+                  SizedBox(height: context.dimensions.spacingLarge),
+                  _buildEntityLayoutsSection(
+                    context: context,
                     title: context.l10n.settings_interface_studio_layouts,
                     subtitle:
                         context.l10n.settings_interface_studio_layouts_subtitle,
-                    child: Column(
-                      children: [
-                        _buildLayoutSetting(
-                          title: context.l10n.settings_interface_media_layout,
-                          subtitle: context
-                              .l10n
-                              .settings_interface_media_layout_subtitle,
-                          currentValue: _studioMediaGridLayout,
-                          onChanged: (isGrid) {
-                            setState(() => _studioMediaGridLayout = isGrid);
-                            _saveSettings();
-                          },
-                        ),
-                        const Divider(height: AppTheme.spacingLarge),
-                        _buildLayoutSetting(
-                          title: context
-                              .l10n
-                              .settings_interface_galleries_layout_item,
-                          subtitle: context
-                              .l10n
-                              .settings_interface_galleries_layout_subtitle_item,
-                          currentValue: _studioGalleriesGridLayout,
-                          onChanged: (isGrid) {
-                            setState(() => _studioGalleriesGridLayout = isGrid);
-                            _saveSettings();
-                          },
-                        ),
-                        const Divider(height: AppTheme.spacingLarge),
-                        _buildGridColumnSetting(
-                          label: context.l10n.settings_interface_grid_columns,
-                          value: _studioGridColumns,
-                          onChanged: (value) async {
-                            setState(() => _studioGridColumns = value);
-                            await _saveSettings();
-                          },
-                        ),
-                      ],
-                    ),
+                    mediaGridValue: _studioMediaGridLayout,
+                    onMediaChanged: (isGrid) {
+                      setState(() => _studioMediaGridLayout = isGrid);
+                      _saveSettings();
+                    },
+                    galleriesGridValue: _studioGalleriesGridLayout,
+                    onGalleriesChanged: (isGrid) {
+                      setState(() => _studioGalleriesGridLayout = isGrid);
+                      _saveSettings();
+                    },
+                    gridColumnsValue: _studioGridColumns,
+                    onGridColumnsChanged: (value) async {
+                      setState(() => _studioGridColumns = value);
+                      await _saveSettings();
+                    },
                   ),
-                  const SizedBox(height: AppTheme.spacingLarge),
-                  SettingsSectionCard(
+                  SizedBox(height: context.dimensions.spacingLarge),
+                  _buildEntityLayoutsSection(
+                    context: context,
                     title: context.l10n.settings_interface_tag_layouts,
                     subtitle:
                         context.l10n.settings_interface_tag_layouts_subtitle,
-                    child: Column(
-                      children: [
-                        _buildLayoutSetting(
-                          title: context.l10n.settings_interface_media_layout,
-                          subtitle: context
-                              .l10n
-                              .settings_interface_media_layout_subtitle,
-                          currentValue: _tagMediaGridLayout,
-                          onChanged: (isGrid) {
-                            setState(() => _tagMediaGridLayout = isGrid);
-                            _saveSettings();
-                          },
-                        ),
-                        const Divider(height: AppTheme.spacingLarge),
-                        _buildLayoutSetting(
-                          title: context
-                              .l10n
-                              .settings_interface_galleries_layout_item,
-                          subtitle: context
-                              .l10n
-                              .settings_interface_galleries_layout_subtitle_item,
-                          currentValue: _tagGalleriesGridLayout,
-                          onChanged: (isGrid) {
-                            setState(() => _tagGalleriesGridLayout = isGrid);
-                            _saveSettings();
-                          },
-                        ),
-                        const Divider(height: AppTheme.spacingLarge),
-                        _buildGridColumnSetting(
-                          label: context.l10n.settings_interface_grid_columns,
-                          value: _tagGridColumns,
-                          onChanged: (value) async {
-                            setState(() => _tagGridColumns = value);
-                            await _saveSettings();
-                          },
-                        ),
-                      ],
-                    ),
+                    mediaGridValue: _tagMediaGridLayout,
+                    onMediaChanged: (isGrid) {
+                      setState(() => _tagMediaGridLayout = isGrid);
+                      _saveSettings();
+                    },
+                    galleriesGridValue: _tagGalleriesGridLayout,
+                    onGalleriesChanged: (isGrid) {
+                      setState(() => _tagGalleriesGridLayout = isGrid);
+                      _saveSettings();
+                    },
+                    gridColumnsValue: _tagGridColumns,
+                    onGridColumnsChanged: (value) async {
+                      setState(() => _tagGridColumns = value);
+                      await _saveSettings();
+                    },
                   ),
                 ],
               ),
@@ -628,15 +592,83 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     );
   }
 
+  Widget _buildEntityLayoutsSection({
+    required BuildContext context,
+    required String title,
+    required String subtitle,
+    required bool mediaGridValue,
+    required ValueChanged<bool> onMediaChanged,
+    required bool galleriesGridValue,
+    required ValueChanged<bool> onGalleriesChanged,
+    required int? gridColumnsValue,
+    required ValueChanged<int?> onGridColumnsChanged,
+  }) {
+    final l10n = AppLocalizations.of(context)!;
+    final listGridSegments = [
+      ButtonSegment<String>(
+        value: 'list',
+        label: Text(l10n.settings_interface_layout_list),
+        icon: Icon(Icons.view_list),
+      ),
+      ButtonSegment<String>(
+        value: 'grid',
+        label: Text(l10n.settings_interface_layout_grid),
+        icon: Icon(Icons.grid_view),
+      ),
+    ];
+
+    return SettingsSectionCard(
+      title: title,
+      subtitle: subtitle,
+      child: Column(
+        children: [
+          _buildSegmentedSetting(
+            context: context,
+            label: l10n.settings_interface_media_layout,
+            description: l10n.settings_interface_media_layout_subtitle,
+            segments: listGridSegments,
+            selected: {mediaGridValue ? 'grid' : 'list'},
+            onSelectionChanged: (selection) {
+              if (selection.isEmpty) return;
+              onMediaChanged(selection.first == 'grid');
+            },
+          ),
+          const Divider(height: AppTheme.spacingLarge),
+          _buildSegmentedSetting(
+            context: context,
+            label: l10n.settings_interface_galleries_layout_item,
+            description: l10n.settings_interface_galleries_layout_subtitle_item,
+            segments: listGridSegments,
+            selected: {galleriesGridValue ? 'grid' : 'list'},
+            onSelectionChanged: (selection) {
+              if (selection.isEmpty) return;
+              onGalleriesChanged(selection.first == 'grid');
+            },
+          ),
+          if (mediaGridValue || galleriesGridValue) ...[
+            Divider(height: context.dimensions.spacingLarge),
+            _buildGridColumnSetting(
+              label: l10n.settings_interface_grid_columns,
+              value: gridColumnsValue,
+              onChanged: onGridColumnsChanged,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   void _showLanguagePicker(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
-    final currentLanguageKey = ref.read(sharedPreferencesProvider).getString(appLanguagePreferenceKey);
+    final currentLanguageKey = ref
+        .read(sharedPreferencesProvider)
+        .getString(appLanguagePreferenceKey);
 
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppTheme.radiusExtraLarge),
+          top: Radius.circular(32 * context.dimensions.fontSizeFactor),
         ),
       ),
       builder: (context) {
@@ -644,44 +676,43 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: AppTheme.spacingMedium),
+              SizedBox(height: context.dimensions.spacingMedium),
               Container(
-                width: 32,
-                height: 4,
+                width: 32 * context.dimensions.fontSizeFactor,
+                height: 4 * context.dimensions.fontSizeFactor,
                 decoration: BoxDecoration(
                   color: colorScheme.outlineVariant,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(2 * context.dimensions.fontSizeFactor),
                 ),
               ),
-              const SizedBox(height: AppTheme.spacingMedium),
+              SizedBox(height: context.dimensions.spacingMedium),
               Flexible(
                 child: ListView(
                   shrinkWrap: true,
-                  children:
-                      supportedLanguages.entries.map((entry) {
-                        final isSelected = entry.key == currentLanguageKey;
-                        return ListTile(
-                          leading: Icon(
-                            isSelected
-                                ? Icons.check_circle_rounded
-                                : Icons.circle_outlined,
-                            color: isSelected ? colorScheme.primary : null,
-                          ),
-                          title: Text(
-                            entry.value,
-                            style: TextStyle(
-                              fontWeight:
-                                  isSelected ? FontWeight.bold : null,
-                            ),
-                          ),
-                          onTap: () async {
-                            await ref
-                                .read(appLanguageProvider.notifier)
-                                .setLanguage(entry.key);
-                            if (context.mounted) Navigator.pop(context);
-                          },
-                        );
-                      }).toList(),
+                  children: supportedLanguages.entries.map((entry) {
+                    final isSelected = entry.key == currentLanguageKey;
+                    return ListTile(
+                      leading: Icon(
+                        isSelected
+                            ? Icons.check_circle_rounded
+                            : Icons.circle_outlined,
+                        color: isSelected ? colorScheme.primary : null,
+                        size: 24 * context.dimensions.fontSizeFactor,
+                      ),
+                      title: Text(
+                        entry.value,
+                        style: context.textTheme.bodyLarge?.copyWith(
+                          fontWeight: isSelected ? FontWeight.bold : null,
+                        ),
+                      ),
+                      onTap: () async {
+                        await ref
+                            .read(appLanguageProvider.notifier)
+                            .setLanguage(entry.key);
+                        if (context.mounted) Navigator.pop(context);
+                      },
+                    );
+                  }).toList(),
                 ),
               ),
             ],
@@ -691,36 +722,29 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     );
   }
 
-  Widget _buildLayoutSetting({
-    required String title,
-    required String subtitle,
-    required bool currentValue,
-    required ValueChanged<bool> onChanged,
+  Widget _buildSegmentedSetting({
+    required BuildContext context,
+    required String label,
+    required String description,
+    required List<ButtonSegment<String>> segments,
+    required Set<String> selected,
+    required ValueChanged<Set<String>> onSelectionChanged,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final labelStyle = textTheme.titleSmall;
+    final descriptionStyle = textTheme.bodySmall?.copyWith(
+      color: colorScheme.onSurfaceVariant,
+    );
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 560;
-        final segments = [
-          ButtonSegment<String>(
-            value: 'list',
-            label: Text(context.l10n.settings_interface_layout_list),
-            icon: Icon(Icons.view_list),
-          ),
-          ButtonSegment<String>(
-            value: 'grid',
-            label: Text(context.l10n.settings_interface_layout_grid),
-            icon: Icon(Icons.grid_view),
-          ),
-        ];
-
         final segmentedButton = SegmentedButton<String>(
           segments: segments,
-          selected: {currentValue ? 'grid' : 'list'},
+          selected: selected,
           showSelectedIcon: false,
-          onSelectionChanged: (selection) {
-            onChanged(selection.first == 'grid');
-          },
+          onSelectionChanged: onSelectionChanged,
         );
 
         Widget control = segmentedButton;
@@ -735,16 +759,10 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: const TextStyle(fontSize: 16)),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: AppTheme.spacingMedium),
+              Text(label, style: labelStyle),
+              SizedBox(height: 4 * context.dimensions.fontSizeFactor),
+              Text(description, style: descriptionStyle),
+              SizedBox(height: context.dimensions.spacingMedium),
               SizedBox(width: double.infinity, child: control),
             ],
           );
@@ -758,90 +776,13 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontSize: 16)),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
+                  Text(label, style: labelStyle),
+                  SizedBox(height: 4 * context.dimensions.fontSizeFactor),
+                  Text(description, style: descriptionStyle),
                 ],
               ),
             ),
-            const SizedBox(width: AppTheme.spacingMedium),
-            Flexible(child: control),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildLayoutRow(
-    BuildContext context, {
-    required String label,
-    required String description,
-    required String value,
-    required List<ButtonSegment<String>> options,
-    required ValueChanged<String> onSelected,
-  }) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isCompact = constraints.maxWidth < 560;
-        final segmentedButton = SegmentedButton<String>(
-          segments: options,
-          selected: {value},
-          showSelectedIcon: false,
-          onSelectionChanged: (selection) {
-            if (selection.isEmpty) return;
-            onSelected(selection.first);
-          },
-        );
-
-        Widget control = segmentedButton;
-        if (isCompact) {
-          control = SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: segmentedButton,
-          );
-        }
-
-        if (isCompact) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label, style: const TextStyle(fontSize: 16)),
-              const SizedBox(height: 4),
-              Text(
-                description,
-                style: TextStyle(color: colorScheme.onSurfaceVariant),
-              ),
-              const SizedBox(height: AppTheme.spacingMedium),
-              SizedBox(width: double.infinity, child: control),
-            ],
-          );
-        }
-
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(label, style: const TextStyle(fontSize: 16)),
-                  const SizedBox(height: 4),
-                  Text(
-                    description,
-                    style: TextStyle(color: colorScheme.onSurfaceVariant),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: AppTheme.spacingMedium),
+            SizedBox(width: context.dimensions.spacingMedium),
             Flexible(child: control),
           ],
         );
@@ -861,7 +802,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: const TextStyle(fontSize: 16)),
+        Text(label, style: textTheme.titleSmall),
         MenuAnchor(
           builder: (context, controller, child) {
             return InkWell(
@@ -872,14 +813,14 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   controller.open();
                 }
               },
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(20 * context.dimensions.fontSizeFactor),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
+                padding: EdgeInsets.symmetric(
+                  horizontal: 16 * context.dimensions.fontSizeFactor,
+                  vertical: 8 * context.dimensions.fontSizeFactor,
                 ),
                 decoration: ShapeDecoration(
-                  color: colorScheme.primaryContainer.withValues(alpha: 0.1),
+                  color: colorScheme.primaryContainer.withValues(alpha: 0.3),
                   shape: StadiumBorder(
                     side: BorderSide(color: colorScheme.outlineVariant),
                   ),
@@ -894,10 +835,11 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(width: 4),
+                    SizedBox(width: 4 * context.dimensions.fontSizeFactor),
                     Icon(
                       Icons.arrow_drop_down_rounded,
                       color: colorScheme.primary,
+                      size: 24 * context.dimensions.fontSizeFactor,
                     ),
                   ],
                 ),
@@ -935,7 +877,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: const TextStyle(fontSize: 16)),
+            Text(label, style: textTheme.titleSmall),
             Text(
               value == null ? 'Default' : '${value.toInt()} pt',
               style: textTheme.labelLarge?.copyWith(
@@ -971,7 +913,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: const TextStyle(fontSize: 16)),
+            Text(label, style: textTheme.titleSmall),
             Text(
               '${value.toInt()} px',
               style: textTheme.labelLarge?.copyWith(

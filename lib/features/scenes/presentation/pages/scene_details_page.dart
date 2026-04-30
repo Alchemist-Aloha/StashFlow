@@ -10,9 +10,8 @@ import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
-import '../../../../core/presentation/widgets/media_strip.dart';
-import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
+import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../domain/entities/scene_title_utils.dart';
 import '../../../studios/presentation/providers/studio_media_provider.dart';
@@ -23,6 +22,7 @@ import '../../../setup/presentation/providers/navigation_customization_provider.
 import '../../../setup/presentation/providers/scrape_customization_provider.dart';
 import '../../domain/entities/scene.dart';
 import '../widgets/scene_video_player.dart';
+import '../widgets/scene_strip.dart';
 
 /// A detailed view for a single scene,
 ///
@@ -282,6 +282,23 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
   }
 
+  Widget _buildSectionContainer(BuildContext context, Widget child) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
+      elevation: 0,
+      color: Theme.of(context).colorScheme.primaryContainer.withValues(
+        alpha: 0.1,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.spacingMedium),
+        child: child,
+      ),
+    );
+  }
+
   Widget _buildMainInfo(BuildContext context, Scene scene, bool scrapeEnabled) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -289,13 +306,17 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         _buildTitle(context, scene),
         const SizedBox(height: 6),
         _buildStudioAndDate(context, scene),
-        const SizedBox(height: 10),
-        _buildTechnicalMetadata(context, scene),
-        const SizedBox(height: 16),
-        _buildActions(context, scene, scrapeEnabled),
-        Divider(
-          height: 32,
-          color: context.colors.outline.withValues(alpha: 0.2),
+        const SizedBox(height: AppTheme.spacingMedium),
+        _buildSectionContainer(
+          context,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildTechnicalMetadata(context, scene),
+              const SizedBox(height: 16),
+              _buildActions(context, scene, scrapeEnabled),
+            ],
+          ),
         ),
         _buildDetails(context, scene),
       ],
@@ -339,7 +360,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         if (scene.studioName != null)
           Text(
             ' • ',
-            style: TextStyle(
+            style: context.textTheme.titleMedium?.copyWith(
               color: context.colors.onSurface.withValues(alpha: 0.5),
             ),
           ),
@@ -497,45 +518,44 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     final canExpandDetails =
         detailsText.length > 260 || detailsText.contains('\n');
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              context.l10n.common_details,
-              style: context.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const Spacer(),
-            if (canExpandDetails)
-              TextButton(
-                onPressed: () {
-                  setState(() => _detailsExpanded = !_detailsExpanded);
-                },
-                child: Text(
-                  _detailsExpanded
-                      ? context.l10n.details_show_less
-                      : context.l10n.details_show_more,
+    return _buildSectionContainer(
+      context,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                context.l10n.common_details,
+                style: context.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-          ],
-        ),
-        const SizedBox(height: AppTheme.spacingSmall),
-        Text(
-          detailsText,
-          maxLines: _detailsExpanded ? null : _collapsedDetailsLines,
-          overflow: _detailsExpanded ? null : TextOverflow.ellipsis,
-          style: context.textTheme.bodyMedium?.copyWith(
-            color: context.colors.onSurface.withValues(alpha: 0.8),
+              const Spacer(),
+              if (canExpandDetails)
+                TextButton(
+                  onPressed: () {
+                    setState(() => _detailsExpanded = !_detailsExpanded);
+                  },
+                  child: Text(
+                    _detailsExpanded
+                        ? context.l10n.details_show_less
+                        : context.l10n.details_show_more,
+                  ),
+                ),
+            ],
           ),
-        ),
-        Divider(
-          height: 32,
-          color: context.colors.outline.withValues(alpha: 0.2),
-        ),
-      ],
+          const SizedBox(height: AppTheme.spacingSmall),
+          Text(
+            detailsText,
+            maxLines: _detailsExpanded ? null : _collapsedDetailsLines,
+            overflow: _detailsExpanded ? null : TextOverflow.ellipsis,
+            style: context.textTheme.bodyMedium?.copyWith(
+              color: context.colors.onSurface.withValues(alpha: 0.8),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -551,69 +571,68 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
     if (!hasTags) return const SizedBox.shrink();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              context.l10n.details_tags,
-              style: context.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const Spacer(),
-            if (canExpandTags)
-              TextButton(
-                onPressed: () {
-                  setState(() => _tagsExpanded = !_tagsExpanded);
-                },
-                child: Text(
-                  _tagsExpanded
-                      ? context.l10n.details_show_less
-                      : context.l10n.details_show_more,
+    return _buildSectionContainer(
+      context,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                context.l10n.details_tags,
+                style: context.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-          ],
-        ),
-        const SizedBox(height: AppTheme.spacingSmall),
-        AnimatedSize(
-          duration: const Duration(milliseconds: 180),
-          curve: Curves.easeOut,
-          child: ConstrainedBox(
-            constraints: _tagsExpanded
-                ? const BoxConstraints()
-                : const BoxConstraints(maxHeight: _collapsedTagRowsHeight),
-            child: ClipRect(
-              child: Wrap(
-                spacing: AppTheme.spacingSmall,
-                runSpacing: AppTheme.spacingSmall,
-                children: [
-                  for (final index in tagIndexes)
-                    ActionChip(
-                      label: Text(
-                        scene.tagNames[index],
-                        style: context.textTheme.bodySmall,
+              const Spacer(),
+              if (canExpandTags)
+                TextButton(
+                  onPressed: () {
+                    setState(() => _tagsExpanded = !_tagsExpanded);
+                  },
+                  child: Text(
+                    _tagsExpanded
+                        ? context.l10n.details_show_less
+                        : context.l10n.details_show_more,
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: AppTheme.spacingSmall),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOut,
+            child: ConstrainedBox(
+              constraints: _tagsExpanded
+                  ? const BoxConstraints()
+                  : const BoxConstraints(maxHeight: _collapsedTagRowsHeight),
+              child: ClipRect(
+                child: Wrap(
+                  spacing: AppTheme.spacingSmall,
+                  runSpacing: AppTheme.spacingSmall,
+                  children: [
+                    for (final index in tagIndexes)
+                      ActionChip(
+                        label: Text(
+                          scene.tagNames[index],
+                          style: context.textTheme.bodySmall,
+                        ),
+                        backgroundColor: context.colors.surfaceVariant,
+                        side: BorderSide.none,
+                        visualDensity: VisualDensity.compact,
+                        onPressed: () {
+                          if (index < scene.tagIds.length) {
+                            context.push('/tags/tag/${scene.tagIds[index]}');
+                          }
+                        },
                       ),
-                      backgroundColor: context.colors.surfaceVariant,
-                      side: BorderSide.none,
-                      visualDensity: VisualDensity.compact,
-                      onPressed: () {
-                        if (index < scene.tagIds.length) {
-                          context.push('/tags/tag/${scene.tagIds[index]}');
-                        }
-                      },
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-        Divider(
-          height: 32,
-          color: context.colors.outline.withValues(alpha: 0.2),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -632,83 +651,82 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
     final mediaHeaders = ref.watch(mediaHeadersProvider);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              context.l10n.performers_title,
-              style: context.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: context.colors.onSurface,
-              ),
-            ),
-            const Spacer(),
-            if (canExpandPerformers)
-              TextButton(
-                onPressed: () {
-                  setState(() => _performersExpanded = !_performersExpanded);
-                },
-                child: Text(
-                  _performersExpanded
-                      ? context.l10n.details_show_less
-                      : context.l10n.details_show_more,
+    return _buildSectionContainer(
+      context,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                context.l10n.performers_title,
+                style: context.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: context.colors.onSurface,
                 ),
               ),
-          ],
-        ),
-        const SizedBox(height: AppTheme.spacingSmall),
-        ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: _performersExpanded
-              ? performerIndexes.length
-              : min(_collapsedPerformerRows, performerIndexes.length),
-          separatorBuilder: (context, index) =>
-              const SizedBox(height: AppTheme.spacingSmall),
-          itemBuilder: (context, index) {
-            final performerIndex = performerIndexes[index];
-            final performerName = scene.performerNames[performerIndex].trim();
-            final performerImagePath =
-                performerIndex < scene.performerImagePaths.length
-                ? scene.performerImagePaths[performerIndex]
-                : null;
-            final hasImage =
-                performerImagePath != null &&
-                performerImagePath.trim().isNotEmpty &&
-                !performerImagePath.contains('default=true');
+              const Spacer(),
+              if (canExpandPerformers)
+                TextButton(
+                  onPressed: () {
+                    setState(() => _performersExpanded = !_performersExpanded);
+                  },
+                  child: Text(
+                    _performersExpanded
+                        ? context.l10n.details_show_less
+                        : context.l10n.details_show_more,
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: AppTheme.spacingSmall),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _performersExpanded
+                ? performerIndexes.length
+                : min(_collapsedPerformerRows, performerIndexes.length),
+            separatorBuilder: (context, index) =>
+                const SizedBox(height: AppTheme.spacingSmall),
+            itemBuilder: (context, index) {
+              final performerIndex = performerIndexes[index];
+              final performerName = scene.performerNames[performerIndex].trim();
+              final performerImagePath =
+                  performerIndex < scene.performerImagePaths.length
+                  ? scene.performerImagePaths[performerIndex]
+                  : null;
+              final hasImage =
+                  performerImagePath != null &&
+                  performerImagePath.trim().isNotEmpty &&
+                  !performerImagePath.contains('default=true');
 
-            return ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: hasImage
-                  ? CircleAvatar(
-                      backgroundColor: context.colors.surfaceVariant,
-                      foregroundImage: StashImage.provider(
-                        ref,
-                        performerImagePath,
-                        headers: mediaHeaders,
-                      ),
-                      child: const Icon(Icons.person),
-                    )
-                  : const CircleAvatar(child: Icon(Icons.person)),
-              title: Text(performerName, style: context.textTheme.bodyLarge),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                if (performerIndex < scene.performerIds.length) {
-                  context.push(
-                    '/performers/performer/${scene.performerIds[performerIndex]}',
-                  );
-                }
-              },
-            );
-          },
-        ),
-        Divider(
-          height: 32,
-          color: context.colors.outline.withValues(alpha: 0.2),
-        ),
-      ],
+              return ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: hasImage
+                    ? CircleAvatar(
+                        backgroundColor: context.colors.surfaceVariant,
+                        foregroundImage: StashImage.provider(
+                          ref,
+                          performerImagePath,
+                          headers: mediaHeaders,
+                        ),
+                        child: const Icon(Icons.person),
+                      )
+                    : const CircleAvatar(child: Icon(Icons.person)),
+                title: Text(performerName, style: context.textTheme.bodyLarge),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  if (performerIndex < scene.performerIds.length) {
+                    context.push(
+                      '/performers/performer/${scene.performerIds[performerIndex]}',
+                    );
+                  }
+                },
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -718,45 +736,38 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     final canOpenStudio =
         scene.studioId != null && (scene.studioName ?? '').trim().isNotEmpty;
     final studioMediaAsync = ref.watch(studioMediaProvider(scene.studioId!));
-    final mediaHeaders = ref.watch(mediaHeadersProvider);
 
     return studioMediaAsync.when(
-      data: (mediaItems) {
-        final shuffled =
-            mediaItems.where((item) => item.sceneId != scene.id).toList()
+      data: (scenes) {
+        final List<Scene> sceneList = scenes;
+        final filtered =
+            sceneList.where((item) => item.id != scene.id).toList()
               ..shuffle(Random(scene.id.hashCode));
 
-        if (shuffled.isEmpty) {
+        if (filtered.isEmpty) {
           return const SizedBox.shrink();
         }
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SectionHeader(
-              title: context.l10n.details_more_from_studio,
-              onViewAll: canOpenStudio
-                  ? () =>
-                        context.push('/studios/studio/${scene.studioId}/media')
-                  : null,
-              padding: EdgeInsets.zero,
-            ),
-            const SizedBox(height: AppTheme.spacingSmall),
-            MediaStrip(
-              items: shuffled
-                  .map(
-                    (item) => MediaStripItem(
-                      id: item.sceneId,
-                      title: item.title,
-                      thumbnailUrl: item.thumbnailUrl,
-                      onTap: () =>
-                          context.push('/scenes/scene/${item.sceneId}'),
-                    ),
-                  )
-                  .toList(),
-              headers: mediaHeaders,
-            ),
-          ],
+        return _buildSectionContainer(
+          context,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SectionHeader(
+                title: context.l10n.details_more_from_studio,
+                onViewAll: canOpenStudio
+                    ? () => context.push('/studios/studio/${scene.studioId}/media')
+                    : null,
+                padding: EdgeInsets.zero,
+              ),
+              const SizedBox(height: AppTheme.spacingSmall),
+              SceneStrip(
+                scenes: filtered,
+                onTap: (selectedScene) =>
+                    context.push('/scenes/scene/${selectedScene.id}'),
+              ),
+            ],
+          ),
         );
       },
       loading: () => const SizedBox.shrink(),
