@@ -152,15 +152,11 @@ void main() {
     // SceneDetailsPage has an AppBar (height 56) and we added 20px margin.
     // safeMaxHeight = 2000 - topPadding - 56 - 20;
     // topPadding is 0 in tests unless specified.
-    // So safeMaxHeight should be 1924.
+    // So safeMaxHeight should be 1920 (2000 - 56 - 24).
 
     final playerFinder = find.byType(SceneVideoPlayer);
-    final constrainedBoxFinder = find.ancestor(
-      of: playerFinder,
-      matching: find.byType(ConstrainedBox),
-    ).first;
-    final constrainedBox = tester.widget<ConstrainedBox>(constrainedBoxFinder);
-    expect(constrainedBox.constraints.maxHeight, equals(1924.0));
+    final player = tester.widget<SceneVideoPlayer>(playerFinder);
+    expect(player.maxHeight, equals(1920.0));
   });
 
   testWidgets('SceneCard three-dot opens scene info page', (tester) async {

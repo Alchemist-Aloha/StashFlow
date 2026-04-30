@@ -158,12 +158,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final scrapeEnabled = ref.watch(scrapeEnabledProvider);
 
-    final mediaQuery = MediaQuery.of(context);
-    final topPadding = mediaQuery.padding.top;
-    final appBarHeight = AppBar().preferredSize.height;
-    final safeMaxHeight =
-        mediaQuery.size.height - topPadding - appBarHeight - 20;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.details_scene),
@@ -192,8 +186,13 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               orElse: () => null,
             )
           : null,
-      body: sceneAsync.when(
-        data: (scene) {
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          // Subtract 24px margin from the body height to ensure video is fully visible
+          final safeMaxHeight = constraints.maxHeight - 8;
+
+          return sceneAsync.when(
+            data: (scene) {
           final useTwoColumns = !Responsive.isMobile(context);
 
           if (useTwoColumns) {
@@ -213,16 +212,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Center(
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxHeight: safeMaxHeight,
-                              ),
-                              child: SceneVideoPlayer(
-                                scene: scene,
-                                autoPlayOnMount: widget.autoPlayOnMount,
-                              ),
-                            ),
+                          SceneVideoPlayer(
+                            scene: scene,
+                            autoPlayOnMount: widget.autoPlayOnMount,
+                            maxHeight: safeMaxHeight,
                           ),
                           Padding(
                             padding: const EdgeInsets.all(
@@ -279,14 +272,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(maxHeight: safeMaxHeight),
-                      child: SceneVideoPlayer(
-                        scene: scene,
-                        autoPlayOnMount: widget.autoPlayOnMount,
-                      ),
-                    ),
+                  SceneVideoPlayer(
+                    scene: scene,
+                    autoPlayOnMount: widget.autoPlayOnMount,
+                    maxHeight: safeMaxHeight,
                   ),
                   Padding(
                     padding: const EdgeInsets.all(AppTheme.spacingMedium),
@@ -310,8 +299,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           message: context.l10n.common_error(err.toString()),
           onRetry: () => ref.refresh(sceneDetailsProvider(widget.sceneId)),
         ),
-      ),
-    );
+      );
+    },
+  ),
+);
   }
 
   Widget _buildSectionContainer(BuildContext context, Widget child) {
