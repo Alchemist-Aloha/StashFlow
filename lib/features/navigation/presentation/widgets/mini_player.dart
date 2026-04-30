@@ -25,25 +25,34 @@ class MiniPlayer extends ConsumerWidget {
     return GestureDetector(
       onTap: () => context.push('/scenes/scene/${activeScene.id}'),
       child: Container(
-        height: 60,
+        height: 66, // Increased height by 10% (from 60)
+        margin: const EdgeInsets.all(8), // Make it floating
         decoration: BoxDecoration(
           color: context.colors.surface,
-          border: Border(
-            top: BorderSide(
-              color: context.colors.outline.withValues(alpha: 0.5),
-              width: 0.5,
+          borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
             ),
-          ),
+          ],
         ),
         child: RepaintBoundary(
           child: Row(
             children: [
               AspectRatio(
                 aspectRatio: 16 / 9,
-                child: StashImage(
-                  imageUrl: activeScene.paths.screenshot ?? '',
-                  fit: BoxFit.cover,
-                  memCacheWidth: 320,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(AppTheme.radiusLarge),
+                    bottomLeft: Radius.circular(AppTheme.radiusLarge),
+                  ),
+                  child: StashImage(
+                    imageUrl: activeScene.paths.screenshot ?? '',
+                    fit: BoxFit.cover,
+                    memCacheWidth: 320,
+                  ),
                 ),
               ),
               const SizedBox(width: 8),

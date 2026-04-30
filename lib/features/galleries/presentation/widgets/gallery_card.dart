@@ -90,114 +90,136 @@ class GalleryCard extends ConsumerWidget {
   }
 
   Widget _buildListCard(BuildContext context, WidgetRef ref, double aspectRatio) {
-    return InkWell(
-      onTap: onTap,
+    return Material(
+      color:
+          Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildThumbnail(context, aspectRatio.clamp(0.5, 2.5)),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        gallery.displayName,
-                        style: context.textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: context.dimensions.cardTitleFontSize *
-                              context.dimensions.fontSizeFactor,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if ((gallery.details != null &&
-                              gallery.details!.isNotEmpty) ||
-                          gallery.date != null) ...[
-                        const SizedBox(height: 4),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildThumbnail(context, aspectRatio.clamp(0.5, 2.5)),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Text(
-                          [
-                            if (gallery.details != null &&
-                                gallery.details!.isNotEmpty)
-                              gallery.details,
-                            if (gallery.date != null)
-                              gallery.date!.split('-').first,
-                          ].join(' • '),
-                          style: context.textTheme.labelMedium,
-                          maxLines: 1,
+                          gallery.displayName,
+                          style: context.textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: context.dimensions.cardTitleFontSize *
+                                context.dimensions.fontSizeFactor,
+                          ),
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
+                        if ((gallery.details != null &&
+                                gallery.details!.isNotEmpty) ||
+                            gallery.date != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            [
+                              if (gallery.details != null &&
+                                  gallery.details!.isNotEmpty)
+                                gallery.details,
+                              if (gallery.date != null)
+                                gallery.date!.split('-').first,
+                            ].join(' • '),
+                            style: context.textTheme.labelMedium?.copyWith(
+                              color: context.colors.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
-                ),
-                IconButton(
-                  tooltip: 'More',
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  onPressed: () => _showRating(context, ref),
-                  icon: const Icon(Icons.more_vert, size: 20),
-                ),
-              ],
+                  IconButton(
+                    tooltip: 'More',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: () => _showRating(context, ref),
+                    icon: const Icon(Icons.more_vert, size: 20),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildGridCard(BuildContext context, WidgetRef ref, double aspectRatio) {
-    return InkWell(
-      onTap: onTap,
+    return Material(
+      color:
+          Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildThumbnail(context, useMasonry ? aspectRatio.clamp(0.5, 2.5) : 16 / 9),
-          Padding(
-            padding: const EdgeInsets.only(top: 4.0, left: 4.0, right: 4.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        gallery.displayName,
-                        style: context.textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: context.dimensions.cardTitleFontSize *
-                              context.dimensions.fontSizeFactor,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (gallery.details != null &&
-                          gallery.details!.isNotEmpty)
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildThumbnail(
+                context, useMasonry ? aspectRatio.clamp(0.5, 2.5) : 16 / 9),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
                         Text(
-                          gallery.details!,
-                          style: context.textTheme.labelSmall,
-                          maxLines: 1,
+                          gallery.displayName,
+                          style: context.textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: context.dimensions.cardTitleFontSize *
+                                context.dimensions.fontSizeFactor,
+                          ),
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                    ],
+                        if (gallery.details != null &&
+                            gallery.details!.isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            gallery.details!,
+                            style: context.textTheme.labelSmall?.copyWith(
+                              color: context.colors.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
-                ),
-                InkWell(
-                  onTap: () => _showRating(context, ref),
-                  child: const Icon(Icons.more_vert, size: 14),
-                ),
-              ],
+                  IconButton(
+                    tooltip: 'More',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: () => _showRating(context, ref),
+                    icon: const Icon(Icons.more_vert, size: 14),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -291,15 +313,12 @@ class GalleryCard extends ConsumerWidget {
       ],
     );
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-      child: aspectRatio != null
-          ? AspectRatio(
-              aspectRatio: aspectRatio,
-              child: child,
-            )
-          : child,
-    );
+    return aspectRatio != null
+        ? AspectRatio(
+            aspectRatio: aspectRatio,
+            child: child,
+          )
+        : child;
   }
 }
 

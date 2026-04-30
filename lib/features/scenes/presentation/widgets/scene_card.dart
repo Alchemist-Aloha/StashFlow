@@ -347,67 +347,75 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     double aspectRatio,
     String apiKey,
   ) {
-    return InkWell(
-      onTap: widget.onTap,
-      onLongPress: () => _showMenu(context, ref),
+    return Material(
+      color:
+          Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AspectRatio(
-            // Clamp aspect ratio to prevent extremely tall or wide items from
-            // breaking the list layout flow.
-            aspectRatio: aspectRatio.clamp(0.5, 2.5),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: widget.onTap,
+        onLongPress: () => _showMenu(context, ref),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AspectRatio(
+              // Clamp aspect ratio to prevent extremely tall or wide items from
+              // breaking the list layout flow.
+              aspectRatio: aspectRatio.clamp(0.5, 2.5),
               child: _buildThumbnail(context, duration, aspectRatio, apiKey),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.scene.displayTitle,
-                        style: context.textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: context.dimensions.cardTitleFontSize *
-                              context.dimensions.fontSizeFactor,
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.scene.displayTitle,
+                          style: context.textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: context.dimensions.cardTitleFontSize *
+                                context.dimensions.fontSizeFactor,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),                      const SizedBox(height: 4),
-                      Text(
-                        '${widget.scene.studioName ?? context.l10n.common_unknown} • ${widget.scene.date.year}',
-                        style: context.textTheme.labelMedium,
-                      ),
-                      if (ref.watch(showPerformerAvatarsProvider) && widget.scene.performerNames.isNotEmpty) ...[
-                        const SizedBox(height: 8),
-                        _PerformerAvatarRow(
-                          performerImagePaths: widget.scene.performerImagePaths,
-                          performerNames: widget.scene.performerNames,
-                          performerIds: widget.scene.performerIds,
+                        const SizedBox(height: 4),
+                        Text(
+                          '${widget.scene.studioName ?? context.l10n.common_unknown} • ${widget.scene.date.year}',
+                          style: context.textTheme.labelMedium?.copyWith(
+                            color: context.colors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
+                        if (ref.watch(showPerformerAvatarsProvider) &&
+                            widget.scene.performerNames.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          _PerformerAvatarRow(
+                            performerImagePaths:
+                                widget.scene.performerImagePaths,
+                            performerNames: widget.scene.performerNames,
+                            performerIds: widget.scene.performerIds,
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
-                ),
-                IconButton(
-                  tooltip: 'More',
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  onPressed: () => _showMenu(context, ref),
-                  icon: const Icon(Icons.more_vert, size: 20, color: null),
-                ),
-              ],
+                  IconButton(
+                    tooltip: 'More',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: () => _showMenu(context, ref),
+                    icon: const Icon(Icons.more_vert, size: 20, color: null),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -423,17 +431,20 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     double aspectRatio,
     String apiKey,
   ) {
-    return InkWell(
-      onTap: widget.onTap,
-      onLongPress: () => _showMenu(context, ref),
+    return Material(
+      color:
+          Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AspectRatio(
-            aspectRatio: widget.useMasonry ? aspectRatio.clamp(0.5, 2.5) : 16 / 9,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: widget.onTap,
+        onLongPress: () => _showMenu(context, ref),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AspectRatio(
+              aspectRatio:
+                  widget.useMasonry ? aspectRatio.clamp(0.5, 2.5) : 16 / 9,
               child: _buildThumbnail(
                 context,
                 duration,
@@ -441,53 +452,59 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                 apiKey,
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.scene.displayTitle,
-                        style: context.textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: context.dimensions.cardTitleFontSize *
-                              context.dimensions.fontSizeFactor,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.scene.displayTitle,
+                          style: context.textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: context.dimensions.cardTitleFontSize *
+                                context.dimensions.fontSizeFactor,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),                      const SizedBox(height: 2),
-                      Text(
-                        widget.scene.studioName ?? context.l10n.common_unknown,
-                        style: context.textTheme.labelSmall,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (ref.watch(showPerformerAvatarsProvider) && widget.scene.performerNames.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        _PerformerAvatarRow(
-                          performerImagePaths: widget.scene.performerImagePaths,
-                          performerNames: widget.scene.performerNames,
-                          performerIds: widget.scene.performerIds,
+                        const SizedBox(height: 2),
+                        Text(
+                          widget.scene.studioName ?? context.l10n.common_unknown,
+                          style: context.textTheme.labelSmall?.copyWith(
+                            color: context.colors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
+                        if (ref.watch(showPerformerAvatarsProvider) &&
+                            widget.scene.performerNames.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          _PerformerAvatarRow(
+                            performerImagePaths:
+                                widget.scene.performerImagePaths,
+                            performerNames: widget.scene.performerNames,
+                            performerIds: widget.scene.performerIds,
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
-                ),
-                IconButton(
-                  tooltip: 'More',
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  onPressed: () => _showMenu(context, ref),
-                  icon: const Icon(Icons.more_vert, size: 16, color: null),
-                ),
-              ],
+                  IconButton(
+                    tooltip: 'More',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: () => _showMenu(context, ref),
+                    icon: const Icon(Icons.more_vert, size: 16, color: null),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
