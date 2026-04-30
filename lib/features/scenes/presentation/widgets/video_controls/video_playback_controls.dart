@@ -93,17 +93,6 @@ class VideoPlaybackControls extends ConsumerWidget {
     );
   }
 
-  String _format(Duration d) {
-    final totalSeconds = d.inSeconds;
-    final hours = totalSeconds ~/ 3600;
-    final minutes = (totalSeconds % 3600) ~/ 60;
-    final seconds = totalSeconds % 60;
-    if (hours > 0) {
-      return '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-    }
-    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -149,24 +138,6 @@ class VideoPlaybackControls extends ConsumerWidget {
                         },
                       ),
                     ],
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: StreamBuilder<Duration>(
-                        stream: controller.player.stream.position,
-                        builder: (context, snapshot) {
-                          final position = snapshot.data ?? controller.player.state.position;
-                          final duration = controller.player.state.duration;
-                          return Text(
-                            '${_format(position)} / ${_format(duration)}',
-                            style: context.textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onSurface,
-                              fontSize: context.fontSizes.small,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
                   ],
                 ),
                 const SizedBox(

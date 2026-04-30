@@ -740,6 +740,17 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     });
   }
 
+  String _formatDuration(Duration d) {
+    final totalSeconds = d.inSeconds;
+    final hours = totalSeconds ~/ 3600;
+    final minutes = (totalSeconds % 3600) ~/ 60;
+    final seconds = totalSeconds % 60;
+    if (hours > 0) {
+      return '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+    }
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -1308,6 +1319,38 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                     _buildSpeedSliderPanel(
                                       colorScheme,
                                       playbackSpeed,
+                                    ),
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                        ),
+                                        child: StreamBuilder<Duration>(
+                                          stream: widget
+                                              .controller.player.stream.position,
+                                          builder: (context, snapshot) {
+                                            final position =
+                                                snapshot.data ??
+                                                widget.controller.player.state
+                                                    .position;
+                                            final duration =
+                                                widget.controller.player.state
+                                                    .duration;
+                                            return Text(
+                                              '${_formatDuration(position)} / ${_formatDuration(duration)}',
+                                              style: context
+                                                  .textTheme.bodyMedium
+                                                  ?.copyWith(
+                                                color: colorScheme.onSurface,
+                                                fontSize:
+                                                    context.fontSizes.small,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
                                     ),
                                     VideoProgressBar(
                                       durationMs: durationMs,

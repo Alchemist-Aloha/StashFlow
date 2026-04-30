@@ -29,15 +29,6 @@ class VideoProgressBar extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: 28,
-          height: 3,
-          margin: const EdgeInsets.only(bottom: 6),
-          decoration: BoxDecoration(
-            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.55),
-            borderRadius: BorderRadius.circular(999),
-          ),
-        ),
         StreamBuilder<Duration>(
           stream: positionStream,
           builder: (context, snapshot) {
