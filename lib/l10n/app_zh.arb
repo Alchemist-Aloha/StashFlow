@@ -697,5 +697,6 @@
   "settings_storage_limits": "限制",
   "settings_storage_limits_subtitle": "设置最大缓存大小",
   "settings_storage_max_image_cache": "最大图像缓存 (MB)",
-  "settings_storage_max_video_cache": "最大视频缓存 (MB)"
+  "settings_storage_max_video_cache": "最大视频缓存 (MB)",
+  "cast_stopped_resuming": "投射已停止，在本地恢复"
 }

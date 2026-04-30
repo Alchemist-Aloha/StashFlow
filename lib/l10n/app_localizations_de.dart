@@ -1955,4 +1955,8 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settings_storage_max_video_cache => 'Maximaler Video-Cache (MB)';
+
+  @override
+  String get cast_stopped_resuming =>
+      'Die Besetzung wurde gestoppt und lokal fortgesetzt';
 }

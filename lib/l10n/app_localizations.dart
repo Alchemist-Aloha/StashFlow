@@ -3599,6 +3599,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Max Video Cache (MB)'**
   String get settings_storage_max_video_cache;
+
+  /// Message shown when casting is stopped and video resumes locally
+  ///
+  /// In en, this message translates to:
+  /// **'Cast stopped, resuming locally'**
+  String get cast_stopped_resuming;
 }
 
 class _AppLocalizationsDelegate

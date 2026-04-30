@@ -697,5 +697,6 @@
   "settings_storage_limits": "Límites",
   "settings_storage_limits_subtitle": "Establecer tamaños máximos de caché",
   "settings_storage_max_image_cache": "Caché de imagen máxima (MB)",
-  "settings_storage_max_video_cache": "Caché de vídeo máxima (MB)"
+  "settings_storage_max_video_cache": "Caché de vídeo máxima (MB)",
+  "cast_stopped_resuming": "El reparto se detuvo y se reanudó localmente"
 }

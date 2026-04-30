@@ -755,5 +755,9 @@
   "settings_storage_limits": "Limits",
   "settings_storage_limits_subtitle": "Set maximum cache sizes",
   "settings_storage_max_image_cache": "Max Image Cache (MB)",
-  "settings_storage_max_video_cache": "Max Video Cache (MB)"
+  "settings_storage_max_video_cache": "Max Video Cache (MB)",
+  "cast_stopped_resuming": "Cast stopped, resuming locally",
+  "@cast_stopped_resuming": {
+    "description": "Message shown when casting is stopped and video resumes locally"
+  }
 }

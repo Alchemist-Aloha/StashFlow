@@ -718,5 +718,6 @@
   "settings_storage_limits": "Grenzen",
   "settings_storage_limits_subtitle": "Legen Sie maximale Cache-Größen fest",
   "settings_storage_max_image_cache": "Maximaler Bildcache (MB)",
-  "settings_storage_max_video_cache": "Maximaler Video-Cache (MB)"
+  "settings_storage_max_video_cache": "Maximaler Video-Cache (MB)",
+  "cast_stopped_resuming": "Die Besetzung wurde gestoppt und lokal fortgesetzt"
 }

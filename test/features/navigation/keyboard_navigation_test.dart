@@ -58,8 +58,6 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Verify we start on Scenes (index 0)
-    // We check if the NavigationRail has the first item selected instead of relying on locale strings
     final rail = tester.widget<NavigationRail>(find.byType(NavigationRail));
     expect(rail.selectedIndex, 0);
 
@@ -69,7 +67,6 @@ void main() {
     await tester.sendKeyUpEvent(LogicalKeyboardKey.control);
     await tester.pumpAndSettle();
 
-    // Verify we are on Images
     final rail2 = tester.widget<NavigationRail>(find.byType(NavigationRail));
     expect(rail2.selectedIndex, 1);
 

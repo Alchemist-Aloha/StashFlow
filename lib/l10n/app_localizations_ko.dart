@@ -1875,4 +1875,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settings_storage_max_video_cache => '최대 비디오 캐시(MB)';
+
+  @override
+  String get cast_stopped_resuming => '전송이 중지되었습니다. 로컬에서 재개됩니다.';
 }

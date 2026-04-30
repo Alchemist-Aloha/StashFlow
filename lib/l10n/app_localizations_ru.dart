@@ -1948,4 +1948,8 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settings_storage_max_video_cache => 'Макс. видеокэш (МБ)';
+
+  @override
+  String get cast_stopped_resuming =>
+      'Трансляция остановлена, возобновляется локально';
 }

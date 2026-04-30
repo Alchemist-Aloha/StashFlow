@@ -1968,4 +1968,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settings_storage_max_video_cache => 'Cache vidéo maximum (Mo)';
+
+  @override
+  String get cast_stopped_resuming => 'Casting arrêté, reprise localement';
 }

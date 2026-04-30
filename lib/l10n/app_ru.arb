@@ -697,5 +697,6 @@
   "settings_storage_limits": "Пределы",
   "settings_storage_limits_subtitle": "Установить максимальные размеры кэша",
   "settings_storage_max_image_cache": "Максимальный кэш изображений (МБ)",
-  "settings_storage_max_video_cache": "Макс. видеокэш (МБ)"
+  "settings_storage_max_video_cache": "Макс. видеокэш (МБ)",
+  "cast_stopped_resuming": "Трансляция остановлена, возобновляется локально"
 }

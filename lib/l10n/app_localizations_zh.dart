@@ -1853,6 +1853,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settings_storage_max_video_cache => '最大视频缓存 (MB)';
+
+  @override
+  String get cast_stopped_resuming => '投射已停止，在本地恢复';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -3704,6 +3707,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_storage_max_video_cache => '最大视频缓存 (MB)';
+
+  @override
+  String get cast_stopped_resuming => '投射已停止，在本地恢复';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -5559,4 +5565,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_storage_max_video_cache => '最大視訊快取 (MB)';
+
+  @override
+  String get cast_stopped_resuming => '投射已停止，在本地恢復';
 }

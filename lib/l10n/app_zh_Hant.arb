@@ -697,5 +697,6 @@
   "settings_storage_limits_subtitle": "設定最大快取大小",
   "settings_storage_max_image_cache": "最大圖像快取 (MB)",
   "settings_storage_max_video_cache": "最大視訊快取 (MB)",
-  "stats_refresh_statistics": "重新整理統計數據"
+  "stats_refresh_statistics": "重新整理統計數據",
+  "cast_stopped_resuming": "投射已停止，在本地恢復"
 }

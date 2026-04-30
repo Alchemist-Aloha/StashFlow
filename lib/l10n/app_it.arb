@@ -703,5 +703,6 @@
   "settings_storage_limits": "Limiti",
   "settings_storage_limits_subtitle": "Imposta le dimensioni massime della cache",
   "settings_storage_max_image_cache": "Cache immagini massima (MB)",
-  "settings_storage_max_video_cache": "Cache video massima (MB)"
+  "settings_storage_max_video_cache": "Cache video massima (MB)",
+  "cast_stopped_resuming": "Cast interrotto, ripresa localmente"
 }

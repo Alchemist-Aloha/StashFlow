@@ -1875,4 +1875,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settings_storage_max_video_cache => '最大ビデオ キャッシュ (MB)';
+
+  @override
+  String get cast_stopped_resuming => 'キャストが停止しました。ローカルで再開します';
 }
