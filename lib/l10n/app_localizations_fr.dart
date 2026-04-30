@@ -12,19 +12,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get appTitle => 'StashFlow';
 
   @override
-  String get common_token => 'Token';
+  String get common_token => 'Jeton';
 
   @override
   String get filter_value => 'Valeur';
 
   @override
-  String get common_yes => 'Yes';
+  String get common_yes => 'Oui';
 
   @override
-  String get common_no => 'No';
+  String get common_no => 'Non';
 
   @override
-  String get common_clear_history => 'Clear History';
+  String get common_clear_history => 'Effacer l\'historique';
 
   @override
   String get nav_scenes => 'Scènes';
@@ -336,7 +336,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get common_play => 'lecture';
 
   @override
-  String get common_refresh => 'Refresh';
+  String get common_refresh => 'Rafraîchir';
 
   @override
   String get common_close => 'fermer';
@@ -1011,11 +1011,12 @@ class AppLocalizationsFr extends AppLocalizations {
       'Entrez un code hexadécimal ARGB à 8 chiffres';
 
   @override
-  String get settings_appearance_font_size => 'Global UI Scale';
+  String get settings_appearance_font_size =>
+      'Échelle mondiale de l\'interface utilisateur';
 
   @override
   String get settings_appearance_font_size_subtitle =>
-      'Scale typography and spacing proportionally';
+      'Mettre à l\'échelle la typographie et l\'espacement proportionnellement';
 
   @override
   String get settings_interface_title => 'Paramètres d\'interface';
@@ -1330,20 +1331,20 @@ class AppLocalizationsFr extends AppLocalizations {
       'Si désactivé, la lecture utilise directement paths.stream';
 
   @override
-  String get settings_playback_end_behavior => 'Play End Behavior';
+  String get settings_playback_end_behavior => 'Comportement de fin de lecture';
 
   @override
   String get settings_playback_end_behavior_subtitle =>
-      'What to do when current playback ends';
+      'Que faire lorsque la lecture en cours se termine';
 
   @override
-  String get settings_playback_end_behavior_stop => 'Stop';
+  String get settings_playback_end_behavior_stop => 'Arrêt';
 
   @override
-  String get settings_playback_end_behavior_loop => 'Loop current scene';
+  String get settings_playback_end_behavior_loop => 'Scène actuelle en boucle';
 
   @override
-  String get settings_playback_end_behavior_next => 'Play next scene';
+  String get settings_playback_end_behavior_next => 'Jouer la scène suivante';
 
   @override
   String get settings_playback_autoplay =>
@@ -1530,11 +1531,11 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible d\'ouvrir le lien GitHub';
 
   @override
-  String get settings_support_issues => 'Report an Issue';
+  String get settings_support_issues => 'Signaler un problème';
 
   @override
   String get settings_support_issues_subtitle =>
-      'Help improve StashFlow by reporting bugs';
+      'Aidez à améliorer StashFlow en signalant les bugs';
 
   @override
   String get settings_develop_title => 'Développer';
@@ -1812,43 +1813,43 @@ class AppLocalizationsFr extends AppLocalizations {
   String get scrape_results_scraped => 'Récupéré';
 
   @override
-  String get stats_refresh_statistics => 'Refresh Statistics';
+  String get stats_refresh_statistics => 'Actualiser les statistiques';
 
   @override
-  String get stats_library_stats => 'Library Stats';
+  String get stats_library_stats => 'Statistiques de la bibliothèque';
 
   @override
-  String get stats_stash_glance => 'Your Stash at a glance';
+  String get stats_stash_glance => 'Votre réserve en un coup d\'œil';
 
   @override
-  String get stats_content => 'Content';
+  String get stats_content => 'Contenu';
 
   @override
-  String get stats_organization => 'Organization';
+  String get stats_organization => 'Organisation';
 
   @override
-  String get stats_activity => 'Activity';
+  String get stats_activity => 'Activité';
 
   @override
-  String get stats_scenes => 'Scenes';
+  String get stats_scenes => 'Scènes';
 
   @override
-  String get stats_galleries => 'Galleries';
+  String get stats_galleries => 'Galeries';
 
   @override
-  String get stats_performers => 'Performers';
+  String get stats_performers => 'Interprètes';
 
   @override
-  String get stats_studios => 'Studios';
+  String get stats_studios => 'Ateliers';
 
   @override
-  String get stats_groups => 'Groups';
+  String get stats_groups => 'Groupes';
 
   @override
-  String get stats_tags => 'Tags';
+  String get stats_tags => 'Balises';
 
   @override
-  String get stats_total_plays => 'Total Plays';
+  String get stats_total_plays => 'Nombre total de lectures';
 
   @override
   String stats_unique_items(int count) {
@@ -1856,16 +1857,17 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get stats_total_o_count => 'Total O-Count';
+  String get stats_total_o_count => 'Nombre total d\'O';
 
   @override
-  String get cast_airplay_pairing => 'AirPlay Pairing';
+  String get cast_airplay_pairing => 'Couplage AirPlay';
 
   @override
-  String get cast_enter_pin => 'Enter the 4-digit PIN shown on your TV';
+  String get cast_enter_pin =>
+      'Saisissez le code PIN à 4 chiffres affiché sur votre téléviseur';
 
   @override
-  String get cast_pair => 'Pair';
+  String get cast_pair => 'Paire';
 
   @override
   String cast_connecting_to(String deviceName) {
@@ -1888,43 +1890,46 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get cast_searching => 'Searching for devices...';
+  String get cast_searching => 'Recherche d\'appareils...';
 
   @override
-  String get cast_cast_to_device => 'Cast to Device';
+  String get cast_cast_to_device => 'Caster sur l\'appareil';
 
   @override
   String get settings_storage_images => 'Images';
 
   @override
-  String get settings_storage_videos => 'Videos';
+  String get settings_storage_videos => 'Vidéos';
 
   @override
-  String get settings_storage_database => 'Database';
+  String get settings_storage_database => 'Base de données';
 
   @override
-  String get settings_storage_clearing_image => 'Clearing image cache...';
+  String get settings_storage_clearing_image => 'Vider le cache des images...';
 
   @override
-  String get settings_storage_clearing_video => 'Clearing video cache...';
+  String get settings_storage_clearing_video => 'Vider le cache vidéo...';
 
   @override
-  String get settings_storage_clearing_database => 'Clearing database cache...';
+  String get settings_storage_clearing_database =>
+      'Vider le cache de la base de données...';
 
   @override
-  String get settings_storage_cleared_image => 'Image cache cleared';
+  String get settings_storage_cleared_image => 'Cache d\'images vidé';
 
   @override
-  String get settings_storage_cleared_video => 'Video cache cleared';
+  String get settings_storage_cleared_video => 'Cache vidéo vidé';
 
   @override
-  String get settings_storage_cleared_database => 'Database cache cleared';
+  String get settings_storage_cleared_database =>
+      'Cache de base de données vidé';
 
   @override
-  String get settings_storage_clear => 'Clear';
+  String get settings_storage_clear => 'Clair';
 
   @override
-  String get settings_storage_error_loading => 'Error loading sizes';
+  String get settings_storage_error_loading =>
+      'Erreur de chargement des tailles';
 
   @override
   String settings_storage_mb(num value) {
@@ -1937,29 +1942,30 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get settings_storage_100_mb => '100 MB';
+  String get settings_storage_100_mb => '100 Mo';
 
   @override
-  String get settings_storage_500_mb => '500 MB';
+  String get settings_storage_500_mb => '500 Mo';
 
   @override
-  String get settings_storage_1_gb => '1 GB';
+  String get settings_storage_1_gb => '1 Go';
 
   @override
-  String get settings_storage_2_gb => '2 GB';
+  String get settings_storage_2_gb => '2 Go';
 
   @override
-  String get settings_storage_unlimited => 'Unlimited';
+  String get settings_storage_unlimited => 'Illimité';
 
   @override
-  String get settings_storage_limits => 'Limits';
+  String get settings_storage_limits => 'Limites';
 
   @override
-  String get settings_storage_limits_subtitle => 'Set maximum cache sizes';
+  String get settings_storage_limits_subtitle =>
+      'Définir les tailles maximales de cache';
 
   @override
-  String get settings_storage_max_image_cache => 'Max Image Cache (MB)';
+  String get settings_storage_max_image_cache => 'Cache d\'images maximum (Mo)';
 
   @override
-  String get settings_storage_max_video_cache => 'Max Video Cache (MB)';
+  String get settings_storage_max_video_cache => 'Cache vidéo maximum (Mo)';
 }
