@@ -59,7 +59,9 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify we start on Scenes (index 0)
-    expect(find.text('Scenes'), findsWidgets); // Rail label and maybe title
+    // We check if the NavigationRail has the first item selected instead of relying on locale strings
+    final rail = tester.widget<NavigationRail>(find.byType(NavigationRail));
+    expect(rail.selectedIndex, 0);
 
     // Press Ctrl + 2 to go to Images
     await tester.sendKeyDownEvent(LogicalKeyboardKey.control);
@@ -68,10 +70,8 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify we are on Images
-    // Note: The actual content might be a mock or empty, but we check if the navigation happened
-    // We can check the selected index of the NavigationRail
-    final rail = tester.widget<NavigationRail>(find.byType(NavigationRail));
-    expect(rail.selectedIndex, 1);
+    final rail2 = tester.widget<NavigationRail>(find.byType(NavigationRail));
+    expect(rail2.selectedIndex, 1);
 
     // Press Ctrl + 3 to go to Performers
     await tester.sendKeyDownEvent(LogicalKeyboardKey.control);
@@ -79,8 +79,8 @@ void main() {
     await tester.sendKeyUpEvent(LogicalKeyboardKey.control);
     await tester.pumpAndSettle();
 
-    final rail2 = tester.widget<NavigationRail>(find.byType(NavigationRail));
-    expect(rail2.selectedIndex, 2);
+    final rail3 = tester.widget<NavigationRail>(find.byType(NavigationRail));
+    expect(rail3.selectedIndex, 2);
 
     // Press Ctrl + 1 to go back to Scenes
     await tester.sendKeyDownEvent(LogicalKeyboardKey.control);
@@ -88,7 +88,7 @@ void main() {
     await tester.sendKeyUpEvent(LogicalKeyboardKey.control);
     await tester.pumpAndSettle();
 
-    final rail3 = tester.widget<NavigationRail>(find.byType(NavigationRail));
-    expect(rail3.selectedIndex, 0);
+    final rail4 = tester.widget<NavigationRail>(find.byType(NavigationRail));
+    expect(rail4.selectedIndex, 0);
   });
 }
