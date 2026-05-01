@@ -996,6 +996,12 @@ abstract class AppLocalizations {
   /// **'Show more'**
   String get details_show_more;
 
+  /// No description provided for @common_more.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get common_more;
+
   /// No description provided for @details_show_less.
   ///
   /// In en, this message translates to:

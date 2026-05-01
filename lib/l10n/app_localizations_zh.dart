@@ -496,6 +496,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get details_show_more => '显示更多';
 
   @override
+  String get common_more => 'More';
+
+  @override
   String get details_show_less => '显示较少';
 
   @override

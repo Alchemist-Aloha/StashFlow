@@ -508,6 +508,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get details_show_more => 'Mostrar más';
 
   @override
+  String get common_more => 'More';
+
+  @override
   String get details_show_less => 'Mostrar menos';
 
   @override
