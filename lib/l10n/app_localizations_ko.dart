@@ -496,6 +496,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get details_show_more => '더 보기';
 
   @override
+  String get common_more => 'More';
+
+  @override
   String get details_show_less => '간략히 보기';
 
   @override

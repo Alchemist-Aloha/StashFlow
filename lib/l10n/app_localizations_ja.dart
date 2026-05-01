@@ -498,6 +498,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get details_show_more => 'もっと見る';
 
   @override
+  String get common_more => 'More';
+
+  @override
   String get details_show_less => '簡易表示';
 
   @override
