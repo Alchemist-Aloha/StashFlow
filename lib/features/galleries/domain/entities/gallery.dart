@@ -10,6 +10,8 @@ class Gallery {
   final int? coverWidth;
   final int? coverHeight;
 
+  static final _separatorRegExp = RegExp(r'[_\.]+');
+
   const Gallery({
     required this.id,
     required this.title,
@@ -41,7 +43,7 @@ class Gallery {
       if (filename.isNotEmpty) {
         final dotIndex = filename.lastIndexOf('.');
         final stem = dotIndex > 0 ? filename.substring(0, dotIndex) : filename;
-        final cleaned = stem.replaceAll(RegExp(r'[_\.]+'), ' ').trim();
+        final cleaned = stem.replaceAll(_separatorRegExp, ' ').trim();
         if (cleaned.isNotEmpty) return cleaned;
       }
     }

@@ -6,6 +6,8 @@ String? _normalizeDate(DateTime? date) {
   return date.toIso8601String().split('T').first;
 }
 
+final _dateRegExp = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+
 String? _cleanUrl(String? url) {
   if (url == null) return null;
   final trimmed = url.trim();
@@ -72,7 +74,7 @@ void validateSceneUpdateInput(Map<String, dynamic> input) {
 
   if (input.containsKey('date')) {
     final d = input['date'];
-    if (d is! String || !RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(d)) {
+    if (d is! String || !_dateRegExp.hasMatch(d)) {
       throw ArgumentError('Invalid date format (expected YYYY-MM-DD): $d');
     }
   }

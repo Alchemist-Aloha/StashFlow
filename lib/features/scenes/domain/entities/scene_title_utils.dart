@@ -22,6 +22,8 @@ String buildSceneDisplayTitle({
   return (fromPath == null || fromPath.isEmpty) ? fallback : fromPath;
 }
 
+final _separatorRegExp = RegExp(r'[_\.]+');
+
 String? getFilestem(String? rawPath) {
   if (rawPath == null || rawPath.trim().isEmpty) return null;
 
@@ -41,7 +43,7 @@ String? getFilestem(String? rawPath) {
   final decoded = _safeDecodeComponent(lastSegment);
   final dotIndex = decoded.lastIndexOf('.');
   final withoutExt = dotIndex > 0 ? decoded.substring(0, dotIndex) : decoded;
-  final cleaned = withoutExt.replaceAll(RegExp(r'[_\.]+'), ' ').trim();
+  final cleaned = withoutExt.replaceAll(_separatorRegExp, ' ').trim();
   if (cleaned.isEmpty) return null;
 
   final lower = cleaned.toLowerCase();
