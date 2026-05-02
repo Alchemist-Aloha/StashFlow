@@ -126,6 +126,25 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       final previousActiveSceneId =
           previous?.activeScene?.id ?? _lastKnownActiveSceneId;
 
+      // Only handle navigation if this page is part of the active path.
+      // This prevents background pages from interfering when the user has
+      // already navigated forward to a different scene or is in fullscreen.
+      final router = GoRouter.of(context);
+      final currentPath = router.routeInformationProvider.value.uri.path;
+      final pathSegments = Uri.parse(currentPath).pathSegments;
+
+      // Only handle navigation if this page is part of the active path.
+      // This prevents background pages from interfering when the user has
+      // already navigated forward to a different scene or is in fullscreen.
+      // We also exclude the 'edit' subroute to avoid jumping away while editing.
+      final isScenePage = currentPath.contains('/scene/') &&
+          pathSegments.contains(widget.sceneId);
+      final isEditPage = pathSegments.contains('edit');
+
+      if (!isScenePage || isEditPage) {
+        return;
+      }
+
       // Navigate to next scene if provider indicates we just moved from the current scene
       if (shouldRouteToNextScene(
         widget.sceneId,
