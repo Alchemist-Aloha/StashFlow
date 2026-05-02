@@ -26,7 +26,7 @@ A modern, multi-platform client for your **Stash** server. Designed for seamless
 
 - 📱 **Android:** Full-featured mobile experience with PiP and background audio.
 - 💻 **Desktop:** Native performance on Windows, macOS, and Linux with keyboard shortcuts and window management.
-- 🌐 **Web:** Access your library from any modern browser without installation.
+- 🌐 **Web:** Demo-focused access from modern browsers. Note: Due to CORS limitations, only API Key login is supported and video playback is not perfect. Native versions are recommended for the full experience.
 
 ### 🧭 Interface & Navigation
 
@@ -80,8 +80,11 @@ A modern, multi-platform client for your **Stash** server. Designed for seamless
 
 ### 🌐 Web
 
-1. **Access:** Visit the [Live Web App](https://alchemist-aloha.github.io/StashFlow/) (if hosted) or host your own build.
-2. **Configure:** Enter your Stash server details in the connection prompt. Enable local network access.
+1. **Access:** Visit the [Live Web App Demo](https://alchemist-aloha.github.io/StashFlow/) or host your own build.
+2. **Note on Limitations:** The web version serves primarily as a **demo**. 
+   - **Authentication:** Only **API Key** login is supported due to browser CORS restrictions. 
+   - **Playback:** Video playback is limited by browser codec support.
+   - **Recommendation:** Use the **Android** or **Desktop** versions for the complete feature set and optimal performance.
 
 ---
 
