@@ -327,19 +327,17 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildTitle(context, scene),
-        const SizedBox(height: 6),
+        const SizedBox(height: AppTheme.spacingSmall),
         _buildStudioAndDate(context, scene),
-        const SizedBox(height: AppTheme.spacingMedium),
-        _buildSectionContainer(
-          context,
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildTechnicalMetadata(context, scene),
-              const SizedBox(height: 16),
-              _buildActions(context, scene, scrapeEnabled),
-            ],
-          ),
+        const SizedBox(height: AppTheme.spacingSmall),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildTechnicalMetadata(context, scene),
+            const SizedBox(height: AppTheme.spacingSmall),
+            _buildActions(context, scene, scrapeEnabled),
+            const SizedBox(height: AppTheme.spacingMedium),
+          ],
         ),
         _buildDetails(context, scene),
       ],

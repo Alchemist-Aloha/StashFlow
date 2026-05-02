@@ -140,6 +140,7 @@ class TagDetailsPage extends ConsumerWidget {
                             ),
                           ),
                         ],
+                        const SizedBox(height: AppTheme.spacingMedium),
                         _buildSectionContainer(
                           context,
                           Column(
