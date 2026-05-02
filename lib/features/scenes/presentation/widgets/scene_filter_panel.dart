@@ -203,14 +203,14 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
           true,
         ),
         IntCriterionInput(
-          label: 'Performer Age',
+          label: context.l10n.scenes_field_performer_age,
           value: _tempFilter.performerAge,
           onChanged: (val) => setState(
             () => _tempFilter = _tempFilter.copyWith(performerAge: val),
           ),
         ),
         IntCriterionInput(
-          label: 'Performer Count',
+          label: context.l10n.scenes_field_performer_count,
           value: _tempFilter.performerCount,
           onChanged: (val) =>
               setState(() => _tempFilter = _tempFilter.copyWith(performerCount: val)),
@@ -268,7 +268,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
           true,
         ),
         IntCriterionInput(
-          label: 'Tag Count',
+          label: context.l10n.scenes_field_tag_count,
           value: _tempFilter.tagCount,
           onChanged: (val) =>
               setState(() => _tempFilter = _tempFilter.copyWith(tagCount: val)),
@@ -282,41 +282,41 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
       title: 'Metadata',
       children: [
         StringCriterionInput(
-          label: 'Code',
+          label: context.l10n.scenes_field_code,
           value: _tempFilter.code,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(code: val)),
         ),
         StringCriterionInput(
-          label: 'Details',
+          label: context.l10n.scenes_field_details,
           value: _tempFilter.details,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(details: val)),
         ),
         StringCriterionInput(
-          label: 'Director',
+          label: context.l10n.scenes_field_director,
           value: _tempFilter.director,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(director: val)),
         ),
         StringCriterionInput(
-          label: 'URL',
+          label: context.l10n.scenes_field_url,
           value: _tempFilter.url,
           onChanged: (val) => setState(
             () => _tempFilter = _tempFilter.copyWith(url: val),
           ),
         ),
         DateCriterionInput(
-          label: 'Date',
+          label: context.l10n.scenes_field_date,
           value: _tempFilter.date,
           onChanged: (val) => setState(
             () => _tempFilter = _tempFilter.copyWith(date: val),
           ),
         ),
         StringCriterionInput(
-          label: 'Path',
+          label: context.l10n.scenes_field_path,
           value: _tempFilter.path,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(path: val)),
         ),
         StringCriterionInput(
-          label: 'Captions',
+          label: context.l10n.scenes_field_captions,
           value: _tempFilter.captions,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(captions: val)),
         ),
@@ -331,37 +331,37 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
         _buildResolutionFilter(),
         _buildOrientationFilter(),
         IntCriterionInput(
-          label: 'Duration (seconds)',
+          label: context.l10n.scenes_field_duration,
           value: _tempFilter.duration,
           onChanged: (val) =>
               setState(() => _tempFilter = _tempFilter.copyWith(duration: val)),
         ),
         IntCriterionInput(
-          label: 'Bitrate',
+          label: context.l10n.scenes_field_bitrate,
           value: _tempFilter.bitrate,
           onChanged: (val) =>
               setState(() => _tempFilter = _tempFilter.copyWith(bitrate: val)),
         ),
         StringCriterionInput(
-          label: 'Video Codec',
+          label: context.l10n.scenes_field_video_codec,
           value: _tempFilter.videoCodec,
           onChanged: (val) =>
               setState(() => _tempFilter = _tempFilter.copyWith(videoCodec: val)),
         ),
         StringCriterionInput(
-          label: 'Audio Codec',
+          label: context.l10n.scenes_field_audio_codec,
           value: _tempFilter.audioCodec,
           onChanged: (val) =>
               setState(() => _tempFilter = _tempFilter.copyWith(audioCodec: val)),
         ),
         IntCriterionInput(
-          label: 'Framerate',
+          label: context.l10n.scenes_field_framerate,
           value: _tempFilter.framerate,
           onChanged: (val) =>
               setState(() => _tempFilter = _tempFilter.copyWith(framerate: val)),
         ),
         IntCriterionInput(
-          label: 'File Count',
+          label: context.l10n.scenes_field_file_count,
           value: _tempFilter.fileCount,
           onChanged: (val) => setState(
             () => _tempFilter = _tempFilter.copyWith(fileCount: val),
@@ -376,33 +376,33 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
       title: 'Usage',
       children: [
         IntCriterionInput(
-          label: 'Play Count',
+          label: context.l10n.scenes_field_play_count,
           value: _tempFilter.playCount,
           onChanged: (val) => setState(
             () => _tempFilter = _tempFilter.copyWith(playCount: val),
           ),
         ),
         IntCriterionInput(
-          label: 'Play Duration',
+          label: context.l10n.scenes_field_play_duration,
           value: _tempFilter.playDuration,
           onChanged: (val) => setState(
             () => _tempFilter = _tempFilter.copyWith(playDuration: val),
           ),
         ),
         IntCriterionInput(
-          label: 'O-Counter',
+          label: context.l10n.scenes_field_o_counter,
           value: _tempFilter.oCounter,
           onChanged: (val) =>
               setState(() => _tempFilter = _tempFilter.copyWith(oCounter: val)),
         ),
         DateCriterionInput(
-          label: 'Last Played At',
+          label: context.l10n.scenes_field_last_played_at,
           value: _tempFilter.lastPlayedAt,
           onChanged: (val) =>
               setState(() => _tempFilter = _tempFilter.copyWith(lastPlayedAt: val)),
         ),
         IntCriterionInput(
-          label: 'Resume Time',
+          label: context.l10n.scenes_field_resume_time,
           value: _tempFilter.resumeTime,
           onChanged: (val) => setState(
             () => _tempFilter = _tempFilter.copyWith(resumeTime: val),
@@ -416,7 +416,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
           ),
         ),
         IntCriterionInput(
-          label: 'Interactive Speed',
+          label: context.l10n.scenes_field_interactive_speed,
           value: _tempFilter.interactiveSpeed,
           onChanged: (val) => setState(
             () => _tempFilter = _tempFilter.copyWith(interactiveSpeed: val),
@@ -431,27 +431,27 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
       title: 'System',
       children: [
         IntCriterionInput(
-          label: 'ID',
+          label: context.l10n.scenes_field_id,
           value: _tempFilter.id,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(id: val)),
         ),
         IntCriterionInput(
-          label: 'Stash ID Count',
+          label: context.l10n.scenes_field_stash_id_count,
           value: _tempFilter.stashIdCount,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(stashIdCount: val)),
         ),
         StringCriterionInput(
-          label: 'Oshash',
+          label: context.l10n.scenes_field_oshash,
           value: _tempFilter.oshash,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(oshash: val)),
         ),
         StringCriterionInput(
-          label: 'Checksum',
+          label: context.l10n.scenes_field_checksum,
           value: _tempFilter.checksum,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(checksum: val)),
         ),
         StringCriterionInput(
-          label: 'Phash',
+          label: context.l10n.scenes_field_phash,
           value: _tempFilter.phash,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(phash: val)),
         ),
@@ -471,12 +471,12 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
           ),
         ),
         DateCriterionInput(
-          label: 'Created At',
+          label: context.l10n.scenes_field_created_at,
           value: _tempFilter.createdAt,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(createdAt: val)),
         ),
         DateCriterionInput(
-          label: 'Updated At',
+          label: context.l10n.scenes_field_updated_at,
           value: _tempFilter.updatedAt,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(updatedAt: val)),
         ),
@@ -732,7 +732,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
             children: [
               Text(label, style: context.textTheme.labelLarge),
               IconButton(
-                tooltip: 'Add',
+                tooltip: context.l10n.common_add,
                 icon: Icon(
                   Icons.add_circle_outline,
                   size: 24 * context.dimensions.fontSizeFactor,

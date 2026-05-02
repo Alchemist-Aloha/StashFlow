@@ -318,7 +318,7 @@ class VideoPlaybackControls extends ConsumerWidget {
                     ],
                     if (castState.isCasting)
                       IconButton(
-                        tooltip: 'Stop Casting',
+                        tooltip: context.l10n.cast_stop_casting,
                         style: _controlButtonStyle(colorScheme),
                         icon: Icon(
                           Icons.cast_connected_rounded,
@@ -332,7 +332,7 @@ class VideoPlaybackControls extends ConsumerWidget {
                       )
                     else
                       IconButton(
-                        tooltip: 'Cast',
+                        tooltip: context.l10n.cast_cast,
                         style: _controlButtonStyle(colorScheme),
                         icon: const Icon(Icons.cast_rounded, size: 20),
                         onPressed: () {

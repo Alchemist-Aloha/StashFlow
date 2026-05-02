@@ -148,7 +148,7 @@ class MultiCriterionInput<T> extends StatelessWidget {
                   spacing: context.dimensions.spacingSmall / 2,
                   children: [
                     IconButton(
-                      tooltip: 'Add',
+                      tooltip: context.l10n.common_add,
                       icon: const Icon(Icons.add_circle_outline),
                       onPressed: () async {
                         // Show picker and update
@@ -299,7 +299,7 @@ class DateCriterionInput extends StatelessWidget {
                 Expanded(
                   child: TextFormField(
                     initialValue: value?.value ?? '',
-                    decoration: InputDecoration(hintText: 'YYYY-MM-DD'),
+                    decoration: InputDecoration(hintText: context.l10n.common_hint_date),
                     onChanged: (val) {
                       onChanged(DateCriterion(
                         value: val,

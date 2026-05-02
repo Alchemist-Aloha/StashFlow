@@ -168,22 +168,22 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
       title: 'Metadata',
       children: [
         StringCriterionInput(
-          label: 'Name',
+          label: context.l10n.studios_field_name,
           value: _tempFilter.name,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(name: val)),
         ),
         StringCriterionInput(
-          label: 'Details',
+          label: context.l10n.studios_field_details,
           value: _tempFilter.details,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(details: val)),
         ),
         StringCriterionInput(
-          label: 'Aliases',
+          label: context.l10n.studios_field_aliases,
           value: _tempFilter.aliases,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(aliases: val)),
         ),
         StringCriterionInput(
-          label: 'URL',
+          label: context.l10n.studios_field_url,
           value: _tempFilter.url,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(url: val)),
         ),
@@ -216,7 +216,7 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
           true,
         ),
         IntCriterionInput(
-          label: 'Tag Count',
+          label: context.l10n.studios_field_tag_count,
           value: _tempFilter.tagCount,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(tagCount: val)),
         ),
@@ -239,32 +239,32 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
           (val) => setState(() => _tempFilter = _tempFilter.copyWith(ignoreAutoTag: val)),
         ),
         IntCriterionInput(
-          label: 'Scene Count',
+          label: context.l10n.studios_field_scene_count,
           value: _tempFilter.sceneCount,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(sceneCount: val)),
         ),
         IntCriterionInput(
-          label: 'Image Count',
+          label: context.l10n.studios_field_image_count,
           value: _tempFilter.imageCount,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(imageCount: val)),
         ),
         IntCriterionInput(
-          label: 'Gallery Count',
+          label: context.l10n.studios_field_gallery_count,
           value: _tempFilter.galleryCount,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(galleryCount: val)),
         ),
         IntCriterionInput(
-          label: 'Sub-studio Count',
+          label: context.l10n.studios_field_sub_studio_count,
           value: _tempFilter.childCount,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(childCount: val)),
         ),
         DateCriterionInput(
-          label: 'Created At',
+          label: context.l10n.studios_field_created_at,
           value: _tempFilter.createdAt,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(createdAt: val)),
         ),
         DateCriterionInput(
-          label: 'Updated At',
+          label: context.l10n.studios_field_updated_at,
           value: _tempFilter.updatedAt,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(updatedAt: val)),
         ),
@@ -404,7 +404,7 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
             children: [
               Text(label, style: context.textTheme.labelLarge),
               IconButton(
-                tooltip: 'Add',
+                tooltip: context.l10n.common_add,
                 icon: Icon(
                   Icons.add_circle_outline,
                   size: 24 * context.dimensions.fontSizeFactor,

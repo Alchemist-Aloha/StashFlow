@@ -173,38 +173,38 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
       title: 'Metadata',
       children: [
         StringCriterionInput(
-          label: 'Title',
+          label: context.l10n.galleries_field_title,
           value: _tempFilter.title,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(title: val)),
         ),
         StringCriterionInput(
-          label: 'Details',
+          label: context.l10n.galleries_field_details,
           value: _tempFilter.details,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(details: val)),
         ),
         DateCriterionInput(
-          label: 'Date',
+          label: context.l10n.galleries_field_date,
           value: _tempFilter.date,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(date: val)),
         ),
         IntCriterionInput(
-          label: 'Performer Age',
+          label: context.l10n.galleries_field_performer_age,
           value: _tempFilter.performerAge,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(performerAge: val)),
         ),
         IntCriterionInput(
-          label: 'Performer Count',
+          label: context.l10n.galleries_field_performer_count,
           value: _tempFilter.performerCount,
           onChanged: (val) =>
               setState(() => _tempFilter = _tempFilter.copyWith(performerCount: val)),
         ),
         IntCriterionInput(
-          label: 'Tag Count',
+          label: context.l10n.galleries_field_tag_count,
           value: _tempFilter.tagCount,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(tagCount: val)),
         ),
         StringCriterionInput(
-          label: 'URL',
+          label: context.l10n.galleries_field_url,
           value: _tempFilter.url,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(url: val)),
         ),
@@ -258,17 +258,17 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
       title: 'System',
       children: [
         IntCriterionInput(
-          label: 'ID',
+          label: context.l10n.galleries_field_id,
           value: _tempFilter.id,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(id: val)),
         ),
         StringCriterionInput(
-          label: 'Path',
+          label: context.l10n.galleries_field_path,
           value: _tempFilter.path,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(path: val)),
         ),
         StringCriterionInput(
-          label: 'Checksum',
+          label: context.l10n.galleries_field_checksum,
           value: _tempFilter.checksum,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(checksum: val)),
         ),
@@ -276,22 +276,22 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
         _buildBooleanFilter('Is Zip', _tempFilter.isZip, (val) => setState(() => _tempFilter = _tempFilter.copyWith(isZip: val))),
         _buildBooleanFilter('Has Chapters', _tempFilter.hasChapters, (val) => setState(() => _tempFilter = _tempFilter.copyWith(hasChapters: val))),
         IntCriterionInput(
-          label: 'Image Count',
+          label: context.l10n.galleries_field_image_count,
           value: _tempFilter.imageCount,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(imageCount: val)),
         ),
         IntCriterionInput(
-          label: 'File Count',
+          label: context.l10n.galleries_field_file_count,
           value: _tempFilter.fileCount,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(fileCount: val)),
         ),
         DateCriterionInput(
-          label: 'Created At',
+          label: context.l10n.galleries_field_created_at,
           value: _tempFilter.createdAt,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(createdAt: val)),
         ),
         DateCriterionInput(
-          label: 'Updated At',
+          label: context.l10n.galleries_field_updated_at,
           value: _tempFilter.updatedAt,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(updatedAt: val)),
         ),
@@ -419,7 +419,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
             children: [
               Text(label, style: context.textTheme.labelLarge),
               IconButton(
-                tooltip: 'Add',
+                tooltip: context.l10n.common_add,
                 icon: const Icon(Icons.add_circle_outline),
                 onPressed: () async {
                   final result = await showDialog<List<T>>(

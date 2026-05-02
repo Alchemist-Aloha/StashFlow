@@ -106,10 +106,10 @@ class _ScrapeQueryDialogState extends ConsumerState<ScrapeQueryDialog> {
               controller: _urlController,
               decoration: InputDecoration(
                 labelText: context.l10n.scrape_from_url,
-                hintText: 'https://...',
+                hintText: context.l10n.common_hint_url,
                 border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
-                  tooltip: 'Download',
+                  tooltip: context.l10n.common_download,
                   icon: const Icon(Icons.download),
                   onPressed: () {
                     if (_urlController.text.isNotEmpty) {
