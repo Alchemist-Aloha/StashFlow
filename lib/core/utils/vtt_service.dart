@@ -13,6 +13,11 @@ final vttServiceProvider = Provider<VttService>((ref) {
 class VttService {
   VttService({this.apiKey});
 
+  static final _spriteRegExp = RegExp(
+    r'^([^#]*)#xywh=(\d+),(\d+),(\d+),(\d+)$',
+    caseSensitive: false,
+  );
+
   final String? apiKey;
   final Map<String, List<SpriteInfo>> _cache = {};
 
@@ -68,11 +73,6 @@ class VttService {
     final List<SpriteInfo> sprites = [];
     final lines = vttBody.split('\n');
 
-    final spriteRegExp = RegExp(
-      r'^([^#]*)#xywh=(\d+),(\d+),(\d+),(\d+)$',
-      caseSensitive: false,
-    );
-
     // Robust VTT parser for Stash sprite format
     for (int i = 0; i < lines.length; i++) {
       final line = lines[i].trim();
@@ -94,7 +94,7 @@ class VttService {
           }
 
           if (spriteLine != null) {
-            final match = spriteRegExp.firstMatch(spriteLine);
+            final match = _spriteRegExp.firstMatch(spriteLine);
             if (match != null) {
               final spriteFile = match.group(1) ?? '';
               final x = double.parse(match.group(2)!);

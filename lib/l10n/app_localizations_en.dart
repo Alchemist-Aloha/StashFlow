@@ -500,6 +500,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get details_show_more => 'Show more';
 
   @override
+  String get common_more => 'More';
+
+  @override
   String get details_show_less => 'Show less';
 
   @override
