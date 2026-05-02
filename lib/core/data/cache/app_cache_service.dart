@@ -21,11 +21,14 @@ class AppCacheService {
     }
     int size = 0;
     try {
-      await for (final entity in dir.list(recursive: true, followLinks: false)) {
+      final entities = await dir.list(recursive: true, followLinks: false).toList();
+      final lengths = await Future.wait(entities.map((entity) async {
         if (entity is File) {
-          size += await entity.length();
+          return await entity.length();
         }
-      }
+        return 0;
+      }));
+      size = lengths.fold(0, (sum, len) => sum + len);
     } catch (e) {
       debugPrint('AppCacheService: Error listing directory ${dir.path}: $e');
     }
@@ -42,11 +45,15 @@ class AppCacheService {
       'libCachedImageData': Directory(p.join(tempPath, 'libCachedImageData')),
     };
 
-    for (final entry in cacheDirs.entries) {
+    final sizes = await Future.wait(cacheDirs.entries.map((entry) async {
       final size = await _calculateDirSize(entry.value);
       if (size > 0) {
         debugPrint('AppCacheService: Directory ${entry.key} size: $size bytes');
       }
+      return size;
+    }));
+
+    for (final size in sizes) {
       totalBytes += size;
     }
 
@@ -61,22 +68,30 @@ class AppCacheService {
     int bytes = 0;
     final videoExtensions = {'.mkv', '.mp4', '.webm', '.avi', '.mov', '.part'};
     
-    Future<void> scan(Directory dir) async {
+    Future<int> scan(Directory dir) async {
+      int dirBytes = 0;
       try {
-        if (!await dir.exists()) return;
-        await for (final entity in dir.list(recursive: true, followLinks: false)) {
+        if (!await dir.exists()) return 0;
+        final entities = await dir.list(recursive: true, followLinks: false).toList();
+        final lengths = await Future.wait(entities.map((entity) async {
           if (entity is File) {
             final ext = p.extension(entity.path).toLowerCase();
             if (videoExtensions.contains(ext)) {
-              bytes += await entity.length();
+              return await entity.length();
             }
           }
-        }
+          return 0;
+        }));
+        dirBytes = lengths.fold(0, (sum, len) => sum + len);
       } catch (_) {}
+      return dirBytes;
     }
 
-    await scan(tempDir);
-    await scan(appDir);
+    final results = await Future.wait([
+      scan(tempDir),
+      scan(appDir),
+    ]);
+    bytes = results.fold(0, (sum, b) => sum + b);
     
     debugPrint('AppCacheService: Video cache size: $bytes bytes');
     return bytes ~/ (1024 * 1024);
@@ -90,11 +105,14 @@ class AppCacheService {
     
     // Also check for root hive files
     try {
-      await for (final entity in appDir.list(recursive: false)) {
+      final entities = await appDir.list(recursive: false).toList();
+      final lengths = await Future.wait(entities.map((entity) async {
         if (entity is File && (entity.path.endsWith('.hive') || entity.path.endsWith('.lock'))) {
-          bytes += await entity.length();
+          return await entity.length();
         }
-      }
+        return 0;
+      }));
+      bytes += lengths.fold(0, (sum, len) => sum + len);
     } catch (_) {}
 
     debugPrint('AppCacheService: Database cache size: $bytes bytes in ${appDir.path}');
@@ -122,19 +140,18 @@ class AppCacheService {
         p.join(tempPath, 'libCachedImageData'),
       ];
 
-      for (final path in dirsToClear) {
+      await Future.wait(dirsToClear.map((path) async {
         final dir = Directory(path);
         if (await dir.exists()) {
           debugPrint('AppCacheService: Manually clearing directory: $path');
           try {
-            await for (final entity in dir.list()) {
-              await entity.delete(recursive: true);
-            }
+            final entities = await dir.list().toList();
+            await Future.wait(entities.map((e) => e.delete(recursive: true)));
           } catch (e) {
             debugPrint('AppCacheService: Manual clear failed for $path: $e');
           }
         }
-      }
+      }));
       
       debugPrint('AppCacheService: Image cache clearing completed');
     } catch (e) {
@@ -151,19 +168,22 @@ class AppCacheService {
     Future<void> deleteVideos(Directory dir) async {
       try {
         if (!await dir.exists()) return;
-        await for (final entity in dir.list(recursive: true, followLinks: false)) {
+        final entities = await dir.list(recursive: true, followLinks: false).toList();
+        await Future.wait(entities.map((entity) async {
           if (entity is File) {
             final ext = p.extension(entity.path).toLowerCase();
             if (videoExtensions.contains(ext)) {
               await entity.delete();
             }
           }
-        }
+        }));
       } catch (_) {}
     }
 
-    await deleteVideos(tempDir);
-    await deleteVideos(appDir);
+    await Future.wait([
+      deleteVideos(tempDir),
+      deleteVideos(appDir),
+    ]);
     debugPrint('AppCacheService: Video cache cleared');
   }
 
@@ -183,7 +203,8 @@ class AppCacheService {
     
     // Also delete root hive files (excluding essential ones if any, but hive files are usually safe to clear for cache)
     try {
-      await for (final entity in appDir.list(recursive: false)) {
+      final entities = await appDir.list(recursive: false).toList();
+      await Future.wait(entities.map((entity) async {
         final path = entity.path;
         if (entity is File && (path.endsWith('.hive') || path.endsWith('.lock'))) {
           // Don't delete shared_preferences if it's there (though usually it's in a different spot)
@@ -191,7 +212,7 @@ class AppCacheService {
             await entity.delete();
           }
         }
-      }
+      }));
       debugPrint('AppCacheService: Root hive files deleted');
     } catch (e) {
       debugPrint('AppCacheService: Error deleting root hive files: $e');
