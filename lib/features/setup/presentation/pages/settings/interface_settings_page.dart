@@ -396,7 +396,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         ],
                         Divider(height: context.dimensions.spacingLarge),
                         _buildFontSizeSetting(
-                          label: 'Card Title Font Size',
+                          label: context.l10n.settings_interface_card_title_font_size,
                           value: _cardTitleFontSize,
                           onChanged: (value) async {
                             setState(() => _cardTitleFontSize = value ?? context.fontSizes.medium);
@@ -892,7 +892,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
           min: 10.0,
           max: 24.0,
           divisions: 7,
-          label: value == null ? 'Default' : '${value.toInt()} pt',
+          label: value == null ? context.l10n.common_default : context.l10n.common_pt(value.toInt()),
           onChanged: (val) => onChanged(val),
         ),
       ],
@@ -928,7 +928,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
           min: 12.0,
           max: 48.0,
           divisions: 9,
-          label: '${value.toInt()} px',
+          label: context.l10n.common_px(value.toInt()),
           onChanged: (val) => onChanged(val),
         ),
       ],

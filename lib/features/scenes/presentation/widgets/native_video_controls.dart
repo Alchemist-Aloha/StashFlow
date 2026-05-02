@@ -306,7 +306,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       await widget.controller.player.play();
 
       messenger.showSnackBar(
-        const SnackBar(content: Text('Cast stopped, resuming locally')),
+        SnackBar(content: Text(context.l10n.cast_stopped_resuming_locally)),
       );
     }
   }

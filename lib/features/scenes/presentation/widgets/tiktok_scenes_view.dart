@@ -569,7 +569,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                   final starValue = (index + 1) * 20;
                   final currentRating = _localRating ?? 0;
                   return IconButton(
-                    tooltip: 'Star',
+                    tooltip: context.l10n.common_star,
                     icon: Icon(
                       currentRating >= starValue
                           ? Icons.star

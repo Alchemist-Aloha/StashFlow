@@ -1,11 +1,10 @@
+import '../../providers/video_player_provider.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:dart_cast/dart_cast.dart' as dc;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/data/services/cast_service.dart';
 import '../../../../../core/presentation/theme/app_theme.dart';
-import '../../../../../core/utils/l10n_extensions.dart';
-import '../../providers/video_player_provider.dart';
-import '../../../../../core/utils/l10n_extensions.dart';
 
 /// A bottom sheet that allows users to select a device for casting.
 class CastSelectionSheet extends ConsumerStatefulWidget {

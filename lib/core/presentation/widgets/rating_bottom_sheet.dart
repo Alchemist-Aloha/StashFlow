@@ -1,3 +1,4 @@
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
@@ -70,7 +71,7 @@ class RatingBottomSheet extends StatelessWidget {
                 final starValue = (index + 1) * 20;
                 final isSelected = initialRating >= starValue;
                 return IconButton(
-                  tooltip: 'Star',
+                  tooltip: context.l10n.common_star,
                   icon: Icon(
                     isSelected ? Icons.star : Icons.star_border,
                     size: 48 * dims.fontSizeFactor,
