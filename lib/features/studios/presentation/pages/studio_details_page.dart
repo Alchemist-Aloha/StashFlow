@@ -158,6 +158,7 @@ class StudioDetailsPage extends ConsumerWidget {
                             ),
                           ),
                         ],
+                        const SizedBox(height: AppTheme.spacingMedium),
                         _buildSectionContainer(
                           context,
                           Column(

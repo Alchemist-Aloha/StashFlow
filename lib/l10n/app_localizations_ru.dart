@@ -504,6 +504,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get details_show_more => 'Показать больше';
 
   @override
+  String get common_more => 'More';
+
+  @override
   String get details_show_less => 'Показать меньше';
 
   @override

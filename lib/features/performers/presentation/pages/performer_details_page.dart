@@ -218,7 +218,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                             ),
                           ),
                         ],
-                        const SizedBox(height: AppTheme.spacingMedium),
+                        const SizedBox(height: AppTheme.spacingSmall),
                         Wrap(
                           spacing: AppTheme.spacingSmall,
                           runSpacing: AppTheme.spacingSmall,
@@ -240,6 +240,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                               _buildChip(context, performer.hairColor!),
                           ],
                         ),
+                        const SizedBox(height: AppTheme.spacingSmall),
                         if (performer.tagNames.isNotEmpty) ...[
                           _buildSectionContainer(
                             context,

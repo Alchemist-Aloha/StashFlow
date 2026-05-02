@@ -506,6 +506,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get details_show_more => 'Afficher plus';
 
   @override
+  String get common_more => 'More';
+
+  @override
   String get details_show_less => 'Afficher moins';
 
   @override
