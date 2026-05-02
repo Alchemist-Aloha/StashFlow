@@ -353,9 +353,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
       final delegate =
           responsiveDelegate as SliverGridDelegateWithFixedCrossAxisCount;
       final crossAxisCount = delegate.crossAxisCount;
-      final padding = widget.padding is EdgeInsets
-          ? (widget.padding as EdgeInsets).horizontal
-          : 0.0;
+      final padding = widget.padding?.horizontal ?? 0.0;
       final availableWidth = screenWidth - padding;
       final itemWidth =
           (availableWidth -
