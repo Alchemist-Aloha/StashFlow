@@ -89,7 +89,9 @@
     "common_hint_hex",
     "common_px",
     "common_pt",
-    "common_percent"
+    "common_percent",
+    "settings_playback_direct_play",
+    "settings_playback_direct_play_subtitle"
   ],
 
   "es": [
@@ -182,7 +184,9 @@
     "common_hint_hex",
     "common_px",
     "common_pt",
-    "common_percent"
+    "common_percent",
+    "settings_playback_direct_play",
+    "settings_playback_direct_play_subtitle"
   ],
 
   "fr": [
@@ -275,7 +279,9 @@
     "common_hint_hex",
     "common_px",
     "common_pt",
-    "common_percent"
+    "common_percent",
+    "settings_playback_direct_play",
+    "settings_playback_direct_play_subtitle"
   ],
 
   "it": [
@@ -367,7 +373,9 @@
     "common_hint_hex",
     "common_px",
     "common_pt",
-    "common_percent"
+    "common_percent",
+    "settings_playback_direct_play",
+    "settings_playback_direct_play_subtitle"
   ],
 
   "ja": [
@@ -460,7 +468,9 @@
     "common_hint_hex",
     "common_px",
     "common_pt",
-    "common_percent"
+    "common_percent",
+    "settings_playback_direct_play",
+    "settings_playback_direct_play_subtitle"
   ],
 
   "ko": [
@@ -553,7 +563,9 @@
     "common_hint_hex",
     "common_px",
     "common_pt",
-    "common_percent"
+    "common_percent",
+    "settings_playback_direct_play",
+    "settings_playback_direct_play_subtitle"
   ],
 
   "ru": [
@@ -646,7 +658,9 @@
     "common_hint_hex",
     "common_px",
     "common_pt",
-    "common_percent"
+    "common_percent",
+    "settings_playback_direct_play",
+    "settings_playback_direct_play_subtitle"
   ],
 
   "zh": [
@@ -739,7 +753,9 @@
     "common_hint_hex",
     "common_px",
     "common_pt",
-    "common_percent"
+    "common_percent",
+    "settings_playback_direct_play",
+    "settings_playback_direct_play_subtitle"
   ],
 
   "zh_Hans": [
@@ -832,7 +848,9 @@
     "common_hint_hex",
     "common_px",
     "common_pt",
-    "common_percent"
+    "common_percent",
+    "settings_playback_direct_play",
+    "settings_playback_direct_play_subtitle"
   ],
 
   "zh_Hant": [
@@ -925,6 +943,8 @@
     "common_hint_hex",
     "common_px",
     "common_pt",
-    "common_percent"
+    "common_percent",
+    "settings_playback_direct_play",
+    "settings_playback_direct_play_subtitle"
   ]
 }

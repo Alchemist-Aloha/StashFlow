@@ -2248,4 +2248,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String common_percent(int value) {
     return '$value%';
   }
+
+  @override
+  String get settings_playback_direct_play => 'Direct-play on scene navigation';
+
+  @override
+  String get settings_playback_direct_play_subtitle =>
+      'When navigating from another playing scene, directly play the new scene';
 }
