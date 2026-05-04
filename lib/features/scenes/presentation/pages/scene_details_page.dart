@@ -175,10 +175,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         );
 
         if (nextScene != null) {
-          context.pushReplacement(
-            '/scenes/scene/${nextScene.id}',
-            extra: true,
-          );
+          context.pushReplacement('/scenes/scene/${nextScene.id}', extra: true);
         }
       }
 
@@ -229,125 +226,127 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
           return sceneAsync.when(
             data: (scene) {
-          final useTwoColumns = !Responsive.isMobile(context);
+              final useTwoColumns = !Responsive.isMobile(context);
 
-          if (useTwoColumns) {
-            return RefreshIndicator(
-              onRefresh: () async {
-                ref.invalidate(sceneDetailsProvider(widget.sceneId));
-                return ref.read(sceneDetailsProvider(widget.sceneId).future);
-              },
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Left Column: Video, Title, Info, Details (61.8%)
-                  Expanded(
-                    flex: 618,
-                    child: SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SceneVideoPlayer(
-                            scene: scene,
-                            autoPlayOnMount: widget.autoPlayOnMount,
-                            maxHeight: safeMaxHeight,
+              if (useTwoColumns) {
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    ref.invalidate(sceneDetailsProvider(widget.sceneId));
+                    return ref.read(
+                      sceneDetailsProvider(widget.sceneId).future,
+                    );
+                  },
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Left Column: Video, Title, Info, Details (61.8%)
+                      Expanded(
+                        flex: 618,
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SceneVideoPlayer(
+                                scene: scene,
+                                autoPlayOnMount: widget.autoPlayOnMount,
+                                maxHeight: safeMaxHeight,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(
+                                  AppTheme.spacingMedium,
+                                ),
+                                child: _buildMainInfo(
+                                  context,
+                                  scene,
+                                  scrapeEnabled,
+                                ),
+                              ),
+                            ],
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(
-                              AppTheme.spacingMedium,
-                            ),
-                            child: _buildMainInfo(
-                              context,
-                              scene,
-                              scrapeEnabled,
-                            ),
+                        ),
+                      ),
+                      // Divider
+                      VerticalDivider(
+                        width: 1,
+                        thickness: 1,
+                        color: context.colors.outline.withValues(alpha: 0.1),
+                      ),
+                      // Right Column: Tags, Performers, More from Studio (38.2%)
+                      Expanded(
+                        flex: 382,
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildTagsSection(context, scene),
+                              _buildPerformersSection(context, scene),
+                              _buildMoreFromStudioSection(context, scene),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                  // Divider
-                  VerticalDivider(
-                    width: 1,
-                    thickness: 1,
-                    color: context.colors.outline.withValues(alpha: 0.1),
-                  ),
-                  // Right Column: Tags, Performers, More from Studio (38.2%)
-                  Expanded(
-                    flex: 382,
-                    child: SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildTagsSection(context, scene),
-                          _buildPerformersSection(context, scene),
-                          _buildMoreFromStudioSection(context, scene),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
+                );
+              }
 
-          // Mobile View (Default Column)
-          return RefreshIndicator(
-            onRefresh: () async {
-              await ref
-                  .read(sceneRepositoryProvider)
-                  .getSceneById(widget.sceneId, refresh: true);
-              ref.invalidate(sceneDetailsProvider(widget.sceneId));
-              return ref.read(sceneDetailsProvider(widget.sceneId).future);
+              // Mobile View (Default Column)
+              return RefreshIndicator(
+                onRefresh: () async {
+                  await ref
+                      .read(sceneRepositoryProvider)
+                      .getSceneById(widget.sceneId, refresh: true);
+                  ref.invalidate(sceneDetailsProvider(widget.sceneId));
+                  return ref.read(sceneDetailsProvider(widget.sceneId).future);
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SceneVideoPlayer(
+                        scene: scene,
+                        autoPlayOnMount: widget.autoPlayOnMount,
+                        maxHeight: safeMaxHeight,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildMainInfo(context, scene, scrapeEnabled),
+                            _buildTagsSection(context, scene),
+                            _buildPerformersSection(context, scene),
+                            _buildMoreFromStudioSection(context, scene),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
             },
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SceneVideoPlayer(
-                    scene: scene,
-                    autoPlayOnMount: widget.autoPlayOnMount,
-                    maxHeight: safeMaxHeight,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildMainInfo(context, scene, scrapeEnabled),
-                        _buildTagsSection(context, scene),
-                        _buildPerformersSection(context, scene),
-                        _buildMoreFromStudioSection(context, scene),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, stack) => ErrorStateView(
+              message: context.l10n.common_error(err.toString()),
+              onRetry: () => ref.refresh(sceneDetailsProvider(widget.sceneId)),
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => ErrorStateView(
-          message: context.l10n.common_error(err.toString()),
-          onRetry: () => ref.refresh(sceneDetailsProvider(widget.sceneId)),
-        ),
-      );
-    },
-  ),
-);
+      ),
+    );
   }
 
   Widget _buildSectionContainer(BuildContext context, Widget child) {
     return Card(
       margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
       elevation: 0,
-      color: Theme.of(context).colorScheme.primaryContainer.withValues(
-        alpha: 0.1,
-      ),
+      color: Theme.of(
+        context,
+      ).colorScheme.primaryContainer.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
       ),
@@ -797,9 +796,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     return studioMediaAsync.when(
       data: (scenes) {
         final List<Scene> sceneList = scenes;
-        final filtered =
-            sceneList.where((item) => item.id != scene.id).toList()
-              ..shuffle(Random(scene.id.hashCode));
+        final filtered = sceneList.where((item) => item.id != scene.id).toList()
+          ..shuffle(Random(scene.id.hashCode));
 
         if (filtered.isEmpty) {
           return const SizedBox.shrink();
@@ -813,7 +811,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               SectionHeader(
                 title: context.l10n.details_more_from_studio,
                 onViewAll: canOpenStudio
-                    ? () => context.push('/studios/studio/${scene.studioId}/media')
+                    ? () => context.push(
+                        '/studios/studio/${scene.studioId}/media',
+                      )
                     : null,
                 padding: EdgeInsets.zero,
               ),

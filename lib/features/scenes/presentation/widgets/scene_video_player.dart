@@ -164,7 +164,8 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     // Users can opt into "direct-play on navigation" which allows a scene
     // details page to start playback even when another scene is already active.
     final prefs = ref.read(sharedPreferencesProvider);
-    final directPlayOnNavigation = prefs.getBool('video_direct_play_on_navigation') ?? false;
+    final directPlayOnNavigation =
+        prefs.getBool('video_direct_play_on_navigation') ?? false;
     if (!force && playerState.activeScene != null && !directPlayOnNavigation) {
       return;
     }
@@ -275,7 +276,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       }
       final resolver = ref.read(streamResolverProvider.notifier);
       final prewarmer = ref.read(streamPrewarmerProvider.notifier);
-      
+
       final choice = await resolver.resolvePreferredStream(scene);
       if (choice == null) {
         return const _PrewarmResult(attempted: false, succeeded: false);
@@ -285,7 +286,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
         return const _PrewarmResult(attempted: false, succeeded: false);
       }
       final headers = ref.read(mediaPlaybackHeadersProvider);
-      
+
       // Use the centralized prewarmer which uses Byte-Range GET (0-10MB)
       // and keeps the connection alive in a pool.
       await prewarmer.prewarm(scene, choice.url, headers: headers);
@@ -293,7 +294,8 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       stopwatch.stop();
       return _PrewarmResult(
         attempted: true,
-        succeeded: true, // We assume success if no exception was thrown during request setup
+        succeeded:
+            true, // We assume success if no exception was thrown during request setup
         latencyMs: stopwatch.elapsedMilliseconds,
       );
     } catch (_) {
@@ -443,12 +445,12 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                                 fit: BoxFit.contain,
                                 errorBuilder: (context, error, stackTrace) =>
                                     const Center(
-                                  child: Icon(
-                                    Icons.cast,
-                                    size: 64,
-                                    color: Colors.white24,
-                                  ),
-                                ),
+                                      child: Icon(
+                                        Icons.cast,
+                                        size: 64,
+                                        color: Colors.white24,
+                                      ),
+                                    ),
                               )
                             : TransformableVideoSurface(
                                 fontSize: playerState.subtitleFontSize,
@@ -471,8 +473,9 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                           decoration: BoxDecoration(
                             color: Colors.black.withValues(alpha: 0.4),
                           ),
-                          child:
-                              const Center(child: CircularProgressIndicator()),
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
                         ),
                       ),
                     if (castState.isCasting)
@@ -815,10 +818,7 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
         // and we are actually on the fullscreen path.
         if (context.mounted &&
             !_isPopping &&
-            _isSceneFullscreenPath(
-              livePath,
-              sceneId: widget.sceneId,
-            )) {
+            _isSceneFullscreenPath(livePath, sceneId: widget.sceneId)) {
           AppLogStore.instance.add(
             'FullscreenPlayerPage [${widget.sceneId}] auto-exiting fullscreen',
             source: 'FullscreenPlayerPage',
@@ -897,10 +897,12 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
 
               // Use the same debouncing logic as the inline player
               if (playerState.isBuffering && !_showBufferingSpinner) {
-                _bufferingDisplayTimer ??=
-                    Timer(const Duration(milliseconds: 500), () {
-                      if (mounted) setState(() => _showBufferingSpinner = true);
-                    });
+                _bufferingDisplayTimer ??= Timer(
+                  const Duration(milliseconds: 500),
+                  () {
+                    if (mounted) setState(() => _showBufferingSpinner = true);
+                  },
+                );
               } else if (!playerState.isBuffering && _showBufferingSpinner) {
                 _bufferingDisplayTimer?.cancel();
                 _bufferingDisplayTimer = null;
@@ -930,12 +932,12 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
                               fit: BoxFit.contain,
                               errorBuilder: (context, error, stackTrace) =>
                                   const Center(
-                                child: Icon(
-                                  Icons.cast,
-                                  size: 64,
-                                  color: Colors.white24,
-                                ),
-                              ),
+                                    child: Icon(
+                                      Icons.cast,
+                                      size: 64,
+                                      color: Colors.white24,
+                                    ),
+                                  ),
                             )
                           : TransformableVideoSurface(
                               fontSize: playerState.subtitleFontSize,
