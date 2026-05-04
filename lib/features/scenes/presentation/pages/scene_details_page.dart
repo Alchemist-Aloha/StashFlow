@@ -137,7 +137,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       // This prevents background pages from interfering when the user has
       // already navigated forward to a different scene or is in fullscreen.
       // We also exclude the 'edit' subroute to avoid jumping away while editing.
-      final isScenePage = currentPath.contains('/scene/') &&
+      final isScenePage = (currentPath.contains('/scene/') || currentPath.contains('/fullscreen/')) &&
           pathSegments.contains(widget.sceneId);
       final isEditPage = pathSegments.contains('edit');
 

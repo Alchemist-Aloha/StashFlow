@@ -659,7 +659,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
       if (mounted) {
         // Navigate to details THEN fullscreen for robust back stack
         router.push('/scenes/scene/${widget.scene.id}');
-        router.push('/scenes/scene/${widget.scene.id}/fullscreen');
+        router.push('/scenes/fullscreen/${widget.scene.id}');
       }
     }
   }

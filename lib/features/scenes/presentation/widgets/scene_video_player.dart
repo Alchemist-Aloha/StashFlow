@@ -308,7 +308,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     // We check both state and path for maximum robustness.
     // If we are in fullscreen state OR on the fullscreen path, we want to exit.
     final currentPath = router?.routeInformationProvider.value.uri.path ?? '';
-    final isInFullscreenPath = currentPath.endsWith('/fullscreen');
+    final isInFullscreenPath = currentPath.contains('/fullscreen');
 
     if (kIsWeb) {
       if (playerState.isFullScreen || isInFullscreenPath) {
@@ -321,7 +321,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     if (playerState.isFullScreen || isInFullscreenPath) {
       router?.pop();
     } else {
-      context.push('/scenes/scene/${widget.scene.id}/fullscreen');
+      context.push('/scenes/fullscreen/${widget.scene.id}');
     }
   }
 
