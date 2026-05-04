@@ -135,6 +135,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       final nextScene = next.activeScene;
       final previousActiveSceneId =
           previous?.activeScene?.id ?? _lastKnownActiveSceneId;
+        final movedByAutoplayNext =
+          next.streamSource == 'autoplay-next' &&
+          nextScene != null &&
+          nextScene.id != widget.sceneId;
 
       // Only handle navigation if this page is part of the active path.
       // This prevents background pages from interfering when the user has
@@ -166,20 +170,28 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         return;
       }
 
-      // Navigate to next scene if provider indicates we just moved from the current scene
-      if (shouldRouteToNextScene(
-        widget.sceneId,
-        previous?.activeScene,
-        _lastKnownActiveSceneId,
-        nextScene,
-      )) {
+      // Navigate to the next scene when playback auto-advances.
+      // We keep the legacy previous/next check and add an explicit
+      // autoplay-next source check for robustness across provider transitions.
+      final shouldNavigateToNext =
+          movedByAutoplayNext ||
+          shouldRouteToNextScene(
+            widget.sceneId,
+            previous?.activeScene,
+            _lastKnownActiveSceneId,
+            nextScene,
+          );
+
+      if (shouldNavigateToNext) {
         AppLogStore.instance.add(
           'SceneDetailsPage [${widget.sceneId}] navigating to next scene: ${nextScene?.id}',
           source: 'SceneDetailsPage',
         );
 
         if (nextScene != null) {
-          context.pushReplacement('/scenes/scene/${nextScene.id}', extra: true);
+          // Playback is already started by the global player during autoplay-next,
+          // so the destination page should not force a fresh manual-start.
+          context.pushReplacement('/scenes/scene/${nextScene.id}');
         }
       }
 
