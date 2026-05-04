@@ -151,6 +151,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         currentPath,
         widget.sceneId,
       );
+      final isFullscreenRoute =
+          pathSegments.length >= 3 &&
+          pathSegments[0] == 'scenes' &&
+          pathSegments[1] == 'fullscreen';
       final isEditPage =
           pathSegments.length >= 4 &&
           pathSegments[0] == 'scenes' &&
@@ -158,7 +162,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           pathSegments[2] == widget.sceneId &&
           pathSegments[3] == 'edit';
 
-      if (!isScenePage || isEditPage) {
+      if (!isScenePage || isEditPage || isFullscreenRoute) {
         return;
       }
 

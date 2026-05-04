@@ -151,12 +151,22 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   /// or if requested by the user.
   Future<void> _startPlaybackIfNeeded({bool force = false}) async {
     final playerState = ref.read(playerStateProvider);
+    final router = GoRouter.maybeOf(context);
+    final currentPath = router?.routeInformationProvider.value.uri.path ?? '';
+    final isInFullscreenRoute = _isSceneFullscreenPath(currentPath);
 
     // If we're already active, just resume or stay as-is.
     if (playerState.activeScene?.id == widget.scene.id) {
       if (playerState.player != null && !playerState.player!.state.playing) {
         playerState.player!.play();
       }
+      return;
+    }
+
+    // Do not let a background scene claim the shared player while fullscreen
+    // is active for another scene. That would replace the active scene under
+    // the fullscreen route and break fullscreen lifecycle validation.
+    if (!force && (playerState.isFullScreen || isInFullscreenRoute)) {
       return;
     }
 
