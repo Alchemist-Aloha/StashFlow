@@ -48,6 +48,16 @@ bool shouldRouteToNextScene(
       previousId == currentPageSceneId;
 }
 
+bool _isSceneOrFullscreenRouteFor(String path, String sceneId) {
+  final segments = Uri.parse(path).pathSegments;
+  if (segments.length < 3) return false;
+  final isSceneRoute = segments[0] == 'scenes' && segments[1] == 'scene';
+  final isFullscreenRoute =
+      segments[0] == 'scenes' && segments[1] == 'fullscreen';
+  if (!isSceneRoute && !isFullscreenRoute) return false;
+  return segments[2] == sceneId;
+}
+
 class SceneDetailsPage extends ConsumerStatefulWidget {
   final String sceneId;
   final bool autoPlayOnMount;
@@ -137,9 +147,16 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       // This prevents background pages from interfering when the user has
       // already navigated forward to a different scene or is in fullscreen.
       // We also exclude the 'edit' subroute to avoid jumping away while editing.
-      final isScenePage = (currentPath.contains('/scene/') || currentPath.contains('/fullscreen/')) &&
-          pathSegments.contains(widget.sceneId);
-      final isEditPage = pathSegments.contains('edit');
+      final isScenePage = _isSceneOrFullscreenRouteFor(
+        currentPath,
+        widget.sceneId,
+      );
+      final isEditPage =
+          pathSegments.length >= 4 &&
+          pathSegments[0] == 'scenes' &&
+          pathSegments[1] == 'scene' &&
+          pathSegments[2] == widget.sceneId &&
+          pathSegments[3] == 'edit';
 
       if (!isScenePage || isEditPage) {
         return;

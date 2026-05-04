@@ -40,6 +40,14 @@ TextAlign _subtitleTextAlign(String setting) {
   }
 }
 
+bool _isSceneFullscreenPath(String path, {String? sceneId}) {
+  final segments = Uri.parse(path).pathSegments;
+  if (segments.length < 3) return false;
+  if (segments[0] != 'scenes' || segments[1] != 'fullscreen') return false;
+  if (sceneId != null && segments[2] != sceneId) return false;
+  return true;
+}
+
 // We can add horizontal alignment for subtitle in the future if needed, but for now we'll just use TextAlign for simplicity and rely on padding to achieve the desired horizontal positioning.
 // Alignment _subtitleHorizontalAlignment(String setting) {
 //   switch (setting) {
@@ -308,7 +316,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     // We check both state and path for maximum robustness.
     // If we are in fullscreen state OR on the fullscreen path, we want to exit.
     final currentPath = router?.routeInformationProvider.value.uri.path ?? '';
-    final isInFullscreenPath = currentPath.contains('/fullscreen');
+    final isInFullscreenPath = _isSceneFullscreenPath(currentPath);
 
     if (kIsWeb) {
       if (playerState.isFullScreen || isInFullscreenPath) {
@@ -792,8 +800,6 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
   @override
   Widget build(BuildContext context) {
     final router = GoRouter.maybeOf(context);
-    final currentPath = router?.routeInformationProvider.value.uri.path ?? '';
-    final isInFullscreenPath = currentPath.endsWith('/fullscreen');
 
     final playerState = ref.watch(playerStateProvider);
     final castState = ref.watch(castServiceProvider);
@@ -804,9 +810,15 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
     // where the parent page might pop twice if the user manually popped first.
     ref.listen(playerStateProvider, (previous, next) {
       if (previous?.isFullScreen == true && next.isFullScreen == false) {
+        final livePath = router?.routeInformationProvider.value.uri.path ?? '';
         // Only trigger a pop if we are not already in the process of popping
         // and we are actually on the fullscreen path.
-        if (context.mounted && !_isPopping && isInFullscreenPath) {
+        if (context.mounted &&
+            !_isPopping &&
+            _isSceneFullscreenPath(
+              livePath,
+              sceneId: widget.sceneId,
+            )) {
           AppLogStore.instance.add(
             'FullscreenPlayerPage [${widget.sceneId}] auto-exiting fullscreen',
             source: 'FullscreenPlayerPage',
