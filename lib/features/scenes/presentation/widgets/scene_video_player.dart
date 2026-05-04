@@ -48,6 +48,14 @@ bool _isSceneFullscreenPath(String path, {String? sceneId}) {
   return true;
 }
 
+bool _isSceneDetailsPath(String path, {String? sceneId}) {
+  final segments = Uri.parse(path).pathSegments;
+  if (segments.length < 3) return false;
+  if (segments[0] != 'scenes' || segments[1] != 'scene') return false;
+  if (sceneId != null && segments[2] != sceneId) return false;
+  return true;
+}
+
 // We can add horizontal alignment for subtitle in the future if needed, but for now we'll just use TextAlign for simplicity and rely on padding to achieve the desired horizontal positioning.
 // Alignment _subtitleHorizontalAlignment(String setting) {
 //   switch (setting) {
@@ -154,12 +162,19 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     final router = GoRouter.maybeOf(context);
     final currentPath = router?.routeInformationProvider.value.uri.path ?? '';
     final isInFullscreenRoute = _isSceneFullscreenPath(currentPath);
+    final isOwningSceneRoute =
+        _isSceneDetailsPath(currentPath, sceneId: widget.scene.id) ||
+        _isSceneFullscreenPath(currentPath, sceneId: widget.scene.id);
 
     // If we're already active, just resume or stay as-is.
     if (playerState.activeScene?.id == widget.scene.id) {
       if (playerState.player != null && !playerState.player!.state.playing) {
         playerState.player!.play();
       }
+      return;
+    }
+
+    if (!force && !isOwningSceneRoute) {
       return;
     }
 
