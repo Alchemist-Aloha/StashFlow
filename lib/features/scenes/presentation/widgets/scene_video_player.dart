@@ -320,6 +320,11 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     final currentPath = router?.routeInformationProvider.value.uri.path ?? '';
     final isInFullscreenPath = _isSceneFullscreenPath(currentPath);
 
+    AppLogStore.instance.add(
+      'SceneVideoPlayer [${widget.scene.id}] _toggleFullScreen: path=$currentPath stateFS=${playerState.isFullScreen} inFSPath=$isInFullscreenPath',
+      source: 'SceneVideoPlayer',
+    );
+
     if (kIsWeb) {
       if (playerState.isFullScreen || isInFullscreenPath) {
         unawaited(exitWebFullScreen());
@@ -329,8 +334,16 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     }
 
     if (playerState.isFullScreen || isInFullscreenPath) {
+      AppLogStore.instance.add(
+        'SceneVideoPlayer [${widget.scene.id}] exiting fullscreen via pop()',
+        source: 'SceneVideoPlayer',
+      );
       router?.pop();
     } else {
+      AppLogStore.instance.add(
+        'SceneVideoPlayer [${widget.scene.id}] entering fullscreen via push()',
+        source: 'SceneVideoPlayer',
+      );
       context.push('/scenes/fullscreen/${widget.scene.id}');
     }
   }
@@ -612,12 +625,20 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
   @override
   void initState() {
     super.initState();
+    AppLogStore.instance.add(
+      'FullscreenPlayerPage [${widget.sceneId}] initState',
+      source: 'FullscreenPlayerPage',
+    );
     // Request landscape and hide system UI immediately upon entering fullscreen.
     _enterFullScreen();
   }
 
   @override
   void deactivate() {
+    AppLogStore.instance.add(
+      'FullscreenPlayerPage [${widget.sceneId}] deactivate',
+      source: 'FullscreenPlayerPage',
+    );
     // Reset orientation and show system UI upon leaving fullscreen.
     // We use deactivate instead of dispose because ref access is still safe here.
     _exitFullScreen();
@@ -626,6 +647,10 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
 
   @override
   void dispose() {
+    AppLogStore.instance.add(
+      'FullscreenPlayerPage [${widget.sceneId}] dispose',
+      source: 'FullscreenPlayerPage',
+    );
     for (final sub in _subscriptions) {
       sub.cancel();
     }
@@ -636,6 +661,11 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
     final playerState = ref.read(playerStateProvider);
     final controller = playerState.videoController;
     final wasPlaying = playerState.player?.state.playing ?? false;
+
+    AppLogStore.instance.add(
+      'FullscreenPlayerPage [${widget.sceneId}] _enterFullScreen: controller=${controller != null} wasPlaying=$wasPlaying',
+      source: 'FullscreenPlayerPage',
+    );
 
     try {
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
@@ -717,6 +747,11 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
   void _exitFullScreen() {
     final controller = ref.read(playerStateProvider).videoController;
     final wasPlaying = _wasPlayingBeforeExit;
+
+    AppLogStore.instance.add(
+      'FullscreenPlayerPage [${widget.sceneId}] _exitFullScreen: wasPlayingBeforeExit=$wasPlaying',
+      source: 'FullscreenPlayerPage',
+    );
 
     // Reset state early so parent pages (like ShellPage) rebuild correctly.
     // We use a post-frame callback to avoid "Tried to modify a provider while
@@ -855,6 +890,10 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
     }
 
     if (scene == null || scene.id != sceneId || controller == null) {
+      AppLogStore.instance.add(
+        'FullscreenPlayerPage [${widget.sceneId}] validation failed: activeScene=${scene?.id} controller=${controller != null}',
+        source: 'FullscreenPlayerPage',
+      );
       return Scaffold(
         backgroundColor: Colors.black,
         body: Center(

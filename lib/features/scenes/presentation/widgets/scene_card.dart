@@ -33,6 +33,7 @@ class SceneCard extends ConsumerStatefulWidget {
     this.onTap,
     this.memCacheWidth,
     this.memCacheHeight,
+    this.useHero = true,
     super.key,
   }) : scene = Scene(
          id: 'skeleton',
@@ -89,6 +90,7 @@ class SceneCard extends ConsumerStatefulWidget {
     this.memCacheWidth,
     this.memCacheHeight,
     this.skeletonize = false,
+    this.useHero = true,
     super.key,
   });
 
@@ -115,6 +117,9 @@ class SceneCard extends ConsumerStatefulWidget {
 
   /// Whether to render this card using skeleton placeholders.
   final bool skeletonize;
+
+  /// Whether to wrap the thumbnail in a Hero widget.
+  final bool useHero;
 
   @override
   ConsumerState<SceneCard> createState() => _SceneCardState();
@@ -326,48 +331,47 @@ class _SceneCardState extends ConsumerState<SceneCard> {
       );
     }
 
-    return Hero(
-      tag: 'scene_player_${widget.scene.id}',
-      child: GestureDetector(
-        onHorizontalDragStart: hasValidSprite
-            ? (_) {
+    final thumbnail = GestureDetector(
+      onHorizontalDragStart: hasValidSprite
+          ? (_) {
+              setState(() {
+                _isScrubbing = true;
+              });
+            }
+          : null,
+      onHorizontalDragUpdate: hasValidSprite
+          ? (details) {
+              if (_isScrubbing) {
+                final box = context.findRenderObject() as RenderBox;
+                final relativePos =
+                    (details.localPosition.dx / box.size.width).clamp(0.0, 1.0);
                 setState(() {
-                  _isScrubbing = true;
+                  _scrubTime = relativePos * totalDuration;
                 });
               }
-            : null,
-        onHorizontalDragUpdate: hasValidSprite
-            ? (details) {
-                if (_isScrubbing) {
-                  final box = context.findRenderObject() as RenderBox;
-                  final relativePos =
-                      (details.localPosition.dx / box.size.width).clamp(
-                        0.0,
-                        1.0,
-                      );
-                  setState(() {
-                    _scrubTime = relativePos * totalDuration;
-                  });
-                }
-              }
-            : null,
-        onHorizontalDragEnd: hasValidSprite
-            ? (_) {
-                setState(() {
-                  _isScrubbing = false;
-                });
-              }
-            : null,
-        onHorizontalDragCancel: hasValidSprite
-            ? () {
-                setState(() {
-                  _isScrubbing = false;
-                });
-              }
-            : null,
-        child: Material(color: Colors.transparent, child: content),
-      ),
+            }
+          : null,
+      onHorizontalDragEnd: hasValidSprite
+          ? (_) {
+              setState(() {
+                _isScrubbing = false;
+              });
+            }
+          : null,
+      onHorizontalDragCancel: hasValidSprite
+          ? () {
+              setState(() {
+                _isScrubbing = false;
+              });
+            }
+          : null,
+      child: Material(color: Colors.transparent, child: content),
     );
+
+    if (widget.useHero) {
+      return Hero(tag: 'scene_player_${widget.scene.id}', child: thumbnail);
+    }
+    return thumbnail;
   }
 
   @override

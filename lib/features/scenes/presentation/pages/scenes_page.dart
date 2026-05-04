@@ -526,6 +526,9 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, scene, memCacheWidth, memCacheHeight) {
         final index = sceneIndexMap[scene.id] ?? -1;
+        final router = GoRouter.of(context);
+        final currentPath = router.routeInformationProvider.value.uri.path;
+        final isAtRoot = currentPath == '/scenes';
 
         return SceneCard(
           scene: scene,
@@ -533,6 +536,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
           useMasonry: isGridView,
           memCacheWidth: memCacheWidth,
           memCacheHeight: memCacheHeight,
+          useHero: isAtRoot,
           onTap: () {
             if (index != -1) {
               ref.read(playbackQueueProvider.notifier).setIndex(index);

@@ -364,7 +364,15 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
                 controller = _controllers[scene.id];
               }
 
-              return TiktokSceneItem(scene: scene, controller: controller);
+              final router = GoRouter.of(context);
+              final currentPath = router.routeInformationProvider.value.uri.path;
+              final isAtRoot = currentPath == '/scenes';
+
+              return TiktokSceneItem(
+                scene: scene,
+                controller: controller,
+                useHero: isAtRoot && !playerState.isFullScreen,
+              );
             },
           ),
         );
@@ -385,8 +393,14 @@ class CircularProgressContext extends StatelessWidget {
 class TiktokSceneItem extends ConsumerStatefulWidget {
   final Scene scene;
   final VideoController? controller;
+  final bool useHero;
 
-  const TiktokSceneItem({required this.scene, this.controller, super.key});
+  const TiktokSceneItem({
+    required this.scene,
+    this.controller,
+    this.useHero = true,
+    super.key,
+  });
 
   @override
   ConsumerState<TiktokSceneItem> createState() => _TiktokSceneItemState();
@@ -668,6 +682,38 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
   Widget build(BuildContext context) {
     final controller = widget.controller;
     final playerState = ref.watch(playerStateProvider);
+
+    final videoSurface = LayoutBuilder(
+      builder: (context, constraints) {
+        final w = controller?.player.state.width;
+        final h = controller?.player.state.height;
+        final r = (w != null && h != null && h > 0) ? w / h : 16 / 9;
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: Container(
+                color: Colors.black,
+                child: TransformableVideoSurface(
+                  fontSize: playerState.subtitleFontSize,
+                  textAlign: _subtitleTextAlign(
+                    playerState.subtitleTextAlignment,
+                  ),
+                  bottomRatio: playerState.subtitlePositionBottomRatio,
+                  constraints: constraints,
+                  controller: controller!,
+                  aspectRatio: r,
+                  fit:
+                      (r - 1.0).abs() < 0.01
+                          ? BoxFit.fill
+                          : (r < 1.0 ? BoxFit.cover : BoxFit.contain),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
     return RepaintBoundary(
       child: Stack(
         fit: StackFit.expand,
@@ -678,42 +724,12 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
             child:
                 (controller != null &&
                     controller.player.state.playlist.medias.isNotEmpty)
-                ? Hero(
-                    tag: 'scene_player_${widget.scene.id}',
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final w = controller.player.state.width;
-                        final h = controller.player.state.height;
-                        final r = (w != null && h != null && h > 0)
-                            ? w / h
-                            : 16 / 9;
-                        return Stack(
-                          children: [
-                            Positioned.fill(
-                              child: Container(
-                                color: Colors.black,
-                                child: TransformableVideoSurface(
-                                  fontSize: playerState.subtitleFontSize,
-                                  textAlign: _subtitleTextAlign(
-                                    playerState.subtitleTextAlignment,
-                                  ),
-                                  bottomRatio: playerState.subtitlePositionBottomRatio,
-                                  constraints: constraints,
-                                  controller: controller,
-                                  aspectRatio: r,
-                                  fit: (r - 1.0).abs() < 0.01
-                                      ? BoxFit.fill
-                                      : (r < 1.0
-                                            ? BoxFit.cover
-                                            : BoxFit.contain),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  )
+                ? (widget.useHero
+                    ? Hero(
+                        tag: 'scene_player_${widget.scene.id}',
+                        child: videoSurface,
+                      )
+                    : videoSurface)
                 : const Center(child: CircularProgressIndicator()),
           ),
 
