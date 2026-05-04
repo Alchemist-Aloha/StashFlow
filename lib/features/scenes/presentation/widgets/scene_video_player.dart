@@ -174,7 +174,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       return;
     }
 
-    if (!isOwningSceneRoute) {
+    if (!force && !isOwningSceneRoute) {
       return;
     }
 
