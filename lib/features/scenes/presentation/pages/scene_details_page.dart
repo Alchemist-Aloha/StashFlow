@@ -220,7 +220,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           );
 
           if (nextScene != null) {
-            context.pushReplacement('/scenes/scene/${nextScene.id}', extra: true);
+            context.pushReplacement(
+              '/scenes/scene/${nextScene.id}',
+              extra: true,
+            );
           }
         }
 
