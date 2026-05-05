@@ -9,15 +9,14 @@ import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
-import 'package:stash_app_flutter/core/presentation/providers/keybinds_provider.dart';
-import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_list_provider.dart';
-import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_details_provider.dart';
-import '../../domain/entities/image.dart' as entity;
-import '../providers/image_list_provider.dart';
+
+import '../../../../core/data/auth/auth_provider.dart';
+import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
-import '../../../../core/utils/responsive.dart';
+import '../../../../core/data/graphql/url_resolver.dart';
+import '../../../../core/data/preferences/shared_preferences_provider.dart';
 
 enum _SlideshowDirection { forward, backward }
 
@@ -206,6 +205,41 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
       duration: _slideshowTransition,
       curve: Curves.easeInOutCubic,
     );
+  }
+
+  Future<void> _downloadImage(entity.Image? image) async {
+    if (image == null) return;
+
+    final imageUrl = image.paths.image ?? image.paths.preview;
+    if (imageUrl == null || imageUrl.isEmpty) return;
+
+    final authState = ref.read(authProvider);
+    final apiKey = ref.read(serverApiKeyProvider);
+    final graphqlEndpoint = Uri.parse(ref.read(serverUrlProvider));
+
+    final authenticatedUrl = applyWebMediaAuthFallback(
+      url: imageUrl,
+      authMode: authState.mode,
+      apiKey: apiKey,
+      username: authState.username,
+      password: authState.password,
+      graphqlEndpoint: graphqlEndpoint,
+    );
+
+    final uri = Uri.tryParse(authenticatedUrl);
+    if (uri == null) return;
+
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.common_error(e.toString()))),
+        );
+      }
+    }
   }
 
   Future<void> _toggleSlideshow(int itemCount) async {
