@@ -698,7 +698,15 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                             tooltip: context.l10n.common_rate,
                           ),
                           SizedBox(width: context.dimensions.spacingSmall),
-                          IconButton.filled(
+                          IconButton.filledTonal(
+                            icon: const Icon(Icons.download_rounded),
+                            onPressed: currentImage == null
+                                ? null
+                                : () => _downloadImage(currentImage),
+                            tooltip: context.l10n.common_download,
+                          ),
+                          SizedBox(width: context.dimensions.spacingSmall),
+                          IconButton.filledTonal(
                             icon: Icon(
                               _isSlideshowPlaying
                                   ? Icons.stop_rounded
