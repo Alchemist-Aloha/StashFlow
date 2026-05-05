@@ -28,10 +28,15 @@ enum VideoEndBehavior { stop, loop, next }
 
 enum PlayerViewMode { inline, fullscreen, tiktok }
 
-class NavigationIntent {
+class NavigationAction {
   final String path;
   final bool isReplacement;
-  NavigationIntent(this.path, {this.isReplacement = false});
+  NavigationAction(this.path, {this.isReplacement = false});
+}
+
+class NavigationIntent {
+  final List<NavigationAction> actions;
+  NavigationIntent(this.actions);
 }
 
 /// Represents the global state of the video player.
@@ -542,9 +547,9 @@ class PlayerState extends _$PlayerState {
     state = state.copyWith(isTransitioning: value);
   }
 
-  void _navigate(String path, {bool replacement = false}) {
+  void _navigate(List<NavigationAction> actions) {
     state = state.copyWith(
-      navigationIntent: NavigationIntent(path, isReplacement: replacement),
+      navigationIntent: NavigationIntent(actions),
     );
     // Immediately clear intent so it's not re-processed on next state update
     Future.microtask(() {
@@ -1307,10 +1312,14 @@ class PlayerState extends _$PlayerState {
           if (state.viewMode == PlayerViewMode.fullscreen) {
             // Sequence: replace current fullscreen with new details, then push new fullscreen.
             // This ensures the "Back" button lands on the current scene's details.
-            _navigate('/scenes/scene/${nextScene.id}', replacement: true);
-            _navigate('/scenes/fullscreen/${nextScene.id}');
+            _navigate([
+              NavigationAction('/scenes/scene/${nextScene.id}', isReplacement: true),
+              NavigationAction('/scenes/fullscreen/${nextScene.id}'),
+            ]);
           } else if (state.viewMode == PlayerViewMode.inline) {
-            _navigate('/scenes/scene/${nextScene.id}', replacement: true);
+            _navigate([
+              NavigationAction('/scenes/scene/${nextScene.id}', isReplacement: true),
+            ]);
           }
         }
 

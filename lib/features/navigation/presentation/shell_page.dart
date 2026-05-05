@@ -211,10 +211,12 @@ class _ShellPageState extends ConsumerState<ShellPage> {
     ref.listen(playerStateProvider.select((s) => s.navigationIntent),
         (prev, next) {
       if (next != null && mounted) {
-        if (next.isReplacement) {
-          context.pushReplacement(next.path);
-        } else {
-          context.push(next.path);
+        for (final action in next.actions) {
+          if (action.isReplacement) {
+            context.pushReplacement(action.path);
+          } else {
+            context.push(action.path);
+          }
         }
       }
     });
