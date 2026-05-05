@@ -136,6 +136,14 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       final previousActiveSceneId =
           previous?.activeScene?.id ?? _lastKnownActiveSceneId;
 
+      AppLogStore.instance.add(
+        'SceneDetailsPage [${widget.sceneId}] playerState listener: '
+        'prevActive=${previous?.activeScene?.id} '
+        'nextActive=${nextScene?.id} '
+        'lastKnown=$_lastKnownActiveSceneId',
+        source: 'SceneDetailsPage',
+      );
+
       // Only handle navigation if this page is part of the active path.
       // This prevents background pages from interfering when the user has
       // already navigated forward to a different scene or is in fullscreen.
@@ -162,17 +170,33 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           pathSegments[2] == widget.sceneId &&
           pathSegments[3] == 'edit';
 
+      AppLogStore.instance.add(
+        'SceneDetailsPage [${widget.sceneId}] navigation check: '
+        'isScenePage=$isScenePage '
+        'isEditPage=$isEditPage '
+        'isFullscreenRoute=$isFullscreenRoute '
+        'currentPath=$currentPath',
+        source: 'SceneDetailsPage',
+      );
+
       if (!isScenePage || isEditPage || isFullscreenRoute) {
         return;
       }
 
-      // Navigate to next scene if provider indicates we just moved from the current scene
-      if (shouldRouteToNextScene(
+      final shouldRoute = shouldRouteToNextScene(
         widget.sceneId,
         previous?.activeScene,
         _lastKnownActiveSceneId,
         nextScene,
-      )) {
+      );
+
+      AppLogStore.instance.add(
+        'SceneDetailsPage [${widget.sceneId}] shouldRouteToNextScene result: $shouldRoute',
+        source: 'SceneDetailsPage',
+      );
+
+      // Navigate to next scene if provider indicates we just moved from the current scene
+      if (shouldRoute) {
         AppLogStore.instance.add(
           'SceneDetailsPage [${widget.sceneId}] navigating to next scene: ${nextScene?.id}',
           source: 'SceneDetailsPage',
