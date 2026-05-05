@@ -26,6 +26,7 @@ import '../../setup/presentation/providers/main_page_orientation_provider.dart';
 import '../../setup/presentation/providers/update_provider.dart';
 import '../../setup/domain/entities/update_info.dart';
 import 'widgets/mini_player.dart';
+import '../../scenes/presentation/widgets/global_fullscreen_overlay.dart';
 
 class ShellPage extends ConsumerStatefulWidget {
   final StatefulNavigationShell navigationShell;
@@ -233,8 +234,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
 
     final isVideoFullScreen =
         playerState.isFullScreen ||
-        isTiktokFullScreen ||
-        currentPath.contains('/fullscreen');
+        isTiktokFullScreen;
     _syncMainPageOrientations(
       allowGravity: allowMainPageGravityOrientation,
       isVideoFullScreen: isVideoFullScreen,
@@ -243,7 +243,6 @@ class _ShellPageState extends ConsumerState<ShellPage> {
     // Consider we are in fullscreen if the provider says so, OR if we are on a known fullscreen path.
     // This provides a more immediate UI response during route transitions.
     final isFullscreenPath =
-        currentPath.contains('/fullscreen') ||
         currentPath.contains('/image/') ||
         currentPath.contains('/images/') ||
         currentPath.startsWith('/image/') ||
@@ -335,6 +334,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
             bottom: 0,
             child: MiniPlayer(),
           ),
+        const GlobalFullscreenOverlay(),
       ],
     );
 
@@ -398,7 +398,19 @@ class _ShellPageState extends ConsumerState<ShellPage> {
     final isDesktop = ref.watch(desktopCapabilitiesProvider);
 
     return PopScope(
-      canPop: !context.canPop(),
+      canPop: !isFullScreen && !context.canPop(),
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && isFullScreen) {
+          if (playerState.isFullScreen) {
+            final notifier = ref.read(playerStateProvider.notifier);
+            notifier.syncBackgroundToActiveScene(context);
+            notifier.setFullScreen(false);
+            notifier.setViewMode(PlayerViewMode.inline);
+          } else if (isTiktokFullScreen) {
+            ref.read(fullScreenModeProvider.notifier).set(false);
+          }
+        }
+      },
       child: Scaffold(
         body: Listener(
             onPointerSignal: (pointerSignal) {
