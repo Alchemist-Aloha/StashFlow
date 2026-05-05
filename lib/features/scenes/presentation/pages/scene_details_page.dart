@@ -49,14 +49,38 @@ bool shouldRouteToNextScene(
 }
 
 bool _isSceneOrFullscreenRouteFor(String path, String sceneId) {
+  // In StatefulShellRoute, the shell path might be just '/scenes'
+  // but the child route has the scene details.
+  // Check if path contains indicators we're on a scene-related route for this ID.
+  
   final segments = Uri.parse(path).pathSegments;
-  if (segments.length < 3) return false;
-  final isSceneRoute = segments[0] == 'scenes' && segments[1] == 'scene';
-  final isFullscreenRoute =
-      segments[0] == 'scenes' && segments[1] == 'fullscreen';
-  if (!isSceneRoute && !isFullscreenRoute) return false;
-  return segments[2] == sceneId;
+  
+  // Check for fullscreen route
+  if (segments.length >= 3 &&
+      segments[0] == 'scenes' &&
+      segments[1] == 'fullscreen' &&
+      segments[2] == sceneId) {
+    return true;
+  }
+  
+  // Check for scene detail route
+  if (segments.length >= 3 &&
+      segments[0] == 'scenes' &&
+      segments[1] == 'scene' &&
+      segments[2] == sceneId) {
+    return true;
+  }
+  
+  // In StatefulShellRoute, child routes might not show in the path,
+  // but they contain the scene ID. Check if sceneId is mentioned.
+  if (segments.length >= 1 && segments[0] == 'scenes' && path.contains(sceneId)) {
+    return true;
+  }
+  
+  return false;
 }
+
+
 
 class SceneDetailsPage extends ConsumerStatefulWidget {
   final String sceneId;
@@ -146,25 +170,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           source: 'SceneDetailsPage',
         );
 
-        // Only handle navigation if this page is part of the active path.
-        // This prevents background pages from interfering when the user has
-        // already navigated forward to a different scene or is in fullscreen.
+        // Check if we're on the edit page route - don't navigate away while editing
         final router = GoRouter.of(context);
         final currentPath = router.routeInformationProvider.value.uri.path;
         final pathSegments = Uri.parse(currentPath).pathSegments;
 
-        // Only handle navigation if this page is part of the active path.
-        // This prevents background pages from interfering when the user has
-        // already navigated forward to a different scene or is in fullscreen.
-        // We also exclude the 'edit' subroute to avoid jumping away while editing.
-        final isScenePage = _isSceneOrFullscreenRouteFor(
-          currentPath,
-          widget.sceneId,
-        );
-        final isFullscreenRoute =
-            pathSegments.length >= 3 &&
-            pathSegments[0] == 'scenes' &&
-            pathSegments[1] == 'fullscreen';
         final isEditPage =
             pathSegments.length >= 4 &&
             pathSegments[0] == 'scenes' &&
@@ -172,22 +182,18 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
             pathSegments[2] == widget.sceneId &&
             pathSegments[3] == 'edit';
 
-        AppLogStore.instance.add(
-          'SceneDetailsPage [${widget.sceneId}] route check: '
-          'isScenePage=$isScenePage (path=$currentPath) '
-          'isEditPage=$isEditPage '
-          'isFullscreenRoute=$isFullscreenRoute',
-          source: 'SceneDetailsPage',
-        );
-
-        if (!isScenePage || isEditPage || isFullscreenRoute) {
+        if (isEditPage) {
           AppLogStore.instance.add(
-            'SceneDetailsPage [${widget.sceneId}] EARLY RETURN: isScenePage=$isScenePage, isEditPage=$isEditPage, isFullscreenRoute=$isFullscreenRoute',
+            'SceneDetailsPage [${widget.sceneId}] EARLY RETURN: on edit page',
             source: 'SceneDetailsPage',
           );
           return;
         }
 
+        // We're a SceneDetailsPage and the listener fired on this instance.
+        // If the scene that was playing (previous) is THIS scene, and a new scene
+        // is now active (next), we should navigate. Don't rely on router path
+        // since StatefulShellRoute makes path-based checks unreliable.
         final previousId = previous?.activeScene?.id ?? _lastKnownActiveSceneId;
         AppLogStore.instance.add(
           'SceneDetailsPage [${widget.sceneId}] shouldRouteToNextScene inputs: '
