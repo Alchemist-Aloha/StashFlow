@@ -897,28 +897,6 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
     final playerState = ref.watch(playerStateProvider);
     final castState = ref.watch(castServiceProvider);
 
-    // Automatically exit fullscreen if the global player state indicates it's no longer fullscreen
-    // This handles scenarios like the video ending and the player state reset.
-    // By listening here instead of the parent page, we avoid race conditions
-    // where the parent page might pop twice if the user manually popped first.
-    ref.listen(playerStateProvider, (previous, next) {
-      if (previous?.isFullScreen == true && next.isFullScreen == false) {
-        final livePath = router?.routeInformationProvider.value.uri.path ?? '';
-        // Only trigger a pop if we are not already in the process of popping
-        // and we are actually on the fullscreen path.
-        if (context.mounted &&
-            !_isPopping &&
-            _isSceneFullscreenPath(livePath, sceneId: widget.sceneId)) {
-          AppLogStore.instance.add(
-            'FullscreenPlayerPage [${widget.sceneId}] auto-exiting fullscreen',
-            source: 'FullscreenPlayerPage',
-          );
-          _isPopping = true;
-          router?.pop();
-        }
-      }
-    });
-
     final sceneId = widget.sceneId;
 
     // We must have an active scene that matches the one we're trying to show.
@@ -972,7 +950,9 @@ class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
         if (didPop) {
           _isPopping = true;
           // Ensure state is updated immediately on back-swipe
-          ref.read(playerStateProvider.notifier).setFullScreen(false);
+          final notifier = ref.read(playerStateProvider.notifier);
+          notifier.setFullScreen(false);
+          notifier.setViewMode(PlayerViewMode.inline);
         }
       },
       child: Material(
