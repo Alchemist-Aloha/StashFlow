@@ -166,8 +166,17 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
         _isSceneDetailsPath(currentPath, sceneId: widget.scene.id) ||
         _isSceneFullscreenPath(currentPath, sceneId: widget.scene.id);
 
+    AppLogStore.instance.add(
+      'SceneVideoPlayer._startPlaybackIfNeeded: scene=${widget.scene.id}, force=$force, autoPlayOnMount=${widget.autoPlayOnMount}, activeScene=${playerState.activeScene?.id}, currentPath=$currentPath, isOwningSceneRoute=$isOwningSceneRoute',
+      source: 'scene_video_player',
+    );
+
     // If we're already active, just resume or stay as-is.
     if (playerState.activeScene?.id == widget.scene.id) {
+      AppLogStore.instance.add(
+        'SceneVideoPlayer: Scene ${widget.scene.id} already active, resuming if paused',
+        source: 'scene_video_player',
+      );
       if (playerState.player != null && !playerState.player!.state.playing) {
         playerState.player!.play();
       }
@@ -182,6 +191,10 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     // is active for another scene. That would replace the active scene under
     // the fullscreen route and break fullscreen lifecycle validation.
     if (!force && (playerState.isFullScreen || isInFullscreenRoute)) {
+      AppLogStore.instance.add(
+        'SceneVideoPlayer: Skipping playback - fullscreen=${playerState.isFullScreen}, isInFullscreenRoute=$isInFullscreenRoute',
+        source: 'scene_video_player',
+      );
       return;
     }
 
@@ -192,8 +205,17 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     final directPlayOnNavigation =
         prefs.getBool('video_direct_play_on_navigation') ?? false;
     if (!force && playerState.activeScene != null && !directPlayOnNavigation) {
+      AppLogStore.instance.add(
+        'SceneVideoPlayer: Skipping playback - another scene active=${playerState.activeScene?.id}, directPlayOnNavigation=$directPlayOnNavigation',
+        source: 'scene_video_player',
+      );
       return;
     }
+
+    AppLogStore.instance.add(
+      'SceneVideoPlayer: Starting playback for scene ${widget.scene.id}',
+      source: 'scene_video_player',
+    );
 
     setState(() => _isStarting = true);
     try {

@@ -202,7 +202,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
 
     final isPlaying = widget.controller.player.state.playing;
     final playingChanged = isPlaying != _wasPlaying;
-    
+
     if (playingChanged) {
       _wasPlaying = isPlaying;
       if (isPlaying) {
@@ -214,11 +214,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       }
     }
 
-    // Performance Optimization: If controls are hidden and we aren't scrubbing, 
+    // Performance Optimization: If controls are hidden and we aren't scrubbing,
     // there's no need to trigger a rebuild for position updates.
     if (!_controlsVisible && !_isScrubbing && !playingChanged) return;
 
-    // Further optimization: Even if visible, only rebuild if we are scrubbing 
+    // Further optimization: Even if visible, only rebuild if we are scrubbing
     // or if enough time has passed (throttling UI updates to ~10fps is plenty for labels).
     setState(() {});
   }
@@ -439,24 +439,62 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
   }
 
   void _playNext() {
+    AppLogStore.instance.add(
+      'NativeVideoControls: _playNext() called',
+      source: 'native_video_controls',
+    );
     final queue = ref.read(playbackQueueProvider.notifier);
     final next = queue.getNextScene();
+    AppLogStore.instance.add(
+      'NativeVideoControls: nextScene=${next?.id}',
+      source: 'native_video_controls',
+    );
     if (next != null) {
       queue.playNext();
       if (mounted) {
-        GoRouter.of(context).pushReplacement('/scenes/scene/${next.id}');
+        AppLogStore.instance.add(
+          'NativeVideoControls: Navigating to next scene ${next.id} with autoPlayOnMount=true',
+          source: 'native_video_controls',
+        );
+        GoRouter.of(
+          context,
+        ).pushReplacement('/scenes/scene/${next.id}', extra: true);
       }
+    } else {
+      AppLogStore.instance.add(
+        'NativeVideoControls: No next scene available',
+        source: 'native_video_controls',
+      );
     }
   }
 
   void _playPrevious() {
+    AppLogStore.instance.add(
+      'NativeVideoControls: _playPrevious() called',
+      source: 'native_video_controls',
+    );
     final queue = ref.read(playbackQueueProvider.notifier);
     final prev = queue.getPreviousScene();
+    AppLogStore.instance.add(
+      'NativeVideoControls: previousScene=${prev?.id}',
+      source: 'native_video_controls',
+    );
     if (prev != null) {
       queue.playPrevious();
       if (mounted) {
-        GoRouter.of(context).pushReplacement('/scenes/scene/${prev.id}');
+        AppLogStore.instance.add(
+          'NativeVideoControls: Navigating to previous scene ${prev.id} with autoPlayOnMount=true',
+          source: 'native_video_controls',
+        );
+        GoRouter.of(
+          context,
+        ).pushReplacement('/scenes/scene/${prev.id}', extra: true);
       }
+    } else {
+      AppLogStore.instance.add(
+        'NativeVideoControls: No previous scene available',
+        source: 'native_video_controls',
+      );
     }
   }
 
@@ -505,10 +543,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
             decoration: BoxDecoration(
               color: Colors.black.withAlpha(160),
               borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-              border: Border.all(
-                color: Colors.white.withAlpha(40),
-                width: 1,
-              ),
+              border: Border.all(color: Colors.white.withAlpha(40), width: 1),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -1262,12 +1297,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                               behavior: HitTestBehavior.opaque,
                               child: Container(
                                 margin: const EdgeInsets.fromLTRB(4, 0, 4, 4),
-                                padding: const EdgeInsets.fromLTRB(
-                                  8,
-                                  4,
-                                  8,
-                                  2,
-                                ),
+                                padding: const EdgeInsets.fromLTRB(8, 4, 8, 2),
                                 decoration: BoxDecoration(
                                   color: colorScheme.surface.withValues(
                                     alpha: 0.62,
@@ -1295,25 +1325,35 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                         ),
                                         child: StreamBuilder<Duration>(
                                           stream: widget
-                                              .controller.player.stream.position,
+                                              .controller
+                                              .player
+                                              .stream
+                                              .position,
                                           builder: (context, snapshot) {
                                             final position =
                                                 snapshot.data ??
-                                                widget.controller.player.state
+                                                widget
+                                                    .controller
+                                                    .player
+                                                    .state
                                                     .position;
-                                            final duration =
-                                                widget.controller.player.state
-                                                    .duration;
+                                            final duration = widget
+                                                .controller
+                                                .player
+                                                .state
+                                                .duration;
                                             return Text(
                                               '${_formatDuration(position)} / ${_formatDuration(duration)}',
                                               style: context
-                                                  .textTheme.bodyMedium
+                                                  .textTheme
+                                                  .bodyMedium
                                                   ?.copyWith(
-                                                color: colorScheme.onSurface,
-                                                fontSize:
-                                                    context.fontSizes.small,
-                                                fontWeight: FontWeight.w600,
-                                              ),
+                                                    color:
+                                                        colorScheme.onSurface,
+                                                    fontSize:
+                                                        context.fontSizes.small,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
                                             );
                                           },
                                         ),
@@ -1321,10 +1361,15 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                     ),
                                     VideoProgressBar(
                                       durationMs: durationMs,
-                                      positionStream:
-                                          widget.controller.player.stream.position,
-                                      initialPositionMs:
-                                          value.position.inMilliseconds.toDouble(),
+                                      positionStream: widget
+                                          .controller
+                                          .player
+                                          .stream
+                                          .position,
+                                      initialPositionMs: value
+                                          .position
+                                          .inMilliseconds
+                                          .toDouble(),
                                       isScrubbing: _isScrubbing,
                                       currentScrubValue: _scrubMs,
                                       onChangeStart: (v) {
