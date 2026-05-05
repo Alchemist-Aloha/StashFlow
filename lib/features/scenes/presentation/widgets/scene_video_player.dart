@@ -183,6 +183,14 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       return;
     }
 
+    if (!force && playerState.viewMode != PlayerViewMode.inline) {
+      AppLogStore.instance.add(
+        'SceneVideoPlayer: Skipping playback - viewMode is ${playerState.viewMode}',
+        source: 'scene_video_player',
+      );
+      return;
+    }
+
     if (!force && !isOwningSceneRoute) {
       return;
     }
