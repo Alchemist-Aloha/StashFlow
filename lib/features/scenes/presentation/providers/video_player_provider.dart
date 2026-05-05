@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:clock/clock.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -541,6 +542,26 @@ class PlayerState extends _$PlayerState {
       source: 'player_provider',
     );
     state = state.copyWith(viewMode: mode);
+  }
+
+  /// Synchronizes the background navigation to match the currently active scene.
+  /// This is called when exiting fullscreen to ensure the user lands on the
+  /// correct details page.
+  void syncBackgroundToActiveScene(BuildContext context) {
+    final activeSceneId = state.activeScene?.id;
+    if (activeSceneId == null) return;
+
+    final router = GoRouter.of(context);
+    final currentPath = router.routeInformationProvider.value.uri.path;
+
+    // If we are not already on the details page for this scene
+    if (!currentPath.contains('/scenes/scene/$activeSceneId')) {
+      AppLogStore.instance.add(
+        'PlayerState: syncing background to scene $activeSceneId',
+        source: 'player_provider',
+      );
+      router.go('/scenes/scene/$activeSceneId');
+    }
   }
 
   void _setTransitioning(bool value) {
