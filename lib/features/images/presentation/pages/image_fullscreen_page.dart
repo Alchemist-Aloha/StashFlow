@@ -21,6 +21,8 @@ import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../galleries/presentation/providers/gallery_details_provider.dart';
 import '../../../galleries/presentation/providers/gallery_list_provider.dart';
