@@ -1,14 +1,17 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/presentation/theme/app_theme.dart';
-import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gal/gal.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -213,36 +216,61 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     );
   }
 
-  Future<void> _downloadImage(entity.Image? image) async {
+  Future<void> _saveImageToGallery(entity.Image? image) async {
     if (image == null) return;
 
     final imageUrl = image.paths.image ?? image.paths.preview;
     if (imageUrl == null || imageUrl.isEmpty) return;
 
-    final authState = ref.read(authProvider);
-    final apiKey = ref.read(serverApiKeyProvider);
-    final graphqlEndpoint = Uri.parse(ref.read(serverUrlProvider));
-
-    final authenticatedUrl = applyWebMediaAuthFallback(
-      url: imageUrl,
-      authMode: authState.mode,
-      apiKey: apiKey,
-      username: authState.username,
-      password: authState.password,
-      graphqlEndpoint: graphqlEndpoint,
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Saving to gallery...'),
+        duration: Duration(seconds: 1),
+      ),
     );
 
-    final uri = Uri.tryParse(authenticatedUrl);
-    if (uri == null) return;
-
     try {
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      final headers = ref.read(mediaHeadersProvider);
+      final tempDir = await getTemporaryDirectory();
+      // Extract extension or default to jpg
+      final extension = imageUrl.split('.').last.split('?').first;
+      final fileName = '${image.id}.$extension';
+      final tempPath = '${tempDir.path}/$fileName';
+
+      await Dio().download(
+        imageUrl,
+        tempPath,
+        options: Options(headers: headers),
+      );
+
+      // Check for access
+      bool hasAccess = await Gal.hasAccess();
+      if (!hasAccess) {
+        hasAccess = await Gal.requestAccess();
+      }
+
+      if (hasAccess) {
+        await Gal.putImage(tempPath);
+
+        // Cleanup
+        final file = File(tempPath);
+        if (await file.exists()) {
+          await file.delete();
+        }
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Saved to gallery')),
+          );
+        }
+      } else {
+        throw Exception('Gallery access denied');
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.common_error(e.toString()))),
+          SnackBar(content: Text('Failed to save: ${e.toString()}')),
         );
       }
     }
@@ -708,7 +736,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                             icon: const Icon(Icons.download_rounded),
                             onPressed: currentImage == null
                                 ? null
-                                : () => _downloadImage(currentImage),
+                                : () => _saveImageToGallery(currentImage),
                             tooltip: context.l10n.common_download,
                           ),
                           SizedBox(width: context.dimensions.spacingSmall),
