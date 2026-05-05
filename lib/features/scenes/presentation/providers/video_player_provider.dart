@@ -702,6 +702,11 @@ class PlayerState extends _$PlayerState {
 
     final stopwatch = Stopwatch()..start();
 
+    AppLogStore.instance.add(
+      'PlayerState playScene: updating state.activeScene to ${scene.id}',
+      source: 'player_provider',
+    );
+
     state = GlobalPlayerState(
       activeScene: scene,
       player: player,
@@ -1290,7 +1295,7 @@ class PlayerState extends _$PlayerState {
 
       if (nextScene != null) {
         AppLogStore.instance.add(
-          'PlayerState playNext: moving to ${nextScene.id}',
+          'PlayerState playNext: moving from ${state.activeScene?.id} to ${nextScene.id}',
           source: 'player_provider',
         );
         queueNotifier.playNext(); // Increment index in queue
