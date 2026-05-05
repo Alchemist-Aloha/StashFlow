@@ -137,10 +137,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           previous?.activeScene?.id ?? _lastKnownActiveSceneId;
 
       AppLogStore.instance.add(
-        'SceneDetailsPage [${widget.sceneId}] playerState listener: '
+        'SceneDetailsPage [${widget.sceneId}] playerState listener FIRED: '
         'prevActive=${previous?.activeScene?.id} '
         'nextActive=${nextScene?.id} '
-        'lastKnown=$_lastKnownActiveSceneId',
+        'lastKnown=$_lastKnownActiveSceneId '
+        'streamSource=${next.streamSource}',
         source: 'SceneDetailsPage',
       );
 
@@ -171,17 +172,31 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           pathSegments[3] == 'edit';
 
       AppLogStore.instance.add(
-        'SceneDetailsPage [${widget.sceneId}] navigation check: '
-        'isScenePage=$isScenePage '
+        'SceneDetailsPage [${widget.sceneId}] route check: '
+        'isScenePage=$isScenePage (path=$currentPath) '
         'isEditPage=$isEditPage '
-        'isFullscreenRoute=$isFullscreenRoute '
-        'currentPath=$currentPath',
+        'isFullscreenRoute=$isFullscreenRoute',
         source: 'SceneDetailsPage',
       );
 
       if (!isScenePage || isEditPage || isFullscreenRoute) {
+        AppLogStore.instance.add(
+          'SceneDetailsPage [${widget.sceneId}] EARLY RETURN: isScenePage=$isScenePage, isEditPage=$isEditPage, isFullscreenRoute=$isFullscreenRoute',
+          source: 'SceneDetailsPage',
+        );
         return;
       }
+
+      final previousId = previous?.activeScene?.id ?? _lastKnownActiveSceneId;
+      AppLogStore.instance.add(
+        'SceneDetailsPage [${widget.sceneId}] shouldRouteToNextScene inputs: '
+        'currentPageSceneId=${widget.sceneId} '
+        'previousActiveScene=${previous?.activeScene?.id} '
+        'lastKnownActiveSceneId=$_lastKnownActiveSceneId '
+        'previousId=$previousId '
+        'nextScene=${nextScene?.id}',
+        source: 'SceneDetailsPage',
+      );
 
       final shouldRoute = shouldRouteToNextScene(
         widget.sceneId,
@@ -191,14 +206,15 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       );
 
       AppLogStore.instance.add(
-        'SceneDetailsPage [${widget.sceneId}] shouldRouteToNextScene result: $shouldRoute',
+        'SceneDetailsPage [${widget.sceneId}] shouldRouteToNextScene result: $shouldRoute '
+        '(nextScene!=null: ${nextScene != null}, nextId!=currentId: ${nextScene?.id != widget.sceneId}, previousId==currentId: ${previousId == widget.sceneId})',
         source: 'SceneDetailsPage',
       );
 
       // Navigate to next scene if provider indicates we just moved from the current scene
       if (shouldRoute) {
         AppLogStore.instance.add(
-          'SceneDetailsPage [${widget.sceneId}] navigating to next scene: ${nextScene?.id}',
+          'SceneDetailsPage [${widget.sceneId}] NAVIGATING to next scene: ${nextScene?.id}',
           source: 'SceneDetailsPage',
         );
 
