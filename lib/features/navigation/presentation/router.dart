@@ -91,22 +91,6 @@ GoRouter router(Ref ref) {
                     ),
                     routes: [
                       GoRoute(
-                        path: 'fullscreen',
-                        pageBuilder: (context, state) => CustomTransitionPage(
-                          key: state.pageKey,
-                          child: FullscreenPlayerPage(
-                            sceneId: state.pathParameters['id']!,
-                          ),
-                          transitionsBuilder:
-                              (context, animation, secondaryAnimation, child) =>
-                                  FadeTransition(
-                                    opacity: animation,
-                                    child: child,
-                                  ),
-                          transitionDuration: const Duration(milliseconds: 200),
-                        ),
-                      ),
-                      GoRoute(
                         path: 'edit',
                         builder: (context, state) {
                           final scene = state.extra as Scene?;

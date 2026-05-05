@@ -167,32 +167,32 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
       title: 'Metadata',
       children: [
         StringCriterionInput(
-          label: 'Name',
+          label: context.l10n.performers_field_name,
           value: _tempFilter.name,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(name: val)),
         ),
         StringCriterionInput(
-          label: 'Aliases',
+          label: context.l10n.performers_field_aliases,
           value: _tempFilter.aliases,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(aliases: val)),
         ),
         StringCriterionInput(
-          label: 'Disambiguation',
+          label: context.l10n.performers_field_disambiguation,
           value: _tempFilter.disambiguation,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(disambiguation: val)),
         ),
         StringCriterionInput(
-          label: 'URL',
+          label: context.l10n.performers_field_url,
           value: _tempFilter.url,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(url: val)),
         ),
         StringCriterionInput(
-          label: 'Details',
+          label: context.l10n.performers_field_details,
           value: _tempFilter.details,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(details: val)),
         ),
         StringCriterionInput(
-          label: 'Country',
+          label: context.l10n.performers_field_country,
           value: _tempFilter.country,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(country: val)),
         ),
@@ -289,88 +289,88 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
       title: 'Physical',
       children: [
         DateCriterionInput(
-          label: 'Birth Date',
+          label: context.l10n.performers_field_birthdate,
           value: _tempFilter.birthdate,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(birthdate: val)),
         ),
         IntCriterionInput(
-          label: 'Birth Year',
+          label: context.l10n.performers_field_birth_year,
           value: _tempFilter.birthYear,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(birthYear: val)),
         ),
         IntCriterionInput(
-          label: 'Age',
+          label: context.l10n.performers_field_age,
           value: _tempFilter.age,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(age: val)),
         ),
         IntCriterionInput(
-          label: 'Height (cm)',
+          label: context.l10n.performers_field_height_cm,
           value: _tempFilter.heightCm,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(heightCm: val)),
         ),
         IntCriterionInput(
-          label: 'Weight (kg)',
+          label: context.l10n.performers_field_weight_kg,
           value: _tempFilter.weight,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(weight: val)),
         ),
         IntCriterionInput(
-          label: 'Penis Length',
+          label: context.l10n.performers_field_penis_length,
           value: _tempFilter.penisLength,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(penisLength: val)),
         ),
         _buildCircumcisedFilter(),
         StringCriterionInput(
-          label: 'Hair Color',
+          label: context.l10n.performers_field_hair_color,
           value: _tempFilter.hairColor,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(hairColor: val)),
         ),
         StringCriterionInput(
-          label: 'Eye Color',
+          label: context.l10n.performers_field_eye_color,
           value: _tempFilter.eyeColor,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(eyeColor: val)),
         ),
         StringCriterionInput(
-          label: 'Ethnicity',
+          label: context.l10n.performers_field_ethnicity,
           value: _tempFilter.ethnicity,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(ethnicity: val)),
         ),
         StringCriterionInput(
-          label: 'Measurements',
+          label: context.l10n.performers_field_measurements,
           value: _tempFilter.measurements,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(measurements: val)),
         ),
         StringCriterionInput(
-          label: 'Fake Tits',
+          label: context.l10n.performers_field_fake_tits,
           value: _tempFilter.fakeTits,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(fakeTits: val)),
         ),
         StringCriterionInput(
-          label: 'Tattoos',
+          label: context.l10n.performers_field_tattoos,
           value: _tempFilter.tattoos,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(tattoos: val)),
         ),
         StringCriterionInput(
-          label: 'Piercings',
+          label: context.l10n.performers_field_piercings,
           value: _tempFilter.piercings,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(piercings: val)),
         ),
         DateCriterionInput(
-          label: 'Career Start',
+          label: context.l10n.performers_field_career_start,
           value: _tempFilter.careerStart,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(careerStart: val)),
         ),
         DateCriterionInput(
-          label: 'Career End',
+          label: context.l10n.performers_field_career_end,
           value: _tempFilter.careerEnd,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(careerEnd: val)),
         ),
         DateCriterionInput(
-          label: 'Death Date',
+          label: context.l10n.performers_field_deathdate,
           value: _tempFilter.deathDate,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(deathDate: val)),
         ),
         IntCriterionInput(
-          label: 'Death Year',
+          label: context.l10n.performers_field_death_year,
           value: _tempFilter.deathYear,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(deathYear: val)),
         ),
@@ -385,42 +385,42 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
         _buildBooleanFilter('Ignore Auto Tag', _tempFilter.ignoreAutoTag, (val) => setState(() => _tempFilter = _tempFilter.copyWith(ignoreAutoTag: val))),
         _buildBooleanFilter('Is Missing', _tempFilter.isMissing, (val) => setState(() => _tempFilter = _tempFilter.copyWith(isMissing: val))),
         IntCriterionInput(
-          label: 'Scene Count',
+          label: context.l10n.performers_field_scene_count,
           value: _tempFilter.sceneCount,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(sceneCount: val)),
         ),
         IntCriterionInput(
-          label: 'Image Count',
+          label: context.l10n.performers_field_image_count,
           value: _tempFilter.imageCount,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(imageCount: val)),
         ),
         IntCriterionInput(
-          label: 'Gallery Count',
+          label: context.l10n.performers_field_gallery_count,
           value: _tempFilter.galleryCount,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(galleryCount: val)),
         ),
         IntCriterionInput(
-          label: 'Play Count',
+          label: context.l10n.performers_field_play_count,
           value: _tempFilter.playCount,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(playCount: val)),
         ),
         IntCriterionInput(
-          label: 'O-Counter',
+          label: context.l10n.performers_field_o_counter,
           value: _tempFilter.oCounter,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(oCounter: val)),
         ),
         IntCriterionInput(
-          label: 'Tag Count',
+          label: context.l10n.performers_field_tag_count,
           value: _tempFilter.tagCount,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(tagCount: val)),
         ),
         DateCriterionInput(
-          label: 'Created At',
+          label: context.l10n.performers_field_created_at,
           value: _tempFilter.createdAt,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(createdAt: val)),
         ),
         DateCriterionInput(
-          label: 'Updated At',
+          label: context.l10n.performers_field_updated_at,
           value: _tempFilter.updatedAt,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(updatedAt: val)),
         ),
@@ -535,7 +535,7 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
             children: [
               Text(label, style: context.textTheme.labelLarge),
               IconButton(
-                tooltip: 'Add',
+                tooltip: context.l10n.common_add,
                 icon: const Icon(Icons.add_circle_outline),
                 onPressed: () async {
                   final result = await showDialog<List<T>>(

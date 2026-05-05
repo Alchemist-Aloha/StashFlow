@@ -187,9 +187,9 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                         Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text('Direct-play on scene navigation'),
-                          subtitle: const Text(
-                              'When navigating from another playing scene, directly play the new scene'),
+                          title: Text(context.l10n.settings_playback_direct_play),
+                          subtitle: Text(
+                              context.l10n.settings_playback_direct_play_subtitle),
                           value: _directPlayOnNavigation,
                           onChanged: (value) async {
                             setState(() => _directPlayOnNavigation = value);

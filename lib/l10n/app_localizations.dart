@@ -810,6 +810,12 @@ abstract class AppLocalizations {
   /// **'Skip Next'**
   String get common_skip_next;
 
+  /// No description provided for @common_skip_previous.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip Previous'**
+  String get common_skip_previous;
+
   /// No description provided for @common_select_subtitle.
   ///
   /// In en, this message translates to:
@@ -3605,6 +3611,552 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Max Video Cache (MB)'**
   String get settings_storage_max_video_cache;
+
+  /// No description provided for @performers_field_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get performers_field_name;
+
+  /// No description provided for @performers_field_url.
+  ///
+  /// In en, this message translates to:
+  /// **'URL'**
+  String get performers_field_url;
+
+  /// No description provided for @performers_field_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get performers_field_details;
+
+  /// No description provided for @performers_field_birth_year.
+  ///
+  /// In en, this message translates to:
+  /// **'Birth Year'**
+  String get performers_field_birth_year;
+
+  /// No description provided for @performers_field_age.
+  ///
+  /// In en, this message translates to:
+  /// **'Age'**
+  String get performers_field_age;
+
+  /// No description provided for @performers_field_death_year.
+  ///
+  /// In en, this message translates to:
+  /// **'Death Year'**
+  String get performers_field_death_year;
+
+  /// No description provided for @performers_field_scene_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Count'**
+  String get performers_field_scene_count;
+
+  /// No description provided for @performers_field_image_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Image Count'**
+  String get performers_field_image_count;
+
+  /// No description provided for @performers_field_gallery_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery Count'**
+  String get performers_field_gallery_count;
+
+  /// No description provided for @performers_field_play_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Play Count'**
+  String get performers_field_play_count;
+
+  /// No description provided for @performers_field_o_counter.
+  ///
+  /// In en, this message translates to:
+  /// **'O-Counter'**
+  String get performers_field_o_counter;
+
+  /// No description provided for @performers_field_tag_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag Count'**
+  String get performers_field_tag_count;
+
+  /// No description provided for @performers_field_created_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Created At'**
+  String get performers_field_created_at;
+
+  /// No description provided for @performers_field_updated_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated At'**
+  String get performers_field_updated_at;
+
+  /// No description provided for @galleries_field_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get galleries_field_title;
+
+  /// No description provided for @galleries_field_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get galleries_field_details;
+
+  /// No description provided for @galleries_field_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get galleries_field_date;
+
+  /// No description provided for @galleries_field_performer_age.
+  ///
+  /// In en, this message translates to:
+  /// **'Performer Age'**
+  String get galleries_field_performer_age;
+
+  /// No description provided for @galleries_field_performer_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Performer Count'**
+  String get galleries_field_performer_count;
+
+  /// No description provided for @galleries_field_tag_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag Count'**
+  String get galleries_field_tag_count;
+
+  /// No description provided for @galleries_field_url.
+  ///
+  /// In en, this message translates to:
+  /// **'URL'**
+  String get galleries_field_url;
+
+  /// No description provided for @galleries_field_id.
+  ///
+  /// In en, this message translates to:
+  /// **'ID'**
+  String get galleries_field_id;
+
+  /// No description provided for @galleries_field_path.
+  ///
+  /// In en, this message translates to:
+  /// **'Path'**
+  String get galleries_field_path;
+
+  /// No description provided for @galleries_field_checksum.
+  ///
+  /// In en, this message translates to:
+  /// **'Checksum'**
+  String get galleries_field_checksum;
+
+  /// No description provided for @galleries_field_image_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Image Count'**
+  String get galleries_field_image_count;
+
+  /// No description provided for @galleries_field_file_count.
+  ///
+  /// In en, this message translates to:
+  /// **'File Count'**
+  String get galleries_field_file_count;
+
+  /// No description provided for @galleries_field_created_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Created At'**
+  String get galleries_field_created_at;
+
+  /// No description provided for @galleries_field_updated_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated At'**
+  String get galleries_field_updated_at;
+
+  /// No description provided for @images_field_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get images_field_title;
+
+  /// No description provided for @images_field_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get images_field_details;
+
+  /// No description provided for @images_field_path.
+  ///
+  /// In en, this message translates to:
+  /// **'Path'**
+  String get images_field_path;
+
+  /// No description provided for @images_field_url.
+  ///
+  /// In en, this message translates to:
+  /// **'URL'**
+  String get images_field_url;
+
+  /// No description provided for @images_field_file_count.
+  ///
+  /// In en, this message translates to:
+  /// **'File Count'**
+  String get images_field_file_count;
+
+  /// No description provided for @images_field_o_counter.
+  ///
+  /// In en, this message translates to:
+  /// **'O-Counter'**
+  String get images_field_o_counter;
+
+  /// No description provided for @studios_field_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get studios_field_name;
+
+  /// No description provided for @studios_field_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get studios_field_details;
+
+  /// No description provided for @studios_field_aliases.
+  ///
+  /// In en, this message translates to:
+  /// **'Aliases'**
+  String get studios_field_aliases;
+
+  /// No description provided for @studios_field_url.
+  ///
+  /// In en, this message translates to:
+  /// **'URL'**
+  String get studios_field_url;
+
+  /// No description provided for @studios_field_tag_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag Count'**
+  String get studios_field_tag_count;
+
+  /// No description provided for @studios_field_scene_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Count'**
+  String get studios_field_scene_count;
+
+  /// No description provided for @studios_field_image_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Image Count'**
+  String get studios_field_image_count;
+
+  /// No description provided for @studios_field_gallery_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery Count'**
+  String get studios_field_gallery_count;
+
+  /// No description provided for @studios_field_sub_studio_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Sub-studio Count'**
+  String get studios_field_sub_studio_count;
+
+  /// No description provided for @studios_field_created_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Created At'**
+  String get studios_field_created_at;
+
+  /// No description provided for @studios_field_updated_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated At'**
+  String get studios_field_updated_at;
+
+  /// No description provided for @scenes_field_performer_age.
+  ///
+  /// In en, this message translates to:
+  /// **'Performer Age'**
+  String get scenes_field_performer_age;
+
+  /// No description provided for @scenes_field_performer_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Performer Count'**
+  String get scenes_field_performer_count;
+
+  /// No description provided for @scenes_field_tag_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag Count'**
+  String get scenes_field_tag_count;
+
+  /// No description provided for @scenes_field_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get scenes_field_code;
+
+  /// No description provided for @scenes_field_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get scenes_field_details;
+
+  /// No description provided for @scenes_field_director.
+  ///
+  /// In en, this message translates to:
+  /// **'Director'**
+  String get scenes_field_director;
+
+  /// No description provided for @scenes_field_url.
+  ///
+  /// In en, this message translates to:
+  /// **'URL'**
+  String get scenes_field_url;
+
+  /// No description provided for @scenes_field_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get scenes_field_date;
+
+  /// No description provided for @scenes_field_path.
+  ///
+  /// In en, this message translates to:
+  /// **'Path'**
+  String get scenes_field_path;
+
+  /// No description provided for @scenes_field_captions.
+  ///
+  /// In en, this message translates to:
+  /// **'Captions'**
+  String get scenes_field_captions;
+
+  /// No description provided for @scenes_field_duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration (seconds)'**
+  String get scenes_field_duration;
+
+  /// No description provided for @scenes_field_bitrate.
+  ///
+  /// In en, this message translates to:
+  /// **'Bitrate'**
+  String get scenes_field_bitrate;
+
+  /// No description provided for @scenes_field_video_codec.
+  ///
+  /// In en, this message translates to:
+  /// **'Video Codec'**
+  String get scenes_field_video_codec;
+
+  /// No description provided for @scenes_field_audio_codec.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Codec'**
+  String get scenes_field_audio_codec;
+
+  /// No description provided for @scenes_field_framerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Framerate'**
+  String get scenes_field_framerate;
+
+  /// No description provided for @scenes_field_file_count.
+  ///
+  /// In en, this message translates to:
+  /// **'File Count'**
+  String get scenes_field_file_count;
+
+  /// No description provided for @scenes_field_play_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Play Count'**
+  String get scenes_field_play_count;
+
+  /// No description provided for @scenes_field_play_duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Play Duration'**
+  String get scenes_field_play_duration;
+
+  /// No description provided for @scenes_field_o_counter.
+  ///
+  /// In en, this message translates to:
+  /// **'O-Counter'**
+  String get scenes_field_o_counter;
+
+  /// No description provided for @scenes_field_last_played_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Played At'**
+  String get scenes_field_last_played_at;
+
+  /// No description provided for @scenes_field_resume_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume Time'**
+  String get scenes_field_resume_time;
+
+  /// No description provided for @scenes_field_interactive_speed.
+  ///
+  /// In en, this message translates to:
+  /// **'Interactive Speed'**
+  String get scenes_field_interactive_speed;
+
+  /// No description provided for @scenes_field_id.
+  ///
+  /// In en, this message translates to:
+  /// **'ID'**
+  String get scenes_field_id;
+
+  /// No description provided for @scenes_field_stash_id_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Stash ID Count'**
+  String get scenes_field_stash_id_count;
+
+  /// No description provided for @scenes_field_oshash.
+  ///
+  /// In en, this message translates to:
+  /// **'Oshash'**
+  String get scenes_field_oshash;
+
+  /// No description provided for @scenes_field_checksum.
+  ///
+  /// In en, this message translates to:
+  /// **'Checksum'**
+  String get scenes_field_checksum;
+
+  /// No description provided for @scenes_field_phash.
+  ///
+  /// In en, this message translates to:
+  /// **'Phash'**
+  String get scenes_field_phash;
+
+  /// No description provided for @scenes_field_created_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Created At'**
+  String get scenes_field_created_at;
+
+  /// No description provided for @scenes_field_updated_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated At'**
+  String get scenes_field_updated_at;
+
+  /// No description provided for @cast_stopped_resuming_locally.
+  ///
+  /// In en, this message translates to:
+  /// **'Cast stopped, resuming locally'**
+  String get cast_stopped_resuming_locally;
+
+  /// No description provided for @cast_stop_casting.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop Casting'**
+  String get cast_stop_casting;
+
+  /// No description provided for @cast_cast.
+  ///
+  /// In en, this message translates to:
+  /// **'Cast'**
+  String get cast_cast;
+
+  /// No description provided for @common_add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get common_add;
+
+  /// No description provided for @common_remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get common_remove;
+
+  /// No description provided for @common_clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get common_clear;
+
+  /// No description provided for @common_download.
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get common_download;
+
+  /// No description provided for @common_star.
+  ///
+  /// In en, this message translates to:
+  /// **'Star'**
+  String get common_star;
+
+  /// No description provided for @settings_interface_card_title_font_size.
+  ///
+  /// In en, this message translates to:
+  /// **'Card Title Font Size'**
+  String get settings_interface_card_title_font_size;
+
+  /// No description provided for @common_hint_date.
+  ///
+  /// In en, this message translates to:
+  /// **'YYYY-MM-DD'**
+  String get common_hint_date;
+
+  /// No description provided for @common_hint_url.
+  ///
+  /// In en, this message translates to:
+  /// **'https://...'**
+  String get common_hint_url;
+
+  /// No description provided for @common_hint_hex.
+  ///
+  /// In en, this message translates to:
+  /// **'FF0F766E'**
+  String get common_hint_hex;
+
+  /// No description provided for @common_px.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} px'**
+  String common_px(int value);
+
+  /// No description provided for @common_pt.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} pt'**
+  String common_pt(int value);
+
+  /// No description provided for @common_percent.
+  ///
+  /// In en, this message translates to:
+  /// **'{value}%'**
+  String common_percent(int value);
+
+  /// No description provided for @settings_playback_direct_play.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct-play on scene navigation'**
+  String get settings_playback_direct_play;
+
+  /// No description provided for @settings_playback_direct_play_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When navigating from another playing scene, directly play the new scene'**
+  String get settings_playback_direct_play_subtitle;
 }
 
 class _AppLocalizationsDelegate

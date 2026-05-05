@@ -61,6 +61,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    // Expect translated text, hardcoded matching text 'Direct-play on scene navigation' from en localization
     expect(find.text('Direct-play on scene navigation'), findsOneWidget);
 
     final directPlaySwitch = find.descendant(

@@ -40,6 +40,22 @@ TextAlign _subtitleTextAlign(String setting) {
   }
 }
 
+bool _isSceneFullscreenPath(String path, {String? sceneId}) {
+  final segments = Uri.parse(path).pathSegments;
+  if (segments.length < 3) return false;
+  if (segments[0] != 'scenes' || segments[1] != 'fullscreen') return false;
+  if (sceneId != null && segments[2] != sceneId) return false;
+  return true;
+}
+
+bool _isSceneDetailsPath(String path, {String? sceneId}) {
+  final segments = Uri.parse(path).pathSegments;
+  if (segments.length < 3) return false;
+  if (segments[0] != 'scenes' || segments[1] != 'scene') return false;
+  if (sceneId != null && segments[2] != sceneId) return false;
+  return true;
+}
+
 // We can add horizontal alignment for subtitle in the future if needed, but for now we'll just use TextAlign for simplicity and rely on padding to achieve the desired horizontal positioning.
 // Alignment _subtitleHorizontalAlignment(String setting) {
 //   switch (setting) {
@@ -143,12 +159,50 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   /// or if requested by the user.
   Future<void> _startPlaybackIfNeeded({bool force = false}) async {
     final playerState = ref.read(playerStateProvider);
+    final router = GoRouter.maybeOf(context);
+    final currentPath = router?.routeInformationProvider.value.uri.path ?? '';
+    final isInFullscreenRoute = _isSceneFullscreenPath(currentPath);
+    final isOwningSceneRoute =
+        _isSceneDetailsPath(currentPath, sceneId: widget.scene.id) ||
+        _isSceneFullscreenPath(currentPath, sceneId: widget.scene.id);
+
+    AppLogStore.instance.add(
+      'SceneVideoPlayer._startPlaybackIfNeeded: scene=${widget.scene.id}, force=$force, autoPlayOnMount=${widget.autoPlayOnMount}, activeScene=${playerState.activeScene?.id}, currentPath=$currentPath, isOwningSceneRoute=$isOwningSceneRoute',
+      source: 'scene_video_player',
+    );
 
     // If we're already active, just resume or stay as-is.
     if (playerState.activeScene?.id == widget.scene.id) {
+      AppLogStore.instance.add(
+        'SceneVideoPlayer: Scene ${widget.scene.id} already active, resuming if paused',
+        source: 'scene_video_player',
+      );
       if (playerState.player != null && !playerState.player!.state.playing) {
         playerState.player!.play();
       }
+      return;
+    }
+
+    if (!force && playerState.viewMode != PlayerViewMode.inline) {
+      AppLogStore.instance.add(
+        'SceneVideoPlayer: Skipping playback - viewMode is ${playerState.viewMode}',
+        source: 'scene_video_player',
+      );
+      return;
+    }
+
+    if (!force && !isOwningSceneRoute) {
+      return;
+    }
+
+    // Do not let a background scene claim the shared player while fullscreen
+    // is active for another scene. That would replace the active scene under
+    // the fullscreen route and break fullscreen lifecycle validation.
+    if (!force && (playerState.isFullScreen || isInFullscreenRoute)) {
+      AppLogStore.instance.add(
+        'SceneVideoPlayer: Skipping playback - fullscreen=${playerState.isFullScreen}, isInFullscreenRoute=$isInFullscreenRoute',
+        source: 'scene_video_player',
+      );
       return;
     }
 
@@ -156,10 +210,20 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     // Users can opt into "direct-play on navigation" which allows a scene
     // details page to start playback even when another scene is already active.
     final prefs = ref.read(sharedPreferencesProvider);
-    final directPlayOnNavigation = prefs.getBool('video_direct_play_on_navigation') ?? false;
+    final directPlayOnNavigation =
+        prefs.getBool('video_direct_play_on_navigation') ?? false;
     if (!force && playerState.activeScene != null && !directPlayOnNavigation) {
+      AppLogStore.instance.add(
+        'SceneVideoPlayer: Skipping playback - another scene active=${playerState.activeScene?.id}, directPlayOnNavigation=$directPlayOnNavigation',
+        source: 'scene_video_player',
+      );
       return;
     }
+
+    AppLogStore.instance.add(
+      'SceneVideoPlayer: Starting playback for scene ${widget.scene.id}',
+      source: 'scene_video_player',
+    );
 
     setState(() => _isStarting = true);
     try {
@@ -267,7 +331,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       }
       final resolver = ref.read(streamResolverProvider.notifier);
       final prewarmer = ref.read(streamPrewarmerProvider.notifier);
-      
+
       final choice = await resolver.resolvePreferredStream(scene);
       if (choice == null) {
         return const _PrewarmResult(attempted: false, succeeded: false);
@@ -277,7 +341,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
         return const _PrewarmResult(attempted: false, succeeded: false);
       }
       final headers = ref.read(mediaPlaybackHeadersProvider);
-      
+
       // Use the centralized prewarmer which uses Byte-Range GET (0-10MB)
       // and keeps the connection alive in a pool.
       await prewarmer.prewarm(scene, choice.url, headers: headers);
@@ -285,7 +349,8 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       stopwatch.stop();
       return _PrewarmResult(
         attempted: true,
-        succeeded: true, // We assume success if no exception was thrown during request setup
+        succeeded:
+            true, // We assume success if no exception was thrown during request setup
         latencyMs: stopwatch.elapsedMilliseconds,
       );
     } catch (_) {
@@ -308,7 +373,12 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     // We check both state and path for maximum robustness.
     // If we are in fullscreen state OR on the fullscreen path, we want to exit.
     final currentPath = router?.routeInformationProvider.value.uri.path ?? '';
-    final isInFullscreenPath = currentPath.endsWith('/fullscreen');
+    final isInFullscreenPath = _isSceneFullscreenPath(currentPath);
+
+    AppLogStore.instance.add(
+      'SceneVideoPlayer [${widget.scene.id}] _toggleFullScreen: path=$currentPath stateFS=${playerState.isFullScreen} inFSPath=$isInFullscreenPath',
+      source: 'SceneVideoPlayer',
+    );
 
     if (kIsWeb) {
       if (playerState.isFullScreen || isInFullscreenPath) {
@@ -319,9 +389,20 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     }
 
     if (playerState.isFullScreen || isInFullscreenPath) {
-      router?.pop();
+      AppLogStore.instance.add(
+        'SceneVideoPlayer [${widget.scene.id}] exiting fullscreen via global state',
+        source: 'SceneVideoPlayer',
+      );
+      ref.read(playerStateProvider.notifier).syncBackgroundToActiveScene(context);
+      ref.read(playerStateProvider.notifier).setFullScreen(false);
+      ref.read(playerStateProvider.notifier).setViewMode(PlayerViewMode.inline);
     } else {
-      context.push('/scenes/scene/${widget.scene.id}/fullscreen');
+      AppLogStore.instance.add(
+        'SceneVideoPlayer [${widget.scene.id}] entering fullscreen via global state',
+        source: 'SceneVideoPlayer',
+      );
+      ref.read(playerStateProvider.notifier).setViewMode(PlayerViewMode.fullscreen);
+      ref.read(playerStateProvider.notifier).setFullScreen(true);
     }
   }
 
@@ -435,12 +516,12 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                                 fit: BoxFit.contain,
                                 errorBuilder: (context, error, stackTrace) =>
                                     const Center(
-                                  child: Icon(
-                                    Icons.cast,
-                                    size: 64,
-                                    color: Colors.white24,
-                                  ),
-                                ),
+                                      child: Icon(
+                                        Icons.cast,
+                                        size: 64,
+                                        color: Colors.white24,
+                                      ),
+                                    ),
                               )
                             : TransformableVideoSurface(
                                 fontSize: playerState.subtitleFontSize,
@@ -463,8 +544,9 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                           decoration: BoxDecoration(
                             color: Colors.black.withValues(alpha: 0.4),
                           ),
-                          child:
-                              const Center(child: CircularProgressIndicator()),
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
                         ),
                       ),
                     if (castState.isCasting)
@@ -529,479 +611,6 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   }
 }
 
-/// An immersive fullscreen page for the active video player.
-///
-/// This page locks the orientation to landscape and hides system bars.
-/// It uses a [Hero] transition to seamlessly hand off the video surface
-/// from the inline [SceneVideoPlayer].
-class FullscreenPlayerPage extends ConsumerStatefulWidget {
-  const FullscreenPlayerPage({required this.sceneId, super.key});
-
-  /// The ID of the scene currently being played.
-  final String sceneId;
-
-  @override
-  ConsumerState<FullscreenPlayerPage> createState() =>
-      _FullscreenPlayerPageState();
-}
-
-class _FullscreenPlayerPageState extends ConsumerState<FullscreenPlayerPage> {
-  bool _isPopping = false;
-  bool _wasMaximizedBeforeFullscreen = false;
-  bool _wasPlayingBeforeExit = false;
-  VideoController? _currentListenedController;
-  final List<StreamSubscription> _subscriptions = [];
-
-  // Timer to debounce the buffering spinner.
-  Timer? _bufferingDisplayTimer;
-  bool _showBufferingSpinner = false;
-
-  final ValueNotifier<Matrix4> _transformationNotifier = ValueNotifier(
-    Matrix4.identity(),
-  );
-  double _lastScale = 1.0;
-  double _lastRotation = 0.0;
-
-  void _onScaleStart(ScaleStartDetails details) {
-    _lastScale = 1.0;
-    _lastRotation = 0.0;
-  }
-
-  void _onScaleUpdate(ScaleUpdateDetails details) {
-    if (details.pointerCount < 2) return;
-
-    final double deltaScale = details.scale / _lastScale;
-    final double deltaRotation = details.rotation - _lastRotation;
-    final Offset focalPoint = details.localFocalPoint;
-
-    final Matrix4 matrix = Matrix4.identity()
-      ..translateByVector3(Vector3(focalPoint.dx, focalPoint.dy, 0))
-      ..rotateZ(deltaRotation)
-      ..scaleByVector3(Vector3(deltaScale, deltaScale, 1.0))
-      ..translateByVector3(Vector3(-focalPoint.dx, -focalPoint.dy, 0))
-      ..translateByVector3(
-        Vector3(details.focalPointDelta.dx, details.focalPointDelta.dy, 0),
-      );
-
-    _transformationNotifier.value = matrix * _transformationNotifier.value;
-    _lastScale = details.scale;
-    _lastRotation = details.rotation;
-  }
-
-  void _onTransformationDelta(Matrix4 delta, Offset focalPoint) {
-    _transformationNotifier.value = delta * _transformationNotifier.value;
-  }
-
-  void _onControllerUpdate() {
-    if (!_isPopping && _currentListenedController != null) {
-      _wasPlayingBeforeExit = _currentListenedController!.player.state.playing;
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // Request landscape and hide system UI immediately upon entering fullscreen.
-    _enterFullScreen();
-  }
-
-  @override
-  void deactivate() {
-    // Reset orientation and show system UI upon leaving fullscreen.
-    // We use deactivate instead of dispose because ref access is still safe here.
-    _exitFullScreen();
-    super.deactivate();
-  }
-
-  @override
-  void dispose() {
-    for (final sub in _subscriptions) {
-      sub.cancel();
-    }
-    super.dispose();
-  }
-
-  Future<void> _enterFullScreen() async {
-    final playerState = ref.read(playerStateProvider);
-    final controller = playerState.videoController;
-    final wasPlaying = playerState.player?.state.playing ?? false;
-
-    try {
-      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-
-      if (!kIsWeb &&
-          (defaultTargetPlatform == TargetPlatform.windows ||
-              defaultTargetPlatform == TargetPlatform.linux ||
-              defaultTargetPlatform == TargetPlatform.macOS)) {
-        _wasMaximizedBeforeFullscreen = await windowManager.isMaximized();
-
-        // Some desktop window managers can keep title bar chrome visible when
-        // entering fullscreen directly from a maximized state.
-        if (_wasMaximizedBeforeFullscreen) {
-          await windowManager.unmaximize();
-        }
-
-        await windowManager.setFullScreen(true);
-
-        // Retry once if the first transition did not stick.
-        if (!await windowManager.isFullScreen()) {
-          await windowManager.setFullScreen(true);
-        }
-
-        // On Windows, toggling fullscreen can sometimes trigger a pause in the native player
-        // due to window state changes or focus loss during the transition.
-        if (wasPlaying && defaultTargetPlatform == TargetPlatform.windows) {
-          if (controller != null && !controller.player.state.playing) {
-            unawaited(controller.player.play());
-          }
-        }
-      } else {
-        final playerState = ref.read(playerStateProvider);
-        final width = controller?.player.state.width;
-        final height = controller?.player.state.height;
-        final aspectRatio = (width != null && height != null && height > 0)
-            ? width / height
-            : 16 / 9;
-        final allowGravity = playerState.videoGravityOrientation;
-
-        List<DeviceOrientation> orientations;
-        if (aspectRatio > 1.0) {
-          // Landscape
-          orientations = allowGravity
-              ? [
-                  DeviceOrientation.landscapeLeft,
-                  DeviceOrientation.landscapeRight,
-                ]
-              : [DeviceOrientation.landscapeLeft];
-        } else {
-          // Portrait or Square
-          orientations = allowGravity
-              ? [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]
-              : [DeviceOrientation.portraitUp];
-        }
-
-        await SystemChrome.setPreferredOrientations(orientations);
-
-        // On Web, toggling fullscreen and the Hero transition can trigger a pause
-        if (wasPlaying && kIsWeb) {
-          Future.delayed(const Duration(milliseconds: 350), () {
-            if (controller != null && !controller.player.state.playing) {
-              unawaited(controller.player.play());
-            }
-          });
-        }
-      }
-    } catch (e) {
-      AppLogStore.instance.add(
-        'FullscreenPlayerPage [${widget.sceneId}] error entering fullscreen: $e',
-        source: 'FullscreenPlayerPage',
-      );
-    } finally {
-      if (mounted) {
-        ref.read(playerStateProvider.notifier).setFullScreen(true);
-      }
-    }
-  }
-
-  void _exitFullScreen() {
-    final controller = ref.read(playerStateProvider).videoController;
-    final wasPlaying = _wasPlayingBeforeExit;
-
-    // Reset state early so parent pages (like ShellPage) rebuild correctly.
-    // We use a post-frame callback to avoid "Tried to modify a provider while
-    // the widget tree was building" errors during route transitions.
-    final notifier = ref.read(playerStateProvider.notifier);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      notifier.setFullScreen(false);
-    });
-
-    // Reset orientation and show system UI.
-    // These are async but don't need to be awaited for the state change.
-    unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge));
-
-    if (!kIsWeb &&
-        (defaultTargetPlatform == TargetPlatform.windows ||
-            defaultTargetPlatform == TargetPlatform.linux ||
-            defaultTargetPlatform == TargetPlatform.macOS)) {
-      unawaited(() async {
-        await windowManager.setFullScreen(false);
-
-        // Restore maximized state when leaving fullscreen if we started there.
-        if (_wasMaximizedBeforeFullscreen) {
-          await windowManager.maximize();
-          _wasMaximizedBeforeFullscreen = false;
-        }
-
-        // On Windows and Web, toggling fullscreen can sometimes trigger a pause in the native player
-        // due to window state changes or focus loss during the transition.
-        if (wasPlaying &&
-            (kIsWeb || defaultTargetPlatform == TargetPlatform.windows)) {
-          if (controller != null && !controller.player.state.playing) {
-            await controller.player.play();
-          }
-        }
-      }());
-    } else {
-      final allowMainPageGravityOrientation = ref.read(
-        mainPageGravityOrientationProvider,
-      );
-      unawaited(() async {
-        await SystemChrome.setPreferredOrientations(
-          allowMainPageGravityOrientation
-              ? [
-                  DeviceOrientation.portraitUp,
-                  DeviceOrientation.portraitDown,
-                  DeviceOrientation.landscapeLeft,
-                  DeviceOrientation.landscapeRight,
-                ]
-              : [DeviceOrientation.portraitUp],
-        );
-
-        // On Web, toggling fullscreen and the Hero transition can trigger a pause
-        if (wasPlaying && kIsWeb) {
-          Future.delayed(const Duration(milliseconds: 350), () {
-            // Do not check `mounted` here because FullscreenPlayerPage might be unmounted
-            // when returning to the inline player page.
-            if (controller != null && !controller.player.state.playing) {
-              unawaited(controller.player.play());
-            }
-          });
-        }
-      }());
-    }
-  }
-
-  /// Toggles between inline and immersive fullscreen mode.
-  Future<void> _toggleFullScreen() async {
-    if (!mounted || _isPopping) return;
-
-    if (kIsWeb) {
-      unawaited(exitWebFullScreen());
-    }
-
-    final router = GoRouter.maybeOf(context);
-
-    // If we are in FullscreenPlayerPage, the toggle button always exits.
-    _isPopping = true;
-    // Update state immediately before popping.
-    // _exitFullScreen will also be called via deactivate() for extra safety.
-    ref.read(playerStateProvider.notifier).setFullScreen(false);
-    router?.pop();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final router = GoRouter.maybeOf(context);
-    final currentPath = router?.routeInformationProvider.value.uri.path ?? '';
-    final isInFullscreenPath = currentPath.endsWith('/fullscreen');
-
-    final playerState = ref.watch(playerStateProvider);
-    final castState = ref.watch(castServiceProvider);
-
-    // Automatically exit fullscreen if the global player state indicates it's no longer fullscreen
-    // This handles scenarios like the video ending and the player state reset.
-    // By listening here instead of the parent page, we avoid race conditions
-    // where the parent page might pop twice if the user manually popped first.
-    ref.listen(playerStateProvider, (previous, next) {
-      if (previous?.isFullScreen == true && next.isFullScreen == false) {
-        // Only trigger a pop if we are not already in the process of popping
-        // and we are actually on the fullscreen path.
-        if (context.mounted && !_isPopping && isInFullscreenPath) {
-          AppLogStore.instance.add(
-            'FullscreenPlayerPage [${widget.sceneId}] auto-exiting fullscreen',
-            source: 'FullscreenPlayerPage',
-          );
-          _isPopping = true;
-          router?.pop();
-        }
-      }
-    });
-
-    final sceneId = widget.sceneId;
-
-    // We must have an active scene that matches the one we're trying to show.
-    final scene = playerState.activeScene;
-    final controller = playerState.videoController;
-
-    if (controller != _currentListenedController) {
-      if (_currentListenedController != null) {
-        for (final sub in _subscriptions) {
-          sub.cancel();
-        }
-        _subscriptions.clear();
-      }
-      _currentListenedController = controller;
-      if (controller != null) {
-        _subscriptions.add(
-          controller.player.stream.playing.listen((_) => _onControllerUpdate()),
-        );
-      }
-      // Immediately hydrate the initial value.
-      if (controller != null && !_isPopping) {
-        _wasPlayingBeforeExit = controller.player.state.playing;
-      }
-    }
-
-    if (scene == null || scene.id != sceneId || controller == null) {
-      return Scaffold(
-        backgroundColor: Colors.black,
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const CircularProgressIndicator(),
-              const SizedBox(height: 16),
-              Text(
-                'Initializing player...',
-                style: const TextStyle(color: Colors.white70),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return PopScope(
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) {
-          _isPopping = true;
-          // Ensure state is updated immediately on back-swipe
-          ref.read(playerStateProvider.notifier).setFullScreen(false);
-        }
-      },
-      child: Material(
-        color: Colors.black,
-        child: Hero(
-          tag: 'scene_player_${widget.sceneId}',
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final videoWidth = playerState.videoWidth;
-              final videoHeight = playerState.videoHeight;
-              final isVideoReady =
-                  videoWidth != null && videoHeight != null && videoHeight > 0;
-              final aspectRatio = isVideoReady
-                  ? videoWidth / videoHeight
-                  : 16 / 9;
-
-              // Use the same debouncing logic as the inline player
-              if (playerState.isBuffering && !_showBufferingSpinner) {
-                _bufferingDisplayTimer ??=
-                    Timer(const Duration(milliseconds: 500), () {
-                      if (mounted) setState(() => _showBufferingSpinner = true);
-                    });
-              } else if (!playerState.isBuffering && _showBufferingSpinner) {
-                _bufferingDisplayTimer?.cancel();
-                _bufferingDisplayTimer = null;
-                Future.microtask(() {
-                  if (mounted) setState(() => _showBufferingSpinner = false);
-                });
-              } else if (!playerState.isBuffering) {
-                _bufferingDisplayTimer?.cancel();
-                _bufferingDisplayTimer = null;
-              }
-
-              final showLoadingIndicator =
-                  _showBufferingSpinner ||
-                  (!isVideoReady && !playerState.isPlaying);
-
-              return Stack(
-                children: [
-                  Positioned.fill(
-                    child: Container(
-                      color: Colors.black,
-                      child: castState.isCasting
-                          ? Image.network(
-                              appendApiKey(
-                                scene.paths.screenshot ?? '',
-                                ref.read(serverApiKeyProvider),
-                              ),
-                              fit: BoxFit.contain,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Center(
-                                child: Icon(
-                                  Icons.cast,
-                                  size: 64,
-                                  color: Colors.white24,
-                                ),
-                              ),
-                            )
-                          : TransformableVideoSurface(
-                              fontSize: playerState.subtitleFontSize,
-                              textAlign: _subtitleTextAlign(
-                                playerState.subtitleTextAlignment,
-                              ),
-                              bottomRatio:
-                                  playerState.subtitlePositionBottomRatio,
-                              constraints: constraints,
-                              controller: controller,
-                              aspectRatio: aspectRatio,
-                              transformationNotifier: _transformationNotifier,
-                              fit: (aspectRatio - 1.0).abs() < 0.01
-                                  ? BoxFit.fill
-                                  : BoxFit.contain,
-                            ),
-                    ),
-                  ),
-                  if (showLoadingIndicator && !castState.isCasting)
-                    Positioned.fill(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.4),
-                        ),
-                        child: const Center(child: CircularProgressIndicator()),
-                      ),
-                    ),
-                  if (castState.isCasting)
-                    Positioned.fill(
-                      child: Container(
-                        color: Colors.black.withValues(alpha: 0.4),
-                        child: Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.cast_connected,
-                                color: Colors.white,
-                                size: 48,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Casting to ${castState.activeSession?.device.name ?? 'Device'}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  Positioned.fill(
-                    child: Material(
-                      color: Colors.transparent,
-                      child: NativeVideoControls(
-                        controller: controller,
-                        useDoubleTapSeek: playerState.useDoubleTapSeek,
-                        enableNativePip: playerState.enableNativePip,
-                        onFullScreenToggle: _toggleFullScreen,
-                        scene: scene,
-                        onScaleStart: _onScaleStart,
-                        onScaleUpdate: _onScaleUpdate,
-                        onTransformationDelta: _onTransformationDelta,
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 /// Internal class tracking the result of a prewarm request.
 class _PrewarmResult {
   const _PrewarmResult({
@@ -1014,3 +623,4 @@ class _PrewarmResult {
   final bool succeeded;
   final int? latencyMs;
 }
+

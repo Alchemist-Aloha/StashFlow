@@ -50,7 +50,7 @@ class PlaybackQueue extends _$PlaybackQueue {
   /// when the scene list refreshes in the background.
   void setSequence(List<Scene> scenes, int initialIndex) {
     AppLogStore.instance.add(
-      'PlaybackQueue setSequence: scenes=${scenes.length}, initialIndex=$initialIndex',
+      'PlaybackQueue setSequence: scenes=${scenes.length}, initialIndex=$initialIndex, currentState=(index=${state.currentIndex}, seqLen=${state.sequence.length})',
       source: 'playback_queue',
     );
 
@@ -62,7 +62,7 @@ class PlaybackQueue extends _$PlaybackQueue {
         state.sequence.isNotEmpty) {
       if (state.sequence[0].id == scenes[0].id) {
         AppLogStore.instance.add(
-          'PlaybackQueue setSequence: detected same/subset list, checking index',
+          'PlaybackQueue setSequence: detected same/subset list (first scene match), early return (initialIndex=$initialIndex)',
           source: 'playback_queue',
         );
         if (initialIndex != -1) {
@@ -72,6 +72,10 @@ class PlaybackQueue extends _$PlaybackQueue {
       }
     }
 
+    AppLogStore.instance.add(
+      'PlaybackQueue setSequence: updating sequence and setting index to $initialIndex',
+      source: 'playback_queue',
+    );
     state = state.copyWith(sequence: scenes, currentIndex: initialIndex);
   }
 
@@ -128,15 +132,22 @@ class PlaybackQueue extends _$PlaybackQueue {
         state.currentIndex < state.sequence.length - 1) {
       final nextScene = state.sequence[state.currentIndex + 1];
       AppLogStore.instance.add(
-        'PlaybackQueue getNextScene: returning ${nextScene.id}',
+        'PlaybackQueue getNextScene: nextIndex=${state.currentIndex + 1}, returning ${nextScene.id}',
         source: 'playback_queue',
       );
       return nextScene;
     }
-    AppLogStore.instance.add(
-      'PlaybackQueue getNextScene: no next scene available',
-      source: 'playback_queue',
-    );
+    if (state.currentIndex >= 0) {
+      AppLogStore.instance.add(
+        'PlaybackQueue getNextScene: currentIndex=${state.currentIndex} is at or beyond end of sequence (len=${state.sequence.length})',
+        source: 'playback_queue',
+      );
+    } else {
+      AppLogStore.instance.add(
+        'PlaybackQueue getNextScene: currentIndex=${state.currentIndex} is invalid',
+        source: 'playback_queue',
+      );
+    }
     return null;
   }
 

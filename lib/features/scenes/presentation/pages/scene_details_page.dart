@@ -33,8 +33,8 @@ import '../widgets/scene_strip.dart';
 /// * Direct file information.
 ///
 /// It also handles sophisticated navigation logic:
-/// * Listens to [playerStateProvider] to auto-navigate to the next scene when the current one ends.
-/// * Pops the immersive fullscreen view automatically when playback transitions to a new scene.
+/// * Listens to [playerStateProvider] via top-level ShellPage to auto-navigate to the next scene when the current one ends.
+/// Pops the immersive fullscreen view automatically when playback transitions to a new scene.
 
 bool shouldRouteToNextScene(
   String currentPageSceneId,
@@ -46,6 +46,40 @@ bool shouldRouteToNextScene(
   return nextScene != null &&
       nextScene.id != currentPageSceneId &&
       previousId == currentPageSceneId;
+}
+
+bool _isSceneOrFullscreenRouteFor(String path, String sceneId) {
+  // In StatefulShellRoute, the shell path might be just '/scenes'
+  // but the child route has the scene details.
+  // Check if path contains indicators we're on a scene-related route for this ID.
+
+  final segments = Uri.parse(path).pathSegments;
+
+  // Check for fullscreen route
+  if (segments.length >= 3 &&
+      segments[0] == 'scenes' &&
+      segments[1] == 'fullscreen' &&
+      segments[2] == sceneId) {
+    return true;
+  }
+
+  // Check for scene detail route
+  if (segments.length >= 3 &&
+      segments[0] == 'scenes' &&
+      segments[1] == 'scene' &&
+      segments[2] == sceneId) {
+    return true;
+  }
+
+  // In StatefulShellRoute, child routes might not show in the path,
+  // but they contain the scene ID. Check if sceneId is mentioned.
+  if (segments.length >= 1 &&
+      segments[0] == 'scenes' &&
+      path.contains(sceneId)) {
+    return true;
+  }
+
+  return false;
 }
 
 class SceneDetailsPage extends ConsumerStatefulWidget {
@@ -69,7 +103,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   bool _detailsExpanded = false;
   bool _tagsExpanded = false;
   bool _performersExpanded = false;
-  String? _lastKnownActiveSceneId;
 
   bool _isRandomSortActive() {
     return ref.read(sceneSortProvider).sort == 'random';
@@ -121,39 +154,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(playerStateProvider, (previous, next) {
-      final nextScene = next.activeScene;
-      final previousActiveSceneId =
-          previous?.activeScene?.id ?? _lastKnownActiveSceneId;
-
-      // Navigate to next scene if provider indicates we just moved from the current scene
-      if (shouldRouteToNextScene(
-        widget.sceneId,
-        previous?.activeScene,
-        _lastKnownActiveSceneId,
-        nextScene,
-      )) {
-        AppLogStore.instance.add(
-          'SceneDetailsPage [${widget.sceneId}] navigating to next scene: ${nextScene?.id}',
-          source: 'SceneDetailsPage',
-        );
-
-        if (nextScene != null) {
-          context.pushReplacement(
-            '/scenes/scene/${nextScene.id}',
-            extra: true,
-          );
-        }
-      }
-
-      // Keep the most recent active scene ID in case the provider emits a transient null state
-      if (nextScene?.id != null) {
-        _lastKnownActiveSceneId = nextScene!.id;
-      } else if (previousActiveSceneId != null) {
-        _lastKnownActiveSceneId = previousActiveSceneId;
-      }
-    });
-
     final sceneAsync = ref.watch(sceneDetailsProvider(widget.sceneId));
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final scrapeEnabled = ref.watch(scrapeEnabledProvider);
@@ -193,125 +193,127 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
           return sceneAsync.when(
             data: (scene) {
-          final useTwoColumns = !Responsive.isMobile(context);
+              final useTwoColumns = !Responsive.isMobile(context);
 
-          if (useTwoColumns) {
-            return RefreshIndicator(
-              onRefresh: () async {
-                ref.invalidate(sceneDetailsProvider(widget.sceneId));
-                return ref.read(sceneDetailsProvider(widget.sceneId).future);
-              },
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Left Column: Video, Title, Info, Details (61.8%)
-                  Expanded(
-                    flex: 618,
-                    child: SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SceneVideoPlayer(
-                            scene: scene,
-                            autoPlayOnMount: widget.autoPlayOnMount,
-                            maxHeight: safeMaxHeight,
+              if (useTwoColumns) {
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    ref.invalidate(sceneDetailsProvider(widget.sceneId));
+                    return ref.read(
+                      sceneDetailsProvider(widget.sceneId).future,
+                    );
+                  },
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Left Column: Video, Title, Info, Details (61.8%)
+                      Expanded(
+                        flex: 618,
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SceneVideoPlayer(
+                                scene: scene,
+                                autoPlayOnMount: widget.autoPlayOnMount,
+                                maxHeight: safeMaxHeight,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(
+                                  AppTheme.spacingMedium,
+                                ),
+                                child: _buildMainInfo(
+                                  context,
+                                  scene,
+                                  scrapeEnabled,
+                                ),
+                              ),
+                            ],
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(
-                              AppTheme.spacingMedium,
-                            ),
-                            child: _buildMainInfo(
-                              context,
-                              scene,
-                              scrapeEnabled,
-                            ),
+                        ),
+                      ),
+                      // Divider
+                      VerticalDivider(
+                        width: 1,
+                        thickness: 1,
+                        color: context.colors.outline.withValues(alpha: 0.1),
+                      ),
+                      // Right Column: Tags, Performers, More from Studio (38.2%)
+                      Expanded(
+                        flex: 382,
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildTagsSection(context, scene),
+                              _buildPerformersSection(context, scene),
+                              _buildMoreFromStudioSection(context, scene),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                  // Divider
-                  VerticalDivider(
-                    width: 1,
-                    thickness: 1,
-                    color: context.colors.outline.withValues(alpha: 0.1),
-                  ),
-                  // Right Column: Tags, Performers, More from Studio (38.2%)
-                  Expanded(
-                    flex: 382,
-                    child: SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildTagsSection(context, scene),
-                          _buildPerformersSection(context, scene),
-                          _buildMoreFromStudioSection(context, scene),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
+                );
+              }
 
-          // Mobile View (Default Column)
-          return RefreshIndicator(
-            onRefresh: () async {
-              await ref
-                  .read(sceneRepositoryProvider)
-                  .getSceneById(widget.sceneId, refresh: true);
-              ref.invalidate(sceneDetailsProvider(widget.sceneId));
-              return ref.read(sceneDetailsProvider(widget.sceneId).future);
+              // Mobile View (Default Column)
+              return RefreshIndicator(
+                onRefresh: () async {
+                  await ref
+                      .read(sceneRepositoryProvider)
+                      .getSceneById(widget.sceneId, refresh: true);
+                  ref.invalidate(sceneDetailsProvider(widget.sceneId));
+                  return ref.read(sceneDetailsProvider(widget.sceneId).future);
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SceneVideoPlayer(
+                        scene: scene,
+                        autoPlayOnMount: widget.autoPlayOnMount,
+                        maxHeight: safeMaxHeight,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildMainInfo(context, scene, scrapeEnabled),
+                            _buildTagsSection(context, scene),
+                            _buildPerformersSection(context, scene),
+                            _buildMoreFromStudioSection(context, scene),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
             },
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SceneVideoPlayer(
-                    scene: scene,
-                    autoPlayOnMount: widget.autoPlayOnMount,
-                    maxHeight: safeMaxHeight,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildMainInfo(context, scene, scrapeEnabled),
-                        _buildTagsSection(context, scene),
-                        _buildPerformersSection(context, scene),
-                        _buildMoreFromStudioSection(context, scene),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, stack) => ErrorStateView(
+              message: context.l10n.common_error(err.toString()),
+              onRetry: () => ref.refresh(sceneDetailsProvider(widget.sceneId)),
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => ErrorStateView(
-          message: context.l10n.common_error(err.toString()),
-          onRetry: () => ref.refresh(sceneDetailsProvider(widget.sceneId)),
-        ),
-      );
-    },
-  ),
-);
+      ),
+    );
   }
 
   Widget _buildSectionContainer(BuildContext context, Widget child) {
     return Card(
       margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
       elevation: 0,
-      color: Theme.of(context).colorScheme.primaryContainer.withValues(
-        alpha: 0.1,
-      ),
+      color: Theme.of(
+        context,
+      ).colorScheme.primaryContainer.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
       ),
@@ -761,9 +763,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     return studioMediaAsync.when(
       data: (scenes) {
         final List<Scene> sceneList = scenes;
-        final filtered =
-            sceneList.where((item) => item.id != scene.id).toList()
-              ..shuffle(Random(scene.id.hashCode));
+        final filtered = sceneList.where((item) => item.id != scene.id).toList()
+          ..shuffle(Random(scene.id.hashCode));
 
         if (filtered.isEmpty) {
           return const SizedBox.shrink();
@@ -777,7 +778,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               SectionHeader(
                 title: context.l10n.details_more_from_studio,
                 onViewAll: canOpenStudio
-                    ? () => context.push('/studios/studio/${scene.studioId}/media')
+                    ? () => context.push(
+                        '/studios/studio/${scene.studioId}/media',
+                      )
                     : null,
                 padding: EdgeInsets.zero,
               ),

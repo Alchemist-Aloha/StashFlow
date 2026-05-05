@@ -5,7 +5,7 @@
 A modern, multi-platform client for your **Stash** server. Designed for seamless browsing, effortless discovery, and high-quality playback across **Android**, **Desktop** (Windows, macOS, Linux), and the [**Web**](https://alchemist-aloha.github.io/StashFlow/).
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.15.0-green.svg)](pubspec.yaml)
+[![Version](https://img.shields.io/badge/version-1.15.1-green.svg)](pubspec.yaml)
 
 ## 📸 Screenshots
 
@@ -63,7 +63,7 @@ A modern, multi-platform client for your **Stash** server. Designed for seamless
 
 ### ⚡ Reliability & Configuration
 
-- ⚡ **Performance Optimized:** Includes **Image Deduplication**, prefetching, and automatic recovery from corrupt cache files for low-latency usage.
+- ⚡ **Performance Optimized:** Includes prefetching, and automatic recovery from corrupt cache files for low-latency usage.
 - 🛠️ **Native Customization:** Configure server connection, UI preferences, and streaming-related behaviors in one place.
 
 ## 🚀 Getting Started
@@ -95,7 +95,8 @@ A modern, multi-platform client for your **Stash** server. Designed for seamless
 - **Flutter** & **GoRouter**
 - **Riverpod** & **Hooks** (State Management)
 - **GraphQL** (`graphql_flutter` + `codegen`)
-- **Video Player** + **Audio Service** (Native-feel playback)
+- **MediaKit** (High-performance video engine)
+- **Audio Service** (Background playback & system controls)
 
 ### Project Structure
 

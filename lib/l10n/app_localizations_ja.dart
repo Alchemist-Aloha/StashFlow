@@ -403,6 +403,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get common_skip_next => '次をスキップ';
 
   @override
+  String get common_skip_previous => 'Skip Previous';
+
+  @override
   String get common_select_subtitle => '字幕を選択';
 
   @override
@@ -1878,4 +1881,284 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settings_storage_max_video_cache => '最大ビデオ キャッシュ (MB)';
+
+  @override
+  String get performers_field_name => 'Name';
+
+  @override
+  String get performers_field_url => 'URL';
+
+  @override
+  String get performers_field_details => 'Details';
+
+  @override
+  String get performers_field_birth_year => 'Birth Year';
+
+  @override
+  String get performers_field_age => 'Age';
+
+  @override
+  String get performers_field_death_year => 'Death Year';
+
+  @override
+  String get performers_field_scene_count => 'Scene Count';
+
+  @override
+  String get performers_field_image_count => 'Image Count';
+
+  @override
+  String get performers_field_gallery_count => 'Gallery Count';
+
+  @override
+  String get performers_field_play_count => 'Play Count';
+
+  @override
+  String get performers_field_o_counter => 'O-Counter';
+
+  @override
+  String get performers_field_tag_count => 'Tag Count';
+
+  @override
+  String get performers_field_created_at => 'Created At';
+
+  @override
+  String get performers_field_updated_at => 'Updated At';
+
+  @override
+  String get galleries_field_title => 'Title';
+
+  @override
+  String get galleries_field_details => 'Details';
+
+  @override
+  String get galleries_field_date => 'Date';
+
+  @override
+  String get galleries_field_performer_age => 'Performer Age';
+
+  @override
+  String get galleries_field_performer_count => 'Performer Count';
+
+  @override
+  String get galleries_field_tag_count => 'Tag Count';
+
+  @override
+  String get galleries_field_url => 'URL';
+
+  @override
+  String get galleries_field_id => 'ID';
+
+  @override
+  String get galleries_field_path => 'Path';
+
+  @override
+  String get galleries_field_checksum => 'Checksum';
+
+  @override
+  String get galleries_field_image_count => 'Image Count';
+
+  @override
+  String get galleries_field_file_count => 'File Count';
+
+  @override
+  String get galleries_field_created_at => 'Created At';
+
+  @override
+  String get galleries_field_updated_at => 'Updated At';
+
+  @override
+  String get images_field_title => 'Title';
+
+  @override
+  String get images_field_details => 'Details';
+
+  @override
+  String get images_field_path => 'Path';
+
+  @override
+  String get images_field_url => 'URL';
+
+  @override
+  String get images_field_file_count => 'File Count';
+
+  @override
+  String get images_field_o_counter => 'O-Counter';
+
+  @override
+  String get studios_field_name => 'Name';
+
+  @override
+  String get studios_field_details => 'Details';
+
+  @override
+  String get studios_field_aliases => 'Aliases';
+
+  @override
+  String get studios_field_url => 'URL';
+
+  @override
+  String get studios_field_tag_count => 'Tag Count';
+
+  @override
+  String get studios_field_scene_count => 'Scene Count';
+
+  @override
+  String get studios_field_image_count => 'Image Count';
+
+  @override
+  String get studios_field_gallery_count => 'Gallery Count';
+
+  @override
+  String get studios_field_sub_studio_count => 'Sub-studio Count';
+
+  @override
+  String get studios_field_created_at => 'Created At';
+
+  @override
+  String get studios_field_updated_at => 'Updated At';
+
+  @override
+  String get scenes_field_performer_age => 'Performer Age';
+
+  @override
+  String get scenes_field_performer_count => 'Performer Count';
+
+  @override
+  String get scenes_field_tag_count => 'Tag Count';
+
+  @override
+  String get scenes_field_code => 'Code';
+
+  @override
+  String get scenes_field_details => 'Details';
+
+  @override
+  String get scenes_field_director => 'Director';
+
+  @override
+  String get scenes_field_url => 'URL';
+
+  @override
+  String get scenes_field_date => 'Date';
+
+  @override
+  String get scenes_field_path => 'Path';
+
+  @override
+  String get scenes_field_captions => 'Captions';
+
+  @override
+  String get scenes_field_duration => 'Duration (seconds)';
+
+  @override
+  String get scenes_field_bitrate => 'Bitrate';
+
+  @override
+  String get scenes_field_video_codec => 'Video Codec';
+
+  @override
+  String get scenes_field_audio_codec => 'Audio Codec';
+
+  @override
+  String get scenes_field_framerate => 'Framerate';
+
+  @override
+  String get scenes_field_file_count => 'File Count';
+
+  @override
+  String get scenes_field_play_count => 'Play Count';
+
+  @override
+  String get scenes_field_play_duration => 'Play Duration';
+
+  @override
+  String get scenes_field_o_counter => 'O-Counter';
+
+  @override
+  String get scenes_field_last_played_at => 'Last Played At';
+
+  @override
+  String get scenes_field_resume_time => 'Resume Time';
+
+  @override
+  String get scenes_field_interactive_speed => 'Interactive Speed';
+
+  @override
+  String get scenes_field_id => 'ID';
+
+  @override
+  String get scenes_field_stash_id_count => 'Stash ID Count';
+
+  @override
+  String get scenes_field_oshash => 'Oshash';
+
+  @override
+  String get scenes_field_checksum => 'Checksum';
+
+  @override
+  String get scenes_field_phash => 'Phash';
+
+  @override
+  String get scenes_field_created_at => 'Created At';
+
+  @override
+  String get scenes_field_updated_at => 'Updated At';
+
+  @override
+  String get cast_stopped_resuming_locally => 'Cast stopped, resuming locally';
+
+  @override
+  String get cast_stop_casting => 'Stop Casting';
+
+  @override
+  String get cast_cast => 'Cast';
+
+  @override
+  String get common_add => 'Add';
+
+  @override
+  String get common_remove => 'Remove';
+
+  @override
+  String get common_clear => 'Clear';
+
+  @override
+  String get common_download => 'Download';
+
+  @override
+  String get common_star => 'Star';
+
+  @override
+  String get settings_interface_card_title_font_size => 'Card Title Font Size';
+
+  @override
+  String get common_hint_date => 'YYYY-MM-DD';
+
+  @override
+  String get common_hint_url => 'https://...';
+
+  @override
+  String get common_hint_hex => 'FF0F766E';
+
+  @override
+  String common_px(int value) {
+    return '$value px';
+  }
+
+  @override
+  String common_pt(int value) {
+    return '$value pt';
+  }
+
+  @override
+  String common_percent(int value) {
+    return '$value%';
+  }
+
+  @override
+  String get settings_playback_direct_play => 'Direct-play on scene navigation';
+
+  @override
+  String get settings_playback_direct_play_subtitle =>
+      'When navigating from another playing scene, directly play the new scene';
 }

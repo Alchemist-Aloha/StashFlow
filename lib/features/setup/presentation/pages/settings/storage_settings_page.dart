@@ -137,12 +137,12 @@ class StorageSettingsPage extends ConsumerWidget {
               children: [
                 DropdownButtonFormField<int>(
                   initialValue: ref.watch(maxImageCacheSizeProvider),
-                  decoration: const InputDecoration(labelText: 'Max Image Cache (MB)'),
-                  items: const [
-                    DropdownMenuItem(value: 100, child: Text('100 MB')),
-                    DropdownMenuItem(value: 500, child: Text('500 MB')),
-                    DropdownMenuItem(value: 1024, child: Text('1 GB')),
-                    DropdownMenuItem(value: 999999, child: Text('Unlimited')),
+                  decoration: InputDecoration(labelText: context.l10n.settings_storage_max_image_cache),
+                  items: [
+                    DropdownMenuItem(value: 100, child: Text(context.l10n.settings_storage_100_mb)),
+                    DropdownMenuItem(value: 500, child: Text(context.l10n.settings_storage_500_mb)),
+                    DropdownMenuItem(value: 1024, child: Text(context.l10n.settings_storage_1_gb)),
+                    DropdownMenuItem(value: 999999, child: Text(context.l10n.settings_storage_unlimited)),
                   ],
                   onChanged: (v) {
                     if (v != null) {
@@ -154,12 +154,12 @@ class StorageSettingsPage extends ConsumerWidget {
                 SizedBox(height: context.dimensions.spacingMedium),
                 DropdownButtonFormField<int>(
                   initialValue: ref.watch(maxVideoCacheSizeProvider),
-                  decoration: const InputDecoration(labelText: 'Max Video Cache (MB)'),
-                  items: const [
-                    DropdownMenuItem(value: 500, child: Text('500 MB')),
-                    DropdownMenuItem(value: 1024, child: Text('1 GB')),
-                    DropdownMenuItem(value: 2048, child: Text('2 GB')),
-                    DropdownMenuItem(value: 999999, child: Text('Unlimited')),
+                  decoration: InputDecoration(labelText: context.l10n.settings_storage_max_video_cache),
+                  items: [
+                    DropdownMenuItem(value: 500, child: Text(context.l10n.settings_storage_500_mb)),
+                    DropdownMenuItem(value: 1024, child: Text(context.l10n.settings_storage_1_gb)),
+                    DropdownMenuItem(value: 2048, child: Text(context.l10n.settings_storage_2_gb)),
+                    DropdownMenuItem(value: 999999, child: Text(context.l10n.settings_storage_unlimited)),
                   ],
                   onChanged: (v) {
                     if (v != null) {

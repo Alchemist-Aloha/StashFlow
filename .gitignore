@@ -1,5 +1,7 @@
 # Miscellaneous
 **/*.g.dart
+**/generated*.*
+**/Generated*.*
 **/*.freezed.dart
 .hermes/
 *.class

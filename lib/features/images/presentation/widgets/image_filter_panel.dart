@@ -176,13 +176,13 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
       title: 'Metadata',
       children: [
         StringCriterionInput(
-          label: 'Title',
+          label: context.l10n.images_field_title,
           value: _tempFilter.title,
           onChanged: (val) =>
               setState(() => _tempFilter = _tempFilter.copyWith(title: val)),
         ),
         StringCriterionInput(
-          label: 'Details',
+          label: context.l10n.images_field_details,
           value: _tempFilter.details,
           onChanged: (val) =>
               setState(() => _tempFilter = _tempFilter.copyWith(details: val)),
@@ -247,25 +247,25 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
       title: 'System',
       children: [
         StringCriterionInput(
-            label: 'Path',
+            label: context.l10n.images_field_path,
             value: _tempFilter.path,
             onChanged: (val) =>
                 setState(() => _tempFilter = _tempFilter.copyWith(path: val))),
         StringCriterionInput(
-            label: 'URL',
+            label: context.l10n.images_field_url,
             value: _tempFilter.url,
             onChanged: (val) =>
                 setState(() => _tempFilter = _tempFilter.copyWith(url: val))),
         _buildBooleanFilter('Is Missing', _tempFilter.isMissing,
             (val) => setState(() => _tempFilter = _tempFilter.copyWith(isMissing: val))),
         IntCriterionInput(
-          label: 'File Count',
+          label: context.l10n.images_field_file_count,
           value: _tempFilter.fileCount,
           onChanged: (val) =>
               setState(() => _tempFilter = _tempFilter.copyWith(fileCount: val)),
         ),
         IntCriterionInput(
-          label: 'O-Counter',
+          label: context.l10n.images_field_o_counter,
           value: _tempFilter.oCounter,
           onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(oCounter: val)),
         ),
@@ -487,7 +487,7 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
             children: [
               Text(label, style: context.textTheme.labelLarge),
               IconButton(
-                tooltip: 'Add',
+                tooltip: context.l10n.common_add,
                 icon: const Icon(Icons.add_circle_outline),
                 onPressed: () async {
                   final result = await showDialog<List<T>>(

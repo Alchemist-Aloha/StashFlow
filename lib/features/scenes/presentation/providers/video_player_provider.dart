@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:clock/clock.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -24,10 +26,19 @@ import 'package:media_kit_video/media_kit_video.dart';
 
 part 'video_player_provider.g.dart';
 
-enum VideoEndBehavior {
-  stop,
-  loop,
-  next,
+enum VideoEndBehavior { stop, loop, next }
+
+enum PlayerViewMode { inline, fullscreen, tiktok }
+
+class NavigationAction {
+  final String path;
+  final bool isReplacement;
+  NavigationAction(this.path, {this.isReplacement = false});
+}
+
+class NavigationIntent {
+  final List<NavigationAction> actions;
+  NavigationIntent(this.actions);
 }
 
 /// Represents the global state of the video player.
@@ -119,6 +130,15 @@ class GlobalPlayerState {
   /// User preference: whether to allow gravity-controlled orientation rotation in fullscreen.
   final bool videoGravityOrientation;
 
+  /// Current UI context where the video is being viewed.
+  final PlayerViewMode viewMode;
+
+  /// Flag to ignore redundant triggers during navigation.
+  final bool isTransitioning;
+
+  /// Intent for coordinated navigation triggered by player state changes.
+  final NavigationIntent? navigationIntent;
+
   GlobalPlayerState({
     this.activeScene,
     this.player,
@@ -148,6 +168,9 @@ class GlobalPlayerState {
     this.subtitleFontSize = 18.0,
     this.subtitlePositionBottomRatio = 0.15,
     this.subtitleTextAlignment = 'center',
+    this.viewMode = PlayerViewMode.inline,
+    this.isTransitioning = false,
+    this.navigationIntent,
   });
 
   /// User preference: whether to automatically play the next scene when current ends.
@@ -186,8 +209,12 @@ class GlobalPlayerState {
     double? subtitleFontSize,
     double? subtitlePositionBottomRatio,
     String? subtitleTextAlignment,
+    PlayerViewMode? viewMode,
+    bool? isTransitioning,
+    NavigationIntent? navigationIntent,
     bool clearActive = false,
     bool clearSubtitle = false,
+    bool clearNavigation = false,
   }) {
     return GlobalPlayerState(
       activeScene: clearActive ? null : (activeScene ?? this.activeScene),
@@ -243,6 +270,10 @@ class GlobalPlayerState {
           subtitlePositionBottomRatio ?? this.subtitlePositionBottomRatio,
       subtitleTextAlignment:
           subtitleTextAlignment ?? this.subtitleTextAlignment,
+      viewMode: viewMode ?? this.viewMode,
+      isTransitioning: isTransitioning ?? this.isTransitioning,
+      navigationIntent:
+          clearNavigation ? null : (navigationIntent ?? this.navigationIntent),
     );
   }
 }
@@ -352,8 +383,9 @@ class PlayerState extends _$PlayerState {
       );
     } else {
       // Migrate from autoplayNext
-      playEndBehavior =
-          autoplayNext ? VideoEndBehavior.next : VideoEndBehavior.stop;
+      playEndBehavior = autoplayNext
+          ? VideoEndBehavior.next
+          : VideoEndBehavior.stop;
     }
 
     return GlobalPlayerState(
@@ -447,7 +479,7 @@ class PlayerState extends _$PlayerState {
   }
 
   Future<void> setSubtitle(String? languageCode, {String? captionType}) async {
-  if (!ref.mounted) return;
+    if (!ref.mounted) return;
     final scene = state.activeScene;
     if (scene == null || state.player == null) return;
     AppLogStore.instance.add(
@@ -463,13 +495,13 @@ class PlayerState extends _$PlayerState {
 
     // 2. Switch the track dynamically
     final player = state.player!;
-    
+
     if (isNone) {
       // Disable subtitles
       await player.setSubtitleTrack(SubtitleTrack.no());
     } else {
       // Find the track that matches your languageCode
-      // Note: You might need to map languageCode to the actual Track ID 
+      // Note: You might need to map languageCode to the actual Track ID
       // available in player.state.tracks.subtitle
       try {
         final availableTracks = player.state.tracks.subtitle;
@@ -477,7 +509,7 @@ class PlayerState extends _$PlayerState {
           (t) => t.language == languageCode || t.title == languageCode,
           orElse: () => SubtitleTrack.auto(),
         );
-        
+
         await player.setSubtitleTrack(targetTrack);
       } catch (e) {
         AppLogStore.instance.add('Failed to switch track: $e');
@@ -503,6 +535,48 @@ class PlayerState extends _$PlayerState {
       source: 'player_provider',
     );
     state = state.copyWith(isFullScreen: value);
+  }
+
+  void setViewMode(PlayerViewMode mode) {
+    AppLogStore.instance.add(
+      'PlayerState setViewMode: $mode',
+      source: 'player_provider',
+    );
+    state = state.copyWith(viewMode: mode);
+  }
+
+  /// Synchronizes the background navigation to match the currently active scene.
+  /// This is called when exiting fullscreen to ensure the user lands on the
+  /// correct details page.
+  void syncBackgroundToActiveScene(BuildContext context) {
+    final activeSceneId = state.activeScene?.id;
+    if (activeSceneId == null) return;
+
+    final router = GoRouter.of(context);
+    final currentPath = router.routeInformationProvider.value.uri.path;
+
+    // If we are not already on the details page for this scene
+    if (!currentPath.contains('/scenes/scene/$activeSceneId')) {
+      AppLogStore.instance.add(
+        'PlayerState: syncing background to scene $activeSceneId',
+        source: 'player_provider',
+      );
+      router.go('/scenes/scene/$activeSceneId');
+    }
+  }
+
+  void _setTransitioning(bool value) {
+    state = state.copyWith(isTransitioning: value);
+  }
+
+  void _navigate(List<NavigationAction> actions) {
+    state = state.copyWith(
+      navigationIntent: NavigationIntent(actions),
+    );
+    // Immediately clear intent so it's not re-processed on next state update
+    Future.microtask(() {
+      if (ref.mounted) state = state.copyWith(clearNavigation: true);
+    });
   }
 
   Future<void> setVolume(double volume) async {
@@ -702,6 +776,11 @@ class PlayerState extends _$PlayerState {
 
     final stopwatch = Stopwatch()..start();
 
+    AppLogStore.instance.add(
+      'PlayerState playScene: updating state.activeScene to ${scene.id}',
+      source: 'player_provider',
+    );
+
     state = GlobalPlayerState(
       activeScene: scene,
       player: player,
@@ -710,6 +789,7 @@ class PlayerState extends _$PlayerState {
       isFullScreen:
           state.isFullScreen, // Preserve fullscreen state across scenes
       isInPipMode: state.isInPipMode, // Preserve PiP state across scenes
+      viewMode: state.viewMode, // Preserve UI context
       streamMimeType: mimeType,
       streamLabel: streamLabel,
       streamSource: streamSource,
@@ -806,7 +886,9 @@ class PlayerState extends _$PlayerState {
           }
         }),
       );
-      _subscriptions.add(player.stream.buffering.listen((_) => _videoListener()));
+      _subscriptions.add(
+        player.stream.buffering.listen((_) => _videoListener()),
+      );
       _subscriptions.add(player.stream.width.listen((_) => _videoListener()));
       _subscriptions.add(player.stream.height.listen((_) => _videoListener()));
       unawaited(player.play());
@@ -871,6 +953,8 @@ class PlayerState extends _$PlayerState {
     _isUsingBorrowedController = true;
     _lastIsPlaying = null;
 
+    final isTiktokHandoff = streamSource == 'tiktok-handoff' || streamSource == 'tiktok-promotion';
+
     state = state.copyWith(
       activeScene: scene,
       player: player,
@@ -878,6 +962,7 @@ class PlayerState extends _$PlayerState {
       isPlaying: player.state.playing,
       isFullScreen: state.isFullScreen, // Preserve fullscreen
       isInPipMode: state.isInPipMode, // Preserve PiP
+      viewMode: isTiktokHandoff ? PlayerViewMode.tiktok : state.viewMode,
       streamMimeType: streamMimeType,
       streamLabel: streamLabel,
       streamSource: streamSource,
@@ -1243,6 +1328,7 @@ class PlayerState extends _$PlayerState {
           );
           break;
         }
+
         // Do NOT exit full screen when moving to the next video,
         // so the next video also starts in full screen.
         playNext();
@@ -1251,7 +1337,17 @@ class PlayerState extends _$PlayerState {
   }
 
   Future<void> playNext() async {
-    if (!ref.mounted) return;
+    AppLogStore.instance.add(
+      'PlayerState playNext: CALLED, _isTransitioning=$_isTransitioning, activeScene=${state.activeScene?.id}',
+      source: 'player_provider',
+    );
+    if (!ref.mounted) {
+      AppLogStore.instance.add(
+        'PlayerState playNext: ref not mounted, returning',
+        source: 'player_provider',
+      );
+      return;
+    }
     if (_isTransitioning) {
       AppLogStore.instance.add(
         'PlayerState playNext: already transitioning, skipping',
@@ -1262,40 +1358,30 @@ class PlayerState extends _$PlayerState {
 
     _isTransitioning = true;
     try {
-      AppLogStore.instance.add(
-        'PlayerState playNext: currentActive=${state.activeScene?.id}',
-        source: 'player_provider',
-      );
-
       final queueNotifier = ref.read(playbackQueueProvider.notifier);
-      // If the playback queue hasn't been synchronized with the currently
-      // active scene (index == -1), try to recover by finding the active
-      // scene in the existing sequence. This helps when `setSequence` was
-      // called with -1 to preserve an external index but the queue hasn't
-      // been initialized for this session.
+      
+      // Ensure queue is synced
       if (queueNotifier.state.currentIndex == -1 &&
           state.activeScene?.id != null) {
-        AppLogStore.instance.add(
-          'PlayerState playNext: queue index unset, attempting to find active scene in sequence=${state.activeScene?.id}',
-          source: 'player_provider',
-        );
         queueNotifier.findAndSetIndex(state.activeScene!.id);
       }
+
       final nextScene = queueNotifier.getNextScene();
 
-      AppLogStore.instance.add(
-        'PlayerState playNext: nextSceneFound=${nextScene?.id}',
-        source: 'player_provider',
-      );
-
       if (nextScene != null) {
-        AppLogStore.instance.add(
-          'PlayerState playNext: moving to ${nextScene.id}',
-          source: 'player_provider',
-        );
+        // Trigger navigation synchronization so background details match active scene
+        // Skip for TikTok mode as it handles its own navigation via PageView
+        if (state.viewMode != PlayerViewMode.tiktok) {
+          _navigate([
+            NavigationAction('/scenes/scene/${nextScene.id}', isReplacement: true),
+          ]);
+        }
+
         queueNotifier.playNext(); // Increment index in queue
+
         final resolver = ref.read(streamResolverProvider.notifier);
         final choice = await resolver.resolvePreferredStream(nextScene);
+
         if (choice != null) {
           final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
           await playScene(
@@ -1306,17 +1392,57 @@ class PlayerState extends _$PlayerState {
             streamSource: 'autoplay-next',
             httpHeaders: mediaHeaders,
           );
-        } else {
-          AppLogStore.instance.add(
-            'PlayerState playNext: failed to resolve stream for ${nextScene.id}',
-            source: 'player_provider',
+        }
+      }
+    } finally {
+      _isTransitioning = false;
+    }
+  }
+
+  Future<void> playPrevious() async {
+    AppLogStore.instance.add(
+      'PlayerState playPrevious: CALLED, _isTransitioning=$_isTransitioning, activeScene=${state.activeScene?.id}',
+      source: 'player_provider',
+    );
+    if (!ref.mounted || _isTransitioning) return;
+
+    _isTransitioning = true;
+    try {
+      final queueNotifier = ref.read(playbackQueueProvider.notifier);
+      
+      // Ensure queue is synced
+      if (queueNotifier.state.currentIndex == -1 &&
+          state.activeScene?.id != null) {
+        queueNotifier.findAndSetIndex(state.activeScene!.id);
+      }
+
+      final prevScene = queueNotifier.getPreviousScene();
+
+      if (prevScene != null) {
+        // Trigger navigation synchronization
+        // Skip for TikTok mode as it handles its own navigation via PageView
+        if (state.viewMode != PlayerViewMode.tiktok) {
+          _navigate([
+            NavigationAction('/scenes/scene/${prevScene.id}', isReplacement: true),
+          ]);
+        }
+
+        queueNotifier.playPrevious(); // Decrement index in queue
+
+        final resolver = ref.read(streamResolverProvider.notifier);
+        final choice = await resolver.resolvePreferredStream(prevScene);
+
+        if (choice != null) {
+          final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
+          await playScene(
+            prevScene,
+            choice.url,
+            mimeType: choice.mimeType,
+            streamLabel: choice.label,
+            streamSource: 'autoplay-prev',
+            httpHeaders: mediaHeaders,
           );
         }
-      } else {
-        AppLogStore.instance.add(
-          'PlayerState playNext: no next scene found',
-          source: 'player_provider',
-        );
       }
     } finally {
       _isTransitioning = false;

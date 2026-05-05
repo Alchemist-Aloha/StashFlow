@@ -94,6 +94,7 @@ class SceneStrip extends ConsumerWidget {
                 scene: scene,
                 isGrid: true,
                 showPerformers: false,
+                useHero: false,
                 onTap: onTap != null ? () => onTap!(scene) : null,
               ),
             );

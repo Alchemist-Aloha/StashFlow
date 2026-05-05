@@ -1,3 +1,4 @@
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
@@ -224,7 +225,7 @@ class _AppearanceSettingsPageState
           min: 0.8,
           max: 1.5,
           divisions: 14,
-          label: '${(value * 100).toInt()}%',
+          label: context.l10n.common_percent((value * 100).toInt()),
           onChanged: (val) {
             ref.read(appGlobalScaleProvider.notifier).set(val);
           },
@@ -255,7 +256,7 @@ class _AppearanceSettingsPageState
             focusNode: _customHexFocusNode,
             decoration: InputDecoration(
               labelText: l10n.settings_appearance_custom_hex,
-              hintText: 'FF0F766E',
+              hintText: context.l10n.common_hint_hex,
               prefixText: '#',
               helperText: l10n.settings_appearance_custom_hex_helper,
             ),

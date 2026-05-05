@@ -500,8 +500,8 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
               ),
             TextField(
               controller: _titleController,
-              decoration: const InputDecoration(
-                labelText: 'Title',
+              decoration: InputDecoration(
+                labelText: context.l10n.common_title,
                 border: OutlineInputBorder(),
               ),
             ),
@@ -509,8 +509,8 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
             TextField(
               controller: _detailsController,
               maxLines: 5,
-              decoration: const InputDecoration(
-                labelText: 'Details',
+              decoration: InputDecoration(
+                labelText: context.l10n.common_details,
                 border: OutlineInputBorder(),
               ),
             ),
@@ -519,8 +519,8 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
               controller: _dateController,
               readOnly: true,
               onTap: _pickDate,
-              decoration: const InputDecoration(
-                labelText: 'Release Date',
+              decoration: InputDecoration(
+                labelText: context.l10n.common_release_date,
                 border: OutlineInputBorder(),
                 suffixIcon: Icon(Icons.calendar_today),
               ),
@@ -552,7 +552,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                     ),
                     if (_selectedStudioId != null)
                       IconButton(
-                        tooltip: 'Clear',
+                        tooltip: context.l10n.common_clear,
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                         icon: const Icon(Icons.clear, size: 18),
@@ -661,8 +661,8 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                     Expanded(
                       child: TextField(
                         controller: controller,
-                        decoration: const InputDecoration(
-                          labelText: 'URL',
+                        decoration: InputDecoration(
+                          labelText: context.l10n.common_url,
                           border: OutlineInputBorder(),
                         ),
                       ),

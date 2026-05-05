@@ -140,6 +140,7 @@ class StatsFloatingPanel extends ConsumerWidget {
           ),
           IconButton.filledTonal(
             icon: const Icon(Icons.close_rounded, size: 20),
+            tooltip: AppLocalizations.of(context)!.common_close,
             onPressed: () => Navigator.of(context).pop(),
           ),
         ],
