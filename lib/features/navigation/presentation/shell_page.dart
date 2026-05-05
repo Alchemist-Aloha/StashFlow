@@ -208,6 +208,17 @@ class _ShellPageState extends ConsumerState<ShellPage> {
       });
     });
 
+    ref.listen(playerStateProvider.select((s) => s.navigationIntent),
+        (prev, next) {
+      if (next != null && mounted) {
+        if (next.isReplacement) {
+          context.pushReplacement(next.path);
+        } else {
+          context.push(next.path);
+        }
+      }
+    });
+
     final navigationShell = widget.navigationShell;
     final currentPath = GoRouterState.of(context).uri.path;
     final playerState = ref.watch(playerStateProvider);

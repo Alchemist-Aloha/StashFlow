@@ -28,6 +28,12 @@ enum VideoEndBehavior { stop, loop, next }
 
 enum PlayerViewMode { inline, fullscreen, tiktok }
 
+class NavigationIntent {
+  final String path;
+  final bool isReplacement;
+  NavigationIntent(this.path, {this.isReplacement = false});
+}
+
 /// Represents the global state of the video player.
 ///
 /// This state is shared across the entire application, allowing the mini-player,
@@ -123,6 +129,9 @@ class GlobalPlayerState {
   /// Flag to ignore redundant triggers during navigation.
   final bool isTransitioning;
 
+  /// Intent for coordinated navigation triggered by player state changes.
+  final NavigationIntent? navigationIntent;
+
   GlobalPlayerState({
     this.activeScene,
     this.player,
@@ -154,6 +163,7 @@ class GlobalPlayerState {
     this.subtitleTextAlignment = 'center',
     this.viewMode = PlayerViewMode.inline,
     this.isTransitioning = false,
+    this.navigationIntent,
   });
 
   /// User preference: whether to automatically play the next scene when current ends.
@@ -194,8 +204,10 @@ class GlobalPlayerState {
     String? subtitleTextAlignment,
     PlayerViewMode? viewMode,
     bool? isTransitioning,
+    NavigationIntent? navigationIntent,
     bool clearActive = false,
     bool clearSubtitle = false,
+    bool clearNavigation = false,
   }) {
     return GlobalPlayerState(
       activeScene: clearActive ? null : (activeScene ?? this.activeScene),
@@ -253,6 +265,8 @@ class GlobalPlayerState {
           subtitleTextAlignment ?? this.subtitleTextAlignment,
       viewMode: viewMode ?? this.viewMode,
       isTransitioning: isTransitioning ?? this.isTransitioning,
+      navigationIntent:
+          clearNavigation ? null : (navigationIntent ?? this.navigationIntent),
     );
   }
 }
@@ -526,6 +540,16 @@ class PlayerState extends _$PlayerState {
 
   void _setTransitioning(bool value) {
     state = state.copyWith(isTransitioning: value);
+  }
+
+  void _navigate(String path, {bool replacement = false}) {
+    state = state.copyWith(
+      navigationIntent: NavigationIntent(path, isReplacement: replacement),
+    );
+    // Immediately clear intent so it's not re-processed on next state update
+    Future.microtask(() {
+      if (ref.mounted) state = state.copyWith(clearNavigation: true);
+    });
   }
 
   Future<void> setVolume(double volume) async {
@@ -1273,6 +1297,19 @@ class PlayerState extends _$PlayerState {
           );
           break;
         }
+
+        final nextScene = ref.read(playbackQueueProvider.notifier).getNextScene();
+        if (nextScene != null) {
+          if (state.viewMode == PlayerViewMode.fullscreen) {
+            // Sequence: replace current fullscreen with new details, then push new fullscreen.
+            // This ensures the "Back" button lands on the current scene's details.
+            _navigate('/scenes/scene/${nextScene.id}', replacement: true);
+            _navigate('/scenes/fullscreen/${nextScene.id}');
+          } else if (state.viewMode == PlayerViewMode.inline) {
+            _navigate('/scenes/scene/${nextScene.id}', replacement: true);
+          }
+        }
+
         // Do NOT exit full screen when moving to the next video,
         // so the next video also starts in full screen.
         playNext();
