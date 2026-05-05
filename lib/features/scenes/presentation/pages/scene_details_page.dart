@@ -52,9 +52,9 @@ bool _isSceneOrFullscreenRouteFor(String path, String sceneId) {
   // In StatefulShellRoute, the shell path might be just '/scenes'
   // but the child route has the scene details.
   // Check if path contains indicators we're on a scene-related route for this ID.
-  
+
   final segments = Uri.parse(path).pathSegments;
-  
+
   // Check for fullscreen route
   if (segments.length >= 3 &&
       segments[0] == 'scenes' &&
@@ -62,7 +62,7 @@ bool _isSceneOrFullscreenRouteFor(String path, String sceneId) {
       segments[2] == sceneId) {
     return true;
   }
-  
+
   // Check for scene detail route
   if (segments.length >= 3 &&
       segments[0] == 'scenes' &&
@@ -70,17 +70,17 @@ bool _isSceneOrFullscreenRouteFor(String path, String sceneId) {
       segments[2] == sceneId) {
     return true;
   }
-  
+
   // In StatefulShellRoute, child routes might not show in the path,
   // but they contain the scene ID. Check if sceneId is mentioned.
-  if (segments.length >= 1 && segments[0] == 'scenes' && path.contains(sceneId)) {
+  if (segments.length >= 1 &&
+      segments[0] == 'scenes' &&
+      path.contains(sceneId)) {
     return true;
   }
-  
+
   return false;
 }
-
-
 
 class SceneDetailsPage extends ConsumerStatefulWidget {
   final String sceneId;
@@ -170,7 +170,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           source: 'SceneDetailsPage',
         );
 
-        // Check if we're on the edit page route - don't navigate away while editing
+        // Check if we're on the edit page or fullscreen - don't navigate away
         final router = GoRouter.of(context);
         final currentPath = router.routeInformationProvider.value.uri.path;
         final pathSegments = Uri.parse(currentPath).pathSegments;
@@ -182,9 +182,14 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
             pathSegments[2] == widget.sceneId &&
             pathSegments[3] == 'edit';
 
-        if (isEditPage) {
+        final isFullscreenRoute =
+            pathSegments.length >= 2 &&
+            pathSegments[0] == 'scenes' &&
+            pathSegments[1] == 'fullscreen';
+
+        if (isEditPage || isFullscreenRoute) {
           AppLogStore.instance.add(
-            'SceneDetailsPage [${widget.sceneId}] EARLY RETURN: on edit page',
+            'SceneDetailsPage [${widget.sceneId}] EARLY RETURN: isEditPage=$isEditPage, isFullscreenRoute=$isFullscreenRoute',
             source: 'SceneDetailsPage',
           );
           return;
