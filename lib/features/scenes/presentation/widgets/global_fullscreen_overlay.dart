@@ -315,7 +315,7 @@ class _GlobalFullscreenOverlayState extends ConsumerState<GlobalFullscreenOverla
       (previous, next) => _onFullScreenChanged(next),
     );
 
-    if (!_isVisible && !_isAnimating) return const SizedBox.shrink();
+    final bool showOverlay = _isVisible || _isAnimating;
 
     final playerState = ref.watch(playerStateProvider);
     final castState = ref.watch(castServiceProvider);
@@ -482,11 +482,19 @@ class _GlobalFullscreenOverlayState extends ConsumerState<GlobalFullscreenOverla
       );
     }
 
-    return SlideTransition(
-      position: _offsetAnimation,
-      child: Material(
-        color: Colors.black,
-        child: content,
+    return IgnorePointer(
+      ignoring: !showOverlay,
+      child: Visibility(
+        visible: showOverlay,
+        maintainState: false,
+        child: SlideTransition(
+          key: const ValueKey('global_fullscreen_overlay_slide'),
+          position: _offsetAnimation,
+          child: Material(
+            color: Colors.black,
+            child: content,
+          ),
+        ),
       ),
     );
   }

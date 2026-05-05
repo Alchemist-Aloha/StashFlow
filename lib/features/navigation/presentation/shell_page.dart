@@ -334,7 +334,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
             bottom: 0,
             child: MiniPlayer(),
           ),
-        const GlobalFullscreenOverlay(),
+        const Positioned.fill(child: GlobalFullscreenOverlay()),
       ],
     );
 
