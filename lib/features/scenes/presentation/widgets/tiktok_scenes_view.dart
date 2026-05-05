@@ -665,17 +665,15 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
   Future<void> _toggleFullScreen() async {
     final isFullScreen = ref.read(fullScreenModeProvider);
     if (isFullScreen) {
-      if (context.mounted) {
-        context.pop();
-      }
+      ref.read(fullScreenModeProvider.notifier).set(false);
     } else {
-      final router = GoRouter.of(context);
       await _handoffToGlobalPlayer();
 
       if (mounted) {
-        // Navigate to details THEN fullscreen for robust back stack
-        router.push('/scenes/scene/${widget.scene.id}');
-        router.push('/scenes/fullscreen/${widget.scene.id}');
+        // Navigate to details THEN set global fullscreen state
+        context.go('/scenes/scene/${widget.scene.id}');
+        ref.read(playerStateProvider.notifier).setFullScreen(true);
+        ref.read(playerStateProvider.notifier).setViewMode(PlayerViewMode.fullscreen);
       }
     }
   }
