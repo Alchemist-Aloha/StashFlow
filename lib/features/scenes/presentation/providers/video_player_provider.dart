@@ -1256,7 +1256,17 @@ class PlayerState extends _$PlayerState {
   }
 
   Future<void> playNext() async {
-    if (!ref.mounted) return;
+    AppLogStore.instance.add(
+      'PlayerState playNext: CALLED, _isTransitioning=$_isTransitioning, activeScene=${state.activeScene?.id}',
+      source: 'player_provider',
+    );
+    if (!ref.mounted) {
+      AppLogStore.instance.add(
+        'PlayerState playNext: ref not mounted, returning',
+        source: 'player_provider',
+      );
+      return;
+    }
     if (_isTransitioning) {
       AppLogStore.instance.add(
         'PlayerState playNext: already transitioning, skipping',
@@ -1273,6 +1283,13 @@ class PlayerState extends _$PlayerState {
       );
 
       final queueNotifier = ref.read(playbackQueueProvider.notifier);
+      final queueState = queueNotifier.state;
+      
+      AppLogStore.instance.add(
+        'PlayerState playNext: queue state - currentIndex=${queueState.currentIndex}, sequenceLength=${queueState.sequence.length}',
+        source: 'player_provider',
+      );
+      
       // If the playback queue hasn't been synchronized with the currently
       // active scene (index == -1), try to recover by finding the active
       // scene in the existing sequence. This helps when `setSequence` was
@@ -1281,15 +1298,21 @@ class PlayerState extends _$PlayerState {
       if (queueNotifier.state.currentIndex == -1 &&
           state.activeScene?.id != null) {
         AppLogStore.instance.add(
-          'PlayerState playNext: queue index unset, attempting to find active scene in sequence=${state.activeScene?.id}',
+          'PlayerState playNext: queue index unset (-1), attempting to find active scene in sequence=${state.activeScene?.id}',
           source: 'player_provider',
         );
         queueNotifier.findAndSetIndex(state.activeScene!.id);
+        
+        AppLogStore.instance.add(
+          'PlayerState playNext: after findAndSetIndex, new index=${queueNotifier.state.currentIndex}',
+          source: 'player_provider',
+        );
       }
+      
       final nextScene = queueNotifier.getNextScene();
 
       AppLogStore.instance.add(
-        'PlayerState playNext: nextSceneFound=${nextScene?.id}',
+        'PlayerState playNext: getNextScene returned ${nextScene?.id}, currentIndex=${queueNotifier.state.currentIndex}, sequenceLength=${queueNotifier.state.sequence.length}',
         source: 'player_provider',
       );
 
@@ -1299,10 +1322,26 @@ class PlayerState extends _$PlayerState {
           source: 'player_provider',
         );
         queueNotifier.playNext(); // Increment index in queue
+        
+        AppLogStore.instance.add(
+          'PlayerState playNext: queue.playNext() called, new index=${queueNotifier.state.currentIndex}',
+          source: 'player_provider',
+        );
+        
         final resolver = ref.read(streamResolverProvider.notifier);
         final choice = await resolver.resolvePreferredStream(nextScene);
+        
+        AppLogStore.instance.add(
+          'PlayerState playNext: stream resolved for ${nextScene.id}, choice=${choice?.label}',
+          source: 'player_provider',
+        );
+        
         if (choice != null) {
           final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
+          AppLogStore.instance.add(
+            'PlayerState playNext: calling playScene() for ${nextScene.id} with streamSource=autoplay-next',
+            source: 'player_provider',
+          );
           await playScene(
             nextScene,
             choice.url,
@@ -1310,6 +1349,10 @@ class PlayerState extends _$PlayerState {
             streamLabel: choice.label,
             streamSource: 'autoplay-next',
             httpHeaders: mediaHeaders,
+          );
+          AppLogStore.instance.add(
+            'PlayerState playNext: playScene() completed for ${nextScene.id}',
+            source: 'player_provider',
           );
         } else {
           AppLogStore.instance.add(
@@ -1319,12 +1362,16 @@ class PlayerState extends _$PlayerState {
         }
       } else {
         AppLogStore.instance.add(
-          'PlayerState playNext: no next scene found',
+          'PlayerState playNext: no next scene found, currentIndex=${queueNotifier.state.currentIndex}, sequenceLength=${queueNotifier.state.sequence.length}',
           source: 'player_provider',
         );
       }
     } finally {
       _isTransitioning = false;
+      AppLogStore.instance.add(
+        'PlayerState playNext: DONE, _isTransitioning=false',
+        source: 'player_provider',
+      );
     }
   }
 }
