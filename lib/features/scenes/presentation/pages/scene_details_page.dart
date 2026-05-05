@@ -34,7 +34,19 @@ import '../widgets/scene_strip.dart';
 ///
 /// It also handles sophisticated navigation logic:
 /// * Listens to [playerStateProvider] via top-level ShellPage to auto-navigate to the next scene when the current one ends.
-/// * Pops the immersive fullscreen view automatically when playback transitions to a new scene.
+/// Pops the immersive fullscreen view automatically when playback transitions to a new scene.
+
+bool shouldRouteToNextScene(
+  String currentPageSceneId,
+  Scene? previousActiveScene,
+  String? lastKnownActiveSceneId,
+  Scene? nextScene,
+) {
+  final previousId = previousActiveScene?.id ?? lastKnownActiveSceneId;
+  return nextScene != null &&
+      nextScene.id != currentPageSceneId &&
+      previousId == currentPageSceneId;
+}
 
 bool _isSceneOrFullscreenRouteFor(String path, String sceneId) {
   // In StatefulShellRoute, the shell path might be just '/scenes'
@@ -147,6 +159,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     final scrapeEnabled = ref.watch(scrapeEnabledProvider);
 
     return Scaffold(
+      appBar: AppBar(
         title: Text(context.l10n.details_scene),
         actions: [
           if (scrapeEnabled)
