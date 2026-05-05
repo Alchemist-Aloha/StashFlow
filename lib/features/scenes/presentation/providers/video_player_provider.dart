@@ -26,6 +26,8 @@ part 'video_player_provider.g.dart';
 
 enum VideoEndBehavior { stop, loop, next }
 
+enum PlayerViewMode { inline, fullscreen, tiktok }
+
 /// Represents the global state of the video player.
 ///
 /// This state is shared across the entire application, allowing the mini-player,
@@ -115,6 +117,12 @@ class GlobalPlayerState {
   /// User preference: whether to allow gravity-controlled orientation rotation in fullscreen.
   final bool videoGravityOrientation;
 
+  /// Current UI context where the video is being viewed.
+  final PlayerViewMode viewMode;
+
+  /// Flag to ignore redundant triggers during navigation.
+  final bool isTransitioning;
+
   GlobalPlayerState({
     this.activeScene,
     this.player,
@@ -144,6 +152,8 @@ class GlobalPlayerState {
     this.subtitleFontSize = 18.0,
     this.subtitlePositionBottomRatio = 0.15,
     this.subtitleTextAlignment = 'center',
+    this.viewMode = PlayerViewMode.inline,
+    this.isTransitioning = false,
   });
 
   /// User preference: whether to automatically play the next scene when current ends.
@@ -182,6 +192,8 @@ class GlobalPlayerState {
     double? subtitleFontSize,
     double? subtitlePositionBottomRatio,
     String? subtitleTextAlignment,
+    PlayerViewMode? viewMode,
+    bool? isTransitioning,
     bool clearActive = false,
     bool clearSubtitle = false,
   }) {
@@ -239,6 +251,8 @@ class GlobalPlayerState {
           subtitlePositionBottomRatio ?? this.subtitlePositionBottomRatio,
       subtitleTextAlignment:
           subtitleTextAlignment ?? this.subtitleTextAlignment,
+      viewMode: viewMode ?? this.viewMode,
+      isTransitioning: isTransitioning ?? this.isTransitioning,
     );
   }
 }
@@ -500,6 +514,18 @@ class PlayerState extends _$PlayerState {
       source: 'player_provider',
     );
     state = state.copyWith(isFullScreen: value);
+  }
+
+  void setViewMode(PlayerViewMode mode) {
+    AppLogStore.instance.add(
+      'PlayerState setViewMode: $mode',
+      source: 'player_provider',
+    );
+    state = state.copyWith(viewMode: mode);
+  }
+
+  void _setTransitioning(bool value) {
+    state = state.copyWith(isTransitioning: value);
   }
 
   Future<void> setVolume(double volume) async {
