@@ -75,6 +75,7 @@ dependencies:
   vector_math: ^2.2.0
   screen_brightness: ^2.0.0
   dart_cast: ^0.5.1
+  gal: ^2.3.2
 
 dev_dependencies:
   flutter_test:
