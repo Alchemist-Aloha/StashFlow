@@ -24,11 +24,7 @@ import 'package:media_kit_video/media_kit_video.dart';
 
 part 'video_player_provider.g.dart';
 
-enum VideoEndBehavior {
-  stop,
-  loop,
-  next,
-}
+enum VideoEndBehavior { stop, loop, next }
 
 /// Represents the global state of the video player.
 ///
@@ -352,8 +348,9 @@ class PlayerState extends _$PlayerState {
       );
     } else {
       // Migrate from autoplayNext
-      playEndBehavior =
-          autoplayNext ? VideoEndBehavior.next : VideoEndBehavior.stop;
+      playEndBehavior = autoplayNext
+          ? VideoEndBehavior.next
+          : VideoEndBehavior.stop;
     }
 
     return GlobalPlayerState(
@@ -447,7 +444,7 @@ class PlayerState extends _$PlayerState {
   }
 
   Future<void> setSubtitle(String? languageCode, {String? captionType}) async {
-  if (!ref.mounted) return;
+    if (!ref.mounted) return;
     final scene = state.activeScene;
     if (scene == null || state.player == null) return;
     AppLogStore.instance.add(
@@ -463,13 +460,13 @@ class PlayerState extends _$PlayerState {
 
     // 2. Switch the track dynamically
     final player = state.player!;
-    
+
     if (isNone) {
       // Disable subtitles
       await player.setSubtitleTrack(SubtitleTrack.no());
     } else {
       // Find the track that matches your languageCode
-      // Note: You might need to map languageCode to the actual Track ID 
+      // Note: You might need to map languageCode to the actual Track ID
       // available in player.state.tracks.subtitle
       try {
         final availableTracks = player.state.tracks.subtitle;
@@ -477,7 +474,7 @@ class PlayerState extends _$PlayerState {
           (t) => t.language == languageCode || t.title == languageCode,
           orElse: () => SubtitleTrack.auto(),
         );
-        
+
         await player.setSubtitleTrack(targetTrack);
       } catch (e) {
         AppLogStore.instance.add('Failed to switch track: $e');
@@ -811,7 +808,9 @@ class PlayerState extends _$PlayerState {
           }
         }),
       );
-      _subscriptions.add(player.stream.buffering.listen((_) => _videoListener()));
+      _subscriptions.add(
+        player.stream.buffering.listen((_) => _videoListener()),
+      );
       _subscriptions.add(player.stream.width.listen((_) => _videoListener()));
       _subscriptions.add(player.stream.height.listen((_) => _videoListener()));
       unawaited(player.play());
@@ -1284,12 +1283,12 @@ class PlayerState extends _$PlayerState {
 
       final queueNotifier = ref.read(playbackQueueProvider.notifier);
       final queueState = queueNotifier.state;
-      
+
       AppLogStore.instance.add(
         'PlayerState playNext: queue state - currentIndex=${queueState.currentIndex}, sequenceLength=${queueState.sequence.length}',
         source: 'player_provider',
       );
-      
+
       // If the playback queue hasn't been synchronized with the currently
       // active scene (index == -1), try to recover by finding the active
       // scene in the existing sequence. This helps when `setSequence` was
@@ -1302,13 +1301,13 @@ class PlayerState extends _$PlayerState {
           source: 'player_provider',
         );
         queueNotifier.findAndSetIndex(state.activeScene!.id);
-        
+
         AppLogStore.instance.add(
           'PlayerState playNext: after findAndSetIndex, new index=${queueNotifier.state.currentIndex}',
           source: 'player_provider',
         );
       }
-      
+
       final nextScene = queueNotifier.getNextScene();
 
       AppLogStore.instance.add(
@@ -1322,20 +1321,20 @@ class PlayerState extends _$PlayerState {
           source: 'player_provider',
         );
         queueNotifier.playNext(); // Increment index in queue
-        
+
         AppLogStore.instance.add(
           'PlayerState playNext: queue.playNext() called, new index=${queueNotifier.state.currentIndex}',
           source: 'player_provider',
         );
-        
+
         final resolver = ref.read(streamResolverProvider.notifier);
         final choice = await resolver.resolvePreferredStream(nextScene);
-        
+
         AppLogStore.instance.add(
           'PlayerState playNext: stream resolved for ${nextScene.id}, choice=${choice?.label}',
           source: 'player_provider',
         );
-        
+
         if (choice != null) {
           final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
           AppLogStore.instance.add(
