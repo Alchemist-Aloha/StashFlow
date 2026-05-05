@@ -438,66 +438,6 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     _showControlsTemporarily();
   }
 
-  void _playNext() {
-    AppLogStore.instance.add(
-      'NativeVideoControls: _playNext() called',
-      source: 'native_video_controls',
-    );
-    final queue = ref.read(playbackQueueProvider.notifier);
-    final next = queue.getNextScene();
-    AppLogStore.instance.add(
-      'NativeVideoControls: nextScene=${next?.id}',
-      source: 'native_video_controls',
-    );
-    if (next != null) {
-      queue.playNext();
-      if (mounted) {
-        AppLogStore.instance.add(
-          'NativeVideoControls: Navigating to next scene ${next.id} with autoPlayOnMount=true',
-          source: 'native_video_controls',
-        );
-        GoRouter.of(
-          context,
-        ).pushReplacement('/scenes/scene/${next.id}', extra: true);
-      }
-    } else {
-      AppLogStore.instance.add(
-        'NativeVideoControls: No next scene available',
-        source: 'native_video_controls',
-      );
-    }
-  }
-
-  void _playPrevious() {
-    AppLogStore.instance.add(
-      'NativeVideoControls: _playPrevious() called',
-      source: 'native_video_controls',
-    );
-    final queue = ref.read(playbackQueueProvider.notifier);
-    final prev = queue.getPreviousScene();
-    AppLogStore.instance.add(
-      'NativeVideoControls: previousScene=${prev?.id}',
-      source: 'native_video_controls',
-    );
-    if (prev != null) {
-      queue.playPrevious();
-      if (mounted) {
-        AppLogStore.instance.add(
-          'NativeVideoControls: Navigating to previous scene ${prev.id} with autoPlayOnMount=true',
-          source: 'native_video_controls',
-        );
-        GoRouter.of(
-          context,
-        ).pushReplacement('/scenes/scene/${prev.id}', extra: true);
-      }
-    } else {
-      AppLogStore.instance.add(
-        'NativeVideoControls: No previous scene available',
-        source: 'native_video_controls',
-      );
-    }
-  }
-
   ButtonStyle _controlButtonStyle(ColorScheme colorScheme) {
     return IconButton.styleFrom(
       backgroundColor: Colors.transparent,
@@ -775,6 +715,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
             queueState.currentIndex < queueState.sequence.length - 1)
         ? queueState.sequence[queueState.currentIndex + 1]
         : null;
+    final previousScene =
+        (queueState.currentIndex > 0 &&
+            queueState.currentIndex < queueState.sequence.length)
+        ? queueState.sequence[queueState.currentIndex - 1]
+        : null;
 
     final isDesktop = ref.watch(desktopCapabilitiesProvider);
     final keybinds = ref.watch(keybindsProvider);
@@ -830,10 +775,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
           };
           break;
         case KeybindAction.nextScene:
-          callback = _playNext;
+          callback = () => ref.read(playerStateProvider.notifier).playNext();
           break;
         case KeybindAction.previousScene:
-          callback = _playPrevious;
+          callback = () => ref.read(playerStateProvider.notifier).playPrevious();
           break;
         case KeybindAction.speedUp:
           callback = () {
@@ -1410,6 +1355,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                       isPlaying: value.playing,
                                       playbackSpeed: playbackSpeed,
                                       nextScene: nextScene,
+                                      previousScene: previousScene,
                                       isFullScreen: isFullScreen,
                                       onPlayPause: () {
                                         if (value.playing) {
@@ -1423,6 +1369,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                         ref
                                             .read(playerStateProvider.notifier)
                                             .playNext();
+                                      },
+                                      onSkipPrevious: () {
+                                        ref
+                                            .read(playerStateProvider.notifier)
+                                            .playPrevious();
                                       },
                                       onSubtitleSelected: (val) async {
                                         if (val == null || val == 'none') {

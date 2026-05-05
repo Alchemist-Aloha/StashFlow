@@ -810,6 +810,12 @@ abstract class AppLocalizations {
   /// **'Skip Next'**
   String get common_skip_next;
 
+  /// No description provided for @common_skip_previous.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip Previous'**
+  String get common_skip_previous;
+
   /// No description provided for @common_select_subtitle.
   ///
   /// In en, this message translates to:

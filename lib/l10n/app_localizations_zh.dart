@@ -401,6 +401,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get common_skip_next => '跳过下一个';
 
   @override
+  String get common_skip_previous => 'Skip Previous';
+
+  @override
   String get common_select_subtitle => '选择字幕';
 
   @override

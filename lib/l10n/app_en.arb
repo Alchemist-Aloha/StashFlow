@@ -143,6 +143,7 @@
   "common_settings": "Settings",
   "common_reset_to_1x": "Reset to 1x",
   "common_skip_next": "Skip Next",
+  "common_skip_previous": "Skip Previous",
   "common_select_subtitle": "Select subtitle",
   "common_playback_speed": "Playback speed",
   "common_pip": "Picture-in-Picture",

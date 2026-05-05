@@ -1329,22 +1329,6 @@ class PlayerState extends _$PlayerState {
           break;
         }
 
-        final nextScene = ref.read(playbackQueueProvider.notifier).getNextScene();
-        if (nextScene != null) {
-          if (state.viewMode == PlayerViewMode.fullscreen) {
-            // Sequence: replace current fullscreen with new details, then push new fullscreen.
-            // This ensures the "Back" button lands on the current scene's details.
-            _navigate([
-              NavigationAction('/scenes/scene/${nextScene.id}', isReplacement: true),
-              NavigationAction('/scenes/fullscreen/${nextScene.id}'),
-            ]);
-          } else if (state.viewMode == PlayerViewMode.inline) {
-            _navigate([
-              NavigationAction('/scenes/scene/${nextScene.id}', isReplacement: true),
-            ]);
-          }
-        }
-
         // Do NOT exit full screen when moving to the next video,
         // so the next video also starts in full screen.
         playNext();
@@ -1374,71 +1358,32 @@ class PlayerState extends _$PlayerState {
 
     _isTransitioning = true;
     try {
-      AppLogStore.instance.add(
-        'PlayerState playNext: currentActive=${state.activeScene?.id}',
-        source: 'player_provider',
-      );
-
       final queueNotifier = ref.read(playbackQueueProvider.notifier);
-      final queueState = queueNotifier.state;
-
-      AppLogStore.instance.add(
-        'PlayerState playNext: queue state - currentIndex=${queueState.currentIndex}, sequenceLength=${queueState.sequence.length}',
-        source: 'player_provider',
-      );
-
-      // If the playback queue hasn't been synchronized with the currently
-      // active scene (index == -1), try to recover by finding the active
-      // scene in the existing sequence. This helps when `setSequence` was
-      // called with -1 to preserve an external index but the queue hasn't
-      // been initialized for this session.
+      
+      // Ensure queue is synced
       if (queueNotifier.state.currentIndex == -1 &&
           state.activeScene?.id != null) {
-        AppLogStore.instance.add(
-          'PlayerState playNext: queue index unset (-1), attempting to find active scene in sequence=${state.activeScene?.id}',
-          source: 'player_provider',
-        );
         queueNotifier.findAndSetIndex(state.activeScene!.id);
-
-        AppLogStore.instance.add(
-          'PlayerState playNext: after findAndSetIndex, new index=${queueNotifier.state.currentIndex}',
-          source: 'player_provider',
-        );
       }
 
       final nextScene = queueNotifier.getNextScene();
 
-      AppLogStore.instance.add(
-        'PlayerState playNext: getNextScene returned ${nextScene?.id}, currentIndex=${queueNotifier.state.currentIndex}, sequenceLength=${queueNotifier.state.sequence.length}',
-        source: 'player_provider',
-      );
-
       if (nextScene != null) {
-        AppLogStore.instance.add(
-          'PlayerState playNext: moving from ${state.activeScene?.id} to ${nextScene.id}',
-          source: 'player_provider',
-        );
-        queueNotifier.playNext(); // Increment index in queue
+        // Trigger navigation synchronization so background details match active scene
+        // Skip for TikTok mode as it handles its own navigation via PageView
+        if (state.viewMode != PlayerViewMode.tiktok) {
+          _navigate([
+            NavigationAction('/scenes/scene/${nextScene.id}', isReplacement: true),
+          ]);
+        }
 
-        AppLogStore.instance.add(
-          'PlayerState playNext: queue.playNext() called, new index=${queueNotifier.state.currentIndex}',
-          source: 'player_provider',
-        );
+        queueNotifier.playNext(); // Increment index in queue
 
         final resolver = ref.read(streamResolverProvider.notifier);
         final choice = await resolver.resolvePreferredStream(nextScene);
 
-        AppLogStore.instance.add(
-          'PlayerState playNext: stream resolved for ${nextScene.id}, choice=${choice?.label}',
-          source: 'player_provider',
-        );
-
         if (choice != null) {
           final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
-          AppLogStore.instance.add(
-            'PlayerState playNext: calling playScene() for ${nextScene.id} with streamSource=autoplay-next',
-            source: 'player_provider',
-          );
           await playScene(
             nextScene,
             choice.url,
@@ -1447,28 +1392,60 @@ class PlayerState extends _$PlayerState {
             streamSource: 'autoplay-next',
             httpHeaders: mediaHeaders,
           );
-          AppLogStore.instance.add(
-            'PlayerState playNext: playScene() completed for ${nextScene.id}',
-            source: 'player_provider',
-          );
-        } else {
-          AppLogStore.instance.add(
-            'PlayerState playNext: failed to resolve stream for ${nextScene.id}',
-            source: 'player_provider',
-          );
         }
-      } else {
-        AppLogStore.instance.add(
-          'PlayerState playNext: no next scene found, currentIndex=${queueNotifier.state.currentIndex}, sequenceLength=${queueNotifier.state.sequence.length}',
-          source: 'player_provider',
-        );
       }
     } finally {
       _isTransitioning = false;
-      AppLogStore.instance.add(
-        'PlayerState playNext: DONE, _isTransitioning=false',
-        source: 'player_provider',
-      );
+    }
+  }
+
+  Future<void> playPrevious() async {
+    AppLogStore.instance.add(
+      'PlayerState playPrevious: CALLED, _isTransitioning=$_isTransitioning, activeScene=${state.activeScene?.id}',
+      source: 'player_provider',
+    );
+    if (!ref.mounted || _isTransitioning) return;
+
+    _isTransitioning = true;
+    try {
+      final queueNotifier = ref.read(playbackQueueProvider.notifier);
+      
+      // Ensure queue is synced
+      if (queueNotifier.state.currentIndex == -1 &&
+          state.activeScene?.id != null) {
+        queueNotifier.findAndSetIndex(state.activeScene!.id);
+      }
+
+      final prevScene = queueNotifier.getPreviousScene();
+
+      if (prevScene != null) {
+        // Trigger navigation synchronization
+        // Skip for TikTok mode as it handles its own navigation via PageView
+        if (state.viewMode != PlayerViewMode.tiktok) {
+          _navigate([
+            NavigationAction('/scenes/scene/${prevScene.id}', isReplacement: true),
+          ]);
+        }
+
+        queueNotifier.playPrevious(); // Decrement index in queue
+
+        final resolver = ref.read(streamResolverProvider.notifier);
+        final choice = await resolver.resolvePreferredStream(prevScene);
+
+        if (choice != null) {
+          final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
+          await playScene(
+            prevScene,
+            choice.url,
+            mimeType: choice.mimeType,
+            streamLabel: choice.label,
+            streamSource: 'autoplay-prev',
+            httpHeaders: mediaHeaders,
+          );
+        }
+      }
+    } finally {
+      _isTransitioning = false;
     }
   }
 }

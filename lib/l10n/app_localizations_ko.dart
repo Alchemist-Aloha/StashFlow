@@ -401,6 +401,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get common_skip_next => '다음 건너뛰기';
 
   @override
+  String get common_skip_previous => 'Skip Previous';
+
+  @override
   String get common_select_subtitle => '자막 선택';
 
   @override

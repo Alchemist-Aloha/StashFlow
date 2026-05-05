@@ -1,5 +1,6 @@
 {
   "de": [
+    "common_skip_previous",
     "common_more",
     "performers_field_name",
     "performers_field_url",
@@ -95,6 +96,7 @@
   ],
 
   "es": [
+    "common_skip_previous",
     "common_more",
     "performers_field_name",
     "performers_field_url",
@@ -190,6 +192,7 @@
   ],
 
   "fr": [
+    "common_skip_previous",
     "common_more",
     "performers_field_name",
     "performers_field_url",
@@ -285,6 +288,7 @@
   ],
 
   "it": [
+    "common_skip_previous",
     "common_more",
     "performers_field_name",
     "performers_field_url",
@@ -379,6 +383,7 @@
   ],
 
   "ja": [
+    "common_skip_previous",
     "common_more",
     "performers_field_name",
     "performers_field_url",
@@ -474,6 +479,7 @@
   ],
 
   "ko": [
+    "common_skip_previous",
     "common_more",
     "performers_field_name",
     "performers_field_url",
@@ -569,6 +575,7 @@
   ],
 
   "ru": [
+    "common_skip_previous",
     "common_more",
     "performers_field_name",
     "performers_field_url",
@@ -664,6 +671,7 @@
   ],
 
   "zh": [
+    "common_skip_previous",
     "common_more",
     "performers_field_name",
     "performers_field_url",
@@ -759,6 +767,7 @@
   ],
 
   "zh_Hans": [
+    "common_skip_previous",
     "common_more",
     "performers_field_name",
     "performers_field_url",
@@ -854,6 +863,7 @@
   ],
 
   "zh_Hant": [
+    "common_skip_previous",
     "common_more",
     "performers_field_name",
     "performers_field_url",

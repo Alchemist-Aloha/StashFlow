@@ -403,6 +403,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get common_skip_next => '次をスキップ';
 
   @override
+  String get common_skip_previous => 'Skip Previous';
+
+  @override
   String get common_select_subtitle => '字幕を選択';
 
   @override

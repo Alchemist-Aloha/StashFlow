@@ -413,6 +413,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get common_skip_next => 'salta succ.';
 
   @override
+  String get common_skip_previous => 'Skip Previous';
+
+  @override
   String get common_select_subtitle => 'selez. sottotitoli';
 
   @override

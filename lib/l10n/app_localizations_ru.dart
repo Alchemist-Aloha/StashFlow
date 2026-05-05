@@ -409,6 +409,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get common_skip_next => 'пропустить';
 
   @override
+  String get common_skip_previous => 'Skip Previous';
+
+  @override
   String get common_select_subtitle => 'выбрать субтитры';
 
   @override
