@@ -762,6 +762,7 @@ class PlayerState extends _$PlayerState {
       isFullScreen:
           state.isFullScreen, // Preserve fullscreen state across scenes
       isInPipMode: state.isInPipMode, // Preserve PiP state across scenes
+      viewMode: state.viewMode, // Preserve UI context
       streamMimeType: mimeType,
       streamLabel: streamLabel,
       streamSource: streamSource,
@@ -925,6 +926,8 @@ class PlayerState extends _$PlayerState {
     _isUsingBorrowedController = true;
     _lastIsPlaying = null;
 
+    final isTiktokHandoff = streamSource == 'tiktok-handoff' || streamSource == 'tiktok-promotion';
+
     state = state.copyWith(
       activeScene: scene,
       player: player,
@@ -932,6 +935,7 @@ class PlayerState extends _$PlayerState {
       isPlaying: player.state.playing,
       isFullScreen: state.isFullScreen, // Preserve fullscreen
       isInPipMode: state.isInPipMode, // Preserve PiP
+      viewMode: isTiktokHandoff ? PlayerViewMode.tiktok : state.viewMode,
       streamMimeType: streamMimeType,
       streamLabel: streamLabel,
       streamSource: streamSource,

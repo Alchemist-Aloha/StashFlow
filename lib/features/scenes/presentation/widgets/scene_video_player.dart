@@ -393,12 +393,14 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
         'SceneVideoPlayer [${widget.scene.id}] exiting fullscreen via pop()',
         source: 'SceneVideoPlayer',
       );
+      // viewMode will be reset via PopScope in FullscreenPlayerPage
       router?.pop();
     } else {
       AppLogStore.instance.add(
         'SceneVideoPlayer [${widget.scene.id}] entering fullscreen via push()',
         source: 'SceneVideoPlayer',
       );
+      ref.read(playerStateProvider.notifier).setViewMode(PlayerViewMode.fullscreen);
       context.push('/scenes/fullscreen/${widget.scene.id}');
     }
   }
