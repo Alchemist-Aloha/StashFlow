@@ -132,102 +132,109 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   @override
   Widget build(BuildContext context) {
     ref.listen(playerStateProvider, (previous, next) {
-      final nextScene = next.activeScene;
-      final previousActiveSceneId =
-          previous?.activeScene?.id ?? _lastKnownActiveSceneId;
+      try {
+        final nextScene = next.activeScene;
+        final previousActiveSceneId =
+            previous?.activeScene?.id ?? _lastKnownActiveSceneId;
 
-      AppLogStore.instance.add(
-        'SceneDetailsPage [${widget.sceneId}] playerState listener FIRED: '
-        'prevActive=${previous?.activeScene?.id} '
-        'nextActive=${nextScene?.id} '
-        'lastKnown=$_lastKnownActiveSceneId '
-        'streamSource=${next.streamSource}',
-        source: 'SceneDetailsPage',
-      );
-
-      // Only handle navigation if this page is part of the active path.
-      // This prevents background pages from interfering when the user has
-      // already navigated forward to a different scene or is in fullscreen.
-      final router = GoRouter.of(context);
-      final currentPath = router.routeInformationProvider.value.uri.path;
-      final pathSegments = Uri.parse(currentPath).pathSegments;
-
-      // Only handle navigation if this page is part of the active path.
-      // This prevents background pages from interfering when the user has
-      // already navigated forward to a different scene or is in fullscreen.
-      // We also exclude the 'edit' subroute to avoid jumping away while editing.
-      final isScenePage = _isSceneOrFullscreenRouteFor(
-        currentPath,
-        widget.sceneId,
-      );
-      final isFullscreenRoute =
-          pathSegments.length >= 3 &&
-          pathSegments[0] == 'scenes' &&
-          pathSegments[1] == 'fullscreen';
-      final isEditPage =
-          pathSegments.length >= 4 &&
-          pathSegments[0] == 'scenes' &&
-          pathSegments[1] == 'scene' &&
-          pathSegments[2] == widget.sceneId &&
-          pathSegments[3] == 'edit';
-
-      AppLogStore.instance.add(
-        'SceneDetailsPage [${widget.sceneId}] route check: '
-        'isScenePage=$isScenePage (path=$currentPath) '
-        'isEditPage=$isEditPage '
-        'isFullscreenRoute=$isFullscreenRoute',
-        source: 'SceneDetailsPage',
-      );
-
-      if (!isScenePage || isEditPage || isFullscreenRoute) {
         AppLogStore.instance.add(
-          'SceneDetailsPage [${widget.sceneId}] EARLY RETURN: isScenePage=$isScenePage, isEditPage=$isEditPage, isFullscreenRoute=$isFullscreenRoute',
-          source: 'SceneDetailsPage',
-        );
-        return;
-      }
-
-      final previousId = previous?.activeScene?.id ?? _lastKnownActiveSceneId;
-      AppLogStore.instance.add(
-        'SceneDetailsPage [${widget.sceneId}] shouldRouteToNextScene inputs: '
-        'currentPageSceneId=${widget.sceneId} '
-        'previousActiveScene=${previous?.activeScene?.id} '
-        'lastKnownActiveSceneId=$_lastKnownActiveSceneId '
-        'previousId=$previousId '
-        'nextScene=${nextScene?.id}',
-        source: 'SceneDetailsPage',
-      );
-
-      final shouldRoute = shouldRouteToNextScene(
-        widget.sceneId,
-        previous?.activeScene,
-        _lastKnownActiveSceneId,
-        nextScene,
-      );
-
-      AppLogStore.instance.add(
-        'SceneDetailsPage [${widget.sceneId}] shouldRouteToNextScene result: $shouldRoute '
-        '(nextScene!=null: ${nextScene != null}, nextId!=currentId: ${nextScene?.id != widget.sceneId}, previousId==currentId: ${previousId == widget.sceneId})',
-        source: 'SceneDetailsPage',
-      );
-
-      // Navigate to next scene if provider indicates we just moved from the current scene
-      if (shouldRoute) {
-        AppLogStore.instance.add(
-          'SceneDetailsPage [${widget.sceneId}] NAVIGATING to next scene: ${nextScene?.id}',
+          'SceneDetailsPage [${widget.sceneId}] playerState listener FIRED: '
+          'prevActive=${previous?.activeScene?.id} '
+          'nextActive=${nextScene?.id} '
+          'lastKnown=$_lastKnownActiveSceneId '
+          'streamSource=${next.streamSource}',
           source: 'SceneDetailsPage',
         );
 
-        if (nextScene != null) {
-          context.pushReplacement('/scenes/scene/${nextScene.id}', extra: true);
+        // Only handle navigation if this page is part of the active path.
+        // This prevents background pages from interfering when the user has
+        // already navigated forward to a different scene or is in fullscreen.
+        final router = GoRouter.of(context);
+        final currentPath = router.routeInformationProvider.value.uri.path;
+        final pathSegments = Uri.parse(currentPath).pathSegments;
+
+        // Only handle navigation if this page is part of the active path.
+        // This prevents background pages from interfering when the user has
+        // already navigated forward to a different scene or is in fullscreen.
+        // We also exclude the 'edit' subroute to avoid jumping away while editing.
+        final isScenePage = _isSceneOrFullscreenRouteFor(
+          currentPath,
+          widget.sceneId,
+        );
+        final isFullscreenRoute =
+            pathSegments.length >= 3 &&
+            pathSegments[0] == 'scenes' &&
+            pathSegments[1] == 'fullscreen';
+        final isEditPage =
+            pathSegments.length >= 4 &&
+            pathSegments[0] == 'scenes' &&
+            pathSegments[1] == 'scene' &&
+            pathSegments[2] == widget.sceneId &&
+            pathSegments[3] == 'edit';
+
+        AppLogStore.instance.add(
+          'SceneDetailsPage [${widget.sceneId}] route check: '
+          'isScenePage=$isScenePage (path=$currentPath) '
+          'isEditPage=$isEditPage '
+          'isFullscreenRoute=$isFullscreenRoute',
+          source: 'SceneDetailsPage',
+        );
+
+        if (!isScenePage || isEditPage || isFullscreenRoute) {
+          AppLogStore.instance.add(
+            'SceneDetailsPage [${widget.sceneId}] EARLY RETURN: isScenePage=$isScenePage, isEditPage=$isEditPage, isFullscreenRoute=$isFullscreenRoute',
+            source: 'SceneDetailsPage',
+          );
+          return;
         }
-      }
 
-      // Keep the most recent active scene ID in case the provider emits a transient null state
-      if (nextScene?.id != null) {
-        _lastKnownActiveSceneId = nextScene!.id;
-      } else if (previousActiveSceneId != null) {
-        _lastKnownActiveSceneId = previousActiveSceneId;
+        final previousId = previous?.activeScene?.id ?? _lastKnownActiveSceneId;
+        AppLogStore.instance.add(
+          'SceneDetailsPage [${widget.sceneId}] shouldRouteToNextScene inputs: '
+          'currentPageSceneId=${widget.sceneId} '
+          'previousActiveScene=${previous?.activeScene?.id} '
+          'lastKnownActiveSceneId=$_lastKnownActiveSceneId '
+          'previousId=$previousId '
+          'nextScene=${nextScene?.id}',
+          source: 'SceneDetailsPage',
+        );
+
+        final shouldRoute = shouldRouteToNextScene(
+          widget.sceneId,
+          previous?.activeScene,
+          _lastKnownActiveSceneId,
+          nextScene,
+        );
+
+        AppLogStore.instance.add(
+          'SceneDetailsPage [${widget.sceneId}] shouldRouteToNextScene result: $shouldRoute '
+          '(nextScene!=null: ${nextScene != null}, nextId!=currentId: ${nextScene?.id != widget.sceneId}, previousId==currentId: ${previousId == widget.sceneId})',
+          source: 'SceneDetailsPage',
+        );
+
+        // Navigate to next scene if provider indicates we just moved from the current scene
+        if (shouldRoute) {
+          AppLogStore.instance.add(
+            'SceneDetailsPage [${widget.sceneId}] NAVIGATING to next scene: ${nextScene?.id}',
+            source: 'SceneDetailsPage',
+          );
+
+          if (nextScene != null) {
+            context.pushReplacement('/scenes/scene/${nextScene.id}', extra: true);
+          }
+        }
+
+        // Keep the most recent active scene ID in case the provider emits a transient null state
+        if (nextScene?.id != null) {
+          _lastKnownActiveSceneId = nextScene!.id;
+        } else if (previousActiveSceneId != null) {
+          _lastKnownActiveSceneId = previousActiveSceneId;
+        }
+      } catch (e, st) {
+        AppLogStore.instance.add(
+          'SceneDetailsPage [${widget.sceneId}] playerState listener ERROR: $e\n$st',
+          source: 'SceneDetailsPage',
+        );
       }
     });
 
