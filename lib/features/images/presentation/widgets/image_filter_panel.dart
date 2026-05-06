@@ -128,12 +128,14 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
                           ref
                               .read(imageOrganizedOnlyProvider.notifier)
                               .set(_tempOrganized);
-                          await ref
-                              .read(imageFilterStateProvider.notifier)
-                              .saveAsDefault();
-                          await ref
-                              .read(imageOrganizedOnlyProvider.notifier)
-                              .saveAsDefault();
+                          await Future.wait([
+                            ref
+                                .read(imageFilterStateProvider.notifier)
+                                .saveAsDefault(),
+                            ref
+                                .read(imageOrganizedOnlyProvider.notifier)
+                                .saveAsDefault(),
+                          ]);
                           if (context.mounted) {
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(

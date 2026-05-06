@@ -125,12 +125,14 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                           ref
                               .read(galleryOrganizedOnlyProvider.notifier)
                               .set(_tempOrganized);
-                          await ref
-                              .read(galleryFilterStateProvider.notifier)
-                              .saveAsDefault();
-                          await ref
-                              .read(galleryOrganizedOnlyProvider.notifier)
-                              .saveAsDefault();
+                          await Future.wait([
+                            ref
+                                .read(galleryFilterStateProvider.notifier)
+                                .saveAsDefault(),
+                            ref
+                                .read(galleryOrganizedOnlyProvider.notifier)
+                                .saveAsDefault(),
+                          ]);
                           if (context.mounted) {
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
