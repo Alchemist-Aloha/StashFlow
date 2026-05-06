@@ -46,12 +46,17 @@ class PerformerMediaGridPage extends ConsumerWidget {
       useMasonry: isGridView,
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, item, memCacheWidth, memCacheHeight) {
+        final router = GoRouter.of(context);
+        final currentPath = router.routeInformationProvider.value.uri.path;
+        final isAtRoot = currentPath.endsWith('/media');
+
         return SceneCard(
           scene: item,
           isGrid: isGridView,
           useMasonry: isGridView,
           memCacheWidth: memCacheWidth,
           memCacheHeight: memCacheHeight,
+          useHero: isAtRoot,
           onTap: () => context.push('/scenes/scene/${item.id}'),
         );
       },

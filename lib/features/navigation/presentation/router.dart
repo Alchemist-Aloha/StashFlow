@@ -37,7 +37,6 @@ import '../../setup/presentation/pages/settings/developer_settings_page.dart';
 import '../../setup/presentation/pages/settings/keybind_settings_page.dart';
 import '../../setup/presentation/pages/settings/storage_settings_page.dart';
 import '../../setup/presentation/debug_log_viewer_page.dart';
-import '../../scenes/presentation/widgets/scene_video_player.dart';
 import 'shell_page.dart';
 
 part 'router.g.dart';
@@ -90,22 +89,6 @@ GoRouter router(Ref ref) {
                               FadeTransition(opacity: animation, child: child),
                     ),
                     routes: [
-                      GoRoute(
-                        path: 'fullscreen',
-                        pageBuilder: (context, state) => CustomTransitionPage(
-                          key: state.pageKey,
-                          child: FullscreenPlayerPage(
-                            sceneId: state.pathParameters['id']!,
-                          ),
-                          transitionsBuilder:
-                              (context, animation, secondaryAnimation, child) =>
-                                  FadeTransition(
-                                    opacity: animation,
-                                    child: child,
-                                  ),
-                          transitionDuration: const Duration(milliseconds: 200),
-                        ),
-                      ),
                       GoRoute(
                         path: 'edit',
                         builder: (context, state) {

@@ -401,6 +401,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get common_skip_next => '다음 건너뛰기';
 
   @override
+  String get common_skip_previous => '이전으로 건너뛰기';
+
+  @override
   String get common_select_subtitle => '자막 선택';
 
   @override
@@ -496,7 +499,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get details_show_more => '더 보기';
 
   @override
-  String get common_more => 'More';
+  String get common_more => '더 보기';
 
   @override
   String get details_show_less => '간략히 보기';
@@ -1924,64 +1927,64 @@ class AppLocalizationsKo extends AppLocalizations {
       'Manage local caches and storage limits';
 
   @override
-  String get performers_field_name => 'Name';
+  String get performers_field_name => '이름';
 
   @override
   String get performers_field_url => 'URL';
 
   @override
-  String get performers_field_details => 'Details';
+  String get performers_field_details => '상세 정보';
 
   @override
-  String get performers_field_birth_year => 'Birth Year';
+  String get performers_field_birth_year => '출생 연도';
 
   @override
-  String get performers_field_age => 'Age';
+  String get performers_field_age => '나이';
 
   @override
-  String get performers_field_death_year => 'Death Year';
+  String get performers_field_death_year => '사망 연도';
 
   @override
-  String get performers_field_scene_count => 'Scene Count';
+  String get performers_field_scene_count => '장면 수';
 
   @override
-  String get performers_field_image_count => 'Image Count';
+  String get performers_field_image_count => '이미지 수';
 
   @override
-  String get performers_field_gallery_count => 'Gallery Count';
+  String get performers_field_gallery_count => '갤러리 수';
 
   @override
-  String get performers_field_play_count => 'Play Count';
+  String get performers_field_play_count => '재생 횟수';
 
   @override
-  String get performers_field_o_counter => 'O-Counter';
+  String get performers_field_o_counter => 'O-카운터';
 
   @override
-  String get performers_field_tag_count => 'Tag Count';
+  String get performers_field_tag_count => '태그 수';
 
   @override
-  String get performers_field_created_at => 'Created At';
+  String get performers_field_created_at => '생성 일시';
 
   @override
-  String get performers_field_updated_at => 'Updated At';
+  String get performers_field_updated_at => '수정 일시';
 
   @override
-  String get galleries_field_title => 'Title';
+  String get galleries_field_title => '제목';
 
   @override
-  String get galleries_field_details => 'Details';
+  String get galleries_field_details => '상세 정보';
 
   @override
-  String get galleries_field_date => 'Date';
+  String get galleries_field_date => '날짜';
 
   @override
-  String get galleries_field_performer_age => 'Performer Age';
+  String get galleries_field_performer_age => '출연자 나이';
 
   @override
-  String get galleries_field_performer_count => 'Performer Count';
+  String get galleries_field_performer_count => '출연자 수';
 
   @override
-  String get galleries_field_tag_count => 'Tag Count';
+  String get galleries_field_tag_count => '태그 수';
 
   @override
   String get galleries_field_url => 'URL';
@@ -1990,187 +1993,187 @@ class AppLocalizationsKo extends AppLocalizations {
   String get galleries_field_id => 'ID';
 
   @override
-  String get galleries_field_path => 'Path';
+  String get galleries_field_path => '경로';
 
   @override
-  String get galleries_field_checksum => 'Checksum';
+  String get galleries_field_checksum => '체크섬';
 
   @override
-  String get galleries_field_image_count => 'Image Count';
+  String get galleries_field_image_count => '이미지 수';
 
   @override
-  String get galleries_field_file_count => 'File Count';
+  String get galleries_field_file_count => '파일 수';
 
   @override
-  String get galleries_field_created_at => 'Created At';
+  String get galleries_field_created_at => '생성 일시';
 
   @override
-  String get galleries_field_updated_at => 'Updated At';
+  String get galleries_field_updated_at => '수정 일시';
 
   @override
-  String get images_field_title => 'Title';
+  String get images_field_title => '제목';
 
   @override
-  String get images_field_details => 'Details';
+  String get images_field_details => '상세 정보';
 
   @override
-  String get images_field_path => 'Path';
+  String get images_field_path => '경로';
 
   @override
   String get images_field_url => 'URL';
 
   @override
-  String get images_field_file_count => 'File Count';
+  String get images_field_file_count => '파일 수';
 
   @override
-  String get images_field_o_counter => 'O-Counter';
+  String get images_field_o_counter => 'O-카운터';
 
   @override
-  String get studios_field_name => 'Name';
+  String get studios_field_name => '이름';
 
   @override
-  String get studios_field_details => 'Details';
+  String get studios_field_details => '상세 정보';
 
   @override
-  String get studios_field_aliases => 'Aliases';
+  String get studios_field_aliases => '별칭';
 
   @override
   String get studios_field_url => 'URL';
 
   @override
-  String get studios_field_tag_count => 'Tag Count';
+  String get studios_field_tag_count => '태그 수';
 
   @override
-  String get studios_field_scene_count => 'Scene Count';
+  String get studios_field_scene_count => '장면 수';
 
   @override
-  String get studios_field_image_count => 'Image Count';
+  String get studios_field_image_count => '이미지 수';
 
   @override
-  String get studios_field_gallery_count => 'Gallery Count';
+  String get studios_field_gallery_count => '갤러리 수';
 
   @override
-  String get studios_field_sub_studio_count => 'Sub-studio Count';
+  String get studios_field_sub_studio_count => '하위 스튜디오 수';
 
   @override
-  String get studios_field_created_at => 'Created At';
+  String get studios_field_created_at => '생성 일시';
 
   @override
-  String get studios_field_updated_at => 'Updated At';
+  String get studios_field_updated_at => '수정 일시';
 
   @override
-  String get scenes_field_performer_age => 'Performer Age';
+  String get scenes_field_performer_age => '출연자 나이';
 
   @override
-  String get scenes_field_performer_count => 'Performer Count';
+  String get scenes_field_performer_count => '출연자 수';
 
   @override
-  String get scenes_field_tag_count => 'Tag Count';
+  String get scenes_field_tag_count => '태그 수';
 
   @override
-  String get scenes_field_code => 'Code';
+  String get scenes_field_code => '코드';
 
   @override
-  String get scenes_field_details => 'Details';
+  String get scenes_field_details => '상세 정보';
 
   @override
-  String get scenes_field_director => 'Director';
+  String get scenes_field_director => '감독';
 
   @override
   String get scenes_field_url => 'URL';
 
   @override
-  String get scenes_field_date => 'Date';
+  String get scenes_field_date => '날짜';
 
   @override
-  String get scenes_field_path => 'Path';
+  String get scenes_field_path => '경로';
 
   @override
-  String get scenes_field_captions => 'Captions';
+  String get scenes_field_captions => '자막';
 
   @override
-  String get scenes_field_duration => 'Duration (seconds)';
+  String get scenes_field_duration => '길이 (초)';
 
   @override
-  String get scenes_field_bitrate => 'Bitrate';
+  String get scenes_field_bitrate => '비트레이트';
 
   @override
-  String get scenes_field_video_codec => 'Video Codec';
+  String get scenes_field_video_codec => '비디오 코덱';
 
   @override
-  String get scenes_field_audio_codec => 'Audio Codec';
+  String get scenes_field_audio_codec => '오디오 코덱';
 
   @override
-  String get scenes_field_framerate => 'Framerate';
+  String get scenes_field_framerate => '프레임레이트';
 
   @override
-  String get scenes_field_file_count => 'File Count';
+  String get scenes_field_file_count => '파일 수';
 
   @override
-  String get scenes_field_play_count => 'Play Count';
+  String get scenes_field_play_count => '재생 횟수';
 
   @override
-  String get scenes_field_play_duration => 'Play Duration';
+  String get scenes_field_play_duration => '재생 시간';
 
   @override
-  String get scenes_field_o_counter => 'O-Counter';
+  String get scenes_field_o_counter => 'O-카운터';
 
   @override
-  String get scenes_field_last_played_at => 'Last Played At';
+  String get scenes_field_last_played_at => '최근 재생 일시';
 
   @override
-  String get scenes_field_resume_time => 'Resume Time';
+  String get scenes_field_resume_time => '이어보기 시간';
 
   @override
-  String get scenes_field_interactive_speed => 'Interactive Speed';
+  String get scenes_field_interactive_speed => '인터랙티브 속도';
 
   @override
   String get scenes_field_id => 'ID';
 
   @override
-  String get scenes_field_stash_id_count => 'Stash ID Count';
+  String get scenes_field_stash_id_count => 'Stash ID 수';
 
   @override
   String get scenes_field_oshash => 'Oshash';
 
   @override
-  String get scenes_field_checksum => 'Checksum';
+  String get scenes_field_checksum => '체크섬';
 
   @override
   String get scenes_field_phash => 'Phash';
 
   @override
-  String get scenes_field_created_at => 'Created At';
+  String get scenes_field_created_at => '생성 일시';
 
   @override
-  String get scenes_field_updated_at => 'Updated At';
+  String get scenes_field_updated_at => '수정 일시';
 
   @override
-  String get cast_stopped_resuming_locally => 'Cast stopped, resuming locally';
+  String get cast_stopped_resuming_locally => '전송이 중단되었습니다. 로컬에서 재생을 재개합니다';
 
   @override
-  String get cast_stop_casting => 'Stop Casting';
+  String get cast_stop_casting => '전송 중지';
 
   @override
-  String get cast_cast => 'Cast';
+  String get cast_cast => '전송';
 
   @override
-  String get common_add => 'Add';
+  String get common_add => '추가';
 
   @override
-  String get common_remove => 'Remove';
+  String get common_remove => '제거';
 
   @override
-  String get common_clear => 'Clear';
+  String get common_clear => '비우기';
 
   @override
-  String get common_download => 'Download';
+  String get common_download => '다운로드';
 
   @override
-  String get common_star => 'Star';
+  String get common_star => '스타';
 
   @override
-  String get settings_interface_card_title_font_size => 'Card Title Font Size';
+  String get settings_interface_card_title_font_size => '카드 제목 글자 크기';
 
   @override
   String get common_hint_date => 'YYYY-MM-DD';
@@ -2195,4 +2198,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String common_percent(int value) {
     return '$value%';
   }
+
+  @override
+  String get settings_playback_direct_play => '장면 이동 시 즉시 재생';
+
+  @override
+  String get settings_playback_direct_play_subtitle =>
+      '다른 재생 중인 장면에서 이동할 때 새 장면을 즉시 재생합니다';
 }

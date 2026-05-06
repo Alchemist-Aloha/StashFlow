@@ -38,12 +38,18 @@ class MediaStrip extends StatelessWidget {
 
     if (items.isEmpty) {
       return Padding(
-        padding: EdgeInsets.symmetric(horizontal: context.dimensions.spacingMedium),
+        padding: EdgeInsets.symmetric(
+          horizontal: context.dimensions.spacingMedium,
+        ),
         child: Text(context.l10n.common_no_media),
       );
     }
 
     final int kPrefetchDistance = StashImage.defaultPrefetchDistance;
+
+    final contentPadding = context.dimensions.spacingMedium;
+    final separatorWidth = context.dimensions.spacingSmall;
+    final stride = effectiveItemWidth + separatorWidth;
 
     // Initial prefetch for the first visible range so items off-screen
     // are warmed before the user scrolls. Also compute stride to account
@@ -71,10 +77,6 @@ class MediaStrip extends StatelessWidget {
           }
 
           final offset = notification.metrics.pixels;
-          // Account for left padding and separator width to compute the item stride.
-          final contentPadding = context.dimensions.spacingMedium;
-          final separatorWidth = context.dimensions.spacingSmall;
-          final stride = effectiveItemWidth + separatorWidth;
           final visibleIndex = ((offset + contentPadding) / stride)
               .floor()
               .clamp(0, items.length - 1);
@@ -130,7 +132,8 @@ class MediaStrip extends StatelessWidget {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(
-                          AppTheme.radiusMedium * context.dimensions.fontSizeFactor,
+                          AppTheme.radiusMedium *
+                              context.dimensions.fontSizeFactor,
                         ),
                         child: StashImage(
                           imageUrl: item.thumbnailUrl,

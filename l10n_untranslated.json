@@ -15,7 +15,6 @@
     "settings_storage_usage",
     "settings_storage_usage_subtitle",
     "settings_storage_subtitle",
-    "performers_field_name",
     "performers_field_url",
     "performers_field_details",
     "performers_field_birth_year",
@@ -105,7 +104,6 @@
     "common_pt",
     "common_percent"
   ],
-
   "es": [
     "common_more",
     "filter_group_general",
@@ -122,7 +120,6 @@
     "settings_storage_usage",
     "settings_storage_usage_subtitle",
     "settings_storage_subtitle",
-    "performers_field_name",
     "performers_field_url",
     "performers_field_details",
     "performers_field_birth_year",
@@ -212,7 +209,6 @@
     "common_pt",
     "common_percent"
   ],
-
   "fr": [
     "common_more",
     "filter_group_general",
@@ -229,7 +225,6 @@
     "settings_storage_usage",
     "settings_storage_usage_subtitle",
     "settings_storage_subtitle",
-    "performers_field_name",
     "performers_field_url",
     "performers_field_details",
     "performers_field_birth_year",
@@ -319,7 +314,6 @@
     "common_pt",
     "common_percent"
   ],
-
   "it": [
     "common_more",
     "filter_group_general",
@@ -336,7 +330,6 @@
     "settings_storage_usage",
     "settings_storage_usage_subtitle",
     "settings_storage_subtitle",
-    "performers_field_name",
     "performers_field_url",
     "performers_field_details",
     "performers_field_birth_year",
@@ -425,7 +418,6 @@
     "common_pt",
     "common_percent"
   ],
-
   "ja": [
     "common_more",
     "filter_group_general",
@@ -442,7 +434,6 @@
     "settings_storage_usage",
     "settings_storage_usage_subtitle",
     "settings_storage_subtitle",
-    "performers_field_name",
     "performers_field_url",
     "performers_field_details",
     "performers_field_birth_year",
@@ -532,7 +523,6 @@
     "common_pt",
     "common_percent"
   ],
-
   "ko": [
     "common_more",
     "filter_group_general",
@@ -549,7 +539,6 @@
     "settings_storage_usage",
     "settings_storage_usage_subtitle",
     "settings_storage_subtitle",
-    "performers_field_name",
     "performers_field_url",
     "performers_field_details",
     "performers_field_birth_year",
@@ -639,7 +628,6 @@
     "common_pt",
     "common_percent"
   ],
-
   "ru": [
     "common_more",
     "filter_group_general",
@@ -656,7 +644,6 @@
     "settings_storage_usage",
     "settings_storage_usage_subtitle",
     "settings_storage_subtitle",
-    "performers_field_name",
     "performers_field_url",
     "performers_field_details",
     "performers_field_birth_year",
@@ -746,7 +733,6 @@
     "common_pt",
     "common_percent"
   ],
-
   "zh": [
     "common_more",
     "filter_group_general",
@@ -763,7 +749,6 @@
     "settings_storage_usage",
     "settings_storage_usage_subtitle",
     "settings_storage_subtitle",
-    "performers_field_name",
     "performers_field_url",
     "performers_field_details",
     "performers_field_birth_year",
@@ -853,7 +838,6 @@
     "common_pt",
     "common_percent"
   ],
-
   "zh_Hans": [
     "common_more",
     "filter_group_general",
@@ -870,7 +854,6 @@
     "settings_storage_usage",
     "settings_storage_usage_subtitle",
     "settings_storage_subtitle",
-    "performers_field_name",
     "performers_field_url",
     "performers_field_details",
     "performers_field_birth_year",
@@ -960,7 +943,6 @@
     "common_pt",
     "common_percent"
   ],
-
   "zh_Hant": [
     "common_more",
     "filter_group_general",
@@ -977,7 +959,6 @@
     "settings_storage_usage",
     "settings_storage_usage_subtitle",
     "settings_storage_subtitle",
-    "performers_field_name",
     "performers_field_url",
     "performers_field_details",
     "performers_field_birth_year",

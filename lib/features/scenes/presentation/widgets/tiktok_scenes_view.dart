@@ -338,14 +338,15 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
                 setState(() {
                   _currentIndex = index;
                 });
-                
+
                 // Immediately try to play the NEW current if we already have its controller
                 final newSceneId = scenes[index].id;
                 final existingController = _controllers[newSceneId];
                 if (existingController != null) {
                   existingController.player.play();
                   // Pause the previous one immediately
-                  final prevSceneId = scenes[index > _currentIndex ? index - 1 : index + 1].id;
+                  final prevSceneId =
+                      scenes[index > _currentIndex ? index - 1 : index + 1].id;
                   _controllers[prevSceneId]?.player.pause();
                 }
               }
@@ -364,7 +365,16 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
                 controller = _controllers[scene.id];
               }
 
-              return TiktokSceneItem(scene: scene, controller: controller);
+              final router = GoRouter.of(context);
+              final currentPath =
+                  router.routeInformationProvider.value.uri.path;
+              final isAtRoot = currentPath == '/scenes';
+
+              return TiktokSceneItem(
+                scene: scene,
+                controller: controller,
+                useHero: isAtRoot && !playerState.isFullScreen,
+              );
             },
           ),
         );
@@ -385,8 +395,14 @@ class CircularProgressContext extends StatelessWidget {
 class TiktokSceneItem extends ConsumerStatefulWidget {
   final Scene scene;
   final VideoController? controller;
+  final bool useHero;
 
-  const TiktokSceneItem({required this.scene, this.controller, super.key});
+  const TiktokSceneItem({
+    required this.scene,
+    this.controller,
+    this.useHero = true,
+    super.key,
+  });
 
   @override
   ConsumerState<TiktokSceneItem> createState() => _TiktokSceneItemState();
@@ -649,17 +665,15 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
   Future<void> _toggleFullScreen() async {
     final isFullScreen = ref.read(fullScreenModeProvider);
     if (isFullScreen) {
-      if (context.mounted) {
-        context.pop();
-      }
+      ref.read(fullScreenModeProvider.notifier).set(false);
     } else {
-      final router = GoRouter.of(context);
       await _handoffToGlobalPlayer();
 
       if (mounted) {
-        // Navigate to details THEN fullscreen for robust back stack
-        router.push('/scenes/scene/${widget.scene.id}');
-        router.push('/scenes/scene/${widget.scene.id}/fullscreen');
+        // Navigate to details THEN set global fullscreen state
+        context.go('/scenes/scene/${widget.scene.id}');
+        ref.read(playerStateProvider.notifier).setFullScreen(true);
+        ref.read(playerStateProvider.notifier).setViewMode(PlayerViewMode.fullscreen);
       }
     }
   }
@@ -668,6 +682,37 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
   Widget build(BuildContext context) {
     final controller = widget.controller;
     final playerState = ref.watch(playerStateProvider);
+
+    final videoSurface = LayoutBuilder(
+      builder: (context, constraints) {
+        final w = controller?.player.state.width;
+        final h = controller?.player.state.height;
+        final r = (w != null && h != null && h > 0) ? w / h : 16 / 9;
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: Container(
+                color: Colors.black,
+                child: TransformableVideoSurface(
+                  fontSize: playerState.subtitleFontSize,
+                  textAlign: _subtitleTextAlign(
+                    playerState.subtitleTextAlignment,
+                  ),
+                  bottomRatio: playerState.subtitlePositionBottomRatio,
+                  constraints: constraints,
+                  controller: controller!,
+                  aspectRatio: r,
+                  fit: (r - 1.0).abs() < 0.01
+                      ? BoxFit.fill
+                      : (r < 1.0 ? BoxFit.cover : BoxFit.contain),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
     return RepaintBoundary(
       child: Stack(
         fit: StackFit.expand,
@@ -678,42 +723,12 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
             child:
                 (controller != null &&
                     controller.player.state.playlist.medias.isNotEmpty)
-                ? Hero(
-                    tag: 'scene_player_${widget.scene.id}',
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final w = controller.player.state.width;
-                        final h = controller.player.state.height;
-                        final r = (w != null && h != null && h > 0)
-                            ? w / h
-                            : 16 / 9;
-                        return Stack(
-                          children: [
-                            Positioned.fill(
-                              child: Container(
-                                color: Colors.black,
-                                child: TransformableVideoSurface(
-                                  fontSize: playerState.subtitleFontSize,
-                                  textAlign: _subtitleTextAlign(
-                                    playerState.subtitleTextAlignment,
-                                  ),
-                                  bottomRatio: playerState.subtitlePositionBottomRatio,
-                                  constraints: constraints,
-                                  controller: controller,
-                                  aspectRatio: r,
-                                  fit: (r - 1.0).abs() < 0.01
-                                      ? BoxFit.fill
-                                      : (r < 1.0
-                                            ? BoxFit.cover
-                                            : BoxFit.contain),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  )
+                ? (widget.useHero
+                      ? Hero(
+                          tag: 'scene_player_${widget.scene.id}',
+                          child: videoSurface,
+                        )
+                      : videoSurface)
                 : const Center(child: CircularProgressIndicator()),
           ),
 
@@ -837,11 +852,12 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                               children: [
                                 Text(
                                   widget.scene.displayTitle,
-                                  style: context.textTheme.headlineSmall?.copyWith(
-                                    color: Colors.white,
-                                    fontSize: context.fontSizes.xLarge,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: context.textTheme.headlineSmall
+                                      ?.copyWith(
+                                        color: Colors.white,
+                                        fontSize: context.fontSizes.xLarge,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -858,12 +874,14 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                                     },
                                     child: Text(
                                       widget.scene.studioName!,
-                                      style: context.textTheme.bodyMedium?.copyWith(
-                                        color: Colors.white,
-                                        fontSize: context.fontSizes.body,
-                                        fontWeight: FontWeight.w500,
-                                        decoration: TextDecoration.underline,
-                                      ),
+                                      style: context.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            color: Colors.white,
+                                            fontSize: context.fontSizes.body,
+                                            fontWeight: FontWeight.w500,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
                                     ),
                                   ),
                                 ],
@@ -900,17 +918,19 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                                           ? (widget.scene.rating100! / 20)
                                                 .toStringAsFixed(1)
                                           : '-',
-                                      style: context.textTheme.bodyMedium?.copyWith(
-                                        color: Colors.white,
-                                        fontSize: context.fontSizes.regular,
-                                      ),
+                                      style: context.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            color: Colors.white,
+                                            fontSize: context.fontSizes.regular,
+                                          ),
                                     ),
                                   ],
                                 ),
                                 const SizedBox(height: 16),
                                 _OverlayButton(
                                   icon: Icons.fullscreen,
-                                  tooltip: context.l10n.common_toggle_fullscreen,
+                                  tooltip:
+                                      context.l10n.common_toggle_fullscreen,
                                   onTap: _toggleFullScreen,
                                 ),
                                 const SizedBox(height: 16),
@@ -920,7 +940,10 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                                   onTap: () async {
                                     await _handoffToGlobalPlayer();
                                     if (context.mounted) {
-                                      context.push('/scenes/scene/${widget.scene.id}');
+                                      context.push(
+                                        '/scenes/scene/${widget.scene.id}',
+                                        extra: true,
+                                      );
                                     }
                                   },
                                 ),
@@ -948,7 +971,9 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                           ),
                           overlayShape: SliderComponentShape.noOverlay,
                           activeTrackColor: Colors.white,
-                          inactiveTrackColor: Colors.white.withValues(alpha: 0.3),
+                          inactiveTrackColor: Colors.white.withValues(
+                            alpha: 0.3,
+                          ),
                           thumbColor: Colors.white,
                           trackShape: const RectangularSliderTrackShape(),
                         ),
@@ -966,12 +991,12 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                               final position = _isScrubbing
                                   ? _scrubMs
                                   : (snapshot.data?.inMilliseconds.toDouble() ??
-                                      controller
-                                          .player
-                                          .state
-                                          .position
-                                          .inMilliseconds
-                                          .toDouble());
+                                        controller
+                                            .player
+                                            .state
+                                            .position
+                                            .inMilliseconds
+                                            .toDouble());
                               return Slider(
                                 value: position.clamp(0.0, duration),
                                 max: duration > 0 ? duration : 1.0,
@@ -1048,6 +1073,7 @@ class _OverlayButton extends StatelessWidget {
     );
   }
 }
+
 TextAlign _subtitleTextAlign(String setting) {
   switch (setting) {
     case 'left':

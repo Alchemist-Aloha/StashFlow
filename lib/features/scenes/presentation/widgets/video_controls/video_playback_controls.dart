@@ -22,9 +22,11 @@ class VideoPlaybackControls extends ConsumerWidget {
     required this.isPlaying,
     required this.playbackSpeed,
     required this.nextScene,
+    this.previousScene,
     required this.isFullScreen,
     required this.onPlayPause,
     required this.onSkipNext,
+    this.onSkipPrevious,
     required this.onSubtitleSelected,
     required this.onSpeedSelected,
     required this.onFullScreenToggle,
@@ -43,9 +45,11 @@ class VideoPlaybackControls extends ConsumerWidget {
   final bool isPlaying;
   final double playbackSpeed;
   final Scene? nextScene;
+  final Scene? previousScene;
   final bool isFullScreen;
   final VoidCallback onPlayPause;
   final VoidCallback onSkipNext;
+  final VoidCallback? onSkipPrevious;
   final ValueChanged<String?> onSubtitleSelected;
   final ValueChanged<double> onSpeedSelected;
   final VoidCallback? onFullScreenToggle;
@@ -112,6 +116,18 @@ class VideoPlaybackControls extends ConsumerWidget {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    if (previousScene != null) ...[
+                      IconButton(
+                        tooltip: context.l10n.common_skip_previous,
+                        style: _controlButtonStyle(colorScheme),
+                        iconSize: 20,
+                        icon: const Icon(Icons.skip_previous_rounded),
+                        onPressed: () {
+                          onSkipPrevious?.call();
+                          onInteract();
+                        },
+                      ),
+                    ],
                     IconButton(
                       tooltip: isPlaying ? context.l10n.common_pause : context.l10n.common_play,
                       style: _controlButtonStyle(colorScheme),
@@ -126,7 +142,7 @@ class VideoPlaybackControls extends ConsumerWidget {
                         onInteract();
                       },
                     ),
-                    if (nextScene != null && !isFullScreen) ...[
+                    if (nextScene != null) ...[
                       IconButton(
                         tooltip: context.l10n.common_skip_next,
                         style: _controlButtonStyle(colorScheme),

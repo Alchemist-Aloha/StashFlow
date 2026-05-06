@@ -405,6 +405,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get common_skip_next => 'Skip Next';
 
   @override
+  String get common_skip_previous => 'Skip Previous';
+
+  @override
   String get common_select_subtitle => 'Select subtitle';
 
   @override
@@ -2242,4 +2245,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String common_percent(int value) {
     return '$value%';
   }
+
+  @override
+  String get settings_playback_direct_play => 'Direct-play on scene navigation';
+
+  @override
+  String get settings_playback_direct_play_subtitle =>
+      'When navigating from another playing scene, directly play the new scene';
 }

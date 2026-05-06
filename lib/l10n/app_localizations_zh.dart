@@ -401,6 +401,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get common_skip_next => '跳过下一个';
 
   @override
+  String get common_skip_previous => '跳过上一个';
+
+  @override
   String get common_select_subtitle => '选择字幕';
 
   @override
@@ -496,7 +499,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get details_show_more => '显示更多';
 
   @override
-  String get common_more => 'More';
+  String get common_more => '更多';
 
   @override
   String get details_show_less => '显示较少';
@@ -1902,64 +1905,64 @@ class AppLocalizationsZh extends AppLocalizations {
       'Manage local caches and storage limits';
 
   @override
-  String get performers_field_name => 'Name';
+  String get performers_field_name => '姓名';
 
   @override
   String get performers_field_url => 'URL';
 
   @override
-  String get performers_field_details => 'Details';
+  String get performers_field_details => '详情';
 
   @override
-  String get performers_field_birth_year => 'Birth Year';
+  String get performers_field_birth_year => '出生年份';
 
   @override
-  String get performers_field_age => 'Age';
+  String get performers_field_age => '年龄';
 
   @override
-  String get performers_field_death_year => 'Death Year';
+  String get performers_field_death_year => '去世年份';
 
   @override
-  String get performers_field_scene_count => 'Scene Count';
+  String get performers_field_scene_count => '场景数';
 
   @override
-  String get performers_field_image_count => 'Image Count';
+  String get performers_field_image_count => '图片数';
 
   @override
-  String get performers_field_gallery_count => 'Gallery Count';
+  String get performers_field_gallery_count => '图库数';
 
   @override
-  String get performers_field_play_count => 'Play Count';
+  String get performers_field_play_count => '播放次数';
 
   @override
-  String get performers_field_o_counter => 'O-Counter';
+  String get performers_field_o_counter => 'O-计数器';
 
   @override
-  String get performers_field_tag_count => 'Tag Count';
+  String get performers_field_tag_count => '标签数';
 
   @override
-  String get performers_field_created_at => 'Created At';
+  String get performers_field_created_at => '创建于';
 
   @override
-  String get performers_field_updated_at => 'Updated At';
+  String get performers_field_updated_at => '更新于';
 
   @override
-  String get galleries_field_title => 'Title';
+  String get galleries_field_title => '标题';
 
   @override
-  String get galleries_field_details => 'Details';
+  String get galleries_field_details => '详情';
 
   @override
-  String get galleries_field_date => 'Date';
+  String get galleries_field_date => '日期';
 
   @override
-  String get galleries_field_performer_age => 'Performer Age';
+  String get galleries_field_performer_age => '演出者年龄';
 
   @override
-  String get galleries_field_performer_count => 'Performer Count';
+  String get galleries_field_performer_count => '演出者人数';
 
   @override
-  String get galleries_field_tag_count => 'Tag Count';
+  String get galleries_field_tag_count => '标签数';
 
   @override
   String get galleries_field_url => 'URL';
@@ -1968,187 +1971,187 @@ class AppLocalizationsZh extends AppLocalizations {
   String get galleries_field_id => 'ID';
 
   @override
-  String get galleries_field_path => 'Path';
+  String get galleries_field_path => '路径';
 
   @override
-  String get galleries_field_checksum => 'Checksum';
+  String get galleries_field_checksum => '校验和';
 
   @override
-  String get galleries_field_image_count => 'Image Count';
+  String get galleries_field_image_count => '图片数';
 
   @override
-  String get galleries_field_file_count => 'File Count';
+  String get galleries_field_file_count => '文件数';
 
   @override
-  String get galleries_field_created_at => 'Created At';
+  String get galleries_field_created_at => '创建于';
 
   @override
-  String get galleries_field_updated_at => 'Updated At';
+  String get galleries_field_updated_at => '更新于';
 
   @override
-  String get images_field_title => 'Title';
+  String get images_field_title => '标题';
 
   @override
-  String get images_field_details => 'Details';
+  String get images_field_details => '详情';
 
   @override
-  String get images_field_path => 'Path';
+  String get images_field_path => '路径';
 
   @override
   String get images_field_url => 'URL';
 
   @override
-  String get images_field_file_count => 'File Count';
+  String get images_field_file_count => '文件数';
 
   @override
-  String get images_field_o_counter => 'O-Counter';
+  String get images_field_o_counter => 'O-计数器';
 
   @override
-  String get studios_field_name => 'Name';
+  String get studios_field_name => '名称';
 
   @override
-  String get studios_field_details => 'Details';
+  String get studios_field_details => '详情';
 
   @override
-  String get studios_field_aliases => 'Aliases';
+  String get studios_field_aliases => '别名';
 
   @override
   String get studios_field_url => 'URL';
 
   @override
-  String get studios_field_tag_count => 'Tag Count';
+  String get studios_field_tag_count => '标签数';
 
   @override
-  String get studios_field_scene_count => 'Scene Count';
+  String get studios_field_scene_count => '场景数';
 
   @override
-  String get studios_field_image_count => 'Image Count';
+  String get studios_field_image_count => '图片数';
 
   @override
-  String get studios_field_gallery_count => 'Gallery Count';
+  String get studios_field_gallery_count => '图库数';
 
   @override
-  String get studios_field_sub_studio_count => 'Sub-studio Count';
+  String get studios_field_sub_studio_count => '子工作室数';
 
   @override
-  String get studios_field_created_at => 'Created At';
+  String get studios_field_created_at => '创建于';
 
   @override
-  String get studios_field_updated_at => 'Updated At';
+  String get studios_field_updated_at => '更新于';
 
   @override
-  String get scenes_field_performer_age => 'Performer Age';
+  String get scenes_field_performer_age => '演出者年龄';
 
   @override
-  String get scenes_field_performer_count => 'Performer Count';
+  String get scenes_field_performer_count => '演出者人数';
 
   @override
-  String get scenes_field_tag_count => 'Tag Count';
+  String get scenes_field_tag_count => '标签数';
 
   @override
-  String get scenes_field_code => 'Code';
+  String get scenes_field_code => '代码';
 
   @override
-  String get scenes_field_details => 'Details';
+  String get scenes_field_details => '详情';
 
   @override
-  String get scenes_field_director => 'Director';
+  String get scenes_field_director => '导演';
 
   @override
   String get scenes_field_url => 'URL';
 
   @override
-  String get scenes_field_date => 'Date';
+  String get scenes_field_date => '日期';
 
   @override
-  String get scenes_field_path => 'Path';
+  String get scenes_field_path => '路径';
 
   @override
-  String get scenes_field_captions => 'Captions';
+  String get scenes_field_captions => '字幕';
 
   @override
-  String get scenes_field_duration => 'Duration (seconds)';
+  String get scenes_field_duration => '时长（秒）';
 
   @override
-  String get scenes_field_bitrate => 'Bitrate';
+  String get scenes_field_bitrate => '比特率';
 
   @override
-  String get scenes_field_video_codec => 'Video Codec';
+  String get scenes_field_video_codec => '视频编码';
 
   @override
-  String get scenes_field_audio_codec => 'Audio Codec';
+  String get scenes_field_audio_codec => '音频编码';
 
   @override
-  String get scenes_field_framerate => 'Framerate';
+  String get scenes_field_framerate => '帧率';
 
   @override
-  String get scenes_field_file_count => 'File Count';
+  String get scenes_field_file_count => '文件数';
 
   @override
-  String get scenes_field_play_count => 'Play Count';
+  String get scenes_field_play_count => '播放次数';
 
   @override
-  String get scenes_field_play_duration => 'Play Duration';
+  String get scenes_field_play_duration => '播放时长';
 
   @override
-  String get scenes_field_o_counter => 'O-Counter';
+  String get scenes_field_o_counter => 'O-计数器';
 
   @override
-  String get scenes_field_last_played_at => 'Last Played At';
+  String get scenes_field_last_played_at => '最后播放于';
 
   @override
-  String get scenes_field_resume_time => 'Resume Time';
+  String get scenes_field_resume_time => '恢复时间';
 
   @override
-  String get scenes_field_interactive_speed => 'Interactive Speed';
+  String get scenes_field_interactive_speed => '交互速度';
 
   @override
   String get scenes_field_id => 'ID';
 
   @override
-  String get scenes_field_stash_id_count => 'Stash ID Count';
+  String get scenes_field_stash_id_count => 'Stash ID 数量';
 
   @override
   String get scenes_field_oshash => 'Oshash';
 
   @override
-  String get scenes_field_checksum => 'Checksum';
+  String get scenes_field_checksum => '校验和';
 
   @override
   String get scenes_field_phash => 'Phash';
 
   @override
-  String get scenes_field_created_at => 'Created At';
+  String get scenes_field_created_at => '创建于';
 
   @override
-  String get scenes_field_updated_at => 'Updated At';
+  String get scenes_field_updated_at => '更新于';
 
   @override
-  String get cast_stopped_resuming_locally => 'Cast stopped, resuming locally';
+  String get cast_stopped_resuming_locally => '投放已停止，在本地恢复播放';
 
   @override
-  String get cast_stop_casting => 'Stop Casting';
+  String get cast_stop_casting => '停止投放';
 
   @override
-  String get cast_cast => 'Cast';
+  String get cast_cast => '投放';
 
   @override
-  String get common_add => 'Add';
+  String get common_add => '添加';
 
   @override
-  String get common_remove => 'Remove';
+  String get common_remove => '移除';
 
   @override
-  String get common_clear => 'Clear';
+  String get common_clear => '清除';
 
   @override
-  String get common_download => 'Download';
+  String get common_download => '下载';
 
   @override
-  String get common_star => 'Star';
+  String get common_star => '收藏';
 
   @override
-  String get settings_interface_card_title_font_size => 'Card Title Font Size';
+  String get settings_interface_card_title_font_size => '卡片标题字体大小';
 
   @override
   String get common_hint_date => 'YYYY-MM-DD';
@@ -2161,18 +2164,25 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String common_px(int value) {
-    return '$value px';
+    return '$value 像素';
   }
 
   @override
   String common_pt(int value) {
-    return '$value pt';
+    return '$value 点';
   }
 
   @override
   String common_percent(int value) {
     return '$value%';
   }
+
+  @override
+  String get settings_playback_direct_play => '切换场景时直接播放';
+
+  @override
+  String get settings_playback_direct_play_subtitle =>
+      '从另一个正在播放的场景切换过来时，直接播放新场景';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -2572,6 +2582,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get common_skip_next => '跳过下一个';
 
   @override
+  String get common_skip_previous => '跳过上一个';
+
+  @override
   String get common_select_subtitle => '选择字幕';
 
   @override
@@ -2665,6 +2678,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get details_show_more => '显示更多';
+
+  @override
+  String get common_more => '更多';
 
   @override
   String get details_show_less => '显示较少';
@@ -4024,6 +4040,286 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_storage_max_video_cache => '最大视频缓存 (MB)';
+
+  @override
+  String get performers_field_name => '姓名';
+
+  @override
+  String get performers_field_url => 'URL';
+
+  @override
+  String get performers_field_details => '详情';
+
+  @override
+  String get performers_field_birth_year => '出生年份';
+
+  @override
+  String get performers_field_age => '年龄';
+
+  @override
+  String get performers_field_death_year => '去世年份';
+
+  @override
+  String get performers_field_scene_count => '场景数';
+
+  @override
+  String get performers_field_image_count => '图片数';
+
+  @override
+  String get performers_field_gallery_count => '图库数';
+
+  @override
+  String get performers_field_play_count => '播放次数';
+
+  @override
+  String get performers_field_o_counter => 'O-计数器';
+
+  @override
+  String get performers_field_tag_count => '标签数';
+
+  @override
+  String get performers_field_created_at => '创建于';
+
+  @override
+  String get performers_field_updated_at => '更新于';
+
+  @override
+  String get galleries_field_title => '标题';
+
+  @override
+  String get galleries_field_details => '详情';
+
+  @override
+  String get galleries_field_date => '日期';
+
+  @override
+  String get galleries_field_performer_age => '演出者年龄';
+
+  @override
+  String get galleries_field_performer_count => '演出者人数';
+
+  @override
+  String get galleries_field_tag_count => '标签数';
+
+  @override
+  String get galleries_field_url => 'URL';
+
+  @override
+  String get galleries_field_id => 'ID';
+
+  @override
+  String get galleries_field_path => '路径';
+
+  @override
+  String get galleries_field_checksum => '校验和';
+
+  @override
+  String get galleries_field_image_count => '图片数';
+
+  @override
+  String get galleries_field_file_count => '文件数';
+
+  @override
+  String get galleries_field_created_at => '创建于';
+
+  @override
+  String get galleries_field_updated_at => '更新于';
+
+  @override
+  String get images_field_title => '标题';
+
+  @override
+  String get images_field_details => '详情';
+
+  @override
+  String get images_field_path => '路径';
+
+  @override
+  String get images_field_url => 'URL';
+
+  @override
+  String get images_field_file_count => '文件数';
+
+  @override
+  String get images_field_o_counter => 'O-计数器';
+
+  @override
+  String get studios_field_name => '名称';
+
+  @override
+  String get studios_field_details => '详情';
+
+  @override
+  String get studios_field_aliases => '别名';
+
+  @override
+  String get studios_field_url => 'URL';
+
+  @override
+  String get studios_field_tag_count => '标签数';
+
+  @override
+  String get studios_field_scene_count => '场景数';
+
+  @override
+  String get studios_field_image_count => '图片数';
+
+  @override
+  String get studios_field_gallery_count => '图库数';
+
+  @override
+  String get studios_field_sub_studio_count => '子工作室数';
+
+  @override
+  String get studios_field_created_at => '创建于';
+
+  @override
+  String get studios_field_updated_at => '更新于';
+
+  @override
+  String get scenes_field_performer_age => '演出者年龄';
+
+  @override
+  String get scenes_field_performer_count => '演出者人数';
+
+  @override
+  String get scenes_field_tag_count => '标签数';
+
+  @override
+  String get scenes_field_code => '代码';
+
+  @override
+  String get scenes_field_details => '详情';
+
+  @override
+  String get scenes_field_director => '导演';
+
+  @override
+  String get scenes_field_url => 'URL';
+
+  @override
+  String get scenes_field_date => '日期';
+
+  @override
+  String get scenes_field_path => '路径';
+
+  @override
+  String get scenes_field_captions => '字幕';
+
+  @override
+  String get scenes_field_duration => '时长（秒）';
+
+  @override
+  String get scenes_field_bitrate => '比特率';
+
+  @override
+  String get scenes_field_video_codec => '视频编码';
+
+  @override
+  String get scenes_field_audio_codec => '音频编码';
+
+  @override
+  String get scenes_field_framerate => '帧率';
+
+  @override
+  String get scenes_field_file_count => '文件数';
+
+  @override
+  String get scenes_field_play_count => '播放次数';
+
+  @override
+  String get scenes_field_play_duration => '播放时长';
+
+  @override
+  String get scenes_field_o_counter => 'O-计数器';
+
+  @override
+  String get scenes_field_last_played_at => '最后播放于';
+
+  @override
+  String get scenes_field_resume_time => '恢复时间';
+
+  @override
+  String get scenes_field_interactive_speed => '交互速度';
+
+  @override
+  String get scenes_field_id => 'ID';
+
+  @override
+  String get scenes_field_stash_id_count => 'Stash ID 数量';
+
+  @override
+  String get scenes_field_oshash => 'Oshash';
+
+  @override
+  String get scenes_field_checksum => '校验和';
+
+  @override
+  String get scenes_field_phash => 'Phash';
+
+  @override
+  String get scenes_field_created_at => '创建于';
+
+  @override
+  String get scenes_field_updated_at => '更新于';
+
+  @override
+  String get cast_stopped_resuming_locally => '投放已停止，在本地恢复播放';
+
+  @override
+  String get cast_stop_casting => '停止投放';
+
+  @override
+  String get cast_cast => '投放';
+
+  @override
+  String get common_add => '添加';
+
+  @override
+  String get common_remove => '移除';
+
+  @override
+  String get common_clear => '清除';
+
+  @override
+  String get common_download => '下载';
+
+  @override
+  String get common_star => '收藏';
+
+  @override
+  String get settings_interface_card_title_font_size => '卡片标题字体大小';
+
+  @override
+  String get common_hint_date => 'YYYY-MM-DD';
+
+  @override
+  String get common_hint_url => 'https://...';
+
+  @override
+  String get common_hint_hex => 'FF0F766E';
+
+  @override
+  String common_px(int value) {
+    return '$value 像素';
+  }
+
+  @override
+  String common_pt(int value) {
+    return '$value 点';
+  }
+
+  @override
+  String common_percent(int value) {
+    return '$value%';
+  }
+
+  @override
+  String get settings_playback_direct_play => '切换场景时直接播放';
+
+  @override
+  String get settings_playback_direct_play_subtitle =>
+      '从另一个正在播放的场景切换过来时，直接播放新场景';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -4425,6 +4721,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get common_skip_next => '跳過下一個';
 
   @override
+  String get common_skip_previous => '跳過上一個';
+
+  @override
   String get common_select_subtitle => '選擇字幕';
 
   @override
@@ -4518,6 +4817,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get details_show_more => '顯示更多';
+
+  @override
+  String get common_more => '更多';
 
   @override
   String get details_show_less => '顯示較少';
@@ -5879,4 +6181,284 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_storage_max_video_cache => '最大視訊快取 (MB)';
+
+  @override
+  String get performers_field_name => '姓名';
+
+  @override
+  String get performers_field_url => 'URL';
+
+  @override
+  String get performers_field_details => '詳情';
+
+  @override
+  String get performers_field_birth_year => '出生年份';
+
+  @override
+  String get performers_field_age => '年齡';
+
+  @override
+  String get performers_field_death_year => '去世年份';
+
+  @override
+  String get performers_field_scene_count => '場景數';
+
+  @override
+  String get performers_field_image_count => '圖片數';
+
+  @override
+  String get performers_field_gallery_count => '圖庫數';
+
+  @override
+  String get performers_field_play_count => '播放次數';
+
+  @override
+  String get performers_field_o_counter => 'O-計數器';
+
+  @override
+  String get performers_field_tag_count => '標籤數';
+
+  @override
+  String get performers_field_created_at => '建立於';
+
+  @override
+  String get performers_field_updated_at => '更新於';
+
+  @override
+  String get galleries_field_title => '標題';
+
+  @override
+  String get galleries_field_details => '詳情';
+
+  @override
+  String get galleries_field_date => '日期';
+
+  @override
+  String get galleries_field_performer_age => '演出者年齡';
+
+  @override
+  String get galleries_field_performer_count => '演出者人數';
+
+  @override
+  String get galleries_field_tag_count => '標籤數';
+
+  @override
+  String get galleries_field_url => 'URL';
+
+  @override
+  String get galleries_field_id => 'ID';
+
+  @override
+  String get galleries_field_path => '路徑';
+
+  @override
+  String get galleries_field_checksum => '校驗和';
+
+  @override
+  String get galleries_field_image_count => '圖片數';
+
+  @override
+  String get galleries_field_file_count => '文件數';
+
+  @override
+  String get galleries_field_created_at => '建立於';
+
+  @override
+  String get galleries_field_updated_at => '更新於';
+
+  @override
+  String get images_field_title => '標題';
+
+  @override
+  String get images_field_details => '詳情';
+
+  @override
+  String get images_field_path => '路徑';
+
+  @override
+  String get images_field_url => 'URL';
+
+  @override
+  String get images_field_file_count => '文件數';
+
+  @override
+  String get images_field_o_counter => 'O-計數器';
+
+  @override
+  String get studios_field_name => '名稱';
+
+  @override
+  String get studios_field_details => '詳情';
+
+  @override
+  String get studios_field_aliases => '別名';
+
+  @override
+  String get studios_field_url => 'URL';
+
+  @override
+  String get studios_field_tag_count => '標籤數';
+
+  @override
+  String get studios_field_scene_count => '場景數';
+
+  @override
+  String get studios_field_image_count => '圖片數';
+
+  @override
+  String get studios_field_gallery_count => '圖庫數';
+
+  @override
+  String get studios_field_sub_studio_count => '子工作室數';
+
+  @override
+  String get studios_field_created_at => '建立於';
+
+  @override
+  String get studios_field_updated_at => '更新於';
+
+  @override
+  String get scenes_field_performer_age => '演出者年齡';
+
+  @override
+  String get scenes_field_performer_count => '演出者人數';
+
+  @override
+  String get scenes_field_tag_count => '標籤數';
+
+  @override
+  String get scenes_field_code => '代碼';
+
+  @override
+  String get scenes_field_details => '詳情';
+
+  @override
+  String get scenes_field_director => '導演';
+
+  @override
+  String get scenes_field_url => 'URL';
+
+  @override
+  String get scenes_field_date => '日期';
+
+  @override
+  String get scenes_field_path => '路徑';
+
+  @override
+  String get scenes_field_captions => '字幕';
+
+  @override
+  String get scenes_field_duration => '時長（秒）';
+
+  @override
+  String get scenes_field_bitrate => '位元率';
+
+  @override
+  String get scenes_field_video_codec => '視訊編碼';
+
+  @override
+  String get scenes_field_audio_codec => '音訊編碼';
+
+  @override
+  String get scenes_field_framerate => '幀率';
+
+  @override
+  String get scenes_field_file_count => '文件數';
+
+  @override
+  String get scenes_field_play_count => '播放次數';
+
+  @override
+  String get scenes_field_play_duration => '播放時長';
+
+  @override
+  String get scenes_field_o_counter => 'O-計數器';
+
+  @override
+  String get scenes_field_last_played_at => '最後播放於';
+
+  @override
+  String get scenes_field_resume_time => '恢復時間';
+
+  @override
+  String get scenes_field_interactive_speed => '交互速度';
+
+  @override
+  String get scenes_field_id => 'ID';
+
+  @override
+  String get scenes_field_stash_id_count => 'Stash ID 數量';
+
+  @override
+  String get scenes_field_oshash => 'Oshash';
+
+  @override
+  String get scenes_field_checksum => '校驗和';
+
+  @override
+  String get scenes_field_phash => 'Phash';
+
+  @override
+  String get scenes_field_created_at => '建立於';
+
+  @override
+  String get scenes_field_updated_at => '更新於';
+
+  @override
+  String get cast_stopped_resuming_locally => '投放已停止，在本地恢復播放';
+
+  @override
+  String get cast_stop_casting => '停止投放';
+
+  @override
+  String get cast_cast => '投放';
+
+  @override
+  String get common_add => '添加';
+
+  @override
+  String get common_remove => '移除';
+
+  @override
+  String get common_clear => '清除';
+
+  @override
+  String get common_download => '下載';
+
+  @override
+  String get common_star => '收藏';
+
+  @override
+  String get settings_interface_card_title_font_size => '卡片標題字體大小';
+
+  @override
+  String get common_hint_date => 'YYYY-MM-DD';
+
+  @override
+  String get common_hint_url => 'https://...';
+
+  @override
+  String get common_hint_hex => 'FF0F766E';
+
+  @override
+  String common_px(int value) {
+    return '$value 像素';
+  }
+
+  @override
+  String common_pt(int value) {
+    return '$value 點';
+  }
+
+  @override
+  String common_percent(int value) {
+    return '$value%';
+  }
+
+  @override
+  String get settings_playback_direct_play => '切換場景時直接播放';
+
+  @override
+  String get settings_playback_direct_play_subtitle =>
+      '從另一個正在播放的場景切換過來時，直接播放新場景';
 }

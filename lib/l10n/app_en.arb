@@ -143,6 +143,7 @@
   "common_settings": "Settings",
   "common_reset_to_1x": "Reset to 1x",
   "common_skip_next": "Skip Next",
+  "common_skip_previous": "Skip Previous",
   "common_select_subtitle": "Select subtitle",
   "common_playback_speed": "Playback speed",
   "common_pip": "Picture-in-Picture",
@@ -879,5 +880,7 @@
         "type": "int"
       }
     }
-  }
+  },
+  "settings_playback_direct_play": "Direct-play on scene navigation",
+  "settings_playback_direct_play_subtitle": "When navigating from another playing scene, directly play the new scene"
 }

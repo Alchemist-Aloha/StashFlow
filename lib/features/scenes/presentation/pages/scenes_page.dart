@@ -16,6 +16,7 @@ import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/utils/app_log_store.dart';
 
 import '../widgets/scene_filter_panel.dart';
 import '../../../../core/presentation/widgets/grid_utils.dart';
@@ -191,7 +192,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
 
     // Set the queue and navigate to details.
     ref.read(playbackQueueProvider.notifier).setIndex(index);
-    context.push('/scenes/scene/${scenes[index].id}');
+    context.push('/scenes/scene/${scenes[index].id}', extra: true);
   }
 
   /// Formats a [_SceneSortField] enum value for display in the UI.
@@ -526,6 +527,9 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, scene, memCacheWidth, memCacheHeight) {
         final index = sceneIndexMap[scene.id] ?? -1;
+        final router = GoRouter.of(context);
+        final currentPath = router.routeInformationProvider.value.uri.path;
+        final isAtRoot = currentPath == '/scenes';
 
         return SceneCard(
           scene: scene,
@@ -533,11 +537,24 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
           useMasonry: isGridView,
           memCacheWidth: memCacheWidth,
           memCacheHeight: memCacheHeight,
+          useHero: isAtRoot,
           onTap: () {
+            AppLogStore.instance.add(
+              'ScenesPage: Scene card tapped: ${scene.id}, index=$index, total=${scenes.length}',
+              source: 'scenes_page',
+            );
             if (index != -1) {
               ref.read(playbackQueueProvider.notifier).setIndex(index);
+              AppLogStore.instance.add(
+                'ScenesPage: Queue index set to $index for scene ${scene.id}',
+                source: 'scenes_page',
+              );
             }
-            context.push('/scenes/scene/${scene.id}');
+            context.push('/scenes/scene/${scene.id}', extra: true);
+            AppLogStore.instance.add(
+              'ScenesPage: Navigated to scene detail page for ${scene.id} with autoPlayOnMount=true',
+              source: 'scenes_page',
+            );
           },
         );
       },

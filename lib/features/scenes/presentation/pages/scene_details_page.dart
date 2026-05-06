@@ -1,7 +1,13 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gal/gal.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -18,6 +24,7 @@ import '../../../studios/presentation/providers/studio_media_provider.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/video_player_provider.dart';
+import '../../data/repositories/stream_resolver.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../setup/presentation/providers/scrape_customization_provider.dart';
 import '../../domain/entities/scene.dart';
@@ -33,8 +40,8 @@ import '../widgets/scene_strip.dart';
 /// * Direct file information.
 ///
 /// It also handles sophisticated navigation logic:
-/// * Listens to [playerStateProvider] to auto-navigate to the next scene when the current one ends.
-/// * Pops the immersive fullscreen view automatically when playback transitions to a new scene.
+/// * Listens to [playerStateProvider] via top-level ShellPage to auto-navigate to the next scene when the current one ends.
+/// Pops the immersive fullscreen view automatically when playback transitions to a new scene.
 
 bool shouldRouteToNextScene(
   String currentPageSceneId,
@@ -69,7 +76,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   bool _detailsExpanded = false;
   bool _tagsExpanded = false;
   bool _performersExpanded = false;
-  String? _lastKnownActiveSceneId;
 
   bool _isRandomSortActive() {
     return ref.read(sceneSortProvider).sort == 'random';
@@ -102,6 +108,110 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     context.push('/scenes/scene/${randomScene.id}', extra: true);
   }
 
+  Future<void> _saveVideoToGallery(Scene scene) async {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Saving to gallery...'),
+        duration: Duration(seconds: 1),
+      ),
+    );
+
+    try {
+      final resolver = ref.read(streamResolverProvider.notifier);
+      final choice = await resolver.resolvePreferredStream(scene);
+      final videoUrl = choice?.url ?? scene.paths.stream;
+
+      if (videoUrl == null || videoUrl.isEmpty) {
+        throw Exception('No stream URL found');
+      }
+
+      // 'gal' only supports Android, iOS, Windows, and macOS.
+      // For Web and Linux, use the system browser to handle the download.
+      if (kIsWeb || (Platform.isLinux)) {
+        final uri = Uri.parse(videoUrl);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+          return;
+        } else {
+          throw Exception('Could not launch download URL');
+        }
+      }
+
+      final headers = ref.read(mediaHeadersProvider);
+      final tempDir = await getTemporaryDirectory();
+      // Use a temporary name, we will rename it once we know the content type
+      final tempPath =
+          '${tempDir.path}/stash_download_${DateTime.now().millisecondsSinceEpoch}.tmp';
+
+      final response = await Dio().download(
+        videoUrl,
+        tempPath,
+        options: Options(headers: headers),
+      );
+
+      final contentType = response.headers.value('content-type');
+      String extension = 'mp4';
+      if (contentType != null) {
+        if (contentType.contains('webm')) {
+          extension = 'webm';
+        } else if (contentType.contains('mkv')) {
+          extension = 'mkv';
+        } else if (contentType.contains('avi')) {
+          extension = 'avi';
+        }
+      }
+
+      bool hasAccess = await Gal.hasAccess(toAlbum: true);
+      if (!hasAccess) {
+        hasAccess = await Gal.requestAccess(toAlbum: true);
+      }
+      if (!hasAccess) {
+        throw Exception('Gallery access denied');
+      }
+
+      final finalPath = '${tempDir.path}/stash_${scene.id}.$extension';
+      final file = File(tempPath);
+      if (await file.exists()) {
+        await file.rename(finalPath);
+      }
+
+      try {
+        await Gal.putVideo(finalPath, album: 'StashFlow');
+      } finally {
+        final finalFile = File(finalPath);
+        if (await finalFile.exists()) {
+          await finalFile.delete();
+        }
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Saved to StashFlow album')),
+        );
+      }
+    } on GalException catch (e) {
+      final message = switch (e.type) {
+        GalExceptionType.accessDenied =>
+          'Permission to access the gallery is denied.',
+        GalExceptionType.notEnoughSpace => 'Not enough space for storage.',
+        GalExceptionType.notSupportedFormat => 'Unsupported file format.',
+        GalExceptionType.unexpected => 'An unexpected error has occurred.',
+      };
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gallery Error: $message')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save: ${e.toString()}')),
+        );
+      }
+    }
+  }
+
   String _formatDuration(double? seconds) {
     if (seconds == null) return '00:00';
     final duration = Duration(seconds: seconds.toInt());
@@ -121,58 +231,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(playerStateProvider, (previous, next) {
-      final nextScene = next.activeScene;
-      final previousActiveSceneId =
-          previous?.activeScene?.id ?? _lastKnownActiveSceneId;
-
-      // Only handle navigation if this page is part of the active path.
-      // This prevents background pages from interfering when the user has
-      // already navigated forward to a different scene or is in fullscreen.
-      final router = GoRouter.of(context);
-      final currentPath = router.routeInformationProvider.value.uri.path;
-      final pathSegments = Uri.parse(currentPath).pathSegments;
-
-      // Only handle navigation if this page is part of the active path.
-      // This prevents background pages from interfering when the user has
-      // already navigated forward to a different scene or is in fullscreen.
-      // We also exclude the 'edit' subroute to avoid jumping away while editing.
-      final isScenePage = currentPath.contains('/scene/') &&
-          pathSegments.contains(widget.sceneId);
-      final isEditPage = pathSegments.contains('edit');
-
-      if (!isScenePage || isEditPage) {
-        return;
-      }
-
-      // Navigate to next scene if provider indicates we just moved from the current scene
-      if (shouldRouteToNextScene(
-        widget.sceneId,
-        previous?.activeScene,
-        _lastKnownActiveSceneId,
-        nextScene,
-      )) {
-        AppLogStore.instance.add(
-          'SceneDetailsPage [${widget.sceneId}] navigating to next scene: ${nextScene?.id}',
-          source: 'SceneDetailsPage',
-        );
-
-        if (nextScene != null) {
-          context.pushReplacement(
-            '/scenes/scene/${nextScene.id}',
-            extra: true,
-          );
-        }
-      }
-
-      // Keep the most recent active scene ID in case the provider emits a transient null state
-      if (nextScene?.id != null) {
-        _lastKnownActiveSceneId = nextScene!.id;
-      } else if (previousActiveSceneId != null) {
-        _lastKnownActiveSceneId = previousActiveSceneId;
-      }
-    });
-
     final sceneAsync = ref.watch(sceneDetailsProvider(widget.sceneId));
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final scrapeEnabled = ref.watch(scrapeEnabledProvider);
@@ -181,6 +239,14 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       appBar: AppBar(
         title: Text(context.l10n.details_scene),
         actions: [
+          sceneAsync.maybeWhen(
+            data: (scene) => IconButton(
+              tooltip: context.l10n.common_download,
+              icon: const Icon(Icons.download_outlined),
+              onPressed: () => _saveVideoToGallery(scene),
+            ),
+            orElse: () => const SizedBox.shrink(),
+          ),
           if (scrapeEnabled)
             sceneAsync.maybeWhen(
               data: (scene) => IconButton(
@@ -212,125 +278,127 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
           return sceneAsync.when(
             data: (scene) {
-          final useTwoColumns = !Responsive.isMobile(context);
+              final useTwoColumns = !Responsive.isMobile(context);
 
-          if (useTwoColumns) {
-            return RefreshIndicator(
-              onRefresh: () async {
-                ref.invalidate(sceneDetailsProvider(widget.sceneId));
-                return ref.read(sceneDetailsProvider(widget.sceneId).future);
-              },
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Left Column: Video, Title, Info, Details (61.8%)
-                  Expanded(
-                    flex: 618,
-                    child: SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SceneVideoPlayer(
-                            scene: scene,
-                            autoPlayOnMount: widget.autoPlayOnMount,
-                            maxHeight: safeMaxHeight,
+              if (useTwoColumns) {
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    ref.invalidate(sceneDetailsProvider(widget.sceneId));
+                    return ref.read(
+                      sceneDetailsProvider(widget.sceneId).future,
+                    );
+                  },
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Left Column: Video, Title, Info, Details (61.8%)
+                      Expanded(
+                        flex: 618,
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SceneVideoPlayer(
+                                scene: scene,
+                                autoPlayOnMount: widget.autoPlayOnMount,
+                                maxHeight: safeMaxHeight,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(
+                                  AppTheme.spacingMedium,
+                                ),
+                                child: _buildMainInfo(
+                                  context,
+                                  scene,
+                                  scrapeEnabled,
+                                ),
+                              ),
+                            ],
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(
-                              AppTheme.spacingMedium,
-                            ),
-                            child: _buildMainInfo(
-                              context,
-                              scene,
-                              scrapeEnabled,
-                            ),
+                        ),
+                      ),
+                      // Divider
+                      VerticalDivider(
+                        width: 1,
+                        thickness: 1,
+                        color: context.colors.outline.withValues(alpha: 0.1),
+                      ),
+                      // Right Column: Tags, Performers, More from Studio (38.2%)
+                      Expanded(
+                        flex: 382,
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildTagsSection(context, scene),
+                              _buildPerformersSection(context, scene),
+                              _buildMoreFromStudioSection(context, scene),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                  // Divider
-                  VerticalDivider(
-                    width: 1,
-                    thickness: 1,
-                    color: context.colors.outline.withValues(alpha: 0.1),
-                  ),
-                  // Right Column: Tags, Performers, More from Studio (38.2%)
-                  Expanded(
-                    flex: 382,
-                    child: SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildTagsSection(context, scene),
-                          _buildPerformersSection(context, scene),
-                          _buildMoreFromStudioSection(context, scene),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
+                );
+              }
 
-          // Mobile View (Default Column)
-          return RefreshIndicator(
-            onRefresh: () async {
-              await ref
-                  .read(sceneRepositoryProvider)
-                  .getSceneById(widget.sceneId, refresh: true);
-              ref.invalidate(sceneDetailsProvider(widget.sceneId));
-              return ref.read(sceneDetailsProvider(widget.sceneId).future);
+              // Mobile View (Default Column)
+              return RefreshIndicator(
+                onRefresh: () async {
+                  await ref
+                      .read(sceneRepositoryProvider)
+                      .getSceneById(widget.sceneId, refresh: true);
+                  ref.invalidate(sceneDetailsProvider(widget.sceneId));
+                  return ref.read(sceneDetailsProvider(widget.sceneId).future);
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SceneVideoPlayer(
+                        scene: scene,
+                        autoPlayOnMount: widget.autoPlayOnMount,
+                        maxHeight: safeMaxHeight,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(AppTheme.spacingMedium),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildMainInfo(context, scene, scrapeEnabled),
+                            _buildTagsSection(context, scene),
+                            _buildPerformersSection(context, scene),
+                            _buildMoreFromStudioSection(context, scene),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
             },
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SceneVideoPlayer(
-                    scene: scene,
-                    autoPlayOnMount: widget.autoPlayOnMount,
-                    maxHeight: safeMaxHeight,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildMainInfo(context, scene, scrapeEnabled),
-                        _buildTagsSection(context, scene),
-                        _buildPerformersSection(context, scene),
-                        _buildMoreFromStudioSection(context, scene),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, stack) => ErrorStateView(
+              message: context.l10n.common_error(err.toString()),
+              onRetry: () => ref.refresh(sceneDetailsProvider(widget.sceneId)),
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => ErrorStateView(
-          message: context.l10n.common_error(err.toString()),
-          onRetry: () => ref.refresh(sceneDetailsProvider(widget.sceneId)),
-        ),
-      );
-    },
-  ),
-);
+      ),
+    );
   }
 
   Widget _buildSectionContainer(BuildContext context, Widget child) {
     return Card(
       margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
       elevation: 0,
-      color: Theme.of(context).colorScheme.primaryContainer.withValues(
-        alpha: 0.1,
-      ),
+      color: Theme.of(
+        context,
+      ).colorScheme.primaryContainer.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
       ),
@@ -780,9 +848,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     return studioMediaAsync.when(
       data: (scenes) {
         final List<Scene> sceneList = scenes;
-        final filtered =
-            sceneList.where((item) => item.id != scene.id).toList()
-              ..shuffle(Random(scene.id.hashCode));
+        final filtered = sceneList.where((item) => item.id != scene.id).toList()
+          ..shuffle(Random(scene.id.hashCode));
 
         if (filtered.isEmpty) {
           return const SizedBox.shrink();
@@ -796,7 +863,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               SectionHeader(
                 title: context.l10n.details_more_from_studio,
                 onViewAll: canOpenStudio
-                    ? () => context.push('/studios/studio/${scene.studioId}/media')
+                    ? () => context.push(
+                        '/studios/studio/${scene.studioId}/media',
+                      )
                     : null,
                 padding: EdgeInsets.zero,
               ),
