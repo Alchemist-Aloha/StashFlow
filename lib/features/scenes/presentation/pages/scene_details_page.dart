@@ -529,7 +529,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   }
 
   Widget _buildActions(BuildContext context, Scene scene, bool scrapeEnabled) {
-    return Wrap(
+    return (Wrap
       spacing: 8,
       runSpacing: 8,
       crossAxisAlignment: WrapCrossAlignment.center,
@@ -570,13 +570,13 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               size: 28,
             ),
           ),
-        if (scene.rating100 != null && scene.rating100! > 0)
-          Text(
-            (scene.rating100! / 20).toStringAsFixed(1),
-            style: context.textTheme.bodyMedium?.copyWith(
-              color: context.colors.onSurface.withValues(alpha: 0.7),
-            ),
-          ),
+        // if (scene.rating100 != null && scene.rating100! > 0)
+        //   Text(
+        //     (scene.rating100! / 20).toStringAsFixed(1),
+        //     style: context.textTheme.bodyMedium?.copyWith(
+        //       color: context.colors.onSurface.withValues(alpha: 0.7),
+        //     ),
+        //   ),
         FilledButton.tonalIcon(
           onPressed: () async {
             try {
