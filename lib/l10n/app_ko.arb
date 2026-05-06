@@ -790,5 +790,24 @@
   "common_pt": "{value} pt",
   "common_percent": "{value}%",
   "settings_playback_direct_play": "장면 이동 시 즉시 재생",
-  "settings_playback_direct_play_subtitle": "다른 재생 중인 장면에서 이동할 때 새 장면을 즉시 재생합니다"
+  "settings_playback_direct_play_subtitle": "다른 재생 중인 장면에서 이동할 때 새 장면을 즉시 재생합니다",
+  "saving_video": "갤러리에 저장 중...",
+  "saved_to_album": "StashFlow 앨범에 저장됨",
+  "gallery_error": "갤러리 오류: {message}",
+  "failed_to_save": "저장 실패: {error}",
+  "saving_image": "이미지 저장 중...",
+  "@gallery_error": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "@failed_to_save": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

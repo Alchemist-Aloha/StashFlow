@@ -790,5 +790,24 @@
   "common_pt": "{value} pt",
   "common_percent": "{value}%",
   "settings_playback_direct_play": "シーン移動時に直接再生",
-  "settings_playback_direct_play_subtitle": "他の再生中シーンから移動した際、新しいシーンを直接再生します"
+  "settings_playback_direct_play_subtitle": "他の再生中シーンから移動した際、新しいシーンを直接再生します",
+  "saving_video": "ギャラリーに保存中...",
+  "saved_to_album": "StashFlowアルバムに保存しました",
+  "gallery_error": "ギャラリーエラー: {message}",
+  "failed_to_save": "保存に失敗しました: {error}",
+  "saving_image": "画像を保存中...",
+  "@gallery_error": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "@failed_to_save": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

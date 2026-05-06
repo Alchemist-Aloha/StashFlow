@@ -111,9 +111,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   Future<void> _saveVideoToGallery(Scene scene) async {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Saving to gallery...'),
-        duration: Duration(seconds: 1),
+      SnackBar(
+        content: Text(context.l10n.saving_video),
+        duration: const Duration(seconds: 1),
       ),
     );
 
@@ -187,7 +187,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Saved to StashFlow album')),
+          SnackBar(content: Text(context.l10n.saved_to_album)),
         );
       }
     } on GalException catch (e) {
@@ -200,13 +200,13 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       };
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gallery Error: $message')),
+          SnackBar(content: Text(context.l10n.gallery_error(message))),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save: ${e.toString()}')),
+          SnackBar(content: Text(context.l10n.failed_to_save(e.toString()))),
         );
       }
     }

@@ -811,5 +811,24 @@
   "common_pt": "{value} pt",
   "common_percent": "{value}%",
   "settings_playback_direct_play": "Direkt-Wiedergabe bei Szenen-Navigation",
-  "settings_playback_direct_play_subtitle": "Bei der Navigation von einer anderen spielenden Szene wird die neue Szene direkt abgespielt"
+  "settings_playback_direct_play_subtitle": "Bei der Navigation von einer anderen spielenden Szene wird die neue Szene direkt abgespielt",
+  "saving_video": "In Galerie speichern...",
+  "saved_to_album": "Im StashFlow-Album gespeichert",
+  "gallery_error": "Galeriefehler: {message}",
+  "failed_to_save": "Speichern fehlgeschlagen: {error}",
+  "saving_image": "Bild speichern...",
+  "@gallery_error": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "@failed_to_save": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

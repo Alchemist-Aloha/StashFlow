@@ -222,9 +222,9 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Saving image...'),
-        duration: Duration(seconds: 1),
+      SnackBar(
+        content: Text(context.l10n.saving_image),
+        duration: const Duration(seconds: 1),
       ),
     );
 
@@ -303,7 +303,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Saved to StashFlow album'),
+            content: Text(context.l10n.saved_to_album),
             // action: SnackBarAction(
             //   label: 'View',
             //   onPressed: () => Gal.open(),
@@ -321,14 +321,14 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
       debugPrint('GalException final failure: ${e.type.name}');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gallery Error: $message')),
+          SnackBar(content: Text(context.l10n.gallery_error(message))),
         );
       }
     } catch (e) {
       debugPrint('Save error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save: ${e.toString()}')),
+          SnackBar(content: Text(context.l10n.failed_to_save(e.toString()))),
         );
       }
     }

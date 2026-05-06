@@ -2176,6 +2176,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String common_percent(int value) {
     return '$value%';
   }
+
+  @override
+  String get saving_video => '正在保存到相册...';
+
+  @override
+  String get saved_to_album => '已保存到 StashFlow 相册';
+
+  @override
+  String gallery_error(String message) {
+    return '相册错误: $message';
+  }
+
+  @override
+  String failed_to_save(String error) {
+    return '保存失败: $error';
+  }
+
+  @override
+  String get saving_image => '正在保存图片...';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -4313,6 +4332,25 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String common_percent(int value) {
     return '$value%';
   }
+
+  @override
+  String get saving_video => '正在保存到相册...';
+
+  @override
+  String get saved_to_album => '已保存到 StashFlow 相册';
+
+  @override
+  String gallery_error(String message) {
+    return '相册错误: $message';
+  }
+
+  @override
+  String failed_to_save(String error) {
+    return '保存失败: $error';
+  }
+
+  @override
+  String get saving_image => '正在保存图片...';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -6454,4 +6492,23 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String common_percent(int value) {
     return '$value%';
   }
+
+  @override
+  String get saving_video => '正在儲存到相簿...';
+
+  @override
+  String get saved_to_album => '已儲存到 StashFlow 相簿';
+
+  @override
+  String gallery_error(String message) {
+    return '相簿錯誤: $message';
+  }
+
+  @override
+  String failed_to_save(String error) {
+    return '儲存失敗: $error';
+  }
+
+  @override
+  String get saving_image => '正在儲存圖片...';
 }

@@ -2274,4 +2274,23 @@ class AppLocalizationsRu extends AppLocalizations {
   String common_percent(int value) {
     return '$value%';
   }
+
+  @override
+  String get saving_video => 'Сохранение в галерею...';
+
+  @override
+  String get saved_to_album => 'Сохранено в альбом StashFlow';
+
+  @override
+  String gallery_error(String message) {
+    return 'Ошибка галереи: $message';
+  }
+
+  @override
+  String failed_to_save(String error) {
+    return 'Не удалось сохранить: $error';
+  }
+
+  @override
+  String get saving_image => 'Сохранение изображения...';
 }

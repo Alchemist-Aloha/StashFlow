@@ -4229,6 +4229,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{value}%'**
   String common_percent(int value);
+
+  /// No description provided for @saving_video.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving to gallery...'**
+  String get saving_video;
+
+  /// No description provided for @saved_to_album.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to StashFlow album'**
+  String get saved_to_album;
+
+  /// No description provided for @gallery_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery Error: {message}'**
+  String gallery_error(String message);
+
+  /// No description provided for @failed_to_save.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save: {error}'**
+  String failed_to_save(String error);
+
+  /// No description provided for @saving_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving image...'**
+  String get saving_image;
 }
 
 class _AppLocalizationsDelegate

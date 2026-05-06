@@ -2198,4 +2198,23 @@ class AppLocalizationsKo extends AppLocalizations {
   String common_percent(int value) {
     return '$value%';
   }
+
+  @override
+  String get saving_video => '갤러리에 저장 중...';
+
+  @override
+  String get saved_to_album => 'StashFlow 앨범에 저장됨';
+
+  @override
+  String gallery_error(String message) {
+    return '갤러리 오류: $message';
+  }
+
+  @override
+  String failed_to_save(String error) {
+    return '저장 실패: $error';
+  }
+
+  @override
+  String get saving_image => '이미지 저장 중...';
 }

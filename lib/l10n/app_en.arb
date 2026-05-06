@@ -881,6 +881,23 @@
       }
     }
   },
-  "settings_playback_direct_play": "Direct-play on scene navigation",
-  "settings_playback_direct_play_subtitle": "When navigating from another playing scene, directly play the new scene"
+  "saving_video": "Saving to gallery...",
+  "saved_to_album": "Saved to StashFlow album",
+  "gallery_error": "Gallery Error: {message}",
+  "@gallery_error": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "failed_to_save": "Failed to save: {error}",
+  "@failed_to_save": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "saving_image": "Saving image..."
 }

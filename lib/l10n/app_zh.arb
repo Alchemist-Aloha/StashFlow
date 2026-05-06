@@ -790,5 +790,24 @@
   "common_pt": "{value} 点",
   "common_percent": "{value}%",
   "settings_playback_direct_play": "切换场景时直接播放",
-  "settings_playback_direct_play_subtitle": "从另一个正在播放的场景切换过来时，直接播放新场景"
+  "settings_playback_direct_play_subtitle": "从另一个正在播放的场景切换过来时，直接播放新场景",
+  "saving_video": "正在保存到相册...",
+  "saved_to_album": "已保存到 StashFlow 相册",
+  "gallery_error": "相册错误: {message}",
+  "failed_to_save": "保存失败: {error}",
+  "saving_image": "正在保存图片...",
+  "@gallery_error": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "@failed_to_save": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

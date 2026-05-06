@@ -790,5 +790,24 @@
   "common_pt": "{value} pt",
   "common_percent": "{value}%",
   "settings_playback_direct_play": "Reproducción directa al navegar por escenas",
-  "settings_playback_direct_play_subtitle": "Al navegar desde otra escena en reproducción, reproducir directamente la nueva escena"
+  "settings_playback_direct_play_subtitle": "Al navegar desde otra escena en reproducción, reproducir directamente la nueva escena",
+  "saving_video": "Guardando en galería...",
+  "saved_to_album": "Guardado en álbum de StashFlow",
+  "gallery_error": "Error de galería: {message}",
+  "failed_to_save": "Error al guardar: {error}",
+  "saving_image": "Guardando imagen...",
+  "@gallery_error": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "@failed_to_save": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
