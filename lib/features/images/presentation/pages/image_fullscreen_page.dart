@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:dio/dio.dart';
@@ -12,13 +11,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gal/gal.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 
-import '../../../../core/data/auth/auth_provider.dart';
-import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
-import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
