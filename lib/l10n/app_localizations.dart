@@ -1494,6 +1494,54 @@ abstract class AppLocalizations {
   /// **'Modifier'**
   String get filter_modifier;
 
+  /// No description provided for @filter_group_general.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get filter_group_general;
+
+  /// No description provided for @filter_group_performer.
+  ///
+  /// In en, this message translates to:
+  /// **'Performer'**
+  String get filter_group_performer;
+
+  /// No description provided for @filter_group_library.
+  ///
+  /// In en, this message translates to:
+  /// **'Library'**
+  String get filter_group_library;
+
+  /// No description provided for @filter_group_metadata.
+  ///
+  /// In en, this message translates to:
+  /// **'Metadata'**
+  String get filter_group_metadata;
+
+  /// No description provided for @filter_group_media_info.
+  ///
+  /// In en, this message translates to:
+  /// **'Media Info'**
+  String get filter_group_media_info;
+
+  /// No description provided for @filter_group_usage.
+  ///
+  /// In en, this message translates to:
+  /// **'Usage'**
+  String get filter_group_usage;
+
+  /// No description provided for @filter_group_system.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get filter_group_system;
+
+  /// No description provided for @filter_group_physical.
+  ///
+  /// In en, this message translates to:
+  /// **'Physical'**
+  String get filter_group_physical;
+
   /// No description provided for @filter_equals.
   ///
   /// In en, this message translates to:
@@ -2670,6 +2718,18 @@ abstract class AppLocalizations {
   /// **'Gravity-controlled orientation'**
   String get settings_playback_gravity_orientation;
 
+  /// No description provided for @settings_playback_direct_play.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct-play on scene navigation'**
+  String get settings_playback_direct_play;
+
+  /// No description provided for @settings_playback_direct_play_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When navigating from another playing scene, directly play the new scene'**
+  String get settings_playback_direct_play_subtitle;
+
   /// No description provided for @settings_playback_gravity_orientation_subtitle.
   ///
   /// In en, this message translates to:
@@ -3611,6 +3671,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Max Video Cache (MB)'**
   String get settings_storage_max_video_cache;
+
+  /// No description provided for @settings_storage.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage & Cache'**
+  String get settings_storage;
+
+  /// No description provided for @settings_storage_usage.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage Usage'**
+  String get settings_storage_usage;
+
+  /// No description provided for @settings_storage_usage_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Current space used by caches'**
+  String get settings_storage_usage_subtitle;
+
+  /// No description provided for @settings_storage_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage local caches and storage limits'**
+  String get settings_storage_subtitle;
 
   /// No description provided for @performers_field_name.
   ///

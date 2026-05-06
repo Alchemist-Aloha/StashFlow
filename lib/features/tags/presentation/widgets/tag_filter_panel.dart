@@ -142,7 +142,7 @@ class _TagFilterPanelState extends ConsumerState<TagFilterPanel> {
 
   Widget _buildGeneralSection() {
     return FilterSection(
-      title: 'General',
+      title: context.l10n.filter_group_general,
       initiallyExpanded: true,
       children: [
         Row(

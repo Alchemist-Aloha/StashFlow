@@ -17,13 +17,13 @@ class StorageSettingsPage extends ConsumerWidget {
     final prefs = ref.watch(sharedPreferencesProvider);
 
     return SettingsPageShell(
-      title: 'Storage & Cache',
+      title: context.l10n.settings_storage,
       child: ListView(
         padding: EdgeInsets.all(context.dimensions.spacingLarge),
         children: [
           SettingsSectionCard(
-            title: 'Storage Usage',
-            subtitle: 'Current space used by caches',
+            title: context.l10n.settings_storage_usage,
+            subtitle: context.l10n.settings_storage_usage_subtitle,
             child: sizesAsync.when(
               data: (sizes) => Column(
                 children: [
@@ -131,8 +131,8 @@ class StorageSettingsPage extends ConsumerWidget {
           ),
           SizedBox(height: context.dimensions.spacingMedium),
           SettingsSectionCard(
-            title: 'Limits',
-            subtitle: 'Set maximum cache sizes',
+            title: context.l10n.settings_storage_limits,
+            subtitle: context.l10n.settings_storage_limits_subtitle,
             child: Column(
               children: [
                 DropdownButtonFormField<int>(

@@ -150,7 +150,7 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
 
   Widget _buildGeneralSection() {
     return FilterSection(
-      title: 'General',
+      title: context.l10n.filter_group_general,
       initiallyExpanded: true,
       children: [
         _buildBooleanFilter(
@@ -165,7 +165,7 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
 
   Widget _buildMetadataSection() {
     return FilterSection(
-      title: 'Metadata',
+      title: context.l10n.filter_group_metadata,
       children: [
         StringCriterionInput(
           label: context.l10n.studios_field_name,
@@ -193,7 +193,7 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
 
   Widget _buildLibrarySection() {
     return FilterSection(
-      title: 'Library',
+      title: context.l10n.filter_group_library,
       children: [
         _buildOrganizedFilter(),
         _buildEntityFilter<Studio>(
@@ -226,7 +226,7 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
 
   Widget _buildSystemSection() {
     return FilterSection(
-      title: 'System',
+      title: context.l10n.filter_group_system,
       children: [
         _buildBooleanFilter(
           'Is Missing',
