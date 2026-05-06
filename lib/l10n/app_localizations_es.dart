@@ -2304,4 +2304,23 @@ class AppLocalizationsEs extends AppLocalizations {
   String common_percent(int value) {
     return '$value%';
   }
+
+  @override
+  String get saving_video => 'Guardando en galería...';
+
+  @override
+  String get saved_to_album => 'Guardado en álbum de StashFlow';
+
+  @override
+  String gallery_error(String message) {
+    return 'Error de galería: $message';
+  }
+
+  @override
+  String failed_to_save(String error) {
+    return 'Error al guardar: $error';
+  }
+
+  @override
+  String get saving_image => 'Guardando imagen...';
 }

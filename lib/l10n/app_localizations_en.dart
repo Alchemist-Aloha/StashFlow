@@ -2245,4 +2245,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String common_percent(int value) {
     return '$value%';
   }
+
+  @override
+  String get saving_video => 'Saving to gallery...';
+
+  @override
+  String get saved_to_album => 'Saved to StashFlow album';
+
+  @override
+  String gallery_error(String message) {
+    return 'Gallery Error: $message';
+  }
+
+  @override
+  String failed_to_save(String error) {
+    return 'Failed to save: $error';
+  }
+
+  @override
+  String get saving_image => 'Saving image...';
 }

@@ -790,5 +790,24 @@
   "common_pt": "{value} pt",
   "common_percent": "{value}%",
   "settings_playback_direct_play": "Lecture directe lors de la navigation entre scènes",
-  "settings_playback_direct_play_subtitle": "Lors de la navigation depuis une autre scène en cours de lecture, lire directement la nouvelle scène"
+  "settings_playback_direct_play_subtitle": "Lors de la navigation depuis une autre scène en cours de lecture, lire directement la nouvelle scène",
+  "saving_video": "Enregistrement dans la galerie...",
+  "saved_to_album": "Enregistré dans l'album StashFlow",
+  "gallery_error": "Erreur de galerie: {message}",
+  "failed_to_save": "Échec de l'enregistrement: {error}",
+  "saving_image": "Enregistrement de l'image...",
+  "@gallery_error": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "@failed_to_save": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

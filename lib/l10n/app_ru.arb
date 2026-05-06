@@ -790,5 +790,24 @@
   "common_pt": "{value} пт",
   "common_percent": "{value}%",
   "settings_playback_direct_play": "Прямое воспроизведение при навигации по сценам",
-  "settings_playback_direct_play_subtitle": "При переходе из другой воспроизводящейся сцены, сразу включать новую сцену"
+  "settings_playback_direct_play_subtitle": "При переходе из другой воспроизводящейся сцены, сразу включать новую сцену",
+  "saving_video": "Сохранение в галерею...",
+  "saved_to_album": "Сохранено в альбом StashFlow",
+  "gallery_error": "Ошибка галереи: {message}",
+  "failed_to_save": "Не удалось сохранить: {error}",
+  "saving_image": "Сохранение изображения...",
+  "@gallery_error": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "@failed_to_save": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
