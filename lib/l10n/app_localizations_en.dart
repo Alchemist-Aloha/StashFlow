@@ -752,6 +752,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filter_modifier => 'Modifier';
 
   @override
+  String get filter_group_general => 'General';
+
+  @override
+  String get filter_group_performer => 'Performer';
+
+  @override
+  String get filter_group_library => 'Library';
+
+  @override
+  String get filter_group_metadata => 'Metadata';
+
+  @override
+  String get filter_group_media_info => 'Media Info';
+
+  @override
+  String get filter_group_usage => 'Usage';
+
+  @override
+  String get filter_group_system => 'System';
+
+  @override
+  String get filter_group_physical => 'Physical';
+
+  @override
   String get filter_equals => 'Equals';
 
   @override
@@ -1408,6 +1432,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Gravity-controlled orientation';
 
   @override
+  String get settings_playback_direct_play => 'Direct-play on scene navigation';
+
+  @override
+  String get settings_playback_direct_play_subtitle =>
+      'When navigating from another playing scene, directly play the new scene';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       'Allow rotating between matching orientations using the device sensor (e.g. flipping landscape left/right).';
 
@@ -1925,6 +1956,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_storage_max_video_cache => 'Max Video Cache (MB)';
+
+  @override
+  String get settings_storage => 'Storage & Cache';
+
+  @override
+  String get settings_storage_usage => 'Storage Usage';
+
+  @override
+  String get settings_storage_usage_subtitle => 'Current space used by caches';
+
+  @override
+  String get settings_storage_subtitle =>
+      'Manage local caches and storage limits';
 
   @override
   String get performers_field_name => 'Name';

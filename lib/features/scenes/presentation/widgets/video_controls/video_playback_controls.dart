@@ -113,7 +113,7 @@ class VideoPlaybackControls extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      tooltip: isPlaying ? 'Pause' : 'Play',
+                      tooltip: isPlaying ? context.l10n.common_pause : context.l10n.common_play,
                       style: _controlButtonStyle(colorScheme),
                       iconSize: 20,
                       icon: Icon(
