@@ -3,6 +3,7 @@
 **/generated*.*
 **/Generated*.*
 **/*.freezed.dart
+**/*.mocks.dart
 .hermes/
 *.class
 *.log
