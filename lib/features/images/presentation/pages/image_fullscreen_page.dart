@@ -229,19 +229,14 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     );
 
     try {
-      // 'gal' only supports Android, iOS, Windows, and macOS.
-      // For Web and Linux, use the system browser to handle the download.
-      if (kIsWeb || (Platform.isLinux)) {
-        final uri = Uri.parse(imageUrl);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-          return;
-        } else {
-          throw Exception('Could not launch download URL');
-        }
-      }
-
+      if (kIsWeb) return;
       final headers = ref.read(mediaHeadersProvider);
+
+      final bool isLinux = Platform.isLinux;
+      final Directory baseDir = isLinux
+          ? (await getDownloadsDirectory() ?? await getTemporaryDirectory())
+          : await getTemporaryDirectory();
+
       debugPrint('Saving image from URL: $imageUrl');
       final response = await Dio().get<List<int>>(
         imageUrl,
@@ -272,7 +267,27 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
         }
       }
 
-      // Check for access
+      final name = 'stash_${image.id}.$extension';
+      final savePath = '${baseDir.path}/$name';
+      final file = File(savePath);
+      await file.writeAsBytes(bytes);
+
+      if (isLinux) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Saved to $savePath'),
+              action: SnackBarAction(
+                label: context.l10n.common_show,
+                onPressed: () => launchUrl(Uri.file(baseDir.path)),
+              ),
+            ),
+          );
+        }
+        return;
+      }
+
+      // Check for access (Android, iOS, Windows, macOS)
       bool hasAccess = await Gal.hasAccess(toAlbum: true);
       debugPrint('Gal.hasAccess(toAlbum: true): $hasAccess');
       if (!hasAccess) {
@@ -284,19 +299,13 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
         throw Exception('Gallery access denied');
       }
 
-      final name = 'stash_${image.id}.$extension';
-      final tempDir = await getTemporaryDirectory();
-      final tempPath = '${tempDir.path}/$name';
-      final file = File(tempPath);
-      await file.writeAsBytes(bytes);
-
       try {
-        debugPrint('Saving to gallery via putImage: $tempPath');
-        await Gal.putImage(tempPath, album: 'StashFlow');
+        debugPrint('Saving to gallery via putImage: $savePath');
+        await Gal.putImage(savePath, album: 'StashFlow');
       } finally {
         if (await file.exists()) {
           await file.delete();
-          debugPrint('Cleaned up temporary file: $tempPath');
+          debugPrint('Cleaned up temporary file: $savePath');
         }
       }
 
@@ -304,10 +313,6 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(context.l10n.saved_to_album),
-            // action: SnackBarAction(
-            //   label: 'View',
-            //   onPressed: () => Gal.open(),
-            // ),
           ),
         );
       }
@@ -789,14 +794,16 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                 : () => _showRatingDialog(currentImage),
                             tooltip: context.l10n.common_rate,
                           ),
-                          SizedBox(width: context.dimensions.spacingSmall),
-                          IconButton.filledTonal(
-                            icon: const Icon(Icons.download_rounded),
-                            onPressed: currentImage == null
-                                ? null
-                                : () => _saveImageToGallery(currentImage),
-                            tooltip: context.l10n.common_download,
-                          ),
+                          if (!kIsWeb) ...[
+                            SizedBox(width: context.dimensions.spacingSmall),
+                            IconButton.filledTonal(
+                              icon: const Icon(Icons.download_rounded),
+                              onPressed: currentImage == null
+                                  ? null
+                                  : () => _saveImageToGallery(currentImage),
+                              tooltip: context.l10n.common_download,
+                            ),
+                          ],
                           SizedBox(width: context.dimensions.spacingSmall),
                           IconButton.filledTonal(
                             icon: Icon(

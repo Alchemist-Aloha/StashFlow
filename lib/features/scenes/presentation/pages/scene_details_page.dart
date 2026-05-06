@@ -126,23 +126,20 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         throw Exception('No stream URL found');
       }
 
-      // 'gal' only supports Android, iOS, Windows, and macOS.
-      // For Web and Linux, use the system browser to handle the download.
-      if (kIsWeb || (Platform.isLinux)) {
-        final uri = Uri.parse(videoUrl);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-          return;
-        } else {
-          throw Exception('Could not launch download URL');
-        }
-      }
+      if (kIsWeb) return;
 
       final headers = ref.read(mediaHeadersProvider);
-      final tempDir = await getTemporaryDirectory();
-      // Use a temporary name, we will rename it once we know the content type
-      final tempPath =
-          '${tempDir.path}/stash_download_${DateTime.now().millisecondsSinceEpoch}.tmp';
+
+      // Determine base directory
+      final bool isLinux = !kIsWeb && Platform.isLinux;
+      final Directory baseDir = isLinux
+          ? (await getDownloadsDirectory() ?? await getTemporaryDirectory())
+          : await getTemporaryDirectory();
+
+      final safeTitle = scene.title.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
+      final baseFileName =
+          'stash_${scene.id}${safeTitle.isNotEmpty ? "_$safeTitle" : ""}';
+      final tempPath = '${baseDir.path}/$baseFileName.tmp';
 
       final response = await Dio().download(
         videoUrl,
@@ -155,11 +152,38 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       if (contentType != null) {
         if (contentType.contains('webm')) {
           extension = 'webm';
-        } else if (contentType.contains('mkv')) {
+        } else if (contentType.contains('mkv') ||
+            contentType.contains('x-matroska')) {
           extension = 'mkv';
         } else if (contentType.contains('avi')) {
           extension = 'avi';
         }
+      }
+
+      final finalPath = '${baseDir.path}/$baseFileName.$extension';
+      final file = File(tempPath);
+      if (await file.exists()) {
+        final finalFile = File(finalPath);
+        if (await finalFile.exists()) {
+          await finalFile.delete();
+        }
+        await file.rename(finalPath);
+      }
+
+      // 'gal' only supports Android, iOS, Windows, and macOS.
+      if (isLinux) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Saved to $finalPath'),
+              action: SnackBarAction(
+                label: context.l10n.common_show,
+                onPressed: () => launchUrl(Uri.file(baseDir.path)),
+              ),
+            ),
+          );
+        }
+        return;
       }
 
       bool hasAccess = await Gal.hasAccess(toAlbum: true);
@@ -168,12 +192,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       }
       if (!hasAccess) {
         throw Exception('Gallery access denied');
-      }
-
-      final finalPath = '${tempDir.path}/stash_${scene.id}.$extension';
-      final file = File(tempPath);
-      if (await file.exists()) {
-        await file.rename(finalPath);
       }
 
       try {
@@ -239,14 +257,15 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       appBar: AppBar(
         title: Text(context.l10n.details_scene),
         actions: [
-          sceneAsync.maybeWhen(
-            data: (scene) => IconButton(
-              tooltip: context.l10n.common_download,
-              icon: const Icon(Icons.download_outlined),
-              onPressed: () => _saveVideoToGallery(scene),
+          if (!kIsWeb)
+            sceneAsync.maybeWhen(
+              data: (scene) => IconButton(
+                tooltip: context.l10n.common_download,
+                icon: const Icon(Icons.download_outlined),
+                onPressed: () => _saveVideoToGallery(scene),
+              ),
+              orElse: () => const SizedBox.shrink(),
             ),
-            orElse: () => const SizedBox.shrink(),
-          ),
           if (scrapeEnabled)
             sceneAsync.maybeWhen(
               data: (scene) => IconButton(
@@ -529,7 +548,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   }
 
   Widget _buildActions(BuildContext context, Scene scene, bool scrapeEnabled) {
-    return (Wrap
+    return Wrap(
       spacing: 8,
       runSpacing: 8,
       crossAxisAlignment: WrapCrossAlignment.center,
