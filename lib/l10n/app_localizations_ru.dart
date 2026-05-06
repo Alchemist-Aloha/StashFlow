@@ -409,7 +409,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get common_skip_next => 'пропустить';
 
   @override
-  String get common_skip_previous => 'Skip Previous';
+  String get common_skip_previous => 'Пропустить назад';
 
   @override
   String get common_select_subtitle => 'выбрать субтитры';
@@ -507,7 +507,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get details_show_more => 'Показать больше';
 
   @override
-  String get common_more => 'More';
+  String get common_more => 'Ещё';
 
   @override
   String get details_show_less => 'Показать меньше';
@@ -1956,64 +1956,64 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_storage_max_video_cache => 'Макс. видеокэш (МБ)';
 
   @override
-  String get performers_field_name => 'Name';
+  String get performers_field_name => 'Имя';
 
   @override
   String get performers_field_url => 'URL';
 
   @override
-  String get performers_field_details => 'Details';
+  String get performers_field_details => 'Подробности';
 
   @override
-  String get performers_field_birth_year => 'Birth Year';
+  String get performers_field_birth_year => 'Год рождения';
 
   @override
-  String get performers_field_age => 'Age';
+  String get performers_field_age => 'Возраст';
 
   @override
-  String get performers_field_death_year => 'Death Year';
+  String get performers_field_death_year => 'Год смерти';
 
   @override
-  String get performers_field_scene_count => 'Scene Count';
+  String get performers_field_scene_count => 'Количество сцен';
 
   @override
-  String get performers_field_image_count => 'Image Count';
+  String get performers_field_image_count => 'Количество изображений';
 
   @override
-  String get performers_field_gallery_count => 'Gallery Count';
+  String get performers_field_gallery_count => 'Количество галерей';
 
   @override
-  String get performers_field_play_count => 'Play Count';
+  String get performers_field_play_count => 'Количество воспроизведений';
 
   @override
-  String get performers_field_o_counter => 'O-Counter';
+  String get performers_field_o_counter => 'О-счетчик';
 
   @override
-  String get performers_field_tag_count => 'Tag Count';
+  String get performers_field_tag_count => 'Количество тегов';
 
   @override
-  String get performers_field_created_at => 'Created At';
+  String get performers_field_created_at => 'Создано';
 
   @override
-  String get performers_field_updated_at => 'Updated At';
+  String get performers_field_updated_at => 'Обновлено';
 
   @override
-  String get galleries_field_title => 'Title';
+  String get galleries_field_title => 'Название';
 
   @override
-  String get galleries_field_details => 'Details';
+  String get galleries_field_details => 'Подробности';
 
   @override
-  String get galleries_field_date => 'Date';
+  String get galleries_field_date => 'Дата';
 
   @override
-  String get galleries_field_performer_age => 'Performer Age';
+  String get galleries_field_performer_age => 'Возраст исполнителя';
 
   @override
-  String get galleries_field_performer_count => 'Performer Count';
+  String get galleries_field_performer_count => 'Количество исполнителей';
 
   @override
-  String get galleries_field_tag_count => 'Tag Count';
+  String get galleries_field_tag_count => 'Количество тегов';
 
   @override
   String get galleries_field_url => 'URL';
@@ -2022,190 +2022,192 @@ class AppLocalizationsRu extends AppLocalizations {
   String get galleries_field_id => 'ID';
 
   @override
-  String get galleries_field_path => 'Path';
+  String get galleries_field_path => 'Путь';
 
   @override
-  String get galleries_field_checksum => 'Checksum';
+  String get galleries_field_checksum => 'Контрольная сумма';
 
   @override
-  String get galleries_field_image_count => 'Image Count';
+  String get galleries_field_image_count => 'Количество изображений';
 
   @override
-  String get galleries_field_file_count => 'File Count';
+  String get galleries_field_file_count => 'Количество файлов';
 
   @override
-  String get galleries_field_created_at => 'Created At';
+  String get galleries_field_created_at => 'Создано';
 
   @override
-  String get galleries_field_updated_at => 'Updated At';
+  String get galleries_field_updated_at => 'Обновлено';
 
   @override
-  String get images_field_title => 'Title';
+  String get images_field_title => 'Название';
 
   @override
-  String get images_field_details => 'Details';
+  String get images_field_details => 'Подробности';
 
   @override
-  String get images_field_path => 'Path';
+  String get images_field_path => 'Путь';
 
   @override
   String get images_field_url => 'URL';
 
   @override
-  String get images_field_file_count => 'File Count';
+  String get images_field_file_count => 'Количество файлов';
 
   @override
-  String get images_field_o_counter => 'O-Counter';
+  String get images_field_o_counter => 'О-счетчик';
 
   @override
-  String get studios_field_name => 'Name';
+  String get studios_field_name => 'Название';
 
   @override
-  String get studios_field_details => 'Details';
+  String get studios_field_details => 'Подробности';
 
   @override
-  String get studios_field_aliases => 'Aliases';
+  String get studios_field_aliases => 'Псевдонимы';
 
   @override
   String get studios_field_url => 'URL';
 
   @override
-  String get studios_field_tag_count => 'Tag Count';
+  String get studios_field_tag_count => 'Количество тегов';
 
   @override
-  String get studios_field_scene_count => 'Scene Count';
+  String get studios_field_scene_count => 'Количество сцен';
 
   @override
-  String get studios_field_image_count => 'Image Count';
+  String get studios_field_image_count => 'Количество изображений';
 
   @override
-  String get studios_field_gallery_count => 'Gallery Count';
+  String get studios_field_gallery_count => 'Количество галерей';
 
   @override
-  String get studios_field_sub_studio_count => 'Sub-studio Count';
+  String get studios_field_sub_studio_count => 'Количество подстудий';
 
   @override
-  String get studios_field_created_at => 'Created At';
+  String get studios_field_created_at => 'Создано';
 
   @override
-  String get studios_field_updated_at => 'Updated At';
+  String get studios_field_updated_at => 'Обновлено';
 
   @override
-  String get scenes_field_performer_age => 'Performer Age';
+  String get scenes_field_performer_age => 'Возраст исполнителя';
 
   @override
-  String get scenes_field_performer_count => 'Performer Count';
+  String get scenes_field_performer_count => 'Количество исполнителей';
 
   @override
-  String get scenes_field_tag_count => 'Tag Count';
+  String get scenes_field_tag_count => 'Количество тегов';
 
   @override
-  String get scenes_field_code => 'Code';
+  String get scenes_field_code => 'Код';
 
   @override
-  String get scenes_field_details => 'Details';
+  String get scenes_field_details => 'Подробности';
 
   @override
-  String get scenes_field_director => 'Director';
+  String get scenes_field_director => 'Режиссер';
 
   @override
   String get scenes_field_url => 'URL';
 
   @override
-  String get scenes_field_date => 'Date';
+  String get scenes_field_date => 'Дата';
 
   @override
-  String get scenes_field_path => 'Path';
+  String get scenes_field_path => 'Путь';
 
   @override
-  String get scenes_field_captions => 'Captions';
+  String get scenes_field_captions => 'Субтитры';
 
   @override
-  String get scenes_field_duration => 'Duration (seconds)';
+  String get scenes_field_duration => 'Продолжительность (секунды)';
 
   @override
-  String get scenes_field_bitrate => 'Bitrate';
+  String get scenes_field_bitrate => 'Битрейт';
 
   @override
-  String get scenes_field_video_codec => 'Video Codec';
+  String get scenes_field_video_codec => 'Видео кодек';
 
   @override
-  String get scenes_field_audio_codec => 'Audio Codec';
+  String get scenes_field_audio_codec => 'Аудио кодек';
 
   @override
-  String get scenes_field_framerate => 'Framerate';
+  String get scenes_field_framerate => 'Частота кадров';
 
   @override
-  String get scenes_field_file_count => 'File Count';
+  String get scenes_field_file_count => 'Количество файлов';
 
   @override
-  String get scenes_field_play_count => 'Play Count';
+  String get scenes_field_play_count => 'Количество воспроизведений';
 
   @override
-  String get scenes_field_play_duration => 'Play Duration';
+  String get scenes_field_play_duration => 'Длительность воспроизведения';
 
   @override
-  String get scenes_field_o_counter => 'O-Counter';
+  String get scenes_field_o_counter => 'О-счетчик';
 
   @override
-  String get scenes_field_last_played_at => 'Last Played At';
+  String get scenes_field_last_played_at => 'Последнее воспроизведение';
 
   @override
-  String get scenes_field_resume_time => 'Resume Time';
+  String get scenes_field_resume_time => 'Время возобновления';
 
   @override
-  String get scenes_field_interactive_speed => 'Interactive Speed';
+  String get scenes_field_interactive_speed => 'Интерактивная скорость';
 
   @override
   String get scenes_field_id => 'ID';
 
   @override
-  String get scenes_field_stash_id_count => 'Stash ID Count';
+  String get scenes_field_stash_id_count => 'Количество ID Stash';
 
   @override
   String get scenes_field_oshash => 'Oshash';
 
   @override
-  String get scenes_field_checksum => 'Checksum';
+  String get scenes_field_checksum => 'Контрольная сумма';
 
   @override
   String get scenes_field_phash => 'Phash';
 
   @override
-  String get scenes_field_created_at => 'Created At';
+  String get scenes_field_created_at => 'Создано';
 
   @override
-  String get scenes_field_updated_at => 'Updated At';
+  String get scenes_field_updated_at => 'Обновлено';
 
   @override
-  String get cast_stopped_resuming_locally => 'Cast stopped, resuming locally';
+  String get cast_stopped_resuming_locally =>
+      'Трансляция остановлена, возобновление локально';
 
   @override
-  String get cast_stop_casting => 'Stop Casting';
+  String get cast_stop_casting => 'Остановить трансляцию';
 
   @override
-  String get cast_cast => 'Cast';
+  String get cast_cast => 'Транслировать';
 
   @override
-  String get common_add => 'Add';
+  String get common_add => 'Добавить';
 
   @override
-  String get common_remove => 'Remove';
+  String get common_remove => 'Удалить';
 
   @override
-  String get common_clear => 'Clear';
+  String get common_clear => 'Очистить';
 
   @override
-  String get common_download => 'Download';
+  String get common_download => 'Скачать';
 
   @override
-  String get common_star => 'Star';
+  String get common_star => 'Звезда';
 
   @override
-  String get settings_interface_card_title_font_size => 'Card Title Font Size';
+  String get settings_interface_card_title_font_size =>
+      'Размер шрифта заголовка карточки';
 
   @override
-  String get common_hint_date => 'YYYY-MM-DD';
+  String get common_hint_date => 'ГГГГ-ММ-ДД';
 
   @override
   String get common_hint_url => 'https://...';
@@ -2215,12 +2217,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String common_px(int value) {
-    return '$value px';
+    return '$value пкс';
   }
 
   @override
   String common_pt(int value) {
-    return '$value pt';
+    return '$value пт';
   }
 
   @override
@@ -2229,9 +2231,10 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get settings_playback_direct_play => 'Direct-play on scene navigation';
+  String get settings_playback_direct_play =>
+      'Прямое воспроизведение при навигации по сценам';
 
   @override
   String get settings_playback_direct_play_subtitle =>
-      'When navigating from another playing scene, directly play the new scene';
+      'При переходе из другой воспроизводящейся сцены, сразу включать новую сцену';
 }

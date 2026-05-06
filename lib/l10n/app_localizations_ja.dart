@@ -403,7 +403,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get common_skip_next => '次をスキップ';
 
   @override
-  String get common_skip_previous => 'Skip Previous';
+  String get common_skip_previous => '前へスキップ';
 
   @override
   String get common_select_subtitle => '字幕を選択';
@@ -501,7 +501,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get details_show_more => 'もっと見る';
 
   @override
-  String get common_more => 'More';
+  String get common_more => 'もっと見る';
 
   @override
   String get details_show_less => '簡易表示';
@@ -1883,64 +1883,64 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_storage_max_video_cache => '最大ビデオ キャッシュ (MB)';
 
   @override
-  String get performers_field_name => 'Name';
+  String get performers_field_name => '名前';
 
   @override
   String get performers_field_url => 'URL';
 
   @override
-  String get performers_field_details => 'Details';
+  String get performers_field_details => '詳細';
 
   @override
-  String get performers_field_birth_year => 'Birth Year';
+  String get performers_field_birth_year => '誕生年';
 
   @override
-  String get performers_field_age => 'Age';
+  String get performers_field_age => '年齢';
 
   @override
-  String get performers_field_death_year => 'Death Year';
+  String get performers_field_death_year => '没年';
 
   @override
-  String get performers_field_scene_count => 'Scene Count';
+  String get performers_field_scene_count => 'シーン数';
 
   @override
-  String get performers_field_image_count => 'Image Count';
+  String get performers_field_image_count => '画像数';
 
   @override
-  String get performers_field_gallery_count => 'Gallery Count';
+  String get performers_field_gallery_count => 'ギャラリー数';
 
   @override
-  String get performers_field_play_count => 'Play Count';
+  String get performers_field_play_count => '再生回数';
 
   @override
-  String get performers_field_o_counter => 'O-Counter';
+  String get performers_field_o_counter => 'Oカウンター';
 
   @override
-  String get performers_field_tag_count => 'Tag Count';
+  String get performers_field_tag_count => 'タグ数';
 
   @override
-  String get performers_field_created_at => 'Created At';
+  String get performers_field_created_at => '作成日時';
 
   @override
-  String get performers_field_updated_at => 'Updated At';
+  String get performers_field_updated_at => '更新日時';
 
   @override
-  String get galleries_field_title => 'Title';
+  String get galleries_field_title => 'タイトル';
 
   @override
-  String get galleries_field_details => 'Details';
+  String get galleries_field_details => '詳細';
 
   @override
-  String get galleries_field_date => 'Date';
+  String get galleries_field_date => '日付';
 
   @override
-  String get galleries_field_performer_age => 'Performer Age';
+  String get galleries_field_performer_age => '出演者年齢';
 
   @override
-  String get galleries_field_performer_count => 'Performer Count';
+  String get galleries_field_performer_count => '出演者数';
 
   @override
-  String get galleries_field_tag_count => 'Tag Count';
+  String get galleries_field_tag_count => 'タグ数';
 
   @override
   String get galleries_field_url => 'URL';
@@ -1949,187 +1949,187 @@ class AppLocalizationsJa extends AppLocalizations {
   String get galleries_field_id => 'ID';
 
   @override
-  String get galleries_field_path => 'Path';
+  String get galleries_field_path => 'パス';
 
   @override
-  String get galleries_field_checksum => 'Checksum';
+  String get galleries_field_checksum => 'チェックサム';
 
   @override
-  String get galleries_field_image_count => 'Image Count';
+  String get galleries_field_image_count => '画像数';
 
   @override
-  String get galleries_field_file_count => 'File Count';
+  String get galleries_field_file_count => 'ファイル数';
 
   @override
-  String get galleries_field_created_at => 'Created At';
+  String get galleries_field_created_at => '作成日時';
 
   @override
-  String get galleries_field_updated_at => 'Updated At';
+  String get galleries_field_updated_at => '更新日時';
 
   @override
-  String get images_field_title => 'Title';
+  String get images_field_title => 'タイトル';
 
   @override
-  String get images_field_details => 'Details';
+  String get images_field_details => '詳細';
 
   @override
-  String get images_field_path => 'Path';
+  String get images_field_path => 'パス';
 
   @override
   String get images_field_url => 'URL';
 
   @override
-  String get images_field_file_count => 'File Count';
+  String get images_field_file_count => 'ファイル数';
 
   @override
-  String get images_field_o_counter => 'O-Counter';
+  String get images_field_o_counter => 'Oカウンター';
 
   @override
-  String get studios_field_name => 'Name';
+  String get studios_field_name => '名前';
 
   @override
-  String get studios_field_details => 'Details';
+  String get studios_field_details => '詳細';
 
   @override
-  String get studios_field_aliases => 'Aliases';
+  String get studios_field_aliases => '別名';
 
   @override
   String get studios_field_url => 'URL';
 
   @override
-  String get studios_field_tag_count => 'Tag Count';
+  String get studios_field_tag_count => 'タグ数';
 
   @override
-  String get studios_field_scene_count => 'Scene Count';
+  String get studios_field_scene_count => 'シーン数';
 
   @override
-  String get studios_field_image_count => 'Image Count';
+  String get studios_field_image_count => '画像数';
 
   @override
-  String get studios_field_gallery_count => 'Gallery Count';
+  String get studios_field_gallery_count => 'ギャラリー数';
 
   @override
-  String get studios_field_sub_studio_count => 'Sub-studio Count';
+  String get studios_field_sub_studio_count => 'サブスタジオ数';
 
   @override
-  String get studios_field_created_at => 'Created At';
+  String get studios_field_created_at => '作成日時';
 
   @override
-  String get studios_field_updated_at => 'Updated At';
+  String get studios_field_updated_at => '更新日時';
 
   @override
-  String get scenes_field_performer_age => 'Performer Age';
+  String get scenes_field_performer_age => '出演者年齢';
 
   @override
-  String get scenes_field_performer_count => 'Performer Count';
+  String get scenes_field_performer_count => '出演者数';
 
   @override
-  String get scenes_field_tag_count => 'Tag Count';
+  String get scenes_field_tag_count => 'タグ数';
 
   @override
-  String get scenes_field_code => 'Code';
+  String get scenes_field_code => 'コード';
 
   @override
-  String get scenes_field_details => 'Details';
+  String get scenes_field_details => '詳細';
 
   @override
-  String get scenes_field_director => 'Director';
+  String get scenes_field_director => '監督';
 
   @override
   String get scenes_field_url => 'URL';
 
   @override
-  String get scenes_field_date => 'Date';
+  String get scenes_field_date => '日付';
 
   @override
-  String get scenes_field_path => 'Path';
+  String get scenes_field_path => 'パス';
 
   @override
-  String get scenes_field_captions => 'Captions';
+  String get scenes_field_captions => '字幕';
 
   @override
-  String get scenes_field_duration => 'Duration (seconds)';
+  String get scenes_field_duration => '時間（秒）';
 
   @override
-  String get scenes_field_bitrate => 'Bitrate';
+  String get scenes_field_bitrate => 'ビットレート';
 
   @override
-  String get scenes_field_video_codec => 'Video Codec';
+  String get scenes_field_video_codec => 'ビデオコーデック';
 
   @override
-  String get scenes_field_audio_codec => 'Audio Codec';
+  String get scenes_field_audio_codec => 'オーディオコーデック';
 
   @override
-  String get scenes_field_framerate => 'Framerate';
+  String get scenes_field_framerate => 'フレームレート';
 
   @override
-  String get scenes_field_file_count => 'File Count';
+  String get scenes_field_file_count => 'ファイル数';
 
   @override
-  String get scenes_field_play_count => 'Play Count';
+  String get scenes_field_play_count => '再生回数';
 
   @override
-  String get scenes_field_play_duration => 'Play Duration';
+  String get scenes_field_play_duration => '再生時間';
 
   @override
-  String get scenes_field_o_counter => 'O-Counter';
+  String get scenes_field_o_counter => 'Oカウンター';
 
   @override
-  String get scenes_field_last_played_at => 'Last Played At';
+  String get scenes_field_last_played_at => '最終再生日時';
 
   @override
-  String get scenes_field_resume_time => 'Resume Time';
+  String get scenes_field_resume_time => 'レジューム時間';
 
   @override
-  String get scenes_field_interactive_speed => 'Interactive Speed';
+  String get scenes_field_interactive_speed => 'インタラクティブスピード';
 
   @override
   String get scenes_field_id => 'ID';
 
   @override
-  String get scenes_field_stash_id_count => 'Stash ID Count';
+  String get scenes_field_stash_id_count => 'Stash ID数';
 
   @override
   String get scenes_field_oshash => 'Oshash';
 
   @override
-  String get scenes_field_checksum => 'Checksum';
+  String get scenes_field_checksum => 'チェックサム';
 
   @override
   String get scenes_field_phash => 'Phash';
 
   @override
-  String get scenes_field_created_at => 'Created At';
+  String get scenes_field_created_at => '作成日時';
 
   @override
-  String get scenes_field_updated_at => 'Updated At';
+  String get scenes_field_updated_at => '更新日時';
 
   @override
-  String get cast_stopped_resuming_locally => 'Cast stopped, resuming locally';
+  String get cast_stopped_resuming_locally => 'キャストが停止しました。ローカルで再生を再開します';
 
   @override
-  String get cast_stop_casting => 'Stop Casting';
+  String get cast_stop_casting => 'キャストを停止';
 
   @override
-  String get cast_cast => 'Cast';
+  String get cast_cast => 'キャスト';
 
   @override
-  String get common_add => 'Add';
+  String get common_add => '追加';
 
   @override
-  String get common_remove => 'Remove';
+  String get common_remove => '削除';
 
   @override
-  String get common_clear => 'Clear';
+  String get common_clear => 'クリア';
 
   @override
-  String get common_download => 'Download';
+  String get common_download => 'ダウンロード';
 
   @override
-  String get common_star => 'Star';
+  String get common_star => 'スター';
 
   @override
-  String get settings_interface_card_title_font_size => 'Card Title Font Size';
+  String get settings_interface_card_title_font_size => 'カードタイトルのフォントサイズ';
 
   @override
   String get common_hint_date => 'YYYY-MM-DD';
@@ -2156,9 +2156,9 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get settings_playback_direct_play => 'Direct-play on scene navigation';
+  String get settings_playback_direct_play => 'シーン移動時に直接再生';
 
   @override
   String get settings_playback_direct_play_subtitle =>
-      'When navigating from another playing scene, directly play the new scene';
+      '他の再生中シーンから移動した際、新しいシーンを直接再生します';
 }

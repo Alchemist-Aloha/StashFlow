@@ -37,7 +37,6 @@ import '../../setup/presentation/pages/settings/developer_settings_page.dart';
 import '../../setup/presentation/pages/settings/keybind_settings_page.dart';
 import '../../setup/presentation/pages/settings/storage_settings_page.dart';
 import '../../setup/presentation/debug_log_viewer_page.dart';
-import '../../scenes/presentation/widgets/scene_video_player.dart';
 import 'shell_page.dart';
 
 part 'router.g.dart';

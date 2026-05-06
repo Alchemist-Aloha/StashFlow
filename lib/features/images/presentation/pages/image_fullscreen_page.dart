@@ -1,23 +1,28 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
+import 'package:dio/dio.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/presentation/theme/app_theme.dart';
-import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gal/gal.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
-import 'package:stash_app_flutter/core/presentation/providers/keybinds_provider.dart';
-import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_list_provider.dart';
-import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_details_provider.dart';
+
+import '../../../../core/data/graphql/media_headers_provider.dart';
+import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/presentation/providers/keybinds_provider.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/utils/l10n_extensions.dart';
+import '../../../../core/utils/responsive.dart';
+import '../../../galleries/presentation/providers/gallery_details_provider.dart';
+import '../../../galleries/presentation/providers/gallery_list_provider.dart';
 import '../../domain/entities/image.dart' as entity;
 import '../providers/image_list_provider.dart';
-import '../../../../core/data/graphql/media_headers_provider.dart';
-import '../../../../core/utils/responsive.dart';
 
 enum _SlideshowDirection { forward, backward }
 
@@ -206,6 +211,114 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
       duration: _slideshowTransition,
       curve: Curves.easeInOutCubic,
     );
+  }
+
+  Future<void> _saveImageToGallery(entity.Image? image) async {
+    if (image == null) return;
+
+    final imageUrl = image.paths.image ?? image.paths.preview;
+    if (imageUrl == null || imageUrl.isEmpty) return;
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Saving to gallery...'),
+        duration: Duration(seconds: 1),
+      ),
+    );
+
+    try {
+      final headers = ref.read(mediaHeadersProvider);
+      debugPrint('Saving image from URL: $imageUrl');
+      final response = await Dio().get<List<int>>(
+        imageUrl,
+        options: Options(
+          headers: headers,
+          responseType: ResponseType.bytes,
+        ),
+      );
+
+      final bytes = response.data;
+      if (bytes == null || bytes.isEmpty) {
+        throw Exception('Failed to download image bytes: empty response');
+      }
+      final contentType = response.headers.value('content-type');
+      debugPrint('Downloaded ${bytes.length} bytes, Content-Type: $contentType');
+
+      // Determine extension from Content-Type
+      String extension = 'jpg';
+      if (contentType != null) {
+        if (contentType.contains('webp')) {
+          extension = 'webp';
+        } else if (contentType.contains('png')) {
+          extension = 'png';
+        } else if (contentType.contains('gif')) {
+          extension = 'gif';
+        } else if (contentType.contains('jpeg') || contentType.contains('jpg')) {
+          extension = 'jpg';
+        }
+      }
+
+      // Check for access
+      bool hasAccess = await Gal.hasAccess(toAlbum: true);
+      debugPrint('Gal.hasAccess(toAlbum: true): $hasAccess');
+      if (!hasAccess) {
+        hasAccess = await Gal.requestAccess(toAlbum: true);
+        debugPrint('Gal.requestAccess(toAlbum: true) result: $hasAccess');
+      }
+
+      if (!hasAccess) {
+        throw Exception('Gallery access denied');
+      }
+
+      final name = 'stash_${image.id}.$extension';
+      final tempDir = await getTemporaryDirectory();
+      final tempPath = '${tempDir.path}/$name';
+      final file = File(tempPath);
+      await file.writeAsBytes(bytes);
+
+      try {
+        debugPrint('Saving to gallery via putImage: $tempPath');
+        await Gal.putImage(tempPath, album: 'StashFlow');
+      } finally {
+        if (await file.exists()) {
+          await file.delete();
+          debugPrint('Cleaned up temporary file: $tempPath');
+        }
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Saved to StashFlow album'),
+            // action: SnackBarAction(
+            //   label: 'View',
+            //   onPressed: () => Gal.open(),
+            // ),
+          ),
+        );
+      }
+    } on GalException catch (e) {
+      final message = switch (e.type) {
+        GalExceptionType.accessDenied => 'Permission to access the gallery is denied.',
+        GalExceptionType.notEnoughSpace => 'Not enough space for storage.',
+        GalExceptionType.notSupportedFormat => 'Unsupported file format.',
+        GalExceptionType.unexpected => 'An unexpected error has occurred.',
+      };
+      debugPrint('GalException final failure: ${e.type.name}');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gallery Error: $message')),
+        );
+      }
+    } catch (e) {
+      debugPrint('Save error: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save: ${e.toString()}')),
+        );
+      }
+    }
   }
 
   Future<void> _toggleSlideshow(int itemCount) async {
@@ -664,7 +777,15 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                             tooltip: context.l10n.common_rate,
                           ),
                           SizedBox(width: context.dimensions.spacingSmall),
-                          IconButton.filled(
+                          IconButton.filledTonal(
+                            icon: const Icon(Icons.download_rounded),
+                            onPressed: currentImage == null
+                                ? null
+                                : () => _saveImageToGallery(currentImage),
+                            tooltip: context.l10n.common_download,
+                          ),
+                          SizedBox(width: context.dimensions.spacingSmall),
+                          IconButton.filledTonal(
                             icon: Icon(
                               _isSlideshowPlaying
                                   ? Icons.stop_rounded

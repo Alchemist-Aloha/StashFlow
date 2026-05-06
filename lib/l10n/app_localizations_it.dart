@@ -413,7 +413,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get common_skip_next => 'salta succ.';
 
   @override
-  String get common_skip_previous => 'Skip Previous';
+  String get common_skip_previous => 'Salta al precedente';
 
   @override
   String get common_select_subtitle => 'selez. sottotitoli';
@@ -511,7 +511,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get details_show_more => 'Mostra di più';
 
   @override
-  String get common_more => 'More';
+  String get common_more => 'Altro';
 
   @override
   String get details_show_less => 'Mostra meno';
@@ -1980,64 +1980,64 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settings_storage_max_video_cache => 'Cache video massima (MB)';
 
   @override
-  String get performers_field_name => 'Name';
+  String get performers_field_name => 'Nome';
 
   @override
   String get performers_field_url => 'URL';
 
   @override
-  String get performers_field_details => 'Details';
+  String get performers_field_details => 'Dettagli';
 
   @override
-  String get performers_field_birth_year => 'Birth Year';
+  String get performers_field_birth_year => 'Anno di nascita';
 
   @override
-  String get performers_field_age => 'Age';
+  String get performers_field_age => 'Età';
 
   @override
-  String get performers_field_death_year => 'Death Year';
+  String get performers_field_death_year => 'Anno di morte';
 
   @override
-  String get performers_field_scene_count => 'Scene Count';
+  String get performers_field_scene_count => 'Numero di scene';
 
   @override
-  String get performers_field_image_count => 'Image Count';
+  String get performers_field_image_count => 'Numero di immagini';
 
   @override
-  String get performers_field_gallery_count => 'Gallery Count';
+  String get performers_field_gallery_count => 'Numero di gallerie';
 
   @override
-  String get performers_field_play_count => 'Play Count';
+  String get performers_field_play_count => 'Numero di riproduzioni';
 
   @override
-  String get performers_field_o_counter => 'O-Counter';
+  String get performers_field_o_counter => 'Contatore O';
 
   @override
-  String get performers_field_tag_count => 'Tag Count';
+  String get performers_field_tag_count => 'Numero di tag';
 
   @override
-  String get performers_field_created_at => 'Created At';
+  String get performers_field_created_at => 'Creato il';
 
   @override
-  String get performers_field_updated_at => 'Updated At';
+  String get performers_field_updated_at => 'Aggiornato il';
 
   @override
-  String get galleries_field_title => 'Title';
+  String get galleries_field_title => 'Titolo';
 
   @override
-  String get galleries_field_details => 'Details';
+  String get galleries_field_details => 'Dettagli';
 
   @override
-  String get galleries_field_date => 'Date';
+  String get galleries_field_date => 'Data';
 
   @override
-  String get galleries_field_performer_age => 'Performer Age';
+  String get galleries_field_performer_age => 'Età dell\'artista';
 
   @override
-  String get galleries_field_performer_count => 'Performer Count';
+  String get galleries_field_performer_count => 'Numero di artisti';
 
   @override
-  String get galleries_field_tag_count => 'Tag Count';
+  String get galleries_field_tag_count => 'Numero di tag';
 
   @override
   String get galleries_field_url => 'URL';
@@ -2046,145 +2046,145 @@ class AppLocalizationsIt extends AppLocalizations {
   String get galleries_field_id => 'ID';
 
   @override
-  String get galleries_field_path => 'Path';
+  String get galleries_field_path => 'Percorso';
 
   @override
   String get galleries_field_checksum => 'Checksum';
 
   @override
-  String get galleries_field_image_count => 'Image Count';
+  String get galleries_field_image_count => 'Numero di immagini';
 
   @override
-  String get galleries_field_file_count => 'File Count';
+  String get galleries_field_file_count => 'Numero di file';
 
   @override
-  String get galleries_field_created_at => 'Created At';
+  String get galleries_field_created_at => 'Creato il';
 
   @override
-  String get galleries_field_updated_at => 'Updated At';
+  String get galleries_field_updated_at => 'Aggiornato il';
 
   @override
-  String get images_field_title => 'Title';
+  String get images_field_title => 'Titolo';
 
   @override
-  String get images_field_details => 'Details';
+  String get images_field_details => 'Dettagli';
 
   @override
-  String get images_field_path => 'Path';
+  String get images_field_path => 'Percorso';
 
   @override
   String get images_field_url => 'URL';
 
   @override
-  String get images_field_file_count => 'File Count';
+  String get images_field_file_count => 'Numero di file';
 
   @override
-  String get images_field_o_counter => 'O-Counter';
+  String get images_field_o_counter => 'Contatore O';
 
   @override
-  String get studios_field_name => 'Name';
+  String get studios_field_name => 'Nome';
 
   @override
-  String get studios_field_details => 'Details';
+  String get studios_field_details => 'Dettagli';
 
   @override
-  String get studios_field_aliases => 'Aliases';
+  String get studios_field_aliases => 'Alias';
 
   @override
   String get studios_field_url => 'URL';
 
   @override
-  String get studios_field_tag_count => 'Tag Count';
+  String get studios_field_tag_count => 'Numero di tag';
 
   @override
-  String get studios_field_scene_count => 'Scene Count';
+  String get studios_field_scene_count => 'Numero di scene';
 
   @override
-  String get studios_field_image_count => 'Image Count';
+  String get studios_field_image_count => 'Numero di immagini';
 
   @override
-  String get studios_field_gallery_count => 'Gallery Count';
+  String get studios_field_gallery_count => 'Numero di gallerie';
 
   @override
-  String get studios_field_sub_studio_count => 'Sub-studio Count';
+  String get studios_field_sub_studio_count => 'Numero di sottostudi';
 
   @override
-  String get studios_field_created_at => 'Created At';
+  String get studios_field_created_at => 'Creato il';
 
   @override
-  String get studios_field_updated_at => 'Updated At';
+  String get studios_field_updated_at => 'Aggiornato il';
 
   @override
-  String get scenes_field_performer_age => 'Performer Age';
+  String get scenes_field_performer_age => 'Età dell\'artista';
 
   @override
-  String get scenes_field_performer_count => 'Performer Count';
+  String get scenes_field_performer_count => 'Numero di artisti';
 
   @override
-  String get scenes_field_tag_count => 'Tag Count';
+  String get scenes_field_tag_count => 'Numero di tag';
 
   @override
-  String get scenes_field_code => 'Code';
+  String get scenes_field_code => 'Codice';
 
   @override
-  String get scenes_field_details => 'Details';
+  String get scenes_field_details => 'Dettagli';
 
   @override
-  String get scenes_field_director => 'Director';
+  String get scenes_field_director => 'Regista';
 
   @override
   String get scenes_field_url => 'URL';
 
   @override
-  String get scenes_field_date => 'Date';
+  String get scenes_field_date => 'Data';
 
   @override
-  String get scenes_field_path => 'Path';
+  String get scenes_field_path => 'Percorso';
 
   @override
-  String get scenes_field_captions => 'Captions';
+  String get scenes_field_captions => 'Sottotitoli';
 
   @override
-  String get scenes_field_duration => 'Duration (seconds)';
+  String get scenes_field_duration => 'Durata (secondi)';
 
   @override
   String get scenes_field_bitrate => 'Bitrate';
 
   @override
-  String get scenes_field_video_codec => 'Video Codec';
+  String get scenes_field_video_codec => 'Codec video';
 
   @override
-  String get scenes_field_audio_codec => 'Audio Codec';
+  String get scenes_field_audio_codec => 'Codec audio';
 
   @override
-  String get scenes_field_framerate => 'Framerate';
+  String get scenes_field_framerate => 'Frequenza fotogrammi';
 
   @override
-  String get scenes_field_file_count => 'File Count';
+  String get scenes_field_file_count => 'Numero di file';
 
   @override
-  String get scenes_field_play_count => 'Play Count';
+  String get scenes_field_play_count => 'Numero di riproduzioni';
 
   @override
-  String get scenes_field_play_duration => 'Play Duration';
+  String get scenes_field_play_duration => 'Durata riproduzione';
 
   @override
-  String get scenes_field_o_counter => 'O-Counter';
+  String get scenes_field_o_counter => 'Contatore O';
 
   @override
-  String get scenes_field_last_played_at => 'Last Played At';
+  String get scenes_field_last_played_at => 'Ultima riproduzione';
 
   @override
-  String get scenes_field_resume_time => 'Resume Time';
+  String get scenes_field_resume_time => 'Tempo di ripresa';
 
   @override
-  String get scenes_field_interactive_speed => 'Interactive Speed';
+  String get scenes_field_interactive_speed => 'Velocità interattiva';
 
   @override
   String get scenes_field_id => 'ID';
 
   @override
-  String get scenes_field_stash_id_count => 'Stash ID Count';
+  String get scenes_field_stash_id_count => 'Conteggio ID Stash';
 
   @override
   String get scenes_field_oshash => 'Oshash';
@@ -2196,40 +2196,42 @@ class AppLocalizationsIt extends AppLocalizations {
   String get scenes_field_phash => 'Phash';
 
   @override
-  String get scenes_field_created_at => 'Created At';
+  String get scenes_field_created_at => 'Creato il';
 
   @override
-  String get scenes_field_updated_at => 'Updated At';
+  String get scenes_field_updated_at => 'Aggiornato il';
 
   @override
-  String get cast_stopped_resuming_locally => 'Cast stopped, resuming locally';
+  String get cast_stopped_resuming_locally =>
+      'Trasmissione interrotta, ripresa locale';
 
   @override
-  String get cast_stop_casting => 'Stop Casting';
+  String get cast_stop_casting => 'Interrompi trasmissione';
 
   @override
-  String get cast_cast => 'Cast';
+  String get cast_cast => 'Trasmetti';
 
   @override
-  String get common_add => 'Add';
+  String get common_add => 'Aggiungi';
 
   @override
-  String get common_remove => 'Remove';
+  String get common_remove => 'Rimuovi';
 
   @override
-  String get common_clear => 'Clear';
+  String get common_clear => 'Cancella';
 
   @override
-  String get common_download => 'Download';
+  String get common_download => 'Scarica';
 
   @override
-  String get common_star => 'Star';
+  String get common_star => 'Stella';
 
   @override
-  String get settings_interface_card_title_font_size => 'Card Title Font Size';
+  String get settings_interface_card_title_font_size =>
+      'Dimensione carattere titolo scheda';
 
   @override
-  String get common_hint_date => 'YYYY-MM-DD';
+  String get common_hint_date => 'AAAA-MM-GG';
 
   @override
   String get common_hint_url => 'https://...';
@@ -2253,9 +2255,10 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get settings_playback_direct_play => 'Direct-play on scene navigation';
+  String get settings_playback_direct_play =>
+      'Riproduzione diretta alla navigazione della scena';
 
   @override
   String get settings_playback_direct_play_subtitle =>
-      'When navigating from another playing scene, directly play the new scene';
+      'Quando si naviga da un\'altra scena in riproduzione, riproduce direttamente la nuova scena';
 }

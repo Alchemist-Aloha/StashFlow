@@ -1,7 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:gal/gal.dart';
+import 'package:path_provider/path_provider.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -18,6 +22,7 @@ import '../../../studios/presentation/providers/studio_media_provider.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/video_player_provider.dart';
+import '../../data/repositories/stream_resolver.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../setup/presentation/providers/scrape_customization_provider.dart';
 import '../../domain/entities/scene.dart';
@@ -46,40 +51,6 @@ bool shouldRouteToNextScene(
   return nextScene != null &&
       nextScene.id != currentPageSceneId &&
       previousId == currentPageSceneId;
-}
-
-bool _isSceneOrFullscreenRouteFor(String path, String sceneId) {
-  // In StatefulShellRoute, the shell path might be just '/scenes'
-  // but the child route has the scene details.
-  // Check if path contains indicators we're on a scene-related route for this ID.
-
-  final segments = Uri.parse(path).pathSegments;
-
-  // Check for fullscreen route
-  if (segments.length >= 3 &&
-      segments[0] == 'scenes' &&
-      segments[1] == 'fullscreen' &&
-      segments[2] == sceneId) {
-    return true;
-  }
-
-  // Check for scene detail route
-  if (segments.length >= 3 &&
-      segments[0] == 'scenes' &&
-      segments[1] == 'scene' &&
-      segments[2] == sceneId) {
-    return true;
-  }
-
-  // In StatefulShellRoute, child routes might not show in the path,
-  // but they contain the scene ID. Check if sceneId is mentioned.
-  if (segments.length >= 1 &&
-      segments[0] == 'scenes' &&
-      path.contains(sceneId)) {
-    return true;
-  }
-
-  return false;
 }
 
 class SceneDetailsPage extends ConsumerStatefulWidget {
@@ -135,6 +106,98 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     context.push('/scenes/scene/${randomScene.id}', extra: true);
   }
 
+  Future<void> _saveVideoToGallery(Scene scene) async {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Saving to gallery...'),
+        duration: Duration(seconds: 1),
+      ),
+    );
+
+    try {
+      final resolver = ref.read(streamResolverProvider.notifier);
+      final choice = await resolver.resolvePreferredStream(scene);
+      final videoUrl = choice?.url ?? scene.paths.stream;
+
+      if (videoUrl == null || videoUrl.isEmpty) {
+        throw Exception('No stream URL found');
+      }
+
+      final headers = ref.read(mediaHeadersProvider);
+      final tempDir = await getTemporaryDirectory();
+      // Use a temporary name, we will rename it once we know the content type
+      final tempPath =
+          '${tempDir.path}/stash_download_${DateTime.now().millisecondsSinceEpoch}.tmp';
+
+      final response = await Dio().download(
+        videoUrl,
+        tempPath,
+        options: Options(headers: headers),
+      );
+
+      final contentType = response.headers.value('content-type');
+      String extension = 'mp4';
+      if (contentType != null) {
+        if (contentType.contains('webm')) {
+          extension = 'webm';
+        } else if (contentType.contains('mkv')) {
+          extension = 'mkv';
+        } else if (contentType.contains('avi')) {
+          extension = 'avi';
+        }
+      }
+
+      bool hasAccess = await Gal.hasAccess(toAlbum: true);
+      if (!hasAccess) {
+        hasAccess = await Gal.requestAccess(toAlbum: true);
+      }
+      if (!hasAccess) {
+        throw Exception('Gallery access denied');
+      }
+
+      final finalPath = '${tempDir.path}/stash_${scene.id}.$extension';
+      final file = File(tempPath);
+      if (await file.exists()) {
+        await file.rename(finalPath);
+      }
+
+      try {
+        await Gal.putVideo(finalPath, album: 'StashFlow');
+      } finally {
+        final finalFile = File(finalPath);
+        if (await finalFile.exists()) {
+          await finalFile.delete();
+        }
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Saved to StashFlow album')),
+        );
+      }
+    } on GalException catch (e) {
+      final message = switch (e.type) {
+        GalExceptionType.accessDenied =>
+          'Permission to access the gallery is denied.',
+        GalExceptionType.notEnoughSpace => 'Not enough space for storage.',
+        GalExceptionType.notSupportedFormat => 'Unsupported file format.',
+        GalExceptionType.unexpected => 'An unexpected error has occurred.',
+      };
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gallery Error: $message')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save: ${e.toString()}')),
+        );
+      }
+    }
+  }
+
   String _formatDuration(double? seconds) {
     if (seconds == null) return '00:00';
     final duration = Duration(seconds: seconds.toInt());
@@ -162,6 +225,14 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       appBar: AppBar(
         title: Text(context.l10n.details_scene),
         actions: [
+          sceneAsync.maybeWhen(
+            data: (scene) => IconButton(
+              tooltip: context.l10n.common_download,
+              icon: const Icon(Icons.download_outlined),
+              onPressed: () => _saveVideoToGallery(scene),
+            ),
+            orElse: () => const SizedBox.shrink(),
+          ),
           if (scrapeEnabled)
             sceneAsync.maybeWhen(
               data: (scene) => IconButton(
