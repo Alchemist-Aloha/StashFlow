@@ -2,17 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
-import 'package:window_manager/window_manager.dart';
 
 import '../../domain/entities/scene.dart';
 import '../providers/video_player_provider.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../data/repositories/stream_prewarmer.dart';
-import '../../../setup/presentation/providers/main_page_orientation_provider.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';

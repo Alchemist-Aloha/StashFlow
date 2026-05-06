@@ -161,7 +161,7 @@ void main() {
                         transitionDuration: const Duration(milliseconds: 200),
                         reverseTransitionDuration:
                             const Duration(milliseconds: 200),
-                        pageBuilder: (_, __, ___) => _FakePlayerPage(
+                        pageBuilder: (_, _, _) => _FakePlayerPage(
                           disposed: disposed,
                         ),
                       ),

@@ -565,10 +565,6 @@ class PlayerState extends _$PlayerState {
     }
   }
 
-  void _setTransitioning(bool value) {
-    state = state.copyWith(isTransitioning: value);
-  }
-
   void _navigate(List<NavigationAction> actions) {
     state = state.copyWith(
       navigationIntent: NavigationIntent(actions),

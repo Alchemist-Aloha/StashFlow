@@ -301,12 +301,13 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     await ref.read(castServiceProvider.notifier).stopCasting();
 
     if (mounted) {
+      final message = context.l10n.cast_stopped_resuming_locally;
       // Ensure local player is at the same position and playing
       await widget.controller.player.seek(currentPos);
       await widget.controller.player.play();
 
       messenger.showSnackBar(
-        SnackBar(content: Text(context.l10n.cast_stopped_resuming_locally)),
+        SnackBar(content: Text(message)),
       );
     }
   }

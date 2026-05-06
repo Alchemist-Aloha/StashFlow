@@ -53,40 +53,6 @@ bool shouldRouteToNextScene(
       previousId == currentPageSceneId;
 }
 
-bool _isSceneOrFullscreenRouteFor(String path, String sceneId) {
-  // In StatefulShellRoute, the shell path might be just '/scenes'
-  // but the child route has the scene details.
-  // Check if path contains indicators we're on a scene-related route for this ID.
-
-  final segments = Uri.parse(path).pathSegments;
-
-  // Check for fullscreen route
-  if (segments.length >= 3 &&
-      segments[0] == 'scenes' &&
-      segments[1] == 'fullscreen' &&
-      segments[2] == sceneId) {
-    return true;
-  }
-
-  // Check for scene detail route
-  if (segments.length >= 3 &&
-      segments[0] == 'scenes' &&
-      segments[1] == 'scene' &&
-      segments[2] == sceneId) {
-    return true;
-  }
-
-  // In StatefulShellRoute, child routes might not show in the path,
-  // but they contain the scene ID. Check if sceneId is mentioned.
-  if (segments.length >= 1 &&
-      segments[0] == 'scenes' &&
-      path.contains(sceneId)) {
-    return true;
-  }
-
-  return false;
-}
-
 class SceneDetailsPage extends ConsumerStatefulWidget {
   final String sceneId;
   final bool autoPlayOnMount;
