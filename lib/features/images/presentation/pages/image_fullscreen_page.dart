@@ -1,7 +1,6 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'dart:ui';
-
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:extended_image/extended_image.dart';
@@ -11,7 +10,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gal/gal.dart';
 import 'package:go_router/go_router.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -234,32 +232,34 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
 
     try {
       final headers = ref.read(mediaHeadersProvider);
-      final tempDir = await getTemporaryDirectory();
-      // Extract extension or default to jpg
-      final extension = imageUrl.split('.').last.split('?').first;
-      final fileName = '${image.id}.$extension';
-      final tempPath = '${tempDir.path}/$fileName';
-
-      await Dio().download(
+      debugPrint('Saving image from URL: $imageUrl');
+      final response = await Dio().get<List<int>>(
         imageUrl,
-        tempPath,
-        options: Options(headers: headers),
+        options: Options(
+          headers: headers,
+          responseType: ResponseType.bytes,
+        ),
       );
+
+      final bytes = response.data;
+      if (bytes == null || bytes.isEmpty) {
+        throw Exception('Failed to download image bytes: empty response');
+      }
+      final contentType = response.headers.value('content-type');
+      debugPrint('Downloaded ${bytes.length} bytes, Content-Type: $contentType');
 
       // Check for access
       bool hasAccess = await Gal.hasAccess();
+      debugPrint('Gal.hasAccess: $hasAccess');
       if (!hasAccess) {
         hasAccess = await Gal.requestAccess();
+        debugPrint('Gal.requestAccess result: $hasAccess');
       }
 
       if (hasAccess) {
-        await Gal.putImage(tempPath);
-
-        // Cleanup
-        final file = File(tempPath);
-        if (await file.exists()) {
-          await file.delete();
-        }
+        // Provide a name with extension to help MediaStore identify the file
+        final name = 'stash_${image.id}.jpg';
+        await Gal.putImageBytes(Uint8List.fromList(bytes), name: name);
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -269,7 +269,15 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
       } else {
         throw Exception('Gallery access denied');
       }
+    } on GalException catch (e) {
+      debugPrint('GalException: ${e.type.name} - ${e.type.message}');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gallery Error: ${e.type.message}')),
+        );
+      }
     } catch (e) {
+      debugPrint('Save error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to save: ${e.toString()}')),
