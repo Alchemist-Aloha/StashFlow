@@ -126,9 +126,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         throw Exception('No stream URL found');
       }
 
-      // 'gal' only supports Android, iOS, and macOS.
-      // For Web, Linux, and Windows, use the system browser to handle the download.
-      if (kIsWeb || (Platform.isLinux || Platform.isWindows)) {
+      // 'gal' only supports Android, iOS, Windows, and macOS.
+      // For Web and Linux, use the system browser to handle the download.
+      if (kIsWeb || (Platform.isLinux)) {
         final uri = Uri.parse(videoUrl);
         if (await canLaunchUrl(uri)) {
           await launchUrl(uri, mode: LaunchMode.externalApplication);
