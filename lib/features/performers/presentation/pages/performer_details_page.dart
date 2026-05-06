@@ -169,8 +169,8 @@ class PerformerDetailsPage extends ConsumerWidget {
                                     : Icons.favorite_border,
                               ),
                               tooltip: performer.favorite
-                                  ? 'Remove favorite'
-                                  : 'Add favorite',
+                                  ? context.l10n.common_remove_favorite
+                                  : context.l10n.common_add_favorite,
                               onPressed: () async {
                                 try {
                                   await ref

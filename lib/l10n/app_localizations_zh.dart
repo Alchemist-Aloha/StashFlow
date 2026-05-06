@@ -751,6 +751,30 @@ class AppLocalizationsZh extends AppLocalizations {
   String get filter_modifier => '修饰符';
 
   @override
+  String get filter_group_general => 'General';
+
+  @override
+  String get filter_group_performer => 'Performer';
+
+  @override
+  String get filter_group_library => 'Library';
+
+  @override
+  String get filter_group_metadata => 'Metadata';
+
+  @override
+  String get filter_group_media_info => 'Media Info';
+
+  @override
+  String get filter_group_usage => 'Usage';
+
+  @override
+  String get filter_group_system => 'System';
+
+  @override
+  String get filter_group_physical => 'Physical';
+
+  @override
   String get filter_equals => '等于';
 
   @override
@@ -1357,6 +1381,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_playback_gravity_orientation => '重力控制的方向';
 
   @override
+  String get settings_playback_direct_play => '切换场景时直接播放';
+
+  @override
+  String get settings_playback_direct_play_subtitle =>
+      '从另一个正在播放的场景切换过来时，直接播放新场景';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       '允许使用设备传感器在匹配的方向之间旋转（例如：左右翻转横向）。';
 
@@ -1861,6 +1892,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_storage_max_video_cache => '最大视频缓存 (MB)';
 
   @override
+  String get settings_storage => 'Storage & Cache';
+
+  @override
+  String get settings_storage_usage => 'Storage Usage';
+
+  @override
+  String get settings_storage_usage_subtitle => 'Current space used by caches';
+
+  @override
+  String get settings_storage_subtitle =>
+      'Manage local caches and storage limits';
+
+  @override
   String get performers_field_name => '姓名';
 
   @override
@@ -2132,13 +2176,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String common_percent(int value) {
     return '$value%';
   }
-
-  @override
-  String get settings_playback_direct_play => '切换场景时直接播放';
-
-  @override
-  String get settings_playback_direct_play_subtitle =>
-      '从另一个正在播放的场景切换过来时，直接播放新场景';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -3494,6 +3531,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_playback_gravity_orientation => '重力控制的方向';
 
   @override
+  String get settings_playback_direct_play => '切换场景时直接播放';
+
+  @override
+  String get settings_playback_direct_play_subtitle =>
+      '从另一个正在播放的场景切换过来时，直接播放新场景';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       '允许使用设备传感器在匹配的方向之间旋转（例如：左右翻转横向）。';
 
@@ -4269,13 +4313,6 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String common_percent(int value) {
     return '$value%';
   }
-
-  @override
-  String get settings_playback_direct_play => '切换场景时直接播放';
-
-  @override
-  String get settings_playback_direct_play_subtitle =>
-      '从另一个正在播放的场景切换过来时，直接播放新场景';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -5634,6 +5671,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_playback_gravity_orientation => '重力控制的方向';
 
   @override
+  String get settings_playback_direct_play => '切換場景時直接播放';
+
+  @override
+  String get settings_playback_direct_play_subtitle =>
+      '從另一個正在播放的場景切換過來時，直接播放新場景';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       '允許使用裝置感測器在相符方向之間旋轉（例如：將橫向向左/向右翻轉）。';
 
@@ -6410,11 +6454,4 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String common_percent(int value) {
     return '$value%';
   }
-
-  @override
-  String get settings_playback_direct_play => '切換場景時直接播放';
-
-  @override
-  String get settings_playback_direct_play_subtitle =>
-      '從另一個正在播放的場景切換過來時，直接播放新場景';
 }

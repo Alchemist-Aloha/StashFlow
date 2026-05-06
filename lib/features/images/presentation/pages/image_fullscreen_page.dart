@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gal/gal.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../../../../core/data/graphql/media_headers_provider.dart';
@@ -222,12 +223,24 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Saving to gallery...'),
+        content: Text('Saving image...'),
         duration: Duration(seconds: 1),
       ),
     );
 
     try {
+      // 'gal' only supports Android, iOS, Windows, and macOS.
+      // For Web and Linux, use the system browser to handle the download.
+      if (kIsWeb || (Platform.isLinux)) {
+        final uri = Uri.parse(imageUrl);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+          return;
+        } else {
+          throw Exception('Could not launch download URL');
+        }
+      }
+
       final headers = ref.read(mediaHeadersProvider);
       debugPrint('Saving image from URL: $imageUrl');
       final response = await Dio().get<List<int>>(

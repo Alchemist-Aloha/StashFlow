@@ -760,6 +760,30 @@ class AppLocalizationsRu extends AppLocalizations {
   String get filter_modifier => 'Модификатор';
 
   @override
+  String get filter_group_general => 'General';
+
+  @override
+  String get filter_group_performer => 'Performer';
+
+  @override
+  String get filter_group_library => 'Library';
+
+  @override
+  String get filter_group_metadata => 'Metadata';
+
+  @override
+  String get filter_group_media_info => 'Media Info';
+
+  @override
+  String get filter_group_usage => 'Usage';
+
+  @override
+  String get filter_group_system => 'System';
+
+  @override
+  String get filter_group_physical => 'Physical';
+
+  @override
   String get filter_equals => 'Равно';
 
   @override
@@ -1423,6 +1447,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Ориентация, управляемая гравитацией';
 
   @override
+  String get settings_playback_direct_play =>
+      'Прямое воспроизведение при навигации по сценам';
+
+  @override
+  String get settings_playback_direct_play_subtitle =>
+      'При переходе из другой воспроизводящейся сцены, сразу включать новую сцену';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       'Разрешить поворот между совпадающими ориентациями с помощью датчика устройства (например, переворачивать альбомную ориентацию влево/вправо).';
 
@@ -1956,6 +1988,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_storage_max_video_cache => 'Макс. видеокэш (МБ)';
 
   @override
+  String get settings_storage => 'Storage & Cache';
+
+  @override
+  String get settings_storage_usage => 'Storage Usage';
+
+  @override
+  String get settings_storage_usage_subtitle => 'Current space used by caches';
+
+  @override
+  String get settings_storage_subtitle =>
+      'Manage local caches and storage limits';
+
+  @override
   String get performers_field_name => 'Имя';
 
   @override
@@ -2229,12 +2274,4 @@ class AppLocalizationsRu extends AppLocalizations {
   String common_percent(int value) {
     return '$value%';
   }
-
-  @override
-  String get settings_playback_direct_play =>
-      'Прямое воспроизведение при навигации по сценам';
-
-  @override
-  String get settings_playback_direct_play_subtitle =>
-      'При переходе из другой воспроизводящейся сцены, сразу включать новую сцену';
 }

@@ -163,7 +163,7 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
 
   Widget _buildGeneralSection() {
     return FilterSection(
-      title: 'General',
+      title: context.l10n.filter_group_general,
       initiallyExpanded: true,
       children: [
         _buildRatingFilter(),
@@ -173,7 +173,7 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
 
   Widget _buildMetadataSection() {
     return FilterSection(
-      title: 'Metadata',
+      title: context.l10n.filter_group_metadata,
       children: [
         StringCriterionInput(
           label: context.l10n.images_field_title,
@@ -193,7 +193,7 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
 
   Widget _buildLibrarySection() {
     return FilterSection(
-      title: 'Library',
+      title: context.l10n.filter_group_library,
       children: [
         _buildOrganizedFilter(),
         _buildEntityFilter<Studio>(
@@ -234,7 +234,7 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
 
   Widget _buildMediaInfoSection() {
     return FilterSection(
-      title: 'Media Info',
+      title: context.l10n.filter_group_media_info,
       children: [
         _buildResolutionFilter(),
         _buildOrientationFilter(),
@@ -244,7 +244,7 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
 
   Widget _buildSystemSection() {
     return FilterSection(
-      title: 'System',
+      title: context.l10n.filter_group_system,
       children: [
         StringCriterionInput(
             label: context.l10n.images_field_path,

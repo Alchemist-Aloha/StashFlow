@@ -237,6 +237,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
                 const SizedBox(height: 24),
                 TextFormField(
                   controller: _nameController,
+                  textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
                     labelText: l10n.settings_server_profile_name,
                     border: const OutlineInputBorder(),
@@ -245,6 +246,8 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _urlController,
+                  keyboardType: TextInputType.url,
+                  textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
                     labelText: l10n.common_url,
                     hintText: l10n.settings_server_url_example,
@@ -396,6 +399,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
     if (_authMode == AuthMode.apiKey || _authMode == AuthMode.bearer) {
       return TextFormField(
         controller: _apiKeyController,
+        textInputAction: TextInputAction.done,
         decoration: InputDecoration(
           labelText: _authMode == AuthMode.apiKey ? l10n.settings_server_auth_apikey : l10n.common_token,
           border: const OutlineInputBorder(),
@@ -412,6 +416,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
         children: [
           TextFormField(
             controller: _usernameController,
+            textInputAction: TextInputAction.next,
             decoration: InputDecoration(
               labelText: l10n.settings_server_username,
               border: const OutlineInputBorder(),
@@ -420,6 +425,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
           const SizedBox(height: 16),
           TextFormField(
             controller: _passwordController,
+            textInputAction: TextInputAction.done,
             decoration: InputDecoration(
               labelText: l10n.settings_server_password,
               border: const OutlineInputBorder(),

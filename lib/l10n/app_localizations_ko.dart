@@ -751,6 +751,30 @@ class AppLocalizationsKo extends AppLocalizations {
   String get filter_modifier => '수정자';
 
   @override
+  String get filter_group_general => 'General';
+
+  @override
+  String get filter_group_performer => 'Performer';
+
+  @override
+  String get filter_group_library => 'Library';
+
+  @override
+  String get filter_group_metadata => 'Metadata';
+
+  @override
+  String get filter_group_media_info => 'Media Info';
+
+  @override
+  String get filter_group_usage => 'Usage';
+
+  @override
+  String get filter_group_system => 'System';
+
+  @override
+  String get filter_group_physical => 'Physical';
+
+  @override
   String get filter_equals => '같음';
 
   @override
@@ -1373,6 +1397,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_playback_gravity_orientation => '중력 제어 화면 방향';
 
   @override
+  String get settings_playback_direct_play => '장면 이동 시 즉시 재생';
+
+  @override
+  String get settings_playback_direct_play_subtitle =>
+      '다른 재생 중인 장면에서 이동할 때 새 장면을 즉시 재생합니다';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       '기기 센서를 사용하여 일치하는 방향으로 회전하도록 허용합니다(예: 좌/우 가로 방향 전환).';
 
@@ -1883,6 +1914,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_storage_max_video_cache => '최대 비디오 캐시(MB)';
 
   @override
+  String get settings_storage => 'Storage & Cache';
+
+  @override
+  String get settings_storage_usage => 'Storage Usage';
+
+  @override
+  String get settings_storage_usage_subtitle => 'Current space used by caches';
+
+  @override
+  String get settings_storage_subtitle =>
+      'Manage local caches and storage limits';
+
+  @override
   String get performers_field_name => '이름';
 
   @override
@@ -2154,11 +2198,4 @@ class AppLocalizationsKo extends AppLocalizations {
   String common_percent(int value) {
     return '$value%';
   }
-
-  @override
-  String get settings_playback_direct_play => '장면 이동 시 즉시 재생';
-
-  @override
-  String get settings_playback_direct_play_subtitle =>
-      '다른 재생 중인 장면에서 이동할 때 새 장면을 즉시 재생합니다';
 }

@@ -765,6 +765,30 @@ class AppLocalizationsEs extends AppLocalizations {
   String get filter_modifier => 'Modificador';
 
   @override
+  String get filter_group_general => 'General';
+
+  @override
+  String get filter_group_performer => 'Performer';
+
+  @override
+  String get filter_group_library => 'Library';
+
+  @override
+  String get filter_group_metadata => 'Metadata';
+
+  @override
+  String get filter_group_media_info => 'Media Info';
+
+  @override
+  String get filter_group_usage => 'Usage';
+
+  @override
+  String get filter_group_system => 'System';
+
+  @override
+  String get filter_group_physical => 'Physical';
+
+  @override
   String get filter_equals => 'Igual';
 
   @override
@@ -1446,6 +1470,14 @@ class AppLocalizationsEs extends AppLocalizations {
       'Orientación controlada por la gravedad';
 
   @override
+  String get settings_playback_direct_play =>
+      'Reproducción directa al navegar por escenas';
+
+  @override
+  String get settings_playback_direct_play_subtitle =>
+      'Al navegar desde otra escena en reproducción, reproducir directamente la nueva escena';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       'Permitir rotar entre orientaciones coincidentes usando el sensor del dispositivo (p. ej., girar el paisaje izquierda/derecha).';
 
@@ -1986,6 +2018,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settings_storage_max_video_cache => 'Caché de vídeo máxima (MB)';
 
   @override
+  String get settings_storage => 'Storage & Cache';
+
+  @override
+  String get settings_storage_usage => 'Storage Usage';
+
+  @override
+  String get settings_storage_usage_subtitle => 'Current space used by caches';
+
+  @override
+  String get settings_storage_subtitle =>
+      'Manage local caches and storage limits';
+
+  @override
   String get performers_field_name => 'Nombre';
 
   @override
@@ -2259,12 +2304,4 @@ class AppLocalizationsEs extends AppLocalizations {
   String common_percent(int value) {
     return '$value%';
   }
-
-  @override
-  String get settings_playback_direct_play =>
-      'Reproducción directa al navegar por escenas';
-
-  @override
-  String get settings_playback_direct_play_subtitle =>
-      'Al navegar desde otra escena en reproducción, reproducir directamente la nueva escena';
 }
