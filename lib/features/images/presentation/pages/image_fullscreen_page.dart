@@ -296,10 +296,10 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Saved to StashFlow album'),
-            action: SnackBarAction(
-              label: 'View',
-              onPressed: () => Gal.open(),
-            ),
+            // action: SnackBarAction(
+            //   label: 'View',
+            //   onPressed: () => Gal.open(),
+            // ),
           ),
         );
       }
