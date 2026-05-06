@@ -170,6 +170,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   bool _didPrefetchInitial = false;
   double? _measuredItemExtent;
   int? _lastVisibleIndexPrefetched;
+  int? _memoizedPrefetchDistance;
+  int? _memoizedMemCacheWidth;
   final GlobalKey _firstItemKey = GlobalKey();
 
   DateTime? _lastHorizontalSwipeTime;
@@ -195,6 +197,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
     if (oldWidget.provider != widget.provider) {
       // Reset prefetch flag when the data set potentially changes.
       _didPrefetchInitial = false;
+      _memoizedPrefetchDistance = null;
+      _memoizedMemCacheWidth = null;
     }
   }
 
@@ -331,22 +335,27 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
     final offset = scrollInfo.metrics.pixels;
     final isGrid = widget.gridDelegate != null;
     final headers = ref.read(mediaHeadersProvider);
-    final prefetchDistance = _getEffectivePrefetchDistance(
-      context,
-      responsiveDelegate,
-    );
 
-    int? memCacheWidth;
-    if (widget.memCacheWidthBuilder != null) {
-      memCacheWidth = widget.memCacheWidthBuilder!(context, isGrid);
-    } else {
-      if (isGrid) {
-        final delegate =
-            responsiveDelegate as SliverGridDelegateWithFixedCrossAxisCount;
-        memCacheWidth = (screenWidth / delegate.crossAxisCount * 1.5).toInt();
+    final prefetchDistance =
+        _memoizedPrefetchDistance ??= _getEffectivePrefetchDistance(
+          context,
+          responsiveDelegate,
+        );
+
+    int? memCacheWidth = _memoizedMemCacheWidth;
+    if (memCacheWidth == null) {
+      if (widget.memCacheWidthBuilder != null) {
+        memCacheWidth = widget.memCacheWidthBuilder!(context, isGrid);
       } else {
-        memCacheWidth = screenWidth > 600 ? 600 : screenWidth.toInt();
+        if (isGrid) {
+          final delegate =
+              responsiveDelegate as SliverGridDelegateWithFixedCrossAxisCount;
+          memCacheWidth = (screenWidth * 1.5 / delegate.crossAxisCount).toInt();
+        } else {
+          memCacheWidth = screenWidth > 600 ? 600 : screenWidth.toInt();
+        }
       }
+      _memoizedMemCacheWidth = memCacheWidth;
     }
 
     if (isGrid) {

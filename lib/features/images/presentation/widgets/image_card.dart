@@ -44,66 +44,68 @@ class ImageCard extends ConsumerWidget {
               image.files.first.height.toDouble()
         : 1.0;
 
-    return Skeletonizer(
-      enabled: image.id == 'skeleton',
-      effect: const ShimmerEffect(duration: Duration(seconds: 2)),
-      child: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: InkWell(
-          onTap: onTap ?? () => context.push('/galleries/images/${image.id}'),
-          borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-          child: Card(
-            margin: EdgeInsets.zero,
-            clipBehavior: Clip.antiAlias,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-            ),
-            child: AspectRatio(
-              aspectRatio: aspectRatio.clamp(0.5, 2.0),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                StashImage(
-                  imageUrl: image.paths.thumbnail ?? image.paths.preview,
-                  width: double.infinity,
-                  height: double.infinity,
-                  fit: BoxFit.cover,
-                  memCacheWidth: memCacheWidth,
-                ),
-                if (image.rating100 != null && image.rating100! > 0)
-                  Positioned(
-                    bottom: 4,
-                    right: 4,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 4,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withAlpha(150),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.star, color: Colors.amber, size: 10),
-                          const SizedBox(width: 2),
-                          Text(
-                            (image.rating100! / 20).toStringAsFixed(1),
-                            style: context.textTheme.labelSmall?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
+    return RepaintBoundary(
+      child: Skeletonizer(
+        enabled: image.id == 'skeleton',
+        effect: const ShimmerEffect(duration: Duration(seconds: 2)),
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: InkWell(
+            onTap: onTap ?? () => context.push('/galleries/images/${image.id}'),
+            borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+            child: Card(
+              margin: EdgeInsets.zero,
+              clipBehavior: Clip.antiAlias,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+              ),
+              child: AspectRatio(
+                aspectRatio: aspectRatio.clamp(0.5, 2.0),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    StashImage(
+                      imageUrl: image.paths.thumbnail ?? image.paths.preview,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                      memCacheWidth: memCacheWidth,
                     ),
-                  ),
-              ],
+                    if (image.rating100 != null && image.rating100! > 0)
+                      Positioned(
+                        bottom: 4,
+                        right: 4,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withAlpha(150),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.star, color: Colors.amber, size: 10),
+                              const SizedBox(width: 2),
+                              Text(
+                                (image.rating100! / 20).toStringAsFixed(1),
+                                style: context.textTheme.labelSmall?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
-      ),
       ),
     );
   }
