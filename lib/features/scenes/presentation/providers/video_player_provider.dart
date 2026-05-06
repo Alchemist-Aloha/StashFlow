@@ -326,6 +326,12 @@ class PlayerState extends _$PlayerState {
   /// Internal flag to track playback state changes across listener fires.
   bool? _lastIsPlaying;
 
+  /// Internal flag to track the last position reported to the media handler.
+  Duration? _lastMediaHandlerPosition;
+
+  /// Internal flag to track the last speed reported to the media handler.
+  double? _lastSpeed;
+
   // Activity tracking state
   Timer? _playCountTimer;
   bool _playCountIncremented = false;
@@ -1284,13 +1290,22 @@ class PlayerState extends _$PlayerState {
       final isBufferingNow = player.state.buffering;
       final currentWidth = player.state.width;
       final currentHeight = player.state.height;
+      final currentPosition = player.state.position;
+      final currentSpeed = player.state.rate;
+      final currentBuffered = player.state.buffer;
 
-      if (isPlayingNow != _lastIsPlaying ||
-          isBufferingNow != state.isBuffering ||
+      final playingChanged = isPlayingNow != _lastIsPlaying;
+      final bufferingChanged = isBufferingNow != state.isBuffering;
+      final speedChanged = currentSpeed != (_lastSpeed ?? 1.0);
+
+      if (playingChanged ||
+          bufferingChanged ||
+          speedChanged ||
           currentWidth != state.videoWidth ||
           currentHeight != state.videoHeight) {
         final wasPlaying = _lastIsPlaying ?? false;
         _lastIsPlaying = isPlayingNow;
+        _lastSpeed = currentSpeed;
 
         state = state.copyWith(
           isPlaying: isPlayingNow,
@@ -1312,12 +1327,24 @@ class PlayerState extends _$PlayerState {
         }
       }
 
-      mediaHandler?.updatePlaybackState(
-        isPlaying: isPlayingNow,
-        position: player.state.position,
-        bufferedPosition: player.state.buffer,
-        speed: player.state.rate,
-      );
+      // Only update media handler if state changed or if position drifted significantly
+      // (audio_service increments position automatically, so we only need to sync periodically)
+      final shouldUpdateMediaHandler = playingChanged ||
+          bufferingChanged ||
+          speedChanged ||
+          _lastMediaHandlerPosition == null ||
+          (currentPosition - _lastMediaHandlerPosition!).abs().inMilliseconds >
+              1000;
+
+      if (shouldUpdateMediaHandler) {
+        _lastMediaHandlerPosition = currentPosition;
+        mediaHandler?.updatePlaybackState(
+          isPlaying: isPlayingNow,
+          position: currentPosition,
+          bufferedPosition: currentBuffered,
+          speed: currentSpeed,
+        );
+      }
     }
   }
 
