@@ -755,6 +755,21 @@ class PlayerState extends _$PlayerState {
         password: authState.password,
         graphqlEndpoint: Uri.tryParse(serverUrl),
       );
+
+      final uri = Uri.tryParse(effectiveStreamUrl);
+      String maskedUrl = effectiveStreamUrl;
+      if (uri != null && uri.userInfo.isNotEmpty) {
+        maskedUrl = uri.replace(userInfo: '***:***').toString();
+      } else if (uri != null && uri.queryParameters.containsKey('apikey')) {
+        final params = Map<String, String>.from(uri.queryParameters);
+        params['apikey'] = '***';
+        maskedUrl = uri.replace(queryParameters: params).toString();
+      }
+
+      AppLogStore.instance.add(
+        'provider playScene: web effective url=$maskedUrl',
+        source: 'player_provider',
+      );
     }
 
     if (state.player != null) {
@@ -887,6 +902,14 @@ class PlayerState extends _$PlayerState {
       );
       _subscriptions.add(player.stream.width.listen((_) => _videoListener()));
       _subscriptions.add(player.stream.height.listen((_) => _videoListener()));
+      _subscriptions.add(
+        player.stream.error.listen((error) {
+          AppLogStore.instance.add(
+            'provider player error scene=${scene.id} error=$error',
+            source: 'player_provider',
+          );
+        }),
+      );
       unawaited(player.play());
 
       // Prepare for the next scene in the queue

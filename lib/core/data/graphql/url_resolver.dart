@@ -41,8 +41,11 @@ String appendBasicAuth(String url, String username, String password) {
   if (uri == null) return url;
   if (username.isEmpty && password.isEmpty) return url;
 
+  final encodedUser = Uri.encodeComponent(username);
+  final encodedPass = Uri.encodeComponent(password);
+
   return uri.replace(
-    userInfo: '${Uri.encodeFull(username)}:${Uri.encodeFull(password)}',
+    userInfo: '$encodedUser:$encodedPass',
   ).toString();
 }
 

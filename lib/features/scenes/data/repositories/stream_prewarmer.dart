@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../domain/entities/scene.dart';
@@ -15,10 +16,13 @@ part 'stream_prewarmer.g.dart';
 @Riverpod(keepAlive: true)
 class StreamPrewarmer extends _$StreamPrewarmer {
   final Map<String, StreamSubscription> _activeRequests = {};
-  late final HttpClient _client;
+  HttpClient? _client;
 
   @override
   void build() {
+    // HttpClient (dart:io) is not supported on Web.
+    if (kIsWeb) return;
+
     // Shared client allows for connection pooling (keep-alive).
     _client = HttpClient()
       ..connectionTimeout = const Duration(seconds: 5)
@@ -28,7 +32,7 @@ class StreamPrewarmer extends _$StreamPrewarmer {
       for (final sub in _activeRequests.values) {
         sub.cancel();
       }
-      _client.close(force: true);
+      _client?.close(force: true);
     });
   }
 
@@ -42,6 +46,8 @@ class StreamPrewarmer extends _$StreamPrewarmer {
     Map<String, String>? headers,
     int rangeBytes = 10 * 1024 * 1024,
   }) async {
+    if (kIsWeb) return;
+    if (_client == null) return;
     if (_activeRequests.containsKey(scene.id)) return;
 
     AppLogStore.instance.add(
@@ -50,7 +56,7 @@ class StreamPrewarmer extends _$StreamPrewarmer {
     );
 
     try {
-      final request = await _client.getUrl(Uri.parse(url));
+      final request = await _client!.getUrl(Uri.parse(url));
       headers?.forEach((k, v) => request.headers.add(k, v));
       
       // Request only the first chunk to minimize bandwidth usage while warming the pipe.
