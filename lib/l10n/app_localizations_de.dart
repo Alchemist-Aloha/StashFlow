@@ -1454,11 +1454,12 @@ class AppLocalizationsDe extends AppLocalizations {
       'Schwerkraftgesteuerte Ausrichtung';
 
   @override
-  String get settings_playback_direct_play => 'Direct-play on scene navigation';
+  String get settings_playback_direct_play =>
+      'Direkt-Wiedergabe bei Szenen-Navigation';
 
   @override
   String get settings_playback_direct_play_subtitle =>
-      'When navigating from another playing scene, directly play the new scene';
+      'Bei der Navigation von einer anderen spielenden Szene wird die neue Szene direkt abgespielt';
 
   @override
   String get settings_playback_gravity_orientation_subtitle =>
@@ -2280,12 +2281,4 @@ class AppLocalizationsDe extends AppLocalizations {
   String common_percent(int value) {
     return '$value%';
   }
-
-  @override
-  String get settings_playback_direct_play =>
-      'Direkt-Wiedergabe bei Szenen-Navigation';
-
-  @override
-  String get settings_playback_direct_play_subtitle =>
-      'Bei der Navigation von einer anderen spielenden Szene wird die neue Szene direkt abgespielt';
 }

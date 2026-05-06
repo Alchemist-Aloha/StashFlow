@@ -4229,18 +4229,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{value}%'**
   String common_percent(int value);
-
-  /// No description provided for @settings_playback_direct_play.
-  ///
-  /// In en, this message translates to:
-  /// **'Direct-play on scene navigation'**
-  String get settings_playback_direct_play;
-
-  /// No description provided for @settings_playback_direct_play_subtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'When navigating from another playing scene, directly play the new scene'**
-  String get settings_playback_direct_play_subtitle;
 }
 
 class _AppLocalizationsDelegate

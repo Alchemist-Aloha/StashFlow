@@ -1381,11 +1381,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_playback_gravity_orientation => '重力控制的方向';
 
   @override
-  String get settings_playback_direct_play => 'Direct-play on scene navigation';
+  String get settings_playback_direct_play => '切换场景时直接播放';
 
   @override
   String get settings_playback_direct_play_subtitle =>
-      'When navigating from another playing scene, directly play the new scene';
+      '从另一个正在播放的场景切换过来时，直接播放新场景';
 
   @override
   String get settings_playback_gravity_orientation_subtitle =>
@@ -2176,13 +2176,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String common_percent(int value) {
     return '$value%';
   }
-
-  @override
-  String get settings_playback_direct_play => '切换场景时直接播放';
-
-  @override
-  String get settings_playback_direct_play_subtitle =>
-      '从另一个正在播放的场景切换过来时，直接播放新场景';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -3538,6 +3531,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_playback_gravity_orientation => '重力控制的方向';
 
   @override
+  String get settings_playback_direct_play => '切换场景时直接播放';
+
+  @override
+  String get settings_playback_direct_play_subtitle =>
+      '从另一个正在播放的场景切换过来时，直接播放新场景';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       '允许使用设备传感器在匹配的方向之间旋转（例如：左右翻转横向）。';
 
@@ -4313,13 +4313,6 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String common_percent(int value) {
     return '$value%';
   }
-
-  @override
-  String get settings_playback_direct_play => '切换场景时直接播放';
-
-  @override
-  String get settings_playback_direct_play_subtitle =>
-      '从另一个正在播放的场景切换过来时，直接播放新场景';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -5678,6 +5671,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_playback_gravity_orientation => '重力控制的方向';
 
   @override
+  String get settings_playback_direct_play => '切換場景時直接播放';
+
+  @override
+  String get settings_playback_direct_play_subtitle =>
+      '從另一個正在播放的場景切換過來時，直接播放新場景';
+
+  @override
   String get settings_playback_gravity_orientation_subtitle =>
       '允許使用裝置感測器在相符方向之間旋轉（例如：將橫向向左/向右翻轉）。';
 
@@ -6454,11 +6454,4 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String common_percent(int value) {
     return '$value%';
   }
-
-  @override
-  String get settings_playback_direct_play => '切換場景時直接播放';
-
-  @override
-  String get settings_playback_direct_play_subtitle =>
-      '從另一個正在播放的場景切換過來時，直接播放新場景';
 }

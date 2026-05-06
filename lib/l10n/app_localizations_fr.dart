@@ -1460,11 +1460,12 @@ class AppLocalizationsFr extends AppLocalizations {
       'Orientation contrôlée par la gravité';
 
   @override
-  String get settings_playback_direct_play => 'Direct-play on scene navigation';
+  String get settings_playback_direct_play =>
+      'Lecture directe lors de la navigation entre scènes';
 
   @override
   String get settings_playback_direct_play_subtitle =>
-      'When navigating from another playing scene, directly play the new scene';
+      'Lors de la navigation depuis une autre scène en cours de lecture, lire directement la nouvelle scène';
 
   @override
   String get settings_playback_gravity_orientation_subtitle =>
@@ -2293,12 +2294,4 @@ class AppLocalizationsFr extends AppLocalizations {
   String common_percent(int value) {
     return '$value%';
   }
-
-  @override
-  String get settings_playback_direct_play =>
-      'Lecture directe lors de la navigation entre scènes';
-
-  @override
-  String get settings_playback_direct_play_subtitle =>
-      'Lors de la navigation depuis une autre scène en cours de lecture, lire directement la nouvelle scène';
 }

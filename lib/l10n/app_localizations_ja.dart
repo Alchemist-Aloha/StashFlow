@@ -1398,11 +1398,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_playback_gravity_orientation => '重力制御の画面向き';
 
   @override
-  String get settings_playback_direct_play => 'Direct-play on scene navigation';
+  String get settings_playback_direct_play => 'シーン移動時に直接再生';
 
   @override
   String get settings_playback_direct_play_subtitle =>
-      'When navigating from another playing scene, directly play the new scene';
+      '他の再生中シーンから移動した際、新しいシーンを直接再生します';
 
   @override
   String get settings_playback_gravity_orientation_subtitle =>
@@ -2198,11 +2198,4 @@ class AppLocalizationsJa extends AppLocalizations {
   String common_percent(int value) {
     return '$value%';
   }
-
-  @override
-  String get settings_playback_direct_play => 'シーン移動時に直接再生';
-
-  @override
-  String get settings_playback_direct_play_subtitle =>
-      '他の再生中シーンから移動した際、新しいシーンを直接再生します';
 }

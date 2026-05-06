@@ -1447,11 +1447,12 @@ class AppLocalizationsRu extends AppLocalizations {
       'Ориентация, управляемая гравитацией';
 
   @override
-  String get settings_playback_direct_play => 'Direct-play on scene navigation';
+  String get settings_playback_direct_play =>
+      'Прямое воспроизведение при навигации по сценам';
 
   @override
   String get settings_playback_direct_play_subtitle =>
-      'When navigating from another playing scene, directly play the new scene';
+      'При переходе из другой воспроизводящейся сцены, сразу включать новую сцену';
 
   @override
   String get settings_playback_gravity_orientation_subtitle =>
@@ -2273,12 +2274,4 @@ class AppLocalizationsRu extends AppLocalizations {
   String common_percent(int value) {
     return '$value%';
   }
-
-  @override
-  String get settings_playback_direct_play =>
-      'Прямое воспроизведение при навигации по сценам';
-
-  @override
-  String get settings_playback_direct_play_subtitle =>
-      'При переходе из другой воспроизводящейся сцены, сразу включать новую сцену';
 }
