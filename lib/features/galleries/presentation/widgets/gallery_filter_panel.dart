@@ -160,7 +160,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
 
   Widget _buildGeneralSection() {
     return FilterSection(
-      title: 'General',
+      title: context.l10n.filter_group_general,
       initiallyExpanded: true,
       children: [
         _buildRatingFilter(),
@@ -170,7 +170,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
 
   Widget _buildMetadataSection() {
     return FilterSection(
-      title: 'Metadata',
+      title: context.l10n.filter_group_metadata,
       children: [
         StringCriterionInput(
           label: context.l10n.galleries_field_title,
@@ -214,7 +214,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
 
   Widget _buildLibrarySection() {
     return FilterSection(
-      title: 'Library',
+      title: context.l10n.filter_group_library,
       children: [
         _buildOrganizedFilter(),
         _buildEntityFilter<Studio>(
@@ -255,7 +255,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
 
   Widget _buildSystemSection() {
     return FilterSection(
-      title: 'System',
+      title: context.l10n.filter_group_system,
       children: [
         IntCriterionInput(
           label: context.l10n.galleries_field_id,

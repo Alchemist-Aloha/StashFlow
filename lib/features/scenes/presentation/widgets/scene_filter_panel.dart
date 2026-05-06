@@ -167,7 +167,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
 
   Widget _buildGeneralSection() {
     return FilterSection(
-      title: 'General',
+      title: context.l10n.filter_group_general,
       initiallyExpanded: true,
       children: [
         _buildRatingFilter(),
@@ -178,7 +178,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
 
   Widget _buildPerformerSection() {
     return FilterSection(
-      title: 'Performer',
+      title: context.l10n.filter_group_performer,
       children: [
         _buildEntityFilter<Performer>(
           'Performers',
@@ -221,7 +221,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
 
   Widget _buildLibrarySection() {
     return FilterSection(
-      title: 'Library',
+      title: context.l10n.filter_group_library,
       children: [
         _buildEntityFilter<Studio>(
           'Studios',
@@ -279,7 +279,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
 
   Widget _buildMetadataSection() {
     return FilterSection(
-      title: 'Metadata',
+      title: context.l10n.filter_group_metadata,
       children: [
         StringCriterionInput(
           label: context.l10n.scenes_field_code,
@@ -326,7 +326,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
 
   Widget _buildMediaInfoSection() {
     return FilterSection(
-      title: 'Media Info',
+      title: context.l10n.filter_group_media_info,
       children: [
         _buildResolutionFilter(),
         _buildOrientationFilter(),
@@ -373,7 +373,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
 
   Widget _buildUsageSection() {
     return FilterSection(
-      title: 'Usage',
+      title: context.l10n.filter_group_usage,
       children: [
         IntCriterionInput(
           label: context.l10n.scenes_field_play_count,
@@ -428,7 +428,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
 
   Widget _buildSystemSection() {
     return FilterSection(
-      title: 'System',
+      title: context.l10n.filter_group_system,
       children: [
         IntCriterionInput(
           label: context.l10n.scenes_field_id,

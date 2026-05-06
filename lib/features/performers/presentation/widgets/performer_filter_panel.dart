@@ -148,7 +148,7 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
 
   Widget _buildGeneralSection() {
     return FilterSection(
-      title: 'General',
+      title: context.l10n.filter_group_general,
       initiallyExpanded: true,
       children: [
         _buildBooleanFilter(
@@ -164,7 +164,7 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
 
   Widget _buildMetadataSection() {
     return FilterSection(
-      title: 'Metadata',
+      title: context.l10n.filter_group_metadata,
       children: [
         StringCriterionInput(
           label: context.l10n.performers_field_name,
@@ -202,7 +202,7 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
 
   Widget _buildLibrarySection() {
     return FilterSection(
-      title: 'Library',
+      title: context.l10n.filter_group_library,
       children: [
         _buildEntityFilter<Studio>(
           'Studios',
@@ -286,7 +286,7 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
 
   Widget _buildPhysicalSection() {
     return FilterSection(
-      title: 'Physical',
+      title: context.l10n.filter_group_physical,
       children: [
         DateCriterionInput(
           label: context.l10n.performers_field_birthdate,
@@ -380,7 +380,7 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
 
   Widget _buildSystemSection() {
     return FilterSection(
-      title: 'System',
+      title: context.l10n.filter_group_system,
       children: [
         _buildBooleanFilter('Ignore Auto Tag', _tempFilter.ignoreAutoTag, (val) => setState(() => _tempFilter = _tempFilter.copyWith(ignoreAutoTag: val))),
         _buildBooleanFilter('Is Missing', _tempFilter.isMissing, (val) => setState(() => _tempFilter = _tempFilter.copyWith(isMissing: val))),
