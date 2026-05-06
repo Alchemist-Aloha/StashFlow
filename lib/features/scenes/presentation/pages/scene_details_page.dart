@@ -3,9 +3,11 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gal/gal.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -122,6 +124,18 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
       if (videoUrl == null || videoUrl.isEmpty) {
         throw Exception('No stream URL found');
+      }
+
+      // 'gal' only supports Android, iOS, and macOS.
+      // For Web, Linux, and Windows, use the system browser to handle the download.
+      if (kIsWeb || (Platform.isLinux || Platform.isWindows)) {
+        final uri = Uri.parse(videoUrl);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+          return;
+        } else {
+          throw Exception('Could not launch download URL');
+        }
       }
 
       final headers = ref.read(mediaHeadersProvider);
