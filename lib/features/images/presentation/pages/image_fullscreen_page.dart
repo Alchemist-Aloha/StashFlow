@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -10,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gal/gal.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -248,32 +250,70 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
       final contentType = response.headers.value('content-type');
       debugPrint('Downloaded ${bytes.length} bytes, Content-Type: $contentType');
 
-      // Check for access
-      bool hasAccess = await Gal.hasAccess();
-      debugPrint('Gal.hasAccess: $hasAccess');
-      if (!hasAccess) {
-        hasAccess = await Gal.requestAccess();
-        debugPrint('Gal.requestAccess result: $hasAccess');
+      // Determine extension from Content-Type
+      String extension = 'jpg';
+      if (contentType != null) {
+        if (contentType.contains('webp')) {
+          extension = 'webp';
+        } else if (contentType.contains('png')) {
+          extension = 'png';
+        } else if (contentType.contains('gif')) {
+          extension = 'gif';
+        } else if (contentType.contains('jpeg') || contentType.contains('jpg')) {
+          extension = 'jpg';
+        }
       }
 
-      if (hasAccess) {
-        // Provide a name with extension to help MediaStore identify the file
-        final name = 'stash_${image.id}.jpg';
-        await Gal.putImageBytes(Uint8List.fromList(bytes), name: name);
+      // Check for access
+      bool hasAccess = await Gal.hasAccess(toAlbum: true);
+      debugPrint('Gal.hasAccess(toAlbum: true): $hasAccess');
+      if (!hasAccess) {
+        hasAccess = await Gal.requestAccess(toAlbum: true);
+        debugPrint('Gal.requestAccess(toAlbum: true) result: $hasAccess');
+      }
 
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Saved to gallery')),
-          );
-        }
-      } else {
+      if (!hasAccess) {
         throw Exception('Gallery access denied');
       }
-    } on GalException catch (e) {
-      debugPrint('GalException: ${e.type.name} - ${e.type.message}');
+
+      final name = 'stash_${image.id}.$extension';
+      final tempDir = await getTemporaryDirectory();
+      final tempPath = '${tempDir.path}/$name';
+      final file = File(tempPath);
+      await file.writeAsBytes(bytes);
+
+      try {
+        debugPrint('Saving to gallery via putImage: $tempPath');
+        await Gal.putImage(tempPath, album: 'StashFlow');
+      } finally {
+        if (await file.exists()) {
+          await file.delete();
+          debugPrint('Cleaned up temporary file: $tempPath');
+        }
+      }
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gallery Error: ${e.type.message}')),
+          SnackBar(
+            content: const Text('Saved to StashFlow album'),
+            action: SnackBarAction(
+              label: 'View',
+              onPressed: () => Gal.open(),
+            ),
+          ),
+        );
+      }
+    } on GalException catch (e) {
+      final message = switch (e.type) {
+        GalExceptionType.accessDenied => 'Permission to access the gallery is denied.',
+        GalExceptionType.notEnoughSpace => 'Not enough space for storage.',
+        GalExceptionType.notSupportedFormat => 'Unsupported file format.',
+        GalExceptionType.unexpected => 'An unexpected error has occurred.',
+      };
+      debugPrint('GalException final failure: ${e.type.name}');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gallery Error: $message')),
         );
       }
     } catch (e) {
