@@ -89,6 +89,10 @@ jobs:
             libavutil-dev \
             libswresample-dev
 
+      - name: Generate macOS Flutter ephemeral files
+        if: matrix.target == 'macos'
+        run: flutter build macos --config-only
+
       - name: Build
         run: |
           if [ "${{ matrix.target }}" = "android" ]; then
