@@ -607,7 +607,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            tooltip: isMuted ? 'Unmute' : 'Mute',
+            tooltip: isMuted ? context.l10n.common_unmute : context.l10n.common_mute,
             style: _controlButtonStyle(colorScheme),
             iconSize: 20,
             icon: Icon(iconData),

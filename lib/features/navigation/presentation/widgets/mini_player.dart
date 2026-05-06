@@ -79,7 +79,7 @@ class MiniPlayer extends ConsumerWidget {
                 ),
               ),
               IconButton(
-                tooltip: isPlaying ? 'Pause' : 'Play',
+                tooltip: isPlaying ? context.l10n.common_pause : context.l10n.common_play,
                 onPressed: () =>
                     ref.read(playerStateProvider.notifier).togglePlayPause(),
                 icon: Icon(
