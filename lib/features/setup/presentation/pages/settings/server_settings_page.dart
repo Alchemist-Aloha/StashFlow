@@ -111,6 +111,7 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
     return SettingsPageShell(
       title: '${l10n.settings_server} ${l10n.settings_title}',
       floatingActionButton: FloatingActionButton(
+        tooltip: l10n.settings_server_profile_add,
         onPressed: () => _showProfileDrawer(),
         child: const Icon(Icons.add),
       ),
