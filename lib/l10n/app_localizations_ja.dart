@@ -753,28 +753,28 @@ class AppLocalizationsJa extends AppLocalizations {
   String get filter_modifier => '修飾子';
 
   @override
-  String get filter_group_general => 'General';
+  String get filter_group_general => '全般';
 
   @override
-  String get filter_group_performer => 'Performer';
+  String get filter_group_performer => '出演者';
 
   @override
-  String get filter_group_library => 'Library';
+  String get filter_group_library => 'ライブラリ';
 
   @override
-  String get filter_group_metadata => 'Metadata';
+  String get filter_group_metadata => 'メタデータ';
 
   @override
-  String get filter_group_media_info => 'Media Info';
+  String get filter_group_media_info => 'メディア情報';
 
   @override
-  String get filter_group_usage => 'Usage';
+  String get filter_group_usage => '使用状況';
 
   @override
-  String get filter_group_system => 'System';
+  String get filter_group_system => 'システム';
 
   @override
-  String get filter_group_physical => 'Physical';
+  String get filter_group_physical => '物理';
 
   @override
   String get filter_equals => '等しい';
@@ -1914,17 +1914,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_storage_max_video_cache => '最大ビデオ キャッシュ (MB)';
 
   @override
-  String get settings_storage => 'Storage & Cache';
+  String get settings_storage => 'ストレージとキャッシュ';
 
   @override
-  String get settings_storage_usage => 'Storage Usage';
+  String get settings_storage_usage => 'ストレージ使用量';
 
   @override
-  String get settings_storage_usage_subtitle => 'Current space used by caches';
+  String get settings_storage_usage_subtitle => 'キャッシュの使用容量';
 
   @override
-  String get settings_storage_subtitle =>
-      'Manage local caches and storage limits';
+  String get settings_storage_subtitle => 'ローカルキャッシュとストレージ制限の管理';
 
   @override
   String get performers_field_name => '名前';

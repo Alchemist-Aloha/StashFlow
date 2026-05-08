@@ -751,28 +751,28 @@ class AppLocalizationsZh extends AppLocalizations {
   String get filter_modifier => '修饰符';
 
   @override
-  String get filter_group_general => 'General';
+  String get filter_group_general => '常规';
 
   @override
-  String get filter_group_performer => 'Performer';
+  String get filter_group_performer => '演员';
 
   @override
-  String get filter_group_library => 'Library';
+  String get filter_group_library => '媒体库';
 
   @override
-  String get filter_group_metadata => 'Metadata';
+  String get filter_group_metadata => '元数据';
 
   @override
-  String get filter_group_media_info => 'Media Info';
+  String get filter_group_media_info => '媒体信息';
 
   @override
-  String get filter_group_usage => 'Usage';
+  String get filter_group_usage => '使用情况';
 
   @override
-  String get filter_group_system => 'System';
+  String get filter_group_system => '系统';
 
   @override
-  String get filter_group_physical => 'Physical';
+  String get filter_group_physical => '物理';
 
   @override
   String get filter_equals => '等于';
@@ -1892,17 +1892,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_storage_max_video_cache => '最大视频缓存 (MB)';
 
   @override
-  String get settings_storage => 'Storage & Cache';
+  String get settings_storage => '存储与缓存';
 
   @override
-  String get settings_storage_usage => 'Storage Usage';
+  String get settings_storage_usage => '存储占用';
 
   @override
-  String get settings_storage_usage_subtitle => 'Current space used by caches';
+  String get settings_storage_usage_subtitle => '当前缓存占用空间';
 
   @override
-  String get settings_storage_subtitle =>
-      'Manage local caches and storage limits';
+  String get settings_storage_subtitle => '管理本地缓存和存储限制';
 
   @override
   String get performers_field_name => '姓名';
@@ -2944,6 +2943,30 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get filter_modifier => '修饰符';
 
   @override
+  String get filter_group_general => '常规';
+
+  @override
+  String get filter_group_performer => '演员';
+
+  @override
+  String get filter_group_library => '媒体库';
+
+  @override
+  String get filter_group_metadata => '元数据';
+
+  @override
+  String get filter_group_media_info => '媒体信息';
+
+  @override
+  String get filter_group_usage => '使用情况';
+
+  @override
+  String get filter_group_system => '系统';
+
+  @override
+  String get filter_group_physical => '物理';
+
+  @override
   String get filter_equals => '等于';
 
   @override
@@ -4061,6 +4084,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_storage_max_video_cache => '最大视频缓存 (MB)';
 
   @override
+  String get settings_storage => '存储与缓存';
+
+  @override
+  String get settings_storage_usage => '存储占用';
+
+  @override
+  String get settings_storage_usage_subtitle => '当前缓存占用空间';
+
+  @override
+  String get settings_storage_subtitle => '管理本地缓存和存储限制';
+
+  @override
   String get performers_field_name => '姓名';
 
   @override
@@ -5100,6 +5135,30 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get filter_modifier => '修饰符';
+
+  @override
+  String get filter_group_general => '一般';
+
+  @override
+  String get filter_group_performer => '演出者';
+
+  @override
+  String get filter_group_library => '媒體庫';
+
+  @override
+  String get filter_group_metadata => '元數據';
+
+  @override
+  String get filter_group_media_info => '媒體資訊';
+
+  @override
+  String get filter_group_usage => '使用情況';
+
+  @override
+  String get filter_group_system => '系統';
+
+  @override
+  String get filter_group_physical => '實體';
 
   @override
   String get filter_equals => '等于';
@@ -6219,6 +6278,18 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_storage_max_video_cache => '最大視訊快取 (MB)';
+
+  @override
+  String get settings_storage => '儲存與快取';
+
+  @override
+  String get settings_storage_usage => '儲存佔用';
+
+  @override
+  String get settings_storage_usage_subtitle => '目前快取佔用空間';
+
+  @override
+  String get settings_storage_subtitle => '管理本地快取和儲存限制';
 
   @override
   String get performers_field_name => '姓名';

@@ -809,5 +809,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "filter_group_general": "全般",
+  "filter_group_performer": "出演者",
+  "filter_group_library": "ライブラリ",
+  "filter_group_metadata": "メタデータ",
+  "filter_group_media_info": "メディア情報",
+  "filter_group_usage": "使用状況",
+  "filter_group_system": "システム",
+  "filter_group_physical": "物理",
+  "settings_storage": "ストレージとキャッシュ",
+  "settings_storage_usage": "ストレージ使用量",
+  "settings_storage_usage_subtitle": "キャッシュの使用容量",
+  "settings_storage_subtitle": "ローカルキャッシュとストレージ制限の管理"
 }

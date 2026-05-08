@@ -760,28 +760,28 @@ class AppLocalizationsRu extends AppLocalizations {
   String get filter_modifier => 'Модификатор';
 
   @override
-  String get filter_group_general => 'General';
+  String get filter_group_general => 'Общие';
 
   @override
-  String get filter_group_performer => 'Performer';
+  String get filter_group_performer => 'Исполнитель';
 
   @override
-  String get filter_group_library => 'Library';
+  String get filter_group_library => 'Библиотека';
 
   @override
-  String get filter_group_metadata => 'Metadata';
+  String get filter_group_metadata => 'Метаданные';
 
   @override
-  String get filter_group_media_info => 'Media Info';
+  String get filter_group_media_info => 'Инфо о медиа';
 
   @override
-  String get filter_group_usage => 'Usage';
+  String get filter_group_usage => 'Использование';
 
   @override
-  String get filter_group_system => 'System';
+  String get filter_group_system => 'Система';
 
   @override
-  String get filter_group_physical => 'Physical';
+  String get filter_group_physical => 'Физический';
 
   @override
   String get filter_equals => 'Равно';
@@ -1988,17 +1988,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_storage_max_video_cache => 'Макс. видеокэш (МБ)';
 
   @override
-  String get settings_storage => 'Storage & Cache';
+  String get settings_storage => 'Хранилище и кэш';
 
   @override
-  String get settings_storage_usage => 'Storage Usage';
+  String get settings_storage_usage => 'Использование диска';
 
   @override
-  String get settings_storage_usage_subtitle => 'Current space used by caches';
+  String get settings_storage_usage_subtitle => 'Место, занятое кэшем';
 
   @override
   String get settings_storage_subtitle =>
-      'Manage local caches and storage limits';
+      'Управление кэшем и лимитами хранилища';
 
   @override
   String get performers_field_name => 'Имя';

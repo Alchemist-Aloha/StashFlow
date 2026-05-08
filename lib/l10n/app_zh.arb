@@ -809,5 +809,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "filter_group_general": "常规",
+  "filter_group_performer": "演员",
+  "filter_group_library": "媒体库",
+  "filter_group_metadata": "元数据",
+  "filter_group_media_info": "媒体信息",
+  "filter_group_usage": "使用情况",
+  "filter_group_system": "系统",
+  "filter_group_physical": "物理",
+  "settings_storage": "存储与缓存",
+  "settings_storage_usage": "存储占用",
+  "settings_storage_usage_subtitle": "当前缓存占用空间",
+  "settings_storage_subtitle": "管理本地缓存和存储限制"
 }

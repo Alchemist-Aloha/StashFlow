@@ -809,5 +809,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "filter_group_general": "Общие",
+  "filter_group_performer": "Исполнитель",
+  "filter_group_library": "Библиотека",
+  "filter_group_metadata": "Метаданные",
+  "filter_group_media_info": "Инфо о медиа",
+  "filter_group_usage": "Использование",
+  "filter_group_system": "Система",
+  "filter_group_physical": "Физический",
+  "settings_storage": "Хранилище и кэш",
+  "settings_storage_usage": "Использование диска",
+  "settings_storage_usage_subtitle": "Место, занятое кэшем",
+  "settings_storage_subtitle": "Управление кэшем и лимитами хранилища"
 }

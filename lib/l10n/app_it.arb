@@ -814,5 +814,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "filter_group_general": "Generale",
+  "filter_group_performer": "Interprete",
+  "filter_group_library": "Libreria",
+  "filter_group_metadata": "Metadati",
+  "filter_group_media_info": "Info media",
+  "filter_group_usage": "Utilizzo",
+  "filter_group_system": "Sistema",
+  "filter_group_physical": "Fisico",
+  "settings_storage": "Archiviazione e cache",
+  "settings_storage_usage": "Utilizzo archiviazione",
+  "settings_storage_usage_subtitle": "Spazio usato dalle cache",
+  "settings_storage_subtitle": "Gestisci cache locali e limiti di archiviazione"
 }

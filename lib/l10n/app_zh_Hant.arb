@@ -809,5 +809,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "filter_group_general": "一般",
+  "filter_group_performer": "演出者",
+  "filter_group_library": "媒體庫",
+  "filter_group_metadata": "元數據",
+  "filter_group_media_info": "媒體資訊",
+  "filter_group_usage": "使用情況",
+  "filter_group_system": "系統",
+  "filter_group_physical": "實體",
+  "settings_storage": "儲存與快取",
+  "settings_storage_usage": "儲存佔用",
+  "settings_storage_usage_subtitle": "目前快取佔用空間",
+  "settings_storage_subtitle": "管理本地快取和儲存限制"
 }

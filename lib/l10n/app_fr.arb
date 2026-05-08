@@ -809,5 +809,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "filter_group_general": "Général",
+  "filter_group_performer": "Interprète",
+  "filter_group_library": "Bibliothèque",
+  "filter_group_metadata": "Métadonnées",
+  "filter_group_media_info": "Infos média",
+  "filter_group_usage": "Utilisation",
+  "filter_group_system": "Système",
+  "filter_group_physical": "Physique",
+  "settings_storage": "Stockage et cache",
+  "settings_storage_usage": "Utilisation du stockage",
+  "settings_storage_usage_subtitle": "Espace utilisé par les caches",
+  "settings_storage_subtitle": "Gérer les caches locaux et les limites de stockage"
 }

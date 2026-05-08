@@ -830,5 +830,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "filter_group_general": "Allgemein",
+  "filter_group_performer": "Darsteller",
+  "filter_group_library": "Bibliothek",
+  "filter_group_metadata": "Metadaten",
+  "filter_group_media_info": "Medieninfo",
+  "filter_group_usage": "Nutzung",
+  "filter_group_system": "System",
+  "filter_group_physical": "Physisch",
+  "settings_storage": "Speicher & Cache",
+  "settings_storage_usage": "Speicherbelegung",
+  "settings_storage_usage_subtitle": "Aktueller Cache-Verbrauch",
+  "settings_storage_subtitle": "Lokale Caches und Speichergrenzen verwalten"
 }

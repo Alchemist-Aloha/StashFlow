@@ -765,28 +765,28 @@ class AppLocalizationsIt extends AppLocalizations {
   String get filter_modifier => 'Modificatore';
 
   @override
-  String get filter_group_general => 'General';
+  String get filter_group_general => 'Generale';
 
   @override
-  String get filter_group_performer => 'Performer';
+  String get filter_group_performer => 'Interprete';
 
   @override
-  String get filter_group_library => 'Library';
+  String get filter_group_library => 'Libreria';
 
   @override
-  String get filter_group_metadata => 'Metadata';
+  String get filter_group_metadata => 'Metadati';
 
   @override
-  String get filter_group_media_info => 'Media Info';
+  String get filter_group_media_info => 'Info media';
 
   @override
-  String get filter_group_usage => 'Usage';
+  String get filter_group_usage => 'Utilizzo';
 
   @override
-  String get filter_group_system => 'System';
+  String get filter_group_system => 'Sistema';
 
   @override
-  String get filter_group_physical => 'Physical';
+  String get filter_group_physical => 'Fisico';
 
   @override
   String get filter_equals => 'Uguale';
@@ -2012,17 +2012,17 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settings_storage_max_video_cache => 'Cache video massima (MB)';
 
   @override
-  String get settings_storage => 'Storage & Cache';
+  String get settings_storage => 'Archiviazione e cache';
 
   @override
-  String get settings_storage_usage => 'Storage Usage';
+  String get settings_storage_usage => 'Utilizzo archiviazione';
 
   @override
-  String get settings_storage_usage_subtitle => 'Current space used by caches';
+  String get settings_storage_usage_subtitle => 'Spazio usato dalle cache';
 
   @override
   String get settings_storage_subtitle =>
-      'Manage local caches and storage limits';
+      'Gestisci cache locali e limiti di archiviazione';
 
   @override
   String get performers_field_name => 'Nome';

@@ -751,28 +751,28 @@ class AppLocalizationsKo extends AppLocalizations {
   String get filter_modifier => '수정자';
 
   @override
-  String get filter_group_general => 'General';
+  String get filter_group_general => '일반';
 
   @override
-  String get filter_group_performer => 'Performer';
+  String get filter_group_performer => '출연자';
 
   @override
-  String get filter_group_library => 'Library';
+  String get filter_group_library => '라이브러리';
 
   @override
-  String get filter_group_metadata => 'Metadata';
+  String get filter_group_metadata => '메타데이터';
 
   @override
-  String get filter_group_media_info => 'Media Info';
+  String get filter_group_media_info => '미디어 정보';
 
   @override
-  String get filter_group_usage => 'Usage';
+  String get filter_group_usage => '사용량';
 
   @override
-  String get filter_group_system => 'System';
+  String get filter_group_system => '시스템';
 
   @override
-  String get filter_group_physical => 'Physical';
+  String get filter_group_physical => '물리적';
 
   @override
   String get filter_equals => '같음';
@@ -1914,17 +1914,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_storage_max_video_cache => '최대 비디오 캐시(MB)';
 
   @override
-  String get settings_storage => 'Storage & Cache';
+  String get settings_storage => '저장소 및 캐시';
 
   @override
-  String get settings_storage_usage => 'Storage Usage';
+  String get settings_storage_usage => '저장소 사용량';
 
   @override
-  String get settings_storage_usage_subtitle => 'Current space used by caches';
+  String get settings_storage_usage_subtitle => '현재 캐시 사용 공간';
 
   @override
-  String get settings_storage_subtitle =>
-      'Manage local caches and storage limits';
+  String get settings_storage_subtitle => '로컬 캐시 및 저장 용량 제한 관리';
 
   @override
   String get performers_field_name => '이름';
