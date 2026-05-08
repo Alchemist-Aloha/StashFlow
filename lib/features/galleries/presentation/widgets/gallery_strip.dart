@@ -27,6 +27,10 @@ class GalleryStrip extends ConsumerWidget {
 
     final int kPrefetchDistance = StashImage.defaultPrefetchDistance;
 
+    final contentPadding = context.dimensions.spacingMedium;
+    final separatorWidth = context.dimensions.spacingSmall;
+    final stride = effectiveItemWidth + separatorWidth;
+
     // Initial prefetch
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final initialCount = galleries.length < kPrefetchDistance
@@ -35,15 +39,16 @@ class GalleryStrip extends ConsumerWidget {
       for (var i = 0; i < initialCount; i++) {
         StashImage.prefetch(
           context,
-          imageUrl: galleries[i].coverPath ??
-              '/gallery/${galleries[i].id}/thumbnail',
+          imageUrl:
+              galleries[i].coverPath ?? '/gallery/${galleries[i].id}/thumbnail',
           memCacheWidth: (effectiveItemWidth * 2).toInt(),
         );
       }
     });
 
     return SizedBox(
-      height: effectiveItemWidth * (9 / 16) +
+      height:
+          effectiveItemWidth * (9 / 16) +
           (80 * context.dimensions.fontSizeFactor),
       child: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
@@ -53,9 +58,6 @@ class GalleryStrip extends ConsumerWidget {
           }
 
           final offset = notification.metrics.pixels;
-          final contentPadding = context.dimensions.spacingMedium;
-          final separatorWidth = context.dimensions.spacingSmall;
-          final stride = effectiveItemWidth + separatorWidth;
           final visibleIndex = ((offset + contentPadding) / stride)
               .floor()
               .clamp(0, galleries.length - 1);
@@ -65,7 +67,8 @@ class GalleryStrip extends ConsumerWidget {
             if (ahead < galleries.length) {
               StashImage.prefetch(
                 context,
-                imageUrl: galleries[ahead].coverPath ??
+                imageUrl:
+                    galleries[ahead].coverPath ??
                     '/gallery/${galleries[ahead].id}/thumbnail',
                 memCacheWidth: (effectiveItemWidth * 2).toInt(),
               );
@@ -74,7 +77,8 @@ class GalleryStrip extends ConsumerWidget {
             if (behind >= 0) {
               StashImage.prefetch(
                 context,
-                imageUrl: galleries[behind].coverPath ??
+                imageUrl:
+                    galleries[behind].coverPath ??
                     '/gallery/${galleries[behind].id}/thumbnail',
                 memCacheWidth: (effectiveItemWidth * 2).toInt(),
               );

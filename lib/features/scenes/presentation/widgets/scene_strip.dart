@@ -27,10 +27,15 @@ class SceneStrip extends ConsumerWidget {
 
     final int kPrefetchDistance = StashImage.defaultPrefetchDistance;
 
+    final contentPadding = context.dimensions.spacingMedium;
+    final separatorWidth = context.dimensions.spacingSmall;
+    final stride = effectiveItemWidth + separatorWidth;
+
     // Initial prefetch
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final initialCount =
-          scenes.length < kPrefetchDistance ? scenes.length : kPrefetchDistance;
+      final initialCount = scenes.length < kPrefetchDistance
+          ? scenes.length
+          : kPrefetchDistance;
       for (var i = 0; i < initialCount; i++) {
         StashImage.prefetch(
           context,
@@ -41,8 +46,12 @@ class SceneStrip extends ConsumerWidget {
     });
 
     return SizedBox(
-      height: effectiveItemWidth * (9 / 16) +
-          (80 * context.dimensions.fontSizeFactor), // Estimate height based on SceneCard needs
+      height:
+          effectiveItemWidth * (9 / 16) +
+          (80 *
+              context
+                  .dimensions
+                  .fontSizeFactor), // Estimate height based on SceneCard needs
       child: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
           if (notification.metrics.axis != Axis.horizontal || scenes.isEmpty) {
@@ -50,9 +59,6 @@ class SceneStrip extends ConsumerWidget {
           }
 
           final offset = notification.metrics.pixels;
-          final contentPadding = context.dimensions.spacingMedium;
-          final separatorWidth = context.dimensions.spacingSmall;
-          final stride = effectiveItemWidth + separatorWidth;
           final visibleIndex = ((offset + contentPadding) / stride)
               .floor()
               .clamp(0, scenes.length - 1);
