@@ -209,8 +209,10 @@ class _ShellPageState extends ConsumerState<ShellPage> {
       });
     });
 
-    ref.listen(playerStateProvider.select((s) => s.navigationIntent),
-        (prev, next) {
+    ref.listen(playerStateProvider.select((s) => s.navigationIntent), (
+      prev,
+      next,
+    ) {
       if (next != null && mounted) {
         for (final action in next.actions) {
           if (action.isReplacement) {
@@ -232,9 +234,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
       mainPageGravityOrientationProvider,
     );
 
-    final isVideoFullScreen =
-        playerState.isFullScreen ||
-        isTiktokFullScreen;
+    final isVideoFullScreen = playerState.isFullScreen || isTiktokFullScreen;
     _syncMainPageOrientations(
       allowGravity: allowMainPageGravityOrientation,
       isVideoFullScreen: isVideoFullScreen,
@@ -328,12 +328,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
       children: [
         Positioned.fill(child: RepaintBoundary(child: navigationShell)),
         if (!hideMiniPlayer)
-          const Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: MiniPlayer(),
-          ),
+          const Positioned(left: 0, right: 0, bottom: 0, child: MiniPlayer()),
         const Positioned.fill(child: GlobalFullscreenOverlay()),
       ],
     );
@@ -375,8 +370,8 @@ class _ShellPageState extends ConsumerState<ShellPage> {
       ];
       for (int i = 0; i < visibleTabs.length && i < digitKeys.length; i++) {
         final index = i;
-        bindings[SingleActivator(digitKeys[i], control: true)] =
-            () => onDestinationSelected(index);
+        bindings[SingleActivator(digitKeys[i], control: true)] = () =>
+            onDestinationSelected(index);
       }
 
       // Add back bind
@@ -415,49 +410,49 @@ class _ShellPageState extends ConsumerState<ShellPage> {
       },
       child: Scaffold(
         body: Listener(
-            onPointerSignal: (pointerSignal) {
-              if (isDesktop && pointerSignal is PointerScrollEvent) {
-                if (pointerSignal.scrollDelta.dx.abs() > 30) {
-                  final now = DateTime.now();
-                  if (_lastHorizontalSwipeTime == null ||
-                      now.difference(_lastHorizontalSwipeTime!) >
-                          _horizontalSwipeThreshold) {
-                    if (pointerSignal.scrollDelta.dx < -30) {
-                      // Swipe Right (negative dx) -> Go Back
-                      if (context.canPop()) {
-                        _lastHorizontalSwipeTime = now;
-                        context.pop();
-                      }
-                    } else if (pointerSignal.scrollDelta.dx > 30) {
-                      // Swipe Left (positive dx) -> Go Forward (if possible)
-                      // GoRouter doesn't have a simple goForward,
-                      // but we can at least support Back for now as it's most expected.
+          onPointerSignal: (pointerSignal) {
+            if (isDesktop && pointerSignal is PointerScrollEvent) {
+              if (pointerSignal.scrollDelta.dx.abs() > 30) {
+                final now = DateTime.now();
+                if (_lastHorizontalSwipeTime == null ||
+                    now.difference(_lastHorizontalSwipeTime!) >
+                        _horizontalSwipeThreshold) {
+                  if (pointerSignal.scrollDelta.dx < -30) {
+                    // Swipe Right (negative dx) -> Go Back
+                    if (context.canPop()) {
+                      _lastHorizontalSwipeTime = now;
+                      context.pop();
                     }
+                  } else if (pointerSignal.scrollDelta.dx > 30) {
+                    // Swipe Left (positive dx) -> Go Forward (if possible)
+                    // GoRouter doesn't have a simple goForward,
+                    // but we can at least support Back for now as it's most expected.
                   }
                 }
               }
-            },
-            child: bodyContent,
-          ),
-          bottomNavigationBar: (isFullScreen || !isMobile)
-              ? null
-              : SafeArea(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: NavigationBar(
-                          selectedIndex: currentUiIndex,
-                          destinations: navigationDestinations,
-                          onDestinationSelected: onDestinationSelected,
-                          labelBehavior: NavigationDestinationLabelBehavior
-                              .alwaysShow,
-                          height: 72,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+            }
+          },
+          child: bodyContent,
         ),
+        bottomNavigationBar: (isFullScreen || !isMobile)
+            ? null
+            : SafeArea(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: NavigationBar(
+                        selectedIndex: currentUiIndex,
+                        destinations: navigationDestinations,
+                        onDestinationSelected: onDestinationSelected,
+                        labelBehavior:
+                            NavigationDestinationLabelBehavior.alwaysShow,
+                        height: 72,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+      ),
     );
   }
 }
