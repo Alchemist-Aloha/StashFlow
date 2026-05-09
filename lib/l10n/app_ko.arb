@@ -821,5 +821,21 @@
   "settings_storage": "저장소 및 캐시",
   "settings_storage_usage": "저장소 사용량",
   "settings_storage_usage_subtitle": "현재 캐시 사용 공간",
-  "settings_storage_subtitle": "로컬 캐시 및 저장 용량 제한 관리"
+  "settings_storage_subtitle": "로컬 캐시 및 저장 용량 제한 관리",
+  "common_select": "{label} 선택",
+  "@common_select": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "common_saved_to": "{path}에 저장됨",
+  "@common_saved_to": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  }
 }

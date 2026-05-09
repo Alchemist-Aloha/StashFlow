@@ -821,5 +821,21 @@
   "settings_storage": "ストレージとキャッシュ",
   "settings_storage_usage": "ストレージ使用量",
   "settings_storage_usage_subtitle": "キャッシュの使用容量",
-  "settings_storage_subtitle": "ローカルキャッシュとストレージ制限の管理"
+  "settings_storage_subtitle": "ローカルキャッシュとストレージ制限の管理",
+  "common_select": "{label}を選択",
+  "@common_select": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "common_saved_to": "{path} に保存されました",
+  "@common_saved_to": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  }
 }

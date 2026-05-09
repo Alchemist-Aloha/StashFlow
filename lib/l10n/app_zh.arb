@@ -821,5 +821,21 @@
   "settings_storage": "存储与缓存",
   "settings_storage_usage": "存储占用",
   "settings_storage_usage_subtitle": "当前缓存占用空间",
-  "settings_storage_subtitle": "管理本地缓存和存储限制"
+  "settings_storage_subtitle": "管理本地缓存和存储限制",
+  "common_select": "选择 {label}",
+  "@common_select": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "common_saved_to": "已保存到 {path}",
+  "@common_saved_to": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  }
 }

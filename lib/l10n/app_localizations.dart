@@ -735,7 +735,7 @@ abstract class AppLocalizations {
   /// No description provided for @common_loading.
   ///
   /// In en, this message translates to:
-  /// **'Loading...'**
+  /// **'Loading'**
   String get common_loading;
 
   /// No description provided for @common_unavailable.
@@ -4259,6 +4259,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saving image...'**
   String get saving_image;
+
+  /// No description provided for @common_select.
+  ///
+  /// In en, this message translates to:
+  /// **'Select {label}'**
+  String common_select(String label);
+
+  /// No description provided for @common_saved_to.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to {path}'**
+  String common_saved_to(String path);
 }
 
 class _AppLocalizationsDelegate

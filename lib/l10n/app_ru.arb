@@ -89,7 +89,7 @@
   "common_favorite": "избранное",
   "common_unfavorite": "убрать из избр.",
   "common_version": "версия",
-  "common_loading": "загрузка",
+  "common_loading": "Загрузка",
   "common_unavailable": "недоступно",
   "common_details": "детали",
   "common_title": "название",
@@ -821,5 +821,21 @@
   "settings_storage": "Хранилище и кэш",
   "settings_storage_usage": "Использование диска",
   "settings_storage_usage_subtitle": "Место, занятое кэшем",
-  "settings_storage_subtitle": "Управление кэшем и лимитами хранилища"
+  "settings_storage_subtitle": "Управление кэшем и лимитами хранилища",
+  "common_select": "Выберите {label}",
+  "@common_select": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "common_saved_to": "Сохранено в {path}",
+  "@common_saved_to": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  }
 }

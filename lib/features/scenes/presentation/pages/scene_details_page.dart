@@ -175,7 +175,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Saved to $finalPath'),
+              content: Text(context.l10n.common_saved_to(finalPath)),
               action: SnackBarAction(
                 label: context.l10n.common_show,
                 onPressed: () => launchUrl(Uri.file(baseDir.path)),

@@ -130,7 +130,7 @@
   "common_favorite": "Favorite",
   "common_unfavorite": "Unfavorite",
   "common_version": "Version",
-  "common_loading": "Loading...",
+  "common_loading": "Loading",
   "common_unavailable": "Unavailable",
   "common_details": "Details",
   "common_title": "Title",
@@ -899,5 +899,21 @@
       }
     }
   },
-  "saving_image": "Saving image..."
+  "saving_image": "Saving image...",
+  "common_select": "Select {label}",
+  "@common_select": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "common_saved_to": "Saved to {path}",
+  "@common_saved_to": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  }
 }

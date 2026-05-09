@@ -2216,4 +2216,14 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get saving_image => '이미지 저장 중...';
+
+  @override
+  String common_select(String label) {
+    return '$label 선택';
+  }
+
+  @override
+  String common_saved_to(String path) {
+    return '$path에 저장됨';
+  }
 }

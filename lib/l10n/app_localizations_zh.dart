@@ -2194,6 +2194,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get saving_image => '正在保存图片...';
+
+  @override
+  String common_select(String label) {
+    return '选择 $label';
+  }
+
+  @override
+  String common_saved_to(String path) {
+    return '已保存到 $path';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).

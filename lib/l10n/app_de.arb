@@ -89,7 +89,7 @@
   "common_favorite": "Favorit",
   "common_unfavorite": "entfavorisieren",
   "common_version": "Version",
-  "common_loading": "lädt",
+  "common_loading": "Wird geladen",
   "common_unavailable": "nicht verfügbar",
   "common_details": "Details",
   "common_title": "Titel",
@@ -842,5 +842,21 @@
   "settings_storage": "Speicher & Cache",
   "settings_storage_usage": "Speicherbelegung",
   "settings_storage_usage_subtitle": "Aktueller Cache-Verbrauch",
-  "settings_storage_subtitle": "Lokale Caches und Speichergrenzen verwalten"
+  "settings_storage_subtitle": "Lokale Caches und Speichergrenzen verwalten",
+  "common_select": "Wähle {label}",
+  "@common_select": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "common_saved_to": "Gespeichert unter {path}",
+  "@common_saved_to": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  }
 }
