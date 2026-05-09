@@ -33,10 +33,13 @@ class GlobalFullscreenOverlay extends ConsumerStatefulWidget {
   const GlobalFullscreenOverlay({super.key});
 
   @override
-  ConsumerState<GlobalFullscreenOverlay> createState() => _GlobalFullscreenOverlayState();
+  ConsumerState<GlobalFullscreenOverlay> createState() =>
+      _GlobalFullscreenOverlayState();
 }
 
-class _GlobalFullscreenOverlayState extends ConsumerState<GlobalFullscreenOverlay> with SingleTickerProviderStateMixin {
+class _GlobalFullscreenOverlayState
+    extends ConsumerState<GlobalFullscreenOverlay>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<Offset> _offsetAnimation;
   bool _isVisible = false;
@@ -64,17 +67,19 @@ class _GlobalFullscreenOverlayState extends ConsumerState<GlobalFullscreenOverla
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-    _offsetAnimation = Tween<Offset>(
-      begin: const Offset(0, 1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _offsetAnimation =
+        Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeInOut,
+          ),
+        );
 
     // Check initial state
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final isFullScreen = ref.read(playerStateProvider.select((s) => s.isFullScreen));
+      final isFullScreen = ref.read(
+        playerStateProvider.select((s) => s.isFullScreen),
+      );
       if (isFullScreen) {
         _onFullScreenChanged(true);
       }
@@ -298,10 +303,10 @@ class _GlobalFullscreenOverlayState extends ConsumerState<GlobalFullscreenOverla
     }
 
     final notifier = ref.read(playerStateProvider.notifier);
-    
+
     // Synchronize background to active scene before exiting
     notifier.syncBackgroundToActiveScene(context);
-    
+
     // Trigger the hide animation and state change
     notifier.setFullScreen(false);
     notifier.setViewMode(PlayerViewMode.inline);
@@ -361,9 +366,7 @@ class _GlobalFullscreenOverlayState extends ConsumerState<GlobalFullscreenOverla
           final videoHeight = playerState.videoHeight;
           final isVideoReady =
               videoWidth != null && videoHeight != null && videoHeight > 0;
-          final aspectRatio = isVideoReady
-              ? videoWidth / videoHeight
-              : 16 / 9;
+          final aspectRatio = isVideoReady ? videoWidth / videoHeight : 16 / 9;
 
           if (playerState.isBuffering && !_showBufferingSpinner) {
             _bufferingDisplayTimer ??= Timer(
@@ -413,8 +416,7 @@ class _GlobalFullscreenOverlayState extends ConsumerState<GlobalFullscreenOverla
                           textAlign: _subtitleTextAlign(
                             playerState.subtitleTextAlignment,
                           ),
-                          bottomRatio:
-                              playerState.subtitlePositionBottomRatio,
+                          bottomRatio: playerState.subtitlePositionBottomRatio,
                           constraints: constraints,
                           controller: controller,
                           aspectRatio: aspectRatio,
@@ -489,10 +491,7 @@ class _GlobalFullscreenOverlayState extends ConsumerState<GlobalFullscreenOverla
         child: SlideTransition(
           key: const ValueKey('global_fullscreen_overlay_slide'),
           position: _offsetAnimation,
-          child: Material(
-            color: Colors.black,
-            child: content,
-          ),
+          child: Material(color: Colors.black, child: content),
         ),
       ),
     );

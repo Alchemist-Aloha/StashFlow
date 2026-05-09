@@ -398,9 +398,11 @@ class _ShellPageState extends ConsumerState<ShellPage> {
     final isDesktop = ref.watch(desktopCapabilitiesProvider);
 
     return PopScope(
-      canPop: !isFullScreen && !context.canPop(),
+      canPop: !isFullScreen,
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop && isFullScreen) {
+          // Back gesture was blocked because canPop=false in fullscreen mode.
+          // Exit fullscreen instead of navigating back.
           if (playerState.isFullScreen) {
             final notifier = ref.read(playerStateProvider.notifier);
             notifier.syncBackgroundToActiveScene(context);
