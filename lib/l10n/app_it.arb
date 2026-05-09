@@ -89,7 +89,7 @@
   "common_favorite": "preferito",
   "common_unfavorite": "rimuovi preferito",
   "common_version": "versione",
-  "common_loading": "caricamento",
+  "common_loading": "Caricamento",
   "common_unavailable": "non disponibile",
   "common_details": "dettagli",
   "common_title": "titolo",
@@ -826,5 +826,21 @@
   "settings_storage": "Archiviazione e cache",
   "settings_storage_usage": "Utilizzo archiviazione",
   "settings_storage_usage_subtitle": "Spazio usato dalle cache",
-  "settings_storage_subtitle": "Gestisci cache locali e limiti di archiviazione"
+  "settings_storage_subtitle": "Gestisci cache locali e limiti di archiviazione",
+  "common_select": "Seleziona {label}",
+  "@common_select": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "common_saved_to": "Salvato in {path}",
+  "@common_saved_to": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  }
 }

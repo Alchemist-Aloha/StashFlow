@@ -372,7 +372,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get common_version => 'version';
 
   @override
-  String get common_loading => 'chargement';
+  String get common_loading => 'Chargement';
 
   @override
   String get common_unavailable => 'indisponible';
@@ -2313,4 +2313,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get saving_image => 'Enregistrement de l\'image...';
+
+  @override
+  String common_select(String label) {
+    return 'Sélectionner $label';
+  }
+
+  @override
+  String common_saved_to(String path) {
+    return 'Enregistré sous $path';
+  }
 }

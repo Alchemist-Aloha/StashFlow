@@ -370,7 +370,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get common_version => 'версия';
 
   @override
-  String get common_loading => 'загрузка';
+  String get common_loading => 'Загрузка';
 
   @override
   String get common_unavailable => 'недоступно';
@@ -2293,4 +2293,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get saving_image => 'Сохранение изображения...';
+
+  @override
+  String common_select(String label) {
+    return 'Выберите $label';
+  }
+
+  @override
+  String common_saved_to(String path) {
+    return 'Сохранено в $path';
+  }
 }

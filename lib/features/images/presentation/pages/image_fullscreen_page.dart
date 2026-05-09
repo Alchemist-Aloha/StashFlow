@@ -276,7 +276,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Saved to $savePath'),
+              content: Text(context.l10n.common_saved_to(savePath)),
               action: SnackBarAction(
                 label: context.l10n.common_show,
                 onPressed: () => launchUrl(Uri.file(baseDir.path)),

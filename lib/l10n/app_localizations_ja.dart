@@ -2216,4 +2216,14 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get saving_image => '画像を保存中...';
+
+  @override
+  String common_select(String label) {
+    return '$labelを選択';
+  }
+
+  @override
+  String common_saved_to(String path) {
+    return '$path に保存されました';
+  }
 }

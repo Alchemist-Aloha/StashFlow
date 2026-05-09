@@ -495,7 +495,7 @@ class _ImageFilterPanelState extends ConsumerState<ImageFilterPanel> {
                   final result = await showDialog<List<T>>(
                     context: context,
                     builder: (context) => EntityPicker<T>(
-                      title: 'Select $label',
+                      title: context.l10n.common_select(label),
                       providerType: providerType,
                       multiSelect: true,
                       initialSelection: selectedIds,
