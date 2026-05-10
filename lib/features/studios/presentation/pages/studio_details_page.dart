@@ -126,12 +126,53 @@ class StudioDetailsPage extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          studio.name,
-                          style: context.textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: context.colors.onSurface,
-                          ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                studio.name,
+                                style: context.textTheme.headlineMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: context.colors.onSurface,
+                                    ),
+                              ),
+                            ),
+                            IconButton.filledTonal(
+                              icon: Icon(
+                                studio.favorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                              ),
+                              tooltip: studio.favorite
+                                  ? context.l10n.common_remove_favorite
+                                  : context.l10n.common_add_favorite,
+                              onPressed: () async {
+                                try {
+                                  await ref
+                                      .read(studioRepositoryProvider)
+                                      .setStudioFavorite(
+                                        studio.id,
+                                        !studio.favorite,
+                                      );
+                                  ref.invalidate(
+                                    studioDetailsProvider(studio.id),
+                                  );
+                                  ref.invalidate(studioListProvider);
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Failed to update favorite: $e',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                            ),
+                          ],
                         ),
                         if (studio.details != null &&
                             studio.details!.trim().isNotEmpty) ...[
