@@ -1095,7 +1095,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                               ),
                                               SizedBox(height: context.dimensions.spacingMedium),
                                               Text(
-                                                'Failed to load. Tap to retry.',
+                                                context.l10n.failed_to_load_tap_to_retry,
                                                 style: const TextStyle(
                                                   color: Colors.white70,
                                                 ),

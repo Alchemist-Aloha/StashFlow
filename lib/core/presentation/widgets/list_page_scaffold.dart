@@ -549,7 +549,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            'Recent Searches',
+                                            context.l10n.recent_searches,
                                             style: context.textTheme.titleSmall
                                                 ?.copyWith(
                                                   color: context

@@ -858,5 +858,15 @@
         "type": "String"
       }
     }
-  }
+  },
+  "recent_searches": "Letzte Suchanfragen",
+  "initializing_player": "Spieler initialisieren...",
+  "sort_scenes": "Szenen sortieren",
+  "failed_to_load_tap_to_retry": "Fehler beim Laden. Tippen Sie, um es erneut zu versuchen.",
+  "would_you_like_to_visit_the_release_page_to_download_it": "Möchten Sie die Release-Seite besuchen, um es herunterzuladen?",
+  "to_get_started_configure_stash_server": "Um zu beginnen, müssen Sie Ihre Stash-Server-Verbindungsdetails konfigurieren.",
+  "loading": "Wird geladen",
+  "wip": "WIP",
+  "performer_filters": "Darstellerfilter",
+  "update_available": "Eine neue Version von StashFlow ({version}) ist verfügbar."
 }

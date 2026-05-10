@@ -837,5 +837,15 @@
         "type": "String"
       }
     }
-  }
+  },
+  "recent_searches": "Recherches récentes",
+  "initializing_player": "Initialisation du lecteur...",
+  "sort_scenes": "Trier les scènes",
+  "failed_to_load_tap_to_retry": "Échec du chargement. Appuyez pour réessayer.",
+  "would_you_like_to_visit_the_release_page_to_download_it": "Souhaitez-vous visiter la page de publication pour le télécharger ?",
+  "to_get_started_configure_stash_server": "Pour commencer, vous devez configurer les détails de connexion de votre serveur Stash.",
+  "loading": "Chargement",
+  "wip": "WIP",
+  "performer_filters": "Filtres d'artistes",
+  "update_available": "Une nouvelle version de StashFlow ({version}) est disponible."
 }

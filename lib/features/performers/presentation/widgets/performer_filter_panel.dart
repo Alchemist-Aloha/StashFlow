@@ -51,7 +51,7 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Performer Filters',
+                      context.l10n.performer_filters,
                       style: context.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),

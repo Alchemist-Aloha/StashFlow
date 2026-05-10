@@ -837,5 +837,15 @@
         "type": "String"
       }
     }
-  }
+  },
+  "recent_searches": "最近の検索",
+  "initializing_player": "プレーヤーを初期化しています...",
+  "sort_scenes": "シーンを並べ替え",
+  "failed_to_load_tap_to_retry": "読み込みに失敗しました。タップして再試行してください。",
+  "would_you_like_to_visit_the_release_page_to_download_it": "リリース ページにアクセスしてダウンロードしますか？",
+  "to_get_started_configure_stash_server": "開始するには、Stash サーバーの接続設定を行う必要があります。",
+  "loading": "読み込み中",
+  "wip": "WIP",
+  "performer_filters": "出演者フィルター",
+  "update_available": "StashFlowの新しいバージョン ({version}) が利用可能です。"
 }

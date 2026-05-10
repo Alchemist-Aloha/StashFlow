@@ -109,11 +109,11 @@ class _ShellPageState extends ConsumerState<ShellPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'A new version of StashFlow (${updateInfo.latestVersion}) is available.',
+              context.l10n.update_available(updateInfo.latestVersion),
             ),
             const SizedBox(height: 12),
-            const Text(
-              'Would you like to visit the release page to download it?',
+            Text(
+              context.l10n.would_you_like_to_visit_the_release_page_to_download_it,
             ),
           ],
         ),
@@ -155,8 +155,8 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         barrierDismissible: false,
         builder: (context) => AlertDialog(
           title: Text(context.l10n.common_setup_required),
-          content: const Text(
-            'To get started, you need to configure your Stash server connection details.',
+          content: Text(
+            context.l10n.to_get_started_configure_stash_server,
           ),
           actions: [
             TextButton(

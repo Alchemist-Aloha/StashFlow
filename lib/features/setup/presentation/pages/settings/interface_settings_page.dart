@@ -244,7 +244,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                                   borderRadius: BorderRadius.circular(999),
                                 ),
                                 child: Text(
-                                  'WIP',
+                                  context.l10n.wip,
                                   style: textTheme.labelSmall?.copyWith(
                                     color: colorScheme.onSurfaceVariant,
                                     fontWeight: FontWeight.bold,
