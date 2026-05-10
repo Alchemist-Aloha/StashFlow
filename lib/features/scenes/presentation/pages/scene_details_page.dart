@@ -111,9 +111,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   Future<void> _saveVideoToGallery(Scene scene) async {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Saving to gallery...'),
-        duration: Duration(seconds: 1),
+      SnackBar(
+        content: Text(context.l10n.saving_video),
+        duration: const Duration(seconds: 1),
       ),
     );
 
@@ -126,23 +126,20 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         throw Exception('No stream URL found');
       }
 
-      // 'gal' only supports Android, iOS, Windows, and macOS.
-      // For Web and Linux, use the system browser to handle the download.
-      if (kIsWeb || (Platform.isLinux)) {
-        final uri = Uri.parse(videoUrl);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-          return;
-        } else {
-          throw Exception('Could not launch download URL');
-        }
-      }
+      if (kIsWeb) return;
 
       final headers = ref.read(mediaHeadersProvider);
-      final tempDir = await getTemporaryDirectory();
-      // Use a temporary name, we will rename it once we know the content type
-      final tempPath =
-          '${tempDir.path}/stash_download_${DateTime.now().millisecondsSinceEpoch}.tmp';
+
+      // Determine base directory
+      final bool isLinux = !kIsWeb && Platform.isLinux;
+      final Directory baseDir = isLinux
+          ? (await getDownloadsDirectory() ?? await getTemporaryDirectory())
+          : await getTemporaryDirectory();
+
+      final safeTitle = scene.title.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
+      final baseFileName =
+          'stash_${scene.id}${safeTitle.isNotEmpty ? "_$safeTitle" : ""}';
+      final tempPath = '${baseDir.path}/$baseFileName.tmp';
 
       final response = await Dio().download(
         videoUrl,
@@ -155,11 +152,38 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       if (contentType != null) {
         if (contentType.contains('webm')) {
           extension = 'webm';
-        } else if (contentType.contains('mkv')) {
+        } else if (contentType.contains('mkv') ||
+            contentType.contains('x-matroska')) {
           extension = 'mkv';
         } else if (contentType.contains('avi')) {
           extension = 'avi';
         }
+      }
+
+      final finalPath = '${baseDir.path}/$baseFileName.$extension';
+      final file = File(tempPath);
+      if (await file.exists()) {
+        final finalFile = File(finalPath);
+        if (await finalFile.exists()) {
+          await finalFile.delete();
+        }
+        await file.rename(finalPath);
+      }
+
+      // 'gal' only supports Android, iOS, Windows, and macOS.
+      if (isLinux) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(context.l10n.common_saved_to(finalPath)),
+              action: SnackBarAction(
+                label: context.l10n.common_show,
+                onPressed: () => launchUrl(Uri.file(baseDir.path)),
+              ),
+            ),
+          );
+        }
+        return;
       }
 
       bool hasAccess = await Gal.hasAccess(toAlbum: true);
@@ -168,12 +192,6 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       }
       if (!hasAccess) {
         throw Exception('Gallery access denied');
-      }
-
-      final finalPath = '${tempDir.path}/stash_${scene.id}.$extension';
-      final file = File(tempPath);
-      if (await file.exists()) {
-        await file.rename(finalPath);
       }
 
       try {
@@ -187,7 +205,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Saved to StashFlow album')),
+          SnackBar(content: Text(context.l10n.saved_to_album)),
         );
       }
     } on GalException catch (e) {
@@ -200,13 +218,13 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       };
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gallery Error: $message')),
+          SnackBar(content: Text(context.l10n.gallery_error(message))),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save: ${e.toString()}')),
+          SnackBar(content: Text(context.l10n.failed_to_save(e.toString()))),
         );
       }
     }
@@ -239,14 +257,15 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       appBar: AppBar(
         title: Text(context.l10n.details_scene),
         actions: [
-          sceneAsync.maybeWhen(
-            data: (scene) => IconButton(
-              tooltip: context.l10n.common_download,
-              icon: const Icon(Icons.download_outlined),
-              onPressed: () => _saveVideoToGallery(scene),
+          if (!kIsWeb)
+            sceneAsync.maybeWhen(
+              data: (scene) => IconButton(
+                tooltip: context.l10n.common_download,
+                icon: const Icon(Icons.download_outlined),
+                onPressed: () => _saveVideoToGallery(scene),
+              ),
+              orElse: () => const SizedBox.shrink(),
             ),
-            orElse: () => const SizedBox.shrink(),
-          ),
           if (scrapeEnabled)
             sceneAsync.maybeWhen(
               data: (scene) => IconButton(
@@ -535,8 +554,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         for (var i = 1; i <= 5; i++)
-          GestureDetector(
-            onTap: () async {
+          IconButton(
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            tooltip: '$i Star${i > 1 ? 's' : ''}',
+            onPressed: () async {
               final currentRating = scene.rating100 ?? 0;
               final newRating = (currentRating == i * 20) ? 0 : i * 20;
 
@@ -561,19 +583,19 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 }
               }
             },
-            child: Icon(
+            icon: Icon(
               (scene.rating100 ?? 0) >= i * 20 ? Icons.star : Icons.star_border,
               color: context.colors.ratingColor,
               size: 28,
             ),
           ),
-        if (scene.rating100 != null && scene.rating100! > 0)
-          Text(
-            (scene.rating100! / 20).toStringAsFixed(1),
-            style: context.textTheme.bodyMedium?.copyWith(
-              color: context.colors.onSurface.withValues(alpha: 0.7),
-            ),
-          ),
+        // if (scene.rating100 != null && scene.rating100! > 0)
+        //   Text(
+        //     (scene.rating100! / 20).toStringAsFixed(1),
+        //     style: context.textTheme.bodyMedium?.copyWith(
+        //       color: context.colors.onSurface.withValues(alpha: 0.7),
+        //     ),
+        //   ),
         FilledButton.tonalIcon(
           onPressed: () async {
             try {

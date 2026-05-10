@@ -89,7 +89,7 @@
   "common_favorite": "favori",
   "common_unfavorite": "retirer des favoris",
   "common_version": "version",
-  "common_loading": "chargement",
+  "common_loading": "Chargement",
   "common_unavailable": "indisponible",
   "common_details": "détails",
   "common_title": "titre",
@@ -790,5 +790,62 @@
   "common_pt": "{value} pt",
   "common_percent": "{value}%",
   "settings_playback_direct_play": "Lecture directe lors de la navigation entre scènes",
-  "settings_playback_direct_play_subtitle": "Lors de la navigation depuis une autre scène en cours de lecture, lire directement la nouvelle scène"
+  "settings_playback_direct_play_subtitle": "Lors de la navigation depuis une autre scène en cours de lecture, lire directement la nouvelle scène",
+  "saving_video": "Enregistrement dans la galerie...",
+  "saved_to_album": "Enregistré dans l'album StashFlow",
+  "gallery_error": "Erreur de galerie: {message}",
+  "failed_to_save": "Échec de l'enregistrement: {error}",
+  "saving_image": "Enregistrement de l'image...",
+  "@gallery_error": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "@failed_to_save": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "filter_group_general": "Général",
+  "filter_group_performer": "Interprète",
+  "filter_group_library": "Bibliothèque",
+  "filter_group_metadata": "Métadonnées",
+  "filter_group_media_info": "Infos média",
+  "filter_group_usage": "Utilisation",
+  "filter_group_system": "Système",
+  "filter_group_physical": "Physique",
+  "settings_storage": "Stockage et cache",
+  "settings_storage_usage": "Utilisation du stockage",
+  "settings_storage_usage_subtitle": "Espace utilisé par les caches",
+  "settings_storage_subtitle": "Gérer les caches locaux et les limites de stockage",
+  "common_select": "Sélectionner {label}",
+  "@common_select": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "common_saved_to": "Enregistré sous {path}",
+  "@common_saved_to": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "recent_searches": "Recherches récentes",
+  "initializing_player": "Initialisation du lecteur...",
+  "sort_scenes": "Trier les scènes",
+  "failed_to_load_tap_to_retry": "Échec du chargement. Appuyez pour réessayer.",
+  "would_you_like_to_visit_the_release_page_to_download_it": "Souhaitez-vous visiter la page de publication pour le télécharger ?",
+  "to_get_started_configure_stash_server": "Pour commencer, vous devez configurer les détails de connexion de votre serveur Stash.",
+  "loading": "Chargement",
+  "wip": "WIP",
+  "performer_filters": "Filtres d'artistes",
+  "update_available": "Une nouvelle version de StashFlow ({version}) est disponible."
 }

@@ -89,7 +89,7 @@
   "common_favorite": "избранное",
   "common_unfavorite": "убрать из избр.",
   "common_version": "версия",
-  "common_loading": "загрузка",
+  "common_loading": "Загрузка",
   "common_unavailable": "недоступно",
   "common_details": "детали",
   "common_title": "название",
@@ -790,5 +790,62 @@
   "common_pt": "{value} пт",
   "common_percent": "{value}%",
   "settings_playback_direct_play": "Прямое воспроизведение при навигации по сценам",
-  "settings_playback_direct_play_subtitle": "При переходе из другой воспроизводящейся сцены, сразу включать новую сцену"
+  "settings_playback_direct_play_subtitle": "При переходе из другой воспроизводящейся сцены, сразу включать новую сцену",
+  "saving_video": "Сохранение в галерею...",
+  "saved_to_album": "Сохранено в альбом StashFlow",
+  "gallery_error": "Ошибка галереи: {message}",
+  "failed_to_save": "Не удалось сохранить: {error}",
+  "saving_image": "Сохранение изображения...",
+  "@gallery_error": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "@failed_to_save": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "filter_group_general": "Общие",
+  "filter_group_performer": "Исполнитель",
+  "filter_group_library": "Библиотека",
+  "filter_group_metadata": "Метаданные",
+  "filter_group_media_info": "Инфо о медиа",
+  "filter_group_usage": "Использование",
+  "filter_group_system": "Система",
+  "filter_group_physical": "Физический",
+  "settings_storage": "Хранилище и кэш",
+  "settings_storage_usage": "Использование диска",
+  "settings_storage_usage_subtitle": "Место, занятое кэшем",
+  "settings_storage_subtitle": "Управление кэшем и лимитами хранилища",
+  "common_select": "Выберите {label}",
+  "@common_select": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "common_saved_to": "Сохранено в {path}",
+  "@common_saved_to": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "recent_searches": "Недавние поиски",
+  "initializing_player": "Инициализация плеера...",
+  "sort_scenes": "Сортировать сцены",
+  "failed_to_load_tap_to_retry": "Не удалось загрузить. Нажмите, чтобы повторить.",
+  "would_you_like_to_visit_the_release_page_to_download_it": "Хотите посетить страницу релиза, чтобы скачать его?",
+  "to_get_started_configure_stash_server": "Для начала вам необходимо настроить данные подключения к серверу Stash.",
+  "loading": "Загрузка",
+  "wip": "WIP",
+  "performer_filters": "Фильтры исполнителей",
+  "update_available": "Доступна новая версия StashFlow ({version})."
 }

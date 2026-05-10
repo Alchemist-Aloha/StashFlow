@@ -751,28 +751,28 @@ class AppLocalizationsZh extends AppLocalizations {
   String get filter_modifier => '修饰符';
 
   @override
-  String get filter_group_general => 'General';
+  String get filter_group_general => '常规';
 
   @override
-  String get filter_group_performer => 'Performer';
+  String get filter_group_performer => '演员';
 
   @override
-  String get filter_group_library => 'Library';
+  String get filter_group_library => '媒体库';
 
   @override
-  String get filter_group_metadata => 'Metadata';
+  String get filter_group_metadata => '元数据';
 
   @override
-  String get filter_group_media_info => 'Media Info';
+  String get filter_group_media_info => '媒体信息';
 
   @override
-  String get filter_group_usage => 'Usage';
+  String get filter_group_usage => '使用情况';
 
   @override
-  String get filter_group_system => 'System';
+  String get filter_group_system => '系统';
 
   @override
-  String get filter_group_physical => 'Physical';
+  String get filter_group_physical => '物理';
 
   @override
   String get filter_equals => '等于';
@@ -1892,17 +1892,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_storage_max_video_cache => '最大视频缓存 (MB)';
 
   @override
-  String get settings_storage => 'Storage & Cache';
+  String get settings_storage => '存储与缓存';
 
   @override
-  String get settings_storage_usage => 'Storage Usage';
+  String get settings_storage_usage => '存储占用';
 
   @override
-  String get settings_storage_usage_subtitle => 'Current space used by caches';
+  String get settings_storage_usage_subtitle => '当前缓存占用空间';
 
   @override
-  String get settings_storage_subtitle =>
-      'Manage local caches and storage limits';
+  String get settings_storage_subtitle => '管理本地缓存和存储限制';
 
   @override
   String get performers_field_name => '姓名';
@@ -2175,6 +2174,69 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String common_percent(int value) {
     return '$value%';
+  }
+
+  @override
+  String get saving_video => '正在保存到相册...';
+
+  @override
+  String get saved_to_album => '已保存到 StashFlow 相册';
+
+  @override
+  String gallery_error(String message) {
+    return '相册错误: $message';
+  }
+
+  @override
+  String failed_to_save(String error) {
+    return '保存失败: $error';
+  }
+
+  @override
+  String get saving_image => '正在保存图片...';
+
+  @override
+  String common_select(String label) {
+    return '选择 $label';
+  }
+
+  @override
+  String common_saved_to(String path) {
+    return '已保存到 $path';
+  }
+
+  @override
+  String get recent_searches => '最近搜索';
+
+  @override
+  String get initializing_player => '正在初始化播放器...';
+
+  @override
+  String get sort_scenes => '排序场景';
+
+  @override
+  String get failed_to_load_tap_to_retry => '加载失败。点击重试。';
+
+  @override
+  String get would_you_like_to_visit_the_release_page_to_download_it =>
+      '您想访问发布页面下载吗？';
+
+  @override
+  String get to_get_started_configure_stash_server =>
+      '要开始使用，您需要配置您的 Stash 服务器连接详细信息。';
+
+  @override
+  String get loading => '加载中';
+
+  @override
+  String get wip => 'WIP';
+
+  @override
+  String get performer_filters => '演员筛选';
+
+  @override
+  String update_available(String version) {
+    return 'StashFlow的更新版本 ($version) 已经发布。';
   }
 }
 
@@ -2925,6 +2987,30 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get filter_modifier => '修饰符';
 
   @override
+  String get filter_group_general => '常规';
+
+  @override
+  String get filter_group_performer => '演员';
+
+  @override
+  String get filter_group_library => '媒体库';
+
+  @override
+  String get filter_group_metadata => '元数据';
+
+  @override
+  String get filter_group_media_info => '媒体信息';
+
+  @override
+  String get filter_group_usage => '使用情况';
+
+  @override
+  String get filter_group_system => '系统';
+
+  @override
+  String get filter_group_physical => '物理';
+
+  @override
   String get filter_equals => '等于';
 
   @override
@@ -4042,6 +4128,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_storage_max_video_cache => '最大视频缓存 (MB)';
 
   @override
+  String get settings_storage => '存储与缓存';
+
+  @override
+  String get settings_storage_usage => '存储占用';
+
+  @override
+  String get settings_storage_usage_subtitle => '当前缓存占用空间';
+
+  @override
+  String get settings_storage_subtitle => '管理本地缓存和存储限制';
+
+  @override
   String get performers_field_name => '姓名';
 
   @override
@@ -4312,6 +4410,59 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String common_percent(int value) {
     return '$value%';
+  }
+
+  @override
+  String get saving_video => '正在保存到相册...';
+
+  @override
+  String get saved_to_album => '已保存到 StashFlow 相册';
+
+  @override
+  String gallery_error(String message) {
+    return '相册错误: $message';
+  }
+
+  @override
+  String failed_to_save(String error) {
+    return '保存失败: $error';
+  }
+
+  @override
+  String get saving_image => '正在保存图片...';
+
+  @override
+  String get recent_searches => '最近搜索';
+
+  @override
+  String get initializing_player => '正在初始化播放器...';
+
+  @override
+  String get sort_scenes => '排序场景';
+
+  @override
+  String get failed_to_load_tap_to_retry => '加载失败。点击重试。';
+
+  @override
+  String get would_you_like_to_visit_the_release_page_to_download_it =>
+      '您想访问发布页面下载吗？';
+
+  @override
+  String get to_get_started_configure_stash_server =>
+      '要开始使用，您需要配置您的 Stash 服务器连接详细信息。';
+
+  @override
+  String get loading => '加载中';
+
+  @override
+  String get wip => 'WIP';
+
+  @override
+  String get performer_filters => '演员筛选';
+
+  @override
+  String update_available(String version) {
+    return 'StashFlow的更新版本 ($version) 已经发布。';
   }
 }
 
@@ -5062,6 +5213,30 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get filter_modifier => '修饰符';
+
+  @override
+  String get filter_group_general => '一般';
+
+  @override
+  String get filter_group_performer => '演出者';
+
+  @override
+  String get filter_group_library => '媒體庫';
+
+  @override
+  String get filter_group_metadata => '元數據';
+
+  @override
+  String get filter_group_media_info => '媒體資訊';
+
+  @override
+  String get filter_group_usage => '使用情況';
+
+  @override
+  String get filter_group_system => '系統';
+
+  @override
+  String get filter_group_physical => '實體';
 
   @override
   String get filter_equals => '等于';
@@ -6183,6 +6358,18 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_storage_max_video_cache => '最大視訊快取 (MB)';
 
   @override
+  String get settings_storage => '儲存與快取';
+
+  @override
+  String get settings_storage_usage => '儲存佔用';
+
+  @override
+  String get settings_storage_usage_subtitle => '目前快取佔用空間';
+
+  @override
+  String get settings_storage_subtitle => '管理本地快取和儲存限制';
+
+  @override
   String get performers_field_name => '姓名';
 
   @override
@@ -6453,5 +6640,58 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String common_percent(int value) {
     return '$value%';
+  }
+
+  @override
+  String get saving_video => '正在儲存到相簿...';
+
+  @override
+  String get saved_to_album => '已儲存到 StashFlow 相簿';
+
+  @override
+  String gallery_error(String message) {
+    return '相簿錯誤: $message';
+  }
+
+  @override
+  String failed_to_save(String error) {
+    return '儲存失敗: $error';
+  }
+
+  @override
+  String get saving_image => '正在儲存圖片...';
+
+  @override
+  String get recent_searches => '最近搜尋';
+
+  @override
+  String get initializing_player => '正在初始化播放器...';
+
+  @override
+  String get sort_scenes => '排序場景';
+
+  @override
+  String get failed_to_load_tap_to_retry => '載入失敗。點擊重試。';
+
+  @override
+  String get would_you_like_to_visit_the_release_page_to_download_it =>
+      '您想訪問發佈頁面下載嗎？';
+
+  @override
+  String get to_get_started_configure_stash_server =>
+      '要開始使用，您需要配置您的 Stash 伺服器連接詳細資訊。';
+
+  @override
+  String get loading => '載入中';
+
+  @override
+  String get wip => 'WIP';
+
+  @override
+  String get performer_filters => '演員篩選';
+
+  @override
+  String update_available(String version) {
+    return 'StashFlow的更新版本 ($version) 已經發布。';
   }
 }

@@ -372,7 +372,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get common_version => 'Version';
 
   @override
-  String get common_loading => 'lädt';
+  String get common_loading => 'Wird geladen';
 
   @override
   String get common_unavailable => 'nicht verfügbar';
@@ -763,28 +763,28 @@ class AppLocalizationsDe extends AppLocalizations {
   String get filter_modifier => 'Modifikator';
 
   @override
-  String get filter_group_general => 'General';
+  String get filter_group_general => 'Allgemein';
 
   @override
-  String get filter_group_performer => 'Performer';
+  String get filter_group_performer => 'Darsteller';
 
   @override
-  String get filter_group_library => 'Library';
+  String get filter_group_library => 'Bibliothek';
 
   @override
-  String get filter_group_metadata => 'Metadata';
+  String get filter_group_metadata => 'Metadaten';
 
   @override
-  String get filter_group_media_info => 'Media Info';
+  String get filter_group_media_info => 'Medieninfo';
 
   @override
-  String get filter_group_usage => 'Usage';
+  String get filter_group_usage => 'Nutzung';
 
   @override
   String get filter_group_system => 'System';
 
   @override
-  String get filter_group_physical => 'Physical';
+  String get filter_group_physical => 'Physisch';
 
   @override
   String get filter_equals => 'Gleich';
@@ -1995,17 +1995,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_storage_max_video_cache => 'Maximaler Video-Cache (MB)';
 
   @override
-  String get settings_storage => 'Storage & Cache';
+  String get settings_storage => 'Speicher & Cache';
 
   @override
-  String get settings_storage_usage => 'Storage Usage';
+  String get settings_storage_usage => 'Speicherbelegung';
 
   @override
-  String get settings_storage_usage_subtitle => 'Current space used by caches';
+  String get settings_storage_usage_subtitle => 'Aktueller Cache-Verbrauch';
 
   @override
   String get settings_storage_subtitle =>
-      'Manage local caches and storage limits';
+      'Lokale Caches und Speichergrenzen verwalten';
 
   @override
   String get performers_field_name => 'Name';
@@ -2280,5 +2280,69 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String common_percent(int value) {
     return '$value%';
+  }
+
+  @override
+  String get saving_video => 'In Galerie speichern...';
+
+  @override
+  String get saved_to_album => 'Im StashFlow-Album gespeichert';
+
+  @override
+  String gallery_error(String message) {
+    return 'Galeriefehler: $message';
+  }
+
+  @override
+  String failed_to_save(String error) {
+    return 'Speichern fehlgeschlagen: $error';
+  }
+
+  @override
+  String get saving_image => 'Bild speichern...';
+
+  @override
+  String common_select(String label) {
+    return 'Wähle $label';
+  }
+
+  @override
+  String common_saved_to(String path) {
+    return 'Gespeichert unter $path';
+  }
+
+  @override
+  String get recent_searches => 'Letzte Suchanfragen';
+
+  @override
+  String get initializing_player => 'Spieler initialisieren...';
+
+  @override
+  String get sort_scenes => 'Szenen sortieren';
+
+  @override
+  String get failed_to_load_tap_to_retry =>
+      'Fehler beim Laden. Tippen Sie, um es erneut zu versuchen.';
+
+  @override
+  String get would_you_like_to_visit_the_release_page_to_download_it =>
+      'Möchten Sie die Release-Seite besuchen, um es herunterzuladen?';
+
+  @override
+  String get to_get_started_configure_stash_server =>
+      'Um zu beginnen, müssen Sie Ihre Stash-Server-Verbindungsdetails konfigurieren.';
+
+  @override
+  String get loading => 'Wird geladen';
+
+  @override
+  String get wip => 'WIP';
+
+  @override
+  String get performer_filters => 'Darstellerfilter';
+
+  @override
+  String update_available(String version) {
+    return 'Eine neue Version von StashFlow ($version) ist verfügbar.';
   }
 }

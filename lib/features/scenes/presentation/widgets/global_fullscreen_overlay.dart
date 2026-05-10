@@ -16,6 +16,7 @@ import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/services/cast_service.dart';
 import '../../../setup/presentation/providers/main_page_orientation_provider.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 
 TextAlign _subtitleTextAlign(String setting) {
   switch (setting) {
@@ -33,10 +34,13 @@ class GlobalFullscreenOverlay extends ConsumerStatefulWidget {
   const GlobalFullscreenOverlay({super.key});
 
   @override
-  ConsumerState<GlobalFullscreenOverlay> createState() => _GlobalFullscreenOverlayState();
+  ConsumerState<GlobalFullscreenOverlay> createState() =>
+      _GlobalFullscreenOverlayState();
 }
 
-class _GlobalFullscreenOverlayState extends ConsumerState<GlobalFullscreenOverlay> with SingleTickerProviderStateMixin {
+class _GlobalFullscreenOverlayState
+    extends ConsumerState<GlobalFullscreenOverlay>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<Offset> _offsetAnimation;
   bool _isVisible = false;
@@ -64,17 +68,19 @@ class _GlobalFullscreenOverlayState extends ConsumerState<GlobalFullscreenOverla
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-    _offsetAnimation = Tween<Offset>(
-      begin: const Offset(0, 1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _offsetAnimation =
+        Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeInOut,
+          ),
+        );
 
     // Check initial state
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final isFullScreen = ref.read(playerStateProvider.select((s) => s.isFullScreen));
+      final isFullScreen = ref.read(
+        playerStateProvider.select((s) => s.isFullScreen),
+      );
       if (isFullScreen) {
         _onFullScreenChanged(true);
       }
@@ -298,10 +304,10 @@ class _GlobalFullscreenOverlayState extends ConsumerState<GlobalFullscreenOverla
     }
 
     final notifier = ref.read(playerStateProvider.notifier);
-    
+
     // Synchronize background to active scene before exiting
     notifier.syncBackgroundToActiveScene(context);
-    
+
     // Trigger the hide animation and state change
     notifier.setFullScreen(false);
     notifier.setViewMode(PlayerViewMode.inline);
@@ -341,15 +347,15 @@ class _GlobalFullscreenOverlayState extends ConsumerState<GlobalFullscreenOverla
 
     Widget content;
     if (scene == null || controller == null) {
-      content = const Center(
+      content = Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
             Text(
-              'Initializing player...',
-              style: TextStyle(color: Colors.white70),
+              context.l10n.initializing_player,
+              style: const TextStyle(color: Colors.white70),
             ),
           ],
         ),
@@ -361,9 +367,7 @@ class _GlobalFullscreenOverlayState extends ConsumerState<GlobalFullscreenOverla
           final videoHeight = playerState.videoHeight;
           final isVideoReady =
               videoWidth != null && videoHeight != null && videoHeight > 0;
-          final aspectRatio = isVideoReady
-              ? videoWidth / videoHeight
-              : 16 / 9;
+          final aspectRatio = isVideoReady ? videoWidth / videoHeight : 16 / 9;
 
           if (playerState.isBuffering && !_showBufferingSpinner) {
             _bufferingDisplayTimer ??= Timer(
@@ -413,8 +417,7 @@ class _GlobalFullscreenOverlayState extends ConsumerState<GlobalFullscreenOverla
                           textAlign: _subtitleTextAlign(
                             playerState.subtitleTextAlignment,
                           ),
-                          bottomRatio:
-                              playerState.subtitlePositionBottomRatio,
+                          bottomRatio: playerState.subtitlePositionBottomRatio,
                           constraints: constraints,
                           controller: controller,
                           aspectRatio: aspectRatio,
@@ -489,10 +492,7 @@ class _GlobalFullscreenOverlayState extends ConsumerState<GlobalFullscreenOverla
         child: SlideTransition(
           key: const ValueKey('global_fullscreen_overlay_slide'),
           position: _offsetAnimation,
-          child: Material(
-            color: Colors.black,
-            child: content,
-          ),
+          child: Material(color: Colors.black, child: content),
         ),
       ),
     );

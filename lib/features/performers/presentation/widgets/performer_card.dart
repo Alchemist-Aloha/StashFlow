@@ -61,52 +61,54 @@ class PerformerCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Skeletonizer(
-      enabled: skeletonize,
-      effect: const ShimmerEffect(duration: Duration(seconds: 2)),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-        child: Padding(
-          padding: EdgeInsets.all(context.dimensions.spacingSmall / 2),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final size = constraints.maxWidth < constraints.maxHeight
-                        ? constraints.maxWidth
-                        : constraints.maxHeight;
-                    return Center(
-                      child: SizedBox(
-                        width: size,
-                        height: size,
-                        child: ClipOval(
-                          child: StashImage(
-                            imageUrl: performer.imagePath ?? '',
-                            fit: BoxFit.cover,
-                            memCacheWidth: memCacheWidth ?? 300,
+    return RepaintBoundary(
+      child: Skeletonizer(
+        enabled: skeletonize,
+        effect: const ShimmerEffect(duration: Duration(seconds: 2)),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+          child: Padding(
+            padding: EdgeInsets.all(context.dimensions.spacingSmall / 2),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final size = constraints.maxWidth < constraints.maxHeight
+                          ? constraints.maxWidth
+                          : constraints.maxHeight;
+                      return Center(
+                        child: SizedBox(
+                          width: size,
+                          height: size,
+                          child: ClipOval(
+                            child: StashImage(
+                              imageUrl: performer.imagePath ?? '',
+                              fit: BoxFit.cover,
+                              memCacheWidth: memCacheWidth ?? 300,
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
-              SizedBox(height: context.dimensions.spacingSmall),
-              Text(
-                performer.name,
-                style: context.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: context.dimensions.cardTitleFontSize *
-                      context.dimensions.fontSizeFactor,
+                SizedBox(height: context.dimensions.spacingSmall),
+                Text(
+                  performer.name,
+                  style: context.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: context.dimensions.cardTitleFontSize *
+                        context.dimensions.fontSizeFactor,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -89,7 +89,7 @@
   "common_favorite": "Favorit",
   "common_unfavorite": "entfavorisieren",
   "common_version": "Version",
-  "common_loading": "lädt",
+  "common_loading": "Wird geladen",
   "common_unavailable": "nicht verfügbar",
   "common_details": "Details",
   "common_title": "Titel",
@@ -811,5 +811,62 @@
   "common_pt": "{value} pt",
   "common_percent": "{value}%",
   "settings_playback_direct_play": "Direkt-Wiedergabe bei Szenen-Navigation",
-  "settings_playback_direct_play_subtitle": "Bei der Navigation von einer anderen spielenden Szene wird die neue Szene direkt abgespielt"
+  "settings_playback_direct_play_subtitle": "Bei der Navigation von einer anderen spielenden Szene wird die neue Szene direkt abgespielt",
+  "saving_video": "In Galerie speichern...",
+  "saved_to_album": "Im StashFlow-Album gespeichert",
+  "gallery_error": "Galeriefehler: {message}",
+  "failed_to_save": "Speichern fehlgeschlagen: {error}",
+  "saving_image": "Bild speichern...",
+  "@gallery_error": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "@failed_to_save": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "filter_group_general": "Allgemein",
+  "filter_group_performer": "Darsteller",
+  "filter_group_library": "Bibliothek",
+  "filter_group_metadata": "Metadaten",
+  "filter_group_media_info": "Medieninfo",
+  "filter_group_usage": "Nutzung",
+  "filter_group_system": "System",
+  "filter_group_physical": "Physisch",
+  "settings_storage": "Speicher & Cache",
+  "settings_storage_usage": "Speicherbelegung",
+  "settings_storage_usage_subtitle": "Aktueller Cache-Verbrauch",
+  "settings_storage_subtitle": "Lokale Caches und Speichergrenzen verwalten",
+  "common_select": "Wähle {label}",
+  "@common_select": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "common_saved_to": "Gespeichert unter {path}",
+  "@common_saved_to": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "recent_searches": "Letzte Suchanfragen",
+  "initializing_player": "Spieler initialisieren...",
+  "sort_scenes": "Szenen sortieren",
+  "failed_to_load_tap_to_retry": "Fehler beim Laden. Tippen Sie, um es erneut zu versuchen.",
+  "would_you_like_to_visit_the_release_page_to_download_it": "Möchten Sie die Release-Seite besuchen, um es herunterzuladen?",
+  "to_get_started_configure_stash_server": "Um zu beginnen, müssen Sie Ihre Stash-Server-Verbindungsdetails konfigurieren.",
+  "loading": "Wird geladen",
+  "wip": "WIP",
+  "performer_filters": "Darstellerfilter",
+  "update_available": "Eine neue Version von StashFlow ({version}) ist verfügbar."
 }

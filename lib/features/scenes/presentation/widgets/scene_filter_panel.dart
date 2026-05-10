@@ -130,12 +130,14 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                           ref
                               .read(sceneOrganizedOnlyProvider.notifier)
                               .set(_tempOrganized);
-                          await ref
-                              .read(sceneFilterStateProvider.notifier)
-                              .saveAsDefault();
-                          await ref
-                              .read(sceneOrganizedOnlyProvider.notifier)
-                              .saveAsDefault();
+                          await Future.wait([
+                            ref
+                                .read(sceneFilterStateProvider.notifier)
+                                .saveAsDefault(),
+                            ref
+                                .read(sceneOrganizedOnlyProvider.notifier)
+                                .saveAsDefault(),
+                          ]);
                           if (context.mounted) {
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -741,7 +743,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                   final result = await showDialog<List<T>>(
                     context: context,
                     builder: (context) => EntityPicker<T>(
-                      title: 'Select $label',
+                      title: context.l10n.common_select(label),
                       providerType: providerType,
                       multiSelect: true,
                       initialSelection: selectedIds,

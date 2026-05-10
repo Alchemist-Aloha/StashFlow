@@ -753,28 +753,28 @@ class AppLocalizationsJa extends AppLocalizations {
   String get filter_modifier => '修飾子';
 
   @override
-  String get filter_group_general => 'General';
+  String get filter_group_general => '全般';
 
   @override
-  String get filter_group_performer => 'Performer';
+  String get filter_group_performer => '出演者';
 
   @override
-  String get filter_group_library => 'Library';
+  String get filter_group_library => 'ライブラリ';
 
   @override
-  String get filter_group_metadata => 'Metadata';
+  String get filter_group_metadata => 'メタデータ';
 
   @override
-  String get filter_group_media_info => 'Media Info';
+  String get filter_group_media_info => 'メディア情報';
 
   @override
-  String get filter_group_usage => 'Usage';
+  String get filter_group_usage => '使用状況';
 
   @override
-  String get filter_group_system => 'System';
+  String get filter_group_system => 'システム';
 
   @override
-  String get filter_group_physical => 'Physical';
+  String get filter_group_physical => '物理';
 
   @override
   String get filter_equals => '等しい';
@@ -1914,17 +1914,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_storage_max_video_cache => '最大ビデオ キャッシュ (MB)';
 
   @override
-  String get settings_storage => 'Storage & Cache';
+  String get settings_storage => 'ストレージとキャッシュ';
 
   @override
-  String get settings_storage_usage => 'Storage Usage';
+  String get settings_storage_usage => 'ストレージ使用量';
 
   @override
-  String get settings_storage_usage_subtitle => 'Current space used by caches';
+  String get settings_storage_usage_subtitle => 'キャッシュの使用容量';
 
   @override
-  String get settings_storage_subtitle =>
-      'Manage local caches and storage limits';
+  String get settings_storage_subtitle => 'ローカルキャッシュとストレージ制限の管理';
 
   @override
   String get performers_field_name => '名前';
@@ -2197,5 +2196,68 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String common_percent(int value) {
     return '$value%';
+  }
+
+  @override
+  String get saving_video => 'ギャラリーに保存中...';
+
+  @override
+  String get saved_to_album => 'StashFlowアルバムに保存しました';
+
+  @override
+  String gallery_error(String message) {
+    return 'ギャラリーエラー: $message';
+  }
+
+  @override
+  String failed_to_save(String error) {
+    return '保存に失敗しました: $error';
+  }
+
+  @override
+  String get saving_image => '画像を保存中...';
+
+  @override
+  String common_select(String label) {
+    return '$labelを選択';
+  }
+
+  @override
+  String common_saved_to(String path) {
+    return '$path に保存されました';
+  }
+
+  @override
+  String get recent_searches => '最近の検索';
+
+  @override
+  String get initializing_player => 'プレーヤーを初期化しています...';
+
+  @override
+  String get sort_scenes => 'シーンを並べ替え';
+
+  @override
+  String get failed_to_load_tap_to_retry => '読み込みに失敗しました。タップして再試行してください。';
+
+  @override
+  String get would_you_like_to_visit_the_release_page_to_download_it =>
+      'リリース ページにアクセスしてダウンロードしますか？';
+
+  @override
+  String get to_get_started_configure_stash_server =>
+      '開始するには、Stash サーバーの接続設定を行う必要があります。';
+
+  @override
+  String get loading => '読み込み中';
+
+  @override
+  String get wip => 'WIP';
+
+  @override
+  String get performer_filters => '出演者フィルター';
+
+  @override
+  String update_available(String version) {
+    return 'StashFlowの新しいバージョン ($version) が利用可能です。';
   }
 }

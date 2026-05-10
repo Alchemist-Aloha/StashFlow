@@ -751,28 +751,28 @@ class AppLocalizationsKo extends AppLocalizations {
   String get filter_modifier => '수정자';
 
   @override
-  String get filter_group_general => 'General';
+  String get filter_group_general => '일반';
 
   @override
-  String get filter_group_performer => 'Performer';
+  String get filter_group_performer => '출연자';
 
   @override
-  String get filter_group_library => 'Library';
+  String get filter_group_library => '라이브러리';
 
   @override
-  String get filter_group_metadata => 'Metadata';
+  String get filter_group_metadata => '메타데이터';
 
   @override
-  String get filter_group_media_info => 'Media Info';
+  String get filter_group_media_info => '미디어 정보';
 
   @override
-  String get filter_group_usage => 'Usage';
+  String get filter_group_usage => '사용량';
 
   @override
-  String get filter_group_system => 'System';
+  String get filter_group_system => '시스템';
 
   @override
-  String get filter_group_physical => 'Physical';
+  String get filter_group_physical => '물리적';
 
   @override
   String get filter_equals => '같음';
@@ -1914,17 +1914,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_storage_max_video_cache => '최대 비디오 캐시(MB)';
 
   @override
-  String get settings_storage => 'Storage & Cache';
+  String get settings_storage => '저장소 및 캐시';
 
   @override
-  String get settings_storage_usage => 'Storage Usage';
+  String get settings_storage_usage => '저장소 사용량';
 
   @override
-  String get settings_storage_usage_subtitle => 'Current space used by caches';
+  String get settings_storage_usage_subtitle => '현재 캐시 사용 공간';
 
   @override
-  String get settings_storage_subtitle =>
-      'Manage local caches and storage limits';
+  String get settings_storage_subtitle => '로컬 캐시 및 저장 용량 제한 관리';
 
   @override
   String get performers_field_name => '이름';
@@ -2197,5 +2196,68 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String common_percent(int value) {
     return '$value%';
+  }
+
+  @override
+  String get saving_video => '갤러리에 저장 중...';
+
+  @override
+  String get saved_to_album => 'StashFlow 앨범에 저장됨';
+
+  @override
+  String gallery_error(String message) {
+    return '갤러리 오류: $message';
+  }
+
+  @override
+  String failed_to_save(String error) {
+    return '저장 실패: $error';
+  }
+
+  @override
+  String get saving_image => '이미지 저장 중...';
+
+  @override
+  String common_select(String label) {
+    return '$label 선택';
+  }
+
+  @override
+  String common_saved_to(String path) {
+    return '$path에 저장됨';
+  }
+
+  @override
+  String get recent_searches => '최근 검색';
+
+  @override
+  String get initializing_player => '플레이어 초기화 중...';
+
+  @override
+  String get sort_scenes => '장면 정렬';
+
+  @override
+  String get failed_to_load_tap_to_retry => '불러오기 실패. 탭하여 다시 시도하세요.';
+
+  @override
+  String get would_you_like_to_visit_the_release_page_to_download_it =>
+      '릴리스 페이지를 방문하여 다운로드하시겠습니까?';
+
+  @override
+  String get to_get_started_configure_stash_server =>
+      '시작하려면 Stash 서버 연결 세부 정보를 구성해야 합니다.';
+
+  @override
+  String get loading => '로딩 중';
+
+  @override
+  String get wip => 'WIP';
+
+  @override
+  String get performer_filters => '출연자 필터';
+
+  @override
+  String update_available(String version) {
+    return 'StashFlow의 새 버전 ($version)을(를) 사용할 수 있습니다.';
   }
 }

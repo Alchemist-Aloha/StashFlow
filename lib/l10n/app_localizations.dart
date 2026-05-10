@@ -735,7 +735,7 @@ abstract class AppLocalizations {
   /// No description provided for @common_loading.
   ///
   /// In en, this message translates to:
-  /// **'Loading...'**
+  /// **'Loading'**
   String get common_loading;
 
   /// No description provided for @common_unavailable.
@@ -4229,6 +4229,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{value}%'**
   String common_percent(int value);
+
+  /// No description provided for @saving_video.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving to gallery...'**
+  String get saving_video;
+
+  /// No description provided for @saved_to_album.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to StashFlow album'**
+  String get saved_to_album;
+
+  /// No description provided for @gallery_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery Error: {message}'**
+  String gallery_error(String message);
+
+  /// No description provided for @failed_to_save.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save: {error}'**
+  String failed_to_save(String error);
+
+  /// No description provided for @saving_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving image...'**
+  String get saving_image;
+
+  /// No description provided for @common_select.
+  ///
+  /// In en, this message translates to:
+  /// **'Select {label}'**
+  String common_select(String label);
+
+  /// No description provided for @common_saved_to.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to {path}'**
+  String common_saved_to(String path);
+
+  /// No description provided for @recent_searches.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Searches'**
+  String get recent_searches;
+
+  /// No description provided for @initializing_player.
+  ///
+  /// In en, this message translates to:
+  /// **'Initializing player...'**
+  String get initializing_player;
+
+  /// No description provided for @sort_scenes.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort Scenes'**
+  String get sort_scenes;
+
+  /// No description provided for @failed_to_load_tap_to_retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load. Tap to retry.'**
+  String get failed_to_load_tap_to_retry;
+
+  /// No description provided for @would_you_like_to_visit_the_release_page_to_download_it.
+  ///
+  /// In en, this message translates to:
+  /// **'Would you like to visit the release page to download it?'**
+  String get would_you_like_to_visit_the_release_page_to_download_it;
+
+  /// No description provided for @to_get_started_configure_stash_server.
+  ///
+  /// In en, this message translates to:
+  /// **'To get started, you need to configure your Stash server connection details.'**
+  String get to_get_started_configure_stash_server;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading'**
+  String get loading;
+
+  /// No description provided for @wip.
+  ///
+  /// In en, this message translates to:
+  /// **'WIP'**
+  String get wip;
+
+  /// No description provided for @performer_filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Performer Filters'**
+  String get performer_filters;
+
+  /// No description provided for @update_available.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version of StashFlow ({version}) is available.'**
+  String update_available(String version);
 }
 
 class _AppLocalizationsDelegate

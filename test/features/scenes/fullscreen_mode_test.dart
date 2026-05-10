@@ -46,37 +46,43 @@ void main() {
     tagNames: [],
   );
 
-  testWidgets('GlobalFullscreenOverlay visibility toggles with player state', (tester) async {
+  testWidgets('GlobalFullscreenOverlay visibility toggles with player state', (
+    tester,
+  ) async {
     final mockRepo = MockSceneRepository()..withData([testScene]);
 
     await pumpTestWidget(
       tester,
       prefs: prefs,
-      overrides: [
-        sceneRepositoryProvider.overrideWithValue(mockRepo),
-      ],
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
       child: const GlobalFullscreenOverlay(),
     );
 
     // Trigger fullscreen
     final container = tester.element(find.byType(GlobalFullscreenOverlay));
     final containerRef = ProviderScope.containerOf(container);
-    
+
     // We need an active scene and controller for the overlay to show content
     // but we can at least test the visibility toggle of the SlideTransition.
-    
+
     containerRef.read(playerStateProvider.notifier).setFullScreen(true);
-    
+
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
 
-    expect(find.byKey(const ValueKey('global_fullscreen_overlay_slide')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('global_fullscreen_overlay_slide')),
+      findsOneWidget,
+    );
 
     // Test exit
     containerRef.read(playerStateProvider.notifier).setFullScreen(false);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
 
-    expect(find.byKey(const ValueKey('global_fullscreen_overlay_slide')), findsNothing);
+    expect(
+      find.byKey(const ValueKey('global_fullscreen_overlay_slide')),
+      findsNothing,
+    );
   });
 }

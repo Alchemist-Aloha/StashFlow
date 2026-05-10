@@ -108,12 +108,51 @@ class TagDetailsPage extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          tag.name,
-                          style: context.textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: context.colors.onSurface,
-                          ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                tag.name,
+                                style: context.textTheme.headlineMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: context.colors.onSurface,
+                                    ),
+                              ),
+                            ),
+                            IconButton.filledTonal(
+                              icon: Icon(
+                                tag.favorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                              ),
+                              tooltip: tag.favorite
+                                  ? context.l10n.common_remove_favorite
+                                  : context.l10n.common_add_favorite,
+                              onPressed: () async {
+                                try {
+                                  await ref
+                                      .read(tagRepositoryProvider)
+                                      .setTagFavorite(
+                                        tag.id,
+                                        !tag.favorite,
+                                      );
+                                  ref.invalidate(tagDetailsProvider(tag.id));
+                                  ref.invalidate(tagListProvider);
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Failed to update favorite: $e',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                            ),
+                          ],
                         ),
                         if (tag.description != null &&
                             tag.description!.trim().isNotEmpty) ...[

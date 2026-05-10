@@ -130,7 +130,7 @@
   "common_favorite": "Favorite",
   "common_unfavorite": "Unfavorite",
   "common_version": "Version",
-  "common_loading": "Loading...",
+  "common_loading": "Loading",
   "common_unavailable": "Unavailable",
   "common_details": "Details",
   "common_title": "Title",
@@ -881,6 +881,56 @@
       }
     }
   },
-  "settings_playback_direct_play": "Direct-play on scene navigation",
-  "settings_playback_direct_play_subtitle": "When navigating from another playing scene, directly play the new scene"
+  "saving_video": "Saving to gallery...",
+  "saved_to_album": "Saved to StashFlow album",
+  "gallery_error": "Gallery Error: {message}",
+  "@gallery_error": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "failed_to_save": "Failed to save: {error}",
+  "@failed_to_save": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "saving_image": "Saving image...",
+  "common_select": "Select {label}",
+  "@common_select": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "common_saved_to": "Saved to {path}",
+  "@common_saved_to": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "recent_searches": "Recent Searches",
+  "initializing_player": "Initializing player...",
+  "sort_scenes": "Sort Scenes",
+  "failed_to_load_tap_to_retry": "Failed to load. Tap to retry.",
+  "would_you_like_to_visit_the_release_page_to_download_it": "Would you like to visit the release page to download it?",
+  "to_get_started_configure_stash_server": "To get started, you need to configure your Stash server connection details.",
+  "loading": "Loading",
+  "wip": "WIP",
+  "performer_filters": "Performer Filters",
+  "update_available": "A new version of StashFlow ({version}) is available.",
+  "@update_available": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  }
 }

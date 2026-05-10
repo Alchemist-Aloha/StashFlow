@@ -790,5 +790,46 @@
   "common_pt": "{value} 點",
   "common_percent": "{value}%",
   "settings_playback_direct_play": "切換場景時直接播放",
-  "settings_playback_direct_play_subtitle": "從另一個正在播放的場景切換過來時，直接播放新場景"
+  "settings_playback_direct_play_subtitle": "從另一個正在播放的場景切換過來時，直接播放新場景",
+  "saving_video": "正在儲存到相簿...",
+  "saved_to_album": "已儲存到 StashFlow 相簿",
+  "gallery_error": "相簿錯誤: {message}",
+  "failed_to_save": "儲存失敗: {error}",
+  "saving_image": "正在儲存圖片...",
+  "@gallery_error": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "@failed_to_save": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "filter_group_general": "一般",
+  "filter_group_performer": "演出者",
+  "filter_group_library": "媒體庫",
+  "filter_group_metadata": "元數據",
+  "filter_group_media_info": "媒體資訊",
+  "filter_group_usage": "使用情況",
+  "filter_group_system": "系統",
+  "filter_group_physical": "實體",
+  "settings_storage": "儲存與快取",
+  "settings_storage_usage": "儲存佔用",
+  "settings_storage_usage_subtitle": "目前快取佔用空間",
+  "settings_storage_subtitle": "管理本地快取和儲存限制",
+  "recent_searches": "最近搜尋",
+  "initializing_player": "正在初始化播放器...",
+  "sort_scenes": "排序場景",
+  "failed_to_load_tap_to_retry": "載入失敗。點擊重試。",
+  "would_you_like_to_visit_the_release_page_to_download_it": "您想訪問發佈頁面下載嗎？",
+  "to_get_started_configure_stash_server": "要開始使用，您需要配置您的 Stash 伺服器連接詳細資訊。",
+  "loading": "載入中",
+  "wip": "WIP",
+  "performer_filters": "演員篩選",
+  "update_available": "StashFlow的更新版本 ({version}) 已經發布。"
 }

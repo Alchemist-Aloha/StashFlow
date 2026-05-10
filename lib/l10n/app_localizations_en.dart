@@ -366,7 +366,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get common_version => 'Version';
 
   @override
-  String get common_loading => 'Loading...';
+  String get common_loading => 'Loading';
 
   @override
   String get common_unavailable => 'Unavailable';
@@ -2244,5 +2244,68 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String common_percent(int value) {
     return '$value%';
+  }
+
+  @override
+  String get saving_video => 'Saving to gallery...';
+
+  @override
+  String get saved_to_album => 'Saved to StashFlow album';
+
+  @override
+  String gallery_error(String message) {
+    return 'Gallery Error: $message';
+  }
+
+  @override
+  String failed_to_save(String error) {
+    return 'Failed to save: $error';
+  }
+
+  @override
+  String get saving_image => 'Saving image...';
+
+  @override
+  String common_select(String label) {
+    return 'Select $label';
+  }
+
+  @override
+  String common_saved_to(String path) {
+    return 'Saved to $path';
+  }
+
+  @override
+  String get recent_searches => 'Recent Searches';
+
+  @override
+  String get initializing_player => 'Initializing player...';
+
+  @override
+  String get sort_scenes => 'Sort Scenes';
+
+  @override
+  String get failed_to_load_tap_to_retry => 'Failed to load. Tap to retry.';
+
+  @override
+  String get would_you_like_to_visit_the_release_page_to_download_it =>
+      'Would you like to visit the release page to download it?';
+
+  @override
+  String get to_get_started_configure_stash_server =>
+      'To get started, you need to configure your Stash server connection details.';
+
+  @override
+  String get loading => 'Loading';
+
+  @override
+  String get wip => 'WIP';
+
+  @override
+  String get performer_filters => 'Performer Filters';
+
+  @override
+  String update_available(String version) {
+    return 'A new version of StashFlow ($version) is available.';
   }
 }

@@ -1,6 +1,7 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
+import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../domain/entities/scene.dart';
 import '../graphql/scenes.graphql.dart';
@@ -97,11 +98,16 @@ class StreamResolver extends _$StreamResolver {
     final List<Query$SceneStreamsForPlayer$findScene$sceneStreams>
     nestedStreams = result.parsedData?.findScene?.sceneStreams ?? [];
 
+    final graphqlEndpoint = Uri.parse(ref.read(serverUrlProvider));
+
     final List<StreamChoice> choices = [];
     for (final s in rootStreams) {
       choices.add(
         StreamChoice(
-          url: s.url,
+          url: resolveGraphqlMediaUrl(
+            rawUrl: s.url,
+            graphqlEndpoint: graphqlEndpoint,
+          ),
           mimeType: s.mime_type ?? 'video/mp4',
           label: s.label,
         ),
@@ -110,7 +116,10 @@ class StreamResolver extends _$StreamResolver {
     for (final s in nestedStreams) {
       choices.add(
         StreamChoice(
-          url: s.url,
+          url: resolveGraphqlMediaUrl(
+            rawUrl: s.url,
+            graphqlEndpoint: graphqlEndpoint,
+          ),
           mimeType: s.mime_type ?? 'video/mp4',
           label: s.label,
         ),

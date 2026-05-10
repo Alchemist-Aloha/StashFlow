@@ -97,6 +97,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
   double _dragStartValue = 0.0;
   bool _dragIsLeft = false;
 
+  Map<ShortcutActivator, VoidCallback>? _cachedBindings;
+  Keybinds? _lastKeybinds;
+
   @override
   void initState() {
     super.initState();
@@ -210,17 +213,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       } else {
         _cancelAutoHide();
         setState(() => _controlsVisible = true);
-        return;
       }
     }
 
-    // Performance Optimization: If controls are hidden and we aren't scrubbing,
-    // there's no need to trigger a rebuild for position updates.
-    if (!_controlsVisible && !_isScrubbing && !playingChanged) return;
-
-    // Further optimization: Even if visible, only rebuild if we are scrubbing
-    // or if enough time has passed (throttling UI updates to ~10fps is plenty for labels).
-    setState(() {});
+    // Note: Redundant setState for position updates removed.
+    // Progress bar and time labels use StreamBuilders for efficient local updates.
   }
 
   void _cancelAutoHide() {
@@ -696,36 +693,14 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final playerState = ref.watch(playerStateProvider);
-
-    if (playerState.isInPipMode) {
-      return const SizedBox.shrink();
+  Map<ShortcutActivator, VoidCallback> _getBindings(Keybinds keybinds) {
+    if (_cachedBindings != null && _lastKeybinds == keybinds) {
+      return _cachedBindings!;
     }
 
-    final value = widget.controller.player.state;
-    final duration = value.duration;
-    final durationMs = math.max(1, duration.inMilliseconds);
-    final playbackSpeed = value.rate;
-    final isFullScreen = playerState.isFullScreen;
-    final queueState = ref.watch(playbackQueueProvider);
-    final nextScene =
-        (queueState.currentIndex >= 0 &&
-            queueState.currentIndex < queueState.sequence.length - 1)
-        ? queueState.sequence[queueState.currentIndex + 1]
-        : null;
-    final previousScene =
-        (queueState.currentIndex > 0 &&
-            queueState.currentIndex < queueState.sequence.length)
-        ? queueState.sequence[queueState.currentIndex - 1]
-        : null;
+    _lastKeybinds = keybinds;
+    _cachedBindings = {};
 
-    final isDesktop = ref.watch(desktopCapabilitiesProvider);
-    final keybinds = ref.watch(keybindsProvider);
-
-    Map<ShortcutActivator, VoidCallback> bindings = {};
     for (var entry in keybinds.binds.entries) {
       final action = entry.key;
       final bind = entry.value;
@@ -779,7 +754,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
           callback = () => ref.read(playerStateProvider.notifier).playNext();
           break;
         case KeybindAction.previousScene:
-          callback = () => ref.read(playerStateProvider.notifier).playPrevious();
+          callback =
+              () => ref.read(playerStateProvider.notifier).playPrevious();
           break;
         case KeybindAction.speedUp:
           callback = () {
@@ -812,9 +788,43 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       }
 
       if (callback != null) {
-        bindings[bind.toActivator()] = callback;
+        _cachedBindings![bind.toActivator()] = callback;
       }
     }
+
+    return _cachedBindings!;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final playerState = ref.watch(playerStateProvider);
+
+    if (playerState.isInPipMode) {
+      return const SizedBox.shrink();
+    }
+
+    final value = widget.controller.player.state;
+    final duration = value.duration;
+    final durationMs = math.max(1, duration.inMilliseconds);
+    final playbackSpeed = value.rate;
+    final isFullScreen = playerState.isFullScreen;
+    final queueState = ref.watch(playbackQueueProvider);
+    final nextScene =
+        (queueState.currentIndex >= 0 &&
+            queueState.currentIndex < queueState.sequence.length - 1)
+        ? queueState.sequence[queueState.currentIndex + 1]
+        : null;
+    final previousScene =
+        (queueState.currentIndex > 0 &&
+            queueState.currentIndex < queueState.sequence.length)
+        ? queueState.sequence[queueState.currentIndex - 1]
+        : null;
+
+    final isDesktop = ref.watch(desktopCapabilitiesProvider);
+    final keybinds = ref.watch(keybindsProvider);
+
+    final bindings = _getBindings(keybinds);
 
     return PopScope(
       canPop: !_isScrubbing,

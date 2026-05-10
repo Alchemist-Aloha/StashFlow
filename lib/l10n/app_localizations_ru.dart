@@ -370,7 +370,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get common_version => 'версия';
 
   @override
-  String get common_loading => 'загрузка';
+  String get common_loading => 'Загрузка';
 
   @override
   String get common_unavailable => 'недоступно';
@@ -760,28 +760,28 @@ class AppLocalizationsRu extends AppLocalizations {
   String get filter_modifier => 'Модификатор';
 
   @override
-  String get filter_group_general => 'General';
+  String get filter_group_general => 'Общие';
 
   @override
-  String get filter_group_performer => 'Performer';
+  String get filter_group_performer => 'Исполнитель';
 
   @override
-  String get filter_group_library => 'Library';
+  String get filter_group_library => 'Библиотека';
 
   @override
-  String get filter_group_metadata => 'Metadata';
+  String get filter_group_metadata => 'Метаданные';
 
   @override
-  String get filter_group_media_info => 'Media Info';
+  String get filter_group_media_info => 'Инфо о медиа';
 
   @override
-  String get filter_group_usage => 'Usage';
+  String get filter_group_usage => 'Использование';
 
   @override
-  String get filter_group_system => 'System';
+  String get filter_group_system => 'Система';
 
   @override
-  String get filter_group_physical => 'Physical';
+  String get filter_group_physical => 'Физический';
 
   @override
   String get filter_equals => 'Равно';
@@ -1988,17 +1988,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_storage_max_video_cache => 'Макс. видеокэш (МБ)';
 
   @override
-  String get settings_storage => 'Storage & Cache';
+  String get settings_storage => 'Хранилище и кэш';
 
   @override
-  String get settings_storage_usage => 'Storage Usage';
+  String get settings_storage_usage => 'Использование диска';
 
   @override
-  String get settings_storage_usage_subtitle => 'Current space used by caches';
+  String get settings_storage_usage_subtitle => 'Место, занятое кэшем';
 
   @override
   String get settings_storage_subtitle =>
-      'Manage local caches and storage limits';
+      'Управление кэшем и лимитами хранилища';
 
   @override
   String get performers_field_name => 'Имя';
@@ -2273,5 +2273,69 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String common_percent(int value) {
     return '$value%';
+  }
+
+  @override
+  String get saving_video => 'Сохранение в галерею...';
+
+  @override
+  String get saved_to_album => 'Сохранено в альбом StashFlow';
+
+  @override
+  String gallery_error(String message) {
+    return 'Ошибка галереи: $message';
+  }
+
+  @override
+  String failed_to_save(String error) {
+    return 'Не удалось сохранить: $error';
+  }
+
+  @override
+  String get saving_image => 'Сохранение изображения...';
+
+  @override
+  String common_select(String label) {
+    return 'Выберите $label';
+  }
+
+  @override
+  String common_saved_to(String path) {
+    return 'Сохранено в $path';
+  }
+
+  @override
+  String get recent_searches => 'Недавние поиски';
+
+  @override
+  String get initializing_player => 'Инициализация плеера...';
+
+  @override
+  String get sort_scenes => 'Сортировать сцены';
+
+  @override
+  String get failed_to_load_tap_to_retry =>
+      'Не удалось загрузить. Нажмите, чтобы повторить.';
+
+  @override
+  String get would_you_like_to_visit_the_release_page_to_download_it =>
+      'Хотите посетить страницу релиза, чтобы скачать его?';
+
+  @override
+  String get to_get_started_configure_stash_server =>
+      'Для начала вам необходимо настроить данные подключения к серверу Stash.';
+
+  @override
+  String get loading => 'Загрузка';
+
+  @override
+  String get wip => 'WIP';
+
+  @override
+  String get performer_filters => 'Фильтры исполнителей';
+
+  @override
+  String update_available(String version) {
+    return 'Доступна новая версия StashFlow ($version).';
   }
 }
