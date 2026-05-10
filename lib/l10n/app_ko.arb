@@ -837,5 +837,15 @@
         "type": "String"
       }
     }
-  }
+  },
+  "recent_searches": "최근 검색",
+  "initializing_player": "플레이어 초기화 중...",
+  "sort_scenes": "장면 정렬",
+  "failed_to_load_tap_to_retry": "불러오기 실패. 탭하여 다시 시도하세요.",
+  "would_you_like_to_visit_the_release_page_to_download_it": "릴리스 페이지를 방문하여 다운로드하시겠습니까?",
+  "to_get_started_configure_stash_server": "시작하려면 Stash 서버 연결 세부 정보를 구성해야 합니다.",
+  "loading": "로딩 중",
+  "wip": "WIP",
+  "performer_filters": "출연자 필터",
+  "update_available": "StashFlow의 새 버전 ({version})을(를) 사용할 수 있습니다."
 }

@@ -408,7 +408,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
           ).colorScheme.primaryContainer.withValues(alpha: 0.3),
           child: ListTile(
             title: Text(
-              'Loading',
+              context.l10n.loading,
               style: context.textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),

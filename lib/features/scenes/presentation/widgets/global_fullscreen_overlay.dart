@@ -16,6 +16,7 @@ import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/services/cast_service.dart';
 import '../../../setup/presentation/providers/main_page_orientation_provider.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 
 TextAlign _subtitleTextAlign(String setting) {
   switch (setting) {
@@ -346,15 +347,15 @@ class _GlobalFullscreenOverlayState
 
     Widget content;
     if (scene == null || controller == null) {
-      content = const Center(
+      content = Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
             Text(
-              'Initializing player...',
-              style: TextStyle(color: Colors.white70),
+              context.l10n.initializing_player,
+              style: const TextStyle(color: Colors.white70),
             ),
           ],
         ),

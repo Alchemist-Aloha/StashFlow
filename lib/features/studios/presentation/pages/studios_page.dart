@@ -419,7 +419,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
           ),
           child: ListTile(
             title: Text(
-              'Loading',
+              context.l10n.loading,
               style: context.textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),

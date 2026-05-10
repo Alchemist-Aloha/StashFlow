@@ -45,6 +45,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String nScenes(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
+
     );
     final String countString = countNumberFormat.format(count);
 
@@ -62,6 +63,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String nPerformers(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
+
     );
     final String countString = countNumberFormat.format(count);
 
@@ -79,6 +81,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String nPlays(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
+
     );
     final String countString = countNumberFormat.format(count);
 
@@ -994,8 +997,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_appearance_primary_color => 'プライマリーカラー';
 
   @override
-  String get settings_appearance_primary_color_subtitle =>
-      'Material 3パレットのシードカラーを選択します';
+  String get settings_appearance_primary_color_subtitle => 'Material 3パレットのシードカラーを選択します';
 
   @override
   String get settings_appearance_advanced_theming => '高度なテーマ設定';
@@ -1007,8 +1009,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_appearance_true_black => 'トゥルーブラック (AMOLED)';
 
   @override
-  String get settings_appearance_true_black_subtitle =>
-      'ダークモードで純粋な黒の背景を使用し、OLED画面のバッテリーを節約します';
+  String get settings_appearance_true_black_subtitle => 'ダークモードで純粋な黒の背景を使用し、OLED画面のバッテリーを節約します';
 
   @override
   String get settings_appearance_custom_hex => 'カスタム16進数カラー';
@@ -1038,37 +1039,31 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_interface_navigation => 'ナビゲーション';
 
   @override
-  String get settings_interface_navigation_subtitle =>
-      'グローバルナビゲーションショートカットの表示設定';
+  String get settings_interface_navigation_subtitle => 'グローバルナビゲーションショートカットの表示設定';
 
   @override
   String get settings_interface_show_random => 'ランダムナビゲーションボタンを表示';
 
   @override
-  String get settings_interface_show_random_subtitle =>
-      'リストおよび詳細ページでフローティングカジノボタンを有効または無効にします';
+  String get settings_interface_show_random_subtitle => 'リストおよび詳細ページでフローティングカジノボタンを有効または無効にします';
 
   @override
-  String get settings_interface_main_pages_gravity_orientation =>
-      '重力制御の画面向き（メインページ）';
+  String get settings_interface_main_pages_gravity_orientation => '重力制御の画面向き（メインページ）';
 
   @override
-  String get settings_interface_main_pages_gravity_orientation_subtitle =>
-      'デバイスセンサーを使ってメインページの向きを回転できるようにします。全画面動画再生は専用の画面向き設定に従います。';
+  String get settings_interface_main_pages_gravity_orientation_subtitle => 'デバイスセンサーを使ってメインページの向きを回転できるようにします。全画面動画再生は専用の画面向き設定に従います。';
 
   @override
   String get settings_interface_show_edit => '編集ボタンを表示';
 
   @override
-  String get settings_interface_show_edit_subtitle =>
-      'シーン詳細ページの編集ボタンを有効または無効にします';
+  String get settings_interface_show_edit_subtitle => 'シーン詳細ページの編集ボタンを有効または無効にします';
 
   @override
   String get settings_interface_customize_tabs => 'タブをカスタマイズ';
 
   @override
-  String get settings_interface_customize_tabs_subtitle =>
-      'ナビゲーションメニュー項目の並べ替えや非表示を行います';
+  String get settings_interface_customize_tabs_subtitle => 'ナビゲーションメニュー項目の並べ替えや非表示を行います';
 
   @override
   String get settings_interface_scenes_layout => 'シーンのレイアウト';
@@ -1086,15 +1081,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_interface_max_performer_avatars => 'パフォーマーの最大アバター数';
 
   @override
-  String get settings_interface_max_performer_avatars_subtitle =>
-      'シーンカードに表示するパフォーマーのアバターの最大数。';
+  String get settings_interface_max_performer_avatars_subtitle => 'シーンカードに表示するパフォーマーのアバターの最大数。';
 
   @override
   String get settings_interface_show_performer_avatars => 'パフォーマーのアバターを表示';
 
   @override
-  String get settings_interface_show_performer_avatars_subtitle =>
-      'すべてのプラットフォームでシーンカードにパフォーマーのアイコンを表示します。';
+  String get settings_interface_show_performer_avatars_subtitle => 'すべてのプラットフォームでシーンカードにパフォーマーのアイコンを表示します。';
 
   @override
   String get settings_interface_performer_avatar_size => 'パフォーマーのアバターのサイズ';
@@ -1127,8 +1120,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_interface_swipe_direction => 'フルスクリーンスワイプ方向';
 
   @override
-  String get settings_interface_swipe_direction_desc =>
-      'フルスクリーンモードで画像を切り替える方法を選択します';
+  String get settings_interface_swipe_direction_desc => 'フルスクリーンモードで画像を切り替える方法を選択します';
 
   @override
   String get settings_interface_swipe_vertical => '垂直';
@@ -1143,22 +1135,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_interface_performer_layouts => 'パフォーマーのレイアウト';
 
   @override
-  String get settings_interface_performer_layouts_subtitle =>
-      'パフォーマーのメディアおよびギャラリーのデフォルト設定';
+  String get settings_interface_performer_layouts_subtitle => 'パフォーマーのメディアおよびギャラリーのデフォルト設定';
 
   @override
   String get settings_interface_studio_layouts => 'スタジオのレイアウト';
 
   @override
-  String get settings_interface_studio_layouts_subtitle =>
-      'スタジオのメディアおよびギャラリーのデフォルト設定';
+  String get settings_interface_studio_layouts_subtitle => 'スタジオのメディアおよびギャラリーのデフォルト設定';
 
   @override
   String get settings_interface_tag_layouts => 'タグのレイアウト';
 
   @override
-  String get settings_interface_tag_layouts_subtitle =>
-      'タグのメディアおよびギャラリーのデフォルト設定';
+  String get settings_interface_tag_layouts_subtitle => 'タグのメディアおよびギャラリーのデフォルト設定';
 
   @override
   String get settings_interface_media_layout => 'メディアのレイアウト';
@@ -1170,8 +1159,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_interface_galleries_layout_item => 'ギャラリーのレイアウト';
 
   @override
-  String get settings_interface_galleries_layout_subtitle_item =>
-      'ギャラリーページのレイアウト';
+  String get settings_interface_galleries_layout_subtitle_item => 'ギャラリーページのレイアウト';
 
   @override
   String get settings_server_title => 'サーバー設定';
@@ -1192,8 +1180,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_server_url => 'StashのURL';
 
   @override
-  String get settings_server_url_helper =>
-      'StashサーバーのURLを入力してください。カスタムパスが設定されている場合は、それを含めてください。';
+  String get settings_server_url_helper => 'StashサーバーのURLを入力してください。カスタムパスが設定されている場合は、それを含めてください。';
 
   @override
   String get settings_server_url_example => 'http://192.168.1.100:9999';
@@ -1211,8 +1198,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_server_auth_password => 'ユーザー名 + パスワード';
 
   @override
-  String get settings_server_auth_password_desc =>
-      '推奨: Stashのユーザー名/パスワードセッションを使用します。';
+  String get settings_server_auth_password_desc => '推奨: Stashのユーザー名/パスワードセッションを使用します。';
 
   @override
   String get settings_server_auth_apikey_desc => '静的トークン認証にAPIキーを使用します。';
@@ -1252,8 +1238,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_server_invalid_url => '無効なサーバーURL';
 
   @override
-  String get settings_server_resolve_error =>
-      'サーバーURLを解決できませんでした。ホスト、ポート、認証情報を確認してください。';
+  String get settings_server_resolve_error => 'サーバーURLを解決できませんでした。ホスト、ポート、認証情報を確認してください。';
 
   @override
   String get settings_server_logout_confirm => 'ログアウトし、クッキーをクリアしました。';
@@ -1271,8 +1256,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_server_profile_delete => 'プロファイルを削除';
 
   @override
-  String get settings_server_profile_delete_confirm =>
-      'このプロファイルを削除してもよろしいですか？この操作は取り消せません。';
+  String get settings_server_profile_delete_confirm => 'このプロファイルを削除してもよろしいですか？この操作は取り消せません。';
 
   @override
   String get settings_server_profile_active => '有効';
@@ -1308,8 +1292,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_playback_prefer_streams => 'sceneStreamsを優先';
 
   @override
-  String get settings_playback_prefer_streams_subtitle =>
-      'オフの場合、再生は直接paths.streamを使用します';
+  String get settings_playback_prefer_streams_subtitle => 'オフの場合、再生は直接paths.streamを使用します';
 
   @override
   String get settings_playback_end_behavior => '再生終了時の動作';
@@ -1330,22 +1313,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_playback_autoplay => '次のシーンを自動再生';
 
   @override
-  String get settings_playback_autoplay_subtitle =>
-      '現在の再生が終了したときに次のシーンを自動的に再生します';
+  String get settings_playback_autoplay_subtitle => '現在の再生が終了したときに次のシーンを自動的に再生します';
 
   @override
   String get settings_playback_background => 'バックグラウンド再生';
 
   @override
-  String get settings_playback_background_subtitle =>
-      'アプリがバックグラウンドに移動しても動画の音声を再生し続けます';
+  String get settings_playback_background_subtitle => 'アプリがバックグラウンドに移動しても動画の音声を再生し続けます';
 
   @override
   String get settings_playback_pip => 'ネイティブ ピクチャー・イン・ピクチャー';
 
   @override
-  String get settings_playback_pip_subtitle =>
-      'Android PiPボタンを有効にし、バックグラウンド時に自動移行します';
+  String get settings_playback_pip_subtitle => 'Android PiPボタンを有効にし、バックグラウンド時に自動移行します';
 
   @override
   String get settings_playback_subtitles => '字幕設定';
@@ -1401,12 +1381,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_playback_direct_play => 'シーン移動時に直接再生';
 
   @override
-  String get settings_playback_direct_play_subtitle =>
-      '他の再生中シーンから移動した際、新しいシーンを直接再生します';
+  String get settings_playback_direct_play_subtitle => '他の再生中シーンから移動した際、新しいシーンを直接再生します';
 
   @override
-  String get settings_playback_gravity_orientation_subtitle =>
-      'デバイスのセンサーを使って一致する向きに回転できるようにします（例：左右の横向きに反転）。';
+  String get settings_playback_gravity_orientation_subtitle => 'デバイスのセンサーを使って一致する向きに回転できるようにします（例：左右の横向きに反転）。';
 
   @override
   String get settings_playback_subtitle_lang_none_disabled => 'なし（無効）';
@@ -1454,15 +1432,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_support_diagnostics => '診断とプロジェクト情報';
 
   @override
-  String get settings_support_diagnostics_subtitle =>
-      'ヘルプが必要なときに実行ログを開いたり、リポジトリに移動したりします。';
+  String get settings_support_diagnostics_subtitle => 'ヘルプが必要なときに実行ログを開いたり、リポジトリに移動したりします。';
 
   @override
   String get settings_support_update_available => 'アップデートがあります';
 
   @override
-  String get settings_support_update_available_subtitle =>
-      'GitHubで新しいバージョンが利用可能です';
+  String get settings_support_update_available_subtitle => 'GitHubで新しいバージョンが利用可能です';
 
   @override
   String settings_support_update_to(String version) {
@@ -1500,8 +1476,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_support_issues => '問題を報告する';
 
   @override
-  String get settings_support_issues_subtitle =>
-      'バグを報告して StashFlow の改善にご協力ください';
+  String get settings_support_issues_subtitle => 'バグを報告して StashFlow の改善にご協力ください';
 
   @override
   String get settings_develop_title => '開発';
@@ -1516,8 +1491,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_develop_video_debug => 'ビデオデバッグ情報を表示';
 
   @override
-  String get settings_develop_video_debug_subtitle =>
-      '技術的な再生詳細を動画プレーヤー上にオーバーレイ表示します。';
+  String get settings_develop_video_debug_subtitle => '技術的な再生詳細を動画プレーヤー上にオーバーレイ表示します。';
 
   @override
   String get settings_develop_log_viewer => 'デバッグログビューアー';
@@ -1541,15 +1515,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_develop_web_auth => 'Webでのパスワードログインを許可';
 
   @override
-  String get settings_develop_web_auth_subtitle =>
-      'ネイティブ限定の制限を上書きし、Flutter Webでユーザー名 + パスワード認証を強制表示します。';
+  String get settings_develop_web_auth_subtitle => 'ネイティブ限定の制限を上書きし、Flutter Webでユーザー名 + パスワード認証を強制表示します。';
 
   @override
   String get settings_develop_proxy_auth => 'プロキシ認証モードを有効にする';
 
   @override
-  String get settings_develop_proxy_auth_subtitle =>
-      'Authentikなどのプロキシの背後にある認証不要のバックエンドで使用するために、高度なBasic認証およびBearerトークン方式を有効にします。';
+  String get settings_develop_proxy_auth_subtitle => 'Authentikなどのプロキシの背後にある認証不要のバックエンドで使用するために、高度なBasic認証およびBearerトークン方式を有効にします。';
 
   @override
   String get settings_server_auth_basic => 'Basic認証';
@@ -1558,12 +1530,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_server_auth_bearer => 'Bearerトークン';
 
   @override
-  String get settings_server_auth_basic_desc =>
-      '\'Authorization: Basic <base64(user:pass)>\' ヘッダーを送信します。';
+  String get settings_server_auth_basic_desc => '\'Authorization: Basic <base64(user:pass)>\' ヘッダーを送信します。';
 
   @override
-  String get settings_server_auth_bearer_desc =>
-      '\'Authorization: Bearer <token>\' ヘッダーを送信します。';
+  String get settings_server_auth_bearer_desc => '\'Authorization: Bearer <token>\' ヘッダーを送信します。';
 
   @override
   String get common_edit => '編集';
@@ -1614,8 +1584,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get common_gallery => 'ギャラリー';
 
   @override
-  String get images_gallery_rating_unavailable =>
-      'ギャラリーの評価は、ギャラリーを閲覧しているときにのみ利用できます。';
+  String get images_gallery_rating_unavailable => 'ギャラリーの評価は、ギャラリーを閲覧しているときにのみ利用できます。';
 
   @override
   String images_rating(String rating) {
@@ -2225,5 +2194,37 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String common_saved_to(String path) {
     return '$path に保存されました';
+  }
+
+  @override
+  String get recent_searches => '最近の検索';
+
+  @override
+  String get initializing_player => 'プレーヤーを初期化しています...';
+
+  @override
+  String get sort_scenes => 'シーンを並べ替え';
+
+  @override
+  String get failed_to_load_tap_to_retry => '読み込みに失敗しました。タップして再試行してください。';
+
+  @override
+  String get would_you_like_to_visit_the_release_page_to_download_it => 'リリース ページにアクセスしてダウンロードしますか？';
+
+  @override
+  String get to_get_started_configure_stash_server => '開始するには、Stash サーバーの接続設定を行う必要があります。';
+
+  @override
+  String get loading => '読み込み中';
+
+  @override
+  String get wip => 'WIP';
+
+  @override
+  String get performer_filters => '出演者フィルター';
+
+  @override
+  String update_available(String version) {
+    return 'StashFlowの新しいバージョン ($version) が利用可能です。';
   }
 }

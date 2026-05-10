@@ -253,7 +253,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                       children: [
                         Expanded(
                           child: Text(
-                            'Sort Scenes',
+                            context.l10n.sort_scenes,
                             style: context.textTheme.headlineSmall?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),

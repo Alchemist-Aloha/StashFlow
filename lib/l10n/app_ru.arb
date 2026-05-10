@@ -837,5 +837,15 @@
         "type": "String"
       }
     }
-  }
+  },
+  "recent_searches": "Недавние поиски",
+  "initializing_player": "Инициализация плеера...",
+  "sort_scenes": "Сортировать сцены",
+  "failed_to_load_tap_to_retry": "Не удалось загрузить. Нажмите, чтобы повторить.",
+  "would_you_like_to_visit_the_release_page_to_download_it": "Хотите посетить страницу релиза, чтобы скачать его?",
+  "to_get_started_configure_stash_server": "Для начала вам необходимо настроить данные подключения к серверу Stash.",
+  "loading": "Загрузка",
+  "wip": "WIP",
+  "performer_filters": "Фильтры исполнителей",
+  "update_available": "Доступна новая версия StashFlow ({version})."
 }
