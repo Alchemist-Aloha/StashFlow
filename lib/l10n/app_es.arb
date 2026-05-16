@@ -847,5 +847,7 @@
   "loading": "Cargando",
   "wip": "WIP",
   "performer_filters": "Filtros de artistas",
-  "update_available": "Una nueva versión de StashFlow ({version}) está disponible."
+  "update_available": "Una nueva versión de StashFlow ({version}) está disponible.",
+  "details_failed_update_favorite": "Error al actualizar favorito: {error}",
+  "details_failed_load_galleries": "Error al cargar galerías: {error}"
 }
