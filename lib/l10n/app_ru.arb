@@ -847,5 +847,7 @@
   "loading": "Загрузка",
   "wip": "WIP",
   "performer_filters": "Фильтры исполнителей",
-  "update_available": "Доступна новая версия StashFlow ({version})."
+  "update_available": "Доступна новая версия StashFlow ({version}).",
+  "details_failed_update_favorite": "Не удалось обновить избранное: {error}",
+  "details_failed_load_galleries": "Не удалось загрузить галереи: {error}"
 }

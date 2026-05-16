@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/stats_provider.dart';
 import '../../data/graphql/stats_repository.dart';
@@ -81,7 +82,7 @@ class StatsFloatingPanel extends ConsumerWidget {
                   error: (err, stack) => Padding(
                     padding: EdgeInsets.all(dims.spacingLarge),
                     child: Text(
-                      'Error: $err',
+                      context.l10n.common_error(err.toString()),
                       textAlign: TextAlign.center,
                       style: TextStyle(color: colorScheme.error),
                     ),

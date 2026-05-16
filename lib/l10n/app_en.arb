@@ -932,5 +932,21 @@
         "type": "String"
       }
     }
+  },
+  "details_failed_update_favorite": "Failed to update favorite: {error}",
+  "@details_failed_update_favorite": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "details_failed_load_galleries": "Failed to load galleries: {error}",
+  "@details_failed_load_galleries": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -847,5 +847,7 @@
   "loading": "로딩 중",
   "wip": "WIP",
   "performer_filters": "출연자 필터",
-  "update_available": "StashFlow의 새 버전 ({version})을(를) 사용할 수 있습니다."
+  "update_available": "StashFlow의 새 버전 ({version})을(를) 사용할 수 있습니다.",
+  "details_failed_update_favorite": "즐겨찾기 업데이트 실패: {error}",
+  "details_failed_load_galleries": "갤러리 로드 실패: {error}"
 }
