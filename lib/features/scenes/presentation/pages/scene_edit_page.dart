@@ -500,6 +500,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
               ),
             TextField(
               controller: _titleController,
+              textInputAction: TextInputAction.next,
               decoration: InputDecoration(
                 labelText: context.l10n.common_title,
                 border: OutlineInputBorder(),
@@ -661,6 +662,8 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                     Expanded(
                       child: TextField(
                         controller: controller,
+                        keyboardType: TextInputType.url,
+                        textInputAction: TextInputAction.done,
                         decoration: InputDecoration(
                           labelText: context.l10n.common_url,
                           border: OutlineInputBorder(),
