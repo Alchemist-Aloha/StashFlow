@@ -188,7 +188,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(
-                                          'Failed to update favorite: $e',
+                                          context.l10n.details_failed_update_favorite(e.toString()),
                                         ),
                                       ),
                                     );
@@ -492,7 +492,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                             child: Center(child: CircularProgressIndicator()),
                           ),
                           error: (err, stack) => Text(
-                            'Failed to load galleries: $err',
+                            context.l10n.details_failed_load_galleries(err.toString()),
                             style: context.textTheme.bodyMedium?.copyWith(
                               color: context.colors.onSurface.withValues(
                                 alpha: 0.7,

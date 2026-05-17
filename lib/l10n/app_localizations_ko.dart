@@ -45,6 +45,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String nScenes(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
+
     );
     final String countString = countNumberFormat.format(count);
 
@@ -61,6 +62,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String nPerformers(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
+
     );
     final String countString = countNumberFormat.format(count);
 
@@ -77,6 +79,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String nPlays(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
+
     );
     final String countString = countNumberFormat.format(count);
 
@@ -857,8 +860,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_customize => 'StashFlow 사용자 정의';
 
   @override
-  String get settings_customize_subtitle =>
-      '재생, 모양, 레이아웃 및 지원 도구를 한 곳에서 조정하세요.';
+  String get settings_customize_subtitle => '재생, 모양, 레이아웃 및 지원 도구를 한 곳에서 조정하세요.';
 
   @override
   String get settings_core_section => '핵심 설정';
@@ -993,22 +995,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_appearance_primary_color => '기본 색상';
 
   @override
-  String get settings_appearance_primary_color_subtitle =>
-      'Material 3 팔레트의 시드 색상 선택';
+  String get settings_appearance_primary_color_subtitle => 'Material 3 팔레트의 시드 색상 선택';
 
   @override
   String get settings_appearance_advanced_theming => '고급 테마 설정';
 
   @override
-  String get settings_appearance_advanced_theming_subtitle =>
-      '특정 화면 유형에 대한 최적화';
+  String get settings_appearance_advanced_theming_subtitle => '특정 화면 유형에 대한 최적화';
 
   @override
   String get settings_appearance_true_black => '트루 블랙 (AMOLED)';
 
   @override
-  String get settings_appearance_true_black_subtitle =>
-      '어두운 모드에서 순수 검정색 배경을 사용하여 OLED 화면의 배터리 절약';
+  String get settings_appearance_true_black_subtitle => '어두운 모드에서 순수 검정색 배경을 사용하여 OLED 화면의 배터리 절약';
 
   @override
   String get settings_appearance_custom_hex => '사용자 정의 헥스 색상';
@@ -1044,30 +1043,25 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_interface_show_random => '랜덤 탐색 버튼 표시';
 
   @override
-  String get settings_interface_show_random_subtitle =>
-      '목록 및 상세 페이지에서 부동 카지노 버튼 활성화 또는 비활성화';
+  String get settings_interface_show_random_subtitle => '목록 및 상세 페이지에서 부동 카지노 버튼 활성화 또는 비활성화';
 
   @override
-  String get settings_interface_main_pages_gravity_orientation =>
-      '중력 제어 화면 방향(메인 페이지)';
+  String get settings_interface_main_pages_gravity_orientation => '중력 제어 화면 방향(메인 페이지)';
 
   @override
-  String get settings_interface_main_pages_gravity_orientation_subtitle =>
-      '기기 센서를 사용해 메인 페이지가 회전하도록 허용합니다. 전체 화면 동영상 재생은 별도의 화면 방향 설정을 따릅니다.';
+  String get settings_interface_main_pages_gravity_orientation_subtitle => '기기 센서를 사용해 메인 페이지가 회전하도록 허용합니다. 전체 화면 동영상 재생은 별도의 화면 방향 설정을 따릅니다.';
 
   @override
   String get settings_interface_show_edit => '편집 버튼 표시';
 
   @override
-  String get settings_interface_show_edit_subtitle =>
-      '장면 상세 페이지에서 편집 버튼 활성화 또는 비활성화';
+  String get settings_interface_show_edit_subtitle => '장면 상세 페이지에서 편집 버튼 활성화 또는 비활성화';
 
   @override
   String get settings_interface_customize_tabs => '탭 사용자 정의';
 
   @override
-  String get settings_interface_customize_tabs_subtitle =>
-      '탐색 메뉴 항목 순서 변경 또는 숨기기';
+  String get settings_interface_customize_tabs_subtitle => '탐색 메뉴 항목 순서 변경 또는 숨기기';
 
   @override
   String get settings_interface_scenes_layout => '장면 레이아웃';
@@ -1085,15 +1079,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_interface_max_performer_avatars => '출연자 아바타 최대 수';
 
   @override
-  String get settings_interface_max_performer_avatars_subtitle =>
-      '장면 카드에 표시할 출연자 아바타의 최대 수입니다.';
+  String get settings_interface_max_performer_avatars_subtitle => '장면 카드에 표시할 출연자 아바타의 최대 수입니다.';
 
   @override
   String get settings_interface_show_performer_avatars => '출연자 아바타 표시';
 
   @override
-  String get settings_interface_show_performer_avatars_subtitle =>
-      '모든 플랫폼의 장면 카드에 출연자 아이콘을 표시합니다.';
+  String get settings_interface_show_performer_avatars_subtitle => '모든 플랫폼의 장면 카드에 출연자 아이콘을 표시합니다.';
 
   @override
   String get settings_interface_performer_avatar_size => '출연자 아바타 크기';
@@ -1126,8 +1118,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_interface_swipe_direction => '전체 화면 스와이프 방향';
 
   @override
-  String get settings_interface_swipe_direction_desc =>
-      '전체 화면 모드에서 이미지가 넘어가는 방식 선택';
+  String get settings_interface_swipe_direction_desc => '전체 화면 모드에서 이미지가 넘어가는 방식 선택';
 
   @override
   String get settings_interface_swipe_vertical => '세로';
@@ -1142,15 +1133,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_interface_performer_layouts => '출연자 레이아웃';
 
   @override
-  String get settings_interface_performer_layouts_subtitle =>
-      '출연자의 미디어 및 갤러리 기본값';
+  String get settings_interface_performer_layouts_subtitle => '출연자의 미디어 및 갤러리 기본값';
 
   @override
   String get settings_interface_studio_layouts => '스튜디오 레이아웃';
 
   @override
-  String get settings_interface_studio_layouts_subtitle =>
-      '스튜디오의 미디어 및 갤러리 기본값';
+  String get settings_interface_studio_layouts_subtitle => '스튜디오의 미디어 및 갤러리 기본값';
 
   @override
   String get settings_interface_tag_layouts => '태그 레이아웃';
@@ -1168,8 +1157,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_interface_galleries_layout_item => '갤러리 레이아웃';
 
   @override
-  String get settings_interface_galleries_layout_subtitle_item =>
-      '갤러리 페이지용 레이아웃';
+  String get settings_interface_galleries_layout_subtitle_item => '갤러리 페이지용 레이아웃';
 
   @override
   String get settings_server_title => '서버 설정';
@@ -1190,8 +1178,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_server_url => 'Stash URL';
 
   @override
-  String get settings_server_url_helper =>
-      'Stash 서버의 URL을 입력하세요. 사용자 정의 경로가 구성된 경우 여기에 포함하세요.';
+  String get settings_server_url_helper => 'Stash 서버의 URL을 입력하세요. 사용자 정의 경로가 구성된 경우 여기에 포함하세요.';
 
   @override
   String get settings_server_url_example => 'http://192.168.1.100:9999';
@@ -1209,8 +1196,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_server_auth_password => '사용자 이름 + 비밀번호';
 
   @override
-  String get settings_server_auth_password_desc =>
-      '권장: Stash 사용자 이름/비밀번호 세션을 사용하세요.';
+  String get settings_server_auth_password_desc => '권장: Stash 사용자 이름/비밀번호 세션을 사용하세요.';
 
   @override
   String get settings_server_auth_apikey_desc => '정적 토큰 인증을 위해 API 키를 사용하세요.';
@@ -1250,8 +1236,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_server_invalid_url => '잘못된 서버 URL';
 
   @override
-  String get settings_server_resolve_error =>
-      '서버 URL을 확인할 수 없습니다. 호스트, 포트 및 자격 증명을 확인하세요.';
+  String get settings_server_resolve_error => '서버 URL을 확인할 수 없습니다. 호스트, 포트 및 자격 증명을 확인하세요.';
 
   @override
   String get settings_server_logout_confirm => '로그아웃되었으며 쿠키가 삭제되었습니다.';
@@ -1269,8 +1254,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_server_profile_delete => '프로필 삭제';
 
   @override
-  String get settings_server_profile_delete_confirm =>
-      '이 프로필을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.';
+  String get settings_server_profile_delete_confirm => '이 프로필을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.';
 
   @override
   String get settings_server_profile_active => '활성';
@@ -1306,15 +1290,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_playback_prefer_streams => 'sceneStreams 우선';
 
   @override
-  String get settings_playback_prefer_streams_subtitle =>
-      '꺼져 있으면 재생 시 paths.stream을 직접 사용합니다';
+  String get settings_playback_prefer_streams_subtitle => '꺼져 있으면 재생 시 paths.stream을 직접 사용합니다';
 
   @override
   String get settings_playback_end_behavior => '재생 종료 동작';
 
   @override
-  String get settings_playback_end_behavior_subtitle =>
-      '현재 재생이 끝나면 어떻게 해야 할까요?';
+  String get settings_playback_end_behavior_subtitle => '현재 재생이 끝나면 어떻게 해야 할까요?';
 
   @override
   String get settings_playback_end_behavior_stop => '멈추다';
@@ -1329,22 +1311,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_playback_autoplay => '다음 장면 자동 재생';
 
   @override
-  String get settings_playback_autoplay_subtitle =>
-      '현재 재생이 끝나면 자동으로 다음 장면을 재생합니다';
+  String get settings_playback_autoplay_subtitle => '현재 재생이 끝나면 자동으로 다음 장면을 재생합니다';
 
   @override
   String get settings_playback_background => '백그라운드 재생';
 
   @override
-  String get settings_playback_background_subtitle =>
-      '앱이 백그라운드로 전환되어도 동영상 오디오를 계속 재생합니다';
+  String get settings_playback_background_subtitle => '앱이 백그라운드로 전환되어도 동영상 오디오를 계속 재생합니다';
 
   @override
   String get settings_playback_pip => '네이티브 화면 속 화면 (PiP)';
 
   @override
-  String get settings_playback_pip_subtitle =>
-      'Android PiP 버튼을 활성화하고 백그라운드 전환 시 자동 진입합니다';
+  String get settings_playback_pip_subtitle => 'Android PiP 버튼을 활성화하고 백그라운드 전환 시 자동 진입합니다';
 
   @override
   String get settings_playback_subtitles => '자막 설정';
@@ -1400,12 +1379,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_playback_direct_play => '장면 이동 시 즉시 재생';
 
   @override
-  String get settings_playback_direct_play_subtitle =>
-      '다른 재생 중인 장면에서 이동할 때 새 장면을 즉시 재생합니다';
+  String get settings_playback_direct_play_subtitle => '다른 재생 중인 장면에서 이동할 때 새 장면을 즉시 재생합니다';
 
   @override
-  String get settings_playback_gravity_orientation_subtitle =>
-      '기기 센서를 사용하여 일치하는 방향으로 회전하도록 허용합니다(예: 좌/우 가로 방향 전환).';
+  String get settings_playback_gravity_orientation_subtitle => '기기 센서를 사용하여 일치하는 방향으로 회전하도록 허용합니다(예: 좌/우 가로 방향 전환).';
 
   @override
   String get settings_playback_subtitle_lang_none_disabled => '없음(비활성화)';
@@ -1453,15 +1430,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_support_diagnostics => '진단 및 프로젝트 정보';
 
   @override
-  String get settings_support_diagnostics_subtitle =>
-      '도움이 필요할 때 런타임 로그를 열거나 저장소로 이동하세요.';
+  String get settings_support_diagnostics_subtitle => '도움이 필요할 때 런타임 로그를 열거나 저장소로 이동하세요.';
 
   @override
   String get settings_support_update_available => '업데이트 가능';
 
   @override
-  String get settings_support_update_available_subtitle =>
-      'GitHub에서 새 버전을 사용할 수 있습니다';
+  String get settings_support_update_available_subtitle => 'GitHub에서 새 버전을 사용할 수 있습니다';
 
   @override
   String settings_support_update_to(String version) {
@@ -1499,8 +1474,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_support_issues => '문제 신고';
 
   @override
-  String get settings_support_issues_subtitle =>
-      '버그를 보고하여 StashFlow 개선에 도움을 주세요.';
+  String get settings_support_issues_subtitle => '버그를 보고하여 StashFlow 개선에 도움을 주세요.';
 
   @override
   String get settings_develop_title => '개발';
@@ -1515,8 +1489,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_develop_video_debug => '비디오 디버그 정보 표시';
 
   @override
-  String get settings_develop_video_debug_subtitle =>
-      '비디오 플레이어 위에 기술적인 재생 세부 정보를 오버레이로 표시합니다.';
+  String get settings_develop_video_debug_subtitle => '비디오 플레이어 위에 기술적인 재생 세부 정보를 오버레이로 표시합니다.';
 
   @override
   String get settings_develop_log_viewer => '디버그 로그 뷰어';
@@ -1540,15 +1513,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_develop_web_auth => '웹에서 비밀번호 로그인 허용';
 
   @override
-  String get settings_develop_web_auth_subtitle =>
-      '네이티브 전용 제한을 무시하고 Flutter 웹에서 사용자 이름 + 비밀번호 인증 방식을 강제로 표시합니다.';
+  String get settings_develop_web_auth_subtitle => '네이티브 전용 제한을 무시하고 Flutter 웹에서 사용자 이름 + 비밀번호 인증 방식을 강제로 표시합니다.';
 
   @override
   String get settings_develop_proxy_auth => '프록시 인증 모드 활성화';
 
   @override
-  String get settings_develop_proxy_auth_subtitle =>
-      'Authentik과 같은 프록시 뒤의 인증 없는 백엔드에서 사용하기 위해 고급 Basic Auth 및 Bearer Token 방식을 활성화합니다.';
+  String get settings_develop_proxy_auth_subtitle => 'Authentik과 같은 프록시 뒤의 인증 없는 백엔드에서 사용하기 위해 고급 Basic Auth 및 Bearer Token 방식을 활성화합니다.';
 
   @override
   String get settings_server_auth_basic => '기본 인증';
@@ -1557,12 +1528,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_server_auth_bearer => '전달자 토큰';
 
   @override
-  String get settings_server_auth_basic_desc =>
-      '\'Authorization: Basic <base64(user:pass)>\' 헤더를 전송합니다.';
+  String get settings_server_auth_basic_desc => '\'Authorization: Basic <base64(user:pass)>\' 헤더를 전송합니다.';
 
   @override
-  String get settings_server_auth_bearer_desc =>
-      '\'Authorization: Bearer <token>\' 헤더를 전송합니다.';
+  String get settings_server_auth_bearer_desc => '\'Authorization: Bearer <token>\' 헤더를 전송합니다.';
 
   @override
   String get common_edit => '편집';
@@ -1613,8 +1582,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get common_gallery => '갤러리';
 
   @override
-  String get images_gallery_rating_unavailable =>
-      '갤러리 평점은 갤러리를 탐색할 때만 사용할 수 있습니다.';
+  String get images_gallery_rating_unavailable => '갤러리 평점은 갤러리를 탐색할 때만 사용할 수 있습니다.';
 
   @override
   String images_rating(String rating) {
@@ -1726,8 +1694,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get scenes_unmatched_scraped_performers => '일치하지 않는 스크랩된 출연자';
 
   @override
-  String get scenes_no_matching_performer_found =>
-      '라이브러리에서 일치하는 출연자를 찾을 수 없습니다';
+  String get scenes_no_matching_performer_found => '라이브러리에서 일치하는 출연자를 찾을 수 없습니다';
 
   @override
   String get common_unknown => '알 수 없음';
@@ -2240,12 +2207,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get failed_to_load_tap_to_retry => '불러오기 실패. 탭하여 다시 시도하세요.';
 
   @override
-  String get would_you_like_to_visit_the_release_page_to_download_it =>
-      '릴리스 페이지를 방문하여 다운로드하시겠습니까?';
+  String get would_you_like_to_visit_the_release_page_to_download_it => '릴리스 페이지를 방문하여 다운로드하시겠습니까?';
 
   @override
-  String get to_get_started_configure_stash_server =>
-      '시작하려면 Stash 서버 연결 세부 정보를 구성해야 합니다.';
+  String get to_get_started_configure_stash_server => '시작하려면 Stash 서버 연결 세부 정보를 구성해야 합니다.';
 
   @override
   String get loading => '로딩 중';
@@ -2259,5 +2224,15 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String update_available(String version) {
     return 'StashFlow의 새 버전 ($version)을(를) 사용할 수 있습니다.';
+  }
+
+  @override
+  String details_failed_update_favorite(String error) {
+    return '즐겨찾기 업데이트 실패: $error';
+  }
+
+  @override
+  String details_failed_load_galleries(String error) {
+    return '갤러리 로드 실패: $error';
   }
 }

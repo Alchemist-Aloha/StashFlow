@@ -45,6 +45,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String nScenes(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
+
     );
     final String countString = countNumberFormat.format(count);
 
@@ -61,6 +62,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String nPerformers(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
+
     );
     final String countString = countNumberFormat.format(count);
 
@@ -77,6 +79,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String nPlays(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
+
     );
     final String countString = countNumberFormat.format(count);
 
@@ -992,8 +995,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_appearance_primary_color => '主色调';
 
   @override
-  String get settings_appearance_primary_color_subtitle =>
-      '为 Material 3 调色板选择种子颜色';
+  String get settings_appearance_primary_color_subtitle => '为 Material 3 调色板选择种子颜色';
 
   @override
   String get settings_appearance_advanced_theming => '高级主题';
@@ -1005,8 +1007,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_appearance_true_black => '纯黑 (AMOLED)';
 
   @override
-  String get settings_appearance_true_black_subtitle =>
-      '在深色模式下使用纯黑背景以节省 OLED 屏幕电量';
+  String get settings_appearance_true_black_subtitle => '在深色模式下使用纯黑背景以节省 OLED 屏幕电量';
 
   @override
   String get settings_appearance_custom_hex => '自定义 Hex 颜色';
@@ -1045,12 +1046,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_interface_show_random_subtitle => '在列表和详情页启用或禁用悬浮随机按钮';
 
   @override
-  String get settings_interface_main_pages_gravity_orientation =>
-      '重力控制的方向（主页面）';
+  String get settings_interface_main_pages_gravity_orientation => '重力控制的方向（主页面）';
 
   @override
-  String get settings_interface_main_pages_gravity_orientation_subtitle =>
-      '允许主页面使用设备传感器旋转。全屏视频播放将使用其自己的方向设置。';
+  String get settings_interface_main_pages_gravity_orientation_subtitle => '允许主页面使用设备传感器旋转。全屏视频播放将使用其自己的方向设置。';
 
   @override
   String get settings_interface_show_edit => '显示编辑按钮';
@@ -1080,15 +1079,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_interface_max_performer_avatars => '最多出演者头像';
 
   @override
-  String get settings_interface_max_performer_avatars_subtitle =>
-      '在场景卡上显示的出演者头像的最大数量。';
+  String get settings_interface_max_performer_avatars_subtitle => '在场景卡上显示的出演者头像的最大数量。';
 
   @override
   String get settings_interface_show_performer_avatars => '显示出演者头像';
 
   @override
-  String get settings_interface_show_performer_avatars_subtitle =>
-      '在所有平台的场景卡上显示出演者图标。';
+  String get settings_interface_show_performer_avatars_subtitle => '在所有平台的场景卡上显示出演者图标。';
 
   @override
   String get settings_interface_performer_avatar_size => '出演者头像大小';
@@ -1181,8 +1178,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_server_url => 'Stash URL';
 
   @override
-  String get settings_server_url_helper =>
-      '输入 Stash 服务器的 URL。如果配置了自定义路径，请在此处包含它。';
+  String get settings_server_url_helper => '输入 Stash 服务器的 URL。如果配置了自定义路径，请在此处包含它。';
 
   @override
   String get settings_server_url_example => 'http://192.168.1.100:9999';
@@ -1294,8 +1290,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_playback_prefer_streams => '优先使用 sceneStreams';
 
   @override
-  String get settings_playback_prefer_streams_subtitle =>
-      '关闭时，播放将直接使用 paths.stream';
+  String get settings_playback_prefer_streams_subtitle => '关闭时，播放将直接使用 paths.stream';
 
   @override
   String get settings_playback_end_behavior => '播放结束行为';
@@ -1384,12 +1379,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_playback_direct_play => '切换场景时直接播放';
 
   @override
-  String get settings_playback_direct_play_subtitle =>
-      '从另一个正在播放的场景切换过来时，直接播放新场景';
+  String get settings_playback_direct_play_subtitle => '从另一个正在播放的场景切换过来时，直接播放新场景';
 
   @override
-  String get settings_playback_gravity_orientation_subtitle =>
-      '允许使用设备传感器在匹配的方向之间旋转（例如：左右翻转横向）。';
+  String get settings_playback_gravity_orientation_subtitle => '允许使用设备传感器在匹配的方向之间旋转（例如：左右翻转横向）。';
 
   @override
   String get settings_playback_subtitle_lang_none_disabled => '无（禁用）';
@@ -1520,15 +1513,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_develop_web_auth => '允许在 Web 上使用密码登录';
 
   @override
-  String get settings_develop_web_auth_subtitle =>
-      '覆盖仅限原生的限制，并强制用户名 + 密码身份验证方式在 Flutter Web 上可见。';
+  String get settings_develop_web_auth_subtitle => '覆盖仅限原生的限制，并强制用户名 + 密码身份验证方式在 Flutter Web 上可见。';
 
   @override
   String get settings_develop_proxy_auth => '启用代理认证模式';
 
   @override
-  String get settings_develop_proxy_auth_subtitle =>
-      '启用高级 Basic Auth 和 Bearer Token 方法，以便在 Authentik 等代理背后的无认证后端中使用。';
+  String get settings_develop_proxy_auth_subtitle => '启用高级 Basic Auth 和 Bearer Token 方法，以便在 Authentik 等代理背后的无认证后端中使用。';
 
   @override
   String get settings_server_auth_basic => '基础认证';
@@ -1537,12 +1528,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_server_auth_bearer => 'Bearer 令牌';
 
   @override
-  String get settings_server_auth_basic_desc =>
-      '发送 \'Authorization: Basic <base64(user:pass)>\' 请求头。';
+  String get settings_server_auth_basic_desc => '发送 \'Authorization: Basic <base64(user:pass)>\' 请求头。';
 
   @override
-  String get settings_server_auth_bearer_desc =>
-      '发送 \'Authorization: Bearer <token>\' 请求头。';
+  String get settings_server_auth_bearer_desc => '发送 \'Authorization: Bearer <token>\' 请求头。';
 
   @override
   String get common_edit => '编辑';
@@ -2218,12 +2207,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get failed_to_load_tap_to_retry => '加载失败。点击重试。';
 
   @override
-  String get would_you_like_to_visit_the_release_page_to_download_it =>
-      '您想访问发布页面下载吗？';
+  String get would_you_like_to_visit_the_release_page_to_download_it => '您想访问发布页面下载吗？';
 
   @override
-  String get to_get_started_configure_stash_server =>
-      '要开始使用，您需要配置您的 Stash 服务器连接详细信息。';
+  String get to_get_started_configure_stash_server => '要开始使用，您需要配置您的 Stash 服务器连接详细信息。';
 
   @override
   String get loading => '加载中';
@@ -2238,11 +2225,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String update_available(String version) {
     return 'StashFlow的更新版本 ($version) 已经发布。';
   }
+
+  @override
+  String details_failed_update_favorite(String error) {
+    return '更新收藏失败: $error';
+  }
+
+  @override
+  String details_failed_load_galleries(String error) {
+    return '加载图库失败: $error';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
 class AppLocalizationsZhHans extends AppLocalizationsZh {
-  AppLocalizationsZhHans() : super('zh_Hans');
+  AppLocalizationsZhHans(): super('zh_Hans');
 
   @override
   String get appTitle => 'StashFlow';
@@ -2281,6 +2278,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String nScenes(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
+
     );
     final String countString = countNumberFormat.format(count);
 
@@ -2297,6 +2295,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String nPerformers(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
+
     );
     final String countString = countNumberFormat.format(count);
 
@@ -2313,6 +2312,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String nPlays(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
+
     );
     final String countString = countNumberFormat.format(count);
 
@@ -3228,8 +3228,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_appearance_primary_color => '主色调';
 
   @override
-  String get settings_appearance_primary_color_subtitle =>
-      '为 Material 3 调色板选择种子颜色';
+  String get settings_appearance_primary_color_subtitle => '为 Material 3 调色板选择种子颜色';
 
   @override
   String get settings_appearance_advanced_theming => '高级主题';
@@ -3241,8 +3240,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_appearance_true_black => '纯黑 (AMOLED)';
 
   @override
-  String get settings_appearance_true_black_subtitle =>
-      '在深色模式下使用纯黑背景以节省 OLED 屏幕电量';
+  String get settings_appearance_true_black_subtitle => '在深色模式下使用纯黑背景以节省 OLED 屏幕电量';
 
   @override
   String get settings_appearance_custom_hex => '自定义 Hex 颜色';
@@ -3281,12 +3279,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_interface_show_random_subtitle => '在列表和详情页启用或禁用悬浮随机按钮';
 
   @override
-  String get settings_interface_main_pages_gravity_orientation =>
-      '重力控制的方向（主页面）';
+  String get settings_interface_main_pages_gravity_orientation => '重力控制的方向（主页面）';
 
   @override
-  String get settings_interface_main_pages_gravity_orientation_subtitle =>
-      '允许主页面使用设备传感器旋转。全屏视频播放将使用其自己的方向设置。';
+  String get settings_interface_main_pages_gravity_orientation_subtitle => '允许主页面使用设备传感器旋转。全屏视频播放将使用其自己的方向设置。';
 
   @override
   String get settings_interface_show_edit => '显示编辑按钮';
@@ -3316,15 +3312,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_interface_max_performer_avatars => '最多出演者头像';
 
   @override
-  String get settings_interface_max_performer_avatars_subtitle =>
-      '在场景卡上显示的出演者头像的最大数量。';
+  String get settings_interface_max_performer_avatars_subtitle => '在场景卡上显示的出演者头像的最大数量。';
 
   @override
   String get settings_interface_show_performer_avatars => '显示出演者头像';
 
   @override
-  String get settings_interface_show_performer_avatars_subtitle =>
-      '在所有平台的场景卡上显示出演者图标。';
+  String get settings_interface_show_performer_avatars_subtitle => '在所有平台的场景卡上显示出演者图标。';
 
   @override
   String get settings_interface_performer_avatar_size => '出演者头像大小';
@@ -3417,8 +3411,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_server_url => 'Stash URL';
 
   @override
-  String get settings_server_url_helper =>
-      '输入 Stash 服务器的 URL。如果配置了自定义路径，请在此处包含它。';
+  String get settings_server_url_helper => '输入 Stash 服务器的 URL。如果配置了自定义路径，请在此处包含它。';
 
   @override
   String get settings_server_url_example => 'http://192.168.1.100:9999';
@@ -3530,8 +3523,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_playback_prefer_streams => '优先使用 sceneStreams';
 
   @override
-  String get settings_playback_prefer_streams_subtitle =>
-      '关闭时，播放将直接使用 paths.stream';
+  String get settings_playback_prefer_streams_subtitle => '关闭时，播放将直接使用 paths.stream';
 
   @override
   String get settings_playback_end_behavior => '播放结束行为';
@@ -3620,12 +3612,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_playback_direct_play => '切换场景时直接播放';
 
   @override
-  String get settings_playback_direct_play_subtitle =>
-      '从另一个正在播放的场景切换过来时，直接播放新场景';
+  String get settings_playback_direct_play_subtitle => '从另一个正在播放的场景切换过来时，直接播放新场景';
 
   @override
-  String get settings_playback_gravity_orientation_subtitle =>
-      '允许使用设备传感器在匹配的方向之间旋转（例如：左右翻转横向）。';
+  String get settings_playback_gravity_orientation_subtitle => '允许使用设备传感器在匹配的方向之间旋转（例如：左右翻转横向）。';
 
   @override
   String get settings_playback_subtitle_lang_none_disabled => '无（禁用）';
@@ -3756,15 +3746,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_develop_web_auth => '允许在 Web 上使用密码登录';
 
   @override
-  String get settings_develop_web_auth_subtitle =>
-      '覆盖仅限原生的限制，并强制用户名 + 密码身份验证方式在 Flutter Web 上可见。';
+  String get settings_develop_web_auth_subtitle => '覆盖仅限原生的限制，并强制用户名 + 密码身份验证方式在 Flutter Web 上可见。';
 
   @override
   String get settings_develop_proxy_auth => '启用代理认证模式';
 
   @override
-  String get settings_develop_proxy_auth_subtitle =>
-      '启用高级 Basic Auth 和 Bearer Token 方法，以便在 Authentik 等代理背后的无认证后端中使用。';
+  String get settings_develop_proxy_auth_subtitle => '启用高级 Basic Auth 和 Bearer Token 方法，以便在 Authentik 等代理背后的无认证后端中使用。';
 
   @override
   String get settings_server_auth_basic => '基础认证';
@@ -3773,12 +3761,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_server_auth_bearer => 'Bearer 令牌';
 
   @override
-  String get settings_server_auth_basic_desc =>
-      '发送 \'Authorization: Basic <base64(user:pass)>\' 请求头。';
+  String get settings_server_auth_basic_desc => '发送 \'Authorization: Basic <base64(user:pass)>\' 请求头。';
 
   @override
-  String get settings_server_auth_bearer_desc =>
-      '发送 \'Authorization: Bearer <token>\' 请求头。';
+  String get settings_server_auth_bearer_desc => '发送 \'Authorization: Bearer <token>\' 请求头。';
 
   @override
   String get common_edit => '编辑';
@@ -4432,6 +4418,16 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get saving_image => '正在保存图片...';
 
   @override
+  String common_select(String label) {
+    return '选择 $label';
+  }
+
+  @override
+  String common_saved_to(String path) {
+    return '保存至 $path';
+  }
+
+  @override
   String get recent_searches => '最近搜索';
 
   @override
@@ -4444,12 +4440,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get failed_to_load_tap_to_retry => '加载失败。点击重试。';
 
   @override
-  String get would_you_like_to_visit_the_release_page_to_download_it =>
-      '您想访问发布页面下载吗？';
+  String get would_you_like_to_visit_the_release_page_to_download_it => '您想访问发布页面下载吗？';
 
   @override
-  String get to_get_started_configure_stash_server =>
-      '要开始使用，您需要配置您的 Stash 服务器连接详细信息。';
+  String get to_get_started_configure_stash_server => '要开始使用，您需要配置您的 Stash 服务器连接详细信息。';
 
   @override
   String get loading => '加载中';
@@ -4464,11 +4458,21 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String update_available(String version) {
     return 'StashFlow的更新版本 ($version) 已经发布。';
   }
+
+  @override
+  String details_failed_update_favorite(String error) {
+    return '更新收藏失败: $error';
+  }
+
+  @override
+  String details_failed_load_galleries(String error) {
+    return '加载图库失败: $error';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
 class AppLocalizationsZhHant extends AppLocalizationsZh {
-  AppLocalizationsZhHant() : super('zh_Hant');
+  AppLocalizationsZhHant(): super('zh_Hant');
 
   @override
   String get appTitle => 'StashFlow';
@@ -4507,6 +4511,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String nScenes(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
+
     );
     final String countString = countNumberFormat.format(count);
 
@@ -4524,6 +4529,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String nPerformers(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
+
     );
     final String countString = countNumberFormat.format(count);
 
@@ -4541,6 +4547,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String nPlays(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
+
     );
     final String countString = countNumberFormat.format(count);
 
@@ -5456,8 +5463,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_appearance_primary_color => '主要顏色';
 
   @override
-  String get settings_appearance_primary_color_subtitle =>
-      '為 Material 3 調色盤挑選種子顏色';
+  String get settings_appearance_primary_color_subtitle => '為 Material 3 調色盤挑選種子顏色';
 
   @override
   String get settings_appearance_advanced_theming => '進階主題';
@@ -5469,8 +5475,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_appearance_true_black => '純黑 (AMOLED)';
 
   @override
-  String get settings_appearance_true_black_subtitle =>
-      '在深色模式下使用純黑背景，以節省 OLED 螢幕的電量';
+  String get settings_appearance_true_black_subtitle => '在深色模式下使用純黑背景，以節省 OLED 螢幕的電量';
 
   @override
   String get settings_appearance_custom_hex => '自訂 Hex 顏色';
@@ -5509,12 +5514,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_interface_show_random_subtitle => '在列表和詳情頁面啟用或停用浮動隨機按鈕';
 
   @override
-  String get settings_interface_main_pages_gravity_orientation =>
-      '重力控制的方向（主頁面）';
+  String get settings_interface_main_pages_gravity_orientation => '重力控制的方向（主頁面）';
 
   @override
-  String get settings_interface_main_pages_gravity_orientation_subtitle =>
-      '允許主頁面使用裝置感測器旋轉。全螢幕影片播放將使用其自己的方向設定。';
+  String get settings_interface_main_pages_gravity_orientation_subtitle => '允許主頁面使用裝置感測器旋轉。全螢幕影片播放將使用其自己的方向設定。';
 
   @override
   String get settings_interface_show_edit => '顯示編輯按鈕';
@@ -5544,15 +5547,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_interface_max_performer_avatars => '最多演出者頭像';
 
   @override
-  String get settings_interface_max_performer_avatars_subtitle =>
-      '在場景卡上顯示的演出者頭像的最大數量。';
+  String get settings_interface_max_performer_avatars_subtitle => '在場景卡上顯示的演出者頭像的最大數量。';
 
   @override
   String get settings_interface_show_performer_avatars => '顯示演出者頭像';
 
   @override
-  String get settings_interface_show_performer_avatars_subtitle =>
-      '在所有平台的場景卡上顯示演出者圖標。';
+  String get settings_interface_show_performer_avatars_subtitle => '在所有平台的場景卡上顯示演出者圖標。';
 
   @override
   String get settings_interface_performer_avatar_size => '演出者頭像大小';
@@ -5645,8 +5646,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_server_url => 'Stash URL';
 
   @override
-  String get settings_server_url_helper =>
-      '輸入 Stash 伺服器的 URL。如果配置了自定義路徑，請在此處包含它。';
+  String get settings_server_url_helper => '輸入 Stash 伺服器的 URL。如果配置了自定義路徑，請在此處包含它。';
 
   @override
   String get settings_server_url_example => 'http://192.168.1.100:9999';
@@ -5664,8 +5664,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_server_auth_password => '使用者名稱 + 密碼';
 
   @override
-  String get settings_server_auth_password_desc =>
-      '建議：使用您的 Stash 使用者名稱/密碼工作階段。';
+  String get settings_server_auth_password_desc => '建議：使用您的 Stash 使用者名稱/密碼工作階段。';
 
   @override
   String get settings_server_auth_apikey_desc => '使用 API 金鑰進行靜態權杖驗證。';
@@ -5759,8 +5758,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_playback_prefer_streams => '優先使用 sceneStreams';
 
   @override
-  String get settings_playback_prefer_streams_subtitle =>
-      '關閉時，播放將直接使用 paths.stream';
+  String get settings_playback_prefer_streams_subtitle => '關閉時，播放將直接使用 paths.stream';
 
   @override
   String get settings_playback_end_behavior => '播放結束行為';
@@ -5849,12 +5847,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_playback_direct_play => '切換場景時直接播放';
 
   @override
-  String get settings_playback_direct_play_subtitle =>
-      '從另一個正在播放的場景切換過來時，直接播放新場景';
+  String get settings_playback_direct_play_subtitle => '從另一個正在播放的場景切換過來時，直接播放新場景';
 
   @override
-  String get settings_playback_gravity_orientation_subtitle =>
-      '允許使用裝置感測器在相符方向之間旋轉（例如：將橫向向左/向右翻轉）。';
+  String get settings_playback_gravity_orientation_subtitle => '允許使用裝置感測器在相符方向之間旋轉（例如：將橫向向左/向右翻轉）。';
 
   @override
   String get settings_playback_subtitle_lang_none_disabled => '無（停用）';
@@ -5902,8 +5898,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_support_diagnostics => '診斷和專案資訊';
 
   @override
-  String get settings_support_diagnostics_subtitle =>
-      '當您需要協助時，開啟執行階段記錄或跳轉至儲存庫。';
+  String get settings_support_diagnostics_subtitle => '當您需要協助時，開啟執行階段記錄或跳轉至儲存庫。';
 
   @override
   String get settings_support_update_available => '有可用更新';
@@ -5986,15 +5981,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_develop_web_auth => '允許在網頁上使用密碼登入';
 
   @override
-  String get settings_develop_web_auth_subtitle =>
-      '覆寫僅限原生的限制，並強制「使用者名稱 + 密碼」驗證方式在 Flutter Web 上可見。';
+  String get settings_develop_web_auth_subtitle => '覆寫僅限原生的限制，並強制「使用者名稱 + 密碼」驗證方式在 Flutter Web 上可見。';
 
   @override
   String get settings_develop_proxy_auth => '啟用代理認證模式';
 
   @override
-  String get settings_develop_proxy_auth_subtitle =>
-      '啟用進階 Basic Auth 和 Bearer Token 方法，以便在 Authentik 等代理背後的無認證後端中使用。';
+  String get settings_develop_proxy_auth_subtitle => '啟用進階 Basic Auth 和 Bearer Token 方法，以便在 Authentik 等代理背後的無認證後端中使用。';
 
   @override
   String get settings_server_auth_basic => '基礎認證';
@@ -6003,12 +5996,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_server_auth_bearer => 'Bearer 權杖';
 
   @override
-  String get settings_server_auth_basic_desc =>
-      '發送 \'Authorization: Basic <base64(user:pass)>\' 請求頭。';
+  String get settings_server_auth_basic_desc => '發送 \'Authorization: Basic <base64(user:pass)>\' 請求頭。';
 
   @override
-  String get settings_server_auth_bearer_desc =>
-      '發送 \'Authorization: Bearer <token>\' 請求頭。';
+  String get settings_server_auth_bearer_desc => '發送 \'Authorization: Bearer <token>\' 請求頭。';
 
   @override
   String get common_edit => '編輯';
@@ -6662,6 +6653,16 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get saving_image => '正在儲存圖片...';
 
   @override
+  String common_select(String label) {
+    return '選擇 $label';
+  }
+
+  @override
+  String common_saved_to(String path) {
+    return '儲存至 $path';
+  }
+
+  @override
   String get recent_searches => '最近搜尋';
 
   @override
@@ -6674,12 +6675,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get failed_to_load_tap_to_retry => '載入失敗。點擊重試。';
 
   @override
-  String get would_you_like_to_visit_the_release_page_to_download_it =>
-      '您想訪問發佈頁面下載嗎？';
+  String get would_you_like_to_visit_the_release_page_to_download_it => '您想訪問發佈頁面下載嗎？';
 
   @override
-  String get to_get_started_configure_stash_server =>
-      '要開始使用，您需要配置您的 Stash 伺服器連接詳細資訊。';
+  String get to_get_started_configure_stash_server => '要開始使用，您需要配置您的 Stash 伺服器連接詳細資訊。';
 
   @override
   String get loading => '載入中';
@@ -6693,5 +6692,15 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String update_available(String version) {
     return 'StashFlow的更新版本 ($version) 已經發布。';
+  }
+
+  @override
+  String details_failed_update_favorite(String error) {
+    return '更新收藏失敗: $error';
+  }
+
+  @override
+  String details_failed_load_galleries(String error) {
+    return '載入圖庫失敗: $error';
   }
 }

@@ -45,6 +45,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String nScenes(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
+
     );
     final String countString = countNumberFormat.format(count);
 
@@ -62,6 +63,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String nPerformers(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
+
     );
     final String countString = countNumberFormat.format(count);
 
@@ -79,6 +81,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String nPlays(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
+
     );
     final String countString = countNumberFormat.format(count);
 
@@ -150,8 +153,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get common_hide => 'Ausblenden';
 
   @override
-  String get galleries_filter_saved =>
-      'Filtereinstellungen als Standard gespeichert';
+  String get galleries_filter_saved => 'Filtereinstellungen als Standard gespeichert';
 
   @override
   String get common_setup_required => 'Einrichtung erforderlich';
@@ -178,8 +180,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get studios_filter_title => 'Studios filtern';
 
   @override
-  String get studios_filter_saved =>
-      'Filtereinstellungen als Standard gespeichert';
+  String get studios_filter_saved => 'Filtereinstellungen als Standard gespeichert';
 
   @override
   String get sort_name => 'Name';
@@ -278,19 +279,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sort_last_played_at => 'Zuletzt abgespielt am';
 
   @override
-  String get studios_sort_saved =>
-      'Sortiereinstellungen als Standard gespeichert';
+  String get studios_sort_saved => 'Sortiereinstellungen als Standard gespeichert';
 
   @override
-  String get studios_no_random =>
-      'Keine Studios für zufällige Navigation verfügbar';
+  String get studios_no_random => 'Keine Studios für zufällige Navigation verfügbar';
 
   @override
   String get tags_filter_title => 'Tags filtern';
 
   @override
-  String get tags_filter_saved =>
-      'Filtereinstellungen als Standard gespeichert';
+  String get tags_filter_saved => 'Filtereinstellungen als Standard gespeichert';
 
   @override
   String get tags_sort_title => 'Tags sortieren';
@@ -302,16 +300,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get tags_no_random => 'Keine Tags für zufällige Navigation verfügbar';
 
   @override
-  String get scenes_no_random =>
-      'Keine Szenen für zufällige Navigation verfügbar';
+  String get scenes_no_random => 'Keine Szenen für zufällige Navigation verfügbar';
 
   @override
-  String get performers_no_random =>
-      'Keine Darsteller für zufällige Navigation verfügbar';
+  String get performers_no_random => 'Keine Darsteller für zufällige Navigation verfügbar';
 
   @override
-  String get galleries_no_random =>
-      'Keine Galerien für zufällige Navigation verfügbar';
+  String get galleries_no_random => 'Keine Galerien für zufällige Navigation verfügbar';
 
   @override
   String common_error(String message) {
@@ -596,8 +591,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scenes_filter_title => 'Szenen filtern';
 
   @override
-  String get scenes_filter_saved =>
-      'Filtereinstellungen als Standard gespeichert';
+  String get scenes_filter_saved => 'Filtereinstellungen als Standard gespeichert';
 
   @override
   String get scenes_watched => 'Gesehen';
@@ -621,8 +615,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scenes_sort_framerate => 'Bildrate';
 
   @override
-  String get scenes_sort_saved_default =>
-      'Sortiereinstellungen als Standard gespeichert';
+  String get scenes_sort_saved_default => 'Sortiereinstellungen als Standard gespeichert';
 
   @override
   String get scenes_sort_tooltip => 'Sortieroptionen';
@@ -869,8 +862,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_customize => 'StashFlow anpassen';
 
   @override
-  String get settings_customize_subtitle =>
-      'Wiedergabe, Aussehen, Layout und Support-Tools an einem Ort optimieren.';
+  String get settings_customize_subtitle => 'Wiedergabe, Aussehen, Layout und Support-Tools an einem Ort optimieren.';
 
   @override
   String get settings_core_section => 'Kern-Einstellungen';
@@ -894,8 +886,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_keyboard => 'Tastatur';
 
   @override
-  String get settings_keyboard_subtitle =>
-      'Anpassbare Verknüpfungen und Hotkeys';
+  String get settings_keyboard_subtitle => 'Anpassbare Verknüpfungen und Hotkeys';
 
   @override
   String get settings_keyboard_title => 'Tastaturkürzel';
@@ -925,16 +916,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_keyboard_prev_scene => 'Vorherige Szene';
 
   @override
-  String get settings_keyboard_increase_speed =>
-      'Wiedergabegeschwindigkeit erhöhen';
+  String get settings_keyboard_increase_speed => 'Wiedergabegeschwindigkeit erhöhen';
 
   @override
-  String get settings_keyboard_decrease_speed =>
-      'Wiedergabegeschwindigkeit verringern';
+  String get settings_keyboard_decrease_speed => 'Wiedergabegeschwindigkeit verringern';
 
   @override
-  String get settings_keyboard_reset_speed =>
-      'Wiedergabegeschwindigkeit zurücksetzen';
+  String get settings_keyboard_reset_speed => 'Wiedergabegeschwindigkeit zurücksetzen';
 
   @override
   String get settings_keyboard_close_player => 'Player schließen';
@@ -949,24 +937,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_keyboard_go_back => 'Zurückgehen';
 
   @override
-  String get settings_keyboard_play_pause_desc =>
-      'Zwischen Wiedergabe und Pause umschalten';
+  String get settings_keyboard_play_pause_desc => 'Zwischen Wiedergabe und Pause umschalten';
 
   @override
-  String get settings_keyboard_seek_forward_5_desc =>
-      '5 Sekunden vorwärts springen';
+  String get settings_keyboard_seek_forward_5_desc => '5 Sekunden vorwärts springen';
 
   @override
-  String get settings_keyboard_seek_backward_5_desc =>
-      '5 Sekunden rückwärts springen';
+  String get settings_keyboard_seek_backward_5_desc => '5 Sekunden rückwärts springen';
 
   @override
-  String get settings_keyboard_seek_forward_10_desc =>
-      '10 Sekunden vorwärts springen';
+  String get settings_keyboard_seek_forward_10_desc => '10 Sekunden vorwärts springen';
 
   @override
-  String get settings_keyboard_seek_backward_10_desc =>
-      '10 Sekunden rückwärts springen';
+  String get settings_keyboard_seek_backward_10_desc => '10 Sekunden rückwärts springen';
 
   @override
   String get settings_appearance => 'Erscheinungsbild';
@@ -999,8 +982,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_appearance_theme_mode => 'Design-Modus';
 
   @override
-  String get settings_appearance_theme_mode_subtitle =>
-      'Wählen Sie, wie die App auf Helligkeitsänderungen reagiert';
+  String get settings_appearance_theme_mode_subtitle => 'Wählen Sie, wie die App auf Helligkeitsänderungen reagiert';
 
   @override
   String get settings_appearance_theme_system => 'System';
@@ -1015,36 +997,31 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_appearance_primary_color => 'Primärfarbe';
 
   @override
-  String get settings_appearance_primary_color_subtitle =>
-      'Wählen Sie eine Ausgangsfarbe für die Material 3-Palette';
+  String get settings_appearance_primary_color_subtitle => 'Wählen Sie eine Ausgangsfarbe für die Material 3-Palette';
 
   @override
   String get settings_appearance_advanced_theming => 'Erweitertes Theming';
 
   @override
-  String get settings_appearance_advanced_theming_subtitle =>
-      'Optimierungen für spezifische Bildschirmtypen';
+  String get settings_appearance_advanced_theming_subtitle => 'Optimierungen für spezifische Bildschirmtypen';
 
   @override
   String get settings_appearance_true_black => 'Echtes Schwarz (AMOLED)';
 
   @override
-  String get settings_appearance_true_black_subtitle =>
-      'Verwenden Sie rein schwarze Hintergründe im dunklen Modus, um Akku bei OLED-Bildschirmen zu sparen';
+  String get settings_appearance_true_black_subtitle => 'Verwenden Sie rein schwarze Hintergründe im dunklen Modus, um Akku bei OLED-Bildschirmen zu sparen';
 
   @override
   String get settings_appearance_custom_hex => 'Benutzerdefinierte Hex-Farbe';
 
   @override
-  String get settings_appearance_custom_hex_helper =>
-      'Geben Sie einen 8-stelligen ARGB-Hex-Code ein';
+  String get settings_appearance_custom_hex_helper => 'Geben Sie einen 8-stelligen ARGB-Hex-Code ein';
 
   @override
   String get settings_appearance_font_size => 'Globale UI-Skala';
 
   @override
-  String get settings_appearance_font_size_subtitle =>
-      'Skalieren Sie Typografie und Abstände proportional';
+  String get settings_appearance_font_size_subtitle => 'Skalieren Sie Typografie und Abstände proportional';
 
   @override
   String get settings_interface_title => 'Interface-Einstellungen';
@@ -1053,8 +1030,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_interface_language => 'Sprache';
 
   @override
-  String get settings_interface_language_subtitle =>
-      'Die Standard-Systemsprache überschreiben';
+  String get settings_interface_language_subtitle => 'Die Standard-Systemsprache überschreiben';
 
   @override
   String get settings_interface_app_language => 'App-Sprache';
@@ -1063,79 +1039,64 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_interface_navigation => 'Navigation';
 
   @override
-  String get settings_interface_navigation_subtitle =>
-      'Sichtbarkeit globaler Navigationskürzel';
+  String get settings_interface_navigation_subtitle => 'Sichtbarkeit globaler Navigationskürzel';
 
   @override
-  String get settings_interface_show_random =>
-      'Zufalls-Navigationsschaltflächen anzeigen';
+  String get settings_interface_show_random => 'Zufalls-Navigationsschaltflächen anzeigen';
 
   @override
-  String get settings_interface_show_random_subtitle =>
-      'Aktivieren oder deaktivieren Sie die schwebenden Casino-Schaltflächen auf Listen- und Detailseiten';
+  String get settings_interface_show_random_subtitle => 'Aktivieren oder deaktivieren Sie die schwebenden Casino-Schaltflächen auf Listen- und Detailseiten';
 
   @override
-  String get settings_interface_main_pages_gravity_orientation =>
-      'Schwerkraftgesteuerte Ausrichtung (Hauptseiten)';
+  String get settings_interface_main_pages_gravity_orientation => 'Schwerkraftgesteuerte Ausrichtung (Hauptseiten)';
 
   @override
-  String get settings_interface_main_pages_gravity_orientation_subtitle =>
-      'Erlaube Hauptseiten, sich mithilfe des Gerätesensors zu drehen. Die Vollbild-Videowiedergabe verwendet eigene Ausrichtungseinstellungen.';
+  String get settings_interface_main_pages_gravity_orientation_subtitle => 'Erlaube Hauptseiten, sich mithilfe des Gerätesensors zu drehen. Die Vollbild-Videowiedergabe verwendet eigene Ausrichtungseinstellungen.';
 
   @override
   String get settings_interface_show_edit => 'Bearbeiten-Schaltfläche anzeigen';
 
   @override
-  String get settings_interface_show_edit_subtitle =>
-      'Aktivieren oder deaktivieren Sie die Bearbeiten-Schaltfläche auf der Szenendetailseite';
+  String get settings_interface_show_edit_subtitle => 'Aktivieren oder deaktivieren Sie die Bearbeiten-Schaltfläche auf der Szenendetailseite';
 
   @override
   String get settings_interface_customize_tabs => 'Tabs anpassen';
 
   @override
-  String get settings_interface_customize_tabs_subtitle =>
-      'Navigationselemente neu anordnen oder ausblenden';
+  String get settings_interface_customize_tabs_subtitle => 'Navigationselemente neu anordnen oder ausblenden';
 
   @override
   String get settings_interface_scenes_layout => 'Szenen-Layout';
 
   @override
-  String get settings_interface_scenes_layout_subtitle =>
-      'Standard-Browsing-Modus für Szenen';
+  String get settings_interface_scenes_layout_subtitle => 'Standard-Browsing-Modus für Szenen';
 
   @override
   String get settings_interface_galleries_layout => 'Galerien-Layout';
 
   @override
-  String get settings_interface_galleries_layout_subtitle =>
-      'Standard-Browsing-Modus für Galerien';
+  String get settings_interface_galleries_layout_subtitle => 'Standard-Browsing-Modus für Galerien';
 
   @override
-  String get settings_interface_max_performer_avatars =>
-      'Maximale Darsteller-Avatare';
+  String get settings_interface_max_performer_avatars => 'Maximale Darsteller-Avatare';
 
   @override
-  String get settings_interface_max_performer_avatars_subtitle =>
-      'Maximale Anzahl der Darsteller-Avatare, die in der Szenenkarte angezeigt werden.';
+  String get settings_interface_max_performer_avatars_subtitle => 'Maximale Anzahl der Darsteller-Avatare, die in der Szenenkarte angezeigt werden.';
 
   @override
-  String get settings_interface_show_performer_avatars =>
-      'Darsteller-Avatare anzeigen';
+  String get settings_interface_show_performer_avatars => 'Darsteller-Avatare anzeigen';
 
   @override
-  String get settings_interface_show_performer_avatars_subtitle =>
-      'Darsteller-Symbole auf Szenenkarten auf allen Plattformen anzeigen.';
+  String get settings_interface_show_performer_avatars_subtitle => 'Darsteller-Symbole auf Szenenkarten auf allen Plattformen anzeigen.';
 
   @override
-  String get settings_interface_performer_avatar_size =>
-      'Größe der Darsteller-Avatare';
+  String get settings_interface_performer_avatar_size => 'Größe der Darsteller-Avatare';
 
   @override
   String get settings_interface_layout_default => 'Standard-Layout';
 
   @override
-  String get settings_interface_layout_default_desc =>
-      'Wählen Sie das Standard-Layout für die Seite';
+  String get settings_interface_layout_default_desc => 'Wählen Sie das Standard-Layout für die Seite';
 
   @override
   String get settings_interface_layout_list => 'Liste';
@@ -1153,15 +1114,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_interface_image_viewer => 'Bildbetrachter';
 
   @override
-  String get settings_interface_image_viewer_subtitle =>
-      'Vollbild-Bild-Browsing-Verhalten konfigurieren';
+  String get settings_interface_image_viewer_subtitle => 'Vollbild-Bild-Browsing-Verhalten konfigurieren';
 
   @override
   String get settings_interface_swipe_direction => 'Vollbild-Wischrichtung';
 
   @override
-  String get settings_interface_swipe_direction_desc =>
-      'Wählen Sie, wie Bilder im Vollbildmodus gewechselt werden';
+  String get settings_interface_swipe_direction_desc => 'Wählen Sie, wie Bilder im Vollbildmodus gewechselt werden';
 
   @override
   String get settings_interface_swipe_vertical => 'Vertikal';
@@ -1176,36 +1135,31 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_interface_performer_layouts => 'Darsteller-Layouts';
 
   @override
-  String get settings_interface_performer_layouts_subtitle =>
-      'Medien- und Galerie-Standards für Darsteller';
+  String get settings_interface_performer_layouts_subtitle => 'Medien- und Galerie-Standards für Darsteller';
 
   @override
   String get settings_interface_studio_layouts => 'Studio-Layouts';
 
   @override
-  String get settings_interface_studio_layouts_subtitle =>
-      'Medien- und Galerie-Standards für Studios';
+  String get settings_interface_studio_layouts_subtitle => 'Medien- und Galerie-Standards für Studios';
 
   @override
   String get settings_interface_tag_layouts => 'Tag-Layouts';
 
   @override
-  String get settings_interface_tag_layouts_subtitle =>
-      'Medien- und Galerie-Standards für Tags';
+  String get settings_interface_tag_layouts_subtitle => 'Medien- und Galerie-Standards für Tags';
 
   @override
   String get settings_interface_media_layout => 'Medien-Layout';
 
   @override
-  String get settings_interface_media_layout_subtitle =>
-      'Layout für die Medienseite';
+  String get settings_interface_media_layout_subtitle => 'Layout für die Medienseite';
 
   @override
   String get settings_interface_galleries_layout_item => 'Galerien-Layout';
 
   @override
-  String get settings_interface_galleries_layout_subtitle_item =>
-      'Layout für die Galerieseite';
+  String get settings_interface_galleries_layout_subtitle_item => 'Layout für die Galerieseite';
 
   @override
   String get settings_server_title => 'Server-Einstellungen';
@@ -1214,22 +1168,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_server_status => 'Verbindungsstatus';
 
   @override
-  String get settings_server_status_subtitle =>
-      'Live-Konnektivität zum konfigurierten Server';
+  String get settings_server_status_subtitle => 'Live-Konnektivität zum konfigurierten Server';
 
   @override
   String get settings_server_details => 'Server-Details';
 
   @override
-  String get settings_server_details_subtitle =>
-      'Endpunkt und Authentifizierungsmethode konfigurieren';
+  String get settings_server_details_subtitle => 'Endpunkt und Authentifizierungsmethode konfigurieren';
 
   @override
   String get settings_server_url => 'Stash-URL';
 
   @override
-  String get settings_server_url_helper =>
-      'Geben Sie die URL Ihres Stash-Servers ein. Wenn ein benutzerdefinierter Pfad konfiguriert ist, geben Sie diesen hier an.';
+  String get settings_server_url_helper => 'Geben Sie die URL Ihres Stash-Servers ein. Wenn ein benutzerdefinierter Pfad konfiguriert ist, geben Sie diesen hier an.';
 
   @override
   String get settings_server_url_example => 'http://192.168.1.100:9999';
@@ -1247,12 +1198,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_server_auth_password => 'Benutzername + Passwort';
 
   @override
-  String get settings_server_auth_password_desc =>
-      'Empfohlen: Verwenden Sie Ihre Stash Benutzername/Passwort-Sitzung.';
+  String get settings_server_auth_password_desc => 'Empfohlen: Verwenden Sie Ihre Stash Benutzername/Passwort-Sitzung.';
 
   @override
-  String get settings_server_auth_apikey_desc =>
-      'Verwenden Sie einen API-Key für die statische Token-Authentifizierung.';
+  String get settings_server_auth_apikey_desc => 'Verwenden Sie einen API-Key für die statische Token-Authentifizierung.';
 
   @override
   String get settings_server_username => 'Benutzername';
@@ -1289,12 +1238,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_server_invalid_url => 'Ungültige Server-URL';
 
   @override
-  String get settings_server_resolve_error =>
-      'Server-URL konnte nicht aufgelöst werden. Überprüfen Sie Host, Port und Zugangsdaten.';
+  String get settings_server_resolve_error => 'Server-URL konnte nicht aufgelöst werden. Überprüfen Sie Host, Port und Zugangsdaten.';
 
   @override
-  String get settings_server_logout_confirm =>
-      'Abgemeldet und Cookies gelöscht.';
+  String get settings_server_logout_confirm => 'Abgemeldet und Cookies gelöscht.';
 
   @override
   String get settings_server_profile_add => 'Profil hinzufügen';
@@ -1309,34 +1256,28 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_server_profile_delete => 'Profil löschen';
 
   @override
-  String get settings_server_profile_delete_confirm =>
-      'Sind Sie sicher, dass Sie dieses Profil löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.';
+  String get settings_server_profile_delete_confirm => 'Sind Sie sicher, dass Sie dieses Profil löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.';
 
   @override
   String get settings_server_profile_active => 'Aktiv';
 
   @override
-  String get settings_server_profile_empty =>
-      'Keine Serverprofile konfiguriert';
+  String get settings_server_profile_empty => 'Keine Serverprofile konfiguriert';
 
   @override
   String get settings_server_profiles => 'Serverprofile';
 
   @override
-  String get settings_server_profiles_subtitle =>
-      'Mehrere Stash-Serververbindungen verwalten';
+  String get settings_server_profiles_subtitle => 'Mehrere Stash-Serververbindungen verwalten';
 
   @override
-  String get settings_server_auth_status_logging_in =>
-      'Authentifizierungsstatus: Anmeldung...';
+  String get settings_server_auth_status_logging_in => 'Authentifizierungsstatus: Anmeldung...';
 
   @override
-  String get settings_server_auth_status_logged_in =>
-      'Authentifizierungsstatus: Angemeldet';
+  String get settings_server_auth_status_logged_in => 'Authentifizierungsstatus: Angemeldet';
 
   @override
-  String get settings_server_auth_status_logged_out =>
-      'Authentifizierungsstatus: Abgemeldet';
+  String get settings_server_auth_status_logged_out => 'Authentifizierungsstatus: Abgemeldet';
 
   @override
   String get settings_playback_title => 'Wiedergabe-Einstellungen';
@@ -1345,75 +1286,64 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_playback_behavior => 'Wiedergabeverhalten';
 
   @override
-  String get settings_playback_behavior_subtitle =>
-      'Standard-Wiedergabe- und Hintergrund-Handling';
+  String get settings_playback_behavior_subtitle => 'Standard-Wiedergabe- und Hintergrund-Handling';
 
   @override
   String get settings_playback_prefer_streams => 'sceneStreams bevorzugen';
 
   @override
-  String get settings_playback_prefer_streams_subtitle =>
-      'Wenn deaktiviert, wird die Wiedergabe direkt über paths.stream ausgeführt';
+  String get settings_playback_prefer_streams_subtitle => 'Wenn deaktiviert, wird die Wiedergabe direkt über paths.stream ausgeführt';
 
   @override
   String get settings_playback_end_behavior => 'Endeverhalten abspielen';
 
   @override
-  String get settings_playback_end_behavior_subtitle =>
-      'Was tun, wenn die aktuelle Wiedergabe endet?';
+  String get settings_playback_end_behavior_subtitle => 'Was tun, wenn die aktuelle Wiedergabe endet?';
 
   @override
   String get settings_playback_end_behavior_stop => 'Stoppen';
 
   @override
-  String get settings_playback_end_behavior_loop =>
-      'Aktuelle Szene wiederholen';
+  String get settings_playback_end_behavior_loop => 'Aktuelle Szene wiederholen';
 
   @override
   String get settings_playback_end_behavior_next => 'Nächste Szene abspielen';
 
   @override
-  String get settings_playback_autoplay =>
-      'Nächste Szene automatisch abspielen';
+  String get settings_playback_autoplay => 'Nächste Szene automatisch abspielen';
 
   @override
-  String get settings_playback_autoplay_subtitle =>
-      'Nächste Szene automatisch abspielen, wenn die aktuelle endet';
+  String get settings_playback_autoplay_subtitle => 'Nächste Szene automatisch abspielen, wenn die aktuelle endet';
 
   @override
   String get settings_playback_background => 'Hintergrund-Wiedergabe';
 
   @override
-  String get settings_playback_background_subtitle =>
-      'Video-Audio weiter abspielen, wenn die App im Hintergrund ist';
+  String get settings_playback_background_subtitle => 'Video-Audio weiter abspielen, wenn die App im Hintergrund ist';
 
   @override
   String get settings_playback_pip => 'Natives Bild-im-Bild';
 
   @override
-  String get settings_playback_pip_subtitle =>
-      'Android PiP-Schaltfläche aktivieren und automatisch bei Hintergrundwechsel starten';
+  String get settings_playback_pip_subtitle => 'Android PiP-Schaltfläche aktivieren und automatisch bei Hintergrundwechsel starten';
 
   @override
   String get settings_playback_subtitles => 'Untertitel-Einstellungen';
 
   @override
-  String get settings_playback_subtitles_subtitle =>
-      'Automatisches Laden und Erscheinungsbild';
+  String get settings_playback_subtitles_subtitle => 'Automatisches Laden und Erscheinungsbild';
 
   @override
   String get settings_playback_subtitle_lang => 'Standard-Untertitelsprache';
 
   @override
-  String get settings_playback_subtitle_lang_subtitle =>
-      'Automatisch laden, falls verfügbar';
+  String get settings_playback_subtitle_lang_subtitle => 'Automatisch laden, falls verfügbar';
 
   @override
   String get settings_playback_subtitle_size => 'Schriftgröße der Untertitel';
 
   @override
-  String get settings_playback_subtitle_pos =>
-      'Vertikale Position der Untertitel';
+  String get settings_playback_subtitle_pos => 'Vertikale Position der Untertitel';
 
   @override
   String settings_playback_subtitle_pos_desc(String percent) {
@@ -1421,27 +1351,22 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get settings_playback_subtitle_align =>
-      'Textausrichtung der Untertitel';
+  String get settings_playback_subtitle_align => 'Textausrichtung der Untertitel';
 
   @override
-  String get settings_playback_subtitle_align_subtitle =>
-      'Ausrichtung für mehrzeilige Untertitel';
+  String get settings_playback_subtitle_align_subtitle => 'Ausrichtung für mehrzeilige Untertitel';
 
   @override
   String get settings_playback_seek => 'Seek-Interaktion';
 
   @override
-  String get settings_playback_seek_subtitle =>
-      'Wählen Sie, wie das Vorspulen während der Wiedergabe funktioniert';
+  String get settings_playback_seek_subtitle => 'Wählen Sie, wie das Vorspulen während der Wiedergabe funktioniert';
 
   @override
-  String get settings_playback_seek_double_tap =>
-      'Doppeltippen links/rechts zum Springen (10s)';
+  String get settings_playback_seek_double_tap => 'Doppeltippen links/rechts zum Springen (10s)';
 
   @override
-  String get settings_playback_seek_drag =>
-      'Ziehen Sie auf der Zeitachse zum Suchen';
+  String get settings_playback_seek_drag => 'Ziehen Sie auf der Zeitachse zum Suchen';
 
   @override
   String get settings_playback_seek_drag_label => 'Ziehen';
@@ -1450,28 +1375,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_playback_seek_double_tap_label => 'Doppeltippen';
 
   @override
-  String get settings_playback_gravity_orientation =>
-      'Schwerkraftgesteuerte Ausrichtung';
+  String get settings_playback_gravity_orientation => 'Schwerkraftgesteuerte Ausrichtung';
 
   @override
-  String get settings_playback_direct_play =>
-      'Direkt-Wiedergabe bei Szenen-Navigation';
+  String get settings_playback_direct_play => 'Direkt-Wiedergabe bei Szenen-Navigation';
 
   @override
-  String get settings_playback_direct_play_subtitle =>
-      'Bei der Navigation von einer anderen spielenden Szene wird die neue Szene direkt abgespielt';
+  String get settings_playback_direct_play_subtitle => 'Bei der Navigation von einer anderen spielenden Szene wird die neue Szene direkt abgespielt';
 
   @override
-  String get settings_playback_gravity_orientation_subtitle =>
-      'Erlaube die Rotation zwischen passenden Ausrichtungen mithilfe des Gerätesensors (z. B. Landschaft links/rechts).';
+  String get settings_playback_gravity_orientation_subtitle => 'Erlaube die Rotation zwischen passenden Ausrichtungen mithilfe des Gerätesensors (z. B. Landschaft links/rechts).';
 
   @override
-  String get settings_playback_subtitle_lang_none_disabled =>
-      'Keine (Deaktiviert)';
+  String get settings_playback_subtitle_lang_none_disabled => 'Keine (Deaktiviert)';
 
   @override
-  String get settings_playback_subtitle_lang_auto_if_only_one =>
-      'Automatisch (Wenn nur eins)';
+  String get settings_playback_subtitle_lang_auto_if_only_one => 'Automatisch (Wenn nur eins)';
 
   @override
   String get settings_playback_subtitle_lang_english => 'Englisch';
@@ -1513,15 +1432,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_support_diagnostics => 'Diagnose und Projektinfo';
 
   @override
-  String get settings_support_diagnostics_subtitle =>
-      'Laufzeit-Logs öffnen oder zum Repository springen, wenn Sie Hilfe benötigen.';
+  String get settings_support_diagnostics_subtitle => 'Laufzeit-Logs öffnen oder zum Repository springen, wenn Sie Hilfe benötigen.';
 
   @override
   String get settings_support_update_available => 'Update verfügbar';
 
   @override
-  String get settings_support_update_available_subtitle =>
-      'Eine neuere Version ist auf GitHub verfügbar';
+  String get settings_support_update_available_subtitle => 'Eine neuere Version ist auf GitHub verfügbar';
 
   @override
   String settings_support_update_to(String version) {
@@ -1529,15 +1446,13 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get settings_support_update_to_subtitle =>
-      'Neue Funktionen und Verbesserungen warten auf Sie.';
+  String get settings_support_update_to_subtitle => 'Neue Funktionen und Verbesserungen warten auf Sie.';
 
   @override
   String get settings_support_about => 'Über';
 
   @override
-  String get settings_support_about_subtitle =>
-      'Projekt- und Quellinformationen';
+  String get settings_support_about_subtitle => 'Projekt- und Quellinformationen';
 
   @override
   String get settings_support_version => 'Version';
@@ -1546,26 +1461,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_support_version_loading => 'Versionsinfo wird geladen...';
 
   @override
-  String get settings_support_version_unavailable =>
-      'Versionsinfo nicht verfügbar';
+  String get settings_support_version_unavailable => 'Versionsinfo nicht verfügbar';
 
   @override
   String get settings_support_github => 'GitHub-Repository';
 
   @override
-  String get settings_support_github_subtitle =>
-      'Quellcode anzeigen und Probleme melden';
+  String get settings_support_github_subtitle => 'Quellcode anzeigen und Probleme melden';
 
   @override
-  String get settings_support_github_error =>
-      'GitHub-Link konnte nicht geöffnet werden';
+  String get settings_support_github_error => 'GitHub-Link konnte nicht geöffnet werden';
 
   @override
   String get settings_support_issues => 'Melden Sie ein Problem';
 
   @override
-  String get settings_support_issues_subtitle =>
-      'Helfen Sie mit, StashFlow zu verbessern, indem Sie Fehler melden';
+  String get settings_support_issues_subtitle => 'Helfen Sie mit, StashFlow zu verbessern, indem Sie Fehler melden';
 
   @override
   String get settings_develop_title => 'Entwickeln';
@@ -1574,52 +1485,43 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_develop_diagnostics => 'Diagnose-Tools';
 
   @override
-  String get settings_develop_diagnostics_subtitle =>
-      'Fehlerbehebung und Leistung';
+  String get settings_develop_diagnostics_subtitle => 'Fehlerbehebung und Leistung';
 
   @override
   String get settings_develop_video_debug => 'Video-Debug-Info anzeigen';
 
   @override
-  String get settings_develop_video_debug_subtitle =>
-      'Technische Wiedergabedetails als Overlay im Videoplayer anzeigen.';
+  String get settings_develop_video_debug_subtitle => 'Technische Wiedergabedetails als Overlay im Videoplayer anzeigen.';
 
   @override
   String get settings_develop_log_viewer => 'Debug-Log-Viewer';
 
   @override
-  String get settings_develop_log_viewer_subtitle =>
-      'Live-Ansicht der In-App-Logs öffnen.';
+  String get settings_develop_log_viewer_subtitle => 'Live-Ansicht der In-App-Logs öffnen.';
 
   @override
-  String get settings_develop_logs_copied =>
-      'Logs in die Zwischenablage kopiert';
+  String get settings_develop_logs_copied => 'Logs in die Zwischenablage kopiert';
 
   @override
-  String get settings_develop_no_logs =>
-      'Noch keine Logs. Interagiere mit der App, um Logs zu erfassen.';
+  String get settings_develop_no_logs => 'Noch keine Logs. Interagiere mit der App, um Logs zu erfassen.';
 
   @override
   String get settings_develop_web_overrides => 'Web-Overrides';
 
   @override
-  String get settings_develop_web_overrides_subtitle =>
-      'Erweiterte Flags für die Web-Plattform';
+  String get settings_develop_web_overrides_subtitle => 'Erweiterte Flags für die Web-Plattform';
 
   @override
   String get settings_develop_web_auth => 'Passwort-Login im Web erlauben';
 
   @override
-  String get settings_develop_web_auth_subtitle =>
-      'Hebt die Native-only-Beschränkung auf und erzwingt die Sichtbarkeit der Benutzername + Passwort-Authentifizierungsmethode in Flutter Web.';
+  String get settings_develop_web_auth_subtitle => 'Hebt die Native-only-Beschränkung auf und erzwingt die Sichtbarkeit der Benutzername + Passwort-Authentifizierungsmethode in Flutter Web.';
 
   @override
-  String get settings_develop_proxy_auth =>
-      'Proxy-Authentifizierungsmodi aktivieren';
+  String get settings_develop_proxy_auth => 'Proxy-Authentifizierungsmodi aktivieren';
 
   @override
-  String get settings_develop_proxy_auth_subtitle =>
-      'Aktivieren Sie erweiterte Basic-Auth- und Bearer-Token-Methoden für die Verwendung mit authentifizierungsfreien Backends hinter Proxys wie Authentik.';
+  String get settings_develop_proxy_auth_subtitle => 'Aktivieren Sie erweiterte Basic-Auth- und Bearer-Token-Methoden für die Verwendung mit authentifizierungsfreien Backends hinter Proxys wie Authentik.';
 
   @override
   String get settings_server_auth_basic => 'Basic Auth';
@@ -1628,12 +1530,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_server_auth_bearer => 'Bearer-Token';
 
   @override
-  String get settings_server_auth_basic_desc =>
-      'Sendet den Header \'Authorization: Basic <base64(user:pass)>\'.';
+  String get settings_server_auth_basic_desc => 'Sendet den Header \'Authorization: Basic <base64(user:pass)>\'.';
 
   @override
-  String get settings_server_auth_bearer_desc =>
-      'Sendet den Header \'Authorization: Bearer <token>\'.';
+  String get settings_server_auth_bearer_desc => 'Sendet den Header \'Authorization: Bearer <token>\'.';
 
   @override
   String get common_edit => 'Bearbeiten';
@@ -1654,8 +1554,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get common_square => 'Quadrat';
 
   @override
-  String get performers_filter_saved =>
-      'Filtereinstellungen als Standard gespeichert';
+  String get performers_filter_saved => 'Filtereinstellungen als Standard gespeichert';
 
   @override
   String get images_title => 'Bilder';
@@ -1664,15 +1563,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get images_filter_title => 'Bilder filtern';
 
   @override
-  String get images_filter_saved =>
-      'Filtereinstellungen als Standard gespeichert';
+  String get images_filter_saved => 'Filtereinstellungen als Standard gespeichert';
 
   @override
   String get images_sort_title => 'Bilder sortieren';
 
   @override
-  String get images_sort_saved =>
-      'Sortier-Einstellungen als Standard gespeichert';
+  String get images_sort_saved => 'Sortier-Einstellungen als Standard gespeichert';
 
   @override
   String get image_rating_updated => 'Bildbewertung aktualisiert.';
@@ -1687,8 +1584,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get common_gallery => 'Galerie';
 
   @override
-  String get images_gallery_rating_unavailable =>
-      'Die Galeriebewertung ist nur verfügbar, wenn Sie eine Galerie durchsuchen.';
+  String get images_gallery_rating_unavailable => 'Die Galeriebewertung ist nur verfügbar, wenn Sie eine Galerie durchsuchen.';
 
   @override
   String images_rating(String rating) {
@@ -1699,8 +1595,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get images_filtered_by_gallery => 'Gefiltert nach Galerie';
 
   @override
-  String get images_slideshow_need_two =>
-      'Mindestens 2 Bilder werden für die Diashow benötigt.';
+  String get images_slideshow_need_two => 'Mindestens 2 Bilder werden für die Diashow benötigt.';
 
   @override
   String get images_slideshow_start_title => 'Diashow starten';
@@ -1737,8 +1632,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_keybind_assign_shortcut => 'Tastenkürzel zuweisen';
 
   @override
-  String get settings_keybind_press_any =>
-      'Drücke eine beliebige Tastenkombination...';
+  String get settings_keybind_press_any => 'Drücke eine beliebige Tastenkombination...';
 
   @override
   String get scenes_select_tags => 'Tags auswählen';
@@ -1796,16 +1690,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scenes_select_performers => 'Darsteller auswählen';
 
   @override
-  String get scenes_unmatched_scraped_tags =>
-      'Nicht übereinstimmende gescrapte Tags';
+  String get scenes_unmatched_scraped_tags => 'Nicht übereinstimmende gescrapte Tags';
 
   @override
-  String get scenes_unmatched_scraped_performers =>
-      'Nicht übereinstimmende gescrapte Darsteller';
+  String get scenes_unmatched_scraped_performers => 'Nicht übereinstimmende gescrapte Darsteller';
 
   @override
-  String get scenes_no_matching_performer_found =>
-      'Kein übereinstimmender Darsteller in der Bibliothek gefunden';
+  String get scenes_no_matching_performer_found => 'Kein übereinstimmender Darsteller in der Bibliothek gefunden';
 
   @override
   String get common_unknown => 'Unbekannt';
@@ -1890,8 +1781,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get cast_airplay_pairing => 'AirPlay-Kopplung';
 
   @override
-  String get cast_enter_pin =>
-      'Geben Sie die 4-stellige PIN ein, die auf Ihrem Fernseher angezeigt wird';
+  String get cast_enter_pin => 'Geben Sie die 4-stellige PIN ein, die auf Ihrem Fernseher angezeigt wird';
 
   @override
   String get cast_pair => 'Paar';
@@ -1938,8 +1828,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_storage_clearing_video => 'Video-Cache wird geleert...';
 
   @override
-  String get settings_storage_clearing_database =>
-      'Datenbank-Cache wird geleert...';
+  String get settings_storage_clearing_database => 'Datenbank-Cache wird geleert...';
 
   @override
   String get settings_storage_cleared_image => 'Bildcache geleert';
@@ -1985,8 +1874,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_storage_limits => 'Grenzen';
 
   @override
-  String get settings_storage_limits_subtitle =>
-      'Legen Sie maximale Cache-Größen fest';
+  String get settings_storage_limits_subtitle => 'Legen Sie maximale Cache-Größen fest';
 
   @override
   String get settings_storage_max_image_cache => 'Maximaler Bildcache (MB)';
@@ -2004,8 +1892,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_storage_usage_subtitle => 'Aktueller Cache-Verbrauch';
 
   @override
-  String get settings_storage_subtitle =>
-      'Lokale Caches und Speichergrenzen verwalten';
+  String get settings_storage_subtitle => 'Lokale Caches und Speichergrenzen verwalten';
 
   @override
   String get performers_field_name => 'Name';
@@ -2230,8 +2117,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scenes_field_updated_at => 'Aktualisiert am';
 
   @override
-  String get cast_stopped_resuming_locally =>
-      'Übertragung gestoppt, lokal fortgesetzt';
+  String get cast_stopped_resuming_locally => 'Übertragung gestoppt, lokal fortgesetzt';
 
   @override
   String get cast_stop_casting => 'Übertragung stoppen';
@@ -2255,8 +2141,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get common_star => 'Favorit';
 
   @override
-  String get settings_interface_card_title_font_size =>
-      'Schriftgröße des Kartentitels';
+  String get settings_interface_card_title_font_size => 'Schriftgröße des Kartentitels';
 
   @override
   String get common_hint_date => 'JJJJ-MM-TT';
@@ -2321,16 +2206,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sort_scenes => 'Szenen sortieren';
 
   @override
-  String get failed_to_load_tap_to_retry =>
-      'Fehler beim Laden. Tippen Sie, um es erneut zu versuchen.';
+  String get failed_to_load_tap_to_retry => 'Fehler beim Laden. Tippen Sie, um es erneut zu versuchen.';
 
   @override
-  String get would_you_like_to_visit_the_release_page_to_download_it =>
-      'Möchten Sie die Release-Seite besuchen, um es herunterzuladen?';
+  String get would_you_like_to_visit_the_release_page_to_download_it => 'Möchten Sie die Release-Seite besuchen, um es herunterzuladen?';
 
   @override
-  String get to_get_started_configure_stash_server =>
-      'Um zu beginnen, müssen Sie Ihre Stash-Server-Verbindungsdetails konfigurieren.';
+  String get to_get_started_configure_stash_server => 'Um zu beginnen, müssen Sie Ihre Stash-Server-Verbindungsdetails konfigurieren.';
 
   @override
   String get loading => 'Wird geladen';
@@ -2344,5 +2226,15 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String update_available(String version) {
     return 'Eine neue Version von StashFlow ($version) ist verfügbar.';
+  }
+
+  @override
+  String details_failed_update_favorite(String error) {
+    return 'Favorit konnte nicht aktualisiert werden: $error';
+  }
+
+  @override
+  String details_failed_load_galleries(String error) {
+    return 'Fehler beim Laden der Galerien: $error';
   }
 }
