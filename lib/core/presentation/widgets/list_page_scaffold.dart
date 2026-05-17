@@ -514,12 +514,12 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                   },
                   builder: (BuildContext context, SearchController controller) {
                     return IconButton(
+                      tooltip: context.l10n.common_search,
                       icon: const Icon(Icons.search),
                       onPressed: () {
                         _lastSubmittedText = _searchController.text;
                         controller.openView();
                       },
-                      tooltip: context.l10n.common_search,
                     );
                   },
                   viewHintText: widget.searchHint,
