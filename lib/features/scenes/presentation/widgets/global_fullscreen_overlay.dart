@@ -398,6 +398,7 @@ class _GlobalFullscreenOverlayState
                   color: Colors.black,
                   child: castState.isCasting
                       ? Image.network(
+                          excludeFromSemantics: true,
                           appendApiKey(
                             scene.paths.screenshot ?? '',
                             ref.read(serverApiKeyProvider),
