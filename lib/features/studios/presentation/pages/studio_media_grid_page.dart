@@ -26,6 +26,13 @@ class StudioMediaGridPage extends ConsumerWidget {
     final isGridView = ref.watch(studioMediaGridLayoutProvider);
     final gridColumns = ref.watch(studioGridColumnsProvider);
 
+    // ⚡ Bolt: Hoist router lookup out of the itemBuilder loop.
+    // Why: Looking up GoRouter.of(context) inside itemBuilder executes an O(1) inherited widget lookup per list item.
+    // Impact: Prevents N router lookups and route uri parsing on every scroll frame, reducing GC pressure.
+    final router = GoRouter.of(context);
+    final currentPath = router.routeInformationProvider.value.uri.path;
+    final isAtRoot = currentPath.endsWith('/media');
+
     return ListPageScaffold<Scene>(
       title: context.l10n.studios_media_title,
       searchHint: context.l10n.common_search_placeholder,
@@ -44,10 +51,6 @@ class StudioMediaGridPage extends ConsumerWidget {
       useMasonry: isGridView,
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, item, memCacheWidth, memCacheHeight) {
-        final router = GoRouter.of(context);
-        final currentPath = router.routeInformationProvider.value.uri.path;
-        final isAtRoot = currentPath.endsWith('/media');
-
         return SceneCard(
           scene: item,
           isGrid: isGridView,

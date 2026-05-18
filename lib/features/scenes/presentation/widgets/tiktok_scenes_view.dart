@@ -318,6 +318,13 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
           });
         }
 
+        // ⚡ Bolt: Hoist router lookup out of the itemBuilder loop.
+        // Why: Looking up GoRouter.of(context) inside itemBuilder executes an O(1) inherited widget lookup per list item.
+        // Impact: Prevents N router lookups and route uri parsing on every scroll frame, reducing GC pressure.
+        final router = GoRouter.of(context);
+        final currentPath = router.routeInformationProvider.value.uri.path;
+        final isAtRoot = currentPath == '/scenes';
+
         return NotificationListener<ScrollNotification>(
           onNotification: (notification) {
             if (notification is ScrollEndNotification) {
@@ -364,11 +371,6 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
               } else {
                 controller = _controllers[scene.id];
               }
-
-              final router = GoRouter.of(context);
-              final currentPath =
-                  router.routeInformationProvider.value.uri.path;
-              final isAtRoot = currentPath == '/scenes';
 
               return TiktokSceneItem(
                 scene: scene,
@@ -673,7 +675,9 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
         // Navigate to details THEN set global fullscreen state
         context.go('/scenes/scene/${widget.scene.id}');
         ref.read(playerStateProvider.notifier).setFullScreen(true);
-        ref.read(playerStateProvider.notifier).setViewMode(PlayerViewMode.fullscreen);
+        ref
+            .read(playerStateProvider.notifier)
+            .setViewMode(PlayerViewMode.fullscreen);
       }
     }
   }

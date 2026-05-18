@@ -444,6 +444,13 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       for (var i = 0; i < scenes.length; i++) scenes[i].id: i,
     };
 
+    // ⚡ Bolt: Hoist router lookup out of the itemBuilder loop.
+    // Why: Looking up GoRouter.of(context) inside itemBuilder executes an O(1) inherited widget lookup per list item.
+    // Impact: Prevents N router lookups and route uri parsing on every scroll frame, reducing GC pressure.
+    final router = GoRouter.of(context);
+    final currentPath = router.routeInformationProvider.value.uri.path;
+    final isAtRoot = currentPath == '/scenes';
+
     return ListPageScaffold<Scene>(
       title: context.l10n.appTitle,
       searchHint: context.l10n.scenes_search_hint,
@@ -527,9 +534,6 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, scene, memCacheWidth, memCacheHeight) {
         final index = sceneIndexMap[scene.id] ?? -1;
-        final router = GoRouter.of(context);
-        final currentPath = router.routeInformationProvider.value.uri.path;
-        final isAtRoot = currentPath == '/scenes';
 
         return SceneCard(
           scene: scene,
