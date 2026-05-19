@@ -318,6 +318,17 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
           });
         }
 
+        // ⚡ Bolt: Hoist invariant lookups out of the itemBuilder
+        GoRouter? router;
+        String currentPath = '';
+        try {
+          router = GoRouter.of(context);
+          currentPath = router.routeInformationProvider.value.uri.path;
+        } catch (_) {
+          // Fallback for tests missing GoRouter context
+        }
+        final isAtRoot = currentPath == '/scenes';
+
         return NotificationListener<ScrollNotification>(
           onNotification: (notification) {
             if (notification is ScrollEndNotification) {
@@ -364,11 +375,6 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
               } else {
                 controller = _controllers[scene.id];
               }
-
-              final router = GoRouter.of(context);
-              final currentPath =
-                  router.routeInformationProvider.value.uri.path;
-              final isAtRoot = currentPath == '/scenes';
 
               return TiktokSceneItem(
                 scene: scene,

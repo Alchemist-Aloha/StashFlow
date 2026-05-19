@@ -444,6 +444,17 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       for (var i = 0; i < scenes.length; i++) scenes[i].id: i,
     };
 
+    // ⚡ Bolt: Hoist invariant lookups out of the itemBuilder
+    GoRouter? router;
+    String currentPath = '';
+    try {
+      router = GoRouter.of(context);
+      currentPath = router.routeInformationProvider.value.uri.path;
+    } catch (_) {
+      // Fallback for tests missing GoRouter context
+    }
+    final isAtRoot = currentPath == '/scenes';
+
     return ListPageScaffold<Scene>(
       title: context.l10n.appTitle,
       searchHint: context.l10n.scenes_search_hint,
@@ -527,9 +538,6 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, scene, memCacheWidth, memCacheHeight) {
         final index = sceneIndexMap[scene.id] ?? -1;
-        final router = GoRouter.of(context);
-        final currentPath = router.routeInformationProvider.value.uri.path;
-        final isAtRoot = currentPath == '/scenes';
 
         return SceneCard(
           scene: scene,
