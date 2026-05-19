@@ -324,8 +324,8 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
                   child: _scrapedImage!.startsWith('data:')
-                      ? Image.memory(base64Decode(_scrapedImage!.split(',').last), height: 200, width: double.infinity, fit: BoxFit.cover)
-                      : Image.network(_scrapedImage!, height: 200, width: double.infinity, fit: BoxFit.cover),
+                      ? Image.memory(base64Decode(_scrapedImage!.split(',').last), excludeFromSemantics: true, height: 200, width: double.infinity, fit: BoxFit.cover)
+                      : Image.network(_scrapedImage!, excludeFromSemantics: true, height: 200, width: double.infinity, fit: BoxFit.cover),
                 ),
               ),
             TextField(controller: _nameController, decoration: InputDecoration(labelText: context.l10n.common_name, border: const OutlineInputBorder())),

@@ -313,6 +313,7 @@ class StashImage extends ConsumerWidget {
 
       return Image.network(
         effectiveUrl,
+        excludeFromSemantics: true,
         headers: headers,
         width: width,
         height: height,

@@ -402,6 +402,7 @@ class _GlobalFullscreenOverlayState
                             scene.paths.screenshot ?? '',
                             ref.read(serverApiKeyProvider),
                           ),
+                          excludeFromSemantics: true,
                           fit: BoxFit.contain,
                           errorBuilder: (context, error, stackTrace) =>
                               const Center(

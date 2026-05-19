@@ -486,12 +486,14 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                   child: _scrapedImage!.startsWith('data:')
                       ? Image.memory(
                           base64Decode(_scrapedImage!.split(',').last),
+                          excludeFromSemantics: true,
                           height: 200,
                           width: double.infinity,
                           fit: BoxFit.cover,
                         )
                       : Image.network(
                           _scrapedImage!,
+                          excludeFromSemantics: true,
                           height: 200,
                           width: double.infinity,
                           fit: BoxFit.cover,

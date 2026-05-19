@@ -195,8 +195,8 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: _scrapedImage!.startsWith('data:')
-                      ? Image.memory(base64Decode(_scrapedImage!.split(',').last), height: 150, width: double.infinity, fit: BoxFit.contain)
-                      : Image.network(_scrapedImage!, height: 150, width: double.infinity, fit: BoxFit.contain),
+                      ? Image.memory(base64Decode(_scrapedImage!.split(',').last), excludeFromSemantics: true, height: 150, width: double.infinity, fit: BoxFit.contain)
+                      : Image.network(_scrapedImage!, excludeFromSemantics: true, height: 150, width: double.infinity, fit: BoxFit.contain),
                 ),
               ),
             TextField(controller: _nameController, decoration: InputDecoration(labelText: context.l10n.common_name, border: const OutlineInputBorder())),
