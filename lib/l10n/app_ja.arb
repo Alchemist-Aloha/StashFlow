@@ -849,5 +849,6 @@
   "performer_filters": "出演者フィルター",
   "update_available": "StashFlowの新しいバージョン ({version}) が利用可能です。",
   "details_failed_update_favorite": "お気に入りの更新に失敗しました: {error}",
-  "details_failed_load_galleries": "ギャラリーの読み込みに失敗しました: {error}"
+  "details_failed_load_galleries": "ギャラリーの読み込みに失敗しました: {error}",
+  "common_stars": "{count, plural, =1{1つ星} other{{count}つ星}}"
 }

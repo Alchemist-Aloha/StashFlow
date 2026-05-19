@@ -835,5 +835,6 @@
   "details_failed_update_favorite": "更新收藏失敗: {error}",
   "details_failed_load_galleries": "載入圖庫失敗: {error}",
   "common_select": "選擇 {label}",
-  "common_saved_to": "儲存至 {path}"
+  "common_saved_to": "儲存至 {path}",
+  "common_stars": "{count, plural, =1{1星} other{{count}星}}"
 }
