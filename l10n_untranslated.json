@@ -1,1 +1,51 @@
-{}
+{
+  "de": [
+    "settings_playback_feed_random",
+    "settings_playback_feed_random_subtitle"
+  ],
+
+  "es": [
+    "settings_playback_feed_random",
+    "settings_playback_feed_random_subtitle"
+  ],
+
+  "fr": [
+    "settings_playback_feed_random",
+    "settings_playback_feed_random_subtitle"
+  ],
+
+  "it": [
+    "settings_playback_feed_random",
+    "settings_playback_feed_random_subtitle"
+  ],
+
+  "ja": [
+    "settings_playback_feed_random",
+    "settings_playback_feed_random_subtitle"
+  ],
+
+  "ko": [
+    "settings_playback_feed_random",
+    "settings_playback_feed_random_subtitle"
+  ],
+
+  "ru": [
+    "settings_playback_feed_random",
+    "settings_playback_feed_random_subtitle"
+  ],
+
+  "zh": [
+    "settings_playback_feed_random",
+    "settings_playback_feed_random_subtitle"
+  ],
+
+  "zh_Hans": [
+    "settings_playback_feed_random",
+    "settings_playback_feed_random_subtitle"
+  ],
+
+  "zh_Hant": [
+    "settings_playback_feed_random",
+    "settings_playback_feed_random_subtitle"
+  ]
+}

@@ -1361,6 +1361,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Si désactivé, la lecture utilise directement paths.stream';
 
   @override
+  String get settings_playback_feed_random => 'Start Feed from random position';
+
+  @override
+  String get settings_playback_feed_random_subtitle =>
+      'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length';
+
+  @override
   String get settings_playback_end_behavior => 'Comportement de fin de lecture';
 
   @override

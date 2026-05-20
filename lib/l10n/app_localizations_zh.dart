@@ -1298,6 +1298,13 @@ class AppLocalizationsZh extends AppLocalizations {
       '关闭时，播放将直接使用 paths.stream';
 
   @override
+  String get settings_playback_feed_random => 'Start Feed from random position';
+
+  @override
+  String get settings_playback_feed_random_subtitle =>
+      'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length';
+
+  @override
   String get settings_playback_end_behavior => '播放结束行为';
 
   @override

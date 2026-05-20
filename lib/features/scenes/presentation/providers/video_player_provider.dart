@@ -130,6 +130,9 @@ class GlobalPlayerState {
   /// User preference: whether to allow gravity-controlled orientation rotation in fullscreen.
   final bool videoGravityOrientation;
 
+  /// User preference: whether to start feed playback from a random position.
+  final bool feedStartRandom;
+
   /// Current UI context where the video is being viewed.
   final PlayerViewMode viewMode;
 
@@ -162,6 +165,7 @@ class GlobalPlayerState {
     this.enableBackgroundPlayback = false,
     this.enableNativePip = false,
     this.videoGravityOrientation = true,
+    this.feedStartRandom = false,
     this.selectedSubtitleLanguage,
     this.selectedSubtitleType,
     this.defaultSubtitleLanguage = 'none',
@@ -203,6 +207,7 @@ class GlobalPlayerState {
     bool? enableBackgroundPlayback,
     bool? enableNativePip,
     bool? videoGravityOrientation,
+    bool? feedStartRandom,
     String? selectedSubtitleLanguage,
     String? selectedSubtitleType,
     String? defaultSubtitleLanguage,
@@ -257,6 +262,7 @@ class GlobalPlayerState {
       enableNativePip: enableNativePip ?? this.enableNativePip,
       videoGravityOrientation:
           videoGravityOrientation ?? this.videoGravityOrientation,
+      feedStartRandom: feedStartRandom ?? this.feedStartRandom,
       selectedSubtitleLanguage: clearSubtitle
           ? null
           : (selectedSubtitleLanguage ?? this.selectedSubtitleLanguage),
@@ -299,6 +305,7 @@ class PlayerState extends _$PlayerState {
   static const _subtitlePositionBottomRatioKey =
       'subtitle_position_bottom_ratio';
   static const _subtitleTextAlignmentKey = 'subtitle_text_alignment';
+  static const _feedStartRandomKey = 'feed_start_random';
 
   /// Internal reference used during disposal to ensure we clean up the right player.
   Player? _playerRef;
@@ -411,6 +418,7 @@ class PlayerState extends _$PlayerState {
           prefs.getDouble(_subtitlePositionBottomRatioKey) ?? 0.15,
       subtitleTextAlignment:
           prefs.getString(_subtitleTextAlignmentKey) ?? 'center',
+      feedStartRandom: prefs.getBool(_feedStartRandomKey) ?? false,
     );
   }
 
@@ -458,6 +466,12 @@ class PlayerState extends _$PlayerState {
     state = state.copyWith(videoGravityOrientation: value);
     final prefs = ref.read(sharedPreferencesProvider);
     prefs.setBool(_videoGravityOrientationKey, value);
+  }
+
+  void setFeedStartRandom(bool value) {
+    state = state.copyWith(feedStartRandom: value);
+    final prefs = ref.read(sharedPreferencesProvider);
+    prefs.setBool(_feedStartRandomKey, value);
   }
 
   void setDefaultSubtitleLanguage(String value) {
