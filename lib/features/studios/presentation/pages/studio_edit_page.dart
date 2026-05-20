@@ -23,7 +23,7 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
   late TextEditingController _nameController;
   late TextEditingController _detailsController;
   late TextEditingController _urlController;
-  
+
   String? _scrapedImage;
   bool _isSaving = false;
   bool _isScraping = false;
@@ -59,19 +59,25 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
     try {
       List<ScrapedStudio> results = [];
       if (scrapeRequest.url != null) {
-        final res = await ref.read(studioScrapeProvider).scrapeStudioURL(scrapeRequest.url!);
+        final res = await ref
+            .read(studioScrapeProvider)
+            .scrapeStudioURL(scrapeRequest.url!);
         if (res != null) results = [res];
       } else {
-        results = await ref.read(studioScrapeProvider).scrapeStudio(
-          scraperId: scrapeRequest.scraperId,
-          stashBoxEndpoint: scrapeRequest.stashBoxEndpoint,
-          query: scrapeRequest.query,
-        );
+        results = await ref
+            .read(studioScrapeProvider)
+            .scrapeStudio(
+              scraperId: scrapeRequest.scraperId,
+              stashBoxEndpoint: scrapeRequest.stashBoxEndpoint,
+              query: scrapeRequest.query,
+            );
       }
 
       if (!mounted) return;
       if (results.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.scenes_no_results_found)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.scenes_no_results_found)),
+        );
         return;
       }
 
@@ -128,10 +134,13 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
         if (merged.url != null) _urlController.text = merged.url!;
         if (merged.image != null) _scrapedImage = merged.image;
       });
-
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.scenes_scrape_failed(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.scenes_scrape_failed(e.toString())),
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _isScraping = false);
@@ -146,12 +155,14 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
         'details': _detailsController.text.trim(),
         'url': _urlController.text.trim(),
       };
-      
+
       if (_scrapedImage != null) {
         input['image'] = _scrapedImage;
       }
 
-      await ref.read(studioScrapeProvider).updateStudio(id: widget.studio.id, input: input);
+      await ref
+          .read(studioScrapeProvider)
+          .updateStudio(id: widget.studio.id, input: input);
 
       if (mounted) {
         ref.invalidate(studioDetailsProvider(widget.studio.id));
@@ -160,7 +171,13 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.details_failed_update_studio(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              context.l10n.details_failed_update_studio(e.toString()),
+            ),
+          ),
+        );
       }
     }
   }
@@ -168,19 +185,41 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
   @override
   Widget build(BuildContext context) {
     final scrapeEnabled = ref.watch(scrapeEnabledProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.scenes_edit_studio),
         actions: [
           if (scrapeEnabled)
             if (_isScraping)
-              const Center(child: Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))))
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                ),
+              )
             else
-              IconButton(onPressed: _scrape, icon: const Icon(Icons.search), tooltip: context.l10n.details_scene_scrape),
+              IconButton(
+                onPressed: _scrape,
+                icon: const Icon(Icons.search),
+                tooltip: context.l10n.details_scene_scrape,
+              ),
           IconButton(
             onPressed: _isSaving ? null : _save,
-            icon: _isSaving ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Icon(Icons.save),
+            icon: _isSaving
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : const Icon(Icons.save),
             tooltip: context.l10n.common_save,
           ),
         ],
@@ -195,15 +234,48 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: _scrapedImage!.startsWith('data:')
-                      ? Image.memory(base64Decode(_scrapedImage!.split(',').last), height: 150, width: double.infinity, fit: BoxFit.contain)
-                      : Image.network(_scrapedImage!, height: 150, width: double.infinity, fit: BoxFit.contain),
+                      ? Image.memory(
+                          excludeFromSemantics: true,
+                          base64Decode(_scrapedImage!.split(',').last),
+                          height: 150,
+                          width: double.infinity,
+                          fit: BoxFit.contain,
+                        )
+                      : Image.network(
+                          excludeFromSemantics: true,
+                          _scrapedImage!,
+                          height: 150,
+                          width: double.infinity,
+                          fit: BoxFit.contain,
+                        ),
                 ),
               ),
-            TextField(controller: _nameController, decoration: InputDecoration(labelText: context.l10n.common_name, border: const OutlineInputBorder())),
+            TextField(
+              textInputAction: TextInputAction.next,
+              controller: _nameController,
+              decoration: InputDecoration(
+                labelText: context.l10n.common_name,
+                border: const OutlineInputBorder(),
+              ),
+            ),
             const SizedBox(height: 16),
-            TextField(controller: _urlController, decoration: InputDecoration(labelText: context.l10n.common_url, border: const OutlineInputBorder())),
+            TextField(
+              textInputAction: TextInputAction.next,
+              controller: _urlController,
+              decoration: InputDecoration(
+                labelText: context.l10n.common_url,
+                border: const OutlineInputBorder(),
+              ),
+            ),
             const SizedBox(height: 16),
-            TextField(controller: _detailsController, maxLines: 5, decoration: InputDecoration(labelText: context.l10n.common_details, border: const OutlineInputBorder())),
+            TextField(
+              controller: _detailsController,
+              maxLines: 5,
+              decoration: InputDecoration(
+                labelText: context.l10n.common_details,
+                border: const OutlineInputBorder(),
+              ),
+            ),
           ],
         ),
       ),

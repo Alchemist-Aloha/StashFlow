@@ -1298,6 +1298,13 @@ class AppLocalizationsZh extends AppLocalizations {
       '关闭时，播放将直接使用 paths.stream';
 
   @override
+  String get settings_playback_feed_random => 'Start Feed from random position';
+
+  @override
+  String get settings_playback_feed_random_subtitle =>
+      'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length';
+
+  @override
   String get settings_playback_end_behavior => '播放结束行为';
 
   @override
@@ -2237,6 +2244,16 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String update_available(String version) {
     return 'StashFlow的更新版本 ($version) 已经发布。';
+  }
+
+  @override
+  String details_failed_update_favorite(String error) {
+    return '更新收藏失败: $error';
+  }
+
+  @override
+  String details_failed_load_galleries(String error) {
+    return '加载图库失败: $error';
   }
 }
 
@@ -4432,6 +4449,16 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get saving_image => '正在保存图片...';
 
   @override
+  String common_select(String label) {
+    return '选择 $label';
+  }
+
+  @override
+  String common_saved_to(String path) {
+    return '保存至 $path';
+  }
+
+  @override
   String get recent_searches => '最近搜索';
 
   @override
@@ -4463,6 +4490,16 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String update_available(String version) {
     return 'StashFlow的更新版本 ($version) 已经发布。';
+  }
+
+  @override
+  String details_failed_update_favorite(String error) {
+    return '更新收藏失败: $error';
+  }
+
+  @override
+  String details_failed_load_galleries(String error) {
+    return '加载图库失败: $error';
   }
 }
 
@@ -6662,6 +6699,16 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get saving_image => '正在儲存圖片...';
 
   @override
+  String common_select(String label) {
+    return '選擇 $label';
+  }
+
+  @override
+  String common_saved_to(String path) {
+    return '儲存至 $path';
+  }
+
+  @override
   String get recent_searches => '最近搜尋';
 
   @override
@@ -6693,5 +6740,15 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String update_available(String version) {
     return 'StashFlow的更新版本 ($version) 已經發布。';
+  }
+
+  @override
+  String details_failed_update_favorite(String error) {
+    return '更新收藏失敗: $error';
+  }
+
+  @override
+  String details_failed_load_galleries(String error) {
+    return '載入圖庫失敗: $error';
   }
 }

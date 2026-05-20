@@ -345,9 +345,11 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(context.l10n.scenes_phash_failed(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.scenes_phash_failed(e.toString())),
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _isScraping = false);
@@ -485,12 +487,14 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                   borderRadius: BorderRadius.circular(8),
                   child: _scrapedImage!.startsWith('data:')
                       ? Image.memory(
+                          excludeFromSemantics: true,
                           base64Decode(_scrapedImage!.split(',').last),
                           height: 200,
                           width: double.infinity,
                           fit: BoxFit.cover,
                         )
                       : Image.network(
+                          excludeFromSemantics: true,
                           _scrapedImage!,
                           height: 200,
                           width: double.infinity,
@@ -500,6 +504,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
               ),
             TextField(
               controller: _titleController,
+              textInputAction: TextInputAction.next,
               decoration: InputDecoration(
                 labelText: context.l10n.common_title,
                 border: OutlineInputBorder(),
@@ -661,6 +666,8 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                     Expanded(
                       child: TextField(
                         controller: controller,
+                        keyboardType: TextInputType.url,
+                        textInputAction: TextInputAction.done,
                         decoration: InputDecoration(
                           labelText: context.l10n.common_url,
                           border: OutlineInputBorder(),

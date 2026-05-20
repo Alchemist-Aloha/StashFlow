@@ -1310,6 +1310,13 @@ class AppLocalizationsKo extends AppLocalizations {
       '꺼져 있으면 재생 시 paths.stream을 직접 사용합니다';
 
   @override
+  String get settings_playback_feed_random => 'Start Feed from random position';
+
+  @override
+  String get settings_playback_feed_random_subtitle =>
+      'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length';
+
+  @override
   String get settings_playback_end_behavior => '재생 종료 동작';
 
   @override
@@ -2259,5 +2266,15 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String update_available(String version) {
     return 'StashFlow의 새 버전 ($version)을(를) 사용할 수 있습니다.';
+  }
+
+  @override
+  String details_failed_update_favorite(String error) {
+    return '즐겨찾기 업데이트 실패: $error';
+  }
+
+  @override
+  String details_failed_load_galleries(String error) {
+    return '갤러리 로드 실패: $error';
   }
 }

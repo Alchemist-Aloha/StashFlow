@@ -1349,6 +1349,13 @@ class AppLocalizationsRu extends AppLocalizations {
       'Если отключено, воспроизведение использует paths.stream напрямую';
 
   @override
+  String get settings_playback_feed_random => 'Start Feed from random position';
+
+  @override
+  String get settings_playback_feed_random_subtitle =>
+      'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length';
+
+  @override
   String get settings_playback_end_behavior => 'Поведение в конце игры';
 
   @override
@@ -2337,5 +2344,15 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String update_available(String version) {
     return 'Доступна новая версия StashFlow ($version).';
+  }
+
+  @override
+  String details_failed_update_favorite(String error) {
+    return 'Не удалось обновить избранное: $error';
+  }
+
+  @override
+  String details_failed_load_galleries(String error) {
+    return 'Не удалось загрузить галереи: $error';
   }
 }

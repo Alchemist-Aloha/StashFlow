@@ -144,7 +144,7 @@ class TagDetailsPage extends ConsumerWidget {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(
-                                          'Failed to update favorite: $e',
+                                          context.l10n.details_failed_update_favorite(e.toString()),
                                         ),
                                       ),
                                     );

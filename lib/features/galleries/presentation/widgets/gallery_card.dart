@@ -19,7 +19,7 @@ class GalleryCard extends ConsumerWidget {
     this.memCacheWidth,
     this.memCacheHeight,
     super.key,
-  }) : gallery = const Gallery(id: 'skeleton', title: 'Loading'),
+  }) : gallery = const Gallery(id: 'skeleton', title: 'Loading'), // Skeletonizer ignores
        skeletonize = true;
 
   const GalleryCard({

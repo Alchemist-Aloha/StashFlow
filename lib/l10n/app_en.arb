@@ -434,6 +434,8 @@
   "settings_playback_behavior_subtitle": "Default playback and background handling",
   "settings_playback_prefer_streams": "Prefer sceneStreams first",
   "settings_playback_prefer_streams_subtitle": "When off, playback directly uses paths.stream",
+  "settings_playback_feed_random": "Start Feed from random position",
+  "settings_playback_feed_random_subtitle": "When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length",
   "settings_playback_end_behavior": "Play End Behavior",
   "settings_playback_end_behavior_subtitle": "What to do when current playback ends",
   "settings_playback_end_behavior_stop": "Stop",
@@ -929,6 +931,22 @@
   "@update_available": {
     "placeholders": {
       "version": {
+        "type": "String"
+      }
+    }
+  },
+  "details_failed_update_favorite": "Failed to update favorite: {error}",
+  "@details_failed_update_favorite": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "details_failed_load_galleries": "Failed to load galleries: {error}",
+  "@details_failed_load_galleries": {
+    "placeholders": {
+      "error": {
         "type": "String"
       }
     }

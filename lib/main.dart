@@ -15,6 +15,7 @@ import 'core/utils/media_handler.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:screen_retriever/screen_retriever.dart';
 
 import 'core/presentation/theme/app_theme.dart';
 import 'core/presentation/theme/theme_mode_provider.dart';
@@ -38,6 +39,17 @@ Future<void> main() async {
           defaultTargetPlatform == TargetPlatform.linux ||
           defaultTargetPlatform == TargetPlatform.macOS)) {
     await windowManager.ensureInitialized();
+    try {
+      final primaryDisplay = await screenRetriever.getPrimaryDisplay();
+      final visibleSize = primaryDisplay.visibleSize ?? primaryDisplay.size;
+      final visiblePosition = primaryDisplay.visiblePosition ?? Offset.zero;
+
+      await windowManager.setMinimumSize(const Size(800, 600));
+      await windowManager.setSize(visibleSize);
+      await windowManager.setPosition(visiblePosition);
+    } catch (e) {
+      debugPrint('Failed to set initial window size: $e');
+    }
   }
 
   // Increase Flutter's in-memory image cache so more decoded thumbnails stay

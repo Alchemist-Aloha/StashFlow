@@ -104,6 +104,8 @@ class _ScrapeQueryDialogState extends ConsumerState<ScrapeQueryDialog> {
           children: [
             TextField(
               controller: _urlController,
+              keyboardType: TextInputType.url,
+              textInputAction: TextInputAction.next,
               decoration: InputDecoration(
                 labelText: context.l10n.scrape_from_url,
                 hintText: context.l10n.common_hint_url,
@@ -126,6 +128,7 @@ class _ScrapeQueryDialogState extends ConsumerState<ScrapeQueryDialog> {
             const SizedBox(height: 16),
             TextField(
               controller: _queryController,
+              textInputAction: TextInputAction.done,
               decoration: InputDecoration(
                 labelText: context.l10n.common_search_placeholder,
                 border: const OutlineInputBorder(),

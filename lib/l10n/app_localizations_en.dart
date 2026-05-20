@@ -1342,6 +1342,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'When off, playback directly uses paths.stream';
 
   @override
+  String get settings_playback_feed_random => 'Start Feed from random position';
+
+  @override
+  String get settings_playback_feed_random_subtitle =>
+      'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length';
+
+  @override
   String get settings_playback_end_behavior => 'Play End Behavior';
 
   @override
@@ -2307,5 +2314,15 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String update_available(String version) {
     return 'A new version of StashFlow ($version) is available.';
+  }
+
+  @override
+  String details_failed_update_favorite(String error) {
+    return 'Failed to update favorite: $error';
+  }
+
+  @override
+  String details_failed_load_galleries(String error) {
+    return 'Failed to load galleries: $error';
   }
 }
