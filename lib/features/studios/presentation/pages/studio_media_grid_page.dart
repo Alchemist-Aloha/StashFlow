@@ -26,6 +26,14 @@ class StudioMediaGridPage extends ConsumerWidget {
     final isGridView = ref.watch(studioMediaGridLayoutProvider);
     final gridColumns = ref.watch(studioGridColumnsProvider);
 
+    // ⚡ Bolt: Hoist routing layout variables out of the itemBuilder loop.
+    // Why: Looking up the router via InheritedWidget causes redundant O(1) traversals
+    // on every rendered list item during scroll.
+    // Impact: Avoids GC pressure and reduces scroll stuttering.
+    final router = GoRouter.of(context);
+    final currentPath = router.routeInformationProvider.value.uri.path;
+    final isAtRoot = currentPath.endsWith('/media');
+
     return ListPageScaffold<Scene>(
       title: context.l10n.studios_media_title,
       searchHint: context.l10n.common_search_placeholder,
@@ -44,10 +52,6 @@ class StudioMediaGridPage extends ConsumerWidget {
       useMasonry: isGridView,
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, item, memCacheWidth, memCacheHeight) {
-        final router = GoRouter.of(context);
-        final currentPath = router.routeInformationProvider.value.uri.path;
-        final isAtRoot = currentPath.endsWith('/media');
-
         return SceneCard(
           scene: item,
           isGrid: isGridView,
