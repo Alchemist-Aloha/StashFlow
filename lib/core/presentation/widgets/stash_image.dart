@@ -249,7 +249,10 @@ class StashImage extends ConsumerWidget {
     int? memCacheWidth,
     int? memCacheHeight,
   }) async {
-    if (imageUrl == null || imageUrl.isEmpty || imageUrl.contains('default=true')) return;
+    if (imageUrl == null ||
+        imageUrl.isEmpty ||
+        imageUrl.contains('default=true'))
+      return;
 
     final dedupeKey = '$imageUrl|w${memCacheWidth ?? 0}h${memCacheHeight ?? 0}';
     if (_prefetched.contains(dedupeKey)) return;
@@ -312,6 +315,7 @@ class StashImage extends ConsumerWidget {
       );
 
       return Image.network(
+        excludeFromSemantics: true,
         effectiveUrl,
         headers: headers,
         width: width,
@@ -416,4 +420,3 @@ class StashImage extends ConsumerWidget {
     );
   }
 }
-

@@ -71,6 +71,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
             Text(context.l10n.cast_enter_pin),
             const SizedBox(height: 16),
             TextField(
+              textInputAction: TextInputAction.next,
               controller: pinController,
               autofocus: true,
               maxLength: 4,
@@ -135,7 +136,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
       );
 
       await session.loadMedia(media);
-      
+
       // Get current local position to sync
       final playerState = ref.read(playerStateProvider);
       final currentPos = playerState.player?.state.position ?? Duration.zero;
@@ -150,9 +151,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(context.l10n.cast_casting_to(device.name)),
-          ),
+          SnackBar(content: Text(context.l10n.cast_casting_to(device.name))),
         );
       }
     } on dc.NeedsPairingException catch (_) {
@@ -161,8 +160,10 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
       if (mounted) Navigator.of(context).pop();
 
       // Trigger PIN display on TV
-      dc.AirPlayPairSetup(host: device.address.address, port: device.port)
-          .startPinDisplay();
+      dc.AirPlayPairSetup(
+        host: device.address.address,
+        port: device.port,
+      ).startPinDisplay();
 
       // Show PIN dialog
       final pin = await _showPinDialog();
@@ -190,7 +191,8 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
 
           // Get current local position to sync
           final playerState = ref.read(playerStateProvider);
-          final currentPos = playerState.player?.state.position ?? Duration.zero;
+          final currentPos =
+              playerState.player?.state.position ?? Duration.zero;
           if (currentPos > Duration.zero) {
             debugPrint('CastSelectionSheet: seeking cast to $currentPos');
             await session.seek(currentPos);
@@ -217,7 +219,9 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
 
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(context.l10n.cast_pairing_failed(e.toString()))),
+              SnackBar(
+                content: Text(context.l10n.cast_pairing_failed(e.toString())),
+              ),
             );
           }
         }
@@ -281,13 +285,11 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.refresh),
-                    tooltip: context.l10n.common_refresh,
-                    onPressed: () {
-                      debugPrint('CastSelectionSheet: refresh discovery');
-                      ref
-                          .read(castServiceProvider.notifier)
-                          .startDiscovery();
-                    },
+                  tooltip: context.l10n.common_refresh,
+                  onPressed: () {
+                    debugPrint('CastSelectionSheet: refresh discovery');
+                    ref.read(castServiceProvider.notifier).startDiscovery();
+                  },
                 ),
               ],
             ),
