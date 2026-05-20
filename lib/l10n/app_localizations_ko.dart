@@ -1309,14 +1309,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_playback_prefer_streams_subtitle =>
       '꺼져 있으면 재생 시 paths.stream을 직접 사용합니다';
 
-
-  @override
-  String get settings_playback_feed_random => 'Start Feed from random position';
-
-  @override
-  String get settings_playback_feed_random_subtitle =>
-      'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length';
-
   @override
   String get settings_playback_end_behavior => '재생 종료 동작';
 

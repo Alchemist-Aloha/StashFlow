@@ -26,7 +26,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   static const _subtitlePositionBottomRatioKey =
       'subtitle_position_bottom_ratio';
   static const _subtitleTextAlignmentKey = 'subtitle_text_alignment';
-  static const _feedStartRandomKey = 'feed_start_random';
 
   bool _preferSceneStreams = true;
   VideoEndBehavior _playEndBehavior = VideoEndBehavior.stop;
@@ -41,7 +40,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   bool _loading = true;
   static const _directPlayOnNavigationKey = 'video_direct_play_on_navigation';
   bool _directPlayOnNavigation = false;
-  bool _feedStartRandom = false;
 
   @override
   void initState() {
@@ -80,7 +78,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     _subtitleTextAlignment =
         prefs.getString(_subtitleTextAlignmentKey) ?? 'center';
     _directPlayOnNavigation = prefs.getBool(_directPlayOnNavigationKey) ?? true;
-    _feedStartRandom = prefs.getBool(_feedStartRandomKey) ?? false;
 
     setState(() => _loading = false);
   }
@@ -110,7 +107,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     );
     await prefs.setString(_subtitleTextAlignmentKey, _subtitleTextAlignment);
     await prefs.setBool(_directPlayOnNavigationKey, _directPlayOnNavigation);
-    await prefs.setBool(_feedStartRandomKey, _feedStartRandom);
 
     final playerStateNotifier = ref.read(playerStateProvider.notifier);
     playerStateNotifier.setPlayEndBehavior(_playEndBehavior);
@@ -124,7 +120,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
       _subtitlePositionBottomRatio,
     );
     playerStateNotifier.setSubtitleTextAlignment(_subtitleTextAlignment);
-    playerStateNotifier.setFeedStartRandom(_feedStartRandom);
   }
 
   @override
@@ -156,21 +151,6 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                           value: _preferSceneStreams,
                           onChanged: (value) async {
                             setState(() => _preferSceneStreams = value);
-                            await _saveToggleSettings();
-                          },
-                        ),
-                        Divider(height: context.dimensions.spacingLarge),
-                        SwitchListTile.adaptive(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(
-                            context.l10n.settings_playback_feed_random,
-                          ),
-                          subtitle: Text(
-                            context.l10n.settings_playback_feed_random_subtitle,
-                          ),
-                          value: _feedStartRandom,
-                          onChanged: (value) async {
-                            setState(() => _feedStartRandom = value);
                             await _saveToggleSettings();
                           },
                         ),

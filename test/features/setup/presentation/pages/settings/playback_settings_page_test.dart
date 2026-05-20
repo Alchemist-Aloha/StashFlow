@@ -71,36 +71,4 @@ void main() {
 
     expect(tester.widget<Switch>(directPlaySwitch).value, isTrue);
   });
-
-  testWidgets('PlaybackSettingsPage renders feed random start position toggle and updates prefs', (tester) async {
-    tester.view.physicalSize = const Size(1200, 1600);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.resetPhysicalSize);
-
-    await pumpTestWidget(
-      tester,
-      prefs: prefs,
-      child: const PlaybackSettingsPage(),
-    );
-    await tester.pumpAndSettle();
-
-    expect(find.text('Start Feed from random position'), findsOneWidget);
-    expect(find.textContaining('start from a random position between 0% and 90%'), findsOneWidget);
-
-    final feedRandomSwitch = find.descendant(
-      of: find.ancestor(
-        of: find.text('Start Feed from random position'),
-        matching: find.byType(SwitchListTile),
-      ),
-      matching: find.byType(Switch),
-    );
-
-    expect(tester.widget<Switch>(feedRandomSwitch).value, isFalse);
-
-    await tester.tap(feedRandomSwitch);
-    await tester.pumpAndSettle();
-
-    expect(tester.widget<Switch>(feedRandomSwitch).value, isTrue);
-    expect(prefs.getBool('feed_start_random'), isTrue);
-  });
 }

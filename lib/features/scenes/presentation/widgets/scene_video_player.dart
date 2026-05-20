@@ -390,9 +390,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
         'SceneVideoPlayer [${widget.scene.id}] exiting fullscreen via global state',
         source: 'SceneVideoPlayer',
       );
-      ref
-          .read(playerStateProvider.notifier)
-          .syncBackgroundToActiveScene(context);
+      ref.read(playerStateProvider.notifier).syncBackgroundToActiveScene(context);
       ref.read(playerStateProvider.notifier).setFullScreen(false);
       ref.read(playerStateProvider.notifier).setViewMode(PlayerViewMode.inline);
     } else {
@@ -400,9 +398,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
         'SceneVideoPlayer [${widget.scene.id}] entering fullscreen via global state',
         source: 'SceneVideoPlayer',
       );
-      ref
-          .read(playerStateProvider.notifier)
-          .setViewMode(PlayerViewMode.fullscreen);
+      ref.read(playerStateProvider.notifier).setViewMode(PlayerViewMode.fullscreen);
       ref.read(playerStateProvider.notifier).setFullScreen(true);
     }
   }
@@ -510,7 +506,6 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                         color: Colors.black,
                         child: castState.isCasting
                             ? Image.network(
-                                excludeFromSemantics: true,
                                 appendApiKey(
                                   widget.scene.paths.screenshot ?? '',
                                   ref.read(serverApiKeyProvider),

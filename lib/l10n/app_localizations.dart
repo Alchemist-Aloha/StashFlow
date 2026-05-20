@@ -2556,18 +2556,6 @@ abstract class AppLocalizations {
   /// **'When off, playback directly uses paths.stream'**
   String get settings_playback_prefer_streams_subtitle;
 
-  /// No description provided for @settings_playback_feed_random.
-  ///
-  /// In en, this message translates to:
-  /// **'Start Feed from random position'**
-  String get settings_playback_feed_random;
-
-  /// No description provided for @settings_playback_feed_random_subtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length'**
-  String get settings_playback_feed_random_subtitle;
-
   /// No description provided for @settings_playback_end_behavior.
   ///
   /// In en, this message translates to:

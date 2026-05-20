@@ -128,9 +128,7 @@ class _AppearanceSettingsPageState
                                   Icons.brightness_auto_outlined,
                                   size: 24 * context.dimensions.fontSizeFactor,
                                 ),
-                                label: Text(
-                                  l10n.settings_appearance_theme_system,
-                                ),
+                                label: Text(l10n.settings_appearance_theme_system),
                               ),
                               ButtonSegment<ThemeMode>(
                                 value: ThemeMode.light,
@@ -138,9 +136,7 @@ class _AppearanceSettingsPageState
                                   Icons.light_mode_outlined,
                                   size: 24 * context.dimensions.fontSizeFactor,
                                 ),
-                                label: Text(
-                                  l10n.settings_appearance_theme_light,
-                                ),
+                                label: Text(l10n.settings_appearance_theme_light),
                               ),
                               ButtonSegment<ThemeMode>(
                                 value: ThemeMode.dark,
@@ -148,9 +144,7 @@ class _AppearanceSettingsPageState
                                   Icons.dark_mode_outlined,
                                   size: 24 * context.dimensions.fontSizeFactor,
                                 ),
-                                label: Text(
-                                  l10n.settings_appearance_theme_dark,
-                                ),
+                                label: Text(l10n.settings_appearance_theme_dark),
                               ),
                             ],
                             selected: {_themeMode},
@@ -213,9 +207,10 @@ class _AppearanceSettingsPageState
               ),
             ),
             TextButton.icon(
-              onPressed: value == 1.0
-                  ? null
-                  : () => ref.read(appGlobalScaleProvider.notifier).set(1.0),
+              onPressed:
+                  value == 1.0
+                      ? null
+                      : () => ref.read(appGlobalScaleProvider.notifier).set(1.0),
               icon: const Icon(Icons.restart_alt, size: 18),
               label: Text(l10n.common_reset),
               style: TextButton.styleFrom(
@@ -257,7 +252,6 @@ class _AppearanceSettingsPageState
         if (isCustom) ...[
           SizedBox(height: context.dimensions.spacingMedium),
           TextField(
-            textInputAction: TextInputAction.next,
             controller: _customHexController,
             focusNode: _customHexFocusNode,
             decoration: InputDecoration(
@@ -311,9 +305,7 @@ class _AppearanceSettingsPageState
             _customHexFocusNode.requestFocus();
           }
         },
-        borderRadius: BorderRadius.circular(
-          20 * context.dimensions.fontSizeFactor,
-        ),
+        borderRadius: BorderRadius.circular(20 * context.dimensions.fontSizeFactor),
         child: Container(
           width: 40 * context.dimensions.fontSizeFactor,
           height: 40 * context.dimensions.fontSizeFactor,

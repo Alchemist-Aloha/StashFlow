@@ -56,14 +56,10 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
     _nameController = TextEditingController(text: p.name);
     _disambiguationController = TextEditingController(text: p.disambiguation);
     _detailsController = TextEditingController(text: p.details);
-    _heightController = TextEditingController(
-      text: p.heightCm?.toString() ?? '',
-    );
+    _heightController = TextEditingController(text: p.heightCm?.toString() ?? '');
     _measurementsController = TextEditingController(text: p.measurements);
     _fakeTitsController = TextEditingController(text: p.fakeTits);
-    _penisLengthController = TextEditingController(
-      text: p.penisLength?.toString() ?? '',
-    );
+    _penisLengthController = TextEditingController(text: p.penisLength?.toString() ?? '');
     _tattoosController = TextEditingController(text: p.tattoos);
     _piercingsController = TextEditingController(text: p.piercings);
     _careerStartController = TextEditingController(text: p.careerStart);
@@ -79,12 +75,8 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
     _birthdate = p.birthdate != null ? DateTime.tryParse(p.birthdate!) : null;
     _deathDate = p.deathDate != null ? DateTime.tryParse(p.deathDate!) : null;
 
-    _urlControllers = p.urls.isEmpty
-        ? [TextEditingController()]
-        : p.urls.map((u) => TextEditingController(text: u)).toList();
-    _aliasControllers = p.aliasList.isEmpty
-        ? [TextEditingController()]
-        : p.aliasList.map((a) => TextEditingController(text: a)).toList();
+    _urlControllers = p.urls.isEmpty ? [TextEditingController()] : p.urls.map((u) => TextEditingController(text: u)).toList();
+    _aliasControllers = p.aliasList.isEmpty ? [TextEditingController()] : p.aliasList.map((a) => TextEditingController(text: a)).toList();
   }
 
   @override
@@ -129,25 +121,19 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
     try {
       List<ScrapedPerformer> results = [];
       if (scrapeRequest.url != null) {
-        final res = await ref
-            .read(performerScrapeProvider)
-            .scrapePerformerURL(scrapeRequest.url!);
+        final res = await ref.read(performerScrapeProvider).scrapePerformerURL(scrapeRequest.url!);
         if (res != null) results = [res];
       } else {
-        results = await ref
-            .read(performerScrapeProvider)
-            .scrapePerformer(
-              scraperId: scrapeRequest.scraperId,
-              stashBoxEndpoint: scrapeRequest.stashBoxEndpoint,
-              query: scrapeRequest.query,
-            );
+        results = await ref.read(performerScrapeProvider).scrapePerformer(
+          scraperId: scrapeRequest.scraperId,
+          stashBoxEndpoint: scrapeRequest.stashBoxEndpoint,
+          query: scrapeRequest.query,
+        );
       }
 
       if (!mounted) return;
       if (results.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.scenes_no_results_found)),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.scenes_no_results_found)));
         return;
       }
 
@@ -195,10 +181,7 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
         careerEnd: _careerEndController.text,
         tattoos: _tattoosController.text,
         piercings: _piercingsController.text,
-        aliases: _aliasControllers
-            .map((c) => c.text)
-            .where((t) => t.isNotEmpty)
-            .join(', '),
+        aliases: _aliasControllers.map((c) => c.text).where((t) => t.isNotEmpty).join(', '),
         image: _scrapedImage,
       );
 
@@ -220,50 +203,33 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
         if (merged.birthdate != null) {
           _birthdate = DateTime.tryParse(merged.birthdate!);
         }
-        if (merged.ethnicity != null)
-          _ethnicityController.text = merged.ethnicity!;
+        if (merged.ethnicity != null) _ethnicityController.text = merged.ethnicity!;
         if (merged.country != null) _countryController.text = merged.country!;
-        if (merged.eyeColor != null)
-          _eyeColorController.text = merged.eyeColor!;
+        if (merged.eyeColor != null) _eyeColorController.text = merged.eyeColor!;
         if (merged.height != null) _heightController.text = merged.height!;
-        if (merged.measurements != null)
-          _measurementsController.text = merged.measurements!;
-        if (merged.fakeTits != null)
-          _fakeTitsController.text = merged.fakeTits!;
-        if (merged.careerStart != null)
-          _careerStartController.text = merged.careerStart!;
-        if (merged.careerEnd != null)
-          _careerEndController.text = merged.careerEnd!;
+        if (merged.measurements != null) _measurementsController.text = merged.measurements!;
+        if (merged.fakeTits != null) _fakeTitsController.text = merged.fakeTits!;
+        if (merged.careerStart != null) _careerStartController.text = merged.careerStart!;
+        if (merged.careerEnd != null) _careerEndController.text = merged.careerEnd!;
         if (merged.tattoos != null) _tattoosController.text = merged.tattoos!;
 
-        if (merged.piercings != null)
-          _piercingsController.text = merged.piercings!;
+        if (merged.piercings != null) _piercingsController.text = merged.piercings!;
 
         if (merged.aliases != null && merged.aliases!.isNotEmpty) {
-          final aliases = merged.aliases!
-              .split(',')
-              .map((s) => s.trim())
-              .where((s) => s.isNotEmpty)
-              .toList();
+          final aliases = merged.aliases!.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
           for (var c in _aliasControllers) {
             c.dispose();
           }
-          _aliasControllers = aliases
-              .map((a) => TextEditingController(text: a))
-              .toList();
-          if (_aliasControllers.isEmpty)
-            _aliasControllers.add(TextEditingController());
+          _aliasControllers = aliases.map((a) => TextEditingController(text: a)).toList();
+          if (_aliasControllers.isEmpty) _aliasControllers.add(TextEditingController());
         }
 
         if (merged.urls.isNotEmpty) {
           for (var c in _urlControllers) {
             c.dispose();
           }
-          _urlControllers = merged.urls
-              .map((u) => TextEditingController(text: u))
-              .toList();
-          if (_urlControllers.isEmpty)
-            _urlControllers.add(TextEditingController());
+          _urlControllers = merged.urls.map((u) => TextEditingController(text: u)).toList();
+          if (_urlControllers.isEmpty) _urlControllers.add(TextEditingController());
         }
 
         if (merged.image != null) {
@@ -272,13 +238,10 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
           _scrapedImage = merged.images.first;
         }
       });
+
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(context.l10n.scenes_scrape_failed(e.toString())),
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.scenes_scrape_failed(e.toString()))));
       }
     } finally {
       if (mounted) setState(() => _isScraping = false);
@@ -309,23 +272,15 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
         'tattoos': _tattoosController.text.trim(),
         'piercings': _piercingsController.text.trim(),
         'weight': int.tryParse(_weightController.text.trim()),
-        'alias_list': _aliasControllers
-            .map((c) => c.text.trim())
-            .where((t) => t.isNotEmpty)
-            .toList(),
-        'urls': _urlControllers
-            .map((c) => c.text.trim())
-            .where((t) => t.isNotEmpty)
-            .toList(),
+        'alias_list': _aliasControllers.map((c) => c.text.trim()).where((t) => t.isNotEmpty).toList(),
+        'urls': _urlControllers.map((c) => c.text.trim()).where((t) => t.isNotEmpty).toList(),
       };
 
       if (_scrapedImage != null) {
         input['image'] = _scrapedImage;
       }
 
-      await ref
-          .read(performerScrapeProvider)
-          .updatePerformer(id: widget.performer.id, input: input);
+      await ref.read(performerScrapeProvider).updatePerformer(id: widget.performer.id, input: input);
 
       if (mounted) {
         ref.invalidate(performerDetailsProvider(widget.performer.id));
@@ -334,13 +289,7 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              context.l10n.details_failed_update_performer(e.toString()),
-            ),
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.details_failed_update_performer(e.toString()))));
       }
     }
   }
@@ -355,34 +304,12 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
         actions: [
           if (scrapeEnabled)
             if (_isScraping)
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                ),
-              )
+              const Center(child: Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))))
             else
-              IconButton(
-                onPressed: _scrape,
-                icon: const Icon(Icons.search),
-                tooltip: context.l10n.details_scene_scrape,
-              ),
+              IconButton(onPressed: _scrape, icon: const Icon(Icons.search), tooltip: context.l10n.details_scene_scrape),
           IconButton(
             onPressed: _isSaving ? null : _save,
-            icon: _isSaving
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
-                : const Icon(Icons.save),
+            icon: _isSaving ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Icon(Icons.save),
             tooltip: context.l10n.common_save,
           ),
         ],
@@ -393,77 +320,28 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
           children: [
             if (_scrapedImage != null)
               Padding(
-                padding: EdgeInsets.only(
-                  bottom: context.dimensions.spacingMedium,
-                ),
+                padding: EdgeInsets.only(bottom: context.dimensions.spacingMedium),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
                   child: _scrapedImage!.startsWith('data:')
-                      ? Image.memory(
-                          excludeFromSemantics: true,
-                          base64Decode(_scrapedImage!.split(',').last),
-                          height: 200,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                        )
-                      : Image.network(
-                          excludeFromSemantics: true,
-                          _scrapedImage!,
-                          height: 200,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
+                      ? Image.memory(base64Decode(_scrapedImage!.split(',').last), height: 200, width: double.infinity, fit: BoxFit.cover)
+                      : Image.network(_scrapedImage!, height: 200, width: double.infinity, fit: BoxFit.cover),
                 ),
               ),
-            TextField(
-              textInputAction: TextInputAction.next,
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: context.l10n.common_name,
-                border: const OutlineInputBorder(),
-              ),
-            ),
+            TextField(controller: _nameController, decoration: InputDecoration(labelText: context.l10n.common_name, border: const OutlineInputBorder())),
             SizedBox(height: context.dimensions.spacingMedium),
-            TextField(
-              textInputAction: TextInputAction.next,
-              controller: _disambiguationController,
-              decoration: InputDecoration(
-                labelText: context.l10n.performers_field_disambiguation,
-                border: const OutlineInputBorder(),
-              ),
-            ),
+            TextField(controller: _disambiguationController, decoration: InputDecoration(labelText: context.l10n.performers_field_disambiguation, border: const OutlineInputBorder())),
             SizedBox(height: context.dimensions.spacingMedium),
             DropdownButtonFormField<String>(
               initialValue: _selectedGender,
-              decoration: InputDecoration(
-                labelText: context.l10n.performers_gender,
-                border: const OutlineInputBorder(),
-              ),
+              decoration: InputDecoration(labelText: context.l10n.performers_gender, border: const OutlineInputBorder()),
               items: [
-                DropdownMenuItem(
-                  value: 'MALE',
-                  child: Text(context.l10n.performers_gender_male),
-                ),
-                DropdownMenuItem(
-                  value: 'FEMALE',
-                  child: Text(context.l10n.performers_gender_female),
-                ),
-                DropdownMenuItem(
-                  value: 'TRANSGENDER_MALE',
-                  child: Text(context.l10n.performers_gender_trans_male),
-                ),
-                DropdownMenuItem(
-                  value: 'TRANSGENDER_FEMALE',
-                  child: Text(context.l10n.performers_gender_trans_female),
-                ),
-                DropdownMenuItem(
-                  value: 'INTERSEX',
-                  child: Text(context.l10n.performers_gender_intersex),
-                ),
-                DropdownMenuItem(
-                  value: 'NON_BINARY',
-                  child: Text(context.l10n.performers_gender_non_binary),
-                ),
+                DropdownMenuItem(value: 'MALE', child: Text(context.l10n.performers_gender_male)),
+                DropdownMenuItem(value: 'FEMALE', child: Text(context.l10n.performers_gender_female)),
+                DropdownMenuItem(value: 'TRANSGENDER_MALE', child: Text(context.l10n.performers_gender_trans_male)),
+                DropdownMenuItem(value: 'TRANSGENDER_FEMALE', child: Text(context.l10n.performers_gender_trans_female)),
+                DropdownMenuItem(value: 'INTERSEX', child: Text(context.l10n.performers_gender_intersex)),
+                DropdownMenuItem(value: 'NON_BINARY', child: Text(context.l10n.performers_gender_non_binary)),
               ],
               onChanged: (val) => setState(() => _selectedGender = val),
             ),
@@ -473,22 +351,10 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
                 Expanded(
                   child: TextField(
                     readOnly: true,
-                    controller: TextEditingController(
-                      text:
-                          _birthdate?.toIso8601String().split('T').first ?? '',
-                    ),
-                    decoration: InputDecoration(
-                      labelText: context.l10n.performers_field_birthdate,
-                      border: const OutlineInputBorder(),
-                      suffixIcon: const Icon(Icons.calendar_today),
-                    ),
+                    controller: TextEditingController(text: _birthdate?.toIso8601String().split('T').first ?? ''),
+                    decoration: InputDecoration(labelText: context.l10n.performers_field_birthdate, border: const OutlineInputBorder(), suffixIcon: const Icon(Icons.calendar_today)),
                     onTap: () async {
-                      final picked = await showDatePicker(
-                        context: context,
-                        initialDate: _birthdate ?? DateTime.now(),
-                        firstDate: DateTime(1900),
-                        lastDate: DateTime.now(),
-                      );
+                      final picked = await showDatePicker(context: context, initialDate: _birthdate ?? DateTime.now(), firstDate: DateTime(1900), lastDate: DateTime.now());
                       if (picked != null) setState(() => _birthdate = picked);
                     },
                   ),
@@ -497,22 +363,10 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
                 Expanded(
                   child: TextField(
                     readOnly: true,
-                    controller: TextEditingController(
-                      text:
-                          _deathDate?.toIso8601String().split('T').first ?? '',
-                    ),
-                    decoration: InputDecoration(
-                      labelText: context.l10n.performers_field_deathdate,
-                      border: const OutlineInputBorder(),
-                      suffixIcon: const Icon(Icons.calendar_today),
-                    ),
+                    controller: TextEditingController(text: _deathDate?.toIso8601String().split('T').first ?? ''),
+                    decoration: InputDecoration(labelText: context.l10n.performers_field_deathdate, border: const OutlineInputBorder(), suffixIcon: const Icon(Icons.calendar_today)),
                     onTap: () async {
-                      final picked = await showDatePicker(
-                        context: context,
-                        initialDate: _deathDate ?? DateTime.now(),
-                        firstDate: DateTime(1900),
-                        lastDate: DateTime.now(),
-                      );
+                      final picked = await showDatePicker(context: context, initialDate: _deathDate ?? DateTime.now(), firstDate: DateTime(1900), lastDate: DateTime.now());
                       if (picked != null) setState(() => _deathDate = picked);
                     },
                   ),
@@ -522,252 +376,75 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
             SizedBox(height: context.dimensions.spacingMedium),
             Row(
               children: [
-                Expanded(
-                  child: TextField(
-                    textInputAction: TextInputAction.next,
-                    controller: _heightController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.performers_field_height_cm,
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                ),
+                Expanded(child: TextField(controller: _heightController, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: context.l10n.performers_field_height_cm, border: const OutlineInputBorder()))),
                 SizedBox(width: context.dimensions.spacingMedium),
-                Expanded(
-                  child: TextField(
-                    textInputAction: TextInputAction.next,
-                    controller: _weightController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.performers_field_weight_kg,
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                ),
+                Expanded(child: TextField(controller: _weightController, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: context.l10n.performers_field_weight_kg, border: const OutlineInputBorder()))),
               ],
             ),
             SizedBox(height: context.dimensions.spacingMedium),
-            TextField(
-              textInputAction: TextInputAction.next,
-              controller: _measurementsController,
-              decoration: InputDecoration(
-                labelText: context.l10n.performers_field_measurements,
-                border: const OutlineInputBorder(),
-              ),
-            ),
+            TextField(controller: _measurementsController, decoration: InputDecoration(labelText: context.l10n.performers_field_measurements, border: const OutlineInputBorder())),
             SizedBox(height: context.dimensions.spacingMedium),
-            TextField(
-              textInputAction: TextInputAction.next,
-              controller: _fakeTitsController,
-              decoration: InputDecoration(
-                labelText: context.l10n.performers_field_fake_tits,
-                border: const OutlineInputBorder(),
-              ),
-            ),
+            TextField(controller: _fakeTitsController, decoration: InputDecoration(labelText: context.l10n.performers_field_fake_tits, border: const OutlineInputBorder())),
             SizedBox(height: context.dimensions.spacingMedium),
-            TextField(
-              textInputAction: TextInputAction.next,
-              controller: _penisLengthController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: context.l10n.performers_field_penis_length,
-                border: const OutlineInputBorder(),
-              ),
-            ),
+            TextField(controller: _penisLengthController, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: context.l10n.performers_field_penis_length, border: const OutlineInputBorder())),
             SizedBox(height: context.dimensions.spacingMedium),
             DropdownButtonFormField<String>(
               initialValue: _selectedCircumcised,
-              decoration: InputDecoration(
-                labelText: context.l10n.performers_circumcised,
-                border: const OutlineInputBorder(),
-              ),
+              decoration: InputDecoration(labelText: context.l10n.performers_circumcised, border: const OutlineInputBorder()),
               items: [
-                DropdownMenuItem(
-                  value: 'CUT',
-                  child: Text(context.l10n.performers_circumcised_cut),
-                ),
-                DropdownMenuItem(
-                  value: 'UNCUT',
-                  child: Text(context.l10n.performers_circumcised_uncut),
-                ),
+                DropdownMenuItem(value: 'CUT', child: Text(context.l10n.performers_circumcised_cut)),
+                DropdownMenuItem(value: 'UNCUT', child: Text(context.l10n.performers_circumcised_uncut)),
               ],
               onChanged: (val) => setState(() => _selectedCircumcised = val),
             ),
             SizedBox(height: context.dimensions.spacingMedium),
-            TextField(
-              textInputAction: TextInputAction.next,
-              controller: _ethnicityController,
-              decoration: InputDecoration(
-                labelText: context.l10n.performers_field_ethnicity,
-                border: const OutlineInputBorder(),
-              ),
-            ),
+            TextField(controller: _ethnicityController, decoration: InputDecoration(labelText: context.l10n.performers_field_ethnicity, border: const OutlineInputBorder())),
             SizedBox(height: context.dimensions.spacingMedium),
-            TextField(
-              textInputAction: TextInputAction.next,
-              controller: _countryController,
-              decoration: InputDecoration(
-                labelText: context.l10n.performers_field_country,
-                border: const OutlineInputBorder(),
-              ),
-            ),
+            TextField(controller: _countryController, decoration: InputDecoration(labelText: context.l10n.performers_field_country, border: const OutlineInputBorder())),
             SizedBox(height: context.dimensions.spacingMedium),
             Row(
               children: [
-                Expanded(
-                  child: TextField(
-                    textInputAction: TextInputAction.next,
-                    controller: _eyeColorController,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.performers_field_eye_color,
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                ),
+                Expanded(child: TextField(controller: _eyeColorController, decoration: InputDecoration(labelText: context.l10n.performers_field_eye_color, border: const OutlineInputBorder()))),
                 SizedBox(width: context.dimensions.spacingMedium),
-                Expanded(
-                  child: TextField(
-                    textInputAction: TextInputAction.next,
-                    controller: _hairColorController,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.performers_field_hair_color,
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                ),
+                Expanded(child: TextField(controller: _hairColorController, decoration: InputDecoration(labelText: context.l10n.performers_field_hair_color, border: const OutlineInputBorder()))),
               ],
             ),
             SizedBox(height: context.dimensions.spacingMedium),
             Row(
               children: [
-                Expanded(
-                  child: TextField(
-                    textInputAction: TextInputAction.next,
-                    controller: _careerStartController,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.performers_field_career_start,
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                ),
+                Expanded(child: TextField(controller: _careerStartController, decoration: InputDecoration(labelText: context.l10n.performers_field_career_start, border: const OutlineInputBorder()))),
                 SizedBox(width: context.dimensions.spacingMedium),
-                Expanded(
-                  child: TextField(
-                    textInputAction: TextInputAction.next,
-                    controller: _careerEndController,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.performers_field_career_end,
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                ),
+                Expanded(child: TextField(controller: _careerEndController, decoration: InputDecoration(labelText: context.l10n.performers_field_career_end, border: const OutlineInputBorder()))),
               ],
             ),
             SizedBox(height: context.dimensions.spacingMedium),
-            TextField(
-              textInputAction: TextInputAction.next,
-              controller: _tattoosController,
-              decoration: InputDecoration(
-                labelText: context.l10n.performers_field_tattoos,
-                border: const OutlineInputBorder(),
-              ),
-            ),
+            TextField(controller: _tattoosController, decoration: InputDecoration(labelText: context.l10n.performers_field_tattoos, border: const OutlineInputBorder())),
             SizedBox(height: context.dimensions.spacingMedium),
-            TextField(
-              textInputAction: TextInputAction.next,
-              controller: _piercingsController,
-              decoration: InputDecoration(
-                labelText: context.l10n.performers_field_piercings,
-                border: const OutlineInputBorder(),
-              ),
-            ),
+            TextField(controller: _piercingsController, decoration: InputDecoration(labelText: context.l10n.performers_field_piercings, border: const OutlineInputBorder())),
             SizedBox(height: context.dimensions.spacingMedium),
-            TextField(
-              controller: _detailsController,
-              maxLines: 5,
-              decoration: InputDecoration(
-                labelText: context.l10n.common_details,
-                border: const OutlineInputBorder(),
-              ),
-            ),
+            TextField(controller: _detailsController, maxLines: 5, decoration: InputDecoration(labelText: context.l10n.common_details, border: const OutlineInputBorder())),
             SizedBox(height: context.dimensions.spacingMedium),
-            _buildListField(
-              context.l10n.performers_field_aliases,
-              _aliasControllers,
-              () => setState(
-                () => _aliasControllers.add(TextEditingController()),
-              ),
-              (i) => setState(() {
-                _aliasControllers[i].dispose();
-                _aliasControllers.removeAt(i);
-                if (_aliasControllers.isEmpty)
-                  _aliasControllers.add(TextEditingController());
-              }),
-            ),
+            _buildListField(context.l10n.performers_field_aliases, _aliasControllers, () => setState(() => _aliasControllers.add(TextEditingController())), (i) => setState(() { _aliasControllers[i].dispose(); _aliasControllers.removeAt(i); if (_aliasControllers.isEmpty) _aliasControllers.add(TextEditingController()); })),
             SizedBox(height: context.dimensions.spacingMedium),
-            _buildListField(
-              context.l10n.scenes_field_urls,
-              _urlControllers,
-              () =>
-                  setState(() => _urlControllers.add(TextEditingController())),
-              (i) => setState(() {
-                _urlControllers[i].dispose();
-                _urlControllers.removeAt(i);
-                if (_urlControllers.isEmpty)
-                  _urlControllers.add(TextEditingController());
-              }),
-            ),
+            _buildListField(context.l10n.scenes_field_urls, _urlControllers, () => setState(() => _urlControllers.add(TextEditingController())), (i) => setState(() { _urlControllers[i].dispose(); _urlControllers.removeAt(i); if (_urlControllers.isEmpty) _urlControllers.add(TextEditingController()); })),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildListField(
-    String label,
-    List<TextEditingController> controllers,
-    VoidCallback onAdd,
-    Function(int) onRemove,
-  ) {
+  Widget _buildListField(String label, List<TextEditingController> controllers, VoidCallback onAdd, Function(int) onRemove) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(label, style: Theme.of(context).textTheme.titleMedium),
-            const Spacer(),
-            IconButton(
-              tooltip: context.l10n.common_add,
-              onPressed: onAdd,
-              icon: const Icon(Icons.add_circle_outline),
-            ),
-          ],
-        ),
-        ...controllers.asMap().entries.map(
-          (e) => Padding(
-            padding: EdgeInsets.only(bottom: context.dimensions.spacingSmall),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    textInputAction: TextInputAction.next,
-                    controller: e.value,
-                    decoration: InputDecoration(
-                      labelText: label,
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                IconButton(
-                  tooltip: context.l10n.common_remove,
-                  onPressed: () => onRemove(e.key),
-                  icon: const Icon(Icons.remove_circle_outline),
-                ),
-              ],
-            ),
-          ),
-        ),
+        Row(children: [Text(label, style: Theme.of(context).textTheme.titleMedium), const Spacer(), IconButton(tooltip: context.l10n.common_add, onPressed: onAdd, icon: const Icon(Icons.add_circle_outline))]),
+        ...controllers.asMap().entries.map((e) => Padding(
+          padding: EdgeInsets.only(bottom: context.dimensions.spacingSmall),
+          child: Row(children: [
+            Expanded(child: TextField(controller: e.value, decoration: InputDecoration(labelText: label, border: const OutlineInputBorder()))),
+            IconButton(tooltip: context.l10n.common_remove, onPressed: () => onRemove(e.key), icon: const Icon(Icons.remove_circle_outline)),
+          ]),
+        )),
       ],
     );
   }

@@ -444,14 +444,6 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       for (var i = 0; i < scenes.length; i++) scenes[i].id: i,
     };
 
-    // ⚡ Bolt: Hoist routing layout variables out of the itemBuilder loop.
-    // Why: Looking up the router via InheritedWidget causes redundant O(1) traversals
-    // on every rendered list item during scroll.
-    // Impact: Avoids GC pressure and reduces scroll stuttering.
-    final router = GoRouter.of(context);
-    final currentPath = router.routeInformationProvider.value.uri.path;
-    final isAtRoot = currentPath == '/scenes';
-
     return ListPageScaffold<Scene>(
       title: context.l10n.appTitle,
       searchHint: context.l10n.scenes_search_hint,
@@ -535,6 +527,9 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
       itemBuilder: (context, scene, memCacheWidth, memCacheHeight) {
         final index = sceneIndexMap[scene.id] ?? -1;
+        final router = GoRouter.of(context);
+        final currentPath = router.routeInformationProvider.value.uri.path;
+        final isAtRoot = currentPath == '/scenes';
 
         return SceneCard(
           scene: scene,

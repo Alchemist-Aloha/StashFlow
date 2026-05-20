@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:clock/clock.dart';
@@ -246,36 +245,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
       _players[scene.id] = player;
       _controllers[scene.id] = controller;
 
-      final feedStartRandom = ref.read(playerStateProvider).feedStartRandom;
-      Duration? startPosition;
-
-      if (feedStartRandom) {
-        final durationSeconds = scene.files.firstOrNull?.duration ?? 0.0;
-        if (durationSeconds > 0) {
-          final randomOffset = Random().nextDouble() * 0.9 * durationSeconds;
-          startPosition = Duration(milliseconds: (randomOffset * 1000).toInt());
-        }
-      }
-
-      await player.open(
-        Media(
-          choice.url,
-          httpHeaders: headers,
-          start: startPosition,
-        ),
-        play: false,
-      );
-
-      if (feedStartRandom && startPosition == null) {
-        late StreamSubscription subscription;
-        subscription = player.stream.duration.listen((duration) async {
-          if (duration.inSeconds > 0) {
-            subscription.cancel();
-            final randomOffset = Random().nextDouble() * 0.9 * duration.inSeconds;
-            await player.seek(Duration(milliseconds: (randomOffset * 1000).toInt()));
-          }
-        });
-      }
+      await player.open(Media(choice.url, httpHeaders: headers), play: false);
 
       final endBehavior = ref.read(playerStateProvider).playEndBehavior;
       await player.setPlaylistMode(
