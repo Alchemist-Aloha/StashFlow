@@ -220,24 +220,37 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
         if (merged.birthdate != null) {
           _birthdate = DateTime.tryParse(merged.birthdate!);
         }
-        if (merged.ethnicity != null)
+        if (merged.ethnicity != null) {
           _ethnicityController.text = merged.ethnicity!;
-        if (merged.country != null) _countryController.text = merged.country!;
-        if (merged.eyeColor != null)
+        }
+        if (merged.country != null) {
+          _countryController.text = merged.country!;
+        }
+        if (merged.eyeColor != null) {
           _eyeColorController.text = merged.eyeColor!;
-        if (merged.height != null) _heightController.text = merged.height!;
-        if (merged.measurements != null)
+        }
+        if (merged.height != null) {
+          _heightController.text = merged.height!;
+        }
+        if (merged.measurements != null) {
           _measurementsController.text = merged.measurements!;
-        if (merged.fakeTits != null)
+        }
+        if (merged.fakeTits != null) {
           _fakeTitsController.text = merged.fakeTits!;
-        if (merged.careerStart != null)
+        }
+        if (merged.careerStart != null) {
           _careerStartController.text = merged.careerStart!;
-        if (merged.careerEnd != null)
+        }
+        if (merged.careerEnd != null) {
           _careerEndController.text = merged.careerEnd!;
-        if (merged.tattoos != null) _tattoosController.text = merged.tattoos!;
+        }
+        if (merged.tattoos != null) {
+          _tattoosController.text = merged.tattoos!;
+        }
 
-        if (merged.piercings != null)
+        if (merged.piercings != null) {
           _piercingsController.text = merged.piercings!;
+        }
 
         if (merged.aliases != null && merged.aliases!.isNotEmpty) {
           final aliases = merged.aliases!
@@ -251,8 +264,9 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
           _aliasControllers = aliases
               .map((a) => TextEditingController(text: a))
               .toList();
-          if (_aliasControllers.isEmpty)
+          if (_aliasControllers.isEmpty) {
             _aliasControllers.add(TextEditingController());
+          }
         }
 
         if (merged.urls.isNotEmpty) {
@@ -262,8 +276,9 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
           _urlControllers = merged.urls
               .map((u) => TextEditingController(text: u))
               .toList();
-          if (_urlControllers.isEmpty)
+          if (_urlControllers.isEmpty) {
             _urlControllers.add(TextEditingController());
+          }
         }
 
         if (merged.image != null) {
@@ -701,8 +716,9 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
               (i) => setState(() {
                 _aliasControllers[i].dispose();
                 _aliasControllers.removeAt(i);
-                if (_aliasControllers.isEmpty)
+                if (_aliasControllers.isEmpty) {
                   _aliasControllers.add(TextEditingController());
+                }
               }),
             ),
             SizedBox(height: context.dimensions.spacingMedium),
@@ -714,8 +730,9 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
               (i) => setState(() {
                 _urlControllers[i].dispose();
                 _urlControllers.removeAt(i);
-                if (_urlControllers.isEmpty)
+                if (_urlControllers.isEmpty) {
                   _urlControllers.add(TextEditingController());
+                }
               }),
             ),
           ],
