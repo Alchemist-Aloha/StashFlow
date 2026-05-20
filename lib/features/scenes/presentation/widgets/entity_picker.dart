@@ -75,6 +75,7 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
+              textInputAction: TextInputAction.next,
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: context.l10n.common_search_placeholder,

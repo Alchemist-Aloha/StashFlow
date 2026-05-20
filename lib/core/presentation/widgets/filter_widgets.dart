@@ -20,7 +20,9 @@ class FilterSection extends StatelessWidget {
     return ExpansionTile(
       title: Text(title, style: context.textTheme.titleMedium),
       initiallyExpanded: initiallyExpanded,
-      childrenPadding: EdgeInsets.symmetric(horizontal: context.dimensions.spacingMedium),
+      childrenPadding: EdgeInsets.symmetric(
+        horizontal: context.dimensions.spacingMedium,
+      ),
       children: children,
     );
   }
@@ -52,33 +54,37 @@ class IntCriterionInput extends StatelessWidget {
                 value: value?.modifier ?? CriterionModifier.equals,
                 onChanged: (mod) {
                   if (mod != null) {
-                    onChanged(IntCriterion(
-                      value: value?.value ?? 0,
-                      value2: value?.value2,
-                      modifier: mod,
-                    ));
+                    onChanged(
+                      IntCriterion(
+                        value: value?.value ?? 0,
+                        value2: value?.value2,
+                        modifier: mod,
+                      ),
+                    );
                   }
                 },
                 items: CriterionModifier.values.map((mod) {
-                  return DropdownMenuItem(
-                    value: mod,
-                    child: Text(mod.name),
-                  );
+                  return DropdownMenuItem(value: mod, child: Text(mod.name));
                 }).toList(),
               ),
               SizedBox(width: context.dimensions.spacingSmall),
               Expanded(
                 child: TextField(
+                  textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(hintText: context.l10n.filter_value),
+                  decoration: InputDecoration(
+                    hintText: context.l10n.filter_value,
+                  ),
                   onChanged: (val) {
                     final intVal = int.tryParse(val);
                     if (intVal != null) {
-                      onChanged(IntCriterion(
-                        value: intVal,
-                        value2: value?.value2,
-                        modifier: value?.modifier ?? CriterionModifier.equals,
-                      ));
+                      onChanged(
+                        IntCriterion(
+                          value: intVal,
+                          value2: value?.value2,
+                          modifier: value?.modifier ?? CriterionModifier.equals,
+                        ),
+                      );
                     }
                   },
                 ),
@@ -123,24 +129,24 @@ class MultiCriterionInput<T> extends StatelessWidget {
                 value: value?.modifier ?? CriterionModifier.includes,
                 onChanged: (mod) {
                   if (mod != null) {
-                    onChanged(MultiCriterion(
-                      value: value?.value ?? [],
-                      modifier: mod,
-                    ));
+                    onChanged(
+                      MultiCriterion(value: value?.value ?? [], modifier: mod),
+                    );
                   }
                 },
-                items: [
-                  CriterionModifier.includes,
-                  CriterionModifier.excludes,
-                  CriterionModifier.includesAll,
-                  CriterionModifier.isNull,
-                  CriterionModifier.notNull,
-                ].map((mod) {
-                  return DropdownMenuItem(
-                    value: mod,
-                    child: Text(mod.name),
-                  );
-                }).toList(),
+                items:
+                    [
+                      CriterionModifier.includes,
+                      CriterionModifier.excludes,
+                      CriterionModifier.includesAll,
+                      CriterionModifier.isNull,
+                      CriterionModifier.notNull,
+                    ].map((mod) {
+                      return DropdownMenuItem(
+                        value: mod,
+                        child: Text(mod.name),
+                      );
+                    }).toList(),
               ),
               SizedBox(width: context.dimensions.spacingSmall),
               Expanded(
@@ -154,17 +160,24 @@ class MultiCriterionInput<T> extends StatelessWidget {
                         // Show picker and update
                       },
                     ),
-                    ...?value?.value.map((id) => Chip(
-                      label: Text(id),
-                      onDeleted: () {
-                        final newValue = List<String>.from(value?.value ?? []);
-                        newValue.remove(id);
-                        onChanged(MultiCriterion(
-                          value: newValue,
-                          modifier: value?.modifier ?? CriterionModifier.includes,
-                        ));
-                      },
-                    )),
+                    ...?value?.value.map(
+                      (id) => Chip(
+                        label: Text(id),
+                        onDeleted: () {
+                          final newValue = List<String>.from(
+                            value?.value ?? [],
+                          );
+                          newValue.remove(id);
+                          onChanged(
+                            MultiCriterion(
+                              value: newValue,
+                              modifier:
+                                  value?.modifier ?? CriterionModifier.includes,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -202,38 +215,51 @@ class StringCriterionInput extends StatelessWidget {
                 value: value?.modifier ?? CriterionModifier.equals,
                 onChanged: (mod) {
                   if (mod != null) {
-                    if (mod == CriterionModifier.isNull || mod == CriterionModifier.notNull) {
+                    if (mod == CriterionModifier.isNull ||
+                        mod == CriterionModifier.notNull) {
                       onChanged(StringCriterion(value: "", modifier: mod));
                     } else {
-                      onChanged(StringCriterion(
-                        value: value?.value ?? "",
-                        modifier: mod,
-                      ));
+                      onChanged(
+                        StringCriterion(
+                          value: value?.value ?? "",
+                          modifier: mod,
+                        ),
+                      );
                     }
                   }
                 },
-                items: [
-                  CriterionModifier.equals,
-                  CriterionModifier.notEquals,
-                  CriterionModifier.includes,
-                  CriterionModifier.excludes,
-                  CriterionModifier.isNull,
-                  CriterionModifier.notNull,
-                ].map((mod) {
-                  return DropdownMenuItem(value: mod, child: Text(mod.name));
-                }).toList(),
+                items:
+                    [
+                      CriterionModifier.equals,
+                      CriterionModifier.notEquals,
+                      CriterionModifier.includes,
+                      CriterionModifier.excludes,
+                      CriterionModifier.isNull,
+                      CriterionModifier.notNull,
+                    ].map((mod) {
+                      return DropdownMenuItem(
+                        value: mod,
+                        child: Text(mod.name),
+                      );
+                    }).toList(),
               ),
               SizedBox(width: context.dimensions.spacingSmall),
-              if (value?.modifier != CriterionModifier.isNull && value?.modifier != CriterionModifier.notNull)
+              if (value?.modifier != CriterionModifier.isNull &&
+                  value?.modifier != CriterionModifier.notNull)
                 Expanded(
                   child: TextFormField(
+                    textInputAction: TextInputAction.next,
                     initialValue: value?.value ?? '',
-                    decoration: InputDecoration(hintText: context.l10n.filter_value),
+                    decoration: InputDecoration(
+                      hintText: context.l10n.filter_value,
+                    ),
                     onChanged: (val) {
-                      onChanged(StringCriterion(
-                        value: val,
-                        modifier: value?.modifier ?? CriterionModifier.equals,
-                      ));
+                      onChanged(
+                        StringCriterion(
+                          value: val,
+                          modifier: value?.modifier ?? CriterionModifier.equals,
+                        ),
+                      );
                     },
                   ),
                 ),
@@ -271,41 +297,54 @@ class DateCriterionInput extends StatelessWidget {
                 value: value?.modifier ?? CriterionModifier.equals,
                 onChanged: (mod) {
                   if (mod != null) {
-                    if (mod == CriterionModifier.isNull || mod == CriterionModifier.notNull) {
+                    if (mod == CriterionModifier.isNull ||
+                        mod == CriterionModifier.notNull) {
                       onChanged(DateCriterion(value: "", modifier: mod));
                     } else {
-                      onChanged(DateCriterion(
-                        value: value?.value ?? "",
-                        value2: value?.value2,
-                        modifier: mod,
-                      ));
+                      onChanged(
+                        DateCriterion(
+                          value: value?.value ?? "",
+                          value2: value?.value2,
+                          modifier: mod,
+                        ),
+                      );
                     }
                   }
                 },
-                items: [
-                  CriterionModifier.equals,
-                  CriterionModifier.notEquals,
-                  CriterionModifier.greaterThan,
-                  CriterionModifier.lessThan,
-                  CriterionModifier.between,
-                  CriterionModifier.isNull,
-                  CriterionModifier.notNull,
-                ].map((mod) {
-                  return DropdownMenuItem(value: mod, child: Text(mod.name));
-                }).toList(),
+                items:
+                    [
+                      CriterionModifier.equals,
+                      CriterionModifier.notEquals,
+                      CriterionModifier.greaterThan,
+                      CriterionModifier.lessThan,
+                      CriterionModifier.between,
+                      CriterionModifier.isNull,
+                      CriterionModifier.notNull,
+                    ].map((mod) {
+                      return DropdownMenuItem(
+                        value: mod,
+                        child: Text(mod.name),
+                      );
+                    }).toList(),
               ),
               SizedBox(width: context.dimensions.spacingSmall),
-              if (value?.modifier != CriterionModifier.isNull && value?.modifier != CriterionModifier.notNull)
+              if (value?.modifier != CriterionModifier.isNull &&
+                  value?.modifier != CriterionModifier.notNull)
                 Expanded(
                   child: TextFormField(
+                    textInputAction: TextInputAction.next,
                     initialValue: value?.value ?? '',
-                    decoration: InputDecoration(hintText: context.l10n.common_hint_date),
+                    decoration: InputDecoration(
+                      hintText: context.l10n.common_hint_date,
+                    ),
                     onChanged: (val) {
-                      onChanged(DateCriterion(
-                        value: val,
-                        value2: value?.value2,
-                        modifier: value?.modifier ?? CriterionModifier.equals,
-                      ));
+                      onChanged(
+                        DateCriterion(
+                          value: val,
+                          value2: value?.value2,
+                          modifier: value?.modifier ?? CriterionModifier.equals,
+                        ),
+                      );
                     },
                   ),
                 ),

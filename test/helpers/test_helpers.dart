@@ -23,6 +23,7 @@ import 'package:stash_app_flutter/features/images/domain/entities/image_filter.d
 import 'package:stash_app_flutter/features/scenes/domain/models/scraper.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_performer.dart';
+import 'package:go_router/go_router.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_studio.dart';
 
@@ -344,7 +345,23 @@ Future<void> pumpTestWidget(
         supportedLocales: AppLocalizations.supportedLocales,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
-        home: child,
+        home: Builder(
+          builder: (context) {
+            return GoRouter.maybeOf(context) != null
+                ? child
+                : Router(
+                    routerDelegate: GoRouter(
+                      initialLocation: '/',
+                      routes: [
+                        GoRoute(
+                          path: '/',
+                          builder: (context, state) => child,
+                        ),
+                      ],
+                    ).routerDelegate,
+                  );
+          },
+        ),
       ),
     ),
   );
