@@ -216,6 +216,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
   void _showMenu(BuildContext context, WidgetRef ref) {
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       backgroundColor: context.colors.surface,
       shape: const RoundedRectangleBorder(
