@@ -1349,11 +1349,12 @@ class AppLocalizationsRu extends AppLocalizations {
       'Если отключено, воспроизведение использует paths.stream напрямую';
 
   @override
-  String get settings_playback_feed_random => 'Start Feed from random position';
+  String get settings_playback_feed_random =>
+      'Начать ленту со случайной позиции';
 
   @override
   String get settings_playback_feed_random_subtitle =>
-      'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length';
+      'Воспроизводит видеоленту со случайной позиции';
 
   @override
   String get settings_playback_end_behavior => 'Поведение в конце игры';
@@ -2354,5 +2355,18 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String details_failed_load_galleries(String error) {
     return 'Не удалось загрузить галереи: $error';
+  }
+
+  @override
+  String nStars(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count звезд',
+      many: '$count звезд',
+      few: '$count звезды',
+      one: '1 звезда',
+    );
+    return '$_temp0';
   }
 }

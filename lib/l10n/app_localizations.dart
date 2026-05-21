@@ -4355,6 +4355,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to load galleries: {error}'**
   String details_failed_load_galleries(String error);
+
+  /// No description provided for @nStars.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 Star} other{{count} Stars}}'**
+  String nStars(num count);
 }
 
 class _AppLocalizationsDelegate

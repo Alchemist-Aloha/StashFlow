@@ -849,5 +849,15 @@
   "performer_filters": "出演者フィルター",
   "update_available": "StashFlowの新しいバージョン ({version}) が利用可能です。",
   "details_failed_update_favorite": "お気に入りの更新に失敗しました: {error}",
-  "details_failed_load_galleries": "ギャラリーの読み込みに失敗しました: {error}"
+  "details_failed_load_galleries": "ギャラリーの読み込みに失敗しました: {error}",
+  "settings_playback_feed_random": "ランダムな位置からフィードを開始",
+  "settings_playback_feed_random_subtitle": "ランダムな位置からビデオフィードを再生します",
+  "nStars": "{count, plural, =1{1星} other{{count}星}}",
+  "@nStars": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  }
 }

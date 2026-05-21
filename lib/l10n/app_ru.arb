@@ -849,5 +849,15 @@
   "performer_filters": "Фильтры исполнителей",
   "update_available": "Доступна новая версия StashFlow ({version}).",
   "details_failed_update_favorite": "Не удалось обновить избранное: {error}",
-  "details_failed_load_galleries": "Не удалось загрузить галереи: {error}"
+  "details_failed_load_galleries": "Не удалось загрузить галереи: {error}",
+  "settings_playback_feed_random": "Начать ленту со случайной позиции",
+  "settings_playback_feed_random_subtitle": "Воспроизводит видеоленту со случайной позиции",
+  "nStars": "{count, plural, =1{1 звезда} few{{count} звезды} many{{count} звезд} other{{count} звезд}}",
+  "@nStars": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  }
 }

@@ -1312,11 +1312,10 @@ class AppLocalizationsJa extends AppLocalizations {
       'オフの場合、再生は直接paths.streamを使用します';
 
   @override
-  String get settings_playback_feed_random => 'Start Feed from random position';
+  String get settings_playback_feed_random => 'ランダムな位置からフィードを開始';
 
   @override
-  String get settings_playback_feed_random_subtitle =>
-      'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length';
+  String get settings_playback_feed_random_subtitle => 'ランダムな位置からビデオフィードを再生します';
 
   @override
   String get settings_playback_end_behavior => '再生終了時の動作';
@@ -2276,5 +2275,16 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String details_failed_load_galleries(String error) {
     return 'ギャラリーの読み込みに失敗しました: $error';
+  }
+
+  @override
+  String nStars(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count星',
+      one: '1星',
+    );
+    return '$_temp0';
   }
 }

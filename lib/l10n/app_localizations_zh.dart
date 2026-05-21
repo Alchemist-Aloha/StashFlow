@@ -1298,11 +1298,10 @@ class AppLocalizationsZh extends AppLocalizations {
       '关闭时，播放将直接使用 paths.stream';
 
   @override
-  String get settings_playback_feed_random => 'Start Feed from random position';
+  String get settings_playback_feed_random => '从随机位置开始动态';
 
   @override
-  String get settings_playback_feed_random_subtitle =>
-      'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length';
+  String get settings_playback_feed_random_subtitle => '从随机位置播放视频动态';
 
   @override
   String get settings_playback_end_behavior => '播放结束行为';
@@ -2254,6 +2253,17 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String details_failed_load_galleries(String error) {
     return '加载图库失败: $error';
+  }
+
+  @override
+  String nStars(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count星',
+      one: '1星',
+    );
+    return '$_temp0';
   }
 }
 
@@ -3551,6 +3561,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
       '关闭时，播放将直接使用 paths.stream';
 
   @override
+  String get settings_playback_feed_random => '从随机位置开始动态';
+
+  @override
+  String get settings_playback_feed_random_subtitle => '从随机位置播放视频动态';
+
+  @override
   String get settings_playback_end_behavior => '播放结束行为';
 
   @override
@@ -4500,6 +4516,17 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String details_failed_load_galleries(String error) {
     return '加载图库失败: $error';
+  }
+
+  @override
+  String nStars(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count星',
+      one: '1星',
+    );
+    return '$_temp0';
   }
 }
 
@@ -5800,6 +5827,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       '關閉時，播放將直接使用 paths.stream';
 
   @override
+  String get settings_playback_feed_random => '從隨機位置開始動態';
+
+  @override
+  String get settings_playback_feed_random_subtitle => '從隨機位置播放影片動態';
+
+  @override
   String get settings_playback_end_behavior => '播放結束行為';
 
   @override
@@ -6750,5 +6783,16 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String details_failed_load_galleries(String error) {
     return '載入圖庫失敗: $error';
+  }
+
+  @override
+  String nStars(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count星',
+      one: '1星',
+    );
+    return '$_temp0';
   }
 }

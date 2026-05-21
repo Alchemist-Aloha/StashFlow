@@ -849,5 +849,15 @@
   "performer_filters": "출연자 필터",
   "update_available": "StashFlow의 새 버전 ({version})을(를) 사용할 수 있습니다.",
   "details_failed_update_favorite": "즐겨찾기 업데이트 실패: {error}",
-  "details_failed_load_galleries": "갤러리 로드 실패: {error}"
+  "details_failed_load_galleries": "갤러리 로드 실패: {error}",
+  "settings_playback_feed_random": "무작위 위치에서 피드 시작",
+  "settings_playback_feed_random_subtitle": "무작위 위치에서 비디오 피드를 재생합니다",
+  "nStars": "{count, plural, =1{별 1개} other{별 {count}개}}",
+  "@nStars": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  }
 }

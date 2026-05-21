@@ -950,5 +950,13 @@
         "type": "String"
       }
     }
+  },
+  "nStars": "{count, plural, =1{1 Star} other{{count} Stars}}",
+  "@nStars": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
   }
 }

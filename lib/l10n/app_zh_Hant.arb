@@ -835,5 +835,15 @@
   "details_failed_update_favorite": "更新收藏失敗: {error}",
   "details_failed_load_galleries": "載入圖庫失敗: {error}",
   "common_select": "選擇 {label}",
-  "common_saved_to": "儲存至 {path}"
+  "common_saved_to": "儲存至 {path}",
+  "settings_playback_feed_random": "從隨機位置開始動態",
+  "settings_playback_feed_random_subtitle": "從隨機位置播放影片動態",
+  "nStars": "{count, plural, =1{1星} other{{count}星}}",
+  "@nStars": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  }
 }

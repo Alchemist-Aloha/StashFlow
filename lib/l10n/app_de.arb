@@ -870,5 +870,15 @@
   "performer_filters": "Darstellerfilter",
   "update_available": "Eine neue Version von StashFlow ({version}) ist verfügbar.",
   "details_failed_update_favorite": "Favorit konnte nicht aktualisiert werden: {error}",
-  "details_failed_load_galleries": "Fehler beim Laden der Galerien: {error}"
+  "details_failed_load_galleries": "Fehler beim Laden der Galerien: {error}",
+  "settings_playback_feed_random": "Feed ab zufälliger Position starten",
+  "settings_playback_feed_random_subtitle": "Spielt den Video-Feed ab einer zufälligen Position ab",
+  "nStars": "{count, plural, =1{1 Stern} other{{count} Sterne}}",
+  "@nStars": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  }
 }

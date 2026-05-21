@@ -2325,4 +2325,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String details_failed_load_galleries(String error) {
     return 'Failed to load galleries: $error';
   }
+
+  @override
+  String nStars(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Stars',
+      one: '1 Star',
+    );
+    return '$_temp0';
+  }
 }

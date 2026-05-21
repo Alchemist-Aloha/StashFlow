@@ -849,5 +849,15 @@
   "performer_filters": "Filtros de artistas",
   "update_available": "Una nueva versión de StashFlow ({version}) está disponible.",
   "details_failed_update_favorite": "Error al actualizar favorito: {error}",
-  "details_failed_load_galleries": "Error al cargar galerías: {error}"
+  "details_failed_load_galleries": "Error al cargar galerías: {error}",
+  "settings_playback_feed_random": "Iniciar feed desde una posición aleatoria",
+  "settings_playback_feed_random_subtitle": "Reproduce el feed de video desde una posición aleatoria",
+  "nStars": "{count, plural, =1{1 Estrella} other{{count} Estrellas}}",
+  "@nStars": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  }
 }

@@ -849,5 +849,15 @@
   "performer_filters": "演员筛选",
   "update_available": "StashFlow的更新版本 ({version}) 已经发布。",
   "details_failed_update_favorite": "更新收藏失败: {error}",
-  "details_failed_load_galleries": "加载图库失败: {error}"
+  "details_failed_load_galleries": "加载图库失败: {error}",
+  "settings_playback_feed_random": "从随机位置开始动态",
+  "settings_playback_feed_random_subtitle": "从随机位置播放视频动态",
+  "nStars": "{count, plural, =1{1星} other{{count}星}}",
+  "@nStars": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  }
 }

@@ -1356,11 +1356,12 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wenn deaktiviert, wird die Wiedergabe direkt über paths.stream ausgeführt';
 
   @override
-  String get settings_playback_feed_random => 'Start Feed from random position';
+  String get settings_playback_feed_random =>
+      'Feed ab zufälliger Position starten';
 
   @override
   String get settings_playback_feed_random_subtitle =>
-      'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length';
+      'Spielt den Video-Feed ab einer zufälligen Position ab';
 
   @override
   String get settings_playback_end_behavior => 'Endeverhalten abspielen';
@@ -2361,5 +2362,16 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String details_failed_load_galleries(String error) {
     return 'Fehler beim Laden der Galerien: $error';
+  }
+
+  @override
+  String nStars(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Sterne',
+      one: '1 Stern',
+    );
+    return '$_temp0';
   }
 }
