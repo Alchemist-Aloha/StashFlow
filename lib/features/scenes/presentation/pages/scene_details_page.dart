@@ -24,6 +24,7 @@ import '../../../studios/presentation/providers/studio_media_provider.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/video_player_provider.dart';
+import 'scene_info_page.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../setup/presentation/providers/scrape_customization_provider.dart';
@@ -106,6 +107,19 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     }
 
     context.push('/scenes/scene/${randomScene.id}', extra: true);
+  }
+
+  void _showSceneDetailsSheet(Scene scene) {
+    showModalBottomSheet(
+      context: context,
+      useRootNavigator: true,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SceneInfoPage(scene: scene),
+    );
   }
 
   Future<void> _saveVideoToGallery(Scene scene) async {
@@ -257,6 +271,14 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       appBar: AppBar(
         title: Text(context.l10n.details_scene),
         actions: [
+          sceneAsync.maybeWhen(
+            data: (scene) => IconButton(
+              tooltip: context.l10n.common_more,
+              icon: const Icon(Icons.info_outline_rounded),
+              onPressed: () => _showSceneDetailsSheet(scene),
+            ),
+            orElse: () => const SizedBox.shrink(),
+          ),
           if (!kIsWeb)
             sceneAsync.maybeWhen(
               data: (scene) => IconButton(
