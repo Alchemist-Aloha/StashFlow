@@ -114,6 +114,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       context: context,
       useRootNavigator: true,
       isScrollControlled: true,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * 0.88,
+      ),
       backgroundColor: Theme.of(context).colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),

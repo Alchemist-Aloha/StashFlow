@@ -6,6 +6,7 @@ import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart'
 import 'package:stash_app_flutter/core/presentation/widgets/stash_image.dart';
 import '../../domain/entities/scene.dart';
 import '../../../../core/utils/l10n_extensions.dart';
+import '../providers/scene_details_provider.dart';
 
 class SceneInfoPage extends ConsumerStatefulWidget {
   const SceneInfoPage({required this.scene, super.key});
@@ -18,6 +19,12 @@ class SceneInfoPage extends ConsumerStatefulWidget {
 
 class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
   bool _showAllTags = false;
+
+  void _closeAndNavigate(String route) {
+    final router = GoRouter.of(context);
+    Navigator.of(context).pop();
+    router.push(route);
+  }
 
   String _formatDuration(double? seconds) {
     if (seconds == null) return '--:--';
@@ -45,7 +52,11 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    final scene = widget.scene;
+    final sceneAsync = ref.watch(sceneDetailsProvider(widget.scene.id));
+    final scene = sceneAsync.maybeWhen(
+      data: (value) => value,
+      orElse: () => widget.scene,
+    );
     final theme = Theme.of(context);
     final mediaHeaders = ref.watch(mediaHeadersProvider);
     final file = scene.files.isNotEmpty ? scene.files.first : null;
@@ -116,7 +127,7 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                   subtitle: scene.studioId != null ? Text('ID: ${scene.studioId}') : null,
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: scene.studioId != null && scene.studioId!.trim().isNotEmpty
-                      ? () => context.push('/studios/studio/${scene.studioId}')
+                      ? () => _closeAndNavigate('/studios/studio/${scene.studioId}')
                       : null,
                 ),
               ),
@@ -157,7 +168,7 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                       ),
                       trailing: const Icon(Icons.chevron_right_rounded),
                       onTap: performerId != null && performerId.trim().isNotEmpty
-                          ? () => context.push('/performers/performer/$performerId')
+                          ? () => _closeAndNavigate('/performers/performer/$performerId')
                           : null,
                     );
                   }),
@@ -185,7 +196,7 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                     return ActionChip(
                       label: Text(tagName),
                       onPressed: tagId != null && tagId.trim().isNotEmpty
-                          ? () => context.push('/tags/tag/$tagId')
+                          ? () => _closeAndNavigate('/tags/tag/$tagId')
                           : null,
                     );
                   }),

@@ -218,6 +218,9 @@ class _SceneCardState extends ConsumerState<SceneCard> {
       context: context,
       useRootNavigator: true,
       isScrollControlled: true,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * 0.88,
+      ),
       backgroundColor: context.colors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
