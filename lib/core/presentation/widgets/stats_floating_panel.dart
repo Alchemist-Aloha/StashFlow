@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/stats_provider.dart';
@@ -75,10 +76,7 @@ class StatsFloatingPanel extends ConsumerWidget {
               Flexible(
                 child: statsAsync.when(
                   data: (stats) => _buildStatsList(context, stats, dims, l10n),
-                  loading: () => Padding(
-                    padding: EdgeInsets.all(dims.spacingLarge * 2),
-                    child: const Center(child: CircularProgressIndicator()),
-                  ),
+                  loading: () => _buildLoadingStatsList(context, dims, l10n),
                   error: (err, stack) => Padding(
                     padding: EdgeInsets.all(dims.spacingLarge),
                     child: Text(
@@ -234,6 +232,78 @@ class StatsFloatingPanel extends ConsumerWidget {
           color: colorScheme.tertiary,
         ),
       ],
+    );
+  }
+
+  Widget _buildLoadingStatsList(
+    BuildContext context,
+    AppDimensions dims,
+    AppLocalizations l10n,
+  ) {
+    return Skeletonizer(
+      enabled: true,
+      child: ListView(
+        shrinkWrap: true,
+        padding: EdgeInsets.symmetric(
+          horizontal: dims.spacingMedium,
+          vertical: dims.spacingSmall,
+        ),
+        children: [
+          _buildSectionTitle(context, l10n.stats_content),
+          const _StatItem(
+            icon: Icons.movie_filter_rounded,
+            label: 'Scenes',
+            value: '000',
+            subtitle: '0.00 GB',
+          ),
+          const _StatItem(
+            icon: Icons.photo_library_rounded,
+            label: 'Images',
+            value: '000',
+            subtitle: '0.00 GB',
+          ),
+          const _StatItem(
+            icon: Icons.auto_stories_rounded,
+            label: 'Galleries',
+            value: '000',
+          ),
+          SizedBox(height: dims.spacingSmall),
+          _buildSectionTitle(context, l10n.stats_organization),
+          const _StatItem(
+            icon: Icons.face_retouching_natural_rounded,
+            label: 'Performers',
+            value: '000',
+          ),
+          const _StatItem(
+            icon: Icons.storefront_rounded,
+            label: 'Studios',
+            value: '000',
+          ),
+          const _StatItem(
+            icon: Icons.workspaces_rounded,
+            label: 'Groups',
+            value: '000',
+          ),
+          const _StatItem(
+            icon: Icons.local_offer_rounded,
+            label: 'Tags',
+            value: '000',
+          ),
+          SizedBox(height: dims.spacingSmall),
+          _buildSectionTitle(context, l10n.stats_activity),
+          const _StatItem(
+            icon: Icons.play_lesson_rounded,
+            label: 'Total Plays',
+            value: '000',
+            subtitle: '0 unique items',
+          ),
+          const _StatItem(
+            icon: Icons.favorite_rounded,
+            label: 'Total O Count',
+            value: '000',
+          ),
+        ],
+      ),
     );
   }
 
