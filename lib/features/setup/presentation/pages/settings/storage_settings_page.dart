@@ -148,6 +148,9 @@ class StorageSettingsPage extends ConsumerWidget {
                     if (v != null) {
                       prefs.setInt('max_image_cache_size_mb', v);
                       ref.invalidate(maxImageCacheSizeProvider);
+                      service.enforceImageCacheLimit(v).then((_) {
+                        ref.invalidate(cacheSizesProvider);
+                      });
                     }
                   },
                 ),
@@ -165,6 +168,9 @@ class StorageSettingsPage extends ConsumerWidget {
                     if (v != null) {
                       prefs.setInt('max_video_cache_size_mb', v);
                       ref.invalidate(maxVideoCacheSizeProvider);
+                      service.enforceVideoCacheLimit(v).then((_) {
+                        ref.invalidate(cacheSizesProvider);
+                      });
                     }
                   },
                 ),
