@@ -173,6 +173,21 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
       await notifier.updateProfile(profile);
     }
 
+    final activeProfile = ref.read(activeProfileProvider);
+    final isSavedProfileActive = activeProfile?.id == id;
+    if (isSavedProfileActive) {
+      final authNotifier = ref.read(authProvider.notifier);
+      await authNotifier.setMode(_authMode);
+      await authNotifier.updateUsername(_usernameController.text);
+      await authNotifier.updatePassword(_passwordController.text);
+
+      if (_authMode == AuthMode.password) {
+        await authNotifier.login();
+      } else {
+        await authNotifier.refreshCookieHeader();
+      }
+    }
+
     if (mounted) {
       Navigator.of(context).pop();
     }
