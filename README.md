@@ -4,6 +4,8 @@
 
 A modern, multi-platform client for your **Stash** server. Designed for seamless browsing, effortless discovery, and high-quality playback across **Android**, **Desktop** (Windows, macOS, Linux), and the [**Web**](https://alchemist-aloha.github.io/StashFlow/).
 
+The program is mainly tested with Android and Windows builds, and the web version is a demo with limited features due to browser restrictions. For the best experience, use the native Android or Desktop versions. Testing and feedback on all platforms are welcome!
+
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-1.17.1-green.svg)](pubspec.yaml)
 
