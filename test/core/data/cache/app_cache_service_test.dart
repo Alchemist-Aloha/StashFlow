@@ -71,8 +71,6 @@ void main() {
       final oldVideo = File('${videoDir.path}/old.webm')
         ..writeAsBytesSync(List<int>.filled(1024 * 1024, 3));
       await Future<void>.delayed(const Duration(milliseconds: 20));
-      final newVideo = File('${videoDir.path}/new.mov')
-        ..writeAsBytesSync(List<int>.filled(1024 * 1024, 4));
 
       await service.enforceVideoCacheLimit(1);
 
