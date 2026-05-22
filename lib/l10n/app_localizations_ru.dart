@@ -2364,4 +2364,74 @@ class AppLocalizationsRu extends AppLocalizations {
   String details_failed_load_galleries(String error) {
     return 'Не удалось загрузить галереи: $error';
   }
+
+  @override
+  String get scene_info_id => 'Идентификатор сцены';
+
+  @override
+  String get scene_info_original_file_path => 'Исходный путь к файлу';
+
+  @override
+  String get scene_info_resume_time => 'Время возобновления';
+
+  @override
+  String get scene_info_play_duration => 'Продолжительность воспроизведения';
+
+  @override
+  String get scene_info_urls => 'URL-адреса';
+
+  @override
+  String get scene_info_resolution => 'Разрешение';
+
+  @override
+  String get scene_info_bitrate => 'Битрейт';
+
+  @override
+  String get scene_info_frame_rate => 'Частота кадров';
+
+  @override
+  String get scene_info_format => 'Формат';
+
+  @override
+  String get scene_info_video_codec => 'Видеокодек';
+
+  @override
+  String get scene_info_audio_codec => 'Аудиокодек';
+
+  @override
+  String get scene_info_stream => 'Транслировать';
+
+  @override
+  String get scene_info_preview => 'Предварительный просмотр';
+
+  @override
+  String get scene_info_screenshot => 'Скриншот';
+
+  @override
+  String get scene_info_caption => 'Подпись';
+
+  @override
+  String get scene_info_vtt => 'ВТТ';
+
+  @override
+  String get scene_info_sprite => 'Спрайт';
+
+  @override
+  String get scene_info_technical => 'Технический';
+
+  @override
+  String scene_studio_id(String id) {
+    return 'Идентификатор: $id';
+  }
+
+  @override
+  String scene_rating_stars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Звезды',
+      one: '1 звезда',
+    );
+    return '$_temp0';
+  }
 }

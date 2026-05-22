@@ -2388,4 +2388,74 @@ class AppLocalizationsIt extends AppLocalizations {
   String details_failed_load_galleries(String error) {
     return 'Impossibile caricare le gallerie: $error';
   }
+
+  @override
+  String get scene_info_id => 'Identificativo della scena';
+
+  @override
+  String get scene_info_original_file_path => 'Percorso file originale';
+
+  @override
+  String get scene_info_resume_time => 'Riprendi tempo';
+
+  @override
+  String get scene_info_play_duration => 'Durata della riproduzione';
+
+  @override
+  String get scene_info_urls => 'URL';
+
+  @override
+  String get scene_info_resolution => 'Risoluzione';
+
+  @override
+  String get scene_info_bitrate => 'Velocità in bit';
+
+  @override
+  String get scene_info_frame_rate => 'Frequenza fotogrammi';
+
+  @override
+  String get scene_info_format => 'Formato';
+
+  @override
+  String get scene_info_video_codec => 'Codec video';
+
+  @override
+  String get scene_info_audio_codec => 'Codec audio';
+
+  @override
+  String get scene_info_stream => 'Flusso';
+
+  @override
+  String get scene_info_preview => 'Anteprima';
+
+  @override
+  String get scene_info_screenshot => 'Schermata';
+
+  @override
+  String get scene_info_caption => 'Didascalia';
+
+  @override
+  String get scene_info_vtt => 'VTT';
+
+  @override
+  String get scene_info_sprite => 'Folletto';
+
+  @override
+  String get scene_info_technical => 'Tecnico';
+
+  @override
+  String scene_studio_id(String id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String scene_rating_stars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Stelle',
+      one: '1 stella',
+    );
+    return '$_temp0';
+  }
 }
