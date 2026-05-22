@@ -335,6 +335,14 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
     final scenesAsync = ref.watch(sceneListProvider);
     final playerState = ref.watch(playerStateProvider);
 
+    // ⚡ Bolt: Hoist routing layout variables out of the itemBuilder loop.
+    // Why: Looking up the router via InheritedWidget causes redundant O(1) traversals
+    // on every rendered list item during scroll.
+    // Impact: Avoids GC pressure and reduces scroll stuttering.
+    final router = GoRouter.of(context);
+    final currentPath = router.routeInformationProvider.value.uri.path;
+    final isAtRoot = currentPath == '/scenes';
+
     return scenesAsync.when(
       data: (scenes) {
         if (scenes.isEmpty) {
@@ -394,11 +402,6 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
               } else {
                 controller = _controllers[scene.id];
               }
-
-              final router = GoRouter.of(context);
-              final currentPath =
-                  router.routeInformationProvider.value.uri.path;
-              final isAtRoot = currentPath == '/scenes';
 
               return TiktokSceneItem(
                 scene: scene,
