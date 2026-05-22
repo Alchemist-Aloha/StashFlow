@@ -106,8 +106,10 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
         }
 
         final cookie = await service.cookieHeaderFor(requestUri: endpointUri);
-        final secureStorage = ref.read(secureStorageProvider);
-        await secureStorage.write(key: 'profile_test_cookie_header', value: cookie);
+        if (cookie.isEmpty) {
+          setState(() => _testResult = 'Error: Login failed. Check credentials.');
+          return;
+        }
       }
 
       final tempProfile = ServerProfile(

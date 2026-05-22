@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
@@ -89,7 +88,7 @@ Future<void> main() async {
   AppLogStore.instance.isEnabled =
       sharedPreferences.getBool('enable_debug_logging') ?? false;
 
-  const secureStorage = FlutterSecureStorage();
+  final secureStorage = AppSecureStorage(sharedPreferences: sharedPreferences);
 
   // Migrate API key from SharedPreferences to Secure Storage if needed.
   if (sharedPreferences.containsKey('server_api_key')) {
