@@ -18,7 +18,7 @@ class SceneInfoPage extends ConsumerStatefulWidget {
 }
 
 class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
-  bool _showAllTags = false;
+  final ValueNotifier<bool> _showAllTags = ValueNotifier<bool>(false);
 
   void _closeAndNavigate(String route) {
     final router = GoRouter.of(context);
@@ -51,6 +51,12 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
   }
 
   @override
+  void dispose() {
+    _showAllTags.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final sceneAsync = ref.watch(sceneDetailsProvider(widget.scene.id));
     final scene = sceneAsync.maybeWhen(
@@ -61,15 +67,10 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
     final mediaHeaders = ref.watch(mediaHeadersProvider);
     final file = scene.files.isNotEmpty ? scene.files.first : null;
     final hasDetails = (scene.details ?? '').trim().isNotEmpty;
-    final allTagCount = scene.tagNames.length;
-    final visibleTagCount = _showAllTags ? allTagCount : allTagCount.clamp(0, 12);
-
     return SafeArea(
-      child: SingleChildScrollView(
+      child: ListView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        children: [
             Row(
               children: [
                 Expanded(
@@ -133,73 +134,88 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
               ),
             if (scene.performerNames.isNotEmpty) ...[
               const SizedBox(height: 12),
-              _SectionCard(
-                title: context.l10n.performers_title,
-                child: Column(
-                  children: List.generate(scene.performerNames.length, (index) {
-                    final performerName = scene.performerNames[index];
-                    final performerId = index < scene.performerIds.length
-                        ? scene.performerIds[index]
-                        : null;
-                    final performerImagePath = index < scene.performerImagePaths.length
-                        ? scene.performerImagePaths[index]
-                        : null;
-                    final hasImage = performerImagePath != null &&
-                        performerImagePath.trim().isNotEmpty &&
-                        !performerImagePath.contains('default=true');
-                    return ListTile(
-                      dense: true,
-                      contentPadding: EdgeInsets.zero,
-                      minLeadingWidth: 36,
-                      leading: hasImage
-                          ? CircleAvatar(
-                              radius: 14,
-                              backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                              foregroundImage: StashImage.provider(
-                                ref,
-                                performerImagePath,
-                                headers: mediaHeaders,
-                              ),
-                              child: const Icon(Icons.person, size: 14),
-                            )
-                          : const CircleAvatar(radius: 14, child: Icon(Icons.person, size: 14)),
-                      title: Text(
-                        performerName.isNotEmpty ? performerName : context.l10n.common_unknown,
-                      ),
-                      trailing: const Icon(Icons.chevron_right_rounded),
-                      onTap: performerId != null && performerId.trim().isNotEmpty
-                          ? () => _closeAndNavigate('/performers/performer/$performerId')
-                          : null,
-                    );
-                  }),
+              RepaintBoundary(
+                child: _SectionCard(
+                  title: context.l10n.performers_title,
+                  child: Column(
+                    children: List.generate(scene.performerNames.length, (index) {
+                      final performerName = scene.performerNames[index];
+                      final performerId = index < scene.performerIds.length
+                          ? scene.performerIds[index]
+                          : null;
+                      final performerImagePath = index < scene.performerImagePaths.length
+                          ? scene.performerImagePaths[index]
+                          : null;
+                      final hasImage = performerImagePath != null &&
+                          performerImagePath.trim().isNotEmpty &&
+                          !performerImagePath.contains('default=true');
+                      return ListTile(
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                        minLeadingWidth: 36,
+                        leading: hasImage
+                            ? CircleAvatar(
+                                radius: 14,
+                                backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                                foregroundImage: StashImage.provider(
+                                  ref,
+                                  performerImagePath,
+                                  headers: mediaHeaders,
+                                ),
+                                child: const Icon(Icons.person, size: 14),
+                              )
+                            : const CircleAvatar(radius: 14, child: Icon(Icons.person, size: 14)),
+                        title: Text(
+                          performerName.isNotEmpty ? performerName : context.l10n.common_unknown,
+                        ),
+                        trailing: const Icon(Icons.chevron_right_rounded),
+                        onTap: performerId != null && performerId.trim().isNotEmpty
+                            ? () => _closeAndNavigate('/performers/performer/$performerId')
+                            : null,
+                      );
+                    }),
+                  ),
                 ),
               ),
             ],
             if (scene.tagNames.isNotEmpty) ...[
               const SizedBox(height: 12),
-              _SectionCard(
-                title: context.l10n.details_tags,
-                trailing: scene.tagNames.length > 12
-                    ? TextButton(
-                        onPressed: () => setState(() => _showAllTags = !_showAllTags),
-                        child: Text(
-                          _showAllTags ? context.l10n.details_show_less : context.l10n.details_show_more,
-                        ),
-                      )
-                    : null,
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: List.generate(visibleTagCount, (index) {
-                    final tagName = scene.tagNames[index];
-                    final tagId = index < scene.tagIds.length ? scene.tagIds[index] : null;
-                    return ActionChip(
-                      label: Text(tagName),
-                      onPressed: tagId != null && tagId.trim().isNotEmpty
-                          ? () => _closeAndNavigate('/tags/tag/$tagId')
+              RepaintBoundary(
+                child: ValueListenableBuilder<bool>(
+                  valueListenable: _showAllTags,
+                  builder: (context, showAllTags, _) {
+                    final allTagCount = scene.tagNames.length;
+                    final visibleTagCount = showAllTags
+                        ? allTagCount
+                        : allTagCount.clamp(0, 12);
+                    return _SectionCard(
+                      title: context.l10n.details_tags,
+                      trailing: scene.tagNames.length > 12
+                          ? TextButton(
+                              onPressed: () => _showAllTags.value = !showAllTags,
+                              child: Text(
+                                showAllTags
+                                    ? context.l10n.details_show_less
+                                    : context.l10n.details_show_more,
+                              ),
+                            )
                           : null,
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: List.generate(visibleTagCount, (index) {
+                          final tagName = scene.tagNames[index];
+                          final tagId = index < scene.tagIds.length ? scene.tagIds[index] : null;
+                          return ActionChip(
+                            label: Text(tagName),
+                            onPressed: tagId != null && tagId.trim().isNotEmpty
+                                ? () => _closeAndNavigate('/tags/tag/$tagId')
+                                : null,
+                          );
+                        }),
+                      ),
                     );
-                  }),
+                  },
                 ),
               ),
             ],
@@ -210,13 +226,21 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _MetaRow(label: 'Scene ID', value: scene.id),
-                  _MetaRow(label: 'Original File Path', value: scene.path?.trim().isNotEmpty == true ? scene.path! : '--'),
+                  _MetaRow(
+                    label: 'Original File Path',
+                    value: scene.path?.trim().isNotEmpty == true ? scene.path! : '--',
+                    selectable: true,
+                  ),
                   _MetaRow(label: 'Resume Time', value: _formatDuration(scene.resumeTime)),
                   _MetaRow(label: 'Play Duration', value: _formatDuration(scene.playDuration)),
-                  _MetaRow(label: 'URLs', value: scene.urls.isNotEmpty ? scene.urls.join('\n') : '--'),
+                  _MetaRow(
+                    label: 'URLs',
+                    value: scene.urls.isNotEmpty ? scene.urls.join('\n') : '--',
+                    selectable: true,
+                  ),
                   if (hasDetails) ...[
                     const SizedBox(height: 8),
-                    Text(scene.details!, style: theme.textTheme.bodyMedium),
+                    SelectableText(scene.details!, style: theme.textTheme.bodyMedium),
                   ],
                 ],
               ),
@@ -242,8 +266,7 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                 ],
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -305,10 +328,15 @@ class _InfoChip extends StatelessWidget {
 }
 
 class _MetaRow extends StatelessWidget {
-  const _MetaRow({required this.label, required this.value});
+  const _MetaRow({
+    required this.label,
+    required this.value,
+    this.selectable = false,
+  });
 
   final String label;
   final String value;
+  final bool selectable;
 
   @override
   Widget build(BuildContext context) {
@@ -329,10 +357,15 @@ class _MetaRow extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: SelectableText(
-              value,
-              style: theme.textTheme.bodySmall,
-            ),
+            child: selectable
+                ? SelectableText(
+                    value,
+                    style: theme.textTheme.bodySmall,
+                  )
+                : Text(
+                    value,
+                    style: theme.textTheme.bodySmall,
+                  ),
           ),
         ],
       ),
