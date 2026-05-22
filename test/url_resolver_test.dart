@@ -92,6 +92,35 @@ void main() {
       final result = appendApiKey(url, 'key');
       expect(result, 'not-a-url?apikey=key');
     });
+
+    test('overwrites existing apikey query value', () {
+      final url = 'http://example.com/image?apikey=old&x=1';
+      final result = appendApiKey(url, 'new');
+      expect(result, contains('apikey=new'));
+      expect(result, contains('x=1'));
+      expect(result, isNot(contains('apikey=old')));
+    });
+  });
+
+  group('appendBasicAuth', () {
+    test('returns original for empty credentials', () {
+      const url = 'https://example.com/scene/1';
+      expect(appendBasicAuth(url, '', ''), url);
+    });
+
+    test('injects and encodes user info when credentials provided', () {
+      const url = 'https://example.com/scene/1?q=a';
+      final result = appendBasicAuth(url, 'alice@example.com', 'p@ss word');
+      expect(
+        result,
+        'https://alice%40example.com:p%40ss%20word@example.com/scene/1?q=a',
+      );
+    });
+
+    test('returns original value for unparseable url', () {
+      const url = '://bad url';
+      expect(appendBasicAuth(url, 'u', 'p'), url);
+    });
   });
 
   group('applyWebMediaAuthFallback', () {
@@ -142,6 +171,30 @@ void main() {
         graphqlEndpoint: endpoint,
       );
       expect(result, url);
+    });
+
+    test('basic mode injects basic auth when credentials are provided', () {
+      const url = 'https://stash.host.tld/scene/11/stream';
+      final result = applyWebMediaAuthFallback(
+        url: url,
+        authMode: AuthMode.basic,
+        apiKey: '',
+        username: 'alice',
+        password: 'secret',
+        graphqlEndpoint: endpoint,
+      );
+      expect(result, 'https://alice:secret@stash.host.tld/scene/11/stream');
+    });
+
+    test('trims input url and api key', () {
+      const url = '  https://stash.host.tld/image/1  ';
+      final result = applyWebMediaAuthFallback(
+        url: url,
+        authMode: AuthMode.password,
+        apiKey: '  key123  ',
+        graphqlEndpoint: endpoint,
+      );
+      expect(result, 'https://stash.host.tld/image/1?apikey=key123');
     });
   });
 }

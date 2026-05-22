@@ -134,5 +134,81 @@ void main() {
       final state = container.read(playbackQueueProvider);
       expect(state.currentIndex, 1);
     });
+
+    test('setIndex ignores negative and out-of-range indexes', () {
+      final container = createContainer();
+      final scene1 = mockScene(id: '1', title: 'S1');
+      final scene2 = mockScene(id: '2', title: 'S2');
+      container.read(playbackQueueProvider.notifier).setSequence([
+        scene1,
+        scene2,
+      ], 0);
+
+      container.read(playbackQueueProvider.notifier).setIndex(-1);
+      expect(container.read(playbackQueueProvider).currentIndex, 0);
+
+      container.read(playbackQueueProvider.notifier).setIndex(99);
+      expect(container.read(playbackQueueProvider).currentIndex, 0);
+    });
+
+    test('findAndSetIndex updates index only when scene id exists', () {
+      final container = createContainer();
+      final scene1 = mockScene(id: '1', title: 'S1');
+      final scene2 = mockScene(id: '2', title: 'S2');
+      container.read(playbackQueueProvider.notifier).setSequence([
+        scene1,
+        scene2,
+      ], 0);
+
+      container.read(playbackQueueProvider.notifier).findAndSetIndex('2');
+      expect(container.read(playbackQueueProvider).currentIndex, 1);
+
+      container.read(playbackQueueProvider.notifier).findAndSetIndex('missing');
+      expect(container.read(playbackQueueProvider).currentIndex, 1);
+    });
+
+    test('getPreviousScene and playPrevious handle boundaries', () {
+      final container = createContainer();
+      final scene1 = mockScene(id: '1', title: 'S1');
+      final scene2 = mockScene(id: '2', title: 'S2');
+      container.read(playbackQueueProvider.notifier).setSequence([
+        scene1,
+        scene2,
+      ], 0);
+
+      expect(
+        container.read(playbackQueueProvider.notifier).getPreviousScene(),
+        isNull,
+      );
+
+      container.read(playbackQueueProvider.notifier).playPrevious();
+      expect(container.read(playbackQueueProvider).currentIndex, 0);
+
+      container.read(playbackQueueProvider.notifier).setIndex(1);
+      expect(
+        container.read(playbackQueueProvider.notifier).getPreviousScene()?.id,
+        '1',
+      );
+
+      container.read(playbackQueueProvider.notifier).playPrevious();
+      expect(container.read(playbackQueueProvider).currentIndex, 0);
+    });
+
+    test('updateSequence appends items preserving existing order', () {
+      final container = createContainer();
+      final scene1 = mockScene(id: '1', title: 'S1');
+      final scene2 = mockScene(id: '2', title: 'S2');
+      final scene3 = mockScene(id: '3', title: 'S3');
+
+      container.read(playbackQueueProvider.notifier).setSequence([scene1], 0);
+      container.read(playbackQueueProvider.notifier).updateSequence([
+        scene2,
+        scene3,
+      ]);
+
+      final state = container.read(playbackQueueProvider);
+      expect(state.sequence.map((s) => s.id).toList(), ['1', '2', '3']);
+      expect(state.currentIndex, 0);
+    });
   });
 }
