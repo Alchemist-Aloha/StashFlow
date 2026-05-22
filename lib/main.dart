@@ -32,6 +32,7 @@ StashMediaHandler? mediaHandler;
 StashMediaHandler _buildMediaHandler() => StashMediaHandler();
 
 Future<void> main() async {
+  final startupStopwatch = Stopwatch()..start();
   WidgetsFlutterBinding.ensureInitialized();
 
   if (!kIsWeb &&
@@ -126,6 +127,13 @@ Future<void> main() async {
       child: const MyApp(),
     ),
   );
+
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    startupStopwatch.stop();
+    debugPrint(
+      'Startup: first frame rendered in ${startupStopwatch.elapsedMilliseconds}ms',
+    );
+  });
 }
 
 class MyApp extends ConsumerWidget {

@@ -42,6 +42,8 @@ class _ShellPageState extends ConsumerState<ShellPage> {
   static const _horizontalSwipeThreshold = Duration(milliseconds: 500);
   bool? _lastAppliedMainPageGravityOrientation;
   bool _wasVideoFullscreen = false;
+  bool _enableDeferredStartupChecks = false;
+  Timer? _deferredStartupTimer;
 
   bool get _isDesktopPlatform =>
       !kIsWeb &&
@@ -95,7 +97,20 @@ class _ShellPageState extends ConsumerState<ShellPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkServerConfiguration();
+      // Defer non-critical startup checks off the first frame.
+      _deferredStartupTimer = Timer(const Duration(milliseconds: 1200), () {
+        if (!mounted) return;
+        setState(() {
+          _enableDeferredStartupChecks = true;
+        });
+      });
     });
+  }
+
+  @override
+  void dispose() {
+    _deferredStartupTimer?.cancel();
+    super.dispose();
   }
 
   void _showUpdateDialog(UpdateInfo updateInfo) {
@@ -201,13 +216,15 @@ class _ShellPageState extends ConsumerState<ShellPage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(startupUpdateCheckProvider, (previous, next) {
-      next.whenData((updateInfo) {
-        if (updateInfo != null && updateInfo.isUpdateAvailable && mounted) {
-          _showUpdateDialog(updateInfo);
-        }
+    if (_enableDeferredStartupChecks) {
+      ref.listen(startupUpdateCheckProvider, (previous, next) {
+        next.whenData((updateInfo) {
+          if (updateInfo != null && updateInfo.isUpdateAvailable && mounted) {
+            _showUpdateDialog(updateInfo);
+          }
+        });
       });
-    });
+    }
 
     ref.listen(playerStateProvider.select((s) => s.navigationIntent), (
       prev,
