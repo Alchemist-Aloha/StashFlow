@@ -19,6 +19,7 @@ void main() {
           itemBuilder: (context, item, mw, mh) => Text(item),
         ),
       );
+      await tester.pump();
 
       expect(find.text('Test Title'), findsOneWidget);
       expect(find.byType(SceneCard), findsWidgets);
@@ -37,6 +38,7 @@ void main() {
           itemBuilder: (context, item, mw, mh) => Text(item),
         ),
       );
+      await tester.pump();
 
       expect(find.text(emptyMessage), findsOneWidget);
     });
@@ -52,6 +54,7 @@ void main() {
           itemBuilder: (context, item, mw, mh) => Text(item),
         ),
       );
+      await tester.pump();
 
       expect(find.byType(ErrorStateView), findsOneWidget);
       expect(find.textContaining('An error occurred'), findsOneWidget);
@@ -71,6 +74,7 @@ void main() {
           itemBuilder: (context, item, mw, mh) => ListTile(title: Text(item)),
         ),
       );
+      await tester.pump();
 
       expect(find.byType(ListView), findsOneWidget);
       for (final item in items) {
@@ -96,6 +100,7 @@ void main() {
           itemBuilder: (context, item, mw, mh) => GridTile(child: Text(item)),
         ),
       );
+      await tester.pump();
 
       expect(find.byType(GridView), findsOneWidget);
       for (final item in items) {
@@ -117,13 +122,14 @@ void main() {
           itemBuilder: (context, item, mw, mh) => Text(item),
         ),
       );
+      await tester.pump();
 
       // Initially, search icon is visible
       expect(find.byIcon(Icons.search), findsOneWidget);
 
       // Tap search icon (this opens SearchAnchor view)
       await tester.tap(find.byIcon(Icons.search));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Now, Search view is open
       expect(find.byType(TextField), findsOneWidget);
@@ -134,7 +140,7 @@ void main() {
       
       // Submit search to close view and trigger callback
       await tester.testTextInput.receiveAction(TextInputAction.done);
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       expect(searchQuery, 'hello');
 
@@ -143,7 +149,7 @@ void main() {
 
       // Tap close icon in the searching for bar to clear search
       await tester.tap(find.byIcon(Icons.close));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Back to initial state, search query cleared
       expect(searchQuery, '');
@@ -161,6 +167,7 @@ void main() {
           itemBuilder: (context, item, mw, mh) => Text(item),
         ),
       );
+      await tester.pump();
 
       expect(find.text('Custom Sort Bar'), findsOneWidget);
     });
@@ -182,6 +189,7 @@ void main() {
           itemBuilder: (context, item, mw, mh) => Text(item),
         ),
       );
+      await tester.pump();
 
       expect(find.byType(FloatingActionButton), findsOneWidget);
       expect(find.byIcon(Icons.add), findsOneWidget);

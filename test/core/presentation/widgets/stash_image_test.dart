@@ -12,6 +12,7 @@ void main() {
       tester,
       child: const StashImage(imageUrl: 'https://example.com/image.jpg'),
     );
+    await tester.pump();
 
     expect(find.byType(StashImage), findsOneWidget);
     expect(find.byType(CachedNetworkImage), findsOneWidget);
@@ -21,6 +22,7 @@ void main() {
     WidgetTester tester,
   ) async {
     await pumpTestWidget(tester, child: const StashImage(imageUrl: null));
+    await tester.pump();
 
     expect(find.byType(StashImage), findsOneWidget);
     expect(find.byType(CachedNetworkImage), findsNothing);
@@ -31,6 +33,7 @@ void main() {
     WidgetTester tester,
   ) async {
     await pumpTestWidget(tester, child: const StashImage(imageUrl: ''));
+    await tester.pump();
 
     expect(find.byType(StashImage), findsOneWidget);
     expect(find.byType(CachedNetworkImage), findsNothing);
