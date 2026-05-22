@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
@@ -32,6 +31,7 @@ StashMediaHandler? mediaHandler;
 StashMediaHandler _buildMediaHandler() => StashMediaHandler();
 
 Future<void> main() async {
+  final startupStopwatch = Stopwatch()..start();
   WidgetsFlutterBinding.ensureInitialized();
 
   if (!kIsWeb &&
@@ -85,7 +85,10 @@ Future<void> main() async {
 
   final sharedPreferences = await SharedPreferences.getInstance();
 
-  const secureStorage = FlutterSecureStorage();
+  AppLogStore.instance.isEnabled =
+      sharedPreferences.getBool('enable_debug_logging') ?? false;
+
+  final secureStorage = AppSecureStorage(sharedPreferences: sharedPreferences);
 
   // Migrate API key from SharedPreferences to Secure Storage if needed.
   if (sharedPreferences.containsKey('server_api_key')) {
@@ -98,10 +101,12 @@ Future<void> main() async {
 
   final oldDebugPrint = debugPrint;
   debugPrint = (String? message, {int? wrapWidth}) {
-    if (message != null) {
-      AppLogStore.instance.add(message, source: 'debugPrint');
+    if (AppLogStore.instance.isEnabled) {
+      if (message != null) {
+        AppLogStore.instance.add(message, source: 'debugPrint');
+      }
+      oldDebugPrint(message, wrapWidth: wrapWidth);
     }
-    oldDebugPrint(message, wrapWidth: wrapWidth);
   };
 
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -126,6 +131,13 @@ Future<void> main() async {
       child: const MyApp(),
     ),
   );
+
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    startupStopwatch.stop();
+    debugPrint(
+      'Startup: first frame rendered in ${startupStopwatch.elapsedMilliseconds}ms',
+    );
+  });
 }
 
 class MyApp extends ConsumerWidget {

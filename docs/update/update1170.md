@@ -64,6 +64,12 @@
   - `screen_brightness_android: 2.1.3` via `dependency_overrides`
 - Verified split-per-ABI release build succeeds.
 
+## Build/CI Compatibility
+
+- Addressed macOS CI build instability related to `connectivity_plus` API/toolchain compatibility.
+- Removed `connectivity_plus` as a direct dependency (it remains transitive via `graphql_flutter`).
+- Pinned transitive `connectivity_plus` to `7.0.0` via `dependency_overrides` for stable macOS builds.
+
 ## Localization & Form UX
 
 - Replaced remaining hardcoded strings with l10n keys in affected UI paths.

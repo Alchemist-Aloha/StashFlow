@@ -12,6 +12,7 @@ void main() {
         tester,
         child: const Scaffold(body: SectionHeader(title: 'Test Title')),
       );
+      await tester.pump();
 
       final titleFinder = find.text('Test Title');
       expect(titleFinder, findsOneWidget);
@@ -29,6 +30,7 @@ void main() {
           body: SectionHeader(title: 'Test Title', onViewAll: () {}),
         ),
       );
+      await tester.pump();
 
       expect(
         find.text(
@@ -48,6 +50,7 @@ void main() {
         tester,
         child: const Scaffold(body: SectionHeader(title: 'Test Title')),
       );
+      await tester.pump();
 
       expect(
         find.text(
@@ -75,12 +78,13 @@ void main() {
           ),
         ),
       );
+      await tester.pump();
 
       final buttonFinder = find.byType(TextButton);
       expect(buttonFinder, findsOneWidget);
 
       await tester.tap(buttonFinder);
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       expect(callbackFired, isTrue);
     });
@@ -92,6 +96,7 @@ void main() {
         tester,
         child: const Scaffold(body: SectionHeader(title: 'Test Title')),
       );
+      await tester.pump();
 
       final paddingFinder = find.byType(Padding).first;
       final paddingWidget = tester.widget<Padding>(paddingFinder);
@@ -115,6 +120,7 @@ void main() {
           body: SectionHeader(title: 'Test Title', padding: customPadding),
         ),
       );
+      await tester.pumpAndSettle();
 
       final paddingFinder = find.byType(Padding).first;
       final paddingWidget = tester.widget<Padding>(paddingFinder);

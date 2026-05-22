@@ -172,7 +172,7 @@ class SceneGridLayout extends _$SceneGridLayout {
   @override
   bool build() {
     final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(_storageKey) ?? false;
+    return prefs.getBool(_storageKey) ?? true;
   }
 
   Future<void> set(bool value) async {

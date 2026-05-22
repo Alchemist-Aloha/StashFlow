@@ -7,6 +7,7 @@ import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provi
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
+import 'package:stash_app_flutter/core/utils/app_log_store.dart';
 
 import '../../widgets/settings_page_shell.dart';
 
@@ -22,10 +23,12 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
   static const _showVideoDebugInfoKey = 'show_video_debug_info';
   static const _allowWebPasswordLoginKey = 'allow_web_password_login';
   static const _enableProxyAuthModesKey = 'enable_proxy_auth_modes';
+  static const _enableDebugLoggingKey = 'enable_debug_logging';
 
   bool _showVideoDebugInfo = false;
   bool _allowWebPasswordLogin = false;
   bool _enableProxyAuthModes = false;
+  bool _enableDebugLogging = false;
 
   @override
   void initState() {
@@ -40,6 +43,7 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
       _allowWebPasswordLogin =
           prefs.getBool(_allowWebPasswordLoginKey) ?? false;
       _enableProxyAuthModes = prefs.getBool(_enableProxyAuthModesKey) ?? false;
+      _enableDebugLogging = prefs.getBool(_enableDebugLoggingKey) ?? false;
     });
   }
 
@@ -84,6 +88,17 @@ class _DeveloperSettingsPageState extends ConsumerState<DeveloperSettingsPage> {
                     ref
                         .read(sharedPreferencesTriggerProvider.notifier)
                         .trigger();
+                  },
+                ),
+                const Divider(height: 1),
+                SwitchListTile(
+                  title: Text(l10n.settings_develop_enable_logging),
+                  subtitle: Text(l10n.settings_develop_enable_logging_subtitle),
+                  value: _enableDebugLogging,
+                  onChanged: (value) {
+                    setState(() => _enableDebugLogging = value);
+                    _saveSetting(_enableDebugLoggingKey, value);
+                    AppLogStore.instance.isEnabled = value;
                   },
                 ),
                 const Divider(height: 1),

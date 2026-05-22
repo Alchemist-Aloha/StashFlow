@@ -322,6 +322,19 @@ class _GlobalFullscreenOverlayState
 
     final bool showOverlay = _isVisible || _isAnimating;
 
+    // Avoid eagerly initializing cast discovery/session infrastructure
+    // while overlay is hidden; this keeps app startup lighter.
+    if (!showOverlay) {
+      return const IgnorePointer(
+        ignoring: true,
+        child: Visibility(
+          visible: false,
+          maintainState: false,
+          child: SizedBox.shrink(),
+        ),
+      );
+    }
+
     final playerState = ref.watch(playerStateProvider);
     final castState = ref.watch(castServiceProvider);
     final scene = playerState.activeScene;
@@ -486,9 +499,9 @@ class _GlobalFullscreenOverlayState
     }
 
     return IgnorePointer(
-      ignoring: !showOverlay,
+      ignoring: false,
       child: Visibility(
-        visible: showOverlay,
+        visible: true,
         maintainState: false,
         child: SlideTransition(
           key: const ValueKey('global_fullscreen_overlay_slide'),

@@ -106,8 +106,10 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
         }
 
         final cookie = await service.cookieHeaderFor(requestUri: endpointUri);
-        final secureStorage = ref.read(secureStorageProvider);
-        await secureStorage.write(key: 'profile_test_cookie_header', value: cookie);
+        if (cookie.isEmpty) {
+          setState(() => _testResult = 'Error: Login failed. Check credentials.');
+          return;
+        }
       }
 
       final tempProfile = ServerProfile(
@@ -171,6 +173,21 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
       await notifier.addProfile(profile);
     } else {
       await notifier.updateProfile(profile);
+    }
+
+    final activeProfile = ref.read(activeProfileProvider);
+    final isSavedProfileActive = activeProfile?.id == id;
+    if (isSavedProfileActive) {
+      final authNotifier = ref.read(authProvider.notifier);
+      await authNotifier.setMode(_authMode);
+      await authNotifier.updateUsername(_usernameController.text);
+      await authNotifier.updatePassword(_passwordController.text);
+
+      if (_authMode == AuthMode.password) {
+        await authNotifier.login();
+      } else {
+        await authNotifier.refreshCookieHeader();
+      }
     }
 
     if (mounted) {

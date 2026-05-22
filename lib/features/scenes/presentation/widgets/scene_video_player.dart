@@ -364,7 +364,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   Future<void> _toggleFullScreen() async {
     if (!mounted) return;
 
-    final playerState = ref.read(playerStateProvider);
+    var playerState = ref.read(playerStateProvider);
     final router = GoRouter.maybeOf(context);
 
     // We check both state and path for maximum robustness.
@@ -396,6 +396,22 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       ref.read(playerStateProvider.notifier).setFullScreen(false);
       ref.read(playerStateProvider.notifier).setViewMode(PlayerViewMode.inline);
     } else {
+      // Fullscreen overlay always renders the global active scene.
+      // Ensure the scene details page owns the global player before entering
+      // fullscreen, otherwise a previously active scene can be shown.
+      if (playerState.activeScene?.id != widget.scene.id) {
+        await _startPlaybackIfNeeded(force: true);
+        if (!mounted) return;
+        playerState = ref.read(playerStateProvider);
+        if (playerState.activeScene?.id != widget.scene.id) {
+          AppLogStore.instance.add(
+            'SceneVideoPlayer [${widget.scene.id}] fullscreen aborted: active scene remains ${playerState.activeScene?.id}',
+            source: 'SceneVideoPlayer',
+          );
+          return;
+        }
+      }
+
       AppLogStore.instance.add(
         'SceneVideoPlayer [${widget.scene.id}] entering fullscreen via global state',
         source: 'SceneVideoPlayer',

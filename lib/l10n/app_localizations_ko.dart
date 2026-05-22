@@ -1310,11 +1310,11 @@ class AppLocalizationsKo extends AppLocalizations {
       '꺼져 있으면 재생 시 paths.stream을 직접 사용합니다';
 
   @override
-  String get settings_playback_feed_random => 'Start Feed from random position';
+  String get settings_playback_feed_random => '피드를 임의의 위치에서 시작';
 
   @override
   String get settings_playback_feed_random_subtitle =>
-      'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length';
+      '피드 모드에서 장면을 재생할 때 비디오 길이의 0%에서 90% 사이의 임의의 위치에서 시작합니다';
 
   @override
   String get settings_playback_end_behavior => '재생 종료 동작';
@@ -1511,6 +1511,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settings_develop_title => '개발';
+
+  @override
+  String get settings_develop_enable_logging => '디버그 로깅 활성화';
+
+  @override
+  String get settings_develop_enable_logging_subtitle =>
+      '문제 해결을 위해 앱 로그를 기록합니다';
 
   @override
   String get settings_develop_diagnostics => '진단 도구';
