@@ -1298,11 +1298,11 @@ class AppLocalizationsZh extends AppLocalizations {
       '关闭时，播放将直接使用 paths.stream';
 
   @override
-  String get settings_playback_feed_random => 'Start Feed from random position';
+  String get settings_playback_feed_random => '从随机位置开始播放Feed';
 
   @override
   String get settings_playback_feed_random_subtitle =>
-      'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length';
+      '在Feed模式下播放场景时，从视频长度的0%到90%之间的随机位置开始播放';
 
   @override
   String get settings_playback_end_behavior => '播放结束行为';
@@ -1492,6 +1492,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settings_develop_title => '开发';
+
+  @override
+  String get settings_develop_enable_logging => '启用调试日志';
+
+  @override
+  String get settings_develop_enable_logging_subtitle => '记录应用日志以供排查问题';
 
   @override
   String get settings_develop_diagnostics => '诊断工具';
@@ -3551,6 +3557,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
       '关闭时，播放将直接使用 paths.stream';
 
   @override
+  String get settings_playback_feed_random => '从随机位置开始播放Feed';
+
+  @override
+  String get settings_playback_feed_random_subtitle =>
+      '在Feed模式下播放场景时，从视频长度的0%到90%之间的随机位置开始播放';
+
+  @override
   String get settings_playback_end_behavior => '播放结束行为';
 
   @override
@@ -3738,6 +3751,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_develop_title => '开发';
+
+  @override
+  String get settings_develop_enable_logging => '启用调试日志';
+
+  @override
+  String get settings_develop_enable_logging_subtitle => '记录应用日志以供排查问题';
 
   @override
   String get settings_develop_diagnostics => '诊断工具';
@@ -5800,6 +5819,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       '關閉時，播放將直接使用 paths.stream';
 
   @override
+  String get settings_playback_feed_random => '從隨機位置開始播放Feed';
+
+  @override
+  String get settings_playback_feed_random_subtitle =>
+      '在Feed模式下播放場景時，從影片長度的0%到90%之間的隨機位置開始播放';
+
+  @override
   String get settings_playback_end_behavior => '播放結束行為';
 
   @override
@@ -5988,6 +6014,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_develop_title => '開發';
+
+  @override
+  String get settings_develop_enable_logging => '啟用調試日誌';
+
+  @override
+  String get settings_develop_enable_logging_subtitle => '記錄應用程式日誌以供排查問題';
 
   @override
   String get settings_develop_diagnostics => '診斷工具';

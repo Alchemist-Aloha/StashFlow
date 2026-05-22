@@ -1554,6 +1554,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_develop_title => 'Develop';
 
   @override
+  String get settings_develop_enable_logging => 'Enable Debug Logging';
+
+  @override
+  String get settings_develop_enable_logging_subtitle =>
+      'Record app logs for troubleshooting';
+
+  @override
   String get settings_develop_diagnostics => 'Diagnostic Tools';
 
   @override

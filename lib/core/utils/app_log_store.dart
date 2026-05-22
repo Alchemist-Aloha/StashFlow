@@ -54,11 +54,15 @@ class AppLogStore {
   UnmodifiableListView<AppLogEntry> get entries =>
       UnmodifiableListView<AppLogEntry>(_entries);
 
+  /// Whether logging is currently enabled.
+  bool isEnabled = false;
+
   /// Adds a new log entry to the store.
   ///
   /// [message] is the log text.
   /// [source] is an optional tag identifying the component (e.g., 'player_provider').
   void add(String message, {String source = 'app'}) {
+    if (!isEnabled) return;
     if (message.trim().isEmpty) return;
     _entries.add(
       AppLogEntry(timestamp: DateTime.now(), message: message, source: source),

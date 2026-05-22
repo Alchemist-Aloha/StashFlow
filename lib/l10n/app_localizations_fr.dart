@@ -1361,11 +1361,12 @@ class AppLocalizationsFr extends AppLocalizations {
       'Si désactivé, la lecture utilise directement paths.stream';
 
   @override
-  String get settings_playback_feed_random => 'Start Feed from random position';
+  String get settings_playback_feed_random =>
+      'Démarrer le flux à partir d\'une position aléatoire';
 
   @override
   String get settings_playback_feed_random_subtitle =>
-      'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length';
+      'Lors de la lecture de scènes en mode Flux, démarrer à une position aléatoire entre 0% et 90% de la durée de la vidéo';
 
   @override
   String get settings_playback_end_behavior => 'Comportement de fin de lecture';
@@ -1584,6 +1585,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settings_develop_title => 'Développer';
+
+  @override
+  String get settings_develop_enable_logging =>
+      'Activer le journal de débogage';
+
+  @override
+  String get settings_develop_enable_logging_subtitle =>
+      'Enregistrer les journaux de l\'application pour le dépannage';
 
   @override
   String get settings_develop_diagnostics => 'Outils de diagnostic';

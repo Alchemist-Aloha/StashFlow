@@ -2934,6 +2934,18 @@ abstract class AppLocalizations {
   /// **'Develop'**
   String get settings_develop_title;
 
+  /// No description provided for @settings_develop_enable_logging.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Debug Logging'**
+  String get settings_develop_enable_logging;
+
+  /// No description provided for @settings_develop_enable_logging_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record app logs for troubleshooting'**
+  String get settings_develop_enable_logging_subtitle;
+
   /// No description provided for @settings_develop_diagnostics.
   ///
   /// In en, this message translates to:

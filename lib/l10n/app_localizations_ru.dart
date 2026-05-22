@@ -1349,11 +1349,12 @@ class AppLocalizationsRu extends AppLocalizations {
       'Если отключено, воспроизведение использует paths.stream напрямую';
 
   @override
-  String get settings_playback_feed_random => 'Start Feed from random position';
+  String get settings_playback_feed_random =>
+      'Начать Ленту со случайного места';
 
   @override
   String get settings_playback_feed_random_subtitle =>
-      'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length';
+      'При воспроизведении сцен в режиме Ленты начинать со случайного места между 0% и 90% длины видео';
 
   @override
   String get settings_playback_end_behavior => 'Поведение в конце игры';
@@ -1570,6 +1571,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settings_develop_title => 'Разработка';
+
+  @override
+  String get settings_develop_enable_logging =>
+      'Включить отладочное логирование';
+
+  @override
+  String get settings_develop_enable_logging_subtitle =>
+      'Записывать логи приложения для устранения неполадок';
 
   @override
   String get settings_develop_diagnostics => 'Инструменты диагностики';

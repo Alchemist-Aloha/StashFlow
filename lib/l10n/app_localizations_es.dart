@@ -1369,11 +1369,12 @@ class AppLocalizationsEs extends AppLocalizations {
       'Cuando está desactivado, la reproducción usa directamente paths.stream';
 
   @override
-  String get settings_playback_feed_random => 'Start Feed from random position';
+  String get settings_playback_feed_random =>
+      'Iniciar Feed desde posición aleatoria';
 
   @override
   String get settings_playback_feed_random_subtitle =>
-      'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length';
+      'Al reproducir escenas en modo Feed, iniciar desde una posición aleatoria entre el 0% y el 90% de la duración del video';
 
   @override
   String get settings_playback_end_behavior =>
@@ -1594,6 +1595,14 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settings_develop_title => 'Desarrollo';
+
+  @override
+  String get settings_develop_enable_logging =>
+      'Activar registro de depuración';
+
+  @override
+  String get settings_develop_enable_logging_subtitle =>
+      'Registrar registros de la aplicación para solucionar problemas';
 
   @override
   String get settings_develop_diagnostics => 'Herramientas de diagnóstico';

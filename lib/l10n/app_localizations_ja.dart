@@ -1312,11 +1312,11 @@ class AppLocalizationsJa extends AppLocalizations {
       'オフの場合、再生は直接paths.streamを使用します';
 
   @override
-  String get settings_playback_feed_random => 'Start Feed from random position';
+  String get settings_playback_feed_random => 'フィードをランダムな位置から開始';
 
   @override
   String get settings_playback_feed_random_subtitle =>
-      'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length';
+      'フィードモードでシーンを再生するとき、動画の長さの0%から90%の間のランダムな位置から開始します';
 
   @override
   String get settings_playback_end_behavior => '再生終了時の動作';
@@ -1512,6 +1512,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settings_develop_title => '開発';
+
+  @override
+  String get settings_develop_enable_logging => 'デバッグログを有効にする';
+
+  @override
+  String get settings_develop_enable_logging_subtitle =>
+      'トラブルシューティング用にアプリのログを記録します';
 
   @override
   String get settings_develop_diagnostics => '診断ツール';

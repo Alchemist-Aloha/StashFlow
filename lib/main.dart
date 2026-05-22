@@ -86,6 +86,9 @@ Future<void> main() async {
 
   final sharedPreferences = await SharedPreferences.getInstance();
 
+  AppLogStore.instance.isEnabled =
+      sharedPreferences.getBool('enable_debug_logging') ?? false;
+
   const secureStorage = FlutterSecureStorage();
 
   // Migrate API key from SharedPreferences to Secure Storage if needed.
@@ -99,10 +102,12 @@ Future<void> main() async {
 
   final oldDebugPrint = debugPrint;
   debugPrint = (String? message, {int? wrapWidth}) {
-    if (message != null) {
-      AppLogStore.instance.add(message, source: 'debugPrint');
+    if (AppLogStore.instance.isEnabled) {
+      if (message != null) {
+        AppLogStore.instance.add(message, source: 'debugPrint');
+      }
+      oldDebugPrint(message, wrapWidth: wrapWidth);
     }
-    oldDebugPrint(message, wrapWidth: wrapWidth);
   };
 
   FlutterError.onError = (FlutterErrorDetails details) {
