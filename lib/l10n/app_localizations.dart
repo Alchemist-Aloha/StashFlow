@@ -640,7 +640,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'ID: {id}'**
-  String common_id(Object id);
+  String common_id(String id);
 
   /// No description provided for @common_search_placeholder.
   ///
@@ -4367,6 +4367,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to load galleries: {error}'**
   String details_failed_load_galleries(String error);
+
+  /// No description provided for @common_stars.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 Star} other{{count} Stars}}'**
+  String common_stars(int count);
 }
 
 class _AppLocalizationsDelegate

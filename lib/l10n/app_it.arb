@@ -858,5 +858,6 @@
   "performer_filters": "Filtri artisti",
   "update_available": "Una nuova versione di StashFlow ({version}) è disponibile.",
   "details_failed_update_favorite": "Impossibile aggiornare il preferito: {error}",
-  "details_failed_load_galleries": "Impossibile caricare le gallerie: {error}"
+  "details_failed_load_galleries": "Impossibile caricare le gallerie: {error}",
+  "common_stars": "{count, plural, =1{1 Stella} other{{count} Stelle}}"
 }

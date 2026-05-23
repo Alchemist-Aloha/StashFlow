@@ -250,7 +250,7 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
                     : Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('$stars'),
+                          Text(context.l10n.common_stars(stars)),
                           SizedBox(width: context.dimensions.spacingSmall / 2),
                           Icon(
                             Icons.star,

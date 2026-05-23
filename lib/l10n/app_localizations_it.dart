@@ -324,7 +324,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get common_no_media_available => 'nessun media disponibile';
 
   @override
-  String common_id(Object id) {
+  String common_id(String id) {
     return 'ID: $id';
   }
 
@@ -2387,5 +2387,16 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String details_failed_load_galleries(String error) {
     return 'Impossibile caricare le gallerie: $error';
+  }
+
+  @override
+  String common_stars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Stelle',
+      one: '1 Stella',
+    );
+    return '$_temp0';
   }
 }

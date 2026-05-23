@@ -952,5 +952,20 @@
         "type": "String"
       }
     }
+  },
+  "common_stars": "{count, plural, =1{1 Star} other{{count} Stars}}",
+  "@common_stars": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@common_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
   }
 }

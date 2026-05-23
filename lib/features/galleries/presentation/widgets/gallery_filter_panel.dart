@@ -316,7 +316,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                     : Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('$stars'),
+                          Text(context.l10n.common_stars(stars)),
                           SizedBox(width: context.dimensions.spacingSmall / 2),
                           Icon(
                             Icons.star,

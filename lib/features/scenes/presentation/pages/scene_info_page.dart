@@ -125,7 +125,7 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                   dense: true,
                   contentPadding: EdgeInsets.zero,
                   title: Text(scene.studioName!),
-                  subtitle: scene.studioId != null ? Text('ID: ${scene.studioId}') : null,
+                  subtitle: scene.studioId != null ? Text(context.l10n.common_id(scene.studioId!)) : null,
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: scene.studioId != null && scene.studioId!.trim().isNotEmpty
                       ? () => _closeAndNavigate('/studios/studio/${scene.studioId}')

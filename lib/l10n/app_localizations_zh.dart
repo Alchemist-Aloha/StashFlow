@@ -312,7 +312,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get common_no_media_available => '无可用媒体';
 
   @override
-  String common_id(Object id) {
+  String common_id(String id) {
     return 'ID：$id';
   }
 
@@ -2261,6 +2261,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String details_failed_load_galleries(String error) {
     return '加载图库失败: $error';
   }
+
+  @override
+  String common_stars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 星星',
+      one: '1 星星',
+    );
+    return '$_temp0';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -2571,7 +2582,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get common_no_media_available => '无可用媒体';
 
   @override
-  String common_id(Object id) {
+  String common_id(String id) {
     return 'ID：$id';
   }
 
@@ -4520,6 +4531,17 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String details_failed_load_galleries(String error) {
     return '加载图库失败: $error';
   }
+
+  @override
+  String common_stars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 星星',
+      one: '1 星星',
+    );
+    return '$_temp0';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -4832,7 +4854,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get common_no_media_available => '無可用媒體';
 
   @override
-  String common_id(Object id) {
+  String common_id(String id) {
     return 'ID：$id';
   }
 
@@ -6782,5 +6804,16 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String details_failed_load_galleries(String error) {
     return '載入圖庫失敗: $error';
+  }
+
+  @override
+  String common_stars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 星星',
+      one: '1 星星',
+    );
+    return '$_temp0';
   }
 }
