@@ -38,13 +38,13 @@ class StreamPrewarmer extends _$StreamPrewarmer {
 
   /// Initiates a Byte-Range GET request for the given [scene] and [url].
   ///
-  /// [rangeBytes] defaults to 10MB, which is usually enough to fetch
-  /// the video headers (moov atom) and start the initial buffer.
+  /// [rangeBytes] defaults to 2MB, which is enough to warm the route and fetch
+  /// typical video headers without spending much bandwidth ahead of playback.
   Future<void> prewarm(
     Scene scene,
     String url, {
     Map<String, String>? headers,
-    int rangeBytes = 10 * 1024 * 1024,
+    int rangeBytes = 2 * 1024 * 1024,
   }) async {
     if (kIsWeb) return;
     if (_client == null) return;
@@ -58,7 +58,7 @@ class StreamPrewarmer extends _$StreamPrewarmer {
     try {
       final request = await _client!.getUrl(Uri.parse(url));
       headers?.forEach((k, v) => request.headers.add(k, v));
-      
+
       // Request only the first chunk to minimize bandwidth usage while warming the pipe.
       request.headers.add(HttpHeaders.rangeHeader, 'bytes=0-${rangeBytes - 1}');
 
@@ -112,8 +112,9 @@ class StreamPrewarmer extends _$StreamPrewarmer {
   ///
   /// This is used to clean up "stale" prewarms as the user moves through the queue.
   void cancelAllExcept(Set<String> sceneIds) {
-    final idsToCancel =
-        _activeRequests.keys.where((id) => !sceneIds.contains(id)).toList();
+    final idsToCancel = _activeRequests.keys
+        .where((id) => !sceneIds.contains(id))
+        .toList();
     for (final id in idsToCancel) {
       cancel(id);
     }

@@ -89,7 +89,9 @@ class _GlobalFullscreenOverlayState
 
   @override
   void dispose() {
+    _bufferingDisplayTimer?.cancel();
     _animationController.dispose();
+    _transformationNotifier.dispose();
     for (final sub in _subscriptions) {
       sub.cancel();
     }

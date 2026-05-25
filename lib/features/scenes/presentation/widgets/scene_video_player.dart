@@ -9,7 +9,6 @@ import 'package:vector_math/vector_math_64.dart' show Vector3;
 import '../../domain/entities/scene.dart';
 import '../providers/video_player_provider.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
-import '../../data/repositories/stream_prewarmer.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
@@ -149,6 +148,8 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   @override
   void dispose() {
     // Note: We don't dispose the controller here as it is managed by the provider.
+    _bufferingDisplayTimer?.cancel();
+    _transformationNotifier.dispose();
     super.dispose();
   }
 
@@ -227,22 +228,6 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       if (!mounted) return;
       final resolver = ref.read(streamResolverProvider.notifier);
 
-      // Perform a background "prewarm" to test connectivity.
-      // We don't await this here to avoid blocking player initialization.
-      unawaited(
-        _prewarmStream(widget.scene).then((prewarmResult) {
-          if (mounted) {
-            ref
-                .read(playerStateProvider.notifier)
-                .setPrewarmResult(
-                  attempted: prewarmResult.attempted,
-                  succeeded: prewarmResult.succeeded,
-                  latencyMs: prewarmResult.latencyMs,
-                );
-          }
-        }),
-      );
-
       final choice = await resolver.resolvePreferredStream(widget.scene);
       if (choice != null && mounted) {
         final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
@@ -310,54 +295,6 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     }
 
     return 16 / 9;
-  }
-
-  /// Attempts to "warm up" the stream by making a partial GET request
-  /// to ensure the URL is valid, the server is responsive, and the connection
-  /// pipe is ready for playback.
-  Future<_PrewarmResult> _prewarmStream(Scene scene) async {
-    if (kIsWeb) {
-      return const _PrewarmResult(attempted: false, succeeded: false);
-    }
-
-    final stopwatch = Stopwatch()..start();
-
-    try {
-      if (!mounted) {
-        return const _PrewarmResult(attempted: false, succeeded: false);
-      }
-      final resolver = ref.read(streamResolverProvider.notifier);
-      final prewarmer = ref.read(streamPrewarmerProvider.notifier);
-
-      final choice = await resolver.resolvePreferredStream(scene);
-      if (choice == null) {
-        return const _PrewarmResult(attempted: false, succeeded: false);
-      }
-
-      if (!mounted) {
-        return const _PrewarmResult(attempted: false, succeeded: false);
-      }
-      final headers = ref.read(mediaPlaybackHeadersProvider);
-
-      // Use the centralized prewarmer which uses Byte-Range GET (0-10MB)
-      // and keeps the connection alive in a pool.
-      await prewarmer.prewarm(scene, choice.url, headers: headers);
-
-      stopwatch.stop();
-      return _PrewarmResult(
-        attempted: true,
-        succeeded:
-            true, // We assume success if no exception was thrown during request setup
-        latencyMs: stopwatch.elapsedMilliseconds,
-      );
-    } catch (_) {
-      stopwatch.stop();
-      return _PrewarmResult(
-        attempted: true,
-        succeeded: false,
-        latencyMs: stopwatch.elapsedMilliseconds,
-      );
-    }
   }
 
   /// Toggles between inline and immersive fullscreen mode.
@@ -627,17 +564,4 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       },
     );
   }
-}
-
-/// Internal class tracking the result of a prewarm request.
-class _PrewarmResult {
-  const _PrewarmResult({
-    required this.attempted,
-    required this.succeeded,
-    this.latencyMs,
-  });
-
-  final bool attempted;
-  final bool succeeded;
-  final int? latencyMs;
 }

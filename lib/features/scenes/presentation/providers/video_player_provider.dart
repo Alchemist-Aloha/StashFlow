@@ -278,8 +278,9 @@ class GlobalPlayerState {
           subtitleTextAlignment ?? this.subtitleTextAlignment,
       viewMode: viewMode ?? this.viewMode,
       isTransitioning: isTransitioning ?? this.isTransitioning,
-      navigationIntent:
-          clearNavigation ? null : (navigationIntent ?? this.navigationIntent),
+      navigationIntent: clearNavigation
+          ? null
+          : (navigationIntent ?? this.navigationIntent),
     );
   }
 }
@@ -586,9 +587,7 @@ class PlayerState extends _$PlayerState {
   }
 
   void _navigate(List<NavigationAction> actions) {
-    state = state.copyWith(
-      navigationIntent: NavigationIntent(actions),
-    );
+    state = state.copyWith(navigationIntent: NavigationIntent(actions));
     // Immediately clear intent so it's not re-processed on next state update
     Future.microtask(() {
       if (ref.mounted) state = state.copyWith(clearNavigation: true);
@@ -626,9 +625,9 @@ class PlayerState extends _$PlayerState {
 
     if (currentIndex == -1 || sequence.isEmpty) return;
 
-    // Window size: how many scenes ahead to prewarm.
-    // 3 is a good balance between responsiveness and resource usage.
-    const windowSize = 3;
+    // Keep prewarming conservative: one next-scene probe preserves quick
+    // sequential navigation without competing heavily with active playback.
+    const windowSize = 1;
     final startIndex = currentIndex + 1;
     final endIndex = (currentIndex + 1 + windowSize).clamp(0, sequence.length);
 
@@ -992,7 +991,8 @@ class PlayerState extends _$PlayerState {
     _isUsingBorrowedController = true;
     _lastIsPlaying = null;
 
-    final isTiktokHandoff = streamSource == 'tiktok-handoff' || streamSource == 'tiktok-promotion';
+    final isTiktokHandoff =
+        streamSource == 'tiktok-handoff' || streamSource == 'tiktok-promotion';
 
     state = state.copyWith(
       activeScene: scene,
@@ -1343,7 +1343,8 @@ class PlayerState extends _$PlayerState {
 
       // Only update media handler if state changed or if position drifted significantly
       // (audio_service increments position automatically, so we only need to sync periodically)
-      final shouldUpdateMediaHandler = playingChanged ||
+      final shouldUpdateMediaHandler =
+          playingChanged ||
           bufferingChanged ||
           speedChanged ||
           _lastMediaHandlerPosition == null ||
@@ -1419,7 +1420,7 @@ class PlayerState extends _$PlayerState {
     _isTransitioning = true;
     try {
       final queueNotifier = ref.read(playbackQueueProvider.notifier);
-      
+
       // Ensure queue is synced
       if (queueNotifier.state.currentIndex == -1 &&
           state.activeScene?.id != null) {
@@ -1433,7 +1434,10 @@ class PlayerState extends _$PlayerState {
         // Skip for TikTok mode as it handles its own navigation via PageView
         if (state.viewMode != PlayerViewMode.tiktok) {
           _navigate([
-            NavigationAction('/scenes/scene/${nextScene.id}', isReplacement: true),
+            NavigationAction(
+              '/scenes/scene/${nextScene.id}',
+              isReplacement: true,
+            ),
           ]);
         }
 
@@ -1469,7 +1473,7 @@ class PlayerState extends _$PlayerState {
     _isTransitioning = true;
     try {
       final queueNotifier = ref.read(playbackQueueProvider.notifier);
-      
+
       // Ensure queue is synced
       if (queueNotifier.state.currentIndex == -1 &&
           state.activeScene?.id != null) {
@@ -1483,7 +1487,10 @@ class PlayerState extends _$PlayerState {
         // Skip for TikTok mode as it handles its own navigation via PageView
         if (state.viewMode != PlayerViewMode.tiktok) {
           _navigate([
-            NavigationAction('/scenes/scene/${prevScene.id}', isReplacement: true),
+            NavigationAction(
+              '/scenes/scene/${prevScene.id}',
+              isReplacement: true,
+            ),
           ]);
         }
 

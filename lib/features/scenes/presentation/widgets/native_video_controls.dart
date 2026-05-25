@@ -170,6 +170,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     WidgetsBinding.instance.removeObserver(this);
     _cancelAutoHide();
     _seekFeedbackTimer?.cancel();
+    _feedbackTimer?.cancel();
     _desktopSettingsSubscription?.close();
     for (final sub in _subscriptions) {
       sub.cancel();
@@ -303,9 +304,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       await widget.controller.player.seek(currentPos);
       await widget.controller.player.play();
 
-      messenger.showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      messenger.showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
@@ -545,7 +544,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            tooltip: isMuted ? context.l10n.common_unmute : context.l10n.common_mute,
+            tooltip: isMuted
+                ? context.l10n.common_unmute
+                : context.l10n.common_mute,
             style: _controlButtonStyle(colorScheme),
             iconSize: 20,
             icon: Icon(iconData),
@@ -754,8 +755,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
           callback = () => ref.read(playerStateProvider.notifier).playNext();
           break;
         case KeybindAction.previousScene:
-          callback =
-              () => ref.read(playerStateProvider.notifier).playPrevious();
+          callback = () =>
+              ref.read(playerStateProvider.notifier).playPrevious();
           break;
         case KeybindAction.speedUp:
           callback = () {
