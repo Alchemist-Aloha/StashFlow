@@ -12,6 +12,7 @@ import 'scene_details_provider.dart';
 import 'scene_list_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../data/repositories/stream_prewarmer.dart';
+import 'player_settings.dart';
 import '../../../../core/utils/pip_mode.dart';
 import '../../../../main.dart'; // To access mediaHandler
 import '../../../../core/data/auth/auth_provider.dart';
@@ -300,20 +301,8 @@ class GlobalPlayerState {
 /// - Managing UI-related playback settings (PiP, Fullscreen).
 @riverpod
 class PlayerState extends _$PlayerState {
-  static const _autoplayNextKey = 'autoplay_next';
-  static const _playEndBehaviorKey = 'video_play_end_behavior';
-  static const _showVideoDebugInfoKey = 'show_video_debug_info';
-  static const _useDoubleTapSeekKey = 'video_use_double_tap_seek';
-  static const _enableBackgroundPlaybackKey = 'video_background_playback';
-  static const _enableNativePipKey = 'video_native_pip';
-  static const _videoGravityOrientationKey = 'video_gravity_orientation';
-  static const _defaultSubtitleLanguageKey = 'default_subtitle_language';
-  static const _subtitleFontSizeKey = 'subtitle_font_size';
-  static const _subtitlePositionBottomRatioKey =
-      'subtitle_position_bottom_ratio';
-  static const _subtitleTextAlignmentKey = 'subtitle_text_alignment';
-  static const _feedStartRandomKey = 'feed_start_random';
-  static const _resumePlayPositionKey = 'video_resume_play_position';
+  PlayerSettingsStore get _settingsStore =>
+      PlayerSettingsStore(ref.read(sharedPreferencesProvider));
 
   /// Internal reference used during disposal to ensure we clean up the right player.
   Player? _playerRef;
@@ -391,43 +380,26 @@ class PlayerState extends _$PlayerState {
       return playNext();
     };
 
-    final prefs = ref.read(sharedPreferencesProvider);
-
-    // Initial load of preferences
-    final autoplayNext = prefs.getBool(_autoplayNextKey) ?? false;
-    final endBehaviorStr = prefs.getString(_playEndBehaviorKey);
-    VideoEndBehavior playEndBehavior;
-    if (endBehaviorStr != null) {
-      playEndBehavior = VideoEndBehavior.values.firstWhere(
-        (e) => e.name == endBehaviorStr,
-        orElse: () => VideoEndBehavior.stop,
-      );
-    } else {
-      // Migrate from autoplayNext
-      playEndBehavior = autoplayNext
-          ? VideoEndBehavior.next
-          : VideoEndBehavior.stop;
-    }
+    final loadedSettings = _settingsStore.load();
+    final playEndBehavior = VideoEndBehavior.values.firstWhere(
+      (e) => e.name == loadedSettings.playEndBehaviorName,
+      orElse: () => VideoEndBehavior.stop,
+    );
 
     return GlobalPlayerState(
       playEndBehavior: playEndBehavior,
-      showVideoDebugInfo: prefs.getBool(_showVideoDebugInfoKey) ?? false,
-      useDoubleTapSeek: prefs.getBool(_useDoubleTapSeekKey) ?? true,
-      enableBackgroundPlayback:
-          prefs.getBool(_enableBackgroundPlaybackKey) ?? false,
-      enableNativePip: prefs.getBool(_enableNativePipKey) ?? false,
-      videoGravityOrientation:
-          prefs.getBool(_videoGravityOrientationKey) ?? true,
+      showVideoDebugInfo: loadedSettings.showVideoDebugInfo,
+      useDoubleTapSeek: loadedSettings.useDoubleTapSeek,
+      enableBackgroundPlayback: loadedSettings.enableBackgroundPlayback,
+      enableNativePip: loadedSettings.enableNativePip,
+      videoGravityOrientation: loadedSettings.videoGravityOrientation,
       isInPipMode: PipMode.isInPipMode.value,
-      defaultSubtitleLanguage:
-          prefs.getString(_defaultSubtitleLanguageKey) ?? 'none',
-      subtitleFontSize: prefs.getDouble(_subtitleFontSizeKey) ?? 18.0,
-      subtitlePositionBottomRatio:
-          prefs.getDouble(_subtitlePositionBottomRatioKey) ?? 0.15,
-      subtitleTextAlignment:
-          prefs.getString(_subtitleTextAlignmentKey) ?? 'center',
-      feedStartRandom: prefs.getBool(_feedStartRandomKey) ?? false,
-      resumePlayPosition: prefs.getBool(_resumePlayPositionKey) ?? true,
+      defaultSubtitleLanguage: loadedSettings.defaultSubtitleLanguage,
+      subtitleFontSize: loadedSettings.subtitleFontSize,
+      subtitlePositionBottomRatio: loadedSettings.subtitlePositionBottomRatio,
+      subtitleTextAlignment: loadedSettings.subtitleTextAlignment,
+      feedStartRandom: loadedSettings.feedStartRandom,
+      resumePlayPosition: loadedSettings.resumePlayPosition,
     );
   }
 
@@ -441,76 +413,62 @@ class PlayerState extends _$PlayerState {
 
   void setPlayEndBehavior(VideoEndBehavior behavior) {
     state = state.copyWith(playEndBehavior: behavior);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setString(_playEndBehaviorKey, behavior.name);
-    // Sync legacy key
-    prefs.setBool(_autoplayNextKey, behavior == VideoEndBehavior.next);
+    unawaited(_settingsStore.savePlayEndBehaviorName(behavior.name));
   }
 
   void setShowVideoDebugInfo(bool value) {
     state = state.copyWith(showVideoDebugInfo: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setBool(_showVideoDebugInfoKey, value);
+    unawaited(_settingsStore.saveShowVideoDebugInfo(value));
   }
 
   void setUseDoubleTapSeek(bool value) {
     state = state.copyWith(useDoubleTapSeek: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setBool(_useDoubleTapSeekKey, value);
+    unawaited(_settingsStore.saveUseDoubleTapSeek(value));
   }
 
   void setEnableBackgroundPlayback(bool value) {
     state = state.copyWith(enableBackgroundPlayback: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setBool(_enableBackgroundPlaybackKey, value);
+    unawaited(_settingsStore.saveEnableBackgroundPlayback(value));
   }
 
   void setEnableNativePip(bool value) {
     state = state.copyWith(enableNativePip: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setBool(_enableNativePipKey, value);
+    unawaited(_settingsStore.saveEnableNativePip(value));
   }
 
   void setVideoGravityOrientation(bool value) {
     state = state.copyWith(videoGravityOrientation: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setBool(_videoGravityOrientationKey, value);
+    unawaited(_settingsStore.saveVideoGravityOrientation(value));
   }
 
   void setFeedStartRandom(bool value) {
     state = state.copyWith(feedStartRandom: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setBool(_feedStartRandomKey, value);
+    unawaited(_settingsStore.saveFeedStartRandom(value));
   }
 
   void setResumePlayPosition(bool value) {
     state = state.copyWith(resumePlayPosition: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setBool(_resumePlayPositionKey, value);
+    unawaited(_settingsStore.saveResumePlayPosition(value));
   }
 
   void setDefaultSubtitleLanguage(String value) {
     state = state.copyWith(defaultSubtitleLanguage: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setString(_defaultSubtitleLanguageKey, value);
+    unawaited(_settingsStore.saveDefaultSubtitleLanguage(value));
   }
 
   void setSubtitleFontSize(double value) {
     state = state.copyWith(subtitleFontSize: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setDouble(_subtitleFontSizeKey, value);
+    unawaited(_settingsStore.saveSubtitleFontSize(value));
   }
 
   void setSubtitlePositionBottomRatio(double value) {
     state = state.copyWith(subtitlePositionBottomRatio: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setDouble(_subtitlePositionBottomRatioKey, value);
+    unawaited(_settingsStore.saveSubtitlePositionBottomRatio(value));
   }
 
   void setSubtitleTextAlignment(String value) {
     state = state.copyWith(subtitleTextAlignment: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setString(_subtitleTextAlignmentKey, value);
+    unawaited(_settingsStore.saveSubtitleTextAlignment(value));
   }
 
   Future<void> setSubtitle(String? languageCode, {String? captionType}) async {
