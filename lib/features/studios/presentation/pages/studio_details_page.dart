@@ -244,6 +244,7 @@ class StudioDetailsPage extends ConsumerWidget {
                                     ),
                                     onTap: (scene) => context.push(
                                       '/scenes/scene/${scene.id}',
+                                      extra: true,
                                     ),
                                   );
                                 },

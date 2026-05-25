@@ -153,6 +153,32 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(covariant SceneVideoPlayer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.scene.id != widget.scene.id) {
+      _bufferingDisplayTimer?.cancel();
+      _bufferingDisplayTimer = null;
+      _showBufferingSpinner = false;
+      _isStarting = false;
+      _transformationNotifier.value = Matrix4.identity();
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _startPlaybackIfNeeded(force: widget.autoPlayOnMount);
+      });
+      return;
+    }
+
+    if (!oldWidget.autoPlayOnMount && widget.autoPlayOnMount) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _startPlaybackIfNeeded(force: true);
+      });
+    }
+  }
+
   /// Automatically start playback if this scene is designated as active,
   /// or if requested by the user.
   Future<void> _startPlaybackIfNeeded({bool force = false}) async {
@@ -383,7 +409,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
                   _startPlaybackIfNeeded(force: true),
           },
           child: Focus(
-            autofocus: true,
+            autofocus: false,
             child: Container(
               color: Colors.black,
               child: Center(

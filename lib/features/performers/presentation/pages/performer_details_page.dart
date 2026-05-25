@@ -448,6 +448,7 @@ class PerformerDetailsPage extends ConsumerWidget {
                                     ),
                                     onTap: (scene) => context.push(
                                       '/scenes/scene/${scene.id}',
+                                      extra: true,
                                     ),
                                   );
                                 },

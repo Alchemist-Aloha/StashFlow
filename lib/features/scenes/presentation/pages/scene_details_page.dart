@@ -79,6 +79,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   bool _tagsExpanded = false;
   bool _performersExpanded = false;
 
+  final GlobalKey _playerKey = GlobalKey();
+
   bool _isRandomSortActive() {
     return ref.read(sceneSortProvider).sort == 'random';
   }
@@ -345,6 +347,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SceneVideoPlayer(
+                                key: _playerKey,
                                 scene: scene,
                                 autoPlayOnMount: widget.autoPlayOnMount,
                                 maxHeight: safeMaxHeight,
@@ -405,6 +408,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SceneVideoPlayer(
+                        key: _playerKey,
                         scene: scene,
                         autoPlayOnMount: widget.autoPlayOnMount,
                         maxHeight: safeMaxHeight,

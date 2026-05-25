@@ -582,7 +582,7 @@ class PlayerState extends _$PlayerState {
         'PlayerState: syncing background to scene $activeSceneId',
         source: 'player_provider',
       );
-      router.go('/scenes/scene/$activeSceneId');
+      router.pushReplacement('/scenes/scene/$activeSceneId');
     }
   }
 

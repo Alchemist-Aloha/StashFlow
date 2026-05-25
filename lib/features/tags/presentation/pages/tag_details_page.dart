@@ -218,6 +218,7 @@ class TagDetailsPage extends ConsumerWidget {
                                     queueId: PlaybackQueueIds.tagStrip(tag.id),
                                     onTap: (scene) => context.push(
                                       '/scenes/scene/${scene.id}',
+                                      extra: true,
                                     ),
                                   );
                                 },

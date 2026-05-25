@@ -70,7 +70,7 @@ class TagMediaGridPage extends ConsumerWidget {
                   scenes,
                   item.id,
                 );
-            context.push('/scenes/scene/${item.id}');
+            context.push('/scenes/scene/${item.id}', extra: true);
           },
         );
       },
