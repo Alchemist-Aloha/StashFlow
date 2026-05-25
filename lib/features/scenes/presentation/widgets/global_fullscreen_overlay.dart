@@ -7,6 +7,7 @@ import 'package:media_kit_video/media_kit_video.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../providers/video_player_provider.dart';
+import '../providers/fullscreen_controller.dart';
 import 'player_surface.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/utils/web_helpers.dart';
@@ -51,10 +52,11 @@ class _GlobalFullscreenOverlayState
 
     // Check initial state
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final isFullScreen = ref.read(
-        playerStateProvider.select((s) => s.isFullScreen),
+      final phase = ref.read(
+        playerStateProvider.select((s) => s.fullscreenPhase),
       );
-      if (isFullScreen) {
+      if (phase == FullscreenPhase.entering ||
+          phase == FullscreenPhase.fullscreen) {
         _onFullScreenChanged(true);
       }
     });
@@ -88,7 +90,11 @@ class _GlobalFullscreenOverlayState
       _animationController.forward().then((_) {
         if (mounted) setState(() => _isAnimating = false);
       });
-      _enterFullScreen();
+      _enterFullScreen().then((_) {
+        if (mounted) {
+          ref.read(playerStateProvider.notifier).markFullscreenEntered();
+        }
+      });
     } else if (!isFullScreen && _isVisible) {
       AppLogStore.instance.add(
         'GlobalFullscreenOverlay: hiding overlay',
@@ -104,6 +110,7 @@ class _GlobalFullscreenOverlayState
         }
       });
       _exitFullScreen();
+      ref.read(playerStateProvider.notifier).markFullscreenExited();
     }
   }
 
@@ -252,15 +259,19 @@ class _GlobalFullscreenOverlayState
     notifier.syncBackgroundToActiveScene(context);
 
     // Trigger the hide animation and state change
-    notifier.setFullScreen(false);
-    notifier.setViewMode(PlayerViewMode.inline);
+    notifier.requestExitFullscreen();
   }
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<bool>(
-      playerStateProvider.select((s) => s.isFullScreen),
-      (previous, next) => _onFullScreenChanged(next),
+    ref.listen<FullscreenPhase>(
+      playerStateProvider.select((s) => s.fullscreenPhase),
+      (previous, next) {
+        final shouldShow =
+            next == FullscreenPhase.entering ||
+            next == FullscreenPhase.fullscreen;
+        _onFullScreenChanged(shouldShow);
+      },
     );
 
     final bool showOverlay = _isVisible || _isAnimating;

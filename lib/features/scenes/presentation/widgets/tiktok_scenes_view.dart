@@ -13,6 +13,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_title_utils.dart';
+import '../providers/player_view_mode.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/video_player_provider.dart';
@@ -262,7 +263,9 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
           if (totalDuration > 0) {
             final percentage = resumeSec / totalDuration;
             if (percentage >= 0.1 && percentage <= 0.9) {
-              startPosition = Duration(milliseconds: (resumeSec * 1000).round());
+              startPosition = Duration(
+                milliseconds: (resumeSec * 1000).round(),
+              );
             }
           } else {
             startPosition = Duration(milliseconds: (resumeSec * 1000).round());
@@ -271,11 +274,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
       }
 
       await player.open(
-        Media(
-          choice.url,
-          httpHeaders: headers,
-          start: startPosition,
-        ),
+        Media(choice.url, httpHeaders: headers, start: startPosition),
         play: false,
       );
 
@@ -284,8 +283,11 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
         subscription = player.stream.duration.listen((duration) async {
           if (duration.inSeconds > 0) {
             subscription.cancel();
-            final randomOffset = Random().nextDouble() * 0.9 * duration.inSeconds;
-            await player.seek(Duration(milliseconds: (randomOffset * 1000).toInt()));
+            final randomOffset =
+                Random().nextDouble() * 0.9 * duration.inSeconds;
+            await player.seek(
+              Duration(milliseconds: (randomOffset * 1000).toInt()),
+            );
           }
         });
       }
@@ -719,7 +721,9 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
         // Navigate to details THEN set global fullscreen state
         context.go('/scenes/scene/${widget.scene.id}');
         ref.read(playerStateProvider.notifier).setFullScreen(true);
-        ref.read(playerStateProvider.notifier).setViewMode(PlayerViewMode.fullscreen);
+        ref
+            .read(playerStateProvider.notifier)
+            .setViewMode(PlayerViewMode.fullscreen);
       }
     }
   }

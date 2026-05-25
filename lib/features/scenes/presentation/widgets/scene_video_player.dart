@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../domain/entities/scene.dart';
+import '../providers/player_view_mode.dart';
 import '../providers/video_player_provider.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
@@ -312,8 +313,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       ref
           .read(playerStateProvider.notifier)
           .syncBackgroundToActiveScene(context);
-      ref.read(playerStateProvider.notifier).setFullScreen(false);
-      ref.read(playerStateProvider.notifier).setViewMode(PlayerViewMode.inline);
+      ref.read(playerStateProvider.notifier).requestExitFullscreen();
     } else {
       // Fullscreen overlay always renders the global active scene.
       // Ensure the scene details page owns the global player before entering
@@ -335,10 +335,9 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
         'SceneVideoPlayer [${widget.scene.id}] entering fullscreen via global state',
         source: 'SceneVideoPlayer',
       );
-      ref
-          .read(playerStateProvider.notifier)
-          .setViewMode(PlayerViewMode.fullscreen);
-      ref.read(playerStateProvider.notifier).setFullScreen(true);
+      final notifier = ref.read(playerStateProvider.notifier);
+      notifier.setViewMode(PlayerViewMode.fullscreen);
+      notifier.requestEnterFullscreen();
     }
   }
 

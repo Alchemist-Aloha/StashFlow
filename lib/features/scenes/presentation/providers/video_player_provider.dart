@@ -7,12 +7,15 @@ import 'package:clock/clock.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../domain/entities/scene.dart';
 import 'playback_queue_provider.dart';
+import 'queue_playback_coordinator.dart';
 import 'scene_details_provider.dart';
 import 'scene_list_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../data/repositories/stream_prewarmer.dart';
+import 'fullscreen_controller.dart';
 import 'playback_activity_tracker.dart';
 import 'playback_session_controller.dart';
+import 'player_view_mode.dart';
 import 'player_settings.dart';
 import '../../../../core/utils/pip_mode.dart';
 import '../../../../main.dart'; // To access mediaHandler
@@ -29,8 +32,6 @@ import 'package:media_kit_video/media_kit_video.dart';
 part 'video_player_provider.g.dart';
 
 enum VideoEndBehavior { stop, loop, next }
-
-enum PlayerViewMode { inline, fullscreen, tiktok }
 
 class NavigationAction {
   final String path;
@@ -140,6 +141,7 @@ class GlobalPlayerState {
 
   /// Current UI context where the video is being viewed.
   final PlayerViewMode viewMode;
+  final FullscreenPhase fullscreenPhase;
 
   /// Flag to ignore redundant triggers during navigation.
   final bool isTransitioning;
@@ -179,6 +181,7 @@ class GlobalPlayerState {
     this.subtitlePositionBottomRatio = 0.15,
     this.subtitleTextAlignment = 'center',
     this.viewMode = PlayerViewMode.inline,
+    this.fullscreenPhase = FullscreenPhase.inline,
     this.isTransitioning = false,
     this.navigationIntent,
   });
@@ -222,6 +225,7 @@ class GlobalPlayerState {
     double? subtitlePositionBottomRatio,
     String? subtitleTextAlignment,
     PlayerViewMode? viewMode,
+    FullscreenPhase? fullscreenPhase,
     bool? isTransitioning,
     NavigationIntent? navigationIntent,
     bool clearActive = false,
@@ -285,6 +289,7 @@ class GlobalPlayerState {
       subtitleTextAlignment:
           subtitleTextAlignment ?? this.subtitleTextAlignment,
       viewMode: viewMode ?? this.viewMode,
+      fullscreenPhase: fullscreenPhase ?? this.fullscreenPhase,
       isTransitioning: isTransitioning ?? this.isTransitioning,
       navigationIntent: clearNavigation
           ? null
@@ -326,6 +331,10 @@ class PlayerState extends _$PlayerState {
 
   late final PlaybackActivityTracker _activityTracker;
   late final PlaybackSessionController _sessionController;
+  final FullscreenController _fullscreenController =
+      const FullscreenController();
+  final QueuePlaybackCoordinator _queuePlaybackCoordinator =
+      const QueuePlaybackCoordinator();
 
   @override
   GlobalPlayerState build() {
@@ -531,7 +540,14 @@ class PlayerState extends _$PlayerState {
       'PlayerState setFullScreen: $value',
       source: 'player_provider',
     );
-    state = state.copyWith(isFullScreen: value);
+    final runtime = _fullscreenController.syncFromLegacy(
+      isFullScreen: value,
+      viewModeName: state.viewMode.name,
+    );
+    state = state.copyWith(
+      isFullScreen: runtime.isFullScreen,
+      fullscreenPhase: runtime.fullscreenPhase,
+    );
   }
 
   void setViewMode(PlayerViewMode mode) {
@@ -539,7 +555,56 @@ class PlayerState extends _$PlayerState {
       'PlayerState setViewMode: $mode',
       source: 'player_provider',
     );
-    state = state.copyWith(viewMode: mode);
+    final runtime = _fullscreenController.syncFromLegacy(
+      isFullScreen: state.isFullScreen,
+      viewModeName: mode.name,
+    );
+    state = state.copyWith(
+      viewMode: mode,
+      fullscreenPhase: runtime.fullscreenPhase,
+    );
+  }
+
+  void requestEnterFullscreen() {
+    final runtime = _fullscreenController.requestEnterFullscreen(
+      viewModeName: state.viewMode.name,
+    );
+    state = state.copyWith(
+      isFullScreen: runtime.isFullScreen,
+      viewMode: PlayerViewMode.values.firstWhere(
+        (e) => e.name == runtime.viewModeName,
+        orElse: () => PlayerViewMode.fullscreen,
+      ),
+      fullscreenPhase: runtime.fullscreenPhase,
+    );
+  }
+
+  void requestExitFullscreen() {
+    final runtime = _fullscreenController.requestExitFullscreen();
+    state = state.copyWith(
+      isFullScreen: runtime.isFullScreen,
+      viewMode: PlayerViewMode.inline,
+      fullscreenPhase: runtime.fullscreenPhase,
+    );
+  }
+
+  void markFullscreenEntered() {
+    final runtime = _fullscreenController.markEntered(
+      viewModeName: state.viewMode.name,
+    );
+    state = state.copyWith(
+      isFullScreen: runtime.isFullScreen,
+      fullscreenPhase: runtime.fullscreenPhase,
+    );
+  }
+
+  void markFullscreenExited() {
+    final runtime = _fullscreenController.markExited();
+    state = state.copyWith(
+      isFullScreen: runtime.isFullScreen,
+      viewMode: PlayerViewMode.inline,
+      fullscreenPhase: runtime.fullscreenPhase,
+    );
   }
 
   /// Synchronizes the background navigation to match the currently active scene.
@@ -816,6 +881,7 @@ class PlayerState extends _$PlayerState {
       subtitleFontSize: state.subtitleFontSize,
       subtitlePositionBottomRatio: state.subtitlePositionBottomRatio,
       subtitleTextAlignment: state.subtitleTextAlignment,
+      fullscreenPhase: state.fullscreenPhase,
     );
 
     try {
@@ -1059,6 +1125,7 @@ class PlayerState extends _$PlayerState {
       subtitleFontSize: state.subtitleFontSize,
       subtitlePositionBottomRatio: state.subtitlePositionBottomRatio,
       subtitleTextAlignment: state.subtitleTextAlignment,
+      fullscreenPhase: state.fullscreenPhase,
     );
   }
 
@@ -1194,7 +1261,7 @@ class PlayerState extends _$PlayerState {
     switch (state.playEndBehavior) {
       case VideoEndBehavior.stop:
         if (state.isFullScreen) {
-          setFullScreen(false);
+          requestExitFullscreen();
         }
         break;
       case VideoEndBehavior.loop:
@@ -1242,42 +1309,38 @@ class PlayerState extends _$PlayerState {
     _isTransitioning = true;
     try {
       final queueNotifier = ref.read(playbackQueueProvider.notifier);
+      final target = _queuePlaybackCoordinator.findTarget(
+        queueState: queueNotifier.state,
+        direction: QueueAdvanceDirection.next,
+        activeSceneId: state.activeScene?.id,
+      );
+      if (target == null) return;
 
-      // Ensure queue is synced
-      if (queueNotifier.state.currentIndex == -1 &&
-          state.activeScene?.id != null) {
-        queueNotifier.findAndSetIndex(state.activeScene!.id);
-      }
+      final resolver = ref.read(streamResolverProvider.notifier);
+      final choice = await resolver.resolvePreferredStream(target.scene);
+      if (choice == null) return;
 
-      final nextScene = queueNotifier.getNextScene();
+      final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
+      await playScene(
+        target.scene,
+        choice.url,
+        mimeType: choice.mimeType,
+        streamLabel: choice.label,
+        streamSource: 'autoplay-next',
+        httpHeaders: mediaHeaders,
+      );
 
-      if (nextScene != null) {
-        // Trigger navigation synchronization so background details match active scene
-        // Skip for TikTok mode as it handles its own navigation via PageView
+      if (state.activeScene?.id == target.scene.id) {
+        queueNotifier.setIndex(target.targetIndex);
+        // Trigger navigation synchronization so background details match active scene.
+        // Skip for TikTok mode as it handles its own navigation via PageView.
         if (state.viewMode != PlayerViewMode.tiktok) {
           _navigate([
             NavigationAction(
-              '/scenes/scene/${nextScene.id}',
+              '/scenes/scene/${target.scene.id}',
               isReplacement: true,
             ),
           ]);
-        }
-
-        queueNotifier.playNext(); // Increment index in queue
-
-        final resolver = ref.read(streamResolverProvider.notifier);
-        final choice = await resolver.resolvePreferredStream(nextScene);
-
-        if (choice != null) {
-          final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
-          await playScene(
-            nextScene,
-            choice.url,
-            mimeType: choice.mimeType,
-            streamLabel: choice.label,
-            streamSource: 'autoplay-next',
-            httpHeaders: mediaHeaders,
-          );
         }
       }
     } finally {
@@ -1295,42 +1358,38 @@ class PlayerState extends _$PlayerState {
     _isTransitioning = true;
     try {
       final queueNotifier = ref.read(playbackQueueProvider.notifier);
+      final target = _queuePlaybackCoordinator.findTarget(
+        queueState: queueNotifier.state,
+        direction: QueueAdvanceDirection.previous,
+        activeSceneId: state.activeScene?.id,
+      );
+      if (target == null) return;
 
-      // Ensure queue is synced
-      if (queueNotifier.state.currentIndex == -1 &&
-          state.activeScene?.id != null) {
-        queueNotifier.findAndSetIndex(state.activeScene!.id);
-      }
+      final resolver = ref.read(streamResolverProvider.notifier);
+      final choice = await resolver.resolvePreferredStream(target.scene);
+      if (choice == null) return;
 
-      final prevScene = queueNotifier.getPreviousScene();
+      final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
+      await playScene(
+        target.scene,
+        choice.url,
+        mimeType: choice.mimeType,
+        streamLabel: choice.label,
+        streamSource: 'autoplay-prev',
+        httpHeaders: mediaHeaders,
+      );
 
-      if (prevScene != null) {
-        // Trigger navigation synchronization
-        // Skip for TikTok mode as it handles its own navigation via PageView
+      if (state.activeScene?.id == target.scene.id) {
+        queueNotifier.setIndex(target.targetIndex);
+        // Trigger navigation synchronization.
+        // Skip for TikTok mode as it handles its own navigation via PageView.
         if (state.viewMode != PlayerViewMode.tiktok) {
           _navigate([
             NavigationAction(
-              '/scenes/scene/${prevScene.id}',
+              '/scenes/scene/${target.scene.id}',
               isReplacement: true,
             ),
           ]);
-        }
-
-        queueNotifier.playPrevious(); // Decrement index in queue
-
-        final resolver = ref.read(streamResolverProvider.notifier);
-        final choice = await resolver.resolvePreferredStream(prevScene);
-
-        if (choice != null) {
-          final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
-          await playScene(
-            prevScene,
-            choice.url,
-            mimeType: choice.mimeType,
-            streamLabel: choice.label,
-            streamSource: 'autoplay-prev',
-            httpHeaders: mediaHeaders,
-          );
         }
       }
     } finally {

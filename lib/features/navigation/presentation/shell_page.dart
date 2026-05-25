@@ -123,12 +123,12 @@ class _ShellPageState extends ConsumerState<ShellPage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              context.l10n.update_available(updateInfo.latestVersion),
-            ),
+            Text(context.l10n.update_available(updateInfo.latestVersion)),
             const SizedBox(height: 12),
             Text(
-              context.l10n.would_you_like_to_visit_the_release_page_to_download_it,
+              context
+                  .l10n
+                  .would_you_like_to_visit_the_release_page_to_download_it,
             ),
           ],
         ),
@@ -170,9 +170,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         barrierDismissible: false,
         builder: (context) => AlertDialog(
           title: Text(context.l10n.common_setup_required),
-          content: Text(
-            context.l10n.to_get_started_configure_stash_server,
-          ),
+          content: Text(context.l10n.to_get_started_configure_stash_server),
           actions: [
             TextButton(
               onPressed: () {
@@ -418,8 +416,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
           if (playerState.isFullScreen) {
             final notifier = ref.read(playerStateProvider.notifier);
             notifier.syncBackgroundToActiveScene(context);
-            notifier.setFullScreen(false);
-            notifier.setViewMode(PlayerViewMode.inline);
+            notifier.requestExitFullscreen();
           } else if (isTiktokFullScreen) {
             ref.read(fullScreenModeProvider.notifier).set(false);
           }
