@@ -6,12 +6,12 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:clock/clock.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../domain/entities/scene.dart';
-import '../../domain/repositories/scene_repository.dart';
 import 'playback_queue_provider.dart';
 import 'scene_details_provider.dart';
 import 'scene_list_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../data/repositories/stream_prewarmer.dart';
+import 'playback_activity_tracker.dart';
 import 'player_settings.dart';
 import '../../../../core/utils/pip_mode.dart';
 import '../../../../main.dart'; // To access mediaHandler
@@ -336,12 +336,7 @@ class PlayerState extends _$PlayerState {
   /// Internal flag to track the last speed reported to the media handler.
   double? _lastSpeed;
 
-  // Activity tracking state
-  Timer? _playCountTimer;
-  bool _playCountIncremented = false;
-  DateTime? _playStartTime;
-  double _accumulatedDuration = 0;
-  Timer? _periodicSaveTimer;
+  late final PlaybackActivityTracker _activityTracker;
 
   @override
   GlobalPlayerState build() {
@@ -352,15 +347,34 @@ class PlayerState extends _$PlayerState {
     // This is called here instead of main() to improve initial app startup performance.
     MediaKit.ensureInitialized();
 
-    final repository = ref.read(sceneRepositoryProvider);
+    _activityTracker = PlaybackActivityTracker(
+      now: () => clock.now(),
+      isMounted: () => ref.mounted,
+      incrementPlayCount: (sceneId) =>
+          ref.read(sceneRepositoryProvider).incrementScenePlayCount(sceneId),
+      saveSceneActivity: (sceneId, resumeTime, playDuration) => ref
+          .read(sceneRepositoryProvider)
+          .saveSceneActivity(
+            sceneId,
+            resumeTime: resumeTime,
+            playDuration: playDuration,
+          ),
+      refreshSceneDetails: (sceneId) {
+        if (!ref.mounted) return;
+        unawaited(ref.read(sceneDetailsProvider(sceneId).notifier).refresh());
+      },
+      log: (message) {
+        AppLogStore.instance.add(message, source: 'player_provider');
+      },
+    );
     ref.onDispose(() {
       PipMode.isInPipMode.removeListener(_onPipModeChanged);
+      _activityTracker.dispose();
 
       unawaited(
         _disposeControllers(
           scene: _activeSceneRef,
           controller: _videoControllerRef,
-          repository: repository,
         ),
       );
     });
@@ -689,9 +703,12 @@ class PlayerState extends _$PlayerState {
 
     // Reset activity tracking state for the new scene
     if (!force && state.activeScene?.id != scene.id) {
-      await _stopActivityTracking();
-      _playCountIncremented = false;
-      _accumulatedDuration = 0;
+      await _activityTracker.stop(
+        sceneId: state.activeScene?.id,
+        resumePositionProvider: () =>
+            state.player?.state.position ?? Duration.zero,
+      );
+      _activityTracker.resetForSceneChange();
     }
 
     // ...
@@ -949,8 +966,7 @@ class PlayerState extends _$PlayerState {
 
     // Reset activity tracking state for the new scene
     if (state.activeScene?.id != scene.id) {
-      _playCountIncremented = false;
-      _accumulatedDuration = 0;
+      _activityTracker.resetForSceneChange();
     }
 
     _playerRef = player;
@@ -1019,7 +1035,10 @@ class PlayerState extends _$PlayerState {
     _subscriptions.add(player.stream.height.listen((_) => _videoListener()));
 
     if (player.state.playing) {
-      _startActivityTracking();
+      _activityTracker.start(
+        sceneId: scene.id,
+        resumePositionProvider: () => player.state.position,
+      );
     }
 
     // Prepare for the next scene in the queue
@@ -1084,13 +1103,17 @@ class PlayerState extends _$PlayerState {
     Scene? scene,
     Player? player,
     VideoController? controller,
-    SceneRepository? repository,
   }) async {
-    // Save final activity before disposing
-    await _stopActivityTracking(
-      scene: scene,
-      player: player,
-      repository: repository,
+    final effectiveSceneId =
+        scene?.id ??
+        _activeSceneRef?.id ??
+        (ref.mounted ? state.activeScene?.id : null);
+    final effectivePlayer =
+        player ?? _playerRef ?? (ref.mounted ? state.player : null);
+    await _activityTracker.stop(
+      sceneId: effectiveSceneId,
+      resumePositionProvider: () =>
+          effectivePlayer?.state.position ?? Duration.zero,
     );
 
     if (isTestMode) {
@@ -1124,131 +1147,6 @@ class PlayerState extends _$PlayerState {
     }
 
     await WakelockPlus.disable();
-  }
-
-  void _startActivityTracking() {
-    if (!ref.mounted) return;
-    final scene = state.activeScene;
-    if (scene == null) return;
-
-    if (_playStartTime != null) return; // Already tracking
-
-    AppLogStore.instance.add(
-      'PlayerState _startActivityTracking for scene=${scene.id}',
-      source: 'player_provider',
-    );
-
-    // 1. Play count timer (5 seconds)
-    if (!_playCountIncremented) {
-      _playCountTimer?.cancel();
-      _playCountTimer = Timer(const Duration(seconds: 5), () async {
-        if (!ref.mounted || _playCountIncremented) return;
-        try {
-          await ref
-              .read(sceneRepositoryProvider)
-              .incrementScenePlayCount(scene.id);
-          _playCountIncremented = true;
-          if (ref.mounted) {
-            unawaited(
-              ref.read(sceneDetailsProvider(scene.id).notifier).refresh(),
-            );
-          }
-          AppLogStore.instance.add(
-            'PlayerState play count incremented for scene=${scene.id}',
-            source: 'player_provider',
-          );
-        } catch (e) {
-          debugPrint('Failed to increment play count: $e');
-        }
-      });
-    }
-
-    // 2. Duration tracking
-    _playStartTime = clock.now();
-
-    // 3. Periodic save timer (30 seconds)
-    _periodicSaveTimer?.cancel();
-    _periodicSaveTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
-      _saveActivity();
-    });
-  }
-
-  Future<void> _stopActivityTracking({
-    Scene? scene,
-    Player? player,
-    SceneRepository? repository,
-  }) async {
-    _playCountTimer?.cancel();
-    _playCountTimer = null;
-    _periodicSaveTimer?.cancel();
-    _periodicSaveTimer = null;
-
-    if (_playStartTime != null) {
-      final now = clock.now();
-      _accumulatedDuration +=
-          now.difference(_playStartTime!).inMilliseconds / 1000.0;
-      _playStartTime = null;
-    }
-
-    if (_accumulatedDuration > 0) {
-      await _saveActivity(scene: scene, player: player, repository: repository);
-    }
-  }
-
-  Future<void> _saveActivity({
-    Scene? scene,
-    Player? player,
-    SceneRepository? repository,
-  }) async {
-    final effectiveScene = scene ?? (ref.mounted ? state.activeScene : null);
-    final effectivePlayer = player ?? (ref.mounted ? state.player : null);
-    final effectiveRepo =
-        repository ?? (ref.mounted ? ref.read(sceneRepositoryProvider) : null);
-
-    if (effectiveScene == null ||
-        effectivePlayer == null ||
-        effectiveRepo == null) {
-      return;
-    }
-
-    // Calculate current duration if still playing
-    double durationToSave = _accumulatedDuration;
-    if (_playStartTime != null) {
-      final now = clock.now();
-      durationToSave += now.difference(_playStartTime!).inMilliseconds / 1000.0;
-      // Reset start time to current so we don't double count in next save
-      _playStartTime = now;
-    }
-
-    if (durationToSave < 0.1 &&
-        effectivePlayer.state.position == Duration.zero) {
-      return;
-    }
-
-    final resumeTime = effectivePlayer.state.position.inMilliseconds / 1000.0;
-    _accumulatedDuration = 0;
-
-    AppLogStore.instance.add(
-      'PlayerState _saveActivity scene=${effectiveScene.id} duration=${durationToSave.toStringAsFixed(1)}s resume=${resumeTime.toStringAsFixed(1)}s',
-      source: 'player_provider',
-    );
-
-    try {
-      await effectiveRepo.saveSceneActivity(
-        effectiveScene.id,
-        resumeTime: resumeTime,
-        playDuration: durationToSave,
-      );
-      if (ref.mounted) {
-        unawaited(
-          ref.read(sceneDetailsProvider(effectiveScene.id).notifier).refresh(),
-        );
-      }
-    } catch (e) {
-      debugPrint('Failed to save scene activity: $e');
-      // On failure, we might want to put the duration back into the accumulator
-      // but let's keep it simple for now to avoid complexity.
-    }
   }
 
   void _videoListener() {
@@ -1298,9 +1196,19 @@ class PlayerState extends _$PlayerState {
         );
 
         if (isPlayingNow && !wasPlaying) {
-          _startActivityTracking();
+          if (state.activeScene != null) {
+            _activityTracker.start(
+              sceneId: state.activeScene!.id,
+              resumePositionProvider: () => player.state.position,
+            );
+          }
         } else if (!isPlayingNow && wasPlaying) {
-          _stopActivityTracking();
+          unawaited(
+            _activityTracker.stop(
+              sceneId: state.activeScene?.id,
+              resumePositionProvider: () => player.state.position,
+            ),
+          );
         }
 
         if (!isTestMode) {
