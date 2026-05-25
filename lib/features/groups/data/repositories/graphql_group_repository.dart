@@ -1,4 +1,5 @@
 import 'package:graphql/client.dart';
+import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../domain/entities/group.dart';
 import '../../domain/repositories/group_repository.dart';
@@ -41,7 +42,7 @@ class GraphQLGroupRepository implements GroupRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
 
     return result.parsedData!.findGroups.groups
         .map((g) => Group.fromJson(g.toJson()))
@@ -57,7 +58,7 @@ class GraphQLGroupRepository implements GroupRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
     final data = result.parsedData!.findGroup;
     if (data == null) throw Exception('Group not found');
 

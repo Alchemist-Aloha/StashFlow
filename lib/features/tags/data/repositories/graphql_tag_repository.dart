@@ -1,4 +1,5 @@
 import 'package:graphql/client.dart';
+import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../graphql/tags.graphql.dart';
@@ -66,7 +67,7 @@ class GraphQLTagRepository implements TagRepository {
       );
     }
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
 
     final tags = result.parsedData!.findTags.tags
         .map(
@@ -146,7 +147,7 @@ class GraphQLTagRepository implements TagRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
     final t = result.parsedData!.findTag;
     if (t == null) throw StateError('Tag not found');
 
@@ -177,6 +178,6 @@ class GraphQLTagRepository implements TagRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
   }
 }

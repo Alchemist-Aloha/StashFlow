@@ -34,110 +34,175 @@ Future<void> main() async {
   final startupStopwatch = Stopwatch()..start();
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (!kIsWeb &&
-      (defaultTargetPlatform == TargetPlatform.windows ||
-          defaultTargetPlatform == TargetPlatform.linux ||
-          defaultTargetPlatform == TargetPlatform.macOS)) {
-    await windowManager.ensureInitialized();
-    try {
-      final primaryDisplay = await screenRetriever.getPrimaryDisplay();
-      final visibleSize = primaryDisplay.visibleSize ?? primaryDisplay.size;
-      final visiblePosition = primaryDisplay.visiblePosition ?? Offset.zero;
-
-      await windowManager.setMinimumSize(const Size(800, 600));
-      await windowManager.setSize(visibleSize);
-      await windowManager.setPosition(visiblePosition);
-    } catch (e) {
-      debugPrint('Failed to set initial window size: $e');
-    }
-  }
-
-  // Increase Flutter's in-memory image cache so more decoded thumbnails stay
-  // resident during aggressive prefetching and fast scrolling.
-  // Tune these values based on available memory and observed behavior.
   try {
-    PaintingBinding.instance.imageCache.maximumSize = 500;
-    PaintingBinding.instance.imageCache.maximumSizeBytes =
-        200 * 1024 * 1024; // 200 MB
-  } catch (_) {
-    // Ignore if PaintingBinding isn't available in some test environments.
-  }
-  await initHiveForFlutter();
-  PipMode.initialize();
+    if (!kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.windows ||
+            defaultTargetPlatform == TargetPlatform.linux ||
+            defaultTargetPlatform == TargetPlatform.macOS)) {
+      await windowManager.ensureInitialized();
+      try {
+        final primaryDisplay = await screenRetriever.getPrimaryDisplay();
+        final visibleSize = primaryDisplay.visibleSize ?? primaryDisplay.size;
+        final visiblePosition = primaryDisplay.visiblePosition ?? Offset.zero;
 
-  if (!isTestMode) {
-    try {
-      mediaHandler = await AudioService.init(
-        builder: _buildMediaHandler,
-        config: const AudioServiceConfig(
-          androidNotificationChannelId:
-              'com.github.alchemistaloha.stash_app_flutter.channel.audio',
-          androidNotificationChannelName: 'StashFlow Playback',
-          androidNotificationOngoing: false,
-          androidStopForegroundOnPause: false,
-        ),
-      );
-    } catch (e) {
-      debugPrint('Failed to initialize AudioService: $e');
-      // Fallback or handle gracefully
-    }
-  }
-
-  final sharedPreferences = await SharedPreferences.getInstance();
-
-  AppLogStore.instance.isEnabled =
-      sharedPreferences.getBool('enable_debug_logging') ?? false;
-
-  final secureStorage = AppSecureStorage(sharedPreferences: sharedPreferences);
-
-  // Migrate API key from SharedPreferences to Secure Storage if needed.
-  if (sharedPreferences.containsKey('server_api_key')) {
-    final oldApiKey = sharedPreferences.getString('server_api_key');
-    if (oldApiKey != null && oldApiKey.isNotEmpty) {
-      await secureStorage.write(key: 'server_api_key', value: oldApiKey);
-    }
-    await sharedPreferences.remove('server_api_key');
-  }
-
-  final oldDebugPrint = debugPrint;
-  debugPrint = (String? message, {int? wrapWidth}) {
-    if (AppLogStore.instance.isEnabled) {
-      if (message != null) {
-        AppLogStore.instance.add(message, source: 'debugPrint');
+        await windowManager.setMinimumSize(const Size(800, 600));
+        await windowManager.setSize(visibleSize);
+        await windowManager.setPosition(visiblePosition);
+      } catch (e) {
+        debugPrint('Failed to set initial window size: $e');
       }
-      oldDebugPrint(message, wrapWidth: wrapWidth);
     }
-  };
 
-  FlutterError.onError = (FlutterErrorDetails details) {
-    AppLogStore.instance.add(
-      details.exceptionAsString(),
-      source: 'flutter_error',
+    // Increase Flutter's in-memory image cache so more decoded thumbnails stay
+    // resident during aggressive prefetching and fast scrolling.
+    // Tune these values based on available memory and observed behavior.
+    try {
+      PaintingBinding.instance.imageCache.maximumSize = 500;
+      PaintingBinding.instance.imageCache.maximumSizeBytes =
+          200 * 1024 * 1024; // 200 MB
+    } catch (_) {
+      // Ignore if PaintingBinding isn't available in some test environments.
+    }
+    await initHiveForFlutter();
+    PipMode.initialize();
+
+    if (!isTestMode) {
+      try {
+        mediaHandler = await AudioService.init(
+          builder: _buildMediaHandler,
+          config: const AudioServiceConfig(
+            androidNotificationChannelId:
+                'com.github.alchemistaloha.stash_app_flutter.channel.audio',
+            androidNotificationChannelName: 'StashFlow Playback',
+            androidNotificationOngoing: false,
+            androidStopForegroundOnPause: false,
+          ),
+        );
+      } catch (e) {
+        debugPrint('Failed to initialize AudioService: $e');
+        // Fallback or handle gracefully
+      }
+    }
+
+    final sharedPreferences = await SharedPreferences.getInstance();
+
+    AppLogStore.instance.isEnabled =
+        sharedPreferences.getBool('enable_debug_logging') ?? false;
+
+    final secureStorage = AppSecureStorage(
+      sharedPreferences: sharedPreferences,
     );
-    FlutterError.presentError(details);
-  };
 
-  PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
-    AppLogStore.instance.add('$error\n$stack', source: 'unhandled_error');
-    return false;
-  };
+    // Migrate API key from SharedPreferences to Secure Storage if needed.
+    if (sharedPreferences.containsKey('server_api_key')) {
+      final oldApiKey = sharedPreferences.getString('server_api_key');
+      if (oldApiKey != null && oldApiKey.isNotEmpty) {
+        await secureStorage.write(key: 'server_api_key', value: oldApiKey);
+      }
+      await sharedPreferences.remove('server_api_key');
+    }
 
-  runApp(
-    ProviderScope(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(sharedPreferences),
-        secureStorageProvider.overrideWithValue(secureStorage),
-      ],
-      child: const MyApp(),
-    ),
-  );
+    final oldDebugPrint = debugPrint;
+    debugPrint = (String? message, {int? wrapWidth}) {
+      if (AppLogStore.instance.isEnabled) {
+        if (message != null) {
+          AppLogStore.instance.add(message, source: 'debugPrint');
+        }
+        oldDebugPrint(message, wrapWidth: wrapWidth);
+      }
+    };
 
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    startupStopwatch.stop();
-    debugPrint(
-      'Startup: first frame rendered in ${startupStopwatch.elapsedMilliseconds}ms',
+    FlutterError.onError = (FlutterErrorDetails details) {
+      AppLogStore.instance.add(
+        details.exceptionAsString(),
+        source: 'flutter_error',
+      );
+      FlutterError.presentError(details);
+    };
+
+    PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
+      AppLogStore.instance.add('$error\n$stack', source: 'unhandled_error');
+      return false;
+    };
+
+    runApp(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+          secureStorageProvider.overrideWithValue(secureStorage),
+        ],
+        child: const MyApp(),
+      ),
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      startupStopwatch.stop();
+      debugPrint(
+        'Startup: first frame rendered in ${startupStopwatch.elapsedMilliseconds}ms',
+      );
+    });
+  } catch (error, stackTrace) {
+    AppLogStore.instance.add('$error\n$stackTrace', source: 'startup_error');
+    runApp(StartupErrorApp(error: error, stackTrace: stackTrace));
+  }
+}
+
+class StartupErrorApp extends StatelessWidget {
+  const StartupErrorApp({
+    super.key,
+    required this.error,
+    required this.stackTrace,
   });
+
+  final Object error;
+  final StackTrace stackTrace;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 640),
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'StashFlow failed to start',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'A startup service failed before the app could finish initializing. Restart the app after checking diagnostics.',
+                      ),
+                      const SizedBox(height: 16),
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: SelectableText('$error\n\n$stackTrace'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class MyApp extends ConsumerWidget {

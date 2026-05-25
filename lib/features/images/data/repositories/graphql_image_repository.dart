@@ -1,8 +1,10 @@
 import 'package:graphql/client.dart';
+import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
-import 'package:stash_app_flutter/core/domain/entities/criterion.dart' as domain;
+import 'package:stash_app_flutter/core/domain/entities/criterion.dart'
+    as domain;
 import '../../domain/entities/image.dart';
 import '../../domain/entities/image_filter.dart';
 import '../../domain/repositories/image_repository.dart';
@@ -87,7 +89,7 @@ class GraphQLImageRepository implements ImageRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
 
     return result.parsedData!.findImages.images.map((i) {
       final map = i.toJson();
@@ -122,7 +124,7 @@ class GraphQLImageRepository implements ImageRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
     final data = result.parsedData!.findImage;
     if (data == null) throw Exception('Image not found');
 
@@ -169,6 +171,6 @@ class GraphQLImageRepository implements ImageRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
   }
 }

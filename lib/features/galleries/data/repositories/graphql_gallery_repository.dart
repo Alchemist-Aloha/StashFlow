@@ -1,7 +1,9 @@
 import 'package:graphql/client.dart';
+import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
-import 'package:stash_app_flutter/core/domain/entities/criterion.dart' as domain;
+import 'package:stash_app_flutter/core/domain/entities/criterion.dart'
+    as domain;
 import '../../domain/entities/gallery.dart';
 import '../../domain/entities/gallery_filter.dart';
 import '../../domain/repositories/gallery_repository.dart';
@@ -35,9 +37,13 @@ class GraphQLGalleryRepository implements GalleryRepository {
       is_zip: galleryFilter?.isZip,
       rating100: mapIntCriterion(galleryFilter?.rating100),
       organized: galleryFilter?.organized,
-      average_resolution: mapResolutionCriterion(galleryFilter?.averageResolution),
+      average_resolution: mapResolutionCriterion(
+        galleryFilter?.averageResolution,
+      ),
       has_chapters: galleryFilter?.hasChapters?.toString(),
-      scenes: galleryFilter?.scenes != null ? mapMultiCriterion(galleryFilter?.scenes) : null,
+      scenes: galleryFilter?.scenes != null
+          ? mapMultiCriterion(galleryFilter?.scenes)
+          : null,
       studios: (studioId != null || galleryFilter?.studios != null)
           ? mapHierarchicalMultiCriterion(
               studioId != null
@@ -53,7 +59,9 @@ class GraphQLGalleryRepository implements GalleryRepository {
             )
           : null,
       tag_count: mapIntCriterion(galleryFilter?.tagCount),
-      performer_tags: mapHierarchicalMultiCriterion(galleryFilter?.performerTags),
+      performer_tags: mapHierarchicalMultiCriterion(
+        galleryFilter?.performerTags,
+      ),
       performers: (performerId != null || galleryFilter?.performers != null)
           ? mapMultiCriterion(
               performerId != null
@@ -91,7 +99,7 @@ class GraphQLGalleryRepository implements GalleryRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
 
     return result.parsedData!.findGalleries.galleries
         .map((g) => Gallery.fromJson(g.toJson()))
@@ -107,7 +115,7 @@ class GraphQLGalleryRepository implements GalleryRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
     final data = result.parsedData?.findGallery;
     if (data == null) throw Exception('Gallery not found');
 
@@ -125,6 +133,6 @@ class GraphQLGalleryRepository implements GalleryRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
   }
 }

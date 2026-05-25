@@ -1,8 +1,10 @@
 import 'package:graphql/client.dart';
+import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
-import 'package:stash_app_flutter/core/domain/entities/criterion.dart' as domain;
+import 'package:stash_app_flutter/core/domain/entities/criterion.dart'
+    as domain;
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../../domain/repositories/scene_repository.dart';
@@ -66,7 +68,7 @@ class GraphQLSceneRepository implements SceneRepository {
       );
     }
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
 
     return result.parsedData!.findScenes.scenes
         .map(
@@ -95,10 +97,9 @@ class GraphQLSceneRepository implements SceneRepository {
                     duration: f.duration,
                     frameRate: null,
                     fingerprints: f.fingerprints
-                        .map((fp) => Fingerprint(
-                              type: fp.type,
-                              value: fp.value,
-                            ))
+                        .map(
+                          (fp) => Fingerprint(type: fp.type, value: fp.value),
+                        )
                         .toList(),
                   ),
                 )
@@ -200,7 +201,9 @@ class GraphQLSceneRepository implements SceneRepository {
             organized: organized ?? sceneFilter?.organized,
             performer_favorite: performerFavorite,
             galleries: mapMultiCriterion(sceneFilter?.galleries),
-            performer_tags: mapHierarchicalMultiCriterion(sceneFilter?.performerTags),
+            performer_tags: mapHierarchicalMultiCriterion(
+              sceneFilter?.performerTags,
+            ),
             groups: mapHierarchicalMultiCriterion(sceneFilter?.groups),
             duplicated: sceneFilter?.duplicated != null
                 ? Input$DuplicationCriterionInput(
@@ -208,8 +211,7 @@ class GraphQLSceneRepository implements SceneRepository {
                     // oshash: not supported in Input$DuplicationCriterionInput yet?
                   )
                 : null,
-            performers:
-                (performerId != null || sceneFilter?.performers != null)
+            performers: (performerId != null || sceneFilter?.performers != null)
                 ? mapMultiCriterion(
                     performerId != null
                         ? domain.MultiCriterion(value: [performerId])
@@ -290,12 +292,14 @@ class GraphQLSceneRepository implements SceneRepository {
   Future<Scene> getSceneById(String id, {bool refresh = false}) async {
     final result = await client.query$FindScene(
       Options$Query$FindScene(
-        fetchPolicy: refresh ? FetchPolicy.networkOnly : FetchPolicy.cacheAndNetwork,
+        fetchPolicy: refresh
+            ? FetchPolicy.networkOnly
+            : FetchPolicy.cacheAndNetwork,
         variables: Variables$Query$FindScene(id: id),
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
     final s = result.parsedData?.findScene;
     if (s == null) throw Exception('Scene not found');
 
@@ -324,10 +328,7 @@ class GraphQLSceneRepository implements SceneRepository {
               duration: f.duration,
               frameRate: f.frame_rate,
               fingerprints: f.fingerprints
-                  .map((fp) => Fingerprint(
-                        type: fp.type,
-                        value: fp.value,
-                      ))
+                  .map((fp) => Fingerprint(type: fp.type, value: fp.value))
                   .toList(),
             ),
           )
@@ -400,7 +401,7 @@ class GraphQLSceneRepository implements SceneRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
 
     final List<Query$ListScrapers$listScrapers> raw =
         result.parsedData?.listScrapers ?? [];
@@ -422,15 +423,12 @@ class GraphQLSceneRepository implements SceneRepository {
             scraper_id: scraperId,
             stash_box_endpoint: stashBoxEndpoint,
           ),
-          input: Input$ScrapeSingleSceneInput(
-            scene_id: sceneId,
-            query: query,
-          ),
+          input: Input$ScrapeSingleSceneInput(scene_id: sceneId, query: query),
         ),
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
 
     final List<Query$ScrapeSingleScene$scrapeSingleScene> raw =
         result.parsedData?.scrapeSingleScene ?? [];
@@ -446,7 +444,7 @@ class GraphQLSceneRepository implements SceneRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
 
     final raw = result.parsedData?.scrapeSceneURL;
     return raw != null ? ScrapedScene.fromJson(raw.toJson()) : null;
@@ -465,7 +463,7 @@ class GraphQLSceneRepository implements SceneRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
   }
 
   @override
@@ -494,7 +492,7 @@ class GraphQLSceneRepository implements SceneRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
   }
 
   @override
@@ -520,7 +518,7 @@ class GraphQLSceneRepository implements SceneRepository {
         ),
       ),
     );
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
   }
 
   @override
@@ -530,7 +528,7 @@ class GraphQLSceneRepository implements SceneRepository {
         variables: Variables$Mutation$SceneAddO(id: id),
       ),
     );
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
   }
 
   @override
@@ -540,7 +538,7 @@ class GraphQLSceneRepository implements SceneRepository {
         variables: Variables$Mutation$SceneIncrementPlayCount(id: id),
       ),
     );
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
   }
 
   @override
@@ -558,6 +556,6 @@ class GraphQLSceneRepository implements SceneRepository {
         ),
       ),
     );
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
   }
 }
