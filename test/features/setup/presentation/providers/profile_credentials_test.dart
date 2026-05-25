@@ -28,7 +28,12 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
-        secureStorageProvider.overrideWithValue(secureStorage),
+        secureStorageProvider.overrideWithValue(
+          AppSecureStorage(
+            secureStorage: secureStorage,
+            sharedPreferences: prefs,
+          ),
+        ),
         ...overrides,
       ],
     );
@@ -105,5 +110,42 @@ void main() {
 
     expect(await container.read(profileUsernameProvider(profileId).future), updatedUser);
     expect(await container.read(profilePasswordProvider(profileId).future), updatedPass);
+  });
+
+  test('profileCookieHeaderProvider should refresh when updateProfileCredentials stores a cookie header', () async {
+    const profileId = 'test-profile';
+    const initialCookie = '';
+    const updatedCookie = 'session=drawer-cookie';
+
+    when(secureStorage.read(key: 'profile_${profileId}_cookie_header'))
+        .thenAnswer((_) async => initialCookie);
+
+    final container = createContainer();
+
+    expect(
+      await container.read(profileCookieHeaderProvider(profileId).future),
+      initialCookie,
+    );
+
+    when(secureStorage.write(
+      key: 'profile_${profileId}_cookie_header',
+      value: updatedCookie,
+    )).thenAnswer((_) async {});
+    when(secureStorage.read(key: 'profile_${profileId}_cookie_header'))
+        .thenAnswer((_) async => updatedCookie);
+
+    await container.read(serverProfilesProvider.notifier).updateProfileCredentials(
+          profileId: profileId,
+          cookieHeader: updatedCookie,
+        );
+
+    expect(
+      await container.read(profileCookieHeaderProvider(profileId).future),
+      updatedCookie,
+    );
+    verify(secureStorage.write(
+      key: 'profile_${profileId}_cookie_header',
+      value: updatedCookie,
+    )).called(1);
   });
 }

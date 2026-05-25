@@ -91,7 +91,12 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
-          secureStorageProvider.overrideWithValue(secureStorage),
+          secureStorageProvider.overrideWithValue(
+            AppSecureStorage(
+              secureStorage: secureStorage,
+              sharedPreferences: prefs,
+            ),
+          ),
           activeProfileProvider.overrideWithValue(testProfile),
         ],
       );
@@ -159,7 +164,12 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
-          secureStorageProvider.overrideWithValue(secureStorage),
+          secureStorageProvider.overrideWithValue(
+            AppSecureStorage(
+              secureStorage: secureStorage,
+              sharedPreferences: prefs,
+            ),
+          ),
           authServiceProvider.overrideWith((ref) async => authService),
           activeProfileProvider.overrideWithValue(profileWithDynamicUrl),
         ],
@@ -201,7 +211,12 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
-          secureStorageProvider.overrideWithValue(secureStorage),
+          secureStorageProvider.overrideWithValue(
+            AppSecureStorage(
+              secureStorage: secureStorage,
+              sharedPreferences: prefs,
+            ),
+          ),
           activeProfileProvider.overrideWithValue(testProfile),
         ],
       );
@@ -231,7 +246,12 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
-          secureStorageProvider.overrideWithValue(secureStorage),
+          secureStorageProvider.overrideWithValue(
+            AppSecureStorage(
+              secureStorage: secureStorage,
+              sharedPreferences: prefs,
+            ),
+          ),
           activeProfileProvider.overrideWithValue(testProfile),
         ],
       );

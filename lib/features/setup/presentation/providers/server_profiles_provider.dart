@@ -82,6 +82,7 @@ class ServerProfiles extends _$ServerProfiles {
     String? apiKey,
     String? username,
     String? password,
+    String? cookieHeader,
   }) async {
     final secureStorage = ref.read(secureStorageProvider);
     if (apiKey != null) {
@@ -92,6 +93,12 @@ class ServerProfiles extends _$ServerProfiles {
     }
     if (password != null) {
       await secureStorage.write(key: 'profile_${profileId}_password', value: password);
+    }
+    if (cookieHeader != null) {
+      await secureStorage.write(
+        key: 'profile_${profileId}_cookie_header',
+        value: cookieHeader,
+      );
     }
 
     // Invalidate the credential providers to ensure they pick up the new values
