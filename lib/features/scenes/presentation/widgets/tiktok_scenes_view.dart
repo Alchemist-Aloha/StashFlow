@@ -255,6 +255,19 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
           final randomOffset = Random().nextDouble() * 0.9 * durationSeconds;
           startPosition = Duration(milliseconds: (randomOffset * 1000).toInt());
         }
+      } else if (ref.read(playerStateProvider).resumePlayPosition) {
+        final resumeSec = scene.resumeTime;
+        if (resumeSec != null && resumeSec > 0) {
+          final totalDuration = scene.files.firstOrNull?.duration ?? 0.0;
+          if (totalDuration > 0) {
+            final percentage = resumeSec / totalDuration;
+            if (percentage >= 0.1 && percentage <= 0.9) {
+              startPosition = Duration(milliseconds: (resumeSec * 1000).round());
+            }
+          } else {
+            startPosition = Duration(milliseconds: (resumeSec * 1000).round());
+          }
+        }
       }
 
       await player.open(

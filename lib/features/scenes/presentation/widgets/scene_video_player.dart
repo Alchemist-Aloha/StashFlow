@@ -257,6 +257,23 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
       final choice = await resolver.resolvePreferredStream(widget.scene);
       if (choice != null && mounted) {
         final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
+        
+        final playerState = ref.read(playerStateProvider);
+        final resumeSec = widget.scene.resumeTime;
+        Duration? resumePosition;
+        if (playerState.resumePlayPosition && resumeSec != null && resumeSec > 0) {
+          final totalDuration = widget.scene.files.firstOrNull?.duration ?? 0.0;
+          if (totalDuration > 0) {
+            final percentage = resumeSec / totalDuration;
+            if (percentage >= 0.1 && percentage <= 0.9) {
+              resumePosition = Duration(milliseconds: (resumeSec * 1000).round());
+            }
+          } else {
+            // Fallback if no duration metadata is available
+            resumePosition = Duration(milliseconds: (resumeSec * 1000).round());
+          }
+        }
+
         await ref
             .read(playerStateProvider.notifier)
             .playScene(
@@ -266,6 +283,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
               streamLabel: choice.label,
               streamSource: force ? 'manual-start' : 'auto-start',
               httpHeaders: mediaHeaders,
+              initialPosition: resumePosition,
             );
       }
     } finally {

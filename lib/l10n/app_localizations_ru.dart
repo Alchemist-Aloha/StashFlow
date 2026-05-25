@@ -1357,6 +1357,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'При воспроизведении сцен в режиме Ленты начинать со случайного места между 0% и 90% длины видео';
 
   @override
+  String get settings_playback_resume_position =>
+      'Resume from last playing position';
+
+  @override
+  String get settings_playback_resume_position_subtitle =>
+      'When opening a video, automatically resume from where you left off';
+
+  @override
   String get settings_playback_end_behavior => 'Поведение в конце игры';
 
   @override

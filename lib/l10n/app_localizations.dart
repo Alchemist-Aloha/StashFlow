@@ -2568,6 +2568,18 @@ abstract class AppLocalizations {
   /// **'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length'**
   String get settings_playback_feed_random_subtitle;
 
+  /// No description provided for @settings_playback_resume_position.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume from last playing position'**
+  String get settings_playback_resume_position;
+
+  /// No description provided for @settings_playback_resume_position_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When opening a video, automatically resume from where you left off'**
+  String get settings_playback_resume_position_subtitle;
+
   /// No description provided for @settings_playback_end_behavior.
   ///
   /// In en, this message translates to:

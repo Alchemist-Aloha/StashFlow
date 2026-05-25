@@ -1317,6 +1317,14 @@ class AppLocalizationsKo extends AppLocalizations {
       '피드 모드에서 장면을 재생할 때 비디오 길이의 0%에서 90% 사이의 임의의 위치에서 시작합니다';
 
   @override
+  String get settings_playback_resume_position =>
+      'Resume from last playing position';
+
+  @override
+  String get settings_playback_resume_position_subtitle =>
+      'When opening a video, automatically resume from where you left off';
+
+  @override
   String get settings_playback_end_behavior => '재생 종료 동작';
 
   @override

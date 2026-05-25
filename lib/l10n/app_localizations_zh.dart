@@ -1305,6 +1305,14 @@ class AppLocalizationsZh extends AppLocalizations {
       '在Feed模式下播放场景时，从视频长度的0%到90%之间的随机位置开始播放';
 
   @override
+  String get settings_playback_resume_position =>
+      'Resume from last playing position';
+
+  @override
+  String get settings_playback_resume_position_subtitle =>
+      'When opening a video, automatically resume from where you left off';
+
+  @override
   String get settings_playback_end_behavior => '播放结束行为';
 
   @override

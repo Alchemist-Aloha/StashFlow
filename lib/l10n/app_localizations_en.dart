@@ -1349,6 +1349,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length';
 
   @override
+  String get settings_playback_resume_position =>
+      'Resume from last playing position';
+
+  @override
+  String get settings_playback_resume_position_subtitle =>
+      'When opening a video, automatically resume from where you left off';
+
+  @override
   String get settings_playback_end_behavior => 'Play End Behavior';
 
   @override

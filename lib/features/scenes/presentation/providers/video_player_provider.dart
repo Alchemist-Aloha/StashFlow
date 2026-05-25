@@ -133,6 +133,9 @@ class GlobalPlayerState {
   /// User preference: whether to start feed playback from a random position.
   final bool feedStartRandom;
 
+  /// User preference: whether to resume playback from the last saved position.
+  final bool resumePlayPosition;
+
   /// Current UI context where the video is being viewed.
   final PlayerViewMode viewMode;
 
@@ -166,6 +169,7 @@ class GlobalPlayerState {
     this.enableNativePip = false,
     this.videoGravityOrientation = true,
     this.feedStartRandom = false,
+    this.resumePlayPosition = true,
     this.selectedSubtitleLanguage,
     this.selectedSubtitleType,
     this.defaultSubtitleLanguage = 'none',
@@ -208,6 +212,7 @@ class GlobalPlayerState {
     bool? enableNativePip,
     bool? videoGravityOrientation,
     bool? feedStartRandom,
+    bool? resumePlayPosition,
     String? selectedSubtitleLanguage,
     String? selectedSubtitleType,
     String? defaultSubtitleLanguage,
@@ -263,6 +268,7 @@ class GlobalPlayerState {
       videoGravityOrientation:
           videoGravityOrientation ?? this.videoGravityOrientation,
       feedStartRandom: feedStartRandom ?? this.feedStartRandom,
+      resumePlayPosition: resumePlayPosition ?? this.resumePlayPosition,
       selectedSubtitleLanguage: clearSubtitle
           ? null
           : (selectedSubtitleLanguage ?? this.selectedSubtitleLanguage),
@@ -307,6 +313,7 @@ class PlayerState extends _$PlayerState {
       'subtitle_position_bottom_ratio';
   static const _subtitleTextAlignmentKey = 'subtitle_text_alignment';
   static const _feedStartRandomKey = 'feed_start_random';
+  static const _resumePlayPositionKey = 'video_resume_play_position';
 
   /// Internal reference used during disposal to ensure we clean up the right player.
   Player? _playerRef;
@@ -420,6 +427,7 @@ class PlayerState extends _$PlayerState {
       subtitleTextAlignment:
           prefs.getString(_subtitleTextAlignmentKey) ?? 'center',
       feedStartRandom: prefs.getBool(_feedStartRandomKey) ?? false,
+      resumePlayPosition: prefs.getBool(_resumePlayPositionKey) ?? true,
     );
   }
 
@@ -473,6 +481,12 @@ class PlayerState extends _$PlayerState {
     state = state.copyWith(feedStartRandom: value);
     final prefs = ref.read(sharedPreferencesProvider);
     prefs.setBool(_feedStartRandomKey, value);
+  }
+
+  void setResumePlayPosition(bool value) {
+    state = state.copyWith(resumePlayPosition: value);
+    final prefs = ref.read(sharedPreferencesProvider);
+    prefs.setBool(_resumePlayPositionKey, value);
   }
 
   void setDefaultSubtitleLanguage(String value) {
@@ -846,6 +860,7 @@ class PlayerState extends _$PlayerState {
         Media(
           effectiveStreamUrl,
           httpHeaders: httpHeaders ?? const <String, String>{},
+          start: initialPosition,
         ),
         play: false,
       );
@@ -859,10 +874,6 @@ class PlayerState extends _$PlayerState {
       if (!ref.mounted) {
         await _disposeControllers();
         return;
-      }
-
-      if (initialPosition != null) {
-        await player.seek(initialPosition);
       }
 
       stopwatch.stop();

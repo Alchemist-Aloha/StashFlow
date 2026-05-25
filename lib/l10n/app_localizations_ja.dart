@@ -1319,6 +1319,14 @@ class AppLocalizationsJa extends AppLocalizations {
       'フィードモードでシーンを再生するとき、動画の長さの0%から90%の間のランダムな位置から開始します';
 
   @override
+  String get settings_playback_resume_position =>
+      'Resume from last playing position';
+
+  @override
+  String get settings_playback_resume_position_subtitle =>
+      'When opening a video, automatically resume from where you left off';
+
+  @override
   String get settings_playback_end_behavior => '再生終了時の動作';
 
   @override

@@ -1369,6 +1369,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Lors de la lecture de scènes en mode Flux, démarrer à une position aléatoire entre 0% et 90% de la durée de la vidéo';
 
   @override
+  String get settings_playback_resume_position =>
+      'Resume from last playing position';
+
+  @override
+  String get settings_playback_resume_position_subtitle =>
+      'When opening a video, automatically resume from where you left off';
+
+  @override
   String get settings_playback_end_behavior => 'Comportement de fin de lecture';
 
   @override
