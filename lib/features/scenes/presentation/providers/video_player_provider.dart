@@ -12,6 +12,7 @@ import 'scene_list_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../data/repositories/stream_prewarmer.dart';
 import 'playback_activity_tracker.dart';
+import 'playback_session_controller.dart';
 import 'player_settings.dart';
 import '../../../../core/utils/pip_mode.dart';
 import '../../../../main.dart'; // To access mediaHandler
@@ -304,15 +305,6 @@ class PlayerState extends _$PlayerState {
   PlayerSettingsStore get _settingsStore =>
       PlayerSettingsStore(ref.read(sharedPreferencesProvider));
 
-  /// Internal reference used during disposal to ensure we clean up the right player.
-  Player? _playerRef;
-
-  /// Internal reference used during disposal to ensure we clean up the right controller.
-  VideoController? _videoControllerRef;
-
-  /// Subscriptions to the player's event streams.
-  final List<StreamSubscription> _subscriptions = [];
-
   /// Internal reference used during disposal to ensure we clean up the right scene activity.
   Scene? _activeSceneRef;
 
@@ -322,10 +314,6 @@ class PlayerState extends _$PlayerState {
   /// Mutex-like flag to prevent overlapping "Play Next" transitions,
   /// especially when triggered by multiple listeners (e.g. video finish + UI button).
   bool _isTransitioning = false;
-
-  /// Whether the current controller was "borrowed" (e.g. from TikTok view)
-  /// and should not be disposed by this provider when stopping/switching.
-  bool _isUsingBorrowedController = false;
 
   /// Internal flag to track playback state changes across listener fires.
   bool? _lastIsPlaying;
@@ -337,6 +325,7 @@ class PlayerState extends _$PlayerState {
   double? _lastSpeed;
 
   late final PlaybackActivityTracker _activityTracker;
+  late final PlaybackSessionController _sessionController;
 
   @override
   GlobalPlayerState build() {
@@ -346,6 +335,7 @@ class PlayerState extends _$PlayerState {
     // Ensure MediaKit is initialized before any Player instances are created.
     // This is called here instead of main() to improve initial app startup performance.
     MediaKit.ensureInitialized();
+    _sessionController = PlaybackSessionController();
 
     _activityTracker = PlaybackActivityTracker(
       now: () => clock.now(),
@@ -374,7 +364,7 @@ class PlayerState extends _$PlayerState {
       unawaited(
         _disposeControllers(
           scene: _activeSceneRef,
-          controller: _videoControllerRef,
+          controller: _sessionController.controller,
         ),
       );
     });
@@ -784,11 +774,9 @@ class PlayerState extends _$PlayerState {
       await _disposeControllers();
     }
 
-    final player = Player();
-    final videoController = VideoController(player);
-
-    _playerRef = player;
-    _videoControllerRef = videoController;
+    final session = _sessionController.createOwnedSession();
+    final player = session.player;
+    final videoController = session.controller;
     _activeSceneRef = scene;
     _firstFrameLoggedSceneId = null;
     _lastIsPlaying = null;
@@ -888,32 +876,16 @@ class PlayerState extends _$PlayerState {
         desktopSettings.isMuted ? 0 : desktopSettings.volume * 100.0,
       );
 
-      _subscriptions.add(player.stream.playing.listen((_) => _videoListener()));
-      _subscriptions.add(
-        player.stream.position.listen((_) => _videoListener()),
-      );
-      _subscriptions.add(
-        player.stream.duration.listen((_) => _videoListener()),
-      );
-      _subscriptions.add(
-        player.stream.completed.listen((completed) {
-          if (completed) {
-            _handleVideoFinished();
-          }
-        }),
-      );
-      _subscriptions.add(
-        player.stream.buffering.listen((_) => _videoListener()),
-      );
-      _subscriptions.add(player.stream.width.listen((_) => _videoListener()));
-      _subscriptions.add(player.stream.height.listen((_) => _videoListener()));
-      _subscriptions.add(
-        player.stream.error.listen((error) {
+      await _sessionController.bindPlayerStreams(
+        player,
+        onTick: _videoListener,
+        onCompleted: _handleVideoFinished,
+        onError: (error) {
           AppLogStore.instance.add(
             'provider player error scene=${scene.id} error=$error',
             source: 'player_provider',
           );
-        }),
+        },
       );
       unawaited(player.play());
 
@@ -969,12 +941,10 @@ class PlayerState extends _$PlayerState {
       _activityTracker.resetForSceneChange();
     }
 
-    _playerRef = player;
-    _videoControllerRef = controller;
     _activeSceneRef = scene;
     _firstFrameLoggedSceneId = null;
-    _isUsingBorrowedController = true;
     _lastIsPlaying = null;
+    _sessionController.adoptBorrowedSession(player, controller);
 
     final isTiktokHandoff =
         streamSource == 'tiktok-handoff' || streamSource == 'tiktok-promotion';
@@ -1015,24 +985,17 @@ class PlayerState extends _$PlayerState {
       ),
     );
 
-    for (final sub in _subscriptions) {
-      await sub.cancel();
-    }
-    _subscriptions.clear();
-
-    _subscriptions.add(player.stream.playing.listen((_) => _videoListener()));
-    _subscriptions.add(player.stream.position.listen((_) => _videoListener()));
-    _subscriptions.add(player.stream.duration.listen((_) => _videoListener()));
-    _subscriptions.add(
-      player.stream.completed.listen((completed) {
-        if (completed) {
-          _handleVideoFinished();
-        }
-      }),
+    await _sessionController.bindPlayerStreams(
+      player,
+      onTick: _videoListener,
+      onCompleted: _handleVideoFinished,
+      onError: (error) {
+        AppLogStore.instance.add(
+          'provider player error scene=${scene.id} error=$error',
+          source: 'player_provider',
+        );
+      },
     );
-    _subscriptions.add(player.stream.buffering.listen((_) => _videoListener()));
-    _subscriptions.add(player.stream.width.listen((_) => _videoListener()));
-    _subscriptions.add(player.stream.height.listen((_) => _videoListener()));
 
     if (player.state.playing) {
       _activityTracker.start(
@@ -1109,44 +1072,26 @@ class PlayerState extends _$PlayerState {
         _activeSceneRef?.id ??
         (ref.mounted ? state.activeScene?.id : null);
     final effectivePlayer =
-        player ?? _playerRef ?? (ref.mounted ? state.player : null);
+        player ??
+        _sessionController.player ??
+        (ref.mounted ? state.player : null);
     await _activityTracker.stop(
       sceneId: effectiveSceneId,
       resumePositionProvider: () =>
           effectivePlayer?.state.position ?? Duration.zero,
     );
 
-    if (isTestMode) {
-      _playerRef = null;
-      _videoControllerRef = null;
-      _isUsingBorrowedController = false;
-      return;
+    await _sessionController.disposeSession(
+      isTestMode: isTestMode,
+      fallbackPlayer: player ?? (ref.mounted ? state.player : null),
+      log: (message) {
+        AppLogStore.instance.add(message, source: 'player_provider');
+      },
+    );
+
+    if (!isTestMode) {
+      await WakelockPlus.disable();
     }
-
-    for (final sub in _subscriptions) {
-      await sub.cancel();
-    }
-    _subscriptions.clear();
-
-    final prevPlayer =
-        _playerRef ?? player ?? (ref.mounted ? state.player : null);
-
-    _playerRef = null;
-    _videoControllerRef = null;
-
-    if (prevPlayer != null) {
-      if (_isUsingBorrowedController) {
-        AppLogStore.instance.add(
-          'provider skipping dispose of borrowed controller',
-          source: 'player_provider',
-        );
-        _isUsingBorrowedController = false;
-      } else {
-        await prevPlayer.dispose();
-      }
-    }
-
-    await WakelockPlus.disable();
   }
 
   void _videoListener() {
