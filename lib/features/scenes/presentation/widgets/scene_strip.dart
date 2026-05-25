@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../domain/entities/scene.dart';
+import '../providers/playback_queue_provider.dart';
 import 'scene_card.dart';
 
 class SceneStrip extends ConsumerWidget {
@@ -10,11 +11,13 @@ class SceneStrip extends ConsumerWidget {
     super.key,
     required this.scenes,
     this.itemWidth = 220,
+    this.queueId,
     this.onTap,
   });
 
   final List<Scene> scenes;
   final double itemWidth;
+  final String? queueId;
   final void Function(Scene)? onTap;
 
   @override
@@ -101,7 +104,21 @@ class SceneStrip extends ConsumerWidget {
                 isGrid: true,
                 showPerformers: false,
                 useHero: false,
-                onTap: onTap != null ? () => onTap!(scene) : null,
+                onTap: queueId != null || onTap != null
+                    ? () {
+                        final playbackQueueId = queueId;
+                        if (playbackQueueId != null) {
+                          ref
+                              .read(playbackQueueProvider.notifier)
+                              .setSequence(
+                                scenes,
+                                index,
+                                queueId: playbackQueueId,
+                              );
+                        }
+                        onTap?.call(scene);
+                      }
+                    : null,
               ),
             );
           },

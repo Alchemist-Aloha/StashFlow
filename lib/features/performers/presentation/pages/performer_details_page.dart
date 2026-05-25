@@ -18,6 +18,7 @@ import '../../../setup/presentation/providers/navigation_customization_provider.
 
 import '../providers/performer_list_provider.dart';
 import '../../../setup/presentation/providers/scrape_customization_provider.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_strip.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_strip.dart';
 
@@ -29,9 +30,9 @@ class PerformerDetailsPage extends ConsumerWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
       elevation: 0,
-      color: Theme.of(context).colorScheme.primaryContainer.withValues(
-        alpha: 0.1,
-      ),
+      color: Theme.of(
+        context,
+      ).colorScheme.primaryContainer.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
       ),
@@ -188,7 +189,10 @@ class PerformerDetailsPage extends ConsumerWidget {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(
-                                          context.l10n.details_failed_update_favorite(e.toString()),
+                                          context.l10n
+                                              .details_failed_update_favorite(
+                                                e.toString(),
+                                              ),
                                         ),
                                       ),
                                     );
@@ -308,7 +312,8 @@ class PerformerDetailsPage extends ConsumerWidget {
                                             if (await canLaunchUrl(uri)) {
                                               await launchUrl(
                                                 uri,
-                                                mode: LaunchMode.externalApplication,
+                                                mode: LaunchMode
+                                                    .externalApplication,
                                               );
                                             } else {
                                               if (context.mounted) {
@@ -317,7 +322,9 @@ class PerformerDetailsPage extends ConsumerWidget {
                                                 ).showSnackBar(
                                                   SnackBar(
                                                     content: Text(
-                                                      context.l10n.common_error(url),
+                                                      context.l10n.common_error(
+                                                        url,
+                                                      ),
                                                     ),
                                                   ),
                                                 );
@@ -353,11 +360,15 @@ class PerformerDetailsPage extends ConsumerWidget {
                                             Expanded(
                                               child: Text(
                                                 url,
-                                                style: context.textTheme.bodyMedium
+                                                style: context
+                                                    .textTheme
+                                                    .bodyMedium
                                                     ?.copyWith(
-                                                      color: context.colors.primary,
-                                                      decoration:
-                                                          TextDecoration.underline,
+                                                      color: context
+                                                          .colors
+                                                          .primary,
+                                                      decoration: TextDecoration
+                                                          .underline,
                                                     ),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
@@ -432,6 +443,9 @@ class PerformerDetailsPage extends ConsumerWidget {
                                     ..shuffle(Random(performer.id.hashCode));
                                   return SceneStrip(
                                     scenes: shuffledItems,
+                                    queueId: PlaybackQueueIds.performerStrip(
+                                      performer.id,
+                                    ),
                                     onTap: (scene) => context.push(
                                       '/scenes/scene/${scene.id}',
                                     ),
@@ -445,11 +459,11 @@ class PerformerDetailsPage extends ConsumerWidget {
                                 ),
                                 error: (err, stack) => Text(
                                   context.l10n.common_error(err.toString()),
-                                  style: context.textTheme.bodyMedium
-                                      ?.copyWith(
-                                        color: context.colors.onSurface
-                                            .withValues(alpha: 0.7),
-                                      ),
+                                  style: context.textTheme.bodyMedium?.copyWith(
+                                    color: context.colors.onSurface.withValues(
+                                      alpha: 0.7,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],
@@ -492,7 +506,9 @@ class PerformerDetailsPage extends ConsumerWidget {
                             child: Center(child: CircularProgressIndicator()),
                           ),
                           error: (err, stack) => Text(
-                            context.l10n.details_failed_load_galleries(err.toString()),
+                            context.l10n.details_failed_load_galleries(
+                              err.toString(),
+                            ),
                             style: context.textTheme.bodyMedium?.copyWith(
                               color: context.colors.onSurface.withValues(
                                 alpha: 0.7,

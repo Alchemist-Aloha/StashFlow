@@ -16,6 +16,7 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../providers/tag_list_provider.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_strip.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_strip.dart';
 
@@ -27,9 +28,9 @@ class TagDetailsPage extends ConsumerWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
       elevation: 0,
-      color: Theme.of(context).colorScheme.primaryContainer.withValues(
-        alpha: 0.1,
-      ),
+      color: Theme.of(
+        context,
+      ).colorScheme.primaryContainer.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
       ),
@@ -133,10 +134,7 @@ class TagDetailsPage extends ConsumerWidget {
                                 try {
                                   await ref
                                       .read(tagRepositoryProvider)
-                                      .setTagFavorite(
-                                        tag.id,
-                                        !tag.favorite,
-                                      );
+                                      .setTagFavorite(tag.id, !tag.favorite);
                                   ref.invalidate(tagDetailsProvider(tag.id));
                                   ref.invalidate(tagListProvider);
                                 } catch (e) {
@@ -144,7 +142,10 @@ class TagDetailsPage extends ConsumerWidget {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(
-                                          context.l10n.details_failed_update_favorite(e.toString()),
+                                          context.l10n
+                                              .details_failed_update_favorite(
+                                                e.toString(),
+                                              ),
                                         ),
                                       ),
                                     );
@@ -169,11 +170,11 @@ class TagDetailsPage extends ConsumerWidget {
                                 const SizedBox(height: AppTheme.spacingSmall),
                                 Text(
                                   tag.description!,
-                                  style: context.textTheme.bodyMedium
-                                      ?.copyWith(
-                                        color: context.colors.onSurface
-                                            .withValues(alpha: 0.8),
-                                      ),
+                                  style: context.textTheme.bodyMedium?.copyWith(
+                                    color: context.colors.onSurface.withValues(
+                                      alpha: 0.8,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
@@ -214,6 +215,7 @@ class TagDetailsPage extends ConsumerWidget {
                                     ..shuffle(Random(tag.id.hashCode));
                                   return SceneStrip(
                                     scenes: shuffledItems,
+                                    queueId: PlaybackQueueIds.tagStrip(tag.id),
                                     onTap: (scene) => context.push(
                                       '/scenes/scene/${scene.id}',
                                     ),
@@ -227,11 +229,11 @@ class TagDetailsPage extends ConsumerWidget {
                                 ),
                                 error: (err, stack) => Text(
                                   context.l10n.common_error(err.toString()),
-                                  style: context.textTheme.bodyMedium
-                                      ?.copyWith(
-                                        color: context.colors.onSurface
-                                            .withValues(alpha: 0.7),
-                                      ),
+                                  style: context.textTheme.bodyMedium?.copyWith(
+                                    color: context.colors.onSurface.withValues(
+                                      alpha: 0.7,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],

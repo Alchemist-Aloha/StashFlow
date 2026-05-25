@@ -23,6 +23,7 @@ import '../../domain/entities/scene_title_utils.dart';
 import '../../../studios/presentation/providers/studio_media_provider.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
+import '../providers/playback_queue_provider.dart';
 import '../providers/video_player_provider.dart';
 import 'scene_info_page.dart';
 import '../../data/repositories/stream_resolver.dart';
@@ -221,9 +222,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.saved_to_album)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.saved_to_album)));
       }
     } on GalException catch (e) {
       final message = switch (e.type) {
@@ -919,6 +920,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               const SizedBox(height: AppTheme.spacingSmall),
               SceneStrip(
                 scenes: filtered,
+                queueId: PlaybackQueueIds.sceneMoreFromStudio(
+                  sceneId: scene.id,
+                  studioId: scene.studioId!,
+                ),
                 onTap: (selectedScene) => context.push(
                   '/scenes/scene/${selectedScene.id}',
                   extra: true,

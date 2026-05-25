@@ -4,21 +4,103 @@ import '../../../../core/utils/app_log_store.dart';
 
 part 'playback_queue_provider.g.dart';
 
-/// Represents the current state of the playback queue.
-class PlaybackQueueState {
-  /// The list of scenes in the current playback sequence.
-  final List<Scene> sequence;
+class PlaybackQueueIds {
+  const PlaybackQueueIds._();
 
-  /// The index of the currently active scene within the [sequence].
-  /// A value of -1 indicates no scene is currently selected or active.
+  static const main = 'main-scenes';
+
+  static String sceneMoreFromStudio({
+    required String sceneId,
+    required String studioId,
+  }) {
+    return 'scene:$sceneId:more-from-studio:$studioId';
+  }
+
+  static String studioStrip(String studioId) => 'studio:$studioId:strip';
+
+  static String performerStrip(String performerId) =>
+      'performer:$performerId:strip';
+
+  static String tagStrip(String tagId) => 'tag:$tagId:strip';
+
+  static String studioMedia(String studioId) => 'studio:$studioId:media';
+
+  static String performerMedia(String performerId) =>
+      'performer:$performerId:media';
+
+  static String tagMedia(String tagId) => 'tag:$tagId:media';
+}
+
+class PlaybackQueueSnapshot {
+  final List<Scene> sequence;
   final int currentIndex;
 
-  PlaybackQueueState({this.sequence = const [], this.currentIndex = -1});
+  const PlaybackQueueSnapshot({
+    this.sequence = const [],
+    this.currentIndex = -1,
+  });
 
-  PlaybackQueueState copyWith({List<Scene>? sequence, int? currentIndex}) {
-    return PlaybackQueueState(
+  PlaybackQueueSnapshot copyWith({List<Scene>? sequence, int? currentIndex}) {
+    return PlaybackQueueSnapshot(
       sequence: sequence ?? this.sequence,
       currentIndex: currentIndex ?? this.currentIndex,
+    );
+  }
+}
+
+/// Represents the current state of the playback queue.
+class PlaybackQueueState {
+  final String activeQueueId;
+
+  final Map<String, PlaybackQueueSnapshot> queues;
+
+  PlaybackQueueState({
+    List<Scene> sequence = const [],
+    int currentIndex = -1,
+    this.activeQueueId = PlaybackQueueIds.main,
+    Map<String, PlaybackQueueSnapshot>? queues,
+  }) : queues =
+           queues ??
+           {
+             activeQueueId: PlaybackQueueSnapshot(
+               sequence: sequence,
+               currentIndex: currentIndex,
+             ),
+           };
+
+  PlaybackQueueSnapshot get activeQueue =>
+      queues[activeQueueId] ?? const PlaybackQueueSnapshot();
+
+  /// The list of scenes in the current active playback sequence.
+  List<Scene> get sequence => activeQueue.sequence;
+
+  /// The index of the currently active scene within [sequence].
+  /// A value of -1 indicates no scene is currently selected or active.
+  int get currentIndex => activeQueue.currentIndex;
+
+  PlaybackQueueState copyWith({
+    List<Scene>? sequence,
+    int? currentIndex,
+    String? activeQueueId,
+    Map<String, PlaybackQueueSnapshot>? queues,
+  }) {
+    final nextActiveQueueId = activeQueueId ?? this.activeQueueId;
+    final nextQueues = Map<String, PlaybackQueueSnapshot>.from(
+      queues ?? this.queues,
+    );
+
+    if (sequence != null || currentIndex != null) {
+      final existing =
+          nextQueues[nextActiveQueueId] ?? const PlaybackQueueSnapshot();
+      nextQueues[nextActiveQueueId] = existing.copyWith(
+        sequence: sequence,
+        currentIndex: currentIndex,
+      );
+    }
+
+    return PlaybackQueueState(
+      activeQueueId: nextActiveQueueId,
+      queues: nextQueues,
     );
   }
 }
@@ -48,84 +130,135 @@ class PlaybackQueue extends _$PlaybackQueue {
   /// position if the new list is a subset of the current one (e.g., during pagination).
   /// This prevents the "Next" button from being disabled or resetting to the start
   /// when the scene list refreshes in the background.
-  void setSequence(List<Scene> scenes, int initialIndex) {
+  void setSequence(
+    List<Scene> scenes,
+    int initialIndex, {
+    String? queueId,
+    bool activate = true,
+  }) {
+    final targetQueueId = queueId ?? state.activeQueueId;
+    final targetQueue =
+        state.queues[targetQueueId] ?? const PlaybackQueueSnapshot();
+
     AppLogStore.instance.add(
-      'PlaybackQueue setSequence: scenes=${scenes.length}, initialIndex=$initialIndex, currentState=(index=${state.currentIndex}, seqLen=${state.sequence.length})',
+      'PlaybackQueue setSequence: queue=$targetQueueId scenes=${scenes.length}, initialIndex=$initialIndex, currentState=(index=${targetQueue.currentIndex}, seqLen=${targetQueue.sequence.length}), activate=$activate',
       source: 'playback_queue',
     );
 
     // Same-list / subset detection logic:
     // If the new list matches our current sequence's start, we avoid resetting the index
     // if the caller passed -1 (which usually means "just refresh the data").
-    if (state.sequence.length >= scenes.length &&
+    if (targetQueue.sequence.length >= scenes.length &&
         scenes.isNotEmpty &&
-        state.sequence.isNotEmpty) {
-      if (state.sequence[0].id == scenes[0].id) {
+        targetQueue.sequence.isNotEmpty) {
+      if (targetQueue.sequence[0].id == scenes[0].id) {
         AppLogStore.instance.add(
-          'PlaybackQueue setSequence: detected same/subset list (first scene match), early return (initialIndex=$initialIndex)',
+          'PlaybackQueue setSequence: detected same/subset list for queue=$targetQueueId (first scene match), early return (initialIndex=$initialIndex)',
           source: 'playback_queue',
         );
+        final nextQueues = Map<String, PlaybackQueueSnapshot>.from(
+          state.queues,
+        );
         if (initialIndex != -1) {
-          state = state.copyWith(currentIndex: initialIndex);
+          nextQueues[targetQueueId] = targetQueue.copyWith(
+            currentIndex: initialIndex,
+          );
         }
+        state = state.copyWith(
+          activeQueueId: activate ? targetQueueId : null,
+          queues: nextQueues,
+        );
         return;
       }
     }
 
+    final nextQueues = Map<String, PlaybackQueueSnapshot>.from(state.queues);
+    nextQueues[targetQueueId] = PlaybackQueueSnapshot(
+      sequence: scenes,
+      currentIndex: initialIndex,
+    );
+
     AppLogStore.instance.add(
-      'PlaybackQueue setSequence: updating sequence and setting index to $initialIndex',
+      'PlaybackQueue setSequence: updating queue=$targetQueueId and setting index to $initialIndex',
       source: 'playback_queue',
     );
-    state = state.copyWith(sequence: scenes, currentIndex: initialIndex);
+    state = state.copyWith(
+      activeQueueId: activate ? targetQueueId : null,
+      queues: nextQueues,
+    );
+  }
+
+  /// Activates a retained queue without changing its sequence.
+  void activateQueue(String queueId) {
+    if (!state.queues.containsKey(queueId)) return;
+    state = state.copyWith(activeQueueId: queueId);
+  }
+
+  void setSequenceForScene(String queueId, List<Scene> scenes, String sceneId) {
+    final index = scenes.indexWhere((scene) => scene.id == sceneId);
+    if (index == -1) return;
+    setSequence(scenes, index, queueId: queueId);
   }
 
   /// Appends new scenes to the existing sequence.
   /// Typically used for infinite scroll/pagination.
-  void updateSequence(List<Scene> scenes) {
+  void updateSequence(List<Scene> scenes, {String? queueId}) {
+    final targetQueueId = queueId ?? state.activeQueueId;
+    final targetQueue =
+        state.queues[targetQueueId] ?? const PlaybackQueueSnapshot();
+
     AppLogStore.instance.add(
-      'PlaybackQueue updateSequence: adding ${scenes.length} scenes to current ${state.sequence.length}',
+      'PlaybackQueue updateSequence: queue=$targetQueueId adding ${scenes.length} scenes to current ${targetQueue.sequence.length}',
       source: 'playback_queue',
     );
-    state = state.copyWith(sequence: [...state.sequence, ...scenes]);
+    final nextQueues = Map<String, PlaybackQueueSnapshot>.from(state.queues);
+    nextQueues[targetQueueId] = targetQueue.copyWith(
+      sequence: [...targetQueue.sequence, ...scenes],
+    );
+    state = state.copyWith(queues: nextQueues);
   }
 
   /// Explicitly sets the current index in the queue.
   /// Typically called when a user selects a specific scene from a list.
-  void setIndex(int index, {bool notify = true}) {
+  void setIndex(int index, {bool notify = true, String? queueId}) {
+    final targetQueueId = queueId ?? state.activeQueueId;
+    final targetQueue =
+        state.queues[targetQueueId] ?? const PlaybackQueueSnapshot();
+
     AppLogStore.instance.add(
-      'PlaybackQueue setIndex: $index (current=${state.currentIndex}, total=${state.sequence.length}, notify=$notify)',
+      'PlaybackQueue setIndex: queue=$targetQueueId $index (current=${targetQueue.currentIndex}, total=${targetQueue.sequence.length}, notify=$notify)',
       source: 'playback_queue',
     );
-    if (index >= 0 && index < state.sequence.length) {
-      if (notify) {
-        state = state.copyWith(currentIndex: index);
-      } else {
-        // We update the state internally but avoid triggering Riverpod listeners
-        // if this was just a high-frequency scroll event.
-        // NOTE: state.currentIndex is still updated so the data is fresh.
-        state = state.copyWith(currentIndex: index);
-      }
+    if (index >= 0 && index < targetQueue.sequence.length) {
+      final nextQueues = Map<String, PlaybackQueueSnapshot>.from(state.queues);
+      nextQueues[targetQueueId] = targetQueue.copyWith(currentIndex: index);
+      state = state.copyWith(activeQueueId: targetQueueId, queues: nextQueues);
     }
   }
 
   /// Synchronizes the queue index by finding a scene ID within the current sequence.
   /// Useful for recovering state after a deep link or app restart.
-  void findAndSetIndex(String sceneId) {
+  void findAndSetIndex(String sceneId, {String? queueId}) {
     if (sceneId.isEmpty) return;
-    final index = state.sequence.indexWhere((s) => s.id == sceneId);
+    final targetQueueId = queueId ?? state.activeQueueId;
+    final targetQueue =
+        state.queues[targetQueueId] ?? const PlaybackQueueSnapshot();
+    final index = targetQueue.sequence.indexWhere((s) => s.id == sceneId);
     AppLogStore.instance.add(
-      'PlaybackQueue findAndSetIndex: sceneId=$sceneId, found at index $index',
+      'PlaybackQueue findAndSetIndex: queue=$targetQueueId sceneId=$sceneId, found at index $index',
       source: 'playback_queue',
     );
     if (index != -1) {
-      state = state.copyWith(currentIndex: index);
+      final nextQueues = Map<String, PlaybackQueueSnapshot>.from(state.queues);
+      nextQueues[targetQueueId] = targetQueue.copyWith(currentIndex: index);
+      state = state.copyWith(queues: nextQueues);
     }
   }
 
   /// Returns the next scene in the sequence, if any.
   Scene? getNextScene() {
     AppLogStore.instance.add(
-      'PlaybackQueue getNextScene: current=${state.currentIndex}, total=${state.sequence.length}',
+      'PlaybackQueue getNextScene: queue=${state.activeQueueId} current=${state.currentIndex}, total=${state.sequence.length}',
       source: 'playback_queue',
     );
     if (state.currentIndex >= 0 &&
@@ -156,7 +289,7 @@ class PlaybackQueue extends _$PlaybackQueue {
   void playNext() {
     final nextIndex = state.currentIndex + 1;
     AppLogStore.instance.add(
-      'PlaybackQueue playNext: nextIndex=$nextIndex, total=${state.sequence.length}',
+      'PlaybackQueue playNext: queue=${state.activeQueueId} nextIndex=$nextIndex, total=${state.sequence.length}',
       source: 'playback_queue',
     );
     if (nextIndex < state.sequence.length) {
@@ -176,7 +309,7 @@ class PlaybackQueue extends _$PlaybackQueue {
   void playPrevious() {
     final prevIndex = state.currentIndex - 1;
     AppLogStore.instance.add(
-      'PlaybackQueue playPrevious: prevIndex=$prevIndex',
+      'PlaybackQueue playPrevious: queue=${state.activeQueueId} prevIndex=$prevIndex',
       source: 'playback_queue',
     );
     if (prevIndex >= 0) {
