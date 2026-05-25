@@ -4367,6 +4367,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to load galleries: {error}'**
   String details_failed_load_galleries(String error);
+
+  /// No description provided for @scene_info_id.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene ID'**
+  String get scene_info_id;
+
+  /// No description provided for @scene_info_original_file_path.
+  ///
+  /// In en, this message translates to:
+  /// **'Original File Path'**
+  String get scene_info_original_file_path;
+
+  /// No description provided for @scene_info_resume_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume Time'**
+  String get scene_info_resume_time;
+
+  /// No description provided for @scene_info_play_duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Play Duration'**
+  String get scene_info_play_duration;
+
+  /// No description provided for @scene_info_urls.
+  ///
+  /// In en, this message translates to:
+  /// **'URLs'**
+  String get scene_info_urls;
+
+  /// No description provided for @scene_info_resolution.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution'**
+  String get scene_info_resolution;
+
+  /// No description provided for @scene_info_bitrate.
+  ///
+  /// In en, this message translates to:
+  /// **'Bitrate'**
+  String get scene_info_bitrate;
+
+  /// No description provided for @scene_info_frame_rate.
+  ///
+  /// In en, this message translates to:
+  /// **'Frame Rate'**
+  String get scene_info_frame_rate;
+
+  /// No description provided for @scene_info_format.
+  ///
+  /// In en, this message translates to:
+  /// **'Format'**
+  String get scene_info_format;
+
+  /// No description provided for @scene_info_video_codec.
+  ///
+  /// In en, this message translates to:
+  /// **'Video Codec'**
+  String get scene_info_video_codec;
+
+  /// No description provided for @scene_info_audio_codec.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Codec'**
+  String get scene_info_audio_codec;
+
+  /// No description provided for @scene_info_stream.
+  ///
+  /// In en, this message translates to:
+  /// **'Stream'**
+  String get scene_info_stream;
+
+  /// No description provided for @scene_info_preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get scene_info_preview;
+
+  /// No description provided for @scene_info_screenshot.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshot'**
+  String get scene_info_screenshot;
+
+  /// No description provided for @scene_info_caption.
+  ///
+  /// In en, this message translates to:
+  /// **'Caption'**
+  String get scene_info_caption;
+
+  /// No description provided for @scene_info_vtt.
+  ///
+  /// In en, this message translates to:
+  /// **'VTT'**
+  String get scene_info_vtt;
+
+  /// No description provided for @scene_info_sprite.
+  ///
+  /// In en, this message translates to:
+  /// **'Sprite'**
+  String get scene_info_sprite;
+
+  /// No description provided for @scene_info_technical.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical'**
+  String get scene_info_technical;
+
+  /// No description provided for @scene_studio_id.
+  ///
+  /// In en, this message translates to:
+  /// **'ID: {id}'**
+  String scene_studio_id(String id);
+
+  /// No description provided for @scene_rating_stars.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 Star} other{{count} Stars}}'**
+  String scene_rating_stars(int count);
 }
 
 class _AppLocalizationsDelegate

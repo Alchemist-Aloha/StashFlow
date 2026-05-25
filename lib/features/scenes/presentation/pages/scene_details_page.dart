@@ -582,7 +582,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           IconButton(
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
-            tooltip: '$i Star${i > 1 ? 's' : ''}',
+            tooltip: context.l10n.scene_rating_stars(i),
             onPressed: () async {
               final currentRating = scene.rating100 ?? 0;
               final newRating = (currentRating == i * 20) ? 0 : i * 20;

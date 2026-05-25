@@ -952,5 +952,39 @@
         "type": "String"
       }
     }
+  },
+  "scene_info_id": "Scene ID",
+  "scene_info_original_file_path": "Original File Path",
+  "scene_info_resume_time": "Resume Time",
+  "scene_info_play_duration": "Play Duration",
+  "scene_info_urls": "URLs",
+  "scene_info_resolution": "Resolution",
+  "scene_info_bitrate": "Bitrate",
+  "scene_info_frame_rate": "Frame Rate",
+  "scene_info_format": "Format",
+  "scene_info_video_codec": "Video Codec",
+  "scene_info_audio_codec": "Audio Codec",
+  "scene_info_stream": "Stream",
+  "scene_info_preview": "Preview",
+  "scene_info_screenshot": "Screenshot",
+  "scene_info_caption": "Caption",
+  "scene_info_vtt": "VTT",
+  "scene_info_sprite": "Sprite",
+  "scene_info_technical": "Technical",
+  "scene_studio_id": "ID: {id}",
+  "@scene_studio_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "scene_rating_stars": "{count, plural, =1{1 Star} other{{count} Stars}}",
+  "@scene_rating_stars": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }
