@@ -694,6 +694,27 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
+  Widget _buildTimePill(BuildContext context, String label) {
+    return Container(
+      constraints: const BoxConstraints(minWidth: 54),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.black.withAlpha(130),
+        borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+        border: Border.all(color: Colors.white.withAlpha(24)),
+      ),
+      child: Text(
+        label,
+        textAlign: TextAlign.center,
+        style: context.textTheme.bodyMedium?.copyWith(
+          color: Colors.white,
+          fontSize: context.fontSizes.small,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+
   Map<ShortcutActivator, VoidCallback> _getBindings(Keybinds keybinds) {
     if (_cachedBindings != null && _lastKeybinds == keybinds) {
       return _cachedBindings!;
@@ -1253,19 +1274,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                               onTap: () {},
                               behavior: HitTestBehavior.opaque,
                               child: Container(
-                                margin: const EdgeInsets.fromLTRB(4, 0, 4, 4),
-                                padding: const EdgeInsets.fromLTRB(8, 4, 8, 2),
-                                decoration: BoxDecoration(
-                                  color: colorScheme.surface.withValues(
-                                    alpha: 0.62,
-                                  ),
-                                  borderRadius: BorderRadius.circular(
-                                    AppTheme.radiusMedium,
-                                  ),
-                                  border: Border.all(
-                                    color: colorScheme.outlineVariant
-                                        .withValues(alpha: 0.35),
-                                  ),
+                                margin: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
                                 ),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
@@ -1274,91 +1285,96 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                       colorScheme,
                                       playbackSpeed,
                                     ),
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16,
-                                        ),
-                                        child: StreamBuilder<Duration>(
-                                          stream: widget
-                                              .controller
-                                              .player
-                                              .stream
-                                              .position,
-                                          builder: (context, snapshot) {
-                                            final position =
-                                                snapshot.data ??
-                                                widget
-                                                    .controller
-                                                    .player
-                                                    .state
-                                                    .position;
-                                            final duration = widget
-                                                .controller
-                                                .player
-                                                .state
-                                                .duration;
-                                            return Text(
-                                              '${_formatDuration(position)} / ${_formatDuration(duration)}',
-                                              style: context
-                                                  .textTheme
-                                                  .bodyMedium
-                                                  ?.copyWith(
-                                                    color:
-                                                        colorScheme.onSurface,
-                                                    fontSize:
-                                                        context.fontSizes.small,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    VideoProgressBar(
-                                      durationMs: durationMs,
-                                      positionStream: widget
+                                    StreamBuilder<Duration>(
+                                      stream: widget
                                           .controller
                                           .player
                                           .stream
                                           .position,
-                                      initialPositionMs: value
-                                          .position
-                                          .inMilliseconds
-                                          .toDouble(),
-                                      isScrubbing: _isScrubbing,
-                                      currentScrubValue: _scrubMs,
-                                      onChangeStart: (v) {
-                                        _wasPlayingBeforeScrub = value.playing;
-                                        _cancelAutoHide();
-                                        setState(() {
-                                          _isScrubbing = true;
-                                          _scrubMs = v;
-                                          _controlsVisible = true;
-                                        });
-                                      },
-                                      onChanged: (v) {
-                                        setState(() => _scrubMs = v);
-                                      },
-                                      onChangeEnd: (v) {
-                                        final target = Duration(
-                                          milliseconds: v.round(),
+                                      builder: (context, snapshot) {
+                                        final streamedPosition =
+                                            snapshot.data ??
+                                            widget
+                                                .controller
+                                                .player
+                                                .state
+                                                .position;
+                                        final position = _isScrubbing
+                                            ? Duration(
+                                                milliseconds: _scrubMs.round(),
+                                              )
+                                            : streamedPosition;
+                                        final duration = widget
+                                            .controller
+                                            .player
+                                            .state
+                                            .duration;
+
+                                        return Row(
+                                          children: [
+                                            _buildTimePill(
+                                              context,
+                                              _formatDuration(position),
+                                            ),
+                                            const Spacer(),
+                                            _buildTimePill(
+                                              context,
+                                              _formatDuration(duration),
+                                            ),
+                                          ],
                                         );
-                                        unawaited(() async {
-                                          await _seekToKeepingPlayback(
-                                            target,
-                                            keepPlayingAfterSeek:
-                                                _wasPlayingBeforeScrub,
-                                          );
-                                        }());
-                                        setState(() {
-                                          _isScrubbing = false;
-                                          _scrubMs = 0;
-                                        });
-                                        _wasPlayingBeforeScrub = false;
-                                        _scheduleAutoHide();
                                       },
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 2,
+                                      ),
+                                      child: VideoProgressBar(
+                                        durationMs: durationMs,
+                                        positionStream: widget
+                                            .controller
+                                            .player
+                                            .stream
+                                            .position,
+                                        initialPositionMs: value
+                                            .position
+                                            .inMilliseconds
+                                            .toDouble(),
+                                        isScrubbing: _isScrubbing,
+                                        currentScrubValue: _scrubMs,
+                                        onChangeStart: (v) {
+                                          _wasPlayingBeforeScrub =
+                                              value.playing;
+                                          _cancelAutoHide();
+                                          setState(() {
+                                            _isScrubbing = true;
+                                            _scrubMs = v;
+                                            _controlsVisible = true;
+                                          });
+                                        },
+                                        onChanged: (v) {
+                                          setState(() => _scrubMs = v);
+                                        },
+                                        onChangeEnd: (v) {
+                                          final target = Duration(
+                                            milliseconds: v.round(),
+                                          );
+                                          unawaited(() async {
+                                            await _seekToKeepingPlayback(
+                                              target,
+                                              keepPlayingAfterSeek:
+                                                  _wasPlayingBeforeScrub,
+                                            );
+                                          }());
+                                          setState(() {
+                                            _isScrubbing = false;
+                                            _scrubMs = 0;
+                                          });
+                                          _wasPlayingBeforeScrub = false;
+                                          _scheduleAutoHide();
+                                        },
+                                      ),
                                     ),
                                     const SizedBox(height: 2),
                                     VideoPlaybackControls(

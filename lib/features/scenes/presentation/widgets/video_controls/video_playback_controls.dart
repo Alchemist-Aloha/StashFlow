@@ -87,13 +87,19 @@ class VideoPlaybackControls extends ConsumerWidget {
   ButtonStyle _controlButtonStyle(ColorScheme colorScheme) {
     return IconButton.styleFrom(
       backgroundColor: Colors.transparent,
-      foregroundColor: colorScheme.onSurface,
+      foregroundColor: Colors.white,
       disabledBackgroundColor: Colors.transparent,
-      disabledForegroundColor: colorScheme.onSurfaceVariant.withValues(
-        alpha: 0.55,
-      ),
+      disabledForegroundColor: Colors.white54,
       padding: const EdgeInsets.all(8),
       minimumSize: const Size(32, 32),
+    );
+  }
+
+  BoxDecoration _controlGroupDecoration() {
+    return BoxDecoration(
+      color: Colors.black.withAlpha(130),
+      borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+      border: Border.all(color: Colors.white.withAlpha(24)),
     );
   }
 
@@ -113,308 +119,322 @@ class VideoPlaybackControls extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (previousScene != null) ...[
+                Container(
+                  decoration: _controlGroupDecoration(),
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (previousScene != null) ...[
+                        IconButton(
+                          tooltip: context.l10n.common_skip_previous,
+                          style: _controlButtonStyle(colorScheme),
+                          iconSize: 20,
+                          icon: const Icon(Icons.skip_previous_rounded),
+                          onPressed: () {
+                            onSkipPrevious?.call();
+                            onInteract();
+                          },
+                        ),
+                      ],
                       IconButton(
-                        tooltip: context.l10n.common_skip_previous,
+                        tooltip: isPlaying
+                            ? context.l10n.common_pause
+                            : context.l10n.common_play,
                         style: _controlButtonStyle(colorScheme),
                         iconSize: 20,
-                        icon: const Icon(Icons.skip_previous_rounded),
+                        icon: Icon(
+                          isPlaying
+                              ? Icons.pause_rounded
+                              : Icons.play_arrow_rounded,
+                        ),
                         onPressed: () {
-                          onSkipPrevious?.call();
+                          onPlayPause();
                           onInteract();
                         },
                       ),
+                      if (nextScene != null) ...[
+                        IconButton(
+                          tooltip: context.l10n.common_skip_next,
+                          style: _controlButtonStyle(colorScheme),
+                          iconSize: 20,
+                          icon: const Icon(Icons.skip_next_rounded),
+                          onPressed: () {
+                            onSkipNext();
+                            onInteract();
+                          },
+                        ),
+                      ],
                     ],
-                    IconButton(
-                      tooltip: isPlaying ? context.l10n.common_pause : context.l10n.common_play,
-                      style: _controlButtonStyle(colorScheme),
-                      iconSize: 20,
-                      icon: Icon(
-                        isPlaying
-                            ? Icons.pause_rounded
-                            : Icons.play_arrow_rounded,
-                      ),
-                      onPressed: () {
-                        onPlayPause();
-                        onInteract();
-                      },
-                    ),
-                    if (nextScene != null) ...[
-                      IconButton(
-                        tooltip: context.l10n.common_skip_next,
-                        style: _controlButtonStyle(colorScheme),
-                        iconSize: 20,
-                        icon: const Icon(Icons.skip_next_rounded),
-                        onPressed: () {
-                          onSkipNext();
-                          onInteract();
-                        },
-                      ),
-                    ],
-                  ],
+                  ),
                 ),
                 const SizedBox(
-                  width: 4,
+                  width: 8,
                 ), // Padding between left and right groups
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (canSelectSubtitles)
-                      PopupMenuButton<String?>(
-                        tooltip: context.l10n.common_select_subtitle,
-                        icon: Icon(
-                          Icons.subtitles_rounded,
-                          size: 20,
-                          color:
-                              selectedSubtitleLanguage != null &&
-                                  selectedSubtitleLanguage != 'none'
-                              ? colorScheme.primary
-                              : colorScheme.onSurface,
+                Container(
+                  decoration: _controlGroupDecoration(),
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (canSelectSubtitles)
+                        PopupMenuButton<String?>(
+                          tooltip: context.l10n.common_select_subtitle,
+                          icon: Icon(
+                            Icons.subtitles_rounded,
+                            size: 20,
+                            color:
+                                selectedSubtitleLanguage != null &&
+                                    selectedSubtitleLanguage != 'none'
+                                ? colorScheme.primary
+                                : Colors.white,
+                          ),
+                          style: _controlButtonStyle(colorScheme),
+                          initialValue: selectedSubtitleLanguage,
+                          color: colorScheme.surfaceContainerHigh,
+                          surfaceTintColor: colorScheme.surfaceTint,
+                          onSelected: (value) {
+                            onSubtitleSelected(value);
+                            onInteract();
+                          },
+                          itemBuilder: (context) {
+                            final items = <PopupMenuEntry<String?>>[
+                              PopupMenuItem<String?>(
+                                value: 'none',
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      (selectedSubtitleLanguage == null ||
+                                              selectedSubtitleLanguage ==
+                                                  'none')
+                                          ? Icons.check_circle
+                                          : Icons.circle_outlined,
+                                      size: 16,
+                                      color:
+                                          (selectedSubtitleLanguage == null ||
+                                              selectedSubtitleLanguage ==
+                                                  'none')
+                                          ? colorScheme.primary
+                                          : colorScheme.onSurfaceVariant,
+                                    ),
+                                    Text(
+                                      context.l10n.common_none,
+                                      style: TextStyle(
+                                        color: colorScheme.onSurface,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ];
+
+                            for (final c in scene.captions) {
+                              final selectedLang =
+                                  selectedSubtitleLanguage ?? '';
+                              final selectedType = selectedSubtitleType ?? '';
+                              final captionLang = c.languageCode;
+                              final captionType = c.captionType;
+                              final isUnknownLangSelection =
+                                  (selectedLang.isEmpty ||
+                                      selectedLang == '00') &&
+                                  (captionLang.isEmpty || captionLang == '00');
+                              final isSelected =
+                                  (selectedLang == captionLang ||
+                                      isUnknownLangSelection) &&
+                                  (selectedType == captionType ||
+                                      (selectedType.isEmpty &&
+                                          isUnknownLangSelection));
+
+                              final label =
+                                  c.languageCode == '00' ||
+                                      c.languageCode.isEmpty
+                                  ? '${context.l10n.common_unknown} (${c.captionType})'
+                                  : '${c.languageCode.toUpperCase()} (${c.captionType})';
+
+                              items.add(
+                                PopupMenuItem<String?>(
+                                  value: '${c.languageCode}:${c.captionType}',
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        isSelected
+                                            ? Icons.check_circle
+                                            : Icons.circle_outlined,
+                                        size: 16,
+                                        color: isSelected
+                                            ? colorScheme.primary
+                                            : colorScheme.onSurfaceVariant,
+                                      ),
+                                      Text(
+                                        label,
+                                        style: TextStyle(
+                                          color: colorScheme.onSurface,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
+                            return items;
+                          },
                         ),
-                        style: _controlButtonStyle(colorScheme),
-                        initialValue: selectedSubtitleLanguage,
+                      PopupMenuButton<double>(
+                        tooltip: context.l10n.common_playback_speed,
+                        initialValue: playbackSpeed,
                         color: colorScheme.surfaceContainerHigh,
                         surfaceTintColor: colorScheme.surfaceTint,
-                        onSelected: (value) {
-                          onSubtitleSelected(value);
+                        onSelected: (speed) {
+                          onSpeedSelected(speed);
                           onInteract();
                         },
                         itemBuilder: (context) {
-                          final items = <PopupMenuEntry<String?>>[
-                            PopupMenuItem<String?>(
-                              value: 'none',
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    (selectedSubtitleLanguage == null ||
-                                            selectedSubtitleLanguage == 'none')
-                                        ? Icons.check_circle
-                                        : Icons.circle_outlined,
-                                    size: 16,
-                                    color:
-                                        (selectedSubtitleLanguage == null ||
-                                            selectedSubtitleLanguage == 'none')
-                                        ? colorScheme.primary
-                                        : colorScheme.onSurfaceVariant,
+                          return _playbackSpeeds
+                              .map(
+                                (speed) => PopupMenuItem<double>(
+                                  value: speed,
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        speed == playbackSpeed
+                                            ? Icons.check_circle
+                                            : Icons.circle_outlined,
+                                        size: 16,
+                                        color: speed == playbackSpeed
+                                            ? colorScheme.primary
+                                            : colorScheme.onSurfaceVariant,
+                                      ),
+                                      Text(
+                                        _formatSpeed(speed),
+                                        style: TextStyle(
+                                          color: colorScheme.onSurface,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    context.l10n.common_none,
-                                    style: TextStyle(
-                                      color: colorScheme.onSurface,
-                                    ),
-                                  ),
-                                ],
+                                ),
+                              )
+                              .toList();
+                        },
+                        child: GestureDetector(
+                          onTap: onSpeedTap,
+                          child: Container(
+                            constraints: const BoxConstraints(
+                              minWidth: 32,
+                              minHeight: 32,
+                            ),
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(10),
+                              border: isSpeedSliderVisible
+                                  ? Border.all(
+                                      color: colorScheme.primary,
+                                      width: 1.5,
+                                    )
+                                  : null,
+                            ),
+                            child: Text(
+                              _formatSpeed(playbackSpeed),
+                              style: context.textTheme.bodyMedium?.copyWith(
+                                color: isSpeedSliderVisible
+                                    ? colorScheme.primary
+                                    : Colors.white,
+                                fontSize: context.fontSizes.small,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
-                          ];
-
-                          for (final c in scene.captions) {
-                            final selectedLang = selectedSubtitleLanguage ?? '';
-                            final selectedType = selectedSubtitleType ?? '';
-                            final captionLang = c.languageCode;
-                            final captionType = c.captionType;
-                            final isUnknownLangSelection =
-                                (selectedLang.isEmpty ||
-                                    selectedLang == '00') &&
-                                (captionLang.isEmpty || captionLang == '00');
-                            final isSelected =
-                                (selectedLang == captionLang ||
-                                    isUnknownLangSelection) &&
-                                (selectedType == captionType ||
-                                    (selectedType.isEmpty &&
-                                        isUnknownLangSelection));
-
-                            final label =
-                                c.languageCode == '00' || c.languageCode.isEmpty
-                                ? '${context.l10n.common_unknown} (${c.captionType})'
-                                : '${c.languageCode.toUpperCase()} (${c.captionType})';
-
-                            items.add(
-                              PopupMenuItem<String?>(
-                                value: '${c.languageCode}:${c.captionType}',
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      isSelected
-                                          ? Icons.check_circle
-                                          : Icons.circle_outlined,
-                                      size: 16,
-                                      color: isSelected
-                                          ? colorScheme.primary
-                                          : colorScheme.onSurfaceVariant,
-                                    ),
-                                    Text(
-                                      label,
-                                      style: TextStyle(
-                                        color: colorScheme.onSurface,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                          ),
+                        ),
+                      ),
+                      if (desktopVolumeControl != null) ...[
+                        desktopVolumeControl!,
+                      ],
+                      if (castState.isCasting)
+                        IconButton(
+                          tooltip: context.l10n.cast_stop_casting,
+                          style: _controlButtonStyle(colorScheme),
+                          icon: Icon(
+                            Icons.cast_connected_rounded,
+                            size: 20,
+                            color: colorScheme.primary,
+                          ),
+                          onPressed: () {
+                            onInteract();
+                            onStopCast?.call();
+                          },
+                        )
+                      else
+                        IconButton(
+                          tooltip: context.l10n.cast_cast,
+                          style: _controlButtonStyle(colorScheme),
+                          icon: const Icon(Icons.cast_rounded, size: 20),
+                          onPressed: () {
+                            onInteract();
+                            showModalBottomSheet(
+                              context: context,
+                              backgroundColor: Colors.transparent,
+                              isScrollControlled: true,
+                              builder: (context) => CastSelectionSheet(
+                                videoUrl:
+                                    controller
+                                        .player
+                                        .state
+                                        .playlist
+                                        .medias
+                                        .firstOrNull
+                                        ?.uri ??
+                                    '',
+                                title: scene.displayTitle,
                               ),
                             );
-                          }
-                          return items;
-                        },
-                      ),
-                    PopupMenuButton<double>(
-                      tooltip: context.l10n.common_playback_speed,
-                      initialValue: playbackSpeed,
-                      color: colorScheme.surfaceContainerHigh,
-                      surfaceTintColor: colorScheme.surfaceTint,
-                      onSelected: (speed) {
-                        onSpeedSelected(speed);
-                        onInteract();
-                      },
-                      itemBuilder: (context) {
-                        return _playbackSpeeds
-                            .map(
-                              (speed) => PopupMenuItem<double>(
-                                value: speed,
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      speed == playbackSpeed
-                                          ? Icons.check_circle
-                                          : Icons.circle_outlined,
-                                      size: 16,
-                                      color: speed == playbackSpeed
-                                          ? colorScheme.primary
-                                          : colorScheme.onSurfaceVariant,
-                                    ),
-                                    Text(
-                                      _formatSpeed(speed),
-                                      style: TextStyle(
-                                        color: colorScheme.onSurface,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            )
-                            .toList();
-                      },
-                      child: GestureDetector(
-                        onTap: onSpeedTap,
-                        child: Container(
-                          constraints: const BoxConstraints(
-                            minWidth: 32,
-                            minHeight: 32,
-                          ),
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(10),
-                            border: isSpeedSliderVisible
-                                ? Border.all(
-                                    color: colorScheme.primary,
-                                    width: 1.5,
-                                  )
-                                : null,
-                          ),
-                          child: Text(
-                            _formatSpeed(playbackSpeed),
-                            style: context.textTheme.bodyMedium?.copyWith(
-                              color: isSpeedSliderVisible
-                                  ? colorScheme.primary
-                                  : colorScheme.onSurface,
-                              fontSize: context.fontSizes.small,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
+                          },
                         ),
-                      ),
-                    ),
-                    if (desktopVolumeControl != null) ...[
-                      desktopVolumeControl!,
-                    ],
-                    if (castState.isCasting)
-                      IconButton(
-                        tooltip: context.l10n.cast_stop_casting,
-                        style: _controlButtonStyle(colorScheme),
-                        icon: Icon(
-                          Icons.cast_connected_rounded,
-                          size: 20,
-                          color: colorScheme.primary,
+                      if (enableNativePip && !kIsWeb && Platform.isAndroid) ...[
+                        IconButton(
+                          tooltip: context.l10n.common_pip,
+                          style: _controlButtonStyle(colorScheme),
+                          icon: const Icon(
+                            Icons.picture_in_picture_alt_outlined,
+                            size: 20,
+                          ),
+                          onPressed: () async {
+                            if (!isFullScreen) {
+                              onFullScreenToggle?.call();
+                              await Future.delayed(
+                                const Duration(milliseconds: 150),
+                              );
+                            }
+                            final w = controller.player.state.width;
+                            final h = controller.player.state.height;
+                            final r = (w != null && h != null && h > 0)
+                                ? w / h
+                                : 16 / 9;
+                            await PipMode.enterIfAvailable(aspectRatio: r);
+                            onInteract();
+                          },
                         ),
-                        onPressed: () {
-                          onInteract();
-                          onStopCast?.call();
-                        },
-                      )
-                    else
-                      IconButton(
-                        tooltip: context.l10n.cast_cast,
-                        style: _controlButtonStyle(colorScheme),
-                        icon: const Icon(Icons.cast_rounded, size: 20),
-                        onPressed: () {
-                          onInteract();
-                          showModalBottomSheet(
-                            context: context,
-                            backgroundColor: Colors.transparent,
-                            isScrollControlled: true,
-                            builder: (context) => CastSelectionSheet(
-                              videoUrl:
-                                  controller
-                                      .player
-                                      .state
-                                      .playlist
-                                      .medias
-                                      .firstOrNull
-                                      ?.uri ??
-                                  '',
-                              title: scene.displayTitle,
-                            ),
-                          );
-                        },
-                      ),
-                    if (enableNativePip && !kIsWeb && Platform.isAndroid) ...[
-                      IconButton(
-                        tooltip: context.l10n.common_pip,
-                        style: _controlButtonStyle(colorScheme),
-                        icon: const Icon(
-                          Icons.picture_in_picture_alt_outlined,
-                          size: 20,
-                        ),
-                        onPressed: () async {
-                          if (!isFullScreen) {
+                      ],
+                      GestureDetector(
+                        onTap: () {}, // Consume tap to prevent propagation
+                        child: IconButton(
+                          tooltip: context.l10n.common_toggle_fullscreen,
+                          style: _controlButtonStyle(colorScheme),
+                          icon: Icon(
+                            isFullScreen
+                                ? Icons.fullscreen_exit_rounded
+                                : Icons.fullscreen_rounded,
+                            size: 20,
+                          ),
+                          onPressed: () {
                             onFullScreenToggle?.call();
-                            await Future.delayed(
-                              const Duration(milliseconds: 150),
-                            );
-                          }
-                          final w = controller.player.state.width;
-                          final h = controller.player.state.height;
-                          final r = (w != null && h != null && h > 0)
-                              ? w / h
-                              : 16 / 9;
-                          await PipMode.enterIfAvailable(aspectRatio: r);
-                          onInteract();
-                        },
+                            onInteract();
+                          },
+                        ),
                       ),
                     ],
-                    GestureDetector(
-                      onTap: () {}, // Consume tap to prevent propagation
-                      child: IconButton(
-                        tooltip: context.l10n.common_toggle_fullscreen,
-                        style: _controlButtonStyle(colorScheme),
-                        icon: Icon(
-                          isFullScreen
-                              ? Icons.fullscreen_exit_rounded
-                              : Icons.fullscreen_rounded,
-                          size: 20,
-                        ),
-                        onPressed: () {
-                          onFullScreenToggle?.call();
-                          onInteract();
-                        },
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ],
             ),
