@@ -6,12 +6,17 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:clock/clock.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../domain/entities/scene.dart';
-import '../../domain/repositories/scene_repository.dart';
 import 'playback_queue_provider.dart';
+import 'queue_playback_coordinator.dart';
 import 'scene_details_provider.dart';
 import 'scene_list_provider.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../data/repositories/stream_prewarmer.dart';
+import 'fullscreen_controller.dart';
+import 'playback_activity_tracker.dart';
+import 'playback_session_controller.dart';
+import 'player_view_mode.dart';
+import 'player_settings.dart';
 import '../../../../core/utils/pip_mode.dart';
 import '../../../../main.dart'; // To access mediaHandler
 import '../../../../core/data/auth/auth_provider.dart';
@@ -27,8 +32,6 @@ import 'package:media_kit_video/media_kit_video.dart';
 part 'video_player_provider.g.dart';
 
 enum VideoEndBehavior { stop, loop, next }
-
-enum PlayerViewMode { inline, fullscreen, tiktok }
 
 class NavigationAction {
   final String path;
@@ -133,8 +136,12 @@ class GlobalPlayerState {
   /// User preference: whether to start feed playback from a random position.
   final bool feedStartRandom;
 
+  /// User preference: whether to resume playback from the last saved position.
+  final bool resumePlayPosition;
+
   /// Current UI context where the video is being viewed.
   final PlayerViewMode viewMode;
+  final FullscreenPhase fullscreenPhase;
 
   /// Flag to ignore redundant triggers during navigation.
   final bool isTransitioning;
@@ -166,6 +173,7 @@ class GlobalPlayerState {
     this.enableNativePip = false,
     this.videoGravityOrientation = true,
     this.feedStartRandom = false,
+    this.resumePlayPosition = true,
     this.selectedSubtitleLanguage,
     this.selectedSubtitleType,
     this.defaultSubtitleLanguage = 'none',
@@ -173,6 +181,7 @@ class GlobalPlayerState {
     this.subtitlePositionBottomRatio = 0.15,
     this.subtitleTextAlignment = 'center',
     this.viewMode = PlayerViewMode.inline,
+    this.fullscreenPhase = FullscreenPhase.inline,
     this.isTransitioning = false,
     this.navigationIntent,
   });
@@ -208,6 +217,7 @@ class GlobalPlayerState {
     bool? enableNativePip,
     bool? videoGravityOrientation,
     bool? feedStartRandom,
+    bool? resumePlayPosition,
     String? selectedSubtitleLanguage,
     String? selectedSubtitleType,
     String? defaultSubtitleLanguage,
@@ -215,6 +225,7 @@ class GlobalPlayerState {
     double? subtitlePositionBottomRatio,
     String? subtitleTextAlignment,
     PlayerViewMode? viewMode,
+    FullscreenPhase? fullscreenPhase,
     bool? isTransitioning,
     NavigationIntent? navigationIntent,
     bool clearActive = false,
@@ -263,6 +274,7 @@ class GlobalPlayerState {
       videoGravityOrientation:
           videoGravityOrientation ?? this.videoGravityOrientation,
       feedStartRandom: feedStartRandom ?? this.feedStartRandom,
+      resumePlayPosition: resumePlayPosition ?? this.resumePlayPosition,
       selectedSubtitleLanguage: clearSubtitle
           ? null
           : (selectedSubtitleLanguage ?? this.selectedSubtitleLanguage),
@@ -277,9 +289,11 @@ class GlobalPlayerState {
       subtitleTextAlignment:
           subtitleTextAlignment ?? this.subtitleTextAlignment,
       viewMode: viewMode ?? this.viewMode,
+      fullscreenPhase: fullscreenPhase ?? this.fullscreenPhase,
       isTransitioning: isTransitioning ?? this.isTransitioning,
-      navigationIntent:
-          clearNavigation ? null : (navigationIntent ?? this.navigationIntent),
+      navigationIntent: clearNavigation
+          ? null
+          : (navigationIntent ?? this.navigationIntent),
     );
   }
 }
@@ -293,28 +307,8 @@ class GlobalPlayerState {
 /// - Managing UI-related playback settings (PiP, Fullscreen).
 @riverpod
 class PlayerState extends _$PlayerState {
-  static const _autoplayNextKey = 'autoplay_next';
-  static const _playEndBehaviorKey = 'video_play_end_behavior';
-  static const _showVideoDebugInfoKey = 'show_video_debug_info';
-  static const _useDoubleTapSeekKey = 'video_use_double_tap_seek';
-  static const _enableBackgroundPlaybackKey = 'video_background_playback';
-  static const _enableNativePipKey = 'video_native_pip';
-  static const _videoGravityOrientationKey = 'video_gravity_orientation';
-  static const _defaultSubtitleLanguageKey = 'default_subtitle_language';
-  static const _subtitleFontSizeKey = 'subtitle_font_size';
-  static const _subtitlePositionBottomRatioKey =
-      'subtitle_position_bottom_ratio';
-  static const _subtitleTextAlignmentKey = 'subtitle_text_alignment';
-  static const _feedStartRandomKey = 'feed_start_random';
-
-  /// Internal reference used during disposal to ensure we clean up the right player.
-  Player? _playerRef;
-
-  /// Internal reference used during disposal to ensure we clean up the right controller.
-  VideoController? _videoControllerRef;
-
-  /// Subscriptions to the player's event streams.
-  final List<StreamSubscription> _subscriptions = [];
+  PlayerSettingsStore get _settingsStore =>
+      PlayerSettingsStore(ref.read(sharedPreferencesProvider));
 
   /// Internal reference used during disposal to ensure we clean up the right scene activity.
   Scene? _activeSceneRef;
@@ -326,10 +320,6 @@ class PlayerState extends _$PlayerState {
   /// especially when triggered by multiple listeners (e.g. video finish + UI button).
   bool _isTransitioning = false;
 
-  /// Whether the current controller was "borrowed" (e.g. from TikTok view)
-  /// and should not be disposed by this provider when stopping/switching.
-  bool _isUsingBorrowedController = false;
-
   /// Internal flag to track playback state changes across listener fires.
   bool? _lastIsPlaying;
 
@@ -339,12 +329,12 @@ class PlayerState extends _$PlayerState {
   /// Internal flag to track the last speed reported to the media handler.
   double? _lastSpeed;
 
-  // Activity tracking state
-  Timer? _playCountTimer;
-  bool _playCountIncremented = false;
-  DateTime? _playStartTime;
-  double _accumulatedDuration = 0;
-  Timer? _periodicSaveTimer;
+  late final PlaybackActivityTracker _activityTracker;
+  late final PlaybackSessionController _sessionController;
+  final FullscreenController _fullscreenController =
+      const FullscreenController();
+  final QueuePlaybackCoordinator _queuePlaybackCoordinator =
+      const QueuePlaybackCoordinator();
 
   @override
   GlobalPlayerState build() {
@@ -354,16 +344,36 @@ class PlayerState extends _$PlayerState {
     // Ensure MediaKit is initialized before any Player instances are created.
     // This is called here instead of main() to improve initial app startup performance.
     MediaKit.ensureInitialized();
+    _sessionController = PlaybackSessionController();
 
-    final repository = ref.read(sceneRepositoryProvider);
+    _activityTracker = PlaybackActivityTracker(
+      now: () => clock.now(),
+      isMounted: () => ref.mounted,
+      incrementPlayCount: (sceneId) =>
+          ref.read(sceneRepositoryProvider).incrementScenePlayCount(sceneId),
+      saveSceneActivity: (sceneId, resumeTime, playDuration) => ref
+          .read(sceneRepositoryProvider)
+          .saveSceneActivity(
+            sceneId,
+            resumeTime: resumeTime,
+            playDuration: playDuration,
+          ),
+      refreshSceneDetails: (sceneId) {
+        if (!ref.mounted) return;
+        unawaited(ref.read(sceneDetailsProvider(sceneId).notifier).refresh());
+      },
+      log: (message) {
+        AppLogStore.instance.add(message, source: 'player_provider');
+      },
+    );
     ref.onDispose(() {
       PipMode.isInPipMode.removeListener(_onPipModeChanged);
+      _activityTracker.dispose();
 
       unawaited(
         _disposeControllers(
           scene: _activeSceneRef,
-          controller: _videoControllerRef,
-          repository: repository,
+          controller: _sessionController.controller,
         ),
       );
     });
@@ -383,42 +393,26 @@ class PlayerState extends _$PlayerState {
       return playNext();
     };
 
-    final prefs = ref.read(sharedPreferencesProvider);
-
-    // Initial load of preferences
-    final autoplayNext = prefs.getBool(_autoplayNextKey) ?? false;
-    final endBehaviorStr = prefs.getString(_playEndBehaviorKey);
-    VideoEndBehavior playEndBehavior;
-    if (endBehaviorStr != null) {
-      playEndBehavior = VideoEndBehavior.values.firstWhere(
-        (e) => e.name == endBehaviorStr,
-        orElse: () => VideoEndBehavior.stop,
-      );
-    } else {
-      // Migrate from autoplayNext
-      playEndBehavior = autoplayNext
-          ? VideoEndBehavior.next
-          : VideoEndBehavior.stop;
-    }
+    final loadedSettings = _settingsStore.load();
+    final playEndBehavior = VideoEndBehavior.values.firstWhere(
+      (e) => e.name == loadedSettings.playEndBehaviorName,
+      orElse: () => VideoEndBehavior.stop,
+    );
 
     return GlobalPlayerState(
       playEndBehavior: playEndBehavior,
-      showVideoDebugInfo: prefs.getBool(_showVideoDebugInfoKey) ?? false,
-      useDoubleTapSeek: prefs.getBool(_useDoubleTapSeekKey) ?? true,
-      enableBackgroundPlayback:
-          prefs.getBool(_enableBackgroundPlaybackKey) ?? false,
-      enableNativePip: prefs.getBool(_enableNativePipKey) ?? false,
-      videoGravityOrientation:
-          prefs.getBool(_videoGravityOrientationKey) ?? true,
+      showVideoDebugInfo: loadedSettings.showVideoDebugInfo,
+      useDoubleTapSeek: loadedSettings.useDoubleTapSeek,
+      enableBackgroundPlayback: loadedSettings.enableBackgroundPlayback,
+      enableNativePip: loadedSettings.enableNativePip,
+      videoGravityOrientation: loadedSettings.videoGravityOrientation,
       isInPipMode: PipMode.isInPipMode.value,
-      defaultSubtitleLanguage:
-          prefs.getString(_defaultSubtitleLanguageKey) ?? 'none',
-      subtitleFontSize: prefs.getDouble(_subtitleFontSizeKey) ?? 18.0,
-      subtitlePositionBottomRatio:
-          prefs.getDouble(_subtitlePositionBottomRatioKey) ?? 0.15,
-      subtitleTextAlignment:
-          prefs.getString(_subtitleTextAlignmentKey) ?? 'center',
-      feedStartRandom: prefs.getBool(_feedStartRandomKey) ?? false,
+      defaultSubtitleLanguage: loadedSettings.defaultSubtitleLanguage,
+      subtitleFontSize: loadedSettings.subtitleFontSize,
+      subtitlePositionBottomRatio: loadedSettings.subtitlePositionBottomRatio,
+      subtitleTextAlignment: loadedSettings.subtitleTextAlignment,
+      feedStartRandom: loadedSettings.feedStartRandom,
+      resumePlayPosition: loadedSettings.resumePlayPosition,
     );
   }
 
@@ -432,70 +426,62 @@ class PlayerState extends _$PlayerState {
 
   void setPlayEndBehavior(VideoEndBehavior behavior) {
     state = state.copyWith(playEndBehavior: behavior);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setString(_playEndBehaviorKey, behavior.name);
-    // Sync legacy key
-    prefs.setBool(_autoplayNextKey, behavior == VideoEndBehavior.next);
+    unawaited(_settingsStore.savePlayEndBehaviorName(behavior.name));
   }
 
   void setShowVideoDebugInfo(bool value) {
     state = state.copyWith(showVideoDebugInfo: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setBool(_showVideoDebugInfoKey, value);
+    unawaited(_settingsStore.saveShowVideoDebugInfo(value));
   }
 
   void setUseDoubleTapSeek(bool value) {
     state = state.copyWith(useDoubleTapSeek: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setBool(_useDoubleTapSeekKey, value);
+    unawaited(_settingsStore.saveUseDoubleTapSeek(value));
   }
 
   void setEnableBackgroundPlayback(bool value) {
     state = state.copyWith(enableBackgroundPlayback: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setBool(_enableBackgroundPlaybackKey, value);
+    unawaited(_settingsStore.saveEnableBackgroundPlayback(value));
   }
 
   void setEnableNativePip(bool value) {
     state = state.copyWith(enableNativePip: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setBool(_enableNativePipKey, value);
+    unawaited(_settingsStore.saveEnableNativePip(value));
   }
 
   void setVideoGravityOrientation(bool value) {
     state = state.copyWith(videoGravityOrientation: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setBool(_videoGravityOrientationKey, value);
+    unawaited(_settingsStore.saveVideoGravityOrientation(value));
   }
 
   void setFeedStartRandom(bool value) {
     state = state.copyWith(feedStartRandom: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setBool(_feedStartRandomKey, value);
+    unawaited(_settingsStore.saveFeedStartRandom(value));
+  }
+
+  void setResumePlayPosition(bool value) {
+    state = state.copyWith(resumePlayPosition: value);
+    unawaited(_settingsStore.saveResumePlayPosition(value));
   }
 
   void setDefaultSubtitleLanguage(String value) {
     state = state.copyWith(defaultSubtitleLanguage: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setString(_defaultSubtitleLanguageKey, value);
+    unawaited(_settingsStore.saveDefaultSubtitleLanguage(value));
   }
 
   void setSubtitleFontSize(double value) {
     state = state.copyWith(subtitleFontSize: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setDouble(_subtitleFontSizeKey, value);
+    unawaited(_settingsStore.saveSubtitleFontSize(value));
   }
 
   void setSubtitlePositionBottomRatio(double value) {
     state = state.copyWith(subtitlePositionBottomRatio: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setDouble(_subtitlePositionBottomRatioKey, value);
+    unawaited(_settingsStore.saveSubtitlePositionBottomRatio(value));
   }
 
   void setSubtitleTextAlignment(String value) {
     state = state.copyWith(subtitleTextAlignment: value);
-    final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setString(_subtitleTextAlignmentKey, value);
+    unawaited(_settingsStore.saveSubtitleTextAlignment(value));
   }
 
   Future<void> setSubtitle(String? languageCode, {String? captionType}) async {
@@ -554,7 +540,14 @@ class PlayerState extends _$PlayerState {
       'PlayerState setFullScreen: $value',
       source: 'player_provider',
     );
-    state = state.copyWith(isFullScreen: value);
+    final runtime = _fullscreenController.syncFromLegacy(
+      isFullScreen: value,
+      viewModeName: state.viewMode.name,
+    );
+    state = state.copyWith(
+      isFullScreen: runtime.isFullScreen,
+      fullscreenPhase: runtime.fullscreenPhase,
+    );
   }
 
   void setViewMode(PlayerViewMode mode) {
@@ -562,7 +555,56 @@ class PlayerState extends _$PlayerState {
       'PlayerState setViewMode: $mode',
       source: 'player_provider',
     );
-    state = state.copyWith(viewMode: mode);
+    final runtime = _fullscreenController.syncFromLegacy(
+      isFullScreen: state.isFullScreen,
+      viewModeName: mode.name,
+    );
+    state = state.copyWith(
+      viewMode: mode,
+      fullscreenPhase: runtime.fullscreenPhase,
+    );
+  }
+
+  void requestEnterFullscreen() {
+    final runtime = _fullscreenController.requestEnterFullscreen(
+      viewModeName: state.viewMode.name,
+    );
+    state = state.copyWith(
+      isFullScreen: runtime.isFullScreen,
+      viewMode: PlayerViewMode.values.firstWhere(
+        (e) => e.name == runtime.viewModeName,
+        orElse: () => PlayerViewMode.fullscreen,
+      ),
+      fullscreenPhase: runtime.fullscreenPhase,
+    );
+  }
+
+  void requestExitFullscreen() {
+    final runtime = _fullscreenController.requestExitFullscreen();
+    state = state.copyWith(
+      isFullScreen: runtime.isFullScreen,
+      viewMode: PlayerViewMode.inline,
+      fullscreenPhase: runtime.fullscreenPhase,
+    );
+  }
+
+  void markFullscreenEntered() {
+    final runtime = _fullscreenController.markEntered(
+      viewModeName: state.viewMode.name,
+    );
+    state = state.copyWith(
+      isFullScreen: runtime.isFullScreen,
+      fullscreenPhase: runtime.fullscreenPhase,
+    );
+  }
+
+  void markFullscreenExited() {
+    final runtime = _fullscreenController.markExited();
+    state = state.copyWith(
+      isFullScreen: runtime.isFullScreen,
+      viewMode: PlayerViewMode.inline,
+      fullscreenPhase: runtime.fullscreenPhase,
+    );
   }
 
   /// Synchronizes the background navigation to match the currently active scene.
@@ -581,14 +623,12 @@ class PlayerState extends _$PlayerState {
         'PlayerState: syncing background to scene $activeSceneId',
         source: 'player_provider',
       );
-      router.go('/scenes/scene/$activeSceneId');
+      router.pushReplacement('/scenes/scene/$activeSceneId');
     }
   }
 
   void _navigate(List<NavigationAction> actions) {
-    state = state.copyWith(
-      navigationIntent: NavigationIntent(actions),
-    );
+    state = state.copyWith(navigationIntent: NavigationIntent(actions));
     // Immediately clear intent so it's not re-processed on next state update
     Future.microtask(() {
       if (ref.mounted) state = state.copyWith(clearNavigation: true);
@@ -626,9 +666,9 @@ class PlayerState extends _$PlayerState {
 
     if (currentIndex == -1 || sequence.isEmpty) return;
 
-    // Window size: how many scenes ahead to prewarm.
-    // 3 is a good balance between responsiveness and resource usage.
-    const windowSize = 3;
+    // Keep prewarming conservative: one next-scene probe preserves quick
+    // sequential navigation without competing heavily with active playback.
+    const windowSize = 1;
     final startIndex = currentIndex + 1;
     final endIndex = (currentIndex + 1 + windowSize).clamp(0, sequence.length);
 
@@ -718,9 +758,12 @@ class PlayerState extends _$PlayerState {
 
     // Reset activity tracking state for the new scene
     if (!force && state.activeScene?.id != scene.id) {
-      await _stopActivityTracking();
-      _playCountIncremented = false;
-      _accumulatedDuration = 0;
+      await _activityTracker.stop(
+        sceneId: state.activeScene?.id,
+        resumePositionProvider: () =>
+            state.player?.state.position ?? Duration.zero,
+      );
+      _activityTracker.resetForSceneChange();
     }
 
     // ...
@@ -796,11 +839,9 @@ class PlayerState extends _$PlayerState {
       await _disposeControllers();
     }
 
-    final player = Player();
-    final videoController = VideoController(player);
-
-    _playerRef = player;
-    _videoControllerRef = videoController;
+    final session = _sessionController.createOwnedSession();
+    final player = session.player;
+    final videoController = session.controller;
     _activeSceneRef = scene;
     _firstFrameLoggedSceneId = null;
     _lastIsPlaying = null;
@@ -840,6 +881,7 @@ class PlayerState extends _$PlayerState {
       subtitleFontSize: state.subtitleFontSize,
       subtitlePositionBottomRatio: state.subtitlePositionBottomRatio,
       subtitleTextAlignment: state.subtitleTextAlignment,
+      fullscreenPhase: state.fullscreenPhase,
     );
 
     try {
@@ -847,6 +889,7 @@ class PlayerState extends _$PlayerState {
         Media(
           effectiveStreamUrl,
           httpHeaders: httpHeaders ?? const <String, String>{},
+          start: initialPosition,
         ),
         play: false,
       );
@@ -860,10 +903,6 @@ class PlayerState extends _$PlayerState {
       if (!ref.mounted) {
         await _disposeControllers();
         return;
-      }
-
-      if (initialPosition != null) {
-        await player.seek(initialPosition);
       }
 
       stopwatch.stop();
@@ -903,32 +942,16 @@ class PlayerState extends _$PlayerState {
         desktopSettings.isMuted ? 0 : desktopSettings.volume * 100.0,
       );
 
-      _subscriptions.add(player.stream.playing.listen((_) => _videoListener()));
-      _subscriptions.add(
-        player.stream.position.listen((_) => _videoListener()),
-      );
-      _subscriptions.add(
-        player.stream.duration.listen((_) => _videoListener()),
-      );
-      _subscriptions.add(
-        player.stream.completed.listen((completed) {
-          if (completed) {
-            _handleVideoFinished();
-          }
-        }),
-      );
-      _subscriptions.add(
-        player.stream.buffering.listen((_) => _videoListener()),
-      );
-      _subscriptions.add(player.stream.width.listen((_) => _videoListener()));
-      _subscriptions.add(player.stream.height.listen((_) => _videoListener()));
-      _subscriptions.add(
-        player.stream.error.listen((error) {
+      await _sessionController.bindPlayerStreams(
+        player,
+        onTick: _videoListener,
+        onCompleted: _handleVideoFinished,
+        onError: (error) {
           AppLogStore.instance.add(
             'provider player error scene=${scene.id} error=$error',
             source: 'player_provider',
           );
-        }),
+        },
       );
       unawaited(player.play());
 
@@ -981,18 +1004,16 @@ class PlayerState extends _$PlayerState {
 
     // Reset activity tracking state for the new scene
     if (state.activeScene?.id != scene.id) {
-      _playCountIncremented = false;
-      _accumulatedDuration = 0;
+      _activityTracker.resetForSceneChange();
     }
 
-    _playerRef = player;
-    _videoControllerRef = controller;
     _activeSceneRef = scene;
     _firstFrameLoggedSceneId = null;
-    _isUsingBorrowedController = true;
     _lastIsPlaying = null;
+    _sessionController.adoptBorrowedSession(player, controller);
 
-    final isTiktokHandoff = streamSource == 'tiktok-handoff' || streamSource == 'tiktok-promotion';
+    final isTiktokHandoff =
+        streamSource == 'tiktok-handoff' || streamSource == 'tiktok-promotion';
 
     state = state.copyWith(
       activeScene: scene,
@@ -1030,27 +1051,23 @@ class PlayerState extends _$PlayerState {
       ),
     );
 
-    for (final sub in _subscriptions) {
-      await sub.cancel();
-    }
-    _subscriptions.clear();
-
-    _subscriptions.add(player.stream.playing.listen((_) => _videoListener()));
-    _subscriptions.add(player.stream.position.listen((_) => _videoListener()));
-    _subscriptions.add(player.stream.duration.listen((_) => _videoListener()));
-    _subscriptions.add(
-      player.stream.completed.listen((completed) {
-        if (completed) {
-          _handleVideoFinished();
-        }
-      }),
+    await _sessionController.bindPlayerStreams(
+      player,
+      onTick: _videoListener,
+      onCompleted: _handleVideoFinished,
+      onError: (error) {
+        AppLogStore.instance.add(
+          'provider player error scene=${scene.id} error=$error',
+          source: 'player_provider',
+        );
+      },
     );
-    _subscriptions.add(player.stream.buffering.listen((_) => _videoListener()));
-    _subscriptions.add(player.stream.width.listen((_) => _videoListener()));
-    _subscriptions.add(player.stream.height.listen((_) => _videoListener()));
 
     if (player.state.playing) {
-      _startActivityTracking();
+      _activityTracker.start(
+        sceneId: scene.id,
+        resumePositionProvider: () => player.state.position,
+      );
     }
 
     // Prepare for the next scene in the queue
@@ -1108,6 +1125,7 @@ class PlayerState extends _$PlayerState {
       subtitleFontSize: state.subtitleFontSize,
       subtitlePositionBottomRatio: state.subtitlePositionBottomRatio,
       subtitleTextAlignment: state.subtitleTextAlignment,
+      fullscreenPhase: state.fullscreenPhase,
     );
   }
 
@@ -1115,170 +1133,31 @@ class PlayerState extends _$PlayerState {
     Scene? scene,
     Player? player,
     VideoController? controller,
-    SceneRepository? repository,
   }) async {
-    // Save final activity before disposing
-    await _stopActivityTracking(
-      scene: scene,
-      player: player,
-      repository: repository,
+    final effectiveSceneId =
+        scene?.id ??
+        _activeSceneRef?.id ??
+        (ref.mounted ? state.activeScene?.id : null);
+    final effectivePlayer =
+        player ??
+        _sessionController.player ??
+        (ref.mounted ? state.player : null);
+    await _activityTracker.stop(
+      sceneId: effectiveSceneId,
+      resumePositionProvider: () =>
+          effectivePlayer?.state.position ?? Duration.zero,
     );
 
-    if (isTestMode) {
-      _playerRef = null;
-      _videoControllerRef = null;
-      _isUsingBorrowedController = false;
-      return;
-    }
-
-    for (final sub in _subscriptions) {
-      await sub.cancel();
-    }
-    _subscriptions.clear();
-
-    final prevPlayer =
-        _playerRef ?? player ?? (ref.mounted ? state.player : null);
-
-    _playerRef = null;
-    _videoControllerRef = null;
-
-    if (prevPlayer != null) {
-      if (_isUsingBorrowedController) {
-        AppLogStore.instance.add(
-          'provider skipping dispose of borrowed controller',
-          source: 'player_provider',
-        );
-        _isUsingBorrowedController = false;
-      } else {
-        await prevPlayer.dispose();
-      }
-    }
-
-    await WakelockPlus.disable();
-  }
-
-  void _startActivityTracking() {
-    if (!ref.mounted) return;
-    final scene = state.activeScene;
-    if (scene == null) return;
-
-    if (_playStartTime != null) return; // Already tracking
-
-    AppLogStore.instance.add(
-      'PlayerState _startActivityTracking for scene=${scene.id}',
-      source: 'player_provider',
+    await _sessionController.disposeSession(
+      isTestMode: isTestMode,
+      fallbackPlayer: player ?? (ref.mounted ? state.player : null),
+      log: (message) {
+        AppLogStore.instance.add(message, source: 'player_provider');
+      },
     );
 
-    // 1. Play count timer (5 seconds)
-    if (!_playCountIncremented) {
-      _playCountTimer?.cancel();
-      _playCountTimer = Timer(const Duration(seconds: 5), () async {
-        if (!ref.mounted || _playCountIncremented) return;
-        try {
-          await ref
-              .read(sceneRepositoryProvider)
-              .incrementScenePlayCount(scene.id);
-          _playCountIncremented = true;
-          if (ref.mounted) {
-            unawaited(
-              ref.read(sceneDetailsProvider(scene.id).notifier).refresh(),
-            );
-          }
-          AppLogStore.instance.add(
-            'PlayerState play count incremented for scene=${scene.id}',
-            source: 'player_provider',
-          );
-        } catch (e) {
-          debugPrint('Failed to increment play count: $e');
-        }
-      });
-    }
-
-    // 2. Duration tracking
-    _playStartTime = clock.now();
-
-    // 3. Periodic save timer (30 seconds)
-    _periodicSaveTimer?.cancel();
-    _periodicSaveTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
-      _saveActivity();
-    });
-  }
-
-  Future<void> _stopActivityTracking({
-    Scene? scene,
-    Player? player,
-    SceneRepository? repository,
-  }) async {
-    _playCountTimer?.cancel();
-    _playCountTimer = null;
-    _periodicSaveTimer?.cancel();
-    _periodicSaveTimer = null;
-
-    if (_playStartTime != null) {
-      final now = clock.now();
-      _accumulatedDuration +=
-          now.difference(_playStartTime!).inMilliseconds / 1000.0;
-      _playStartTime = null;
-    }
-
-    if (_accumulatedDuration > 0) {
-      await _saveActivity(scene: scene, player: player, repository: repository);
-    }
-  }
-
-  Future<void> _saveActivity({
-    Scene? scene,
-    Player? player,
-    SceneRepository? repository,
-  }) async {
-    final effectiveScene = scene ?? (ref.mounted ? state.activeScene : null);
-    final effectivePlayer = player ?? (ref.mounted ? state.player : null);
-    final effectiveRepo =
-        repository ?? (ref.mounted ? ref.read(sceneRepositoryProvider) : null);
-
-    if (effectiveScene == null ||
-        effectivePlayer == null ||
-        effectiveRepo == null) {
-      return;
-    }
-
-    // Calculate current duration if still playing
-    double durationToSave = _accumulatedDuration;
-    if (_playStartTime != null) {
-      final now = clock.now();
-      durationToSave += now.difference(_playStartTime!).inMilliseconds / 1000.0;
-      // Reset start time to current so we don't double count in next save
-      _playStartTime = now;
-    }
-
-    if (durationToSave < 0.1 &&
-        effectivePlayer.state.position == Duration.zero) {
-      return;
-    }
-
-    final resumeTime = effectivePlayer.state.position.inMilliseconds / 1000.0;
-    _accumulatedDuration = 0;
-
-    AppLogStore.instance.add(
-      'PlayerState _saveActivity scene=${effectiveScene.id} duration=${durationToSave.toStringAsFixed(1)}s resume=${resumeTime.toStringAsFixed(1)}s',
-      source: 'player_provider',
-    );
-
-    try {
-      await effectiveRepo.saveSceneActivity(
-        effectiveScene.id,
-        resumeTime: resumeTime,
-        playDuration: durationToSave,
-      );
-      if (ref.mounted) {
-        unawaited(
-          ref.read(sceneDetailsProvider(effectiveScene.id).notifier).refresh(),
-        );
-      }
-    } catch (e) {
-      debugPrint('Failed to save scene activity: $e');
-      // On failure, we might want to put the duration back into the accumulator
-      // but let's keep it simple for now to avoid complexity.
+    if (!isTestMode) {
+      await WakelockPlus.disable();
     }
   }
 
@@ -1329,9 +1208,19 @@ class PlayerState extends _$PlayerState {
         );
 
         if (isPlayingNow && !wasPlaying) {
-          _startActivityTracking();
+          if (state.activeScene != null) {
+            _activityTracker.start(
+              sceneId: state.activeScene!.id,
+              resumePositionProvider: () => player.state.position,
+            );
+          }
         } else if (!isPlayingNow && wasPlaying) {
-          _stopActivityTracking();
+          unawaited(
+            _activityTracker.stop(
+              sceneId: state.activeScene?.id,
+              resumePositionProvider: () => player.state.position,
+            ),
+          );
         }
 
         if (!isTestMode) {
@@ -1343,7 +1232,8 @@ class PlayerState extends _$PlayerState {
 
       // Only update media handler if state changed or if position drifted significantly
       // (audio_service increments position automatically, so we only need to sync periodically)
-      final shouldUpdateMediaHandler = playingChanged ||
+      final shouldUpdateMediaHandler =
+          playingChanged ||
           bufferingChanged ||
           speedChanged ||
           _lastMediaHandlerPosition == null ||
@@ -1371,7 +1261,7 @@ class PlayerState extends _$PlayerState {
     switch (state.playEndBehavior) {
       case VideoEndBehavior.stop:
         if (state.isFullScreen) {
-          setFullScreen(false);
+          requestExitFullscreen();
         }
         break;
       case VideoEndBehavior.loop:
@@ -1419,39 +1309,38 @@ class PlayerState extends _$PlayerState {
     _isTransitioning = true;
     try {
       final queueNotifier = ref.read(playbackQueueProvider.notifier);
-      
-      // Ensure queue is synced
-      if (queueNotifier.state.currentIndex == -1 &&
-          state.activeScene?.id != null) {
-        queueNotifier.findAndSetIndex(state.activeScene!.id);
-      }
+      final target = _queuePlaybackCoordinator.findTarget(
+        queueState: queueNotifier.state,
+        direction: QueueAdvanceDirection.next,
+        activeSceneId: state.activeScene?.id,
+      );
+      if (target == null) return;
 
-      final nextScene = queueNotifier.getNextScene();
+      final resolver = ref.read(streamResolverProvider.notifier);
+      final choice = await resolver.resolvePreferredStream(target.scene);
+      if (choice == null) return;
 
-      if (nextScene != null) {
-        // Trigger navigation synchronization so background details match active scene
-        // Skip for TikTok mode as it handles its own navigation via PageView
+      final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
+      await playScene(
+        target.scene,
+        choice.url,
+        mimeType: choice.mimeType,
+        streamLabel: choice.label,
+        streamSource: 'autoplay-next',
+        httpHeaders: mediaHeaders,
+      );
+
+      if (state.activeScene?.id == target.scene.id) {
+        queueNotifier.setIndex(target.targetIndex);
+        // Trigger navigation synchronization so background details match active scene.
+        // Skip for TikTok mode as it handles its own navigation via PageView.
         if (state.viewMode != PlayerViewMode.tiktok) {
           _navigate([
-            NavigationAction('/scenes/scene/${nextScene.id}', isReplacement: true),
+            NavigationAction(
+              '/scenes/scene/${target.scene.id}',
+              isReplacement: true,
+            ),
           ]);
-        }
-
-        queueNotifier.playNext(); // Increment index in queue
-
-        final resolver = ref.read(streamResolverProvider.notifier);
-        final choice = await resolver.resolvePreferredStream(nextScene);
-
-        if (choice != null) {
-          final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
-          await playScene(
-            nextScene,
-            choice.url,
-            mimeType: choice.mimeType,
-            streamLabel: choice.label,
-            streamSource: 'autoplay-next',
-            httpHeaders: mediaHeaders,
-          );
         }
       }
     } finally {
@@ -1469,39 +1358,38 @@ class PlayerState extends _$PlayerState {
     _isTransitioning = true;
     try {
       final queueNotifier = ref.read(playbackQueueProvider.notifier);
-      
-      // Ensure queue is synced
-      if (queueNotifier.state.currentIndex == -1 &&
-          state.activeScene?.id != null) {
-        queueNotifier.findAndSetIndex(state.activeScene!.id);
-      }
+      final target = _queuePlaybackCoordinator.findTarget(
+        queueState: queueNotifier.state,
+        direction: QueueAdvanceDirection.previous,
+        activeSceneId: state.activeScene?.id,
+      );
+      if (target == null) return;
 
-      final prevScene = queueNotifier.getPreviousScene();
+      final resolver = ref.read(streamResolverProvider.notifier);
+      final choice = await resolver.resolvePreferredStream(target.scene);
+      if (choice == null) return;
 
-      if (prevScene != null) {
-        // Trigger navigation synchronization
-        // Skip for TikTok mode as it handles its own navigation via PageView
+      final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
+      await playScene(
+        target.scene,
+        choice.url,
+        mimeType: choice.mimeType,
+        streamLabel: choice.label,
+        streamSource: 'autoplay-prev',
+        httpHeaders: mediaHeaders,
+      );
+
+      if (state.activeScene?.id == target.scene.id) {
+        queueNotifier.setIndex(target.targetIndex);
+        // Trigger navigation synchronization.
+        // Skip for TikTok mode as it handles its own navigation via PageView.
         if (state.viewMode != PlayerViewMode.tiktok) {
           _navigate([
-            NavigationAction('/scenes/scene/${prevScene.id}', isReplacement: true),
+            NavigationAction(
+              '/scenes/scene/${target.scene.id}',
+              isReplacement: true,
+            ),
           ]);
-        }
-
-        queueNotifier.playPrevious(); // Decrement index in queue
-
-        final resolver = ref.read(streamResolverProvider.notifier);
-        final choice = await resolver.resolvePreferredStream(prevScene);
-
-        if (choice != null) {
-          final mediaHeaders = ref.read(mediaPlaybackHeadersProvider);
-          await playScene(
-            prevScene,
-            choice.url,
-            mimeType: choice.mimeType,
-            streamLabel: choice.label,
-            streamSource: 'autoplay-prev',
-            httpHeaders: mediaHeaders,
-          );
         }
       }
     } finally {

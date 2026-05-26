@@ -1,4 +1,5 @@
 import 'package:graphql/client.dart';
+import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
@@ -75,7 +76,7 @@ class GraphQLPerformerRepository implements PerformerRepository {
       );
     }
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
 
     final performers = result.parsedData!.findPerformers.performers
         .map(
@@ -146,16 +147,17 @@ class GraphQLPerformerRepository implements PerformerRepository {
         .toList();
 
     final inputFilter = Input$PerformerFilterType(
-      filter_favorites:
-          (favoritesOnly || performerFilter?.favorite == true) ? true : null,
+      filter_favorites: (favoritesOnly || performerFilter?.favorite == true)
+          ? true
+          : null,
       gender: performerFilter?.gender != null
           ? mapGenderCriterion(performerFilter!.gender)
           : genderEnums.isNotEmpty
-              ? Input$GenderCriterionInput(
-                  value_list: genderEnums,
-                  modifier: Enum$CriterionModifier.INCLUDES,
-                )
-              : null,
+          ? Input$GenderCriterionInput(
+              value_list: genderEnums,
+              modifier: Enum$CriterionModifier.INCLUDES,
+            )
+          : null,
       circumcised: mapCircumcisionCriterion(performerFilter?.circumcised),
       tags: mapHierarchicalMultiCriterion(performerFilter?.tags),
       groups: mapHierarchicalMultiCriterion(performerFilter?.groups),
@@ -234,7 +236,7 @@ class GraphQLPerformerRepository implements PerformerRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
     final p = result.parsedData!.findPerformer;
     if (p == null) throw StateError('Performer not found');
 
@@ -288,7 +290,7 @@ class GraphQLPerformerRepository implements PerformerRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
   }
 
   @override
@@ -313,7 +315,7 @@ class GraphQLPerformerRepository implements PerformerRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
 
     final List<Query$ScrapeSinglePerformer$scrapeSinglePerformer> raw =
         result.parsedData?.scrapeSinglePerformer ?? [];
@@ -329,7 +331,7 @@ class GraphQLPerformerRepository implements PerformerRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
 
     final raw = result.parsedData?.scrapePerformerURL;
     return raw != null ? ScrapedPerformer.fromJson(raw.toJson()) : null;
@@ -348,6 +350,6 @@ class GraphQLPerformerRepository implements PerformerRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
   }
 }

@@ -10,8 +10,10 @@ import 'package:media_kit_video/media_kit_video.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
+import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
 
 import 'playend_behavior_test.mocks.dart';
 
@@ -56,6 +58,7 @@ void main() {
       overrides: [
         sharedPreferencesProvider.overrideWithValue(sharedPrefs),
         sceneRepositoryProvider.overrideWithValue(mockRepo),
+        streamResolverProvider.overrideWith(NullStreamResolver.new),
       ],
     );
   });
@@ -98,23 +101,23 @@ void main() {
   test('playNext should NOT exit full screen', () async {
     final notifier = container.read(playerStateProvider.notifier);
     final scene1 = createTestScene('1');
-    
+
     // Attach initial controller
     await notifier.attachController(scene1, mockPlayer, mockVideoController);
-    
+
     // Set full screen
     notifier.setFullScreen(true);
     expect(container.read(playerStateProvider).isFullScreen, isTrue);
 
     // Mock playEndBehavior to next
     notifier.setPlayEndBehavior(VideoEndBehavior.next);
-    
+
     // Trigger video finish by emitting to completedStream
     completedStream.add(true);
-    
+
     // Wait for async operations
     await Future.delayed(Duration.zero);
-    
+
     // Verify it DID NOT exit full screen
     expect(container.read(playerStateProvider).isFullScreen, isTrue);
   });
@@ -122,16 +125,52 @@ void main() {
   test('playEndBehavior.stop SHOULD exit full screen', () async {
     final notifier = container.read(playerStateProvider.notifier);
     final scene1 = createTestScene('1');
-    
+
     await notifier.attachController(scene1, mockPlayer, mockVideoController);
     notifier.setFullScreen(true);
-    
+
     notifier.setPlayEndBehavior(VideoEndBehavior.stop);
     completedStream.add(true);
     await Future.delayed(Duration.zero);
-    
+
     expect(container.read(playerStateProvider).isFullScreen, isFalse);
   });
+
+  test(
+    'playNext keeps queue index unchanged when stream resolution fails',
+    () async {
+      final notifier = container.read(playerStateProvider.notifier);
+      final queue = container.read(playbackQueueProvider.notifier);
+      final scene1 = createTestScene('1');
+      final scene2 = createTestScene('2');
+
+      queue.setSequence([scene1, scene2], 0);
+      await notifier.attachController(scene1, mockPlayer, mockVideoController);
+
+      await notifier.playNext();
+
+      expect(container.read(playbackQueueProvider).currentIndex, 0);
+      expect(container.read(playerStateProvider).activeScene?.id, '1');
+    },
+  );
+
+  test(
+    'playPrevious keeps queue index unchanged when stream resolution fails',
+    () async {
+      final notifier = container.read(playerStateProvider.notifier);
+      final queue = container.read(playbackQueueProvider.notifier);
+      final scene1 = createTestScene('1');
+      final scene2 = createTestScene('2');
+
+      queue.setSequence([scene1, scene2], 1);
+      await notifier.attachController(scene2, mockPlayer, mockVideoController);
+
+      await notifier.playPrevious();
+
+      expect(container.read(playbackQueueProvider).currentIndex, 1);
+      expect(container.read(playerStateProvider).activeScene?.id, '2');
+    },
+  );
 }
 
 // Minimal mock for PlayerState (media_kit)
@@ -163,7 +202,7 @@ class CustomPlayerStream extends Mock implements mk.PlayerStream {
   final Stream<Duration> position;
   @override
   final Stream<Duration> duration;
-  
+
   @override
   Stream<Duration> get buffer => const Stream.empty();
   @override
@@ -192,4 +231,12 @@ class CustomPlayerStream extends Mock implements mk.PlayerStream {
     this.position,
     this.duration,
   );
+}
+
+class NullStreamResolver extends StreamResolver {
+  @override
+  void build() {}
+
+  @override
+  Future<StreamChoice?> resolvePreferredStream(Scene scene) async => null;
 }

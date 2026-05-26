@@ -1,8 +1,10 @@
 import 'package:graphql/client.dart';
+import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
-import 'package:stash_app_flutter/core/domain/entities/criterion.dart' as domain;
+import 'package:stash_app_flutter/core/domain/entities/criterion.dart'
+    as domain;
 import '../../domain/entities/studio.dart';
 import '../../domain/entities/studio_filter.dart';
 import '../../domain/repositories/studio_repository.dart';
@@ -72,7 +74,7 @@ class GraphQLStudioRepository implements StudioRepository {
       );
     }
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
 
     final studios = result.parsedData!.findStudios.studios
         .map(
@@ -119,12 +121,14 @@ class GraphQLStudioRepository implements StudioRepository {
       favorite: (favoritesOnly || studioFilter?.favorite == true) ? true : null,
       name: mapStringCriterion(studioFilter?.name),
       details: mapStringCriterion(studioFilter?.details),
-      parents: mapMultiCriterion(studioFilter?.parentStudios != null 
-          ? domain.MultiCriterion(
-              value: studioFilter!.parentStudios!.value,
-              modifier: studioFilter.parentStudios!.modifier,
-            )
-          : null),
+      parents: mapMultiCriterion(
+        studioFilter?.parentStudios != null
+            ? domain.MultiCriterion(
+                value: studioFilter!.parentStudios!.value,
+                modifier: studioFilter.parentStudios!.modifier,
+              )
+            : null,
+      ),
       tags: mapHierarchicalMultiCriterion(studioFilter?.tags),
       rating100: mapIntCriterion(studioFilter?.rating100),
       ignore_auto_tag: studioFilter?.ignoreAutoTag,
@@ -178,7 +182,7 @@ class GraphQLStudioRepository implements StudioRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
     final s = result.parsedData!.findStudio;
     if (s == null) throw StateError('Studio not found');
 
@@ -211,7 +215,7 @@ class GraphQLStudioRepository implements StudioRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
   }
 
   @override
@@ -228,14 +232,12 @@ class GraphQLStudioRepository implements StudioRepository {
             scraper_id: scraperId,
             stash_box_endpoint: stashBoxEndpoint,
           ),
-          input: Input$ScrapeSingleStudioInput(
-            query: query,
-          ),
+          input: Input$ScrapeSingleStudioInput(query: query),
         ),
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
 
     final List<Query$ScrapeSingleStudio$scrapeSingleStudio> raw =
         result.parsedData?.scrapeSingleStudio ?? [];
@@ -262,6 +264,6 @@ class GraphQLStudioRepository implements StudioRepository {
       ),
     );
 
-    if (result.hasException) throw result.exception!;
+    BaseRepository.validateResult(result);
   }
 }

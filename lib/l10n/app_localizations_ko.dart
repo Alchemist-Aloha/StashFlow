@@ -1317,6 +1317,14 @@ class AppLocalizationsKo extends AppLocalizations {
       '피드 모드에서 장면을 재생할 때 비디오 길이의 0%에서 90% 사이의 임의의 위치에서 시작합니다';
 
   @override
+  String get settings_playback_resume_position =>
+      'Resume from last playing position';
+
+  @override
+  String get settings_playback_resume_position_subtitle =>
+      'When opening a video, automatically resume from where you left off';
+
+  @override
   String get settings_playback_end_behavior => '재생 종료 동작';
 
   @override
@@ -2283,5 +2291,75 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String details_failed_load_galleries(String error) {
     return '갤러리 로드 실패: $error';
+  }
+
+  @override
+  String get scene_info_id => '장면 ID';
+
+  @override
+  String get scene_info_original_file_path => '원본 파일 경로';
+
+  @override
+  String get scene_info_resume_time => '재개 시간';
+
+  @override
+  String get scene_info_play_duration => '재생 시간';
+
+  @override
+  String get scene_info_urls => 'URL';
+
+  @override
+  String get scene_info_resolution => '해결';
+
+  @override
+  String get scene_info_bitrate => '비트레이트';
+
+  @override
+  String get scene_info_frame_rate => '프레임 속도';
+
+  @override
+  String get scene_info_format => '체재';
+
+  @override
+  String get scene_info_video_codec => '비디오 코덱';
+
+  @override
+  String get scene_info_audio_codec => '오디오 코덱';
+
+  @override
+  String get scene_info_stream => '개울';
+
+  @override
+  String get scene_info_preview => '시사';
+
+  @override
+  String get scene_info_screenshot => '스크린샷';
+
+  @override
+  String get scene_info_caption => '표제';
+
+  @override
+  String get scene_info_vtt => 'VTT';
+
+  @override
+  String get scene_info_sprite => '요정';
+
+  @override
+  String get scene_info_technical => '인위적인';
+
+  @override
+  String scene_studio_id(String id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String scene_rating_stars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 별',
+      one: '별 1개',
+    );
+    return '$_temp0';
   }
 }

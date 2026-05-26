@@ -23,6 +23,7 @@ import '../../domain/entities/scene_title_utils.dart';
 import '../../../studios/presentation/providers/studio_media_provider.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
+import '../providers/playback_queue_provider.dart';
 import '../providers/video_player_provider.dart';
 import 'scene_info_page.dart';
 import '../../data/repositories/stream_resolver.dart';
@@ -77,6 +78,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   bool _detailsExpanded = false;
   bool _tagsExpanded = false;
   bool _performersExpanded = false;
+
+  final GlobalKey _playerKey = GlobalKey();
 
   bool _isRandomSortActive() {
     return ref.read(sceneSortProvider).sort == 'random';
@@ -221,9 +224,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.saved_to_album)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.saved_to_album)));
       }
     } on GalException catch (e) {
       final message = switch (e.type) {
@@ -344,6 +347,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SceneVideoPlayer(
+                                key: _playerKey,
                                 scene: scene,
                                 autoPlayOnMount: widget.autoPlayOnMount,
                                 maxHeight: safeMaxHeight,
@@ -404,6 +408,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SceneVideoPlayer(
+                        key: _playerKey,
                         scene: scene,
                         autoPlayOnMount: widget.autoPlayOnMount,
                         maxHeight: safeMaxHeight,
@@ -582,7 +587,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           IconButton(
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
-            tooltip: '$i Star${i > 1 ? 's' : ''}',
+            tooltip: context.l10n.scene_rating_stars(i),
             onPressed: () async {
               final currentRating = scene.rating100 ?? 0;
               final newRating = (currentRating == i * 20) ? 0 : i * 20;
@@ -919,6 +924,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               const SizedBox(height: AppTheme.spacingSmall),
               SceneStrip(
                 scenes: filtered,
+                queueId: PlaybackQueueIds.sceneMoreFromStudio(
+                  sceneId: scene.id,
+                  studioId: scene.studioId!,
+                ),
                 onTap: (selectedScene) => context.push(
                   '/scenes/scene/${selectedScene.id}',
                   extra: true,

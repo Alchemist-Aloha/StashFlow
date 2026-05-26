@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:graphql/client.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
 import 'package:stash_app_flutter/core/data/graphql/schema.graphql.dart';
 import 'package:stash_app_flutter/features/images/data/repositories/graphql_image_repository.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image.dart';
@@ -154,7 +155,16 @@ void main() {
         mockClient.query<Query$FindImages>(any),
       ).thenAnswer((_) async => mockQueryResult);
 
-      expect(() => repository.findImages(), throwsA(isA<OperationException>()));
+      expect(
+        () => repository.findImages(),
+        throwsA(
+          isA<AppGraphQLException>().having(
+            (e) => e.kind,
+            'kind',
+            GraphQLFailureKind.schema,
+          ),
+        ),
+      );
     });
   });
 }

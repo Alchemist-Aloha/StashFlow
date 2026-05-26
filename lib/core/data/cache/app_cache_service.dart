@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:isolate';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
@@ -65,7 +66,6 @@ class AppCacheService {
     return roots
         .expand(
           (root) => [
-            root,
             Directory(p.join(root.path, 'video')),
             Directory(p.join(root.path, 'videos')),
             Directory(p.join(root.path, 'video_cache')),
@@ -79,17 +79,7 @@ class AppCacheService {
       debugPrint('AppCacheService: Directory does not exist: ${dir.path}');
       return 0;
     }
-    int size = 0;
-    try {
-      await for (final entity in dir.list(recursive: true, followLinks: false)) {
-        if (entity is File) {
-          size += await entity.length();
-        }
-      }
-    } catch (e) {
-      debugPrint('AppCacheService: Error listing directory ${dir.path}: $e');
-    }
-    return size;
+    return _calculateCacheSizeInBackground([dir.path]);
   }
 
   Future<int> getImageCacheSizeMb() async {
@@ -109,27 +99,12 @@ class AppCacheService {
   }
 
   Future<int> getVideoCacheSizeMb() async {
-    int bytes = 0;
     final dirs = await _videoCacheDirs();
-    
-    Future<void> scan(Directory dir) async {
-      try {
-        if (!await dir.exists()) return;
-        await for (final entity in dir.list(recursive: true, followLinks: false)) {
-          if (entity is File) {
-            final ext = p.extension(entity.path).toLowerCase();
-            if (_videoExtensions.contains(ext)) {
-              bytes += await entity.length();
-            }
-          }
-        }
-      } catch (_) {}
-    }
+    final bytes = await _calculateCacheSizeInBackground(
+      dirs.map((dir) => dir.path).toList(),
+      extensions: _videoExtensions,
+    );
 
-    for (final dir in dirs) {
-      await scan(dir);
-    }
-    
     debugPrint('AppCacheService: Video cache size: $bytes bytes');
     return bytes ~/ (1024 * 1024);
   }
@@ -137,19 +112,22 @@ class AppCacheService {
   Future<int> getDatabaseCacheSizeMb() async {
     final appDir = await _applicationDocumentsDirectoryProvider();
     final hiveDir = Directory(p.join(appDir.path, 'stash_hive'));
-    
+
     int bytes = await _calculateDirSize(hiveDir);
-    
+
     // Also check for root hive files
     try {
       await for (final entity in appDir.list(recursive: false)) {
-        if (entity is File && (entity.path.endsWith('.hive') || entity.path.endsWith('.lock'))) {
+        if (entity is File &&
+            (entity.path.endsWith('.hive') || entity.path.endsWith('.lock'))) {
           bytes += await entity.length();
         }
       }
     } catch (_) {}
 
-    debugPrint('AppCacheService: Database cache size: $bytes bytes in ${appDir.path}');
+    debugPrint(
+      'AppCacheService: Database cache size: $bytes bytes in ${appDir.path}',
+    );
     return bytes ~/ (1024 * 1024);
   }
 
@@ -164,26 +142,16 @@ class AppCacheService {
         extended_image.clearDiskCachedImages(),
       ]);
       debugPrint('AppCacheService: Library clear calls finished: $results');
-      
+
       extended_image.clearMemoryImageCache();
 
       // 2. Manual brute force for the directories we scan
       final dirsToClear = await _imageCacheDirs();
+      final manualErrors = await _clearDirectoriesInBackground(
+        dirsToClear.map((dir) => dir.path).toList(),
+      );
+      errors.addAll(manualErrors);
 
-      for (final dir in dirsToClear) {
-        if (await dir.exists()) {
-          debugPrint('AppCacheService: Manually clearing directory: ${dir.path}');
-          try {
-            await for (final entity in dir.list()) {
-              await entity.delete(recursive: true);
-            }
-          } catch (e) {
-            debugPrint('AppCacheService: Manual clear failed for ${dir.path}: $e');
-            errors.add(e);
-          }
-        }
-      }
-      
       debugPrint('AppCacheService: Image cache clearing completed');
     } catch (e) {
       debugPrint('AppCacheService: Error clearing image cache: $e');
@@ -199,27 +167,10 @@ class AppCacheService {
   Future<void> clearVideoCache() async {
     debugPrint('AppCacheService: Clearing video cache...');
     final dirs = await _videoCacheDirs();
-    final errors = <Object>[];
-
-    Future<void> deleteVideos(Directory dir) async {
-      try {
-        if (!await dir.exists()) return;
-        await for (final entity in dir.list(recursive: true, followLinks: false)) {
-          if (entity is File) {
-            final ext = p.extension(entity.path).toLowerCase();
-            if (_videoExtensions.contains(ext)) {
-              await entity.delete();
-            }
-          }
-        }
-      } catch (e) {
-        errors.add(e);
-      }
-    }
-
-    for (final dir in dirs) {
-      await deleteVideos(dir);
-    }
+    final errors = await _deleteFilesInBackground(
+      dirs.map((dir) => dir.path).toList(),
+      extensions: _videoExtensions,
+    );
     debugPrint('AppCacheService: Video cache cleared');
     if (errors.isNotEmpty) {
       throw StateError(
@@ -232,7 +183,7 @@ class AppCacheService {
     debugPrint('AppCacheService: Clearing database cache...');
     final appDir = await _applicationDocumentsDirectoryProvider();
     final hiveDir = Directory(p.join(appDir.path, 'stash_hive'));
-    
+
     final errors = <Object>[];
     if (await hiveDir.exists()) {
       try {
@@ -243,12 +194,13 @@ class AppCacheService {
         errors.add(e);
       }
     }
-    
+
     // Also delete root hive files (excluding essential ones if any, but hive files are usually safe to clear for cache)
     try {
       await for (final entity in appDir.list(recursive: false)) {
         final path = entity.path;
-        if (entity is File && (path.endsWith('.hive') || path.endsWith('.lock'))) {
+        if (entity is File &&
+            (path.endsWith('.hive') || path.endsWith('.lock'))) {
           // Don't delete shared_preferences if it's there (though usually it's in a different spot)
           if (!path.contains('shared_preferences') &&
               !path.contains('flutter_secure_storage')) {
@@ -296,47 +248,169 @@ class AppCacheService {
     if (maxMb <= 0 || maxMb >= 999999) return;
 
     final maxBytes = maxMb * 1024 * 1024;
-    final files = <File>[];
-    int totalBytes = 0;
-
-    for (final dir in dirs) {
-      try {
-        if (!await dir.exists()) continue;
-        await for (final entity in dir.list(recursive: true, followLinks: false)) {
-          if (entity is! File) continue;
-          final ext = p.extension(entity.path).toLowerCase();
-          if (extensions != null && !extensions.contains(ext)) continue;
-          files.add(entity);
-          totalBytes += await entity.length();
-        }
-      } catch (_) {
-        // Best-effort trimming: continue with remaining directories.
-      }
-    }
-
-    if (totalBytes <= maxBytes || files.isEmpty) return;
-
-    files.sort((a, b) {
-      final aMs = a.statSync().modified.millisecondsSinceEpoch;
-      final bMs = b.statSync().modified.millisecondsSinceEpoch;
-      return aMs.compareTo(bMs);
-    });
-
-    var deletedBytes = 0;
-    for (final file in files) {
-      if (totalBytes - deletedBytes <= maxBytes) break;
-      try {
-        final len = await file.length();
-        await file.delete();
-        deletedBytes += len;
-      } catch (_) {
-        // Ignore individual deletion failures and continue.
-      }
-    }
+    final deletedBytes = await _enforceCacheLimitInBackground(
+      dirs.map((dir) => dir.path).toList(),
+      maxBytes: maxBytes,
+      extensions: extensions,
+    );
 
     debugPrint(
       'AppCacheService: enforce $label cache limit=${maxMb}MB '
       'deleted=${deletedBytes ~/ (1024 * 1024)}MB',
     );
   }
+}
+
+Future<int> _calculateCacheSizeInBackground(
+  List<String> dirPaths, {
+  Set<String>? extensions,
+}) {
+  return Isolate.run(
+    () => _calculateCacheSizeSync(dirPaths, extensions: extensions),
+  );
+}
+
+Future<List<Object>> _clearDirectoriesInBackground(List<String> dirPaths) {
+  return Isolate.run(() => _clearDirectoriesSync(dirPaths));
+}
+
+Future<List<Object>> _deleteFilesInBackground(
+  List<String> dirPaths, {
+  required Set<String> extensions,
+}) {
+  return Isolate.run(() => _deleteFilesSync(dirPaths, extensions: extensions));
+}
+
+Future<int> _enforceCacheLimitInBackground(
+  List<String> dirPaths, {
+  required int maxBytes,
+  required Set<String>? extensions,
+}) {
+  return Isolate.run(
+    () => _enforceCacheLimitSync(
+      dirPaths,
+      maxBytes: maxBytes,
+      extensions: extensions,
+    ),
+  );
+}
+
+int _calculateCacheSizeSync(List<String> dirPaths, {Set<String>? extensions}) {
+  var size = 0;
+  for (final dirPath in dirPaths) {
+    try {
+      final dir = Directory(dirPath);
+      if (!dir.existsSync()) continue;
+      for (final entity in dir.listSync(recursive: true, followLinks: false)) {
+        if (entity is! File) continue;
+        if (!_matchesExtension(entity.path, extensions)) continue;
+        size += entity.lengthSync();
+      }
+    } catch (_) {
+      // Best-effort cache accounting: continue with remaining directories.
+    }
+  }
+  return size;
+}
+
+List<Object> _clearDirectoriesSync(List<String> dirPaths) {
+  final errors = <Object>[];
+  for (final dirPath in dirPaths) {
+    try {
+      final dir = Directory(dirPath);
+      if (!dir.existsSync()) continue;
+      for (final entity in dir.listSync(followLinks: false)) {
+        entity.deleteSync(recursive: true);
+      }
+    } catch (e) {
+      errors.add(e);
+    }
+  }
+  return errors;
+}
+
+List<Object> _deleteFilesSync(
+  List<String> dirPaths, {
+  required Set<String> extensions,
+}) {
+  final errors = <Object>[];
+  for (final dirPath in dirPaths) {
+    try {
+      final dir = Directory(dirPath);
+      if (!dir.existsSync()) continue;
+      for (final entity in dir.listSync(recursive: true, followLinks: false)) {
+        if (entity is File && _matchesExtension(entity.path, extensions)) {
+          entity.deleteSync();
+        }
+      }
+    } catch (e) {
+      errors.add(e);
+    }
+  }
+  return errors;
+}
+
+int _enforceCacheLimitSync(
+  List<String> dirPaths, {
+  required int maxBytes,
+  required Set<String>? extensions,
+}) {
+  final files = <_CacheFile>[];
+  var totalBytes = 0;
+
+  for (final dirPath in dirPaths) {
+    try {
+      final dir = Directory(dirPath);
+      if (!dir.existsSync()) continue;
+      for (final entity in dir.listSync(recursive: true, followLinks: false)) {
+        if (entity is! File) continue;
+        if (!_matchesExtension(entity.path, extensions)) continue;
+        final stat = entity.statSync();
+        final length = stat.size;
+        files.add(
+          _CacheFile(
+            path: entity.path,
+            size: length,
+            modifiedMs: stat.modified.millisecondsSinceEpoch,
+          ),
+        );
+        totalBytes += length;
+      }
+    } catch (_) {
+      // Best-effort trimming: continue with remaining directories.
+    }
+  }
+
+  if (totalBytes <= maxBytes || files.isEmpty) return 0;
+
+  files.sort((a, b) => a.modifiedMs.compareTo(b.modifiedMs));
+
+  var deletedBytes = 0;
+  for (final file in files) {
+    if (totalBytes - deletedBytes <= maxBytes) break;
+    try {
+      File(file.path).deleteSync();
+      deletedBytes += file.size;
+    } catch (_) {
+      // Ignore individual deletion failures and continue.
+    }
+  }
+  return deletedBytes;
+}
+
+bool _matchesExtension(String path, Set<String>? extensions) {
+  if (extensions == null) return true;
+  return extensions.contains(p.extension(path).toLowerCase());
+}
+
+class _CacheFile {
+  const _CacheFile({
+    required this.path,
+    required this.size,
+    required this.modifiedMs,
+  });
+
+  final String path;
+  final int size;
+  final int modifiedMs;
 }

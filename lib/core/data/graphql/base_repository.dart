@@ -1,4 +1,5 @@
 import 'package:graphql/client.dart';
+import 'graphql_exception.dart';
 
 /// A base class for all GraphQL repositories.
 ///
@@ -7,10 +8,14 @@ import 'package:graphql/client.dart';
 abstract class BaseRepository {
   /// Validates that the [result] does not have any exceptions.
   ///
-  /// Throws the [OperationException] if one is present in the [result].
+  /// Throws a normalized [AppGraphQLException] if one is present in the result.
   static void validateResult(QueryResult result) {
     if (result.hasException) {
-      throw result.exception!;
+      throw normalizeGraphQLException(result.exception!);
     }
+  }
+
+  static Never throwNormalized(OperationException exception) {
+    throw normalizeGraphQLException(exception);
   }
 }

@@ -27,6 +27,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
       'subtitle_position_bottom_ratio';
   static const _subtitleTextAlignmentKey = 'subtitle_text_alignment';
   static const _feedStartRandomKey = 'feed_start_random';
+  static const _resumePlayPositionKey = 'video_resume_play_position';
 
   bool _preferSceneStreams = true;
   VideoEndBehavior _playEndBehavior = VideoEndBehavior.stop;
@@ -42,6 +43,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
   static const _directPlayOnNavigationKey = 'video_direct_play_on_navigation';
   bool _directPlayOnNavigation = false;
   bool _feedStartRandom = false;
+  bool _resumePlayPosition = true;
 
   @override
   void initState() {
@@ -81,6 +83,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
         prefs.getString(_subtitleTextAlignmentKey) ?? 'center';
     _directPlayOnNavigation = prefs.getBool(_directPlayOnNavigationKey) ?? true;
     _feedStartRandom = prefs.getBool(_feedStartRandomKey) ?? false;
+    _resumePlayPosition = prefs.getBool(_resumePlayPositionKey) ?? true;
 
     setState(() => _loading = false);
   }
@@ -111,6 +114,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     await prefs.setString(_subtitleTextAlignmentKey, _subtitleTextAlignment);
     await prefs.setBool(_directPlayOnNavigationKey, _directPlayOnNavigation);
     await prefs.setBool(_feedStartRandomKey, _feedStartRandom);
+    await prefs.setBool(_resumePlayPositionKey, _resumePlayPosition);
 
     final playerStateNotifier = ref.read(playerStateProvider.notifier);
     playerStateNotifier.setPlayEndBehavior(_playEndBehavior);
@@ -230,6 +234,21 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                           value: _videoGravityOrientation,
                           onChanged: (value) async {
                             setState(() => _videoGravityOrientation = value);
+                            await _saveToggleSettings();
+                          },
+                        ),
+                        Divider(height: context.dimensions.spacingLarge),
+                        SwitchListTile.adaptive(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(
+                            context.l10n.settings_playback_resume_position,
+                          ),
+                          subtitle: Text(
+                            context.l10n.settings_playback_resume_position_subtitle,
+                          ),
+                          value: _resumePlayPosition,
+                          onChanged: (value) async {
+                            setState(() => _resumePlayPosition = value);
                             await _saveToggleSettings();
                           },
                         ),

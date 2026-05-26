@@ -89,6 +89,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
       final baseUrl = _urlController.text.trim();
       final username = _usernameController.text.trim();
       final password = _passwordController.text;
+      var cookieHeader = '';
 
       if (_authMode == AuthMode.password) {
         setState(() => _testResult = 'Attempting login...');
@@ -105,8 +106,8 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
           return;
         }
 
-        final cookie = await service.cookieHeaderFor(requestUri: endpointUri);
-        if (cookie.isEmpty) {
+        cookieHeader = await service.cookieHeaderFor(requestUri: endpointUri);
+        if (cookieHeader.isEmpty) {
           setState(() => _testResult = 'Error: Login failed. Check credentials.');
           return;
         }
@@ -126,6 +127,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
         apiKey: _apiKeyController.text,
         username: username,
         password: password,
+        cookieHeader: cookieHeader,
       );
 
       // We only need to refresh the top-level status provider.

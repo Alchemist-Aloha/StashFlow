@@ -1319,6 +1319,14 @@ class AppLocalizationsJa extends AppLocalizations {
       'フィードモードでシーンを再生するとき、動画の長さの0%から90%の間のランダムな位置から開始します';
 
   @override
+  String get settings_playback_resume_position =>
+      'Resume from last playing position';
+
+  @override
+  String get settings_playback_resume_position_subtitle =>
+      'When opening a video, automatically resume from where you left off';
+
+  @override
   String get settings_playback_end_behavior => '再生終了時の動作';
 
   @override
@@ -2283,5 +2291,75 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String details_failed_load_galleries(String error) {
     return 'ギャラリーの読み込みに失敗しました: $error';
+  }
+
+  @override
+  String get scene_info_id => 'シーンID';
+
+  @override
+  String get scene_info_original_file_path => '元のファイルパス';
+
+  @override
+  String get scene_info_resume_time => '再開時間';
+
+  @override
+  String get scene_info_play_duration => '再生時間';
+
+  @override
+  String get scene_info_urls => 'URL';
+
+  @override
+  String get scene_info_resolution => '解決';
+
+  @override
+  String get scene_info_bitrate => 'ビットレート';
+
+  @override
+  String get scene_info_frame_rate => 'フレームレート';
+
+  @override
+  String get scene_info_format => '形式';
+
+  @override
+  String get scene_info_video_codec => 'ビデオコーデック';
+
+  @override
+  String get scene_info_audio_codec => 'オーディオコーデック';
+
+  @override
+  String get scene_info_stream => 'ストリーム';
+
+  @override
+  String get scene_info_preview => 'プレビュー';
+
+  @override
+  String get scene_info_screenshot => 'スクリーンショット';
+
+  @override
+  String get scene_info_caption => 'キャプション';
+
+  @override
+  String get scene_info_vtt => 'VTT';
+
+  @override
+  String get scene_info_sprite => 'スプライト';
+
+  @override
+  String get scene_info_technical => 'テクニカル';
+
+  @override
+  String scene_studio_id(String id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String scene_rating_stars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count スター',
+      one: '1 つ星',
+    );
+    return '$_temp0';
   }
 }

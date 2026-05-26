@@ -1305,6 +1305,14 @@ class AppLocalizationsZh extends AppLocalizations {
       '在Feed模式下播放场景时，从视频长度的0%到90%之间的随机位置开始播放';
 
   @override
+  String get settings_playback_resume_position =>
+      'Resume from last playing position';
+
+  @override
+  String get settings_playback_resume_position_subtitle =>
+      'When opening a video, automatically resume from where you left off';
+
+  @override
   String get settings_playback_end_behavior => '播放结束行为';
 
   @override
@@ -2260,6 +2268,76 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String details_failed_load_galleries(String error) {
     return '加载图库失败: $error';
+  }
+
+  @override
+  String get scene_info_id => '场景ID';
+
+  @override
+  String get scene_info_original_file_path => '原始文件路径';
+
+  @override
+  String get scene_info_resume_time => '恢复时间';
+
+  @override
+  String get scene_info_play_duration => '播放时长';
+
+  @override
+  String get scene_info_urls => '网址';
+
+  @override
+  String get scene_info_resolution => '解决';
+
+  @override
+  String get scene_info_bitrate => '比特率';
+
+  @override
+  String get scene_info_frame_rate => '帧率';
+
+  @override
+  String get scene_info_format => '格式';
+
+  @override
+  String get scene_info_video_codec => '视频编解码器';
+
+  @override
+  String get scene_info_audio_codec => '音频编解码器';
+
+  @override
+  String get scene_info_stream => '溪流';
+
+  @override
+  String get scene_info_preview => '预览';
+
+  @override
+  String get scene_info_screenshot => '截屏';
+
+  @override
+  String get scene_info_caption => '标题';
+
+  @override
+  String get scene_info_vtt => '视听测试';
+
+  @override
+  String get scene_info_sprite => '雪碧';
+
+  @override
+  String get scene_info_technical => '技术的';
+
+  @override
+  String scene_studio_id(String id) {
+    return 'ID：$id';
+  }
+
+  @override
+  String scene_rating_stars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 星星',
+      one: '1 星',
+    );
+    return '$_temp0';
   }
 }
 
@@ -4519,6 +4597,76 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String details_failed_load_galleries(String error) {
     return '加载图库失败: $error';
+  }
+
+  @override
+  String get scene_info_id => '场景ID';
+
+  @override
+  String get scene_info_original_file_path => '原始文件路径';
+
+  @override
+  String get scene_info_resume_time => '恢复时间';
+
+  @override
+  String get scene_info_play_duration => '播放时长';
+
+  @override
+  String get scene_info_urls => '网址';
+
+  @override
+  String get scene_info_resolution => '解决';
+
+  @override
+  String get scene_info_bitrate => '比特率';
+
+  @override
+  String get scene_info_frame_rate => '帧率';
+
+  @override
+  String get scene_info_format => '格式';
+
+  @override
+  String get scene_info_video_codec => '视频编解码器';
+
+  @override
+  String get scene_info_audio_codec => '音频编解码器';
+
+  @override
+  String get scene_info_stream => '溪流';
+
+  @override
+  String get scene_info_preview => '预览';
+
+  @override
+  String get scene_info_screenshot => '截屏';
+
+  @override
+  String get scene_info_caption => '标题';
+
+  @override
+  String get scene_info_vtt => '视听测试';
+
+  @override
+  String get scene_info_sprite => '雪碧';
+
+  @override
+  String get scene_info_technical => '技术的';
+
+  @override
+  String scene_studio_id(String id) {
+    return 'ID：$id';
+  }
+
+  @override
+  String scene_rating_stars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 星星',
+      one: '1 星',
+    );
+    return '$_temp0';
   }
 }
 
@@ -6782,5 +6930,75 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String details_failed_load_galleries(String error) {
     return '載入圖庫失敗: $error';
+  }
+
+  @override
+  String get scene_info_id => '場景ID';
+
+  @override
+  String get scene_info_original_file_path => '原始檔案路徑';
+
+  @override
+  String get scene_info_resume_time => '恢復時間';
+
+  @override
+  String get scene_info_play_duration => '播放時長';
+
+  @override
+  String get scene_info_urls => '網址';
+
+  @override
+  String get scene_info_resolution => '解決';
+
+  @override
+  String get scene_info_bitrate => '位元率';
+
+  @override
+  String get scene_info_frame_rate => '幀率';
+
+  @override
+  String get scene_info_format => '格式';
+
+  @override
+  String get scene_info_video_codec => '視訊編解碼器';
+
+  @override
+  String get scene_info_audio_codec => '音訊編解碼器';
+
+  @override
+  String get scene_info_stream => '溪流';
+
+  @override
+  String get scene_info_preview => '預覽';
+
+  @override
+  String get scene_info_screenshot => '螢幕截圖';
+
+  @override
+  String get scene_info_caption => '標題';
+
+  @override
+  String get scene_info_vtt => '視聽測試';
+
+  @override
+  String get scene_info_sprite => '雪碧';
+
+  @override
+  String get scene_info_technical => '技術的';
+
+  @override
+  String scene_studio_id(String id) {
+    return 'ID：$id';
+  }
+
+  @override
+  String scene_rating_stars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 星星',
+      one: '1 顆星',
+    );
+    return '$_temp0';
   }
 }

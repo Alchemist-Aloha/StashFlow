@@ -20,7 +20,7 @@ Scene mockScene({required String id, required String title}) {
     interactive: false,
     resumeTime: 0.0,
     playCount: 0,
-        playDuration: 0,
+    playDuration: 0,
     files: [],
     paths: const ScenePaths(screenshot: '', preview: '', stream: ''),
     urls: [],
@@ -210,5 +210,70 @@ void main() {
       expect(state.sequence.map((s) => s.id).toList(), ['1', '2', '3']);
       expect(state.currentIndex, 0);
     });
+
+    test('local queue activation preserves the main scene queue', () {
+      final container = createContainer();
+      final main1 = mockScene(id: 'main-1', title: 'Main 1');
+      final main2 = mockScene(id: 'main-2', title: 'Main 2');
+      final studio1 = mockScene(id: 'studio-1', title: 'Studio 1');
+      final studio2 = mockScene(id: 'studio-2', title: 'Studio 2');
+
+      final queue = container.read(playbackQueueProvider.notifier);
+
+      queue.setSequence([main1, main2], 1, queueId: PlaybackQueueIds.main);
+      expect(container.read(playbackQueueProvider).sequence, [main1, main2]);
+      expect(container.read(playbackQueueProvider).currentIndex, 1);
+
+      queue.setSequence(
+        [studio1, studio2],
+        0,
+        queueId: 'scene:main-2:more-from-studio:s1',
+      );
+
+      var state = container.read(playbackQueueProvider);
+      expect(state.sequence, [studio1, studio2]);
+      expect(state.currentIndex, 0);
+      expect(queue.getNextScene(), studio2);
+
+      queue.setIndex(1, queueId: PlaybackQueueIds.main);
+
+      state = container.read(playbackQueueProvider);
+      expect(state.sequence, [main1, main2]);
+      expect(state.currentIndex, 1);
+    });
+
+    test(
+      'inactive main sequence refresh does not replace active local queue',
+      () {
+        final container = createContainer();
+        final main1 = mockScene(id: 'main-1', title: 'Main 1');
+        final main2 = mockScene(id: 'main-2', title: 'Main 2');
+        final main3 = mockScene(id: 'main-3', title: 'Main 3');
+        final studio1 = mockScene(id: 'studio-1', title: 'Studio 1');
+        final studio2 = mockScene(id: 'studio-2', title: 'Studio 2');
+
+        final queue = container.read(playbackQueueProvider.notifier);
+        queue.setSequence([main1, main2], 0, queueId: PlaybackQueueIds.main);
+        queue.setSequence([studio1, studio2], 1, queueId: 'studio:s1:strip');
+
+        queue.setSequence(
+          [main1, main2],
+          -1,
+          queueId: PlaybackQueueIds.main,
+          activate: false,
+        );
+        queue.updateSequence([main3], queueId: PlaybackQueueIds.main);
+
+        var state = container.read(playbackQueueProvider);
+        expect(state.sequence, [studio1, studio2]);
+        expect(state.currentIndex, 1);
+
+        queue.setIndex(0, queueId: PlaybackQueueIds.main);
+
+        state = container.read(playbackQueueProvider);
+        expect(state.sequence, [main1, main2, main3]);
+        expect(state.currentIndex, 0);
+      },
+    );
   });
 }

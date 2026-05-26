@@ -436,6 +436,8 @@
   "settings_playback_prefer_streams_subtitle": "When off, playback directly uses paths.stream",
   "settings_playback_feed_random": "Start Feed from random position",
   "settings_playback_feed_random_subtitle": "When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length",
+  "settings_playback_resume_position": "Resume from last playing position",
+  "settings_playback_resume_position_subtitle": "When opening a video, automatically resume from where you left off",
   "settings_playback_end_behavior": "Play End Behavior",
   "settings_playback_end_behavior_subtitle": "What to do when current playback ends",
   "settings_playback_end_behavior_stop": "Stop",
@@ -950,6 +952,40 @@
     "placeholders": {
       "error": {
         "type": "String"
+      }
+    }
+  },
+  "scene_info_id": "Scene ID",
+  "scene_info_original_file_path": "Original File Path",
+  "scene_info_resume_time": "Resume Time",
+  "scene_info_play_duration": "Play Duration",
+  "scene_info_urls": "URLs",
+  "scene_info_resolution": "Resolution",
+  "scene_info_bitrate": "Bitrate",
+  "scene_info_frame_rate": "Frame Rate",
+  "scene_info_format": "Format",
+  "scene_info_video_codec": "Video Codec",
+  "scene_info_audio_codec": "Audio Codec",
+  "scene_info_stream": "Stream",
+  "scene_info_preview": "Preview",
+  "scene_info_screenshot": "Screenshot",
+  "scene_info_caption": "Caption",
+  "scene_info_vtt": "VTT",
+  "scene_info_sprite": "Sprite",
+  "scene_info_technical": "Technical",
+  "scene_studio_id": "ID: {id}",
+  "@scene_studio_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "scene_rating_stars": "{count, plural, =1{1 Star} other{{count} Stars}}",
+  "@scene_rating_stars": {
+    "placeholders": {
+      "count": {
+        "type": "int"
       }
     }
   }

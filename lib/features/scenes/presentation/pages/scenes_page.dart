@@ -191,7 +191,9 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     _lastRandomSceneId = scenes[index].id;
 
     // Set the queue and navigate to details.
-    ref.read(playbackQueueProvider.notifier).setIndex(index);
+    ref
+        .read(playbackQueueProvider.notifier)
+        .setIndex(index, queueId: PlaybackQueueIds.main);
     context.push('/scenes/scene/${scenes[index].id}', extra: true);
   }
 
@@ -549,7 +551,9 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
               source: 'scenes_page',
             );
             if (index != -1) {
-              ref.read(playbackQueueProvider.notifier).setIndex(index);
+              ref
+                  .read(playbackQueueProvider.notifier)
+                  .setIndex(index, queueId: PlaybackQueueIds.main);
               AppLogStore.instance.add(
                 'ScenesPage: Queue index set to $index for scene ${scene.id}',
                 source: 'scenes_page',

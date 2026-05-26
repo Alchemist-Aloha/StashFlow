@@ -72,32 +72,37 @@ void main() {
     FlutterError.onError = originalOnError;
   });
 
-  testWidgets('MyApp handles theme mode and true black correctly during initialization', (WidgetTester tester) async {
-    final sharedPreferences = await SharedPreferences.getInstance();
+  testWidgets(
+    'MyApp handles theme mode and true black correctly during initialization',
+    (WidgetTester tester) async {
+      final sharedPreferences = await SharedPreferences.getInstance();
 
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
-          appThemeModeProvider.overrideWith(TestAppThemeModeNotifier.new),
-          trueBlackEnabledProvider.overrideWith(TestTrueBlackNotifier.new),
-        ],
-        child: const MyApp(),
-      ),
-    );
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+            appThemeModeProvider.overrideWith(TestAppThemeModeNotifier.new),
+            trueBlackEnabledProvider.overrideWith(TestTrueBlackNotifier.new),
+          ],
+          child: const MyApp(),
+        ),
+      );
 
-    await tester.pump();
+      await tester.pump();
 
-    final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
-    
-    // Verify theme mode is set to Dark
-    expect(materialApp.themeMode, ThemeMode.dark);
-    
-    // Verify true black background logic applies
-    expect(materialApp.darkTheme?.scaffoldBackgroundColor, Colors.black);
-  });
+      final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
 
-  testWidgets('MyApp initializes with custom locales successfully', (WidgetTester tester) async {
+      // Verify theme mode is set to Dark
+      expect(materialApp.themeMode, ThemeMode.dark);
+
+      // Verify true black background logic applies
+      expect(materialApp.darkTheme?.scaffoldBackgroundColor, Colors.black);
+    },
+  );
+
+  testWidgets('MyApp initializes with custom locales successfully', (
+    WidgetTester tester,
+  ) async {
     final sharedPreferences = await SharedPreferences.getInstance();
     const testLocale = Locale('fr', 'FR');
 
@@ -114,8 +119,22 @@ void main() {
     await tester.pump();
 
     final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
-    
+
     // Verify the locale is correctly passed to the app
     expect(materialApp.locale, testLocale);
+  });
+
+  testWidgets('StartupErrorApp shows a visible startup failure', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      StartupErrorApp(
+        error: StateError('controlled startup failure'),
+        stackTrace: StackTrace.current,
+      ),
+    );
+
+    expect(find.text('StashFlow failed to start'), findsOneWidget);
+    expect(find.textContaining('controlled startup failure'), findsOneWidget);
   });
 }

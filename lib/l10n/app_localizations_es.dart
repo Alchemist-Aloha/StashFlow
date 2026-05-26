@@ -1377,6 +1377,14 @@ class AppLocalizationsEs extends AppLocalizations {
       'Al reproducir escenas en modo Feed, iniciar desde una posición aleatoria entre el 0% y el 90% de la duración del video';
 
   @override
+  String get settings_playback_resume_position =>
+      'Resume from last playing position';
+
+  @override
+  String get settings_playback_resume_position_subtitle =>
+      'When opening a video, automatically resume from where you left off';
+
+  @override
   String get settings_playback_end_behavior =>
       'Comportamiento de finalización del juego';
 
@@ -2393,5 +2401,75 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String details_failed_load_galleries(String error) {
     return 'Error al cargar galerías: $error';
+  }
+
+  @override
+  String get scene_info_id => 'ID de escena';
+
+  @override
+  String get scene_info_original_file_path => 'Ruta del archivo original';
+
+  @override
+  String get scene_info_resume_time => 'Tiempo de reanudación';
+
+  @override
+  String get scene_info_play_duration => 'Duración del juego';
+
+  @override
+  String get scene_info_urls => 'URL';
+
+  @override
+  String get scene_info_resolution => 'Resolución';
+
+  @override
+  String get scene_info_bitrate => 'tasa de bits';
+
+  @override
+  String get scene_info_frame_rate => 'Velocidad de fotogramas';
+
+  @override
+  String get scene_info_format => 'Formato';
+
+  @override
+  String get scene_info_video_codec => 'Códec de vídeo';
+
+  @override
+  String get scene_info_audio_codec => 'Códec de audio';
+
+  @override
+  String get scene_info_stream => 'Arroyo';
+
+  @override
+  String get scene_info_preview => 'Avance';
+
+  @override
+  String get scene_info_screenshot => 'Captura de pantalla';
+
+  @override
+  String get scene_info_caption => 'Subtítulo';
+
+  @override
+  String get scene_info_vtt => 'VTT';
+
+  @override
+  String get scene_info_sprite => 'Duende';
+
+  @override
+  String get scene_info_technical => 'Técnico';
+
+  @override
+  String scene_studio_id(String id) {
+    return 'Identificación: $id';
+  }
+
+  @override
+  String scene_rating_stars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count estrellas',
+      one: '1 estrella',
+    );
+    return '$_temp0';
   }
 }

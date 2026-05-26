@@ -170,6 +170,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     WidgetsBinding.instance.removeObserver(this);
     _cancelAutoHide();
     _seekFeedbackTimer?.cancel();
+    _feedbackTimer?.cancel();
     _desktopSettingsSubscription?.close();
     for (final sub in _subscriptions) {
       sub.cancel();
@@ -303,9 +304,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       await widget.controller.player.seek(currentPos);
       await widget.controller.player.play();
 
-      messenger.showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      messenger.showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
@@ -444,8 +443,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       disabledForegroundColor: colorScheme.onSurfaceVariant.withValues(
         alpha: 0.55,
       ),
-      padding: const EdgeInsets.all(8),
-      minimumSize: const Size(38, 38),
+      padding: const EdgeInsets.all(4),
+      minimumSize: const Size(26, 26),
     );
   }
 
@@ -476,13 +475,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
           scale: isVisible ? 1.0 : 0.8,
           duration: const Duration(milliseconds: 250),
           curve: Curves.elasticOut,
-          child: Container(
+          child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            decoration: BoxDecoration(
-              color: Colors.black.withAlpha(160),
-              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-              border: Border.all(color: Colors.white.withAlpha(40), width: 1),
-            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -545,7 +539,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            tooltip: isMuted ? context.l10n.common_unmute : context.l10n.common_mute,
+            tooltip: isMuted
+                ? context.l10n.common_unmute
+                : context.l10n.common_mute,
             style: _controlButtonStyle(colorScheme),
             iconSize: 20,
             icon: Icon(iconData),
@@ -693,6 +689,30 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
+  Widget _buildTimePill(BuildContext context, String label, {bool compact = false}) {
+    return Container(
+      constraints: BoxConstraints(minWidth: compact ? 48 : 54),
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 7 : 8,
+        vertical: compact ? 3 : 4,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.black.withAlpha(130),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white.withAlpha(24)),
+      ),
+      child: Text(
+        label,
+        textAlign: TextAlign.center,
+        style: context.textTheme.bodyMedium?.copyWith(
+          color: Colors.white,
+          fontSize: compact ? context.fontSizes.tiny : context.fontSizes.small,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+
   Map<ShortcutActivator, VoidCallback> _getBindings(Keybinds keybinds) {
     if (_cachedBindings != null && _lastKeybinds == keybinds) {
       return _cachedBindings!;
@@ -754,8 +774,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
           callback = () => ref.read(playerStateProvider.notifier).playNext();
           break;
         case KeybindAction.previousScene:
-          callback =
-              () => ref.read(playerStateProvider.notifier).playPrevious();
+          callback = () =>
+              ref.read(playerStateProvider.notifier).playPrevious();
           break;
         case KeybindAction.speedUp:
           callback = () {
@@ -809,6 +829,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     final durationMs = math.max(1, duration.inMilliseconds);
     final playbackSpeed = value.rate;
     final isFullScreen = playerState.isFullScreen;
+    final compact = !isFullScreen;
     final queueState = ref.watch(playbackQueueProvider);
     final nextScene =
         (queueState.currentIndex >= 0 &&
@@ -1167,9 +1188,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                             ),
                             decoration: BoxDecoration(
                               color: Colors.black.withAlpha(130),
-                              borderRadius: BorderRadius.circular(
-                                AppTheme.radiusSmall,
-                              ),
+                              borderRadius: BorderRadius.circular(999),
                             ),
                             child: Text(
                               'mime: ${playerState.streamMimeType ?? 'unknown'}'
@@ -1252,19 +1271,14 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                               onTap: () {},
                               behavior: HitTestBehavior.opaque,
                               child: Container(
-                                margin: const EdgeInsets.fromLTRB(4, 0, 4, 4),
-                                padding: const EdgeInsets.fromLTRB(8, 4, 8, 2),
-                                decoration: BoxDecoration(
-                                  color: colorScheme.surface.withValues(
-                                    alpha: 0.62,
-                                  ),
-                                  borderRadius: BorderRadius.circular(
-                                    AppTheme.radiusMedium,
-                                  ),
-                                  border: Border.all(
-                                    color: colorScheme.outlineVariant
-                                        .withValues(alpha: 0.35),
-                                  ),
+                                margin: EdgeInsets.fromLTRB(
+                                  compact ? 3 : 6,
+                                  0,
+                                  compact ? 3 : 6,
+                                  compact ? 3 : 6,
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: compact ? 4 : 6,
                                 ),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
@@ -1273,93 +1287,100 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                       colorScheme,
                                       playbackSpeed,
                                     ),
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16,
-                                        ),
-                                        child: StreamBuilder<Duration>(
-                                          stream: widget
-                                              .controller
-                                              .player
-                                              .stream
-                                              .position,
-                                          builder: (context, snapshot) {
-                                            final position =
-                                                snapshot.data ??
-                                                widget
-                                                    .controller
-                                                    .player
-                                                    .state
-                                                    .position;
-                                            final duration = widget
-                                                .controller
-                                                .player
-                                                .state
-                                                .duration;
-                                            return Text(
-                                              '${_formatDuration(position)} / ${_formatDuration(duration)}',
-                                              style: context
-                                                  .textTheme
-                                                  .bodyMedium
-                                                  ?.copyWith(
-                                                    color:
-                                                        colorScheme.onSurface,
-                                                    fontSize:
-                                                        context.fontSizes.small,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    VideoProgressBar(
-                                      durationMs: durationMs,
-                                      positionStream: widget
+                                    StreamBuilder<Duration>(
+                                      stream: widget
                                           .controller
                                           .player
                                           .stream
                                           .position,
-                                      initialPositionMs: value
-                                          .position
-                                          .inMilliseconds
-                                          .toDouble(),
-                                      isScrubbing: _isScrubbing,
-                                      currentScrubValue: _scrubMs,
-                                      onChangeStart: (v) {
-                                        _wasPlayingBeforeScrub = value.playing;
-                                        _cancelAutoHide();
-                                        setState(() {
-                                          _isScrubbing = true;
-                                          _scrubMs = v;
-                                          _controlsVisible = true;
-                                        });
-                                      },
-                                      onChanged: (v) {
-                                        setState(() => _scrubMs = v);
-                                      },
-                                      onChangeEnd: (v) {
-                                        final target = Duration(
-                                          milliseconds: v.round(),
+                                      builder: (context, snapshot) {
+                                        final streamedPosition =
+                                            snapshot.data ??
+                                            widget
+                                                .controller
+                                                .player
+                                                .state
+                                                .position;
+                                        final position = _isScrubbing
+                                            ? Duration(
+                                                milliseconds: _scrubMs.round(),
+                                              )
+                                            : streamedPosition;
+                                        final duration = widget
+                                            .controller
+                                            .player
+                                            .state
+                                            .duration;
+
+                                        return Row(
+                                          children: [
+                                            _buildTimePill(
+                                              context,
+                                              _formatDuration(position),
+                                              compact: compact,
+                                            ),
+                                            const Spacer(),
+                                            _buildTimePill(
+                                              context,
+                                              _formatDuration(duration),
+                                              compact: compact,
+                                            ),
+                                          ],
                                         );
-                                        unawaited(() async {
-                                          await _seekToKeepingPlayback(
-                                            target,
-                                            keepPlayingAfterSeek:
-                                                _wasPlayingBeforeScrub,
-                                          );
-                                        }());
-                                        setState(() {
-                                          _isScrubbing = false;
-                                          _scrubMs = 0;
-                                        });
-                                        _wasPlayingBeforeScrub = false;
-                                        _scheduleAutoHide();
                                       },
                                     ),
-                                    const SizedBox(height: 2),
+                                    SizedBox(height: compact ? 2 : 4),
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: compact ? 1 : 2,
+                                      ),
+                                      child: VideoProgressBar(
+                                        durationMs: durationMs,
+                                        positionStream: widget
+                                            .controller
+                                            .player
+                                            .stream
+                                            .position,
+                                        initialPositionMs: value
+                                            .position
+                                            .inMilliseconds
+                                            .toDouble(),
+                                        isScrubbing: _isScrubbing,
+                                        currentScrubValue: _scrubMs,
+                                        onChangeStart: (v) {
+                                          _wasPlayingBeforeScrub =
+                                              value.playing;
+                                          _cancelAutoHide();
+                                          setState(() {
+                                            _isScrubbing = true;
+                                            _scrubMs = v;
+                                            _controlsVisible = true;
+                                          });
+                                        },
+                                        onChanged: (v) {
+                                          setState(() => _scrubMs = v);
+                                        },
+                                        onChangeEnd: (v) {
+                                          final target = Duration(
+                                            milliseconds: v.round(),
+                                          );
+                                          unawaited(() async {
+                                            await _seekToKeepingPlayback(
+                                              target,
+                                              keepPlayingAfterSeek:
+                                                  _wasPlayingBeforeScrub,
+                                            );
+                                          }());
+                                          setState(() {
+                                            _isScrubbing = false;
+                                            _scrubMs = 0;
+                                          });
+                                          _wasPlayingBeforeScrub = false;
+                                          _scheduleAutoHide();
+                                        },
+                                      ),
+                                    ),
+                                    SizedBox(height: compact ? 1 : 2),
                                     VideoPlaybackControls(
                                       controller: widget.controller,
                                       scene: widget.scene,

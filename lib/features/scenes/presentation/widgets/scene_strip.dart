@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../domain/entities/scene.dart';
+import '../providers/playback_queue_provider.dart';
 import 'scene_card.dart';
 
 class SceneStrip extends ConsumerWidget {
@@ -10,11 +11,13 @@ class SceneStrip extends ConsumerWidget {
     super.key,
     required this.scenes,
     this.itemWidth = 220,
+    this.queueId,
     this.onTap,
   });
 
   final List<Scene> scenes;
   final double itemWidth;
+  final String? queueId;
   final void Function(Scene)? onTap;
 
   @override
@@ -45,6 +48,8 @@ class SceneStrip extends ConsumerWidget {
       }
     });
 
+    var lastVisibleIndex = -1;
+
     return SizedBox(
       height:
           effectiveItemWidth * (9 / 16) +
@@ -62,6 +67,12 @@ class SceneStrip extends ConsumerWidget {
           final visibleIndex = ((offset + contentPadding) / stride)
               .floor()
               .clamp(0, scenes.length - 1);
+
+          // ⚡ Bolt: Skip redundant prefetching if the visible index hasn't changed.
+          // Scroll events fire rapidly; throttling by index prevents repeated
+          // loop iterations and hash lookups on every single frame.
+          if (visibleIndex == lastVisibleIndex) return false;
+          lastVisibleIndex = visibleIndex;
 
           for (var i = 1; i <= kPrefetchDistance; i++) {
             final ahead = visibleIndex + i;
@@ -83,28 +94,44 @@ class SceneStrip extends ConsumerWidget {
           }
           return false;
         },
-        child: ListView.separated(
-          padding: EdgeInsets.symmetric(
-            horizontal: context.dimensions.spacingMedium,
-          ),
-          scrollDirection: Axis.horizontal,
-          itemCount: scenes.length,
-          separatorBuilder: (_, _) =>
-              SizedBox(width: context.dimensions.spacingSmall),
-          itemBuilder: (context, index) {
-            final scene = scenes[index];
+        child: Scrollbar(
+          child: ListView.separated(
+            padding: EdgeInsets.symmetric(
+              horizontal: context.dimensions.spacingMedium,
+            ),
+            scrollDirection: Axis.horizontal,
+            itemCount: scenes.length,
+            separatorBuilder: (_, _) =>
+                SizedBox(width: context.dimensions.spacingSmall),
+            itemBuilder: (context, index) {
+              final scene = scenes[index];
 
-            return SizedBox(
-              width: effectiveItemWidth,
-              child: SceneCard(
-                scene: scene,
-                isGrid: true,
-                showPerformers: false,
-                useHero: false,
-                onTap: onTap != null ? () => onTap!(scene) : null,
-              ),
-            );
-          },
+              return SizedBox(
+                width: effectiveItemWidth,
+                child: SceneCard(
+                  scene: scene,
+                  isGrid: true,
+                  showPerformers: false,
+                  useHero: false,
+                  onTap: queueId != null || onTap != null
+                      ? () {
+                          final playbackQueueId = queueId;
+                          if (playbackQueueId != null) {
+                            ref
+                                .read(playbackQueueProvider.notifier)
+                                .setSequence(
+                                  scenes,
+                                  index,
+                                  queueId: playbackQueueId,
+                                );
+                          }
+                          onTap?.call(scene);
+                        }
+                      : null,
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

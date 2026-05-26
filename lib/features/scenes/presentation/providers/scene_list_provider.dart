@@ -234,7 +234,14 @@ class SceneList extends _$SceneList {
         'SceneList build: initializing playback queue with ${scenes.length} scenes',
         source: 'scene_list',
       );
-      ref.read(playbackQueueProvider.notifier).setSequence(scenes, -1);
+      ref
+          .read(playbackQueueProvider.notifier)
+          .setSequence(
+            scenes,
+            -1,
+            queueId: PlaybackQueueIds.main,
+            activate: false,
+          );
     });
 
     return scenes;
@@ -306,7 +313,9 @@ class SceneList extends _$SceneList {
           source: 'scene_list',
         );
         // Update playback queue sequence
-        ref.read(playbackQueueProvider.notifier).updateSequence(nextScenes);
+        ref
+            .read(playbackQueueProvider.notifier)
+            .updateSequence(nextScenes, queueId: PlaybackQueueIds.main);
       }
     } catch (e) {
       // In a real app, you might want to show a snackbar for error during pagination

@@ -12,7 +12,9 @@ void main() {
 
     setUp(() async {
       tempRoot = await Directory.systemTemp.createTemp('stashflow-temp-');
-      appCacheRoot = await Directory.systemTemp.createTemp('stashflow-appcache-');
+      appCacheRoot = await Directory.systemTemp.createTemp(
+        'stashflow-appcache-',
+      );
       docsRoot = await Directory.systemTemp.createTemp('stashflow-docs-');
 
       service = AppCacheService(
@@ -35,7 +37,8 @@ void main() {
     });
 
     test('enforceImageCacheLimit trims oldest files when over max', () async {
-      final cacheDir = Directory('${tempRoot.path}/cache')..createSync(recursive: true);
+      final cacheDir = Directory('${tempRoot.path}/cache')
+        ..createSync(recursive: true);
       final oldFile = File('${cacheDir.path}/old.bin')
         ..writeAsBytesSync(List<int>.filled(1024 * 1024, 1));
       await Future<void>.delayed(const Duration(milliseconds: 20));
@@ -53,7 +56,8 @@ void main() {
     });
 
     test('enforceVideoCacheLimit only targets video extensions', () async {
-      final videoDir = Directory('${tempRoot.path}/video')..createSync(recursive: true);
+      final videoDir = Directory('${tempRoot.path}/video')
+        ..createSync(recursive: true);
       final videoFile = File('${videoDir.path}/clip.mp4')
         ..writeAsBytesSync(List<int>.filled(128 * 1024, 9));
       final nonVideoFile = File('${videoDir.path}/notes.txt')
@@ -74,8 +78,40 @@ void main() {
 
       await service.enforceVideoCacheLimit(1);
 
-      expect(await oldVideo.exists(), isFalse);
+      expect(await videoFile.exists(), isFalse);
+      expect(await oldVideo.exists(), isTrue);
       expect(await nonVideoFile.exists(), isTrue);
     });
+
+    test(
+      'getVideoCacheSizeMb ignores media files outside explicit video caches',
+      () async {
+        File(
+          '${tempRoot.path}/unowned.mp4',
+        ).writeAsBytesSync(List<int>.filled(1024 * 1024, 1));
+        final videoDir = Directory('${tempRoot.path}/video')..createSync();
+        File(
+          '${videoDir.path}/owned.mp4',
+        ).writeAsBytesSync(List<int>.filled(1024 * 1024, 1));
+
+        expect(await service.getVideoCacheSizeMb(), 1);
+      },
+    );
+
+    test(
+      'clearVideoCache does not delete media files outside explicit video caches',
+      () async {
+        final unownedFile = File('${tempRoot.path}/unowned.mp4')
+          ..writeAsBytesSync(List<int>.filled(1024, 1));
+        final videoDir = Directory('${tempRoot.path}/video')..createSync();
+        final ownedFile = File('${videoDir.path}/owned.mp4')
+          ..writeAsBytesSync(List<int>.filled(1024, 1));
+
+        await service.clearVideoCache();
+
+        expect(await unownedFile.exists(), isTrue);
+        expect(await ownedFile.exists(), isFalse);
+      },
+    );
   });
 }

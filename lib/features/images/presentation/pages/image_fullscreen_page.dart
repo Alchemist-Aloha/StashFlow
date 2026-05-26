@@ -1044,6 +1044,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                             return RepaintBoundary(
                               child: ExtendedImage.network(
                                 imageUrl,
+                                excludeFromSemantics: true,
                                 headers: headers,
                                 fit: BoxFit.contain,
                                 mode: ExtendedImageMode.gesture,

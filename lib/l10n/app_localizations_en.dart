@@ -1349,6 +1349,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'When playing scenes in Feed mode, start from a random position between 0% and 90% of the video length';
 
   @override
+  String get settings_playback_resume_position =>
+      'Resume from last playing position';
+
+  @override
+  String get settings_playback_resume_position_subtitle =>
+      'When opening a video, automatically resume from where you left off';
+
+  @override
   String get settings_playback_end_behavior => 'Play End Behavior';
 
   @override
@@ -2331,5 +2339,75 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String details_failed_load_galleries(String error) {
     return 'Failed to load galleries: $error';
+  }
+
+  @override
+  String get scene_info_id => 'Scene ID';
+
+  @override
+  String get scene_info_original_file_path => 'Original File Path';
+
+  @override
+  String get scene_info_resume_time => 'Resume Time';
+
+  @override
+  String get scene_info_play_duration => 'Play Duration';
+
+  @override
+  String get scene_info_urls => 'URLs';
+
+  @override
+  String get scene_info_resolution => 'Resolution';
+
+  @override
+  String get scene_info_bitrate => 'Bitrate';
+
+  @override
+  String get scene_info_frame_rate => 'Frame Rate';
+
+  @override
+  String get scene_info_format => 'Format';
+
+  @override
+  String get scene_info_video_codec => 'Video Codec';
+
+  @override
+  String get scene_info_audio_codec => 'Audio Codec';
+
+  @override
+  String get scene_info_stream => 'Stream';
+
+  @override
+  String get scene_info_preview => 'Preview';
+
+  @override
+  String get scene_info_screenshot => 'Screenshot';
+
+  @override
+  String get scene_info_caption => 'Caption';
+
+  @override
+  String get scene_info_vtt => 'VTT';
+
+  @override
+  String get scene_info_sprite => 'Sprite';
+
+  @override
+  String get scene_info_technical => 'Technical';
+
+  @override
+  String scene_studio_id(String id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String scene_rating_stars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Stars',
+      one: '1 Star',
+    );
+    return '$_temp0';
   }
 }

@@ -250,56 +250,56 @@ class StatsFloatingPanel extends ConsumerWidget {
         ),
         children: [
           _buildSectionTitle(context, l10n.stats_content),
-          const _StatItem(
+          _StatItem(
             icon: Icons.movie_filter_rounded,
-            label: 'Scenes',
+            label: l10n.stats_scenes,
             value: '000',
             subtitle: '0.00 GB',
           ),
-          const _StatItem(
+          _StatItem(
             icon: Icons.photo_library_rounded,
-            label: 'Images',
+            label: l10n.images_title,
             value: '000',
             subtitle: '0.00 GB',
           ),
-          const _StatItem(
+          _StatItem(
             icon: Icons.auto_stories_rounded,
-            label: 'Galleries',
+            label: l10n.stats_galleries,
             value: '000',
           ),
           SizedBox(height: dims.spacingSmall),
           _buildSectionTitle(context, l10n.stats_organization),
-          const _StatItem(
+          _StatItem(
             icon: Icons.face_retouching_natural_rounded,
-            label: 'Performers',
+            label: l10n.stats_performers,
             value: '000',
           ),
-          const _StatItem(
+          _StatItem(
             icon: Icons.storefront_rounded,
-            label: 'Studios',
+            label: l10n.stats_studios,
             value: '000',
           ),
-          const _StatItem(
+          _StatItem(
             icon: Icons.workspaces_rounded,
-            label: 'Groups',
+            label: l10n.stats_groups,
             value: '000',
           ),
-          const _StatItem(
+          _StatItem(
             icon: Icons.local_offer_rounded,
-            label: 'Tags',
+            label: l10n.stats_tags,
             value: '000',
           ),
           SizedBox(height: dims.spacingSmall),
           _buildSectionTitle(context, l10n.stats_activity),
-          const _StatItem(
+          _StatItem(
             icon: Icons.play_lesson_rounded,
-            label: 'Total Plays',
+            label: l10n.stats_total_plays,
             value: '000',
             subtitle: '0 unique items',
           ),
-          const _StatItem(
+          _StatItem(
             icon: Icons.favorite_rounded,
-            label: 'Total O Count',
+            label: l10n.stats_total_o_count,
             value: '000',
           ),
         ],

@@ -68,6 +68,8 @@ class MediaStrip extends StatelessWidget {
       }
     });
 
+    var lastVisibleIndex = -1;
+
     return SizedBox(
       height: effectiveHeight,
       child: NotificationListener<ScrollNotification>(
@@ -80,6 +82,12 @@ class MediaStrip extends StatelessWidget {
           final visibleIndex = ((offset + contentPadding) / stride)
               .floor()
               .clamp(0, items.length - 1);
+
+          // ⚡ Bolt: Skip redundant prefetching if the visible index hasn't changed.
+          // Scroll events fire rapidly; throttling by index prevents repeated
+          // loop iterations and hash lookups on every single frame.
+          if (visibleIndex == lastVisibleIndex) return false;
+          lastVisibleIndex = visibleIndex;
 
           for (var i = 1; i <= kPrefetchDistance; i++) {
             final ahead = visibleIndex + i;
@@ -103,61 +111,63 @@ class MediaStrip extends StatelessWidget {
           }
           return false;
         },
-        child: ListView.separated(
-          padding: EdgeInsets.symmetric(
-            horizontal: context.dimensions.spacingMedium,
-          ),
-          scrollDirection: Axis.horizontal,
-          itemCount: items.length,
-          separatorBuilder: (_, _) =>
-              SizedBox(width: context.dimensions.spacingSmall),
-          itemBuilder: (context, index) {
-            final item = items[index];
+        child: Scrollbar(
+          child: ListView.separated(
+            padding: EdgeInsets.symmetric(
+              horizontal: context.dimensions.spacingMedium,
+            ),
+            scrollDirection: Axis.horizontal,
+            itemCount: items.length,
+            separatorBuilder: (_, _) =>
+                SizedBox(width: context.dimensions.spacingSmall),
+            itemBuilder: (context, index) {
+              final item = items[index];
 
-            // Remove the redundant addPostFrameCallback that was triggering
-            // a full-size un-optimized prefetch dynamically as items built.
-            // The initial and scroll-based prefetching accurately handle warming
-            // the cache with memCacheWidth constraints.
+              // Remove the redundant addPostFrameCallback that was triggering
+              // a full-size un-optimized prefetch dynamically as items built.
+              // The initial and scroll-based prefetching accurately handle warming
+              // the cache with memCacheWidth constraints.
 
-            return RepaintBoundary(
-              child: InkWell(
-                onTap: item.onTap,
-                borderRadius: BorderRadius.circular(
-                  AppTheme.radiusMedium * context.dimensions.fontSizeFactor,
-                ),
-                child: SizedBox(
-                  width: effectiveItemWidth,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(
-                          AppTheme.radiusMedium *
-                              context.dimensions.fontSizeFactor,
+              return RepaintBoundary(
+                child: InkWell(
+                  onTap: item.onTap,
+                  borderRadius: BorderRadius.circular(
+                    AppTheme.radiusMedium * context.dimensions.fontSizeFactor,
+                  ),
+                  child: SizedBox(
+                    width: effectiveItemWidth,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                            AppTheme.radiusMedium *
+                                context.dimensions.fontSizeFactor,
+                          ),
+                          child: StashImage(
+                            imageUrl: item.thumbnailUrl,
+                            width: effectiveItemWidth,
+                            height: effectiveItemWidth * (9 / 16),
+                            fit: BoxFit.cover,
+                            memCacheWidth: (effectiveItemWidth * 2).toInt(),
+                          ),
                         ),
-                        child: StashImage(
-                          imageUrl: item.thumbnailUrl,
-                          width: effectiveItemWidth,
-                          height: effectiveItemWidth * (9 / 16),
-                          fit: BoxFit.cover,
-                          memCacheWidth: (effectiveItemWidth * 2).toInt(),
+                        SizedBox(height: context.dimensions.spacingSmall),
+                        Text(
+                          item.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.textTheme.bodySmall?.copyWith(
+                            color: context.colors.onSurface,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: context.dimensions.spacingSmall),
-                      Text(
-                        item.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: context.textTheme.bodySmall?.copyWith(
-                          color: context.colors.onSurface,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

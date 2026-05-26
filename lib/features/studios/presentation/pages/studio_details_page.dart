@@ -18,6 +18,7 @@ import '../../../setup/presentation/providers/navigation_customization_provider.
 import '../providers/studio_list_provider.dart';
 import '../../../setup/presentation/providers/scrape_customization_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_strip.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_strip.dart';
 
 class StudioDetailsPage extends ConsumerWidget {
@@ -28,9 +29,9 @@ class StudioDetailsPage extends ConsumerWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
       elevation: 0,
-      color: Theme.of(context).colorScheme.primaryContainer.withValues(
-        alpha: 0.1,
-      ),
+      color: Theme.of(
+        context,
+      ).colorScheme.primaryContainer.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
       ),
@@ -164,7 +165,10 @@ class StudioDetailsPage extends ConsumerWidget {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(
-                                          context.l10n.details_failed_update_favorite(e.toString()),
+                                          context.l10n
+                                              .details_failed_update_favorite(
+                                                e.toString(),
+                                              ),
                                         ),
                                       ),
                                     );
@@ -235,8 +239,12 @@ class StudioDetailsPage extends ConsumerWidget {
                                     ..shuffle(Random(studio.id.hashCode));
                                   return SceneStrip(
                                     scenes: shuffledItems,
+                                    queueId: PlaybackQueueIds.studioStrip(
+                                      studio.id,
+                                    ),
                                     onTap: (scene) => context.push(
                                       '/scenes/scene/${scene.id}',
+                                      extra: true,
                                     ),
                                   );
                                 },
@@ -248,11 +256,11 @@ class StudioDetailsPage extends ConsumerWidget {
                                 ),
                                 error: (err, stack) => Text(
                                   context.l10n.common_error(err.toString()),
-                                  style: context.textTheme.bodyMedium
-                                      ?.copyWith(
-                                        color: context.colors.onSurface
-                                            .withValues(alpha: 0.7),
-                                      ),
+                                  style: context.textTheme.bodyMedium?.copyWith(
+                                    color: context.colors.onSurface.withValues(
+                                      alpha: 0.7,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/presentation/theme/app_theme.dart';
 
 /// A centered overlay widget that provides visual feedback for video player gestures.
 ///
@@ -29,16 +28,8 @@ class PlayerGestureFeedback extends StatelessWidget {
           duration: const Duration(milliseconds: 250),
           curve: Curves.elasticOut,
           child: Center(
-            child: Container(
+            child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              decoration: BoxDecoration(
-                color: Colors.black.withAlpha(160),
-                borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                border: Border.all(
-                  color: Colors.white.withAlpha(40),
-                  width: 1,
-                ),
-              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [

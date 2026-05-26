@@ -7,6 +7,7 @@ import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/grid_utils.dart';
 import '../../../scenes/presentation/widgets/scene_card.dart';
 import '../../../scenes/domain/entities/scene.dart';
+import '../../../scenes/presentation/providers/playback_queue_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../providers/performer_media_provider.dart';
 
@@ -25,6 +26,7 @@ class PerformerMediaGridPage extends ConsumerWidget {
     final mediaAsync = ref.watch(performerMediaGridProvider(performerId));
     final isGridView = ref.watch(performerMediaGridLayoutProvider);
     final gridColumns = ref.watch(performerGridColumnsProvider);
+    final scenes = mediaAsync.value ?? const <Scene>[];
 
     // ⚡ Bolt: Hoist routing layout variables out of the itemBuilder loop.
     // Why: Looking up the router via InheritedWidget causes redundant O(1) traversals
@@ -61,7 +63,16 @@ class PerformerMediaGridPage extends ConsumerWidget {
           memCacheWidth: memCacheWidth,
           memCacheHeight: memCacheHeight,
           useHero: isAtRoot,
-          onTap: () => context.push('/scenes/scene/${item.id}'),
+          onTap: () {
+            ref
+                .read(playbackQueueProvider.notifier)
+                .setSequenceForScene(
+                  PlaybackQueueIds.performerMedia(performerId),
+                  scenes,
+                  item.id,
+                );
+            context.push('/scenes/scene/${item.id}', extra: true);
+          },
         );
       },
     );
