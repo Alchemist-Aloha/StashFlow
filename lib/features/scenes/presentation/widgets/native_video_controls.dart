@@ -443,8 +443,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       disabledForegroundColor: colorScheme.onSurfaceVariant.withValues(
         alpha: 0.55,
       ),
-      padding: const EdgeInsets.all(8),
-      minimumSize: const Size(38, 38),
+      padding: const EdgeInsets.all(4),
+      minimumSize: const Size(26, 26),
     );
   }
 
@@ -475,13 +475,8 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
           scale: isVisible ? 1.0 : 0.8,
           duration: const Duration(milliseconds: 250),
           curve: Curves.elasticOut,
-          child: Container(
+          child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            decoration: BoxDecoration(
-              color: Colors.black.withAlpha(160),
-              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-              border: Border.all(color: Colors.white.withAlpha(40), width: 1),
-            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -694,13 +689,16 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
-  Widget _buildTimePill(BuildContext context, String label) {
+  Widget _buildTimePill(BuildContext context, String label, {bool compact = false}) {
     return Container(
-      constraints: const BoxConstraints(minWidth: 54),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      constraints: BoxConstraints(minWidth: compact ? 48 : 54),
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 7 : 8,
+        vertical: compact ? 3 : 4,
+      ),
       decoration: BoxDecoration(
         color: Colors.black.withAlpha(130),
-        borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+        borderRadius: BorderRadius.circular(999),
         border: Border.all(color: Colors.white.withAlpha(24)),
       ),
       child: Text(
@@ -708,7 +706,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
         textAlign: TextAlign.center,
         style: context.textTheme.bodyMedium?.copyWith(
           color: Colors.white,
-          fontSize: context.fontSizes.small,
+          fontSize: compact ? context.fontSizes.tiny : context.fontSizes.small,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -831,6 +829,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     final durationMs = math.max(1, duration.inMilliseconds);
     final playbackSpeed = value.rate;
     final isFullScreen = playerState.isFullScreen;
+    final compact = !isFullScreen;
     final queueState = ref.watch(playbackQueueProvider);
     final nextScene =
         (queueState.currentIndex >= 0 &&
@@ -1189,9 +1188,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                             ),
                             decoration: BoxDecoration(
                               color: Colors.black.withAlpha(130),
-                              borderRadius: BorderRadius.circular(
-                                AppTheme.radiusSmall,
-                              ),
+                              borderRadius: BorderRadius.circular(999),
                             ),
                             child: Text(
                               'mime: ${playerState.streamMimeType ?? 'unknown'}'
@@ -1274,9 +1271,14 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                               onTap: () {},
                               behavior: HitTestBehavior.opaque,
                               child: Container(
-                                margin: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
+                                margin: EdgeInsets.fromLTRB(
+                                  compact ? 3 : 6,
+                                  0,
+                                  compact ? 3 : 6,
+                                  compact ? 3 : 6,
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: compact ? 4 : 6,
                                 ),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
@@ -1315,20 +1317,22 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                             _buildTimePill(
                                               context,
                                               _formatDuration(position),
+                                              compact: compact,
                                             ),
                                             const Spacer(),
                                             _buildTimePill(
                                               context,
                                               _formatDuration(duration),
+                                              compact: compact,
                                             ),
                                           ],
                                         );
                                       },
                                     ),
-                                    const SizedBox(height: 4),
+                                    SizedBox(height: compact ? 2 : 4),
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 2,
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: compact ? 1 : 2,
                                       ),
                                       child: VideoProgressBar(
                                         durationMs: durationMs,
@@ -1376,7 +1380,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                         },
                                       ),
                                     ),
-                                    const SizedBox(height: 2),
+                                    SizedBox(height: compact ? 1 : 2),
                                     VideoPlaybackControls(
                                       controller: widget.controller,
                                       scene: widget.scene,
