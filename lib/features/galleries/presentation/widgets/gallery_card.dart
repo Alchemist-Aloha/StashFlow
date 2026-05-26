@@ -78,6 +78,7 @@ class GalleryCard extends ConsumerWidget {
       context,
       initialRating: gallery.rating100 ?? 0,
       title: '${context.l10n.common_rate} ${gallery.displayName}',
+      detailsWidget: _buildGalleryDetails(context),
       onRatingSelected: (rating) async {
         try {
           await ref
@@ -360,5 +361,136 @@ class GalleryCard extends ConsumerWidget {
     return aspectRatio != null
         ? AspectRatio(aspectRatio: aspectRatio, child: child)
         : child;
+  }
+
+  Widget _buildGalleryDetails(BuildContext context) {
+    final theme = Theme.of(context);
+    final hasDetails = (gallery.details ?? '').trim().isNotEmpty;
+    
+    return Column(
+      children: [
+        _SectionCard(
+          title: context.l10n.common_details,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _MetaRow(label: context.l10n.galleries_field_id, value: gallery.id),
+              _MetaRow(
+                label: context.l10n.galleries_field_path,
+                value: gallery.path?.trim().isNotEmpty == true ? gallery.path! : '--',
+                selectable: true,
+              ),
+              _MetaRow(label: context.l10n.galleries_field_date, value: gallery.date ?? '--'),
+              _MetaRow(label: context.l10n.galleries_field_image_count, value: gallery.imageCount?.toString() ?? '--'),
+              if (hasDetails) ...[
+                const SizedBox(height: 8),
+                SelectableText(gallery.details!, style: theme.textTheme.bodyMedium),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        _SectionCard(
+          title: context.l10n.scene_info_technical,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _MetaRow(
+                label: context.l10n.common_resolution, 
+                value: gallery.coverWidth != null && gallery.coverHeight != null 
+                    ? '${gallery.coverWidth} x ${gallery.coverHeight}' 
+                    : '--'
+              ),
+              _MetaRow(label: context.l10n.scene_info_screenshot, value: gallery.coverPath ?? '--', selectable: true),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SectionCard extends StatelessWidget {
+  const _SectionCard({required this.title, required this.child, this.trailing});
+
+  final String title;
+  final Widget child;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                ),
+              ),
+              if (trailing != null) ...[trailing!],
+            ],
+          ),
+          const SizedBox(height: 8),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _MetaRow extends StatelessWidget {
+  const _MetaRow({
+    required this.label,
+    required this.value,
+    this.selectable = false,
+  });
+
+  final String label;
+  final String value;
+  final bool selectable;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 128,
+            child: Text(
+              label,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          Expanded(
+            child: selectable
+                ? SelectableText(
+                    value,
+                    style: theme.textTheme.bodySmall,
+                  )
+                : Text(
+                    value,
+                    style: theme.textTheme.bodySmall,
+                  ),
+          ),
+        ],
+      ),
+    );
   }
 }
