@@ -92,7 +92,8 @@ class VideoPlaybackControls extends ConsumerWidget {
       disabledBackgroundColor: Colors.transparent,
       disabledForegroundColor: Colors.white54,
       padding: const EdgeInsets.all(4),
-      minimumSize: Size(compact ? 24 : 26, compact ? 24 : 26),
+      minimumSize: Size(compact ? 40 : 48, compact ? 40 : 48),
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
   }
 
@@ -109,8 +110,8 @@ class VideoPlaybackControls extends ConsumerWidget {
     final compact = !isFullScreen;
     final controlIconSize = compact ? 18.0 : 20.0;
     final groupHorizontalPadding = compact ? 1.0 : 2.0;
-    final speedMinSize = compact ? 24.0 : 26.0;
-    final speedHorizontalPadding = compact ? 1.0 : 2.0;
+    final buttonMinSize = compact ? 40.0 : 48.0;
+    final buttonGap = compact ? 1.0 : 2.0;
     final colorScheme = Theme.of(context).colorScheme;
     final canSelectSubtitles = scene.captions.isNotEmpty;
     final castState = ref.watch(castServiceProvider);
@@ -142,6 +143,7 @@ class VideoPlaybackControls extends ConsumerWidget {
                             onInteract();
                           },
                         ),
+                        SizedBox(width: buttonGap),
                       ],
                       IconButton(
                         tooltip: isPlaying
@@ -160,6 +162,7 @@ class VideoPlaybackControls extends ConsumerWidget {
                         },
                       ),
                       if (nextScene != null) ...[
+                        SizedBox(width: buttonGap),
                         IconButton(
                           tooltip: context.l10n.common_skip_next,
                           style: _controlButtonStyle(colorScheme),
@@ -186,16 +189,7 @@ class VideoPlaybackControls extends ConsumerWidget {
                       if (canSelectSubtitles)
                         PopupMenuButton<String?>(
                           tooltip: context.l10n.common_select_subtitle,
-                          icon: Icon(
-                            Icons.subtitles_rounded,
-                            size: controlIconSize,
-                            color:
-                                selectedSubtitleLanguage != null &&
-                                    selectedSubtitleLanguage != 'none'
-                                ? colorScheme.primary
-                                : Colors.white,
-                          ),
-                          style: _controlButtonStyle(colorScheme),
+                          padding: EdgeInsets.zero,
                           initialValue: selectedSubtitleLanguage,
                           color: colorScheme.surfaceContainerHigh,
                           surfaceTintColor: colorScheme.surfaceTint,
@@ -284,7 +278,26 @@ class VideoPlaybackControls extends ConsumerWidget {
                             }
                             return items;
                           },
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minWidth: buttonMinSize,
+                              minHeight: buttonMinSize,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: Icon(
+                                Icons.subtitles_rounded,
+                                size: controlIconSize,
+                                color:
+                                    selectedSubtitleLanguage != null &&
+                                        selectedSubtitleLanguage != 'none'
+                                    ? colorScheme.primary
+                                    : Colors.white,
+                              ),
+                            ),
+                          ),
                         ),
+                      if (canSelectSubtitles) SizedBox(width: buttonGap),
                       PopupMenuButton<double>(
                         tooltip: context.l10n.common_playback_speed,
                         initialValue: playbackSpeed,
@@ -324,40 +337,46 @@ class VideoPlaybackControls extends ConsumerWidget {
                         },
                         child: GestureDetector(
                           onTap: onSpeedTap,
-                          child: Container(
+                          child: ConstrainedBox(
                             constraints: BoxConstraints(
-                              minWidth: speedMinSize,
-                              minHeight: speedMinSize,
+                              minWidth: buttonMinSize,
+                              minHeight: buttonMinSize,
                             ),
-                            alignment: Alignment.center,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: speedHorizontalPadding,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(999),
-                              border: isSpeedSliderVisible
-                                  ? Border.all(
-                                      color: colorScheme.primary,
-                                      width: 1.5,
-                                    )
-                                  : null,
-                            ),
-                            child: Text(
-                              _formatSpeed(playbackSpeed),
-                              style: context.textTheme.bodyMedium?.copyWith(
-                                color: isSpeedSliderVisible
-                                    ? colorScheme.primary
-                                    : Colors.white,
-                                fontSize: context.fontSizes.small,
-                                fontWeight: FontWeight.w700,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                borderRadius: BorderRadius.circular(999),
+                                border: isSpeedSliderVisible
+                                    ? Border.all(
+                                        color: colorScheme.primary,
+                                        width: 1.5,
+                                      )
+                                    : null,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(4),
+                                child: Center(
+                                  child: Text(
+                                    _formatSpeed(playbackSpeed),
+                                    style: context.textTheme.bodyMedium
+                                        ?.copyWith(
+                                          color: isSpeedSliderVisible
+                                              ? colorScheme.primary
+                                              : Colors.white,
+                                          fontSize: context.fontSizes.small,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
+                      SizedBox(width: buttonGap),
                       if (desktopVolumeControl != null) ...[
                         desktopVolumeControl!,
+                        SizedBox(width: buttonGap),
                       ],
                       if (castState.isCasting)
                         IconButton(
@@ -399,6 +418,7 @@ class VideoPlaybackControls extends ConsumerWidget {
                             );
                           },
                         ),
+                      SizedBox(width: buttonGap),
                       if (enableNativePip && !kIsWeb && Platform.isAndroid) ...[
                         IconButton(
                           tooltip: context.l10n.common_pip,
@@ -423,6 +443,7 @@ class VideoPlaybackControls extends ConsumerWidget {
                             onInteract();
                           },
                         ),
+                        SizedBox(width: buttonGap),
                       ],
                       GestureDetector(
                         onTap: () {}, // Consume tap to prevent propagation
