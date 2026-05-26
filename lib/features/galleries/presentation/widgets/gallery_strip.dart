@@ -94,26 +94,28 @@ class GalleryStrip extends ConsumerWidget {
           }
           return false;
         },
-        child: ListView.separated(
-          padding: EdgeInsets.symmetric(
-            horizontal: context.dimensions.spacingMedium,
-          ),
-          scrollDirection: Axis.horizontal,
-          itemCount: galleries.length,
-          separatorBuilder: (_, _) =>
-              SizedBox(width: context.dimensions.spacingSmall),
-          itemBuilder: (context, index) {
-            final gallery = galleries[index];
+        child: Scrollbar(
+          child: ListView.separated(
+            padding: EdgeInsets.symmetric(
+              horizontal: context.dimensions.spacingMedium,
+            ),
+            scrollDirection: Axis.horizontal,
+            itemCount: galleries.length,
+            separatorBuilder: (_, _) =>
+                SizedBox(width: context.dimensions.spacingSmall),
+            itemBuilder: (context, index) {
+              final gallery = galleries[index];
 
-            return SizedBox(
-              width: effectiveItemWidth,
-              child: GalleryCard(
-                gallery: gallery,
-                isGrid: true,
-                onTap: onTap != null ? () => onTap!(gallery) : null,
-              ),
-            );
-          },
+              return SizedBox(
+                width: effectiveItemWidth,
+                child: GalleryCard(
+                  gallery: gallery,
+                  isGrid: true,
+                  onTap: onTap != null ? () => onTap!(gallery) : null,
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

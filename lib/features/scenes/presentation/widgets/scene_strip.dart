@@ -94,42 +94,44 @@ class SceneStrip extends ConsumerWidget {
           }
           return false;
         },
-        child: ListView.separated(
-          padding: EdgeInsets.symmetric(
-            horizontal: context.dimensions.spacingMedium,
-          ),
-          scrollDirection: Axis.horizontal,
-          itemCount: scenes.length,
-          separatorBuilder: (_, _) =>
-              SizedBox(width: context.dimensions.spacingSmall),
-          itemBuilder: (context, index) {
-            final scene = scenes[index];
+        child: Scrollbar(
+          child: ListView.separated(
+            padding: EdgeInsets.symmetric(
+              horizontal: context.dimensions.spacingMedium,
+            ),
+            scrollDirection: Axis.horizontal,
+            itemCount: scenes.length,
+            separatorBuilder: (_, _) =>
+                SizedBox(width: context.dimensions.spacingSmall),
+            itemBuilder: (context, index) {
+              final scene = scenes[index];
 
-            return SizedBox(
-              width: effectiveItemWidth,
-              child: SceneCard(
-                scene: scene,
-                isGrid: true,
-                showPerformers: false,
-                useHero: false,
-                onTap: queueId != null || onTap != null
-                    ? () {
-                        final playbackQueueId = queueId;
-                        if (playbackQueueId != null) {
-                          ref
-                              .read(playbackQueueProvider.notifier)
-                              .setSequence(
-                                scenes,
-                                index,
-                                queueId: playbackQueueId,
-                              );
+              return SizedBox(
+                width: effectiveItemWidth,
+                child: SceneCard(
+                  scene: scene,
+                  isGrid: true,
+                  showPerformers: false,
+                  useHero: false,
+                  onTap: queueId != null || onTap != null
+                      ? () {
+                          final playbackQueueId = queueId;
+                          if (playbackQueueId != null) {
+                            ref
+                                .read(playbackQueueProvider.notifier)
+                                .setSequence(
+                                  scenes,
+                                  index,
+                                  queueId: playbackQueueId,
+                                );
+                          }
+                          onTap?.call(scene);
                         }
-                        onTap?.call(scene);
-                      }
-                    : null,
-              ),
-            );
-          },
+                      : null,
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
