@@ -127,6 +127,7 @@ class GalleryCard extends ConsumerWidget {
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,
+          onLongPress: () => _showRating(context, ref),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -207,6 +208,7 @@ class GalleryCard extends ConsumerWidget {
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,
+          onLongPress: () => _showRating(context, ref),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
