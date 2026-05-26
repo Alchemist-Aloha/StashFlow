@@ -48,6 +48,8 @@ class SceneStrip extends ConsumerWidget {
       }
     });
 
+    var lastVisibleIndex = -1;
+
     return SizedBox(
       height:
           effectiveItemWidth * (9 / 16) +
@@ -65,6 +67,12 @@ class SceneStrip extends ConsumerWidget {
           final visibleIndex = ((offset + contentPadding) / stride)
               .floor()
               .clamp(0, scenes.length - 1);
+
+          // ⚡ Bolt: Skip redundant prefetching if the visible index hasn't changed.
+          // Scroll events fire rapidly; throttling by index prevents repeated
+          // loop iterations and hash lookups on every single frame.
+          if (visibleIndex == lastVisibleIndex) return false;
+          lastVisibleIndex = visibleIndex;
 
           for (var i = 1; i <= kPrefetchDistance; i++) {
             final ahead = visibleIndex + i;
