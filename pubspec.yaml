@@ -76,6 +76,7 @@ dependencies:
   screen_brightness: ^2.0.0
   dart_cast: ^0.5.1
   gal: ^2.3.2
+  flutter_app_lock: 4.3.0
 
 dev_dependencies:
   flutter_test:

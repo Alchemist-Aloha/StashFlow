@@ -36,6 +36,7 @@ import '../../setup/presentation/pages/settings/support_settings_page.dart';
 import '../../setup/presentation/pages/settings/developer_settings_page.dart';
 import '../../setup/presentation/pages/settings/keybind_settings_page.dart';
 import '../../setup/presentation/pages/settings/storage_settings_page.dart';
+import '../../setup/presentation/pages/settings/security_settings_page.dart';
 import '../../setup/presentation/debug_log_viewer_page.dart';
 import 'shell_page.dart';
 
@@ -81,8 +82,9 @@ GoRouter router(Ref ref) {
                       key: state.pageKey,
                       child: SceneDetailsPage(
                         sceneId: state.pathParameters['id']!,
-                        autoPlayOnMount:
-                            state.extra is bool ? state.extra as bool : false,
+                        autoPlayOnMount: state.extra is bool
+                            ? state.extra as bool
+                            : false,
                       ),
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) =>
@@ -98,8 +100,9 @@ GoRouter router(Ref ref) {
                           }
                           return SceneDetailsPage(
                             sceneId: state.pathParameters['id']!,
-                            autoPlayOnMount:
-                                state.extra is bool ? state.extra as bool : false,
+                            autoPlayOnMount: state.extra is bool
+                                ? state.extra as bool
+                                : false,
                           );
                         },
                       ),
@@ -360,6 +363,10 @@ GoRouter router(Ref ref) {
           GoRoute(
             path: 'storage',
             builder: (context, state) => const StorageSettingsPage(),
+          ),
+          GoRoute(
+            path: 'security',
+            builder: (context, state) => const SecuritySettingsPage(),
           ),
           GoRoute(
             path: 'logs',
