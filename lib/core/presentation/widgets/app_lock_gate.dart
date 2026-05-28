@@ -19,6 +19,7 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
   Timer? _backgroundLockTimer;
   bool _locked = false;
   bool _launchLockShown = false;
+  bool _lockFeatureEnabled = false;
 
   @override
   void initState() {
@@ -37,11 +38,11 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
 
-    final settings = ref.read(appLockSettingsProvider);
-    if (!_shouldEnable(settings)) return;
+    if (!_lockFeatureEnabled) return;
 
     if (state == AppLifecycleState.hidden && !_locked) {
       _backgroundLockTimer?.cancel();
+      final settings = ref.read(appLockSettingsProvider);
       _backgroundLockTimer = Timer(
         Duration(seconds: settings.backgroundLockSeconds),
         _showLockScreen,
@@ -71,12 +72,21 @@ class _AppLockGateState extends ConsumerState<AppLockGate>
   Widget build(BuildContext context) {
     final settings = ref.watch(appLockSettingsProvider);
     final shouldEnable = _shouldEnable(settings);
+    _lockFeatureEnabled = shouldEnable;
 
     if (!shouldEnable) {
       _backgroundLockTimer?.cancel();
       _launchLockShown = false;
-      _locked = false;
-    } else if (settings.lockOnLaunch && !_launchLockShown && !_locked) {
+      if (_locked) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          setState(() => _locked = false);
+        });
+      }
+      return widget.child;
+    }
+
+    if (settings.lockOnLaunch && !_launchLockShown && !_locked) {
       _launchLockShown = true;
       WidgetsBinding.instance.addPostFrameCallback((_) => _showLockScreen());
     }
