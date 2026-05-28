@@ -335,6 +335,11 @@ class PlayerState extends _$PlayerState {
       const FullscreenController();
   final QueuePlaybackCoordinator _queuePlaybackCoordinator =
       const QueuePlaybackCoordinator();
+  bool? _fullscreenBeforePip;
+  PlayerViewMode? _viewModeBeforePip;
+  bool _pipRequestInFlight = false;
+  DateTime? _lastPipRequestAt;
+  static const Duration _pipRequestCooldown = Duration(milliseconds: 700);
 
   @override
   GlobalPlayerState build() {
@@ -417,7 +422,36 @@ class PlayerState extends _$PlayerState {
   }
 
   void _onPipModeChanged() {
-    state = state.copyWith(isInPipMode: PipMode.isInPipMode.value);
+    final nextInPip = PipMode.isInPipMode.value;
+    final wasInPip = state.isInPipMode;
+
+    if (wasInPip && !nextInPip) {
+      final restoreFullscreen = _fullscreenBeforePip;
+      final restoreViewMode = _viewModeBeforePip;
+      _fullscreenBeforePip = null;
+      _viewModeBeforePip = null;
+
+      if (restoreFullscreen != null && restoreViewMode != null) {
+        final runtime = _fullscreenController.syncFromLegacy(
+          isFullScreen: restoreFullscreen,
+          viewModeName: restoreViewMode.name,
+        );
+        state = state.copyWith(
+          isInPipMode: false,
+          isFullScreen: runtime.isFullScreen,
+          viewMode: PlayerViewMode.values.firstWhere(
+            (e) => e.name == runtime.viewModeName,
+            orElse: () => runtime.isFullScreen
+                ? PlayerViewMode.fullscreen
+                : PlayerViewMode.inline,
+          ),
+          fullscreenPhase: runtime.fullscreenPhase,
+        );
+        return;
+      }
+    }
+
+    state = state.copyWith(isInPipMode: nextInPip);
   }
 
   void setAutoplayNext(bool value) {
@@ -482,6 +516,32 @@ class PlayerState extends _$PlayerState {
   void setSubtitleTextAlignment(String value) {
     state = state.copyWith(subtitleTextAlignment: value);
     unawaited(_settingsStore.saveSubtitleTextAlignment(value));
+  }
+
+  Future<bool> requestEnterPip({double? aspectRatio}) async {
+    final now = clock.now();
+    final elapsedSinceLast = _lastPipRequestAt == null
+        ? null
+        : now.difference(_lastPipRequestAt!);
+    if (_pipRequestInFlight ||
+        state.isInPipMode ||
+        (elapsedSinceLast != null && elapsedSinceLast < _pipRequestCooldown)) {
+      return false;
+    }
+
+    _pipRequestInFlight = true;
+    _lastPipRequestAt = now;
+    try {
+      _fullscreenBeforePip = state.isFullScreen;
+      _viewModeBeforePip = state.viewMode;
+      if (!state.isFullScreen) {
+        requestEnterFullscreen();
+        await Future.delayed(const Duration(milliseconds: 150));
+      }
+      return await PipMode.enterIfAvailable(aspectRatio: aspectRatio);
+    } finally {
+      _pipRequestInFlight = false;
+    }
   }
 
   Future<void> setSubtitle(String? languageCode, {String? captionType}) async {

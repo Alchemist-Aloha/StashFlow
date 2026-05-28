@@ -17,7 +17,6 @@ import 'video_controls/player_gesture_feedback.dart';
 import '../../../../core/presentation/providers/desktop_capabilities_provider.dart';
 import '../../../../core/presentation/providers/desktop_settings_provider.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
-import '../../../../core/utils/pip_mode.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../domain/entities/scene.dart';
@@ -194,7 +193,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     final aspect = (width != null && height != null && height > 0)
         ? width / height
         : 16 / 9;
-    unawaited(PipMode.enterIfAvailable(aspectRatio: aspect));
+    unawaited(
+      ref
+          .read(playerStateProvider.notifier)
+          .requestEnterPip(aspectRatio: aspect),
+    );
   }
 
   void _onVideoTick() {
@@ -689,7 +692,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
-  Widget _buildTimePill(BuildContext context, String label, {bool compact = false}) {
+  Widget _buildTimePill(
+    BuildContext context,
+    String label, {
+    bool compact = false,
+  }) {
     return Container(
       constraints: BoxConstraints(minWidth: compact ? 48 : 54),
       padding: EdgeInsets.symmetric(
@@ -766,7 +773,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
               final w = widget.controller.player.state.width;
               final h = widget.controller.player.state.height;
               final r = (w != null && h != null && h > 0) ? w / h : 16 / 9;
-              PipMode.enterIfAvailable(aspectRatio: r);
+              unawaited(
+                ref
+                    .read(playerStateProvider.notifier)
+                    .requestEnterPip(aspectRatio: r),
+              );
             }
           };
           break;

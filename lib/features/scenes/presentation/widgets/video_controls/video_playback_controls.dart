@@ -6,10 +6,10 @@ import '../../../../../core/utils/l10n_extensions.dart';
 import '../../../../../core/presentation/theme/app_theme.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
-import '../../../../../core/utils/pip_mode.dart';
 import '../../../domain/entities/scene.dart';
 import '../../../domain/entities/scene_title_utils.dart';
 import 'cast_selection_sheet.dart';
+import '../../providers/video_player_provider.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/data/services/cast_service.dart';
@@ -128,7 +128,9 @@ class VideoPlaybackControls extends ConsumerWidget {
               children: [
                 Container(
                   decoration: _controlGroupDecoration(),
-                  padding: EdgeInsets.symmetric(horizontal: groupHorizontalPadding),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: groupHorizontalPadding,
+                  ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -182,7 +184,9 @@ class VideoPlaybackControls extends ConsumerWidget {
                 ), // Padding between left and right groups
                 Container(
                   decoration: _controlGroupDecoration(),
-                  padding: EdgeInsets.symmetric(horizontal: groupHorizontalPadding),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: groupHorizontalPadding,
+                  ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -428,18 +432,14 @@ class VideoPlaybackControls extends ConsumerWidget {
                             size: controlIconSize,
                           ),
                           onPressed: () async {
-                            if (!isFullScreen) {
-                              onFullScreenToggle?.call();
-                              await Future.delayed(
-                                const Duration(milliseconds: 150),
-                              );
-                            }
                             final w = controller.player.state.width;
                             final h = controller.player.state.height;
                             final r = (w != null && h != null && h > 0)
                                 ? w / h
                                 : 16 / 9;
-                            await PipMode.enterIfAvailable(aspectRatio: r);
+                            await ref
+                                .read(playerStateProvider.notifier)
+                                .requestEnterPip(aspectRatio: r);
                             onInteract();
                           },
                         ),
