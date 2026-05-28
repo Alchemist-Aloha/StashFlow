@@ -3,14 +3,20 @@ package io.github.alchemistaloha.stashflow
 import android.app.PictureInPictureParams
 import android.content.res.Configuration
 import android.os.Build
+import android.os.Bundle
 import android.util.Rational
 import io.flutter.embedding.engine.FlutterEngine
 import com.ryanheise.audioservice.AudioServiceActivity
 import io.flutter.plugin.common.MethodChannel
 
-class MainActivity : AudioServiceActivity() {
+open class MainActivity : AudioServiceActivity() {
 	private val pipChannel = "stash_app_flutter/pip"
 	private var channel: MethodChannel? = null
+
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+		applyRecentsScreenshotPolicy()
+	}
 
 	override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
 		super.configureFlutterEngine(flutterEngine)
@@ -39,6 +45,18 @@ class MainActivity : AudioServiceActivity() {
 			enterPictureInPictureMode(builder.build())
 		} catch (_: Throwable) {
 			false
+		}
+	}
+
+	internal fun applyRecentsScreenshotPolicy() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			setRecentsScreenshotEnabledCompat(false)
+		}
+	}
+
+	internal open fun setRecentsScreenshotEnabledCompat(enabled: Boolean) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			setRecentsScreenshotEnabled(enabled)
 		}
 	}
 
