@@ -118,28 +118,20 @@ class _PasscodeLockScreenState extends ConsumerState<_PasscodeLockScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      unawaited(_ensureKeyboardOpen());
+      _focusAndShowKeyboard();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        if (!_focusNode.hasFocus) {
+          _focusAndShowKeyboard();
+        }
+      });
     });
   }
 
-  Future<void> _ensureKeyboardOpen() async {
+  void _focusAndShowKeyboard() {
     if (!mounted) return;
-
-    // First focus request right after mount.
     _focusNode.requestFocus();
-    await Future<void>.delayed(const Duration(milliseconds: 60));
-    if (!mounted) return;
-
-    // A second request improves reliability when overlay insertion races.
-    if (!_focusNode.hasFocus) {
-      _focusNode.requestFocus();
-      await Future<void>.delayed(const Duration(milliseconds: 60));
-      if (!mounted) return;
-    }
-
-    if (_focusNode.hasFocus) {
-      await SystemChannels.textInput.invokeMethod<void>('TextInput.show');
-    }
+    unawaited(SystemChannels.textInput.invokeMethod<void>('TextInput.show'));
   }
 
   @override
