@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_lock/flutter_app_lock.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/app_lock_gate.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/app_lock_settings_provider.dart';
 
@@ -53,18 +53,12 @@ void main() {
     await tester.pump();
   }
 
-  testWidgets('updates lock settings without recreating AppLock state', (
+  testWidgets('does not add a nested Navigator above app content', (
     tester,
   ) async {
     await pumpLockedApp(tester);
-    final firstState = tester.state<AppLockState>(find.byType(AppLock));
 
-    await tester.tap(find.text('Change timeout'));
-    await tester.pump();
-    await tester.pump();
-
-    final secondState = tester.state<AppLockState>(find.byType(AppLock));
-    expect(identical(firstState, secondState), isTrue);
+    expect(find.byType(Navigator), findsOneWidget);
   });
 
   testWidgets('shows lock screen after background timeout', (tester) async {
@@ -77,5 +71,70 @@ void main() {
     await tester.pump();
 
     expect(find.text('App Locked'), findsOneWidget);
+  });
+
+  testWidgets('focuses passcode field when lock screen opens', (tester) async {
+    await pumpLockedApp(tester);
+
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    await tester.pump(const Duration(seconds: 2));
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump();
+    await tester.pump();
+
+    final textField = tester.widget<TextField>(find.byType(TextField));
+    expect(textField.focusNode?.hasFocus, isTrue);
+    expect(textField.autofocus, isTrue);
+  });
+
+  testWidgets('lets GoRouter handle system back before exiting app', (
+    tester,
+  ) async {
+    final router = GoRouter(
+      initialLocation: '/',
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) => Scaffold(
+            body: TextButton(
+              onPressed: () => context.push('/details'),
+              child: const Text('Home'),
+            ),
+          ),
+        ),
+        GoRoute(
+          path: '/details',
+          builder: (context, state) => const Scaffold(body: Text('Details')),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appLockSettingsProvider.overrideWith(TestAppLockSettingsNotifier.new),
+        ],
+        child: MaterialApp.router(
+          routerConfig: router,
+          builder: (context, child) => AppLockGate(child: child!),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    await tester.tap(find.text('Home'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Details'), findsOneWidget);
+
+    await tester.binding.handlePopRoute();
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(find.text('Home'), findsOneWidget);
+    expect(find.text('Details'), findsNothing);
   });
 }

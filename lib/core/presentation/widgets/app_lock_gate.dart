@@ -1,90 +1,107 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_app_lock/flutter_app_lock.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/app_lock_settings_provider.dart';
 
-class AppLockGate extends ConsumerWidget {
+class AppLockGate extends ConsumerStatefulWidget {
   const AppLockGate({super.key, required this.child});
 
   final Widget child;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(appLockSettingsProvider);
-
-    return AppLock(
-      builder: (context, launchArg) =>
-          _AppLockBinding(settings: settings, child: child),
-      lockScreenBuilder: (_) => const _PasscodeLockScreen(),
-      initiallyEnabled: false,
-      initialBackgroundLockLatency: Duration(
-        seconds: settings.backgroundLockSeconds,
-      ),
-    );
-  }
+  ConsumerState<AppLockGate> createState() => _AppLockGateState();
 }
 
-class _AppLockBinding extends StatefulWidget {
-  const _AppLockBinding({required this.settings, required this.child});
-
-  final AppLockSettings settings;
-  final Widget child;
-
-  @override
-  State<_AppLockBinding> createState() => _AppLockBindingState();
-}
-
-class _AppLockBindingState extends State<_AppLockBinding> {
+class _AppLockGateState extends ConsumerState<AppLockGate>
+    with WidgetsBindingObserver {
+  Timer? _backgroundLockTimer;
+  bool _locked = false;
   bool _launchLockShown = false;
-  bool _syncScheduled = false;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _scheduleLockStateSync();
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
-  void didUpdateWidget(covariant _AppLockBinding oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _scheduleLockStateSync();
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _backgroundLockTimer?.cancel();
+    super.dispose();
   }
 
-  void _scheduleLockStateSync() {
-    if (_syncScheduled) return;
-    _syncScheduled = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _syncScheduled = false;
-      if (!mounted) return;
-      _syncLockState();
-    });
-  }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
 
-  void _syncLockState() {
-    final lock = AppLock.of(context);
-    if (lock == null) return;
+    final settings = ref.read(appLockSettingsProvider);
+    if (!_shouldEnable(settings)) return;
 
-    final shouldEnable = widget.settings.enabled && widget.settings.hasPasscode;
-    lock.setEnabled(shouldEnable);
-    lock.setBackgroundLockLatency(
-      Duration(seconds: widget.settings.backgroundLockSeconds),
-    );
+    if (state == AppLifecycleState.hidden && !_locked) {
+      _backgroundLockTimer?.cancel();
+      _backgroundLockTimer = Timer(
+        Duration(seconds: settings.backgroundLockSeconds),
+        _showLockScreen,
+      );
+    }
 
-    if (shouldEnable && widget.settings.lockOnLaunch && !_launchLockShown) {
-      _launchLockShown = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        AppLock.of(context)?.showLockScreen();
-      });
+    if (state == AppLifecycleState.resumed) {
+      _backgroundLockTimer?.cancel();
     }
   }
 
+  bool _shouldEnable(AppLockSettings settings) {
+    return settings.enabled && settings.hasPasscode;
+  }
+
+  void _showLockScreen() {
+    if (!mounted || _locked) return;
+    setState(() => _locked = true);
+  }
+
+  void _unlock() {
+    if (!mounted) return;
+    setState(() => _locked = false);
+  }
+
   @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) {
+    final settings = ref.watch(appLockSettingsProvider);
+    final shouldEnable = _shouldEnable(settings);
+
+    if (!shouldEnable) {
+      _backgroundLockTimer?.cancel();
+      _launchLockShown = false;
+      _locked = false;
+    } else if (settings.lockOnLaunch && !_launchLockShown && !_locked) {
+      _launchLockShown = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) => _showLockScreen());
+    }
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        widget.child,
+        if (_locked)
+          Overlay(
+            initialEntries: [
+              OverlayEntry(
+                builder: (_) => _PasscodeLockScreen(onUnlocked: _unlock),
+              ),
+            ],
+          ),
+      ],
+    );
+  }
 }
 
 class _PasscodeLockScreen extends ConsumerStatefulWidget {
-  const _PasscodeLockScreen();
+  const _PasscodeLockScreen({required this.onUnlocked});
+
+  final VoidCallback onUnlocked;
 
   @override
   ConsumerState<_PasscodeLockScreen> createState() =>
@@ -93,12 +110,42 @@ class _PasscodeLockScreen extends ConsumerStatefulWidget {
 
 class _PasscodeLockScreenState extends ConsumerState<_PasscodeLockScreen> {
   final _controller = TextEditingController();
+  final _focusNode = FocusNode();
   String? _error;
   bool _submitting = false;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(_ensureKeyboardOpen());
+    });
+  }
+
+  Future<void> _ensureKeyboardOpen() async {
+    if (!mounted) return;
+
+    // First focus request right after mount.
+    _focusNode.requestFocus();
+    await Future<void>.delayed(const Duration(milliseconds: 60));
+    if (!mounted) return;
+
+    // A second request improves reliability when overlay insertion races.
+    if (!_focusNode.hasFocus) {
+      _focusNode.requestFocus();
+      await Future<void>.delayed(const Duration(milliseconds: 60));
+      if (!mounted) return;
+    }
+
+    if (_focusNode.hasFocus) {
+      await SystemChannels.textInput.invokeMethod<void>('TextInput.show');
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -115,7 +162,7 @@ class _PasscodeLockScreenState extends ConsumerState<_PasscodeLockScreen> {
     if (!mounted) return;
 
     if (ok) {
-      AppLock.of(context)!.didUnlock();
+      widget.onUnlocked();
       return;
     }
 
@@ -127,56 +174,63 @@ class _PasscodeLockScreenState extends ConsumerState<_PasscodeLockScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 420),
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.lock_rounded,
-                    size: 44,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'App Locked',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  const Text('Enter your passcode to continue.'),
-                  const SizedBox(height: 20),
-                  TextField(
-                    controller: _controller,
-                    keyboardType: TextInputType.number,
-                    obscureText: true,
-                    maxLength: 8,
-                    enabled: !_submitting,
-                    onSubmitted: (_) => _unlock(),
-                    decoration: InputDecoration(
-                      labelText: 'Passcode',
-                      errorText: _error,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.lock_rounded,
+                      size: 44,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: _submitting ? null : _unlock,
-                      child: _submitting
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Text('Unlock'),
+                    const SizedBox(height: 12),
+                    Text(
+                      'App Locked',
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    const Text('Enter your passcode to continue.'),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      autofocus: true,
+                      keyboardType: TextInputType.number,
+                      obscureText: true,
+                      maxLength: 8,
+                      enabled: !_submitting,
+                      onSubmitted: (_) => _unlock(),
+                      decoration: InputDecoration(
+                        labelText: 'Passcode',
+                        errorText: _error,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        onPressed: _submitting ? null : _unlock,
+                        child: _submitting
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text('Unlock'),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
