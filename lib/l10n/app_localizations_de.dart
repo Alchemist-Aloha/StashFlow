@@ -1365,11 +1365,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settings_playback_resume_position =>
-      'Resume from last playing position';
+      'Von der letzten Spielposition aus fortfahren';
 
   @override
   String get settings_playback_resume_position_subtitle =>
-      'When opening a video, automatically resume from where you left off';
+      'Wenn Sie ein Video öffnen, wird es automatisch an der Stelle fortgesetzt, an der Sie aufgehört haben';
 
   @override
   String get settings_playback_end_behavior => 'Endeverhalten abspielen';
@@ -2449,4 +2449,19 @@ class AppLocalizationsDe extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get main_startup_failed => 'StashFlow konnte nicht gestartet werden';
+
+  @override
+  String get main_startup_failed_desc =>
+      'Ein Startdienst ist fehlgeschlagen, bevor die App die Initialisierung abschließen konnte.Starten Sie die App neu, nachdem Sie die Diagnose überprüft haben.';
+
+  @override
+  String common_searching_for(String query) {
+    return 'Suche nach: „$query“';
+  }
+
+  @override
+  String get cast_device => 'Gerät';
 }

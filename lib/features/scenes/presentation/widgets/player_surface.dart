@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
@@ -207,7 +208,7 @@ class _PlayerSurfaceState extends ConsumerState<PlayerSurface> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Casting to ${castState.activeSession?.device.name ?? 'Device'}',
+                          context.l10n.cast_casting_to(castState.activeSession?.device.name ?? context.l10n.cast_device),
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,

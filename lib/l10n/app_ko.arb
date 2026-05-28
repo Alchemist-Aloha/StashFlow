@@ -873,5 +873,11 @@
   "scene_info_sprite": "요정",
   "scene_info_technical": "인위적인",
   "scene_studio_id": "ID: {id}",
-  "scene_rating_stars": "{count, plural, =1{별 1개} other{{count} 별}}"
+  "scene_rating_stars": "{count, plural, =1{별 1개} other{{count} 별}}",
+  "settings_playback_resume_position": "마지막 재생 위치에서 다시 시작",
+  "settings_playback_resume_position_subtitle": "비디오를 열 때 중단한 부분부터 자동으로 다시 시작",
+  "main_startup_failed": "StashFlow를 시작하지 못했습니다.",
+  "main_startup_failed_desc": "앱 초기화가 완료되기 전에 시작 서비스가 실패했습니다.진단을 확인한 후 앱을 다시 시작하세요.",
+  "common_searching_for": "검색 중: \"{query}\"",
+  "cast_device": "장치"
 }

@@ -988,5 +988,16 @@
         "type": "int"
       }
     }
-  }
+  },
+  "main_startup_failed": "StashFlow failed to start",
+  "main_startup_failed_desc": "A startup service failed before the app could finish initializing. Restart the app after checking diagnostics.",
+  "common_searching_for": "Searching for: \"{query}\"",
+  "@common_searching_for": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "cast_device": "Device"
 }

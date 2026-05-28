@@ -1317,12 +1317,11 @@ class AppLocalizationsKo extends AppLocalizations {
       '피드 모드에서 장면을 재생할 때 비디오 길이의 0%에서 90% 사이의 임의의 위치에서 시작합니다';
 
   @override
-  String get settings_playback_resume_position =>
-      'Resume from last playing position';
+  String get settings_playback_resume_position => '마지막 재생 위치에서 다시 시작';
 
   @override
   String get settings_playback_resume_position_subtitle =>
-      'When opening a video, automatically resume from where you left off';
+      '비디오를 열 때 중단한 부분부터 자동으로 다시 시작';
 
   @override
   String get settings_playback_end_behavior => '재생 종료 동작';
@@ -2362,4 +2361,19 @@ class AppLocalizationsKo extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get main_startup_failed => 'StashFlow를 시작하지 못했습니다.';
+
+  @override
+  String get main_startup_failed_desc =>
+      '앱 초기화가 완료되기 전에 시작 서비스가 실패했습니다.진단을 확인한 후 앱을 다시 시작하세요.';
+
+  @override
+  String common_searching_for(String query) {
+    return '검색 중: \"$query\"';
+  }
+
+  @override
+  String get cast_device => '장치';
 }
