@@ -661,7 +661,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                     SizedBox(width: context.dimensions.spacingSmall),
                     Expanded(
                       child: Text(
-                        'Searching for: "$_currentQuery"',
+                        context.l10n.common_searching_for(_currentQuery ?? ''),
                         style: context.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),

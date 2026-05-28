@@ -1358,11 +1358,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settings_playback_resume_position =>
-      'Resume from last playing position';
+      'Возобновить с последней игровой позиции';
 
   @override
   String get settings_playback_resume_position_subtitle =>
-      'When opening a video, automatically resume from where you left off';
+      'При открытии видео автоматически возобновляется с того места, на котором вы остановились.';
 
   @override
   String get settings_playback_end_behavior => 'Поведение в конце игры';
@@ -2442,4 +2442,19 @@ class AppLocalizationsRu extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get main_startup_failed => 'StashFlow не удалось запустить';
+
+  @override
+  String get main_startup_failed_desc =>
+      'Служба запуска завершилась сбоем до того, как приложение смогло завершить инициализацию.Перезапустите приложение после проверки диагностики.';
+
+  @override
+  String common_searching_for(String query) {
+    return 'Поиск: \"$query\"';
+  }
+
+  @override
+  String get cast_device => 'Устройство';
 }
