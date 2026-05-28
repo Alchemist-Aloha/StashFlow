@@ -237,7 +237,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                               Container(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: context.dimensions.spacingSmall,
-                                  vertical: 3 * context.dimensions.fontSizeFactor,
+                                  vertical:
+                                      3 * context.dimensions.fontSizeFactor,
                                 ),
                                 decoration: BoxDecoration(
                                   color: colorScheme.surfaceContainerHighest,
@@ -294,8 +295,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                       children: [
                         _buildSegmentedSetting(
                           context: context,
-                          label:
-                              context.l10n.settings_interface_layout_default,
+                          label: context.l10n.settings_interface_layout_default,
                           description: context
                               .l10n
                               .settings_interface_layout_default_desc,
@@ -396,10 +396,15 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         ],
                         Divider(height: context.dimensions.spacingLarge),
                         _buildFontSizeSetting(
-                          label: context.l10n.settings_interface_card_title_font_size,
+                          label: context
+                              .l10n
+                              .settings_interface_card_title_font_size,
                           value: _cardTitleFontSize,
                           onChanged: (value) async {
-                            setState(() => _cardTitleFontSize = value ?? context.fontSizes.medium);
+                            setState(
+                              () => _cardTitleFontSize =
+                                  value ?? context.fontSizes.medium,
+                            );
                             await _saveSettings();
                           },
                         ),
@@ -416,8 +421,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                       children: [
                         _buildSegmentedSetting(
                           context: context,
-                          label:
-                              context.l10n.settings_interface_layout_default,
+                          label: context.l10n.settings_interface_layout_default,
                           description: context
                               .l10n
                               .settings_interface_galleries_layout_subtitle_item,
@@ -663,6 +667,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     final currentLanguageKey = ref
         .read(sharedPreferencesProvider)
         .getString(appLanguagePreferenceKey);
+    final languageEntries = supportedLanguages.entries.toList(growable: false);
 
     showModalBottomSheet(
       context: context,
@@ -682,14 +687,17 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                 height: 4 * context.dimensions.fontSizeFactor,
                 decoration: BoxDecoration(
                   color: colorScheme.outlineVariant,
-                  borderRadius: BorderRadius.circular(2 * context.dimensions.fontSizeFactor),
+                  borderRadius: BorderRadius.circular(
+                    2 * context.dimensions.fontSizeFactor,
+                  ),
                 ),
               ),
               SizedBox(height: context.dimensions.spacingMedium),
               Flexible(
-                child: ListView(
-                  shrinkWrap: true,
-                  children: supportedLanguages.entries.map((entry) {
+                child: ListView.builder(
+                  itemCount: languageEntries.length,
+                  itemBuilder: (context, index) {
+                    final entry = languageEntries[index];
                     final isSelected = entry.key == currentLanguageKey;
                     return ListTile(
                       leading: Icon(
@@ -712,7 +720,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                         if (context.mounted) Navigator.pop(context);
                       },
                     );
-                  }).toList(),
+                  },
                 ),
               ),
             ],
@@ -813,7 +821,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   controller.open();
                 }
               },
-              borderRadius: BorderRadius.circular(20 * context.dimensions.fontSizeFactor),
+              borderRadius: BorderRadius.circular(
+                20 * context.dimensions.fontSizeFactor,
+              ),
               child: Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: 16 * context.dimensions.fontSizeFactor,
@@ -892,7 +902,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
           min: 10.0,
           max: 24.0,
           divisions: 7,
-          label: value == null ? context.l10n.common_default : context.l10n.common_pt(value.toInt()),
+          label: value == null
+              ? context.l10n.common_default
+              : context.l10n.common_pt(value.toInt()),
           onChanged: (val) => onChanged(val),
         ),
       ],
