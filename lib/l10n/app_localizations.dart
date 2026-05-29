@@ -4523,6 +4523,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Device'**
   String get cast_device;
+
+  /// No description provided for @security_enter_passcode_to_continue.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your passcode to continue.'**
+  String get security_enter_passcode_to_continue;
+
+  /// No description provided for @security_passcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcode'**
+  String get security_passcode;
+
+  /// No description provided for @security_unlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock'**
+  String get security_unlock;
+
+  /// No description provided for @mini_player_now_playing.
+  ///
+  /// In en, this message translates to:
+  /// **'Now playing: {title}. Tap to open scene details.'**
+  String mini_player_now_playing(String title);
+
+  /// No description provided for @settings_security.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get settings_security;
+
+  /// No description provided for @settings_security_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App lock and passcode settings'**
+  String get settings_security_subtitle;
+
+  /// No description provided for @settings_security_app_lock.
+  ///
+  /// In en, this message translates to:
+  /// **'App lock'**
+  String get settings_security_app_lock;
+
+  /// No description provided for @settings_security_app_lock_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Protect access with a passcode after backgrounding.'**
+  String get settings_security_app_lock_subtitle;
+
+  /// No description provided for @security_passcode_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcode saved'**
+  String get security_passcode_saved;
+
+  /// No description provided for @security_passcode_removed.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcode removed'**
+  String get security_passcode_removed;
+
+  /// No description provided for @settings_security_enable_app_lock.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable app lock'**
+  String get settings_security_enable_app_lock;
+
+  /// No description provided for @settings_security_lock_on_app_launch.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock on app launch'**
+  String get settings_security_lock_on_app_launch;
+
+  /// No description provided for @settings_security_background_lock_timer.
+  ///
+  /// In en, this message translates to:
+  /// **'Background lock timer'**
+  String get settings_security_background_lock_timer;
+
+  /// No description provided for @settings_security_set_passcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Set passcode'**
+  String get settings_security_set_passcode;
+
+  /// No description provided for @settings_security_passcode_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcode (4-8 digits)'**
+  String get settings_security_passcode_hint;
+
+  /// No description provided for @settings_security_confirm_passcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get settings_security_confirm_passcode;
+
+  /// No description provided for @settings_security_configured.
+  ///
+  /// In en, this message translates to:
+  /// **'Configured'**
+  String get settings_security_configured;
+
+  /// No description provided for @settings_security_not_configured.
+  ///
+  /// In en, this message translates to:
+  /// **'Not configured'**
+  String get settings_security_not_configured;
+
+  /// No description provided for @settings_security_require_passcode_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Require passcode on app resume/launch.'**
+  String get settings_security_require_passcode_subtitle;
+
+  /// No description provided for @settings_security_lock_on_launch_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask for passcode immediately when app opens.'**
+  String get settings_security_lock_on_launch_subtitle;
+
+  /// No description provided for @settings_security_background_timer_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How long the app can stay in background before locking.'**
+  String get settings_security_background_timer_subtitle;
 }
 
 class _AppLocalizationsDelegate

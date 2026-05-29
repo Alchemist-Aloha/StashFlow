@@ -2487,4 +2487,79 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get cast_device => 'Dispositivo';
+
+  @override
+  String get security_enter_passcode_to_continue =>
+      'Ingrese su contraseña para continuar.';
+
+  @override
+  String get security_passcode => 'Código de acceso';
+
+  @override
+  String get security_unlock => 'Descubrir';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return 'Reproduciendo ahora: $title.Toque para abrir los detalles de la escena.';
+  }
+
+  @override
+  String get settings_security => 'Seguridad';
+
+  @override
+  String get settings_security_subtitle =>
+      'Configuración de bloqueo de aplicaciones y contraseña';
+
+  @override
+  String get settings_security_app_lock => 'Bloqueo de aplicaciones';
+
+  @override
+  String get settings_security_app_lock_subtitle =>
+      'Proteja el acceso con una contraseña después de ponerlo en segundo plano.';
+
+  @override
+  String get security_passcode_saved => 'Código de acceso guardado';
+
+  @override
+  String get security_passcode_removed => 'Código de acceso eliminado';
+
+  @override
+  String get settings_security_enable_app_lock =>
+      'Habilitar bloqueo de aplicaciones';
+
+  @override
+  String get settings_security_lock_on_app_launch =>
+      'Bloquear al iniciar la aplicación';
+
+  @override
+  String get settings_security_background_lock_timer =>
+      'Temporizador de bloqueo de fondo';
+
+  @override
+  String get settings_security_set_passcode => 'Establecer contraseña';
+
+  @override
+  String get settings_security_passcode_hint =>
+      'Código de acceso (4-8 dígitos)';
+
+  @override
+  String get settings_security_confirm_passcode => 'Confirmar';
+
+  @override
+  String get settings_security_configured => 'Configurado';
+
+  @override
+  String get settings_security_not_configured => 'No configurado';
+
+  @override
+  String get settings_security_require_passcode_subtitle =>
+      'Requerir código de acceso al reanudar/iniciar la aplicación.';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle =>
+      'Solicite el código de acceso inmediatamente cuando se abra la aplicación.';
+
+  @override
+  String get settings_security_background_timer_subtitle =>
+      'Cuánto tiempo puede permanecer la aplicación en segundo plano antes de bloquearse.';
 }

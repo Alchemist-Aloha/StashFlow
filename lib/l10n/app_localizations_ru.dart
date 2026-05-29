@@ -2457,4 +2457,78 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get cast_device => 'Устройство';
+
+  @override
+  String get security_enter_passcode_to_continue =>
+      'Введите свой пароль, чтобы продолжить.';
+
+  @override
+  String get security_passcode => 'Код доступа';
+
+  @override
+  String get security_unlock => 'Разблокировать';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return 'Сейчас играет: $title.Нажмите, чтобы открыть сведения о сцене.';
+  }
+
+  @override
+  String get settings_security => 'Безопасность';
+
+  @override
+  String get settings_security_subtitle =>
+      'Настройки блокировки приложений и пароля';
+
+  @override
+  String get settings_security_app_lock => 'Блокировка приложения';
+
+  @override
+  String get settings_security_app_lock_subtitle =>
+      'Защитите доступ с помощью пароля после фонового режима.';
+
+  @override
+  String get security_passcode_saved => 'Код доступа сохранен.';
+
+  @override
+  String get security_passcode_removed => 'Код доступа удален.';
+
+  @override
+  String get settings_security_enable_app_lock =>
+      'Включить блокировку приложения';
+
+  @override
+  String get settings_security_lock_on_app_launch =>
+      'Блокировка запуска приложения';
+
+  @override
+  String get settings_security_background_lock_timer =>
+      'Таймер блокировки фона';
+
+  @override
+  String get settings_security_set_passcode => 'Установить пароль';
+
+  @override
+  String get settings_security_passcode_hint => 'Код доступа (4–8 цифр)';
+
+  @override
+  String get settings_security_confirm_passcode => 'Подтверждать';
+
+  @override
+  String get settings_security_configured => 'Настроено';
+
+  @override
+  String get settings_security_not_configured => 'Не настроено';
+
+  @override
+  String get settings_security_require_passcode_subtitle =>
+      'Требовать пароль при возобновлении/запуске приложения.';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle =>
+      'Запросите пароль сразу после открытия приложения.';
+
+  @override
+  String get settings_security_background_timer_subtitle =>
+      'Как долго приложение может оставаться в фоновом режиме перед блокировкой.';
 }

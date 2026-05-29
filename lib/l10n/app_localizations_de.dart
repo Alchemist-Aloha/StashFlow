@@ -2464,4 +2464,76 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get cast_device => 'Gerät';
+
+  @override
+  String get security_enter_passcode_to_continue =>
+      'Geben Sie Ihren Passcode ein, um fortzufahren.';
+
+  @override
+  String get security_passcode => 'Passcode';
+
+  @override
+  String get security_unlock => 'Entsperren';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return 'Spielt gerade: $title.Tippen Sie hier, um Szenendetails zu öffnen.';
+  }
+
+  @override
+  String get settings_security => 'Sicherheit';
+
+  @override
+  String get settings_security_subtitle =>
+      'Einstellungen für App-Sperre und Passcode';
+
+  @override
+  String get settings_security_app_lock => 'App-Sperre';
+
+  @override
+  String get settings_security_app_lock_subtitle =>
+      'Schützen Sie den Zugriff nach dem Hintergrundbetrieb mit einem Passcode.';
+
+  @override
+  String get security_passcode_saved => 'Passcode gespeichert';
+
+  @override
+  String get security_passcode_removed => 'Passcode entfernt';
+
+  @override
+  String get settings_security_enable_app_lock => 'App-Sperre aktivieren';
+
+  @override
+  String get settings_security_lock_on_app_launch => 'Beim App-Start sperren';
+
+  @override
+  String get settings_security_background_lock_timer =>
+      'Hintergrundsperr-Timer';
+
+  @override
+  String get settings_security_set_passcode => 'Passcode festlegen';
+
+  @override
+  String get settings_security_passcode_hint => 'Passcode (4–8 Ziffern)';
+
+  @override
+  String get settings_security_confirm_passcode => 'Bestätigen';
+
+  @override
+  String get settings_security_configured => 'Konfiguriert';
+
+  @override
+  String get settings_security_not_configured => 'Nicht konfiguriert';
+
+  @override
+  String get settings_security_require_passcode_subtitle =>
+      'Passcode beim Fortsetzen/Starten der App erforderlich.';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle =>
+      'Fragen Sie sofort nach dem Passwort, wenn die App geöffnet wird.';
+
+  @override
+  String get settings_security_background_timer_subtitle =>
+      'Wie lange die App im Hintergrund bleiben kann, bevor sie gesperrt wird.';
 }

@@ -6,6 +6,8 @@ import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import '../../../../../core/presentation/providers/desktop_capabilities_provider.dart';
 
 import '../../widgets/settings_page_shell.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
+
 
 class SettingsHubPage extends ConsumerWidget {
   const SettingsHubPage({super.key});
@@ -64,8 +66,8 @@ class SettingsHubPage extends ConsumerWidget {
                 SizedBox(height: context.dimensions.spacingMedium),
                 SettingsActionCard(
                   icon: Icons.lock_outline_rounded,
-                  title: 'Security',
-                  subtitle: 'App lock and passcode settings',
+                  title: context.l10n.settings_security,
+                  subtitle: context.l10n.settings_security_subtitle,
                   onTap: () => context.push('/settings/security'),
                 ),
                 SizedBox(height: context.dimensions.spacingMedium),

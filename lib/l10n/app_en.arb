@@ -999,5 +999,33 @@
       }
     }
   },
-  "cast_device": "Device"
+  "cast_device": "Device",
+  "security_enter_passcode_to_continue": "Enter your passcode to continue.",
+  "security_passcode": "Passcode",
+  "security_unlock": "Unlock",
+  "mini_player_now_playing": "Now playing: {title}. Tap to open scene details.",
+  "@mini_player_now_playing": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "settings_security": "Security",
+  "settings_security_subtitle": "App lock and passcode settings",
+  "settings_security_app_lock": "App lock",
+  "settings_security_app_lock_subtitle": "Protect access with a passcode after backgrounding.",
+  "security_passcode_saved": "Passcode saved",
+  "security_passcode_removed": "Passcode removed",
+  "settings_security_enable_app_lock": "Enable app lock",
+  "settings_security_lock_on_app_launch": "Lock on app launch",
+  "settings_security_background_lock_timer": "Background lock timer",
+  "settings_security_set_passcode": "Set passcode",
+  "settings_security_passcode_hint": "Passcode (4-8 digits)",
+  "settings_security_confirm_passcode": "Confirm",
+  "settings_security_configured": "Configured",
+  "settings_security_not_configured": "Not configured",
+  "settings_security_require_passcode_subtitle": "Require passcode on app resume/launch.",
+  "settings_security_lock_on_launch_subtitle": "Ask for passcode immediately when app opens.",
+  "settings_security_background_timer_subtitle": "How long the app can stay in background before locking."
 }

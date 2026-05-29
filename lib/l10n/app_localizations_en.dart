@@ -2425,4 +2425,74 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cast_device => 'Device';
+
+  @override
+  String get security_enter_passcode_to_continue =>
+      'Enter your passcode to continue.';
+
+  @override
+  String get security_passcode => 'Passcode';
+
+  @override
+  String get security_unlock => 'Unlock';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return 'Now playing: $title. Tap to open scene details.';
+  }
+
+  @override
+  String get settings_security => 'Security';
+
+  @override
+  String get settings_security_subtitle => 'App lock and passcode settings';
+
+  @override
+  String get settings_security_app_lock => 'App lock';
+
+  @override
+  String get settings_security_app_lock_subtitle =>
+      'Protect access with a passcode after backgrounding.';
+
+  @override
+  String get security_passcode_saved => 'Passcode saved';
+
+  @override
+  String get security_passcode_removed => 'Passcode removed';
+
+  @override
+  String get settings_security_enable_app_lock => 'Enable app lock';
+
+  @override
+  String get settings_security_lock_on_app_launch => 'Lock on app launch';
+
+  @override
+  String get settings_security_background_lock_timer => 'Background lock timer';
+
+  @override
+  String get settings_security_set_passcode => 'Set passcode';
+
+  @override
+  String get settings_security_passcode_hint => 'Passcode (4-8 digits)';
+
+  @override
+  String get settings_security_confirm_passcode => 'Confirm';
+
+  @override
+  String get settings_security_configured => 'Configured';
+
+  @override
+  String get settings_security_not_configured => 'Not configured';
+
+  @override
+  String get settings_security_require_passcode_subtitle =>
+      'Require passcode on app resume/launch.';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle =>
+      'Ask for passcode immediately when app opens.';
+
+  @override
+  String get settings_security_background_timer_subtitle =>
+      'How long the app can stay in background before locking.';
 }

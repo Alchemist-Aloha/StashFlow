@@ -2481,4 +2481,77 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get cast_device => 'Dispositivo';
+
+  @override
+  String get security_enter_passcode_to_continue =>
+      'Inserisci il tuo passcode per continuare.';
+
+  @override
+  String get security_passcode => 'Codice di accesso';
+
+  @override
+  String get security_unlock => 'Sbloccare';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return 'Ora in riproduzione: $title.Tocca per aprire i dettagli della scena.';
+  }
+
+  @override
+  String get settings_security => 'Sicurezza';
+
+  @override
+  String get settings_security_subtitle =>
+      'Impostazioni del blocco dell\'app e del passcode';
+
+  @override
+  String get settings_security_app_lock => 'Blocco dell\'app';
+
+  @override
+  String get settings_security_app_lock_subtitle =>
+      'Proteggi l\'accesso con un passcode dopo il background.';
+
+  @override
+  String get security_passcode_saved => 'Codice di accesso salvato';
+
+  @override
+  String get security_passcode_removed => 'Codice rimosso';
+
+  @override
+  String get settings_security_enable_app_lock => 'Abilita il blocco dell\'app';
+
+  @override
+  String get settings_security_lock_on_app_launch =>
+      'Blocca all\'avvio dell\'app';
+
+  @override
+  String get settings_security_background_lock_timer =>
+      'Temporizzatore di blocco dello sfondo';
+
+  @override
+  String get settings_security_set_passcode => 'Imposta il codice di accesso';
+
+  @override
+  String get settings_security_passcode_hint => 'Codice di accesso (4-8 cifre)';
+
+  @override
+  String get settings_security_confirm_passcode => 'Confermare';
+
+  @override
+  String get settings_security_configured => 'Configurato';
+
+  @override
+  String get settings_security_not_configured => 'Non configurato';
+
+  @override
+  String get settings_security_require_passcode_subtitle =>
+      'Richiedi il passcode al ripristino/avvio dell\'app.';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle =>
+      'Richiedi immediatamente il passcode all\'apertura dell\'app.';
+
+  @override
+  String get settings_security_background_timer_subtitle =>
+      'Per quanto tempo l\'app può rimanere in background prima di bloccarsi.';
 }

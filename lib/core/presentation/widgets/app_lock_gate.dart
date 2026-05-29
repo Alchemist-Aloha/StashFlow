@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/app_lock_settings_provider.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
+
 
 class AppLockGate extends ConsumerStatefulWidget {
   const AppLockGate({super.key, required this.child});
@@ -199,7 +201,7 @@ class _PasscodeLockScreenState extends ConsumerState<_PasscodeLockScreen> {
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     const SizedBox(height: 8),
-                    const Text('Enter your passcode to continue.'),
+                    Text(context.l10n.security_enter_passcode_to_continue),
                     const SizedBox(height: 20),
                     TextField(
                       controller: _controller,
@@ -211,7 +213,7 @@ class _PasscodeLockScreenState extends ConsumerState<_PasscodeLockScreen> {
                       enabled: !_submitting,
                       onSubmitted: (_) => _unlock(),
                       decoration: InputDecoration(
-                        labelText: 'Passcode',
+                        labelText: context.l10n.security_passcode,
                         errorText: _error,
                       ),
                     ),
@@ -228,7 +230,7 @@ class _PasscodeLockScreenState extends ConsumerState<_PasscodeLockScreen> {
                                   strokeWidth: 2,
                                 ),
                               )
-                            : const Text('Unlock'),
+                            : Text(context.l10n.security_unlock),
                       ),
                     ),
                   ],

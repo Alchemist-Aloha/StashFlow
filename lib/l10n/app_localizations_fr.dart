@@ -2477,4 +2477,79 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get cast_device => 'Appareil';
+
+  @override
+  String get security_enter_passcode_to_continue =>
+      'Entrez votre mot de passe pour continuer.';
+
+  @override
+  String get security_passcode => 'Code d\'accès';
+
+  @override
+  String get security_unlock => 'Ouvrir';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return 'Lecture en cours : $title.Appuyez pour ouvrir les détails de la scène.';
+  }
+
+  @override
+  String get settings_security => 'Sécurité';
+
+  @override
+  String get settings_security_subtitle =>
+      'Paramètres de verrouillage de l\'application et de mot de passe';
+
+  @override
+  String get settings_security_app_lock => 'Verrouillage d\'application';
+
+  @override
+  String get settings_security_app_lock_subtitle =>
+      'Protégez l’accès avec un mot de passe après la mise en arrière-plan.';
+
+  @override
+  String get security_passcode_saved => 'Code d\'accès enregistré';
+
+  @override
+  String get security_passcode_removed => 'Code d\'accès supprimé';
+
+  @override
+  String get settings_security_enable_app_lock =>
+      'Activer le verrouillage des applications';
+
+  @override
+  String get settings_security_lock_on_app_launch =>
+      'Verrouiller le lancement de l\'application';
+
+  @override
+  String get settings_security_background_lock_timer =>
+      'Minuterie de verrouillage en arrière-plan';
+
+  @override
+  String get settings_security_set_passcode => 'Définir le mot de passe';
+
+  @override
+  String get settings_security_passcode_hint =>
+      'Code d\'accès (4 à 8 chiffres)';
+
+  @override
+  String get settings_security_confirm_passcode => 'Confirmer';
+
+  @override
+  String get settings_security_configured => 'Configuré';
+
+  @override
+  String get settings_security_not_configured => 'Non configuré';
+
+  @override
+  String get settings_security_require_passcode_subtitle =>
+      'Exiger un mot de passe lors de la reprise/du lancement de l\'application.';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle =>
+      'Demandez le mot de passe immédiatement lorsque l\'application s\'ouvre.';
+
+  @override
+  String get settings_security_background_timer_subtitle =>
+      'Combien de temps l\'application peut rester en arrière-plan avant de se verrouiller.';
 }

@@ -2376,4 +2376,73 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get cast_device => 'デバイス';
+
+  @override
+  String get security_enter_passcode_to_continue => '続行するにはパスコードを入力してください。';
+
+  @override
+  String get security_passcode => 'パスコード';
+
+  @override
+  String get security_unlock => 'ロックを解除する';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return '現在再生中: $title。タップしてシーンの詳細を開きます。';
+  }
+
+  @override
+  String get settings_security => '安全';
+
+  @override
+  String get settings_security_subtitle => 'アプリロックとパスコードの設定';
+
+  @override
+  String get settings_security_app_lock => 'アプリロック';
+
+  @override
+  String get settings_security_app_lock_subtitle =>
+      'バックグラウンド化後はパスコードでアクセスを保護します。';
+
+  @override
+  String get security_passcode_saved => 'パスコードが保存されました';
+
+  @override
+  String get security_passcode_removed => 'パスコードが削除されました';
+
+  @override
+  String get settings_security_enable_app_lock => 'アプリロックを有効にする';
+
+  @override
+  String get settings_security_lock_on_app_launch => 'アプリ起動時にロックする';
+
+  @override
+  String get settings_security_background_lock_timer => 'バックグラウンドロックタイマー';
+
+  @override
+  String get settings_security_set_passcode => 'パスコードを設定する';
+
+  @override
+  String get settings_security_passcode_hint => 'パスコード（4～8桁）';
+
+  @override
+  String get settings_security_confirm_passcode => '確認する';
+
+  @override
+  String get settings_security_configured => '設定済み';
+
+  @override
+  String get settings_security_not_configured => '未設定';
+
+  @override
+  String get settings_security_require_passcode_subtitle =>
+      'アプリの再開/起動時にパスコードを要求します。';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle =>
+      'アプリを開いたらすぐにパスコードを要求します。';
+
+  @override
+  String get settings_security_background_timer_subtitle =>
+      'アプリがロックされるまでバックグラウンドに留まる時間。';
 }

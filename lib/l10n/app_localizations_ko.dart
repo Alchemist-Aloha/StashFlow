@@ -2376,4 +2376,72 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get cast_device => '장치';
+
+  @override
+  String get security_enter_passcode_to_continue => '계속하려면 비밀번호를 입력하세요.';
+
+  @override
+  String get security_passcode => '비밀번호';
+
+  @override
+  String get security_unlock => '터놓다';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return '지금 재생 중: $title.장면 세부정보를 열려면 탭하세요.';
+  }
+
+  @override
+  String get settings_security => '보안';
+
+  @override
+  String get settings_security_subtitle => '앱 잠금 및 비밀번호 설정';
+
+  @override
+  String get settings_security_app_lock => '앱 잠금';
+
+  @override
+  String get settings_security_app_lock_subtitle => '백그라운드 후 비밀번호로 접근을 보호하세요.';
+
+  @override
+  String get security_passcode_saved => '비밀번호가 저장되었습니다';
+
+  @override
+  String get security_passcode_removed => '비밀번호가 삭제되었습니다.';
+
+  @override
+  String get settings_security_enable_app_lock => '앱 잠금 활성화';
+
+  @override
+  String get settings_security_lock_on_app_launch => '앱 실행 시 잠금';
+
+  @override
+  String get settings_security_background_lock_timer => '백그라운드 잠금 타이머';
+
+  @override
+  String get settings_security_set_passcode => '비밀번호 설정';
+
+  @override
+  String get settings_security_passcode_hint => '비밀번호(4~8자리)';
+
+  @override
+  String get settings_security_confirm_passcode => '확인하다';
+
+  @override
+  String get settings_security_configured => '구성됨';
+
+  @override
+  String get settings_security_not_configured => '구성되지 않음';
+
+  @override
+  String get settings_security_require_passcode_subtitle =>
+      '앱 재개/실행 시 비밀번호가 필요합니다.';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle =>
+      '앱이 열리면 즉시 비밀번호를 요청하세요.';
+
+  @override
+  String get settings_security_background_timer_subtitle =>
+      '앱이 잠기기 전에 백그라운드에 머무를 수 있는 시간입니다.';
 }
