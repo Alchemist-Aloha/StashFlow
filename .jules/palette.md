@@ -12,3 +12,6 @@
 ## 2024-05-24 - Accessibility on MiniPlayer
 **Learning:** We can swap a pure `GestureDetector` that provides no visual feedback with a semantic Material `InkWell` to provide keyboard navigation, touch feedback, and accessibility labels on floating elements.
 **Action:** When creating purely interactive elements that trigger navigation, wrap them in a `Material` widget (if needed) and use `InkWell` combined with `Semantics(button: true, label: ...)` rather than just wrapping the subtree in `GestureDetector`.
+## 2024-05-29 - Convert GestureDetector to IconButton in TikTok Scene View
+**Learning:** Raw `GestureDetector` widgets with nested `Tooltip`s for interactive icons lack critical accessibility features out-of-the-box (like keyboard focusability, ripple effects, and screen reader semantic roles).
+**Action:** Always prefer Flutter's native `IconButton` (or `InkWell` wrapped in `Material`) over `GestureDetector` for single-action touch targets to get "free" accessibility and proper visual feedback.

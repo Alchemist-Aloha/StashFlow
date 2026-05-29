@@ -1100,25 +1100,17 @@ class _OverlayButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Tooltip(
-        message: tooltip ?? '',
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: const BoxDecoration(
-            color: Colors.transparent,
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            icon,
-            color: Colors.white,
-            size: 28,
-            shadows: [
-              Shadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 8),
-            ],
-          ),
-        ),
+    return IconButton(
+      onPressed: onTap,
+      tooltip: tooltip,
+      padding: const EdgeInsets.all(12),
+      iconSize: 28,
+      color: Colors.white,
+      icon: Icon(
+        icon,
+        shadows: [
+          Shadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 8),
+        ],
       ),
     );
   }
