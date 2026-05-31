@@ -22,12 +22,12 @@ class MiniPlayer extends ConsumerWidget {
 
     final displayTitle = activeScene.displayTitle;
 
-    return GestureDetector(
-      onTap: () => context.push('/scenes/scene/${activeScene.id}'),
+    return Semantics(
+      button: true,
+      label: 'Now playing: $displayTitle. Tap to open scene details.',
       child: Container(
         height: 66, // Increased height by 10% (from 60)
         decoration: BoxDecoration(
-          color: context.colors.surface,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.1),
@@ -36,63 +36,69 @@ class MiniPlayer extends ConsumerWidget {
             ),
           ],
         ),
-        child: RepaintBoundary(
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(6),
-                child: AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                    child: StashImage(
-                      imageUrl: activeScene.paths.screenshot ?? '',
-                      fit: BoxFit.cover,
-                      memCacheWidth: 320,
+        child: Material(
+          color: context.colors.surface,
+          child: InkWell(
+            onTap: () => context.push('/scenes/scene/${activeScene.id}'),
+            child: RepaintBoundary(
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                        child: StashImage(
+                          imageUrl: activeScene.paths.screenshot ?? '',
+                          fit: BoxFit.cover,
+                          memCacheWidth: 320,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    MarqueeText(
-                      text: displayTitle,
-                      style: context.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: context.colors.onSurface,
-                      ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        MarqueeText(
+                          text: displayTitle,
+                          style: context.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: context.colors.onSurface,
+                          ),
+                        ),
+                        Text(
+                          activeScene.studioName ?? '',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.textTheme.bodySmall?.copyWith(
+                            color: context.colors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      activeScene.studioName ?? '',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.textTheme.bodySmall?.copyWith(
-                        color: context.colors.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  ),
+                  IconButton(
+                    tooltip: isPlaying ? context.l10n.common_pause : context.l10n.common_play,
+                    onPressed: () =>
+                        ref.read(playerStateProvider.notifier).togglePlayPause(),
+                    icon: Icon(
+                      isPlaying ? Icons.pause : Icons.play_arrow,
+                      color: context.colors.onSurface,
                     ),
-                  ],
-                ),
+                  ),
+                  IconButton(
+                    tooltip: context.l10n.common_close,
+                    onPressed: () => ref.read(playerStateProvider.notifier).stop(),
+                    icon: Icon(Icons.close, color: context.colors.onSurface),
+                  ),
+                ],
               ),
-              IconButton(
-                tooltip: isPlaying ? context.l10n.common_pause : context.l10n.common_play,
-                onPressed: () =>
-                    ref.read(playerStateProvider.notifier).togglePlayPause(),
-                icon: Icon(
-                  isPlaying ? Icons.pause : Icons.play_arrow,
-                  color: context.colors.onSurface,
-                ),
-              ),
-              IconButton(
-                tooltip: context.l10n.common_close,
-                onPressed: () => ref.read(playerStateProvider.notifier).stop(),
-                icon: Icon(Icons.close, color: context.colors.onSurface),
-              ),
-            ],
+            ),
           ),
         ),
       ),

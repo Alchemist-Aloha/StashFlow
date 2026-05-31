@@ -63,6 +63,13 @@ class SettingsHubPage extends ConsumerWidget {
                 ),
                 SizedBox(height: context.dimensions.spacingMedium),
                 SettingsActionCard(
+                  icon: Icons.lock_outline_rounded,
+                  title: 'Security',
+                  subtitle: 'App lock and passcode settings',
+                  onTap: () => context.push('/settings/security'),
+                ),
+                SizedBox(height: context.dimensions.spacingMedium),
+                SettingsActionCard(
                   icon: Icons.storage_rounded,
                   title: l10n.settings_storage,
                   subtitle: l10n.settings_storage_subtitle,

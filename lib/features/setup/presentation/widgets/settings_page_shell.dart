@@ -72,45 +72,47 @@ class SettingsSectionCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: 32.0 * context.dimensions.fontSizeFactor,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (title != null) ...[
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: context.dimensions.spacingSmall,
-              ),
-              child: Text(
-                title!,
-                style: textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.primary,
+    return RepaintBoundary(
+      child: Padding(
+        padding: EdgeInsets.only(
+          bottom: 32.0 * context.dimensions.fontSizeFactor,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (title != null) ...[
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.dimensions.spacingSmall,
+                ),
+                child: Text(
+                  title!,
+                  style: textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.primary,
+                  ),
                 ),
               ),
-            ),
-          ],
-          if (subtitle != null) ...[
-            SizedBox(height: 4 * context.dimensions.fontSizeFactor),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: context.dimensions.spacingSmall,
-              ),
-              child: Text(
-                subtitle!,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
+            ],
+            if (subtitle != null) ...[
+              SizedBox(height: 4 * context.dimensions.fontSizeFactor),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.dimensions.spacingSmall,
+                ),
+                child: Text(
+                  subtitle!,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
-            ),
+            ],
+            if (title != null || subtitle != null)
+              SizedBox(height: context.dimensions.spacingMedium),
+            child,
           ],
-          if (title != null || subtitle != null)
-            SizedBox(height: context.dimensions.spacingMedium),
-          child,
-        ],
+        ),
       ),
     );
   }
@@ -144,76 +146,78 @@ class _SettingsActionCardState extends State<SettingsActionCard> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return AnimatedScale(
-      scale: _isPressed ? 0.98 : 1.0,
-      duration: const Duration(milliseconds: 100),
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        elevation: 0,
-        color: colorScheme.primaryContainer.withValues(alpha: 0.3),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
-        ),
-        child: InkWell(
-          onTapDown: (_) => setState(() => _isPressed = true),
-          onTapUp: (_) => setState(() => _isPressed = false),
-          onTapCancel: () => setState(() => _isPressed = false),
-          onTap: widget.onTap,
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: context.dimensions.spacingMedium,
-              vertical: context.dimensions.spacingMedium,
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 48 * context.dimensions.fontSizeFactor,
-                  height: 48 * context.dimensions.fontSizeFactor,
-                  decoration: ShapeDecoration(
-                    color: colorScheme.secondaryContainer,
-                    shape: ContinuousRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        32 * context.dimensions.fontSizeFactor,
-                      ),
-                    ),
-                  ),
-                  child: Icon(
-                    widget.icon,
-                    color: colorScheme.primary,
-                    size: 24 * context.dimensions.fontSizeFactor,
-                  ),
-                ),
-                SizedBox(width: context.dimensions.spacingMedium),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.title,
-                        style: textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: colorScheme.onSurface,
+    return RepaintBoundary(
+      child: AnimatedScale(
+        scale: _isPressed ? 0.98 : 1.0,
+        duration: const Duration(milliseconds: 100),
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          elevation: 0,
+          color: colorScheme.primaryContainer.withValues(alpha: 0.3),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
+          ),
+          child: InkWell(
+            onTapDown: (_) => setState(() => _isPressed = true),
+            onTapUp: (_) => setState(() => _isPressed = false),
+            onTapCancel: () => setState(() => _isPressed = false),
+            onTap: widget.onTap,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: context.dimensions.spacingMedium,
+                vertical: context.dimensions.spacingMedium,
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 48 * context.dimensions.fontSizeFactor,
+                    height: 48 * context.dimensions.fontSizeFactor,
+                    decoration: ShapeDecoration(
+                      color: colorScheme.secondaryContainer,
+                      shape: ContinuousRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          32 * context.dimensions.fontSizeFactor,
                         ),
                       ),
-                      SizedBox(height: 2 * context.dimensions.fontSizeFactor),
-                      Text(
-                        widget.subtitle,
-                        style: textTheme.labelMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                          height: 1.2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(width: context.dimensions.spacingSmall),
-                widget.trailing ??
-                    Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 14 * context.dimensions.fontSizeFactor,
-                      color: colorScheme.outline,
                     ),
-              ],
+                    child: Icon(
+                      widget.icon,
+                      color: colorScheme.primary,
+                      size: 24 * context.dimensions.fontSizeFactor,
+                    ),
+                  ),
+                  SizedBox(width: context.dimensions.spacingMedium),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.title,
+                          style: textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: colorScheme.onSurface,
+                          ),
+                        ),
+                        SizedBox(height: 2 * context.dimensions.fontSizeFactor),
+                        Text(
+                          widget.subtitle,
+                          style: textTheme.labelMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                            height: 1.2,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: context.dimensions.spacingSmall),
+                  widget.trailing ??
+                      Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 14 * context.dimensions.fontSizeFactor,
+                        color: colorScheme.outline,
+                      ),
+                ],
+              ),
             ),
           ),
         ),

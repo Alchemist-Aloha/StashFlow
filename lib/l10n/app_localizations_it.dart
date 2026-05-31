@@ -132,7 +132,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get common_later => 'Più tardi';
 
   @override
-  String get common_update_now => 'Aggiorna Ora';
+  String get common_update_now => 'Dettagli versione';
 
   @override
   String get common_configure_now => 'Configura Ora';
@@ -1374,11 +1374,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get settings_playback_resume_position =>
-      'Resume from last playing position';
+      'Riprendi dall\'ultima posizione di gioco';
 
   @override
   String get settings_playback_resume_position_subtitle =>
-      'When opening a video, automatically resume from where you left off';
+      'Quando apri un video, riprendi automaticamente da dove avevi interrotto';
 
   @override
   String get settings_playback_end_behavior =>
@@ -2466,4 +2466,19 @@ class AppLocalizationsIt extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get main_startup_failed => 'Impossibile avviare StashFlow';
+
+  @override
+  String get main_startup_failed_desc =>
+      'Un servizio di avvio non è riuscito prima che l\'app potesse completare l\'inizializzazione.Riavvia l\'app dopo aver controllato la diagnostica.';
+
+  @override
+  String common_searching_for(String query) {
+    return 'Cercando: \"$query\"';
+  }
+
+  @override
+  String get cast_device => 'Dispositivo';
 }

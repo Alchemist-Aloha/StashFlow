@@ -398,6 +398,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_app_lock:
+    dependency: "direct main"
+    description:
+      name: flutter_app_lock
+      sha256: "5892851c5a26e0fd1ef646d77d87ea208af7cc4261b3a1d3c491f9e22e84091d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.3.0"
   flutter_cache_manager:
     dependency: "direct main"
     description:

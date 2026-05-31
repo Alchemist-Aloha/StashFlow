@@ -11,6 +11,7 @@ part 'update_info.g.dart';
 /// - `currentVersion` (String): The current version of the application.
 /// - `releaseUrl` (String): The URL to the latest release on GitHub.
 /// - `releaseNotes` (String?): Optional release notes for the update.
+/// - `androidApkUrl` (String?): Optional direct download URL for the matching Android APK.
 ///
 /// Example:
 /// ```dart
@@ -19,6 +20,7 @@ part 'update_info.g.dart';
 ///   latestVersion: '1.9.0',
 ///   currentVersion: '1.8.1',
 ///   releaseUrl: 'https://github.com/Alchemist-Aloha/StashFlow/releases/tag/1.9.0',
+///   androidApkUrl: 'https://github.com/.../app-arm64-v8a-release.apk',
 /// );
 /// ```
 @freezed
@@ -29,6 +31,7 @@ abstract class UpdateInfo with _$UpdateInfo {
     required String currentVersion,
     required String releaseUrl,
     String? releaseNotes,
+    String? androidApkUrl,
   }) = _UpdateInfo;
 
   factory UpdateInfo.fromJson(Map<String, dynamic> json) =>

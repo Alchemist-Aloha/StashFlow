@@ -279,7 +279,7 @@ abstract class AppLocalizations {
   /// No description provided for @common_update_now.
   ///
   /// In en, this message translates to:
-  /// **'Update Now'**
+  /// **'Release Details'**
   String get common_update_now;
 
   /// No description provided for @common_configure_now.
@@ -4499,6 +4499,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 Star} other{{count} Stars}}'**
   String scene_rating_stars(int count);
+
+  /// No description provided for @main_startup_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'StashFlow failed to start'**
+  String get main_startup_failed;
+
+  /// No description provided for @main_startup_failed_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'A startup service failed before the app could finish initializing. Restart the app after checking diagnostics.'**
+  String get main_startup_failed_desc;
+
+  /// No description provided for @common_searching_for.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching for: \"{query}\"'**
+  String common_searching_for(String query);
+
+  /// No description provided for @cast_device.
+  ///
+  /// In en, this message translates to:
+  /// **'Device'**
+  String get cast_device;
 }
 
 class _AppLocalizationsDelegate

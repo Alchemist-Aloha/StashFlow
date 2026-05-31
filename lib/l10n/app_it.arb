@@ -37,7 +37,7 @@
   "common_view_all": "Vedi tutto",
   "common_default": "Predefinito",
   "common_later": "Più tardi",
-  "common_update_now": "Aggiorna Ora",
+  "common_update_now": "Dettagli versione",
   "common_configure_now": "Configura Ora",
   "common_clear_rating": "cancella valutazione",
   "common_no_media": "Nessun media disponibile",
@@ -878,5 +878,11 @@
   "scene_info_sprite": "Folletto",
   "scene_studio_id": "ID: {id}",
   "scene_rating_stars": "{count, plural, =1{1 stella} other{{count} Stelle}}",
-  "scene_info_technical": "Tecnico"
+  "scene_info_technical": "Tecnico",
+  "settings_playback_resume_position": "Riprendi dall'ultima posizione di gioco",
+  "settings_playback_resume_position_subtitle": "Quando apri un video, riprendi automaticamente da dove avevi interrotto",
+  "main_startup_failed": "Impossibile avviare StashFlow",
+  "main_startup_failed_desc": "Un servizio di avvio non è riuscito prima che l'app potesse completare l'inizializzazione.Riavvia l'app dopo aver controllato la diagnostica.",
+  "common_searching_for": "Cercando: \"{query}\"",
+  "cast_device": "Dispositivo"
 }

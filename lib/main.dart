@@ -21,6 +21,7 @@ import 'core/presentation/theme/theme_mode_provider.dart';
 import 'core/presentation/theme/theme_color_provider.dart';
 import 'core/presentation/theme/true_black_provider.dart';
 import 'core/presentation/providers/layout_settings_provider.dart';
+import 'core/presentation/widgets/app_lock_gate.dart';
 
 import 'core/utils/environment.dart' as env;
 
@@ -160,6 +161,8 @@ class StartupErrorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
         body: SafeArea(
           child: SingleChildScrollView(
@@ -173,13 +176,11 @@ class StartupErrorApp extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'StashFlow failed to start',
+                        context.l10n.main_startup_failed,
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 12),
-                      const Text(
-                        'A startup service failed before the app could finish initializing. Restart the app after checking diagnostics.',
-                      ),
+                      Text(context.l10n.main_startup_failed_desc),
                       const SizedBox(height: 16),
                       DecoratedBox(
                         decoration: BoxDecoration(
@@ -222,6 +223,12 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp.router(
       routerConfig: router,
+      builder: (context, child) {
+        if (child == null) {
+          return const SizedBox.shrink();
+        }
+        return AppLockGate(child: child);
+      },
       onGenerateTitle: (context) => context.l10n.appTitle,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,

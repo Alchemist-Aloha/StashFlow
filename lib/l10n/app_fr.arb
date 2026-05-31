@@ -37,7 +37,7 @@
   "common_view_all": "Tout afficher",
   "common_default": "Par défaut",
   "common_later": "Plus tard",
-  "common_update_now": "Mettre à jour maintenant",
+  "common_update_now": "Détails de la version",
   "common_configure_now": "Configurer maintenant",
   "common_clear_rating": "effacer la note",
   "common_no_media": "Aucun média disponible",
@@ -873,5 +873,11 @@
   "scene_info_sprite": "Lutin",
   "scene_info_technical": "Technique",
   "scene_studio_id": "Identifiant : {id}",
-  "scene_rating_stars": "{count, plural, =1{1 étoile} other{{count} Étoiles}}"
+  "scene_rating_stars": "{count, plural, =1{1 étoile} other{{count} Étoiles}}",
+  "settings_playback_resume_position": "Reprendre à partir de la dernière position de jeu",
+  "settings_playback_resume_position_subtitle": "Lors de l'ouverture d'une vidéo, reprenez automatiquement là où vous vous étiez arrêté",
+  "main_startup_failed": "StashFlow n'a pas réussi à démarrer",
+  "main_startup_failed_desc": "Un service de démarrage a échoué avant que l'application puisse terminer son initialisation.Redémarrez l'application après avoir vérifié les diagnostics.",
+  "common_searching_for": "Recherche de : \"{query}\"",
+  "cast_device": "Appareil"
 }

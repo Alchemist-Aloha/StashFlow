@@ -130,7 +130,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get common_later => '以后';
 
   @override
-  String get common_update_now => '立即更新';
+  String get common_update_now => '发布详情';
 
   @override
   String get common_configure_now => '立即配置';
@@ -1305,12 +1305,11 @@ class AppLocalizationsZh extends AppLocalizations {
       '在Feed模式下播放场景时，从视频长度的0%到90%之间的随机位置开始播放';
 
   @override
-  String get settings_playback_resume_position =>
-      'Resume from last playing position';
+  String get settings_playback_resume_position => '从上次播放位置恢复';
 
   @override
   String get settings_playback_resume_position_subtitle =>
-      'When opening a video, automatically resume from where you left off';
+      '打开视频时，自动从上次中断的地方继续播放';
 
   @override
   String get settings_playback_end_behavior => '播放结束行为';
@@ -2339,6 +2338,20 @@ class AppLocalizationsZh extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get main_startup_failed => 'StashFlow 启动失败';
+
+  @override
+  String get main_startup_failed_desc => '在应用程序完成初始化之前启动服务失败。检查诊断后重新启动应用程序。';
+
+  @override
+  String common_searching_for(String query) {
+    return '正在搜索：“$query”';
+  }
+
+  @override
+  String get cast_device => '设备';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -2467,7 +2480,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get common_later => '以后';
 
   @override
-  String get common_update_now => '立即更新';
+  String get common_update_now => '发布详情';
 
   @override
   String get common_configure_now => '立即配置';
@@ -3642,6 +3655,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
       '在Feed模式下播放场景时，从视频长度的0%到90%之间的随机位置开始播放';
 
   @override
+  String get settings_playback_resume_position => '从上次播放位置恢复';
+
+  @override
+  String get settings_playback_resume_position_subtitle =>
+      '打开视频时，自动从上次中断的地方继续播放';
+
+  @override
   String get settings_playback_end_behavior => '播放结束行为';
 
   @override
@@ -4668,6 +4688,20 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
     );
     return '$_temp0';
   }
+
+  @override
+  String get main_startup_failed => 'StashFlow 启动失败';
+
+  @override
+  String get main_startup_failed_desc => '在应用程序完成初始化之前启动服务失败。检查诊断后重新启动应用程序。';
+
+  @override
+  String common_searching_for(String query) {
+    return '正在搜索：“$query”';
+  }
+
+  @override
+  String get cast_device => '设备';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -4798,7 +4832,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get common_later => '稍後';
 
   @override
-  String get common_update_now => '立即更新';
+  String get common_update_now => '發佈詳情';
 
   @override
   String get common_configure_now => '立即設定';
@@ -5974,6 +6008,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       '在Feed模式下播放場景時，從影片長度的0%到90%之間的隨機位置開始播放';
 
   @override
+  String get settings_playback_resume_position => '從上次播放位置恢復';
+
+  @override
+  String get settings_playback_resume_position_subtitle =>
+      '打開影片時，自動從上次中斷的地方繼續播放';
+
+  @override
   String get settings_playback_end_behavior => '播放結束行為';
 
   @override
@@ -7001,4 +7042,18 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
     );
     return '$_temp0';
   }
+
+  @override
+  String get main_startup_failed => 'StashFlow 啟動失敗';
+
+  @override
+  String get main_startup_failed_desc => '在應用程式完成初始化之前啟動服務失敗。檢查診斷後重新啟動應用程式。';
+
+  @override
+  String common_searching_for(String query) {
+    return '正在搜尋：“$query”';
+  }
+
+  @override
+  String get cast_device => '裝置';
 }

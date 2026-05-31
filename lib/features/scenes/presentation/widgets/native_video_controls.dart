@@ -17,7 +17,6 @@ import 'video_controls/player_gesture_feedback.dart';
 import '../../../../core/presentation/providers/desktop_capabilities_provider.dart';
 import '../../../../core/presentation/providers/desktop_settings_provider.dart';
 import '../../../../core/presentation/providers/keybinds_provider.dart';
-import '../../../../core/utils/pip_mode.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../domain/entities/scene.dart';
@@ -194,7 +193,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     final aspect = (width != null && height != null && height > 0)
         ? width / height
         : 16 / 9;
-    unawaited(PipMode.enterIfAvailable(aspectRatio: aspect));
+    unawaited(
+      ref
+          .read(playerStateProvider.notifier)
+          .requestEnterPip(aspectRatio: aspect),
+    );
   }
 
   void _onVideoTick() {
@@ -260,9 +263,14 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
 
   void _seekRelativeSeconds(int seconds) {
     if (widget.controller.player.state.width == null) return;
-    final current = widget.controller.player.state.position;
+    final castState = ref.read(castServiceProvider);
+    final current = castState.isCasting
+        ? castState.remotePosition
+        : widget.controller.player.state.position;
     final duration = widget.controller.player.state.duration;
-    final wasPlaying = widget.controller.player.state.playing;
+    final wasPlaying = castState.isCasting
+        ? castState.remoteIsPlaying
+        : widget.controller.player.state.playing;
     var target = current + Duration(seconds: seconds);
     if (target < Duration.zero) target = Duration.zero;
     if (target > duration) target = duration;
@@ -277,6 +285,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     final castState = ref.read(castServiceProvider);
     if (castState.isCasting) {
       await ref.read(castServiceProvider.notifier).seek(target);
+      if (keepPlayingAfterSeek &&
+          !ref.read(castServiceProvider).remoteIsPlaying) {
+        await ref.read(castServiceProvider.notifier).play();
+      }
+      return;
     }
 
     await widget.controller.player.seek(target);
@@ -292,17 +305,21 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
 
     final messenger = ScaffoldMessenger.of(context);
 
-    // TODO: Get real remote position if supported by protocol
-    // For now we rely on the local player being in sync
-    final currentPos = widget.controller.player.state.position;
+    final remotePosition = castState.remotePosition;
+    final localResumePosition = castState.localResumePosition;
+    final resumePosition = remotePosition > Duration.zero
+        ? remotePosition
+        : (localResumePosition ?? widget.controller.player.state.position);
+    final shouldResume = castState.localWasPlaying;
 
     await ref.read(castServiceProvider.notifier).stopCasting();
 
     if (mounted) {
       final message = context.l10n.cast_stopped_resuming_locally;
-      // Ensure local player is at the same position and playing
-      await widget.controller.player.seek(currentPos);
-      await widget.controller.player.play();
+      await widget.controller.player.seek(resumePosition);
+      if (shouldResume) {
+        await widget.controller.player.play();
+      }
 
       messenger.showSnackBar(SnackBar(content: Text(message)));
     }
@@ -332,10 +349,15 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     if (!isActive) return;
 
     if (widget.controller.player.state.width == null) return;
-    _dragSeekStartPosition = widget.controller.player.state.position;
+    final castState = ref.read(castServiceProvider);
+    _dragSeekStartPosition = castState.isCasting
+        ? castState.remotePosition
+        : widget.controller.player.state.position;
     _dragSeekTarget = null;
     _dragSeekAccumulatedDx = 0;
-    _dragSeekShouldResumePlayback = widget.controller.player.state.playing;
+    _dragSeekShouldResumePlayback = castState.isCasting
+        ? castState.remoteIsPlaying
+        : widget.controller.player.state.playing;
     _seekFeedbackTimer?.cancel();
 
     AppLogStore.instance.add(
@@ -393,9 +415,14 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
           keepPlayingAfterSeek: _dragSeekShouldResumePlayback,
         ),
       );
-    } else if (_dragSeekShouldResumePlayback &&
-        !widget.controller.player.state.playing) {
-      unawaited(_play());
+    } else if (_dragSeekShouldResumePlayback) {
+      final castState = ref.read(castServiceProvider);
+      final isPlaying = castState.isCasting
+          ? castState.remoteIsPlaying
+          : widget.controller.player.state.playing;
+      if (!isPlaying) {
+        unawaited(_play());
+      }
     }
 
     _seekFeedbackTimer?.cancel();
@@ -412,22 +439,28 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
 
   Future<void> _play() async {
     final castState = ref.read(castServiceProvider);
-    await widget.controller.player.play();
     if (castState.isCasting) {
       await ref.read(castServiceProvider.notifier).play();
+      return;
     }
+    await widget.controller.player.play();
   }
 
   Future<void> _pause() async {
     final castState = ref.read(castServiceProvider);
-    await widget.controller.player.pause();
     if (castState.isCasting) {
       await ref.read(castServiceProvider.notifier).pause();
+      return;
     }
+    await widget.controller.player.pause();
   }
 
   void _togglePlay() {
-    if (widget.controller.player.state.playing) {
+    final castState = ref.read(castServiceProvider);
+    final isPlaying = castState.isCasting
+        ? castState.remoteIsPlaying
+        : widget.controller.player.state.playing;
+    if (isPlaying) {
       _pause();
     } else {
       _play();
@@ -689,7 +722,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
-  Widget _buildTimePill(BuildContext context, String label, {bool compact = false}) {
+  Widget _buildTimePill(
+    BuildContext context,
+    String label, {
+    bool compact = false,
+  }) {
     return Container(
       constraints: BoxConstraints(minWidth: compact ? 48 : 54),
       padding: EdgeInsets.symmetric(
@@ -766,7 +803,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
               final w = widget.controller.player.state.width;
               final h = widget.controller.player.state.height;
               final r = (w != null && h != null && h > 0) ? w / h : 16 / 9;
-              PipMode.enterIfAvailable(aspectRatio: r);
+              unawaited(
+                ref
+                    .read(playerStateProvider.notifier)
+                    .requestEnterPip(aspectRatio: r),
+              );
             }
           };
           break;
@@ -819,6 +860,7 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final playerState = ref.watch(playerStateProvider);
+    final castState = ref.watch(castServiceProvider);
 
     if (playerState.isInPipMode) {
       return const SizedBox.shrink();
@@ -827,6 +869,12 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     final value = widget.controller.player.state;
     final duration = value.duration;
     final durationMs = math.max(1, duration.inMilliseconds);
+    final effectivePosition = castState.isCasting
+        ? castState.remotePosition
+        : value.position;
+    final effectivePlaying = castState.isCasting
+        ? castState.remoteIsPlaying
+        : value.playing;
     final playbackSpeed = value.rate;
     final isFullScreen = playerState.isFullScreen;
     final compact = !isFullScreen;
@@ -1295,12 +1343,14 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                           .position,
                                       builder: (context, snapshot) {
                                         final streamedPosition =
-                                            snapshot.data ??
-                                            widget
-                                                .controller
-                                                .player
-                                                .state
-                                                .position;
+                                            castState.isCasting
+                                            ? castState.remotePosition
+                                            : (snapshot.data ??
+                                                  widget
+                                                      .controller
+                                                      .player
+                                                      .state
+                                                      .position);
                                         final position = _isScrubbing
                                             ? Duration(
                                                 milliseconds: _scrubMs.round(),
@@ -1336,20 +1386,23 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                       ),
                                       child: VideoProgressBar(
                                         durationMs: durationMs,
-                                        positionStream: widget
-                                            .controller
-                                            .player
-                                            .stream
-                                            .position,
-                                        initialPositionMs: value
-                                            .position
+                                        positionStream: castState.isCasting
+                                            ? Stream<Duration>.value(
+                                                castState.remotePosition,
+                                              )
+                                            : widget
+                                                  .controller
+                                                  .player
+                                                  .stream
+                                                  .position,
+                                        initialPositionMs: effectivePosition
                                             .inMilliseconds
                                             .toDouble(),
                                         isScrubbing: _isScrubbing,
                                         currentScrubValue: _scrubMs,
                                         onChangeStart: (v) {
                                           _wasPlayingBeforeScrub =
-                                              value.playing;
+                                              effectivePlaying;
                                           _cancelAutoHide();
                                           setState(() {
                                             _isScrubbing = true;
@@ -1384,13 +1437,13 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                     VideoPlaybackControls(
                                       controller: widget.controller,
                                       scene: widget.scene,
-                                      isPlaying: value.playing,
+                                      isPlaying: effectivePlaying,
                                       playbackSpeed: playbackSpeed,
                                       nextScene: nextScene,
                                       previousScene: previousScene,
                                       isFullScreen: isFullScreen,
                                       onPlayPause: () {
-                                        if (value.playing) {
+                                        if (effectivePlaying) {
                                           _pause();
                                         } else {
                                           _play();

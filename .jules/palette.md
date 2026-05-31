@@ -8,3 +8,7 @@
 ## 2024-05-18 - Fullscreen Raw Image Semantics
 **Learning:** Screen readers may redundantly announce "Image" or attempt to read the raw URL data for decorative/fullscreen raw image viewers like `ExtendedImage.network` if no semantic label is provided, trapping focus on unhelpful content.
 **Action:** Always add `excludeFromSemantics: true` to purely decorative or context-less fullscreen images (especially those fetching raw URLs) to prevent unhelpful screen reader announcements.
+
+## 2024-05-24 - Accessibility on MiniPlayer
+**Learning:** We can swap a pure `GestureDetector` that provides no visual feedback with a semantic Material `InkWell` to provide keyboard navigation, touch feedback, and accessibility labels on floating elements.
+**Action:** When creating purely interactive elements that trigger navigation, wrap them in a `Material` widget (if needed) and use `InkWell` combined with `Semantics(button: true, label: ...)` rather than just wrapping the subtree in `GestureDetector`.

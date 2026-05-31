@@ -132,7 +132,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get common_later => 'Later';
 
   @override
-  String get common_update_now => 'Update Now';
+  String get common_update_now => 'Release Details';
 
   @override
   String get common_configure_now => 'Configure Now';
@@ -2410,4 +2410,19 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get main_startup_failed => 'StashFlow failed to start';
+
+  @override
+  String get main_startup_failed_desc =>
+      'A startup service failed before the app could finish initializing. Restart the app after checking diagnostics.';
+
+  @override
+  String common_searching_for(String query) {
+    return 'Searching for: \"$query\"';
+  }
+
+  @override
+  String get cast_device => 'Device';
 }

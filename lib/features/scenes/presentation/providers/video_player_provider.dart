@@ -306,7 +306,7 @@ class GlobalPlayerState {
 /// - Handling transitions between scenes (Play Next).
 /// - Managing UI-related playback settings (PiP, Fullscreen).
 @riverpod
-class PlayerState extends _$PlayerState {
+class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   PlayerSettingsStore get _settingsStore =>
       PlayerSettingsStore(ref.read(sharedPreferencesProvider));
 
@@ -335,6 +335,17 @@ class PlayerState extends _$PlayerState {
       const FullscreenController();
   final QueuePlaybackCoordinator _queuePlaybackCoordinator =
       const QueuePlaybackCoordinator();
+  bool? _fullscreenBeforePip;
+  PlayerViewMode? _viewModeBeforePip;
+  bool _pipRequestInFlight = false;
+  DateTime? _lastPipRequestAt;
+  static const Duration _pipRequestCooldown = Duration(milliseconds: 700);
+  AppLifecycleState _appLifecycleState = AppLifecycleState.resumed;
+  int _backgroundRecoveryToken = 0;
+  bool _backgroundRecoverySuppressed = false;
+  bool _backgroundRecoveryInFlight = false;
+  DateTime? _backgroundEnteredAt;
+  static const Duration _backgroundPauseGraceWindow = Duration(seconds: 2);
 
   @override
   GlobalPlayerState build() {
@@ -344,6 +355,7 @@ class PlayerState extends _$PlayerState {
     // Ensure MediaKit is initialized before any Player instances are created.
     // This is called here instead of main() to improve initial app startup performance.
     MediaKit.ensureInitialized();
+    WidgetsBinding.instance.addObserver(this);
     _sessionController = PlaybackSessionController();
 
     _activityTracker = PlaybackActivityTracker(
@@ -367,6 +379,7 @@ class PlayerState extends _$PlayerState {
       },
     );
     ref.onDispose(() {
+      WidgetsBinding.instance.removeObserver(this);
       PipMode.isInPipMode.removeListener(_onPipModeChanged);
       _activityTracker.dispose();
 
@@ -381,8 +394,8 @@ class PlayerState extends _$PlayerState {
     PipMode.isInPipMode.addListener(_onPipModeChanged);
 
     // Link system media controls to our provider
-    mediaHandler?.onPlayCallback = () async => togglePlayPause();
-    mediaHandler?.onPauseCallback = () async => togglePlayPause();
+    mediaHandler?.onPlayCallback = () async => play();
+    mediaHandler?.onPauseCallback = () async => _handleMediaPauseCommand();
     mediaHandler?.onStopCallback = () async => stop();
     mediaHandler?.onSeekCallback = (pos) async => state.player?.seek(pos);
     mediaHandler?.onSkipToNextCallback = () async {
@@ -417,7 +430,36 @@ class PlayerState extends _$PlayerState {
   }
 
   void _onPipModeChanged() {
-    state = state.copyWith(isInPipMode: PipMode.isInPipMode.value);
+    final nextInPip = PipMode.isInPipMode.value;
+    final wasInPip = state.isInPipMode;
+
+    if (wasInPip && !nextInPip) {
+      final restoreFullscreen = _fullscreenBeforePip;
+      final restoreViewMode = _viewModeBeforePip;
+      _fullscreenBeforePip = null;
+      _viewModeBeforePip = null;
+
+      if (restoreFullscreen != null && restoreViewMode != null) {
+        final runtime = _fullscreenController.syncFromLegacy(
+          isFullScreen: restoreFullscreen,
+          viewModeName: restoreViewMode.name,
+        );
+        state = state.copyWith(
+          isInPipMode: false,
+          isFullScreen: runtime.isFullScreen,
+          viewMode: PlayerViewMode.values.firstWhere(
+            (e) => e.name == runtime.viewModeName,
+            orElse: () => runtime.isFullScreen
+                ? PlayerViewMode.fullscreen
+                : PlayerViewMode.inline,
+          ),
+          fullscreenPhase: runtime.fullscreenPhase,
+        );
+        return;
+      }
+    }
+
+    state = state.copyWith(isInPipMode: nextInPip);
   }
 
   void setAutoplayNext(bool value) {
@@ -482,6 +524,32 @@ class PlayerState extends _$PlayerState {
   void setSubtitleTextAlignment(String value) {
     state = state.copyWith(subtitleTextAlignment: value);
     unawaited(_settingsStore.saveSubtitleTextAlignment(value));
+  }
+
+  Future<bool> requestEnterPip({double? aspectRatio}) async {
+    final now = clock.now();
+    final elapsedSinceLast = _lastPipRequestAt == null
+        ? null
+        : now.difference(_lastPipRequestAt!);
+    if (_pipRequestInFlight ||
+        state.isInPipMode ||
+        (elapsedSinceLast != null && elapsedSinceLast < _pipRequestCooldown)) {
+      return false;
+    }
+
+    _pipRequestInFlight = true;
+    _lastPipRequestAt = now;
+    try {
+      _fullscreenBeforePip = state.isFullScreen;
+      _viewModeBeforePip = state.viewMode;
+      if (!state.isFullScreen) {
+        requestEnterFullscreen();
+        await Future.delayed(const Duration(milliseconds: 150));
+      }
+      return await PipMode.enterIfAvailable(aspectRatio: aspectRatio);
+    } finally {
+      _pipRequestInFlight = false;
+    }
   }
 
   Future<void> setSubtitle(String? languageCode, {String? captionType}) async {
@@ -1093,6 +1161,113 @@ class PlayerState extends _$PlayerState {
     }
   }
 
+  void play() {
+    final player = state.player;
+    if (player == null || player.state.playing) return;
+    _backgroundRecoverySuppressed = false;
+    player.play();
+    state = state.copyWith(isPlaying: true);
+    if (!isTestMode) {
+      unawaited(WakelockPlus.enable());
+    }
+  }
+
+  void pause({bool suppressBackgroundRecovery = true}) {
+    final player = state.player;
+    if (player == null || !player.state.playing) return;
+    if (_appLifecycleState != AppLifecycleState.resumed &&
+        state.enableBackgroundPlayback &&
+        suppressBackgroundRecovery) {
+      _backgroundRecoverySuppressed = true;
+    }
+    player.pause();
+    state = state.copyWith(isPlaying: false);
+    if (!isTestMode) {
+      unawaited(WakelockPlus.disable());
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _appLifecycleState = state;
+    if (state == AppLifecycleState.resumed) {
+      _backgroundRecoveryToken++;
+      _backgroundRecoverySuppressed = false;
+      _backgroundEnteredAt = null;
+      return;
+    }
+
+    final isBackgroundState =
+        state == AppLifecycleState.hidden || state == AppLifecycleState.paused;
+    if (!isBackgroundState) return;
+    _backgroundEnteredAt ??= clock.now();
+
+    final player = this.state.player;
+    if (player == null) return;
+
+    // Only try to keep playback alive if it was playing as we entered background.
+    if (!this.state.enableBackgroundPlayback || !player.state.playing) return;
+
+    _scheduleBackgroundPlaybackRecovery();
+  }
+
+  void _scheduleBackgroundPlaybackRecovery() {
+    if (_backgroundRecoveryInFlight) return;
+    _backgroundRecoveryInFlight = true;
+    final token = ++_backgroundRecoveryToken;
+    unawaited(_enforceBackgroundPlayback(token));
+  }
+
+  Future<void> _enforceBackgroundPlayback(int token) async {
+    try {
+      // Retry a few times to survive lifecycle/audio-focus races on Android.
+      for (var attempt = 0; attempt < 20; attempt++) {
+        if (!ref.mounted || token != _backgroundRecoveryToken) return;
+        if (_appLifecycleState == AppLifecycleState.resumed) return;
+
+        final player = state.player;
+        if (player == null) return;
+        if (!state.enableBackgroundPlayback) return;
+        if (_backgroundRecoverySuppressed) return;
+
+        if (!player.state.playing) {
+          AppLogStore.instance.add(
+            'PlayerState: background keepalive resume attempt=${attempt + 1}',
+            source: 'player_provider',
+          );
+          player.play();
+        } else {
+          return;
+        }
+
+        await Future<void>.delayed(const Duration(milliseconds: 250));
+      }
+    } finally {
+      _backgroundRecoveryInFlight = false;
+    }
+  }
+
+  Future<void> _handleMediaPauseCommand() async {
+    final inBackground = _appLifecycleState != AppLifecycleState.resumed;
+    final enteredAt = _backgroundEnteredAt;
+    final inBackgroundGraceWindow =
+        inBackground &&
+        state.enableBackgroundPlayback &&
+        enteredAt != null &&
+        clock.now().difference(enteredAt) < _backgroundPauseGraceWindow;
+
+    if (inBackgroundGraceWindow) {
+      AppLogStore.instance.add(
+        'PlayerState: ignoring transient media pause during background transition',
+        source: 'player_provider',
+      );
+      _scheduleBackgroundPlaybackRecovery();
+      return;
+    }
+
+    pause(suppressBackgroundRecovery: true);
+  }
+
   void seekRelative(Duration delta) {
     final player = state.player;
     if (player == null) return;
@@ -1228,6 +1403,15 @@ class PlayerState extends _$PlayerState {
             isPlayingNow ? WakelockPlus.enable() : WakelockPlus.disable(),
           );
         }
+      }
+
+      final shouldRecoverBackgroundPlayback =
+          _appLifecycleState != AppLifecycleState.resumed &&
+          state.enableBackgroundPlayback &&
+          !_backgroundRecoverySuppressed &&
+          !player.state.playing;
+      if (shouldRecoverBackgroundPlayback) {
+        _scheduleBackgroundPlaybackRecovery();
       }
 
       // Only update media handler if state changed or if position drifted significantly

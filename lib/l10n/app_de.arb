@@ -37,7 +37,7 @@
   "common_view_all": "Alle anzeigen",
   "common_default": "Standard",
   "common_later": "Später",
-  "common_update_now": "Jetzt aktualisieren",
+  "common_update_now": "Versionsdetails",
   "common_configure_now": "Jetzt konfigurieren",
   "common_clear_rating": "Bewertung löschen",
   "common_no_media": "Keine Medien verfügbar",
@@ -894,5 +894,11 @@
   "scene_info_sprite": "Sprite",
   "scene_info_technical": "Technisch",
   "scene_studio_id": "ID: {id}",
-  "scene_rating_stars": "{count, plural, =1{1 Stern} other{{count} Sterne}}"
+  "scene_rating_stars": "{count, plural, =1{1 Stern} other{{count} Sterne}}",
+  "settings_playback_resume_position": "Von der letzten Spielposition aus fortfahren",
+  "settings_playback_resume_position_subtitle": "Wenn Sie ein Video öffnen, wird es automatisch an der Stelle fortgesetzt, an der Sie aufgehört haben",
+  "main_startup_failed": "StashFlow konnte nicht gestartet werden",
+  "main_startup_failed_desc": "Ein Startdienst ist fehlgeschlagen, bevor die App die Initialisierung abschließen konnte.Starten Sie die App neu, nachdem Sie die Diagnose überprüft haben.",
+  "common_searching_for": "Suche nach: „{query}“",
+  "cast_device": "Gerät"
 }

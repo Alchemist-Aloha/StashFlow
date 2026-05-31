@@ -39,6 +39,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
 
   void _showConnectingDialog(String deviceName) {
     if (mounted) {
+      final message = context.l10n.cast_connecting_to(deviceName);
       debugPrint('CastSelectionSheet: connecting to $deviceName');
       showDialog(
         context: context,
@@ -48,13 +49,17 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
             children: [
               const CircularProgressIndicator(),
               const SizedBox(width: 24),
-              Expanded(
-                child: Text(context.l10n.cast_connecting_to(deviceName)),
-              ),
+              Expanded(child: Text(message)),
             ],
           ),
         ),
       );
+    }
+  }
+
+  void _dismissConnectingDialog(NavigatorState navigator) {
+    if (navigator.canPop()) {
+      navigator.pop();
     }
   }
 
@@ -106,8 +111,27 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
     );
     // Show a connecting dialog
     _showConnectingDialog(device.name);
+    var connectingDialogVisible = true;
 
+    final rootNavigator = Navigator.of(context, rootNavigator: true);
+    final sheetNavigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = context.l10n;
+    final errorColor = context.colors.error;
     final appCastServiceNotifier = ref.read(castServiceProvider.notifier);
+    final playerStateNotifier = ref.read(playerStateProvider.notifier);
+    final playerState = ref.read(playerStateProvider);
+    final localPlayer = playerState.player;
+    final currentPos = localPlayer?.state.position ?? Duration.zero;
+    final localWasPlaying = localPlayer?.state.playing ?? false;
+    if (localWasPlaying) {
+      playerStateNotifier.pause();
+    }
+    void dismissConnectingDialog() {
+      if (!connectingDialogVisible) return;
+      _dismissConnectingDialog(rootNavigator);
+      connectingDialogVisible = false;
+    }
 
     try {
       dc.CastSession session;
@@ -122,7 +146,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
       }
 
       // Close the connecting dialog
-      if (mounted) Navigator.of(context).pop();
+      dismissConnectingDialog();
 
       // Load media
       final mediaType = _detectMediaType(widget.videoUrl);
@@ -133,31 +157,34 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
         url: widget.videoUrl,
         type: mediaType,
         title: widget.title,
+        startPosition: currentPos > Duration.zero ? currentPos : null,
       );
 
-      await session.loadMedia(media);
+      await appCastServiceNotifier.loadMediaAndConfirm(session, media);
 
-      // Get current local position to sync
-      final playerState = ref.read(playerStateProvider);
-      final currentPos = playerState.player?.state.position ?? Duration.zero;
-      if (currentPos > Duration.zero) {
+      if (device.protocol == dc.CastProtocol.airplay &&
+          currentPos > Duration.zero) {
         debugPrint('CastSelectionSheet: seeking cast to $currentPos');
         await session.seek(currentPos);
       }
 
-      await appCastServiceNotifier.setActiveSession(session);
+      await appCastServiceNotifier.setActiveSession(
+        session,
+        localResumePosition: currentPos,
+        localWasPlaying: localWasPlaying,
+      );
       debugPrint('CastSelectionSheet: load media complete');
 
       if (mounted) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.cast_casting_to(device.name))),
-        );
+        sheetNavigator.pop();
       }
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.cast_casting_to(device.name))),
+      );
     } on dc.NeedsPairingException catch (_) {
       debugPrint('CastSelectionSheet: AirPlay pairing required');
       // Dismiss connecting dialog
-      if (mounted) Navigator.of(context).pop();
+      dismissConnectingDialog();
 
       // Trigger PIN display on TV
       dc.AirPlayPairSetup(
@@ -171,6 +198,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
         debugPrint('CastSelectionSheet: pairing with PIN');
         // Re-show connecting dialog
         _showConnectingDialog(device.name);
+        connectingDialogVisible = true;
         try {
           // Create a fresh AirPlaySession for pairing
           final session = dc.AirPlaySession(device);
@@ -186,59 +214,60 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
             url: widget.videoUrl,
             type: mediaType,
             title: widget.title,
+            startPosition: currentPos > Duration.zero ? currentPos : null,
           );
-          await session.loadMedia(media);
+          await appCastServiceNotifier.loadMediaAndConfirm(session, media);
 
-          // Get current local position to sync
-          final playerState = ref.read(playerStateProvider);
-          final currentPos =
-              playerState.player?.state.position ?? Duration.zero;
           if (currentPos > Duration.zero) {
             debugPrint('CastSelectionSheet: seeking cast to $currentPos');
             await session.seek(currentPos);
           }
 
-          await appCastServiceNotifier.setActiveSession(session);
+          await appCastServiceNotifier.setActiveSession(
+            session,
+            localResumePosition: currentPos,
+            localWasPlaying: localWasPlaying,
+          );
           debugPrint('CastSelectionSheet: load media complete');
 
           // Dismiss connecting dialog
-          if (mounted) Navigator.of(context).pop();
+          dismissConnectingDialog();
 
           if (mounted) {
-            Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(context.l10n.cast_casting_to(device.name)),
-              ),
-            );
+            sheetNavigator.pop();
           }
+          messenger.showSnackBar(
+            SnackBar(content: Text(l10n.cast_casting_to(device.name))),
+          );
         } catch (e) {
           debugPrint('CastSelectionSheet: pairing failed: $e');
           // Dismiss connecting dialog
-          if (mounted) Navigator.of(context).pop();
-
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(context.l10n.cast_pairing_failed(e.toString())),
-              ),
-            );
+          dismissConnectingDialog();
+          if (localWasPlaying) {
+            playerStateNotifier.play();
           }
+
+          messenger.showSnackBar(
+            SnackBar(content: Text(l10n.cast_pairing_failed(e.toString()))),
+          );
         }
+      } else if (localWasPlaying) {
+        playerStateNotifier.play();
       }
     } catch (e) {
       debugPrint('CastSelectionSheet: cast failed: $e');
       // Dismiss connecting dialog
-      if (mounted) Navigator.of(context).pop();
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(context.l10n.cast_failed_to_cast(e.toString())),
-            backgroundColor: context.colors.error,
-          ),
-        );
+      dismissConnectingDialog();
+      if (localWasPlaying) {
+        playerStateNotifier.play();
       }
+
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(l10n.cast_failed_to_cast(e.toString())),
+          backgroundColor: errorColor,
+        ),
+      );
     }
   }
 

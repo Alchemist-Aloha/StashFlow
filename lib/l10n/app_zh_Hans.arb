@@ -40,7 +40,7 @@
   "common_view_all": "查看全部",
   "common_default": "默认",
   "common_later": "以后",
-  "common_update_now": "立即更新",
+  "common_update_now": "发布详情",
   "common_configure_now": "立即配置",
   "common_clear_rating": "清除评分",
   "common_no_media": "暂无媒体",
@@ -859,5 +859,11 @@
   "scene_info_sprite": "雪碧",
   "scene_info_technical": "技术的",
   "scene_studio_id": "ID：{id}",
-  "scene_rating_stars": "{count, plural, =1{1 星} other{{count} 星星}}"
+  "scene_rating_stars": "{count, plural, =1{1 星} other{{count} 星星}}",
+  "settings_playback_resume_position": "从上次播放位置恢复",
+  "settings_playback_resume_position_subtitle": "打开视频时，自动从上次中断的地方继续播放",
+  "main_startup_failed": "StashFlow 启动失败",
+  "main_startup_failed_desc": "在应用程序完成初始化之前启动服务失败。检查诊断后重新启动应用程序。",
+  "common_searching_for": "正在搜索：“{query}”",
+  "cast_device": "设备"
 }
