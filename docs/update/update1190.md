@@ -2,54 +2,60 @@
 
 ## Security & App Lock
 
-- Added a new **Security** settings page with app lock controls:
+- Added a dedicated **Security** settings page.
+- Added app lock controls:
   - Enable/disable app lock
   - Set/change/remove passcode
-  - Lock on launch toggle
+  - Lock-on-launch toggle
   - Background lock timer options
-- Introduced persisted app lock settings provider and secure passcode storage flow.
-- Added lock overlay integration at app root with lifecycle-based lock behavior.
-- Improved lock UX:
-  - Auto-focus passcode input on lock open
-  - Explicit keyboard open request for faster unlock entry
+- Added persisted app lock settings and secure passcode storage integration.
+- Added root-level lock gate behavior with lifecycle-aware lock/relock handling.
+- Improved unlock input UX with focus and keyboard behavior refinements.
 
-## Background Playback Robustness (Android)
+## Casting Improvements
 
-- Hardened playback provider lifecycle handling for background transitions.
-- Reworked media session callback behavior to avoid ambiguous toggle races.
-- Added background keep-alive recovery attempts when background playback is enabled.
-- Added safeguards to preserve user intent (e.g. not fighting explicit pause actions).
+- Improved cast connection flow for Chromecast and AirPlay.
+- Added media load confirmation and retry handling for Chromecast startup reliability.
+- Added local-to-remote handoff support for resume position and playback state.
+- Added remote position/state tracking in cast service state.
+- Improved cast pairing/connect error handling and user feedback.
+- Added/updated cast service tests.
 
-## Navigation & Back Behavior
+## Playback, PiP & Background Reliability
 
-- Fixed Android back behavior conflicts introduced by lock integration.
-- Ensured settings and routed pages correctly return to previous routes instead of exiting unexpectedly in nested navigation scenarios.
+- Expanded player lifecycle handling with `WidgetsBindingObserver` integration.
+- Added guarded PiP entry requests and improved PiP exit state restoration.
+- Improved Android background playback resilience with recovery attempts during lifecycle/audio-focus races.
+- Refined media-session callbacks to use explicit play/pause handling.
+- Added protections against transient pause commands during background transitions.
 
-## Settings UI & Performance
+## Player UI & Navigation
 
-- Added security entry in Settings Hub and corresponding router integration.
-- Improved settings page rendering behavior with repaint isolation in common settings containers/cards.
-- Optimized interface language picker list rendering with lazy list building.
-- Applied focused settings-shell refinements for smoother interaction and scrolling.
+- Refined mini player visuals and interaction feedback.
+- Updated native video controls and playback control widgets for better behavior consistency.
+- Improved navigation/back behavior in lock-related and nested route scenarios.
 
-## Scenes & Player UX
+## App Update Flow (Android)
 
-- Updated mini player behavior and related player surface/control rendering paths.
-- Refined native video controls interactions and playback control surface behavior.
+- Enhanced update check model to support architecture-specific Android APK links.
+- Added Android-only update dialog action to open the matching APK download in browser when available.
+- Renamed update dialog release action label from **Update Now** to **Release Details**.
 
-## Android Platform Changes
+## Android Platform
 
-- Updated `MainActivity` to extend `AudioServiceActivity` for improved media session integration.
-- Added Android recents screenshot policy handling.
-- Added/updated PiP channel integration and tests around activity behavior.
-- Updated Android build configuration for platform compatibility changes.
+- `MainActivity` now includes:
+  - Audio service activity integration
+  - Recents screenshot policy handling
+  - PiP method channel enhancements
+  - Device ABI method-channel support for update asset matching
+- Updated Android build configuration for compatibility updates.
+- Added/updated Android activity tests.
 
-## Localization & Strings
+## Localization
 
-- Added new localization keys and generated localization updates across supported locales.
-- Synced localization outputs with new settings/security and playback-related UI text.
+- Added/synced localization keys for new settings, security, playback, casting, and update flow text.
+- Updated update-dialog action text across supported locales.
 
-## Release/CI & Project Metadata
+## CI, Metadata & Docs
 
-- Updated release workflow files.
-- Updated dependency metadata and lockfile (including app lock dependency integration).
+- Updated release workflow actions.
