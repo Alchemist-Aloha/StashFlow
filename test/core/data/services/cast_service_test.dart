@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dart_cast/dart_cast.dart' as dc;
@@ -78,6 +79,26 @@ void main() {
       expect(session.state, dc.SessionState.playing);
     },
   );
+
+  test('tracks remote position updates from active cast session', () async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final session = _FakeCastSession();
+    final notifier = container.read(castServiceProvider.notifier);
+
+    await notifier.setActiveSession(
+      session,
+      localResumePosition: const Duration(seconds: 5),
+      localWasPlaying: true,
+    );
+
+    session.emitPosition(const Duration(seconds: 47));
+    await Future<void>.delayed(Duration.zero);
+
+    final state = container.read(castServiceProvider);
+    expect(state.remotePosition, const Duration(seconds: 47));
+  });
 }
 
 class _FakeCastSession extends dc.CastSession {
@@ -95,11 +116,20 @@ class _FakeCastSession extends dc.CastSession {
        );
 
   final int playbackStartsOnLoadAttempt;
+  final _positionController = StreamController<Duration>.broadcast();
   int loadMediaCalls = 0;
   int disconnectCalls = 0;
   int pauseCalls = 0;
   int seekCalls = 0;
   Duration? lastSeekPosition;
+
+  void emitPosition(Duration position) {
+    updatePosition(position);
+    _positionController.add(position);
+  }
+
+  @override
+  Stream<Duration> get positionStream => _positionController.stream;
 
   @override
   Future<void> connect() async {}

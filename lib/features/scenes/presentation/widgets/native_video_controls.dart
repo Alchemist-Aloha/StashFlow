@@ -305,9 +305,11 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
 
     final messenger = ScaffoldMessenger.of(context);
 
-    final resumePosition =
-        castState.localResumePosition ??
-        widget.controller.player.state.position;
+    final remotePosition = castState.remotePosition;
+    final localResumePosition = castState.localResumePosition;
+    final resumePosition = remotePosition > Duration.zero
+        ? remotePosition
+        : (localResumePosition ?? widget.controller.player.state.position);
     final shouldResume = castState.localWasPlaying;
 
     await ref.read(castServiceProvider.notifier).stopCasting();

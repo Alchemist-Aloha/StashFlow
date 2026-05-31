@@ -55,6 +55,8 @@ class AppCastService extends Notifier<CastState> {
   late final dc.CastService _castService;
   StreamSubscription<List<dc.CastDevice>>? _subscription;
   StreamSubscription<dc.CastSession?>? _sessionSubscription;
+  StreamSubscription<Duration>? _positionSubscription;
+  StreamSubscription<dc.SessionState>? _stateSubscription;
 
   @override
   CastState build() {
@@ -84,6 +86,8 @@ class AppCastService extends Notifier<CastState> {
       debugPrint('CastService: disposing');
       _subscription?.cancel();
       _sessionSubscription?.cancel();
+      _positionSubscription?.cancel();
+      _stateSubscription?.cancel();
       _castService.dispose();
     });
 
@@ -179,6 +183,8 @@ class AppCastService extends Notifier<CastState> {
     bool localWasPlaying = false,
   }) async {
     await _sessionSubscription?.cancel();
+    await _positionSubscription?.cancel();
+    await _stateSubscription?.cancel();
     state = state.copyWith(
       activeSession: session,
       isCasting: true,
@@ -188,7 +194,19 @@ class AppCastService extends Notifier<CastState> {
       remoteIsPlaying: true,
     );
 
-    // We can add session listeners here if dart_cast supports them
+    _positionSubscription = session.positionStream.listen((position) {
+      state = state.copyWith(remotePosition: position);
+    });
+    _stateSubscription = session.stateStream.listen((sessionState) {
+      if (sessionState == dc.SessionState.playing ||
+          sessionState == dc.SessionState.buffering) {
+        state = state.copyWith(remoteIsPlaying: true);
+      } else if (sessionState == dc.SessionState.paused ||
+          sessionState == dc.SessionState.idle ||
+          sessionState == dc.SessionState.disconnected) {
+        state = state.copyWith(remoteIsPlaying: false);
+      }
+    });
   }
 
   Future<void> stopCasting() async {
@@ -202,6 +220,8 @@ class AppCastService extends Notifier<CastState> {
       }
     }
     await _sessionSubscription?.cancel();
+    await _positionSubscription?.cancel();
+    await _stateSubscription?.cancel();
     state = state.copyWith(
       isCasting: false,
       remotePosition: Duration.zero,
