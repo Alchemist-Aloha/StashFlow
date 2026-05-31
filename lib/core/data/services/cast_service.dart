@@ -7,22 +7,46 @@ class CastState {
   final List<dc.CastDevice> discoveredDevices;
   final dc.CastSession? activeSession;
   final bool isCasting;
+  final Duration? localResumePosition;
+  final bool localWasPlaying;
+  final Duration remotePosition;
+  final bool remoteIsPlaying;
 
   CastState({
     this.discoveredDevices = const [],
     this.activeSession,
     this.isCasting = false,
+    this.localResumePosition,
+    this.localWasPlaying = false,
+    this.remotePosition = Duration.zero,
+    this.remoteIsPlaying = false,
   });
 
   CastState copyWith({
     List<dc.CastDevice>? discoveredDevices,
     dc.CastSession? activeSession,
     bool? isCasting,
+    Duration? localResumePosition,
+    bool? localWasPlaying,
+    Duration? remotePosition,
+    bool? remoteIsPlaying,
+    bool clearActiveSession = false,
+    bool clearLocalHandoff = false,
   }) {
     return CastState(
       discoveredDevices: discoveredDevices ?? this.discoveredDevices,
-      activeSession: activeSession ?? this.activeSession,
+      activeSession: clearActiveSession
+          ? null
+          : (activeSession ?? this.activeSession),
       isCasting: isCasting ?? this.isCasting,
+      localResumePosition: clearLocalHandoff
+          ? null
+          : (localResumePosition ?? this.localResumePosition),
+      localWasPlaying: clearLocalHandoff
+          ? false
+          : (localWasPlaying ?? this.localWasPlaying),
+      remotePosition: remotePosition ?? this.remotePosition,
+      remoteIsPlaying: remoteIsPlaying ?? this.remoteIsPlaying,
     );
   }
 }
@@ -75,17 +99,17 @@ class AppCastService extends Notifier<CastState> {
     _subscription = _castService
         .startDiscovery(timeout: const Duration(seconds: 15))
         .listen(
-      (devices) {
-        debugPrint('CastService: discovered ${devices.length} device(s)');
-        state = state.copyWith(discoveredDevices: devices);
-      },
-      onDone: () {
-        debugPrint('CastService: discovery completed');
-      },
-      onError: (error) {
-        debugPrint('CastService: discovery error: $error');
-      },
-    );
+          (devices) {
+            debugPrint('CastService: discovered ${devices.length} device(s)');
+            state = state.copyWith(discoveredDevices: devices);
+          },
+          onDone: () {
+            debugPrint('CastService: discovery completed');
+          },
+          onError: (error) {
+            debugPrint('CastService: discovery error: $error');
+          },
+        );
   }
 
   void stopDiscovery() {
@@ -95,10 +119,21 @@ class AppCastService extends Notifier<CastState> {
     state = state.copyWith(discoveredDevices: []);
   }
 
-  Future<void> setActiveSession(dc.CastSession session) async {
+  Future<void> setActiveSession(
+    dc.CastSession session, {
+    Duration localResumePosition = Duration.zero,
+    bool localWasPlaying = false,
+  }) async {
     await _sessionSubscription?.cancel();
-    state = state.copyWith(activeSession: session, isCasting: true);
-    
+    state = state.copyWith(
+      activeSession: session,
+      isCasting: true,
+      localResumePosition: localResumePosition,
+      localWasPlaying: localWasPlaying,
+      remotePosition: localResumePosition,
+      remoteIsPlaying: true,
+    );
+
     // We can add session listeners here if dart_cast supports them
   }
 
@@ -113,25 +148,38 @@ class AppCastService extends Notifier<CastState> {
       }
     }
     await _sessionSubscription?.cancel();
-    state = state.copyWith(activeSession: null, isCasting: false);
+    state = state.copyWith(
+      isCasting: false,
+      remotePosition: Duration.zero,
+      remoteIsPlaying: false,
+      clearActiveSession: true,
+      clearLocalHandoff: true,
+    );
   }
 
   Future<void> play() async {
-    await state.activeSession?.play();
+    final session = state.activeSession;
+    if (session == null) return;
+    await session.play();
+    state = state.copyWith(remoteIsPlaying: true);
   }
 
   Future<void> pause() async {
-    await state.activeSession?.pause();
+    final session = state.activeSession;
+    if (session == null) return;
+    await session.pause();
+    state = state.copyWith(remoteIsPlaying: false);
   }
 
   Future<void> seek(Duration position) async {
-    await state.activeSession?.seek(position);
+    final session = state.activeSession;
+    if (session == null) return;
+    await session.seek(position);
+    state = state.copyWith(remotePosition: position);
   }
 
   Future<Duration> getRemotePosition() async {
-    // Some protocols might support getting the current position
-    // For now we might have to rely on local tracking or session state
-    return Duration.zero; 
+    return state.remotePosition;
   }
 }
 
