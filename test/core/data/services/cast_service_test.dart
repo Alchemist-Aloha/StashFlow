@@ -51,20 +51,51 @@ void main() {
       expect(state.remoteIsPlaying, isFalse);
     },
   );
+
+  test(
+    'retries Chromecast media load until playback state is confirmed',
+    () async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final session = _FakeCastSession(
+        protocol: dc.CastProtocol.chromecast,
+        playbackStartsOnLoadAttempt: 2,
+      );
+      final notifier = container.read(castServiceProvider.notifier);
+
+      await notifier.loadMediaAndConfirm(
+        session,
+        const dc.CastMedia(
+          url: 'http://example.test/video.mp4',
+          type: dc.CastMediaType.mp4,
+        ),
+        confirmationTimeout: const Duration(milliseconds: 10),
+        retryDelay: Duration.zero,
+      );
+
+      expect(session.loadMediaCalls, 2);
+      expect(session.state, dc.SessionState.playing);
+    },
+  );
 }
 
 class _FakeCastSession extends dc.CastSession {
-  _FakeCastSession()
-    : super(
-        dc.CastDevice(
-          id: 'fake',
-          name: 'Fake Cast',
-          protocol: dc.CastProtocol.chromecast,
-          address: InternetAddress.loopbackIPv4,
-          port: 8009,
-        ),
-      );
+  _FakeCastSession({
+    dc.CastProtocol protocol = dc.CastProtocol.chromecast,
+    this.playbackStartsOnLoadAttempt = 1,
+  }) : super(
+         dc.CastDevice(
+           id: 'fake',
+           name: 'Fake Cast',
+           protocol: protocol,
+           address: InternetAddress.loopbackIPv4,
+           port: 8009,
+         ),
+       );
 
+  final int playbackStartsOnLoadAttempt;
+  int loadMediaCalls = 0;
   int disconnectCalls = 0;
   int pauseCalls = 0;
   int seekCalls = 0;
@@ -79,7 +110,15 @@ class _FakeCastSession extends dc.CastSession {
   }
 
   @override
-  Future<void> loadMedia(dc.CastMedia media) async {}
+  Future<void> loadMedia(dc.CastMedia media) async {
+    loadMediaCalls++;
+    stateMachine.forceState(dc.SessionState.loading);
+    if (loadMediaCalls >= playbackStartsOnLoadAttempt) {
+      Future<void>.microtask(
+        () => stateMachine.forceState(dc.SessionState.playing),
+      );
+    }
+  }
 
   @override
   Future<void> pause() async {

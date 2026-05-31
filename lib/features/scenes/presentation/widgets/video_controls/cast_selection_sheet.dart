@@ -157,11 +157,13 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
         url: widget.videoUrl,
         type: mediaType,
         title: widget.title,
+        startPosition: currentPos > Duration.zero ? currentPos : null,
       );
 
-      await session.loadMedia(media);
+      await appCastServiceNotifier.loadMediaAndConfirm(session, media);
 
-      if (currentPos > Duration.zero) {
+      if (device.protocol == dc.CastProtocol.airplay &&
+          currentPos > Duration.zero) {
         debugPrint('CastSelectionSheet: seeking cast to $currentPos');
         await session.seek(currentPos);
       }
@@ -212,8 +214,9 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
             url: widget.videoUrl,
             type: mediaType,
             title: widget.title,
+            startPosition: currentPos > Duration.zero ? currentPos : null,
           );
-          await session.loadMedia(media);
+          await appCastServiceNotifier.loadMediaAndConfirm(session, media);
 
           if (currentPos > Duration.zero) {
             debugPrint('CastSelectionSheet: seeking cast to $currentPos');

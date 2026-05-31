@@ -119,6 +119,60 @@ class AppCastService extends Notifier<CastState> {
     state = state.copyWith(discoveredDevices: []);
   }
 
+  Future<void> loadMediaAndConfirm(
+    dc.CastSession session,
+    dc.CastMedia media, {
+    int maxAttempts = 2,
+    Duration confirmationTimeout = const Duration(milliseconds: 2500),
+    Duration retryDelay = const Duration(milliseconds: 400),
+  }) async {
+    if (session.device.protocol != dc.CastProtocol.chromecast) {
+      await session.loadMedia(media);
+      return;
+    }
+
+    for (var attempt = 1; attempt <= maxAttempts; attempt++) {
+      await session.loadMedia(media);
+      if (await _waitForPlaybackConfirmation(session, confirmationTimeout)) {
+        return;
+      }
+
+      if (attempt < maxAttempts) {
+        debugPrint(
+          'CastService: Chromecast load did not enter playback; retrying ($attempt/$maxAttempts)',
+        );
+        await Future<void>.delayed(retryDelay);
+      }
+    }
+
+    throw TimeoutException(
+      'Chromecast did not enter playback after $maxAttempts load attempts',
+      confirmationTimeout * maxAttempts,
+    );
+  }
+
+  Future<bool> _waitForPlaybackConfirmation(
+    dc.CastSession session,
+    Duration timeout,
+  ) async {
+    if (_isPlaybackConfirmed(session.state)) return true;
+    try {
+      await session.stateStream
+          .where(_isPlaybackConfirmed)
+          .first
+          .timeout(timeout);
+      return true;
+    } on TimeoutException {
+      return _isPlaybackConfirmed(session.state);
+    }
+  }
+
+  bool _isPlaybackConfirmed(dc.SessionState state) {
+    return state == dc.SessionState.playing ||
+        state == dc.SessionState.buffering ||
+        state == dc.SessionState.paused;
+  }
+
   Future<void> setActiveSession(
     dc.CastSession session, {
     Duration localResumePosition = Duration.zero,
