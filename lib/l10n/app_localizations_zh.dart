@@ -130,7 +130,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get common_later => '以后';
 
   @override
-  String get common_update_now => '立即更新';
+  String get common_update_now => '发布详情';
 
   @override
   String get common_configure_now => '立即配置';
@@ -2480,7 +2480,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get common_later => '以后';
 
   @override
-  String get common_update_now => '立即更新';
+  String get common_update_now => '发布详情';
 
   @override
   String get common_configure_now => '立即配置';
@@ -4832,7 +4832,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get common_later => '稍後';
 
   @override
-  String get common_update_now => '立即更新';
+  String get common_update_now => '發佈詳情';
 
   @override
   String get common_configure_now => '立即設定';

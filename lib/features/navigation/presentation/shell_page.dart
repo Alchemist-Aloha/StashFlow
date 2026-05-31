@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -140,6 +141,21 @@ class _ShellPageState extends ConsumerState<ShellPage> {
             },
             child: Text(context.l10n.common_later),
           ),
+          if (!kIsWeb &&
+              Platform.isAndroid &&
+              updateInfo.androidApkUrl != null &&
+              updateInfo.androidApkUrl!.isNotEmpty)
+            TextButton(
+              onPressed: () async {
+                final url = Uri.parse(updateInfo.androidApkUrl!);
+                try {
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  }
+                } catch (_) {}
+              },
+              child: Text(context.l10n.common_download),
+            ),
           FilledButton(
             onPressed: () async {
               final url = Uri.parse(updateInfo.releaseUrl);

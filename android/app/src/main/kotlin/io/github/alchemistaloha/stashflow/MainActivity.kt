@@ -29,6 +29,9 @@ open class MainActivity : AudioServiceActivity() {
 					val denominator = call.argument<Int>("denominator") ?: 1
 					result.success(enterPipMode(numerator, denominator))
 				}
+				"getPrimaryAbi" -> {
+					result.success(Build.SUPPORTED_ABIS.firstOrNull())
+				}
 				else -> result.notImplemented()
 			}
 		}

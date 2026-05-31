@@ -279,7 +279,7 @@ abstract class AppLocalizations {
   /// No description provided for @common_update_now.
   ///
   /// In en, this message translates to:
-  /// **'Update Now'**
+  /// **'Release Details'**
   String get common_update_now;
 
   /// No description provided for @common_configure_now.

@@ -132,7 +132,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get common_later => 'Più tardi';
 
   @override
-  String get common_update_now => 'Aggiorna Ora';
+  String get common_update_now => 'Dettagli versione';
 
   @override
   String get common_configure_now => 'Configura Ora';

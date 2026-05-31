@@ -134,7 +134,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get common_later => 'Позже';
 
   @override
-  String get common_update_now => 'Обновить сейчас';
+  String get common_update_now => 'Сведения о релизе';
 
   @override
   String get common_configure_now => 'Настроить сейчас';
