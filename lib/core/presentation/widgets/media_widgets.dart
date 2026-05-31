@@ -99,18 +99,29 @@ class MediaHeader extends StatelessWidget {
         ),
         if (secondaryTitle != null) ...[
           SizedBox(height: context.dimensions.spacingSmall / 2),
-          GestureDetector(
-            onTap: onSecondaryTitleTap,
-            child: Text(
-              secondaryTitle!,
-              style: context.textTheme.titleMedium?.copyWith(
-                color: onSecondaryTitleTap != null
-                    ? context.colors.primary
-                    : context.colors.onSurfaceVariant,
-                fontWeight: FontWeight.w500,
-                decoration: onSecondaryTitleTap != null
-                    ? TextDecoration.underline
-                    : TextDecoration.none,
+          Semantics(
+            button: onSecondaryTitleTap != null,
+            label: onSecondaryTitleTap != null ? 'Open $secondaryTitle' : null,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: onSecondaryTitleTap,
+                borderRadius: BorderRadius.circular(4),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
+                  child: Text(
+                    secondaryTitle!,
+                    style: context.textTheme.titleMedium?.copyWith(
+                      color: onSecondaryTitleTap != null
+                          ? context.colors.primary
+                          : context.colors.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
+                      decoration: onSecondaryTitleTap != null
+                          ? TextDecoration.underline
+                          : TextDecoration.none,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
