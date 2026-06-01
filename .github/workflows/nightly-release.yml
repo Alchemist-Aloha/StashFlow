@@ -34,7 +34,7 @@ jobs:
             os: ubuntu-latest
             artifact_name: web
           - target: macos
-            os: macos-26-arm64
+            os: macos-26
             artifact_name: macos
 
     steps:
