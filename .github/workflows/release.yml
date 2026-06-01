@@ -34,7 +34,7 @@ jobs:
             os: ubuntu-latest
             artifact_name: web
           - target: macos
-            os: macos-latest
+            os: macos-26
             artifact_name: macos
 
     steps:
@@ -47,11 +47,13 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "17"
+          cache: "gradle"
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: "stable"
+          cache: true
 
       - name: Install dependencies
         run: flutter pub get
@@ -147,7 +149,7 @@ jobs:
         shell: bash
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: StashFlow-${{ matrix.artifact_name }}
           path: |
@@ -162,13 +164,13 @@ jobs:
       contents: write
     steps:
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: artifacts
           merge-multiple: true
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: artifacts/**
         env:

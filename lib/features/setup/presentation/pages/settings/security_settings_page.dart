@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/app_lock_settings_provider.dart';
 import '../../widgets/settings_page_shell.dart';
 
@@ -15,20 +16,20 @@ class SecuritySettingsPage extends ConsumerWidget {
     final notifier = ref.read(appLockSettingsProvider.notifier);
 
     return SettingsPageShell(
-      title: 'Security',
+      title: context.l10n.settings_security_title,
       child: ListView(
         padding: EdgeInsets.all(context.dimensions.spacingLarge),
         children: [
           SettingsSectionCard(
-            title: 'App lock',
-            subtitle: 'Protect access with a passcode after backgrounding.',
+            title: context.l10n.settings_security_app_lock,
+            subtitle: context.l10n.settings_security_app_lock_subtitle,
             child: Column(
               children: [
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Passcode'),
+                  title: Text(context.l10n.settings_security_passcode),
                   subtitle: Text(
-                    settings.hasPasscode ? 'Configured' : 'Not configured',
+                    settings.hasPasscode ? context.l10n.settings_security_passcode_configured : context.l10n.settings_security_passcode_not_configured,
                   ),
                   trailing: Wrap(
                     spacing: 8,
@@ -40,11 +41,11 @@ class SecuritySettingsPage extends ConsumerWidget {
                           await notifier.setPasscode(passcode);
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Passcode saved')),
+                              SnackBar(content: Text(context.l10n.settings_security_passcode_saved)),
                             );
                           }
                         },
-                        child: Text(settings.hasPasscode ? 'Change' : 'Set'),
+                        child: Text(settings.hasPasscode ? context.l10n.common_change : context.l10n.common_set),
                       ),
                       if (settings.hasPasscode)
                         TextButton(
@@ -52,13 +53,13 @@ class SecuritySettingsPage extends ConsumerWidget {
                             await notifier.clearPasscode();
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Passcode removed'),
+                                SnackBar(
+                                  content: Text(context.l10n.settings_security_passcode_removed),
                                 ),
                               );
                             }
                           },
-                          child: const Text('Remove'),
+                          child: Text(context.l10n.common_remove),
                         ),
                     ],
                   ),
@@ -66,9 +67,9 @@ class SecuritySettingsPage extends ConsumerWidget {
                 Divider(height: context.dimensions.spacingLarge),
                 SwitchListTile.adaptive(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Enable app lock'),
-                  subtitle: const Text(
-                    'Require passcode on app resume/launch.',
+                  title: Text(context.l10n.settings_security_enable_app_lock),
+                  subtitle: Text(
+                    context.l10n.settings_security_enable_app_lock_subtitle,
                   ),
                   value: settings.enabled && settings.hasPasscode,
                   onChanged: (value) async {
@@ -83,9 +84,9 @@ class SecuritySettingsPage extends ConsumerWidget {
                 Divider(height: context.dimensions.spacingLarge),
                 SwitchListTile.adaptive(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Lock on app launch'),
-                  subtitle: const Text(
-                    'Ask for passcode immediately when app opens.',
+                  title: Text(context.l10n.settings_security_lock_on_launch),
+                  subtitle: Text(
+                    context.l10n.settings_security_lock_on_launch_subtitle,
                   ),
                   value: settings.lockOnLaunch,
                   onChanged: settings.enabled && settings.hasPasscode
@@ -95,9 +96,9 @@ class SecuritySettingsPage extends ConsumerWidget {
                 Divider(height: context.dimensions.spacingLarge),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Background lock timer'),
-                  subtitle: const Text(
-                    'How long the app can stay in background before locking.',
+                  title: Text(context.l10n.settings_security_background_lock_timer),
+                  subtitle: Text(
+                    context.l10n.settings_security_background_lock_timer_subtitle,
                   ),
                   trailing: DropdownButton<int>(
                     value: settings.backgroundLockSeconds,
@@ -112,7 +113,7 @@ class SecuritySettingsPage extends ConsumerWidget {
                         .map(
                           (seconds) => DropdownMenuItem<int>(
                             value: seconds,
-                            child: Text(_formatTimeout(seconds)),
+                            child: Text(_formatTimeout(context, seconds)),
                           ),
                         )
                         .toList(),
@@ -126,11 +127,11 @@ class SecuritySettingsPage extends ConsumerWidget {
     );
   }
 
-  static String _formatTimeout(int seconds) {
-    if (seconds == 0) return 'Immediately';
-    if (seconds < 60) return '$seconds sec';
-    if (seconds % 60 == 0) return '${seconds ~/ 60} min';
-    return '${seconds}s';
+  static String _formatTimeout(BuildContext context, int seconds) {
+    if (seconds == 0) return context.l10n.common_immediately;
+    if (seconds < 60) return context.l10n.common_sec(seconds);
+    if (seconds % 60 == 0) return context.l10n.common_min(seconds ~/ 60);
+    return context.l10n.common_s(seconds);
   }
 
   static Future<String?> _showPasscodeDialog(BuildContext context) async {
@@ -144,7 +145,7 @@ class SecuritySettingsPage extends ConsumerWidget {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text('Set passcode'),
+              title: Text(context.l10n.settings_security_set_passcode),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -153,8 +154,8 @@ class SecuritySettingsPage extends ConsumerWidget {
                     keyboardType: TextInputType.number,
                     obscureText: true,
                     maxLength: 8,
-                    decoration: const InputDecoration(
-                      labelText: 'Passcode (4-8 digits)',
+                    decoration: InputDecoration(
+                      labelText: context.l10n.settings_security_passcode_prompt,
                     ),
                   ),
                   TextField(
@@ -162,7 +163,7 @@ class SecuritySettingsPage extends ConsumerWidget {
                     keyboardType: TextInputType.number,
                     obscureText: true,
                     maxLength: 8,
-                    decoration: const InputDecoration(labelText: 'Confirm'),
+                    decoration: InputDecoration(labelText: context.l10n.settings_security_confirm_passcode),
                   ),
                   if (error != null)
                     Padding(
@@ -179,7 +180,7 @@ class SecuritySettingsPage extends ConsumerWidget {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(dialogContext).pop(),
-                  child: const Text('Cancel'),
+                  child: Text(context.l10n.common_cancel),
                 ),
                 FilledButton(
                   onPressed: () {
@@ -188,17 +189,17 @@ class SecuritySettingsPage extends ConsumerWidget {
                     final numeric = RegExp(r'^\d{4,8}$');
                     if (!numeric.hasMatch(passcode)) {
                       setState(
-                        () => error = 'Use only digits, with length 4-8.',
+                        () => error = context.l10n.settings_security_error_numeric,
                       );
                       return;
                     }
                     if (passcode != confirm) {
-                      setState(() => error = 'Passcodes do not match.');
+                      setState(() => error = context.l10n.settings_security_error_mismatch);
                       return;
                     }
                     Navigator.of(dialogContext).pop(passcode);
                   },
-                  child: const Text('Save'),
+                  child: Text(context.l10n.common_save),
                 ),
               ],
             );

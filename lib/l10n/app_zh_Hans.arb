@@ -865,5 +865,55 @@
   "main_startup_failed": "StashFlow 启动失败",
   "main_startup_failed_desc": "在应用程序完成初始化之前启动服务失败。检查诊断后重新启动应用程序。",
   "common_searching_for": "正在搜索：“{query}”",
-  "cast_device": "设备"
+  "cast_device": "设备",
+  "auth_enter_passcode": "输入您的密码以继续。",
+  "auth_unlock": "开锁",
+  "auth_incorrect_passcode": "密码不正确",
+  "auth_app_locked": "应用程序已锁定",
+  "settings_security_passcode": "密码",
+  "settings_security_passcode_configured": "已配置",
+  "settings_security_passcode_not_configured": "未配置",
+  "settings_security_passcode_saved": "密码已保存",
+  "settings_security_passcode_removed": "密码已删除",
+  "settings_security_enable_app_lock": "启用应用程序锁定",
+  "settings_security_enable_app_lock_subtitle": "应用程序恢复/启动时需要密码。",
+  "settings_security_lock_on_launch": "锁定应用程序启动",
+  "settings_security_lock_on_launch_subtitle": "应用程序打开时立即询问密码。",
+  "settings_security_background_lock_timer": "后台锁定定时器",
+  "settings_security_background_lock_timer_subtitle": "应用程序在锁定之前可以在后台停留多长时间。",
+  "settings_security_set_passcode": "设置密码",
+  "settings_security_passcode_prompt": "密码（4-8位）",
+  "settings_security_confirm_passcode": "确认",
+  "settings_security_error_numeric": "仅使用数字，长度为 4-8。",
+  "settings_security_error_mismatch": "密码不匹配。",
+  "common_change": "改变",
+  "common_set": "放",
+  "common_immediately": "立即地",
+  "common_sec": "{value} 秒",
+  "@common_sec": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "common_min": "{value} 分钟",
+  "@common_min": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "common_s": "{value}s",
+  "@common_s": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "settings_security_title": "安全",
+  "settings_security_app_lock": "应用锁",
+  "settings_security_app_lock_subtitle": "后台运行后使用密码保护访问。"
 }

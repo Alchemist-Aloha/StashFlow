@@ -2376,4 +2376,100 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get cast_device => '장치';
+
+  @override
+  String get auth_enter_passcode => '계속하려면 비밀번호를 입력하세요.';
+
+  @override
+  String get auth_unlock => '터놓다';
+
+  @override
+  String get auth_incorrect_passcode => '잘못된 비밀번호';
+
+  @override
+  String get auth_app_locked => '앱이 잠겼습니다.';
+
+  @override
+  String get settings_security_passcode => '비밀번호';
+
+  @override
+  String get settings_security_passcode_configured => '구성됨';
+
+  @override
+  String get settings_security_passcode_not_configured => '구성되지 않음';
+
+  @override
+  String get settings_security_passcode_saved => '비밀번호가 저장되었습니다';
+
+  @override
+  String get settings_security_passcode_removed => '비밀번호가 삭제되었습니다.';
+
+  @override
+  String get settings_security_enable_app_lock => '앱 잠금 활성화';
+
+  @override
+  String get settings_security_enable_app_lock_subtitle =>
+      '앱 재개/실행 시 비밀번호가 필요합니다.';
+
+  @override
+  String get settings_security_lock_on_launch => '앱 실행 시 잠금';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle =>
+      '앱이 열리면 즉시 비밀번호를 요청하세요.';
+
+  @override
+  String get settings_security_background_lock_timer => '백그라운드 잠금 타이머';
+
+  @override
+  String get settings_security_background_lock_timer_subtitle =>
+      '앱이 잠기기 전에 백그라운드에 머무를 수 있는 시간입니다.';
+
+  @override
+  String get settings_security_set_passcode => '비밀번호 설정';
+
+  @override
+  String get settings_security_passcode_prompt => '비밀번호(4~8자리)';
+
+  @override
+  String get settings_security_confirm_passcode => '확인하다';
+
+  @override
+  String get settings_security_error_numeric => '길이가 4~8인 숫자만 사용하세요.';
+
+  @override
+  String get settings_security_error_mismatch => '비밀번호가 일치하지 않습니다.';
+
+  @override
+  String get common_change => '변화';
+
+  @override
+  String get common_set => '세트';
+
+  @override
+  String get common_immediately => '즉시';
+
+  @override
+  String common_sec(int value) {
+    return '$value초';
+  }
+
+  @override
+  String common_min(int value) {
+    return '$value분';
+  }
+
+  @override
+  String common_s(int value) {
+    return '${value}s';
+  }
+
+  @override
+  String get settings_security_title => '보안';
+
+  @override
+  String get settings_security_app_lock => '앱 잠금';
+
+  @override
+  String get settings_security_app_lock_subtitle => '백그라운드 후 비밀번호로 접근을 보호하세요.';
 }

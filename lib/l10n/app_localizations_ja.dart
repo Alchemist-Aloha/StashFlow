@@ -2376,4 +2376,101 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get cast_device => 'デバイス';
+
+  @override
+  String get auth_enter_passcode => '続行するにはパスコードを入力してください。';
+
+  @override
+  String get auth_unlock => 'ロックを解除する';
+
+  @override
+  String get auth_incorrect_passcode => '間違ったパスコード';
+
+  @override
+  String get auth_app_locked => 'アプリがロックされました';
+
+  @override
+  String get settings_security_passcode => 'パスコード';
+
+  @override
+  String get settings_security_passcode_configured => '設定済み';
+
+  @override
+  String get settings_security_passcode_not_configured => '未設定';
+
+  @override
+  String get settings_security_passcode_saved => 'パスコードが保存されました';
+
+  @override
+  String get settings_security_passcode_removed => 'パスコードが削除されました';
+
+  @override
+  String get settings_security_enable_app_lock => 'アプリロックを有効にする';
+
+  @override
+  String get settings_security_enable_app_lock_subtitle =>
+      'アプリの再開/起動時にパスコードを要求します。';
+
+  @override
+  String get settings_security_lock_on_launch => 'アプリ起動時にロックする';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle =>
+      'アプリを開いたらすぐにパスコードを要求します。';
+
+  @override
+  String get settings_security_background_lock_timer => 'バックグラウンドロックタイマー';
+
+  @override
+  String get settings_security_background_lock_timer_subtitle =>
+      'アプリがロックされるまでにバックグラウンドに留まることができる時間。';
+
+  @override
+  String get settings_security_set_passcode => 'パスコードを設定する';
+
+  @override
+  String get settings_security_passcode_prompt => 'パスコード（4～8桁）';
+
+  @override
+  String get settings_security_confirm_passcode => '確認する';
+
+  @override
+  String get settings_security_error_numeric => '長さ 4 ～ 8 の数字のみを使用してください。';
+
+  @override
+  String get settings_security_error_mismatch => 'パスコードが一致しません。';
+
+  @override
+  String get common_change => '変化';
+
+  @override
+  String get common_set => 'セット';
+
+  @override
+  String get common_immediately => 'すぐに';
+
+  @override
+  String common_sec(int value) {
+    return '$value 秒';
+  }
+
+  @override
+  String common_min(int value) {
+    return '$value分';
+  }
+
+  @override
+  String common_s(int value) {
+    return '${value}s';
+  }
+
+  @override
+  String get settings_security_title => '安全';
+
+  @override
+  String get settings_security_app_lock => 'アプリロック';
+
+  @override
+  String get settings_security_app_lock_subtitle =>
+      'バックグラウンド化後はパスコードでアクセスを保護します。';
 }

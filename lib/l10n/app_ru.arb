@@ -879,5 +879,55 @@
   "main_startup_failed": "StashFlow не удалось запустить",
   "main_startup_failed_desc": "Служба запуска завершилась сбоем до того, как приложение смогло завершить инициализацию.Перезапустите приложение после проверки диагностики.",
   "common_searching_for": "Поиск: \"{query}\"",
-  "cast_device": "Устройство"
+  "cast_device": "Устройство",
+  "auth_enter_passcode": "Введите свой пароль, чтобы продолжить.",
+  "auth_unlock": "Разблокировать",
+  "auth_incorrect_passcode": "Неправильный пароль",
+  "auth_app_locked": "Приложение заблокировано",
+  "settings_security_passcode": "Код доступа",
+  "settings_security_passcode_configured": "Настроено",
+  "settings_security_passcode_not_configured": "Не настроено",
+  "settings_security_passcode_saved": "Код доступа сохранен.",
+  "settings_security_passcode_removed": "Код доступа удален.",
+  "settings_security_enable_app_lock": "Включить блокировку приложения",
+  "settings_security_enable_app_lock_subtitle": "Требовать пароль при возобновлении/запуске приложения.",
+  "settings_security_lock_on_launch": "Блокировка запуска приложения",
+  "settings_security_lock_on_launch_subtitle": "Запросите пароль сразу после открытия приложения.",
+  "settings_security_background_lock_timer": "Таймер блокировки фона",
+  "settings_security_background_lock_timer_subtitle": "Как долго приложение может оставаться в фоновом режиме перед блокировкой.",
+  "settings_security_set_passcode": "Установить пароль",
+  "settings_security_passcode_prompt": "Код доступа (4–8 цифр)",
+  "settings_security_confirm_passcode": "Подтверждать",
+  "settings_security_error_numeric": "Используйте только цифры длиной 4–8.",
+  "settings_security_error_mismatch": "Пароли не совпадают.",
+  "common_change": "Изменять",
+  "common_set": "Набор",
+  "common_immediately": "Немедленно",
+  "common_sec": "{value} сек.",
+  "@common_sec": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "common_min": "{value} мин.",
+  "@common_min": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "common_s": "{value}s",
+  "@common_s": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "settings_security_title": "Безопасность",
+  "settings_security_app_lock": "Блокировка приложения",
+  "settings_security_app_lock_subtitle": "Защитите доступ с помощью пароля после фонового режима."
 }

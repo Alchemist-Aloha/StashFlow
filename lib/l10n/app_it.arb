@@ -884,5 +884,55 @@
   "main_startup_failed": "Impossibile avviare StashFlow",
   "main_startup_failed_desc": "Un servizio di avvio non è riuscito prima che l'app potesse completare l'inizializzazione.Riavvia l'app dopo aver controllato la diagnostica.",
   "common_searching_for": "Cercando: \"{query}\"",
-  "cast_device": "Dispositivo"
+  "cast_device": "Dispositivo",
+  "auth_enter_passcode": "Inserisci il tuo passcode per continuare.",
+  "auth_unlock": "Sbloccare",
+  "auth_incorrect_passcode": "Codice di accesso errato",
+  "auth_app_locked": "Applicazione bloccata",
+  "settings_security_passcode": "Codice di accesso",
+  "settings_security_passcode_configured": "Configurato",
+  "settings_security_passcode_not_configured": "Non configurato",
+  "settings_security_passcode_saved": "Codice di accesso salvato",
+  "settings_security_passcode_removed": "Codice rimosso",
+  "settings_security_enable_app_lock": "Abilita il blocco dell'app",
+  "settings_security_enable_app_lock_subtitle": "Richiedi il passcode al ripristino/avvio dell'app.",
+  "settings_security_lock_on_launch": "Blocca all'avvio dell'app",
+  "settings_security_lock_on_launch_subtitle": "Richiedi immediatamente il passcode all'apertura dell'app.",
+  "settings_security_background_lock_timer": "Temporizzatore di blocco dello sfondo",
+  "settings_security_background_lock_timer_subtitle": "Per quanto tempo l'app può rimanere in background prima di bloccarsi.",
+  "settings_security_set_passcode": "Imposta il codice di accesso",
+  "settings_security_passcode_prompt": "Codice di accesso (4-8 cifre)",
+  "settings_security_confirm_passcode": "Confermare",
+  "settings_security_error_numeric": "Utilizzare solo cifre, con lunghezza compresa tra 4 e 8.",
+  "settings_security_error_mismatch": "I codici di accesso non corrispondono.",
+  "common_change": "Modifica",
+  "common_set": "Impostato",
+  "common_immediately": "Immediatamente",
+  "common_sec": "{value} sec",
+  "@common_sec": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "common_min": "{value} min",
+  "@common_min": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "common_s": "{value}s",
+  "@common_s": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "settings_security_title": "Sicurezza",
+  "settings_security_app_lock": "Blocco dell'app",
+  "settings_security_app_lock_subtitle": "Proteggi l'accesso con un passcode dopo il background."
 }

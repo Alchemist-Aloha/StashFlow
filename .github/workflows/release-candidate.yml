@@ -1,11 +1,9 @@
-name: Nightly Release Build
+name: Release Candidate Build
 
 on:
   push:
     branches:
-      - dev
-  # schedule:
-  #   - cron: '0 3 * * *' # daily at 03:00 UTC
+      - main
   workflow_dispatch:
 
 jobs:
@@ -114,21 +112,21 @@ jobs:
         if: matrix.target == 'windows'
         run: |
           cd build/windows/x64/runner/Release
-          7z a ../../../../../StashFlow-windows-nightly.zip *
+          7z a ../../../../../StashFlow-windows-rc.zip *
         shell: bash
 
       - name: Package Linux
         if: matrix.target == 'linux'
         run: |
           cd build/linux/x64/release/bundle
-          zip -r ../../../../../StashFlow-linux-nightly.zip .
+          zip -r ../../../../../StashFlow-linux-rc.zip .
         shell: bash
 
       - name: Package Web
         if: matrix.target == 'web'
         run: |
           cd build/web
-          zip -r ../../StashFlow-web-nightly.zip .
+          zip -r ../../StashFlow-web-rc.zip .
         shell: bash
 
       - name: Deploy to GitHub Pages
@@ -139,22 +137,22 @@ jobs:
           publish_dir: ./build/web
           user_name: "github-actions[bot]"
           user_email: "github-actions[bot]@users.noreply.github.com"
-          commit_message: "Deploy Nightly to GitHub Pages: ${{ github.sha }}"
+          commit_message: "Deploy Release Candidate to GitHub Pages: ${{ github.sha }}"
 
       - name: Package macOS
         if: matrix.target == 'macos'
         run: |
           cd build/macos/Build/Products/Release
-          zip -r ../../../../../StashFlow-macos-nightly.zip *.app
+          zip -r ../../../../../StashFlow-macos-rc.zip *.app
         shell: bash
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v7
         with:
-          name: StashFlow-nightly-${{ matrix.artifact_name }}
+          name: StashFlow-rc-${{ matrix.artifact_name }}
           path: |
             build/app/outputs/flutter-apk/app-*-release.apk
-            StashFlow-*-nightly.zip
+            StashFlow-*-rc.zip
 
   release:
     needs: build
@@ -178,23 +176,23 @@ jobs:
           path: artifacts
           merge-multiple: true
 
-      - name: Update/Push rolling `nightly` tag
+      - name: Update/Push rolling `release-candidate` tag
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -f nightly ${{ github.sha }}
-          git push --force origin refs/tags/nightly
+          git tag -f release-candidate ${{ github.sha }}
+          git push --force origin refs/tags/release-candidate
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update Rolling Nightly Release
+      - name: Update Rolling Release Candidate
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: nightly
-          name: Nightly Build (${{ steps.slug.outputs.sha_short }})
-          body: "Latest development build from the dev branch. Commit: ${{ github.sha }}"
+          tag_name: release-candidate
+          name: Release Candidate (${{ steps.slug.outputs.sha_short }})
+          body: "Latest release candidate build from the main branch. Commit: ${{ github.sha }}"
           prerelease: true
-          make_latest: true
+          make_latest: false
           files: artifacts/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -999,5 +999,55 @@
       }
     }
   },
-  "cast_device": "Device"
+  "cast_device": "Device",
+  "auth_enter_passcode": "Enter your passcode to continue.",
+  "auth_unlock": "Unlock",
+  "auth_incorrect_passcode": "Incorrect passcode",
+  "auth_app_locked": "App Locked",
+  "settings_security_passcode": "Passcode",
+  "settings_security_passcode_configured": "Configured",
+  "settings_security_passcode_not_configured": "Not configured",
+  "settings_security_passcode_saved": "Passcode saved",
+  "settings_security_passcode_removed": "Passcode removed",
+  "settings_security_enable_app_lock": "Enable app lock",
+  "settings_security_enable_app_lock_subtitle": "Require passcode on app resume/launch.",
+  "settings_security_lock_on_launch": "Lock on app launch",
+  "settings_security_lock_on_launch_subtitle": "Ask for passcode immediately when app opens.",
+  "settings_security_background_lock_timer": "Background lock timer",
+  "settings_security_background_lock_timer_subtitle": "How long the app can stay in background before locking.",
+  "settings_security_set_passcode": "Set passcode",
+  "settings_security_passcode_prompt": "Passcode (4-8 digits)",
+  "settings_security_confirm_passcode": "Confirm",
+  "settings_security_error_numeric": "Use only digits, with length 4-8.",
+  "settings_security_error_mismatch": "Passcodes do not match.",
+  "common_change": "Change",
+  "common_set": "Set",
+  "common_immediately": "Immediately",
+  "common_sec": "{value} sec",
+  "@common_sec": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "common_min": "{value} min",
+  "@common_min": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "common_s": "{value}s",
+  "@common_s": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "settings_security_title": "Security",
+  "settings_security_app_lock": "App lock",
+  "settings_security_app_lock_subtitle": "Protect access with a passcode after backgrounding."
 }
