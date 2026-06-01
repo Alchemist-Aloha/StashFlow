@@ -2464,4 +2464,105 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get cast_device => 'Gerät';
+
+  @override
+  String get auth_enter_passcode =>
+      'Geben Sie Ihren Passcode ein, um fortzufahren.';
+
+  @override
+  String get auth_unlock => 'Entsperren';
+
+  @override
+  String get auth_incorrect_passcode => 'Falscher Passcode';
+
+  @override
+  String get auth_app_locked => 'App gesperrt';
+
+  @override
+  String get settings_security_passcode => 'Passcode';
+
+  @override
+  String get settings_security_passcode_configured => 'Konfiguriert';
+
+  @override
+  String get settings_security_passcode_not_configured => 'Nicht konfiguriert';
+
+  @override
+  String get settings_security_passcode_saved => 'Passcode gespeichert';
+
+  @override
+  String get settings_security_passcode_removed => 'Passcode entfernt';
+
+  @override
+  String get settings_security_enable_app_lock => 'App-Sperre aktivieren';
+
+  @override
+  String get settings_security_enable_app_lock_subtitle =>
+      'Passcode beim Fortsetzen/Starten der App erforderlich.';
+
+  @override
+  String get settings_security_lock_on_launch => 'Beim App-Start sperren';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle =>
+      'Fragen Sie sofort nach dem Passwort, wenn die App geöffnet wird.';
+
+  @override
+  String get settings_security_background_lock_timer =>
+      'Hintergrundsperr-Timer';
+
+  @override
+  String get settings_security_background_lock_timer_subtitle =>
+      'Wie lange die App im Hintergrund bleiben kann, bevor sie gesperrt wird.';
+
+  @override
+  String get settings_security_set_passcode => 'Passcode festlegen';
+
+  @override
+  String get settings_security_passcode_prompt => 'Passcode (4–8 Ziffern)';
+
+  @override
+  String get settings_security_confirm_passcode => 'Bestätigen';
+
+  @override
+  String get settings_security_error_numeric =>
+      'Verwenden Sie nur Ziffern mit einer Länge von 4–8.';
+
+  @override
+  String get settings_security_error_mismatch =>
+      'Passcodes stimmen nicht überein.';
+
+  @override
+  String get common_change => 'Ändern';
+
+  @override
+  String get common_set => 'Satz';
+
+  @override
+  String get common_immediately => 'Sofort';
+
+  @override
+  String common_sec(int value) {
+    return '$value Sek';
+  }
+
+  @override
+  String common_min(int value) {
+    return '$value min';
+  }
+
+  @override
+  String common_s(int value) {
+    return '${value}s';
+  }
+
+  @override
+  String get settings_security_title => 'Sicherheit';
+
+  @override
+  String get settings_security_app_lock => 'App-Sperre';
+
+  @override
+  String get settings_security_app_lock_subtitle =>
+      'Schützen Sie den Zugriff nach dem Hintergrundbetrieb mit einem Passcode.';
 }

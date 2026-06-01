@@ -865,5 +865,55 @@
   "main_startup_failed": "StashFlow 啟動失敗",
   "main_startup_failed_desc": "在應用程式完成初始化之前啟動服務失敗。檢查診斷後重新啟動應用程式。",
   "common_searching_for": "正在搜尋：“{query}”",
-  "cast_device": "裝置"
+  "cast_device": "裝置",
+  "auth_enter_passcode": "輸入您的密碼以繼續。",
+  "auth_unlock": "開鎖",
+  "auth_incorrect_passcode": "密碼不正確",
+  "auth_app_locked": "應用程式已鎖定",
+  "settings_security_passcode": "密碼",
+  "settings_security_passcode_configured": "已配置",
+  "settings_security_passcode_not_configured": "未配置",
+  "settings_security_passcode_saved": "密碼已儲存",
+  "settings_security_passcode_removed": "密碼已刪除",
+  "settings_security_enable_app_lock": "啟用應用程式鎖定",
+  "settings_security_enable_app_lock_subtitle": "應用程式恢復/啟動時需要密碼。",
+  "settings_security_lock_on_launch": "鎖定應用程式啟動",
+  "settings_security_lock_on_launch_subtitle": "應用程式開啟時立即詢問密碼。",
+  "settings_security_background_lock_timer": "後台鎖定定時器",
+  "settings_security_background_lock_timer_subtitle": "應用程式在鎖定之前可以在背景停留多長時間。",
+  "settings_security_set_passcode": "設定密碼",
+  "settings_security_passcode_prompt": "密碼（4-8位）",
+  "settings_security_confirm_passcode": "確認",
+  "settings_security_error_numeric": "僅使用數字，長度為 4-8。",
+  "settings_security_error_mismatch": "密碼不符。",
+  "common_change": "改變",
+  "common_set": "放",
+  "common_immediately": "立即地",
+  "common_sec": "{value} 秒",
+  "@common_sec": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "common_min": "{value} 分鐘",
+  "@common_min": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "common_s": "{value}s",
+  "@common_s": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "settings_security_title": "安全",
+  "settings_security_app_lock": "應用鎖",
+  "settings_security_app_lock_subtitle": "後台運行後使用密碼保護存取。"
 }

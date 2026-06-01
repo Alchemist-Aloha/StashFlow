@@ -900,5 +900,55 @@
   "main_startup_failed": "StashFlow konnte nicht gestartet werden",
   "main_startup_failed_desc": "Ein Startdienst ist fehlgeschlagen, bevor die App die Initialisierung abschließen konnte.Starten Sie die App neu, nachdem Sie die Diagnose überprüft haben.",
   "common_searching_for": "Suche nach: „{query}“",
-  "cast_device": "Gerät"
+  "cast_device": "Gerät",
+  "auth_enter_passcode": "Geben Sie Ihren Passcode ein, um fortzufahren.",
+  "auth_unlock": "Entsperren",
+  "auth_incorrect_passcode": "Falscher Passcode",
+  "auth_app_locked": "App gesperrt",
+  "settings_security_passcode": "Passcode",
+  "settings_security_passcode_configured": "Konfiguriert",
+  "settings_security_passcode_not_configured": "Nicht konfiguriert",
+  "settings_security_passcode_saved": "Passcode gespeichert",
+  "settings_security_passcode_removed": "Passcode entfernt",
+  "settings_security_enable_app_lock": "App-Sperre aktivieren",
+  "settings_security_enable_app_lock_subtitle": "Passcode beim Fortsetzen/Starten der App erforderlich.",
+  "settings_security_lock_on_launch": "Beim App-Start sperren",
+  "settings_security_lock_on_launch_subtitle": "Fragen Sie sofort nach dem Passwort, wenn die App geöffnet wird.",
+  "settings_security_background_lock_timer": "Hintergrundsperr-Timer",
+  "settings_security_background_lock_timer_subtitle": "Wie lange die App im Hintergrund bleiben kann, bevor sie gesperrt wird.",
+  "settings_security_set_passcode": "Passcode festlegen",
+  "settings_security_passcode_prompt": "Passcode (4–8 Ziffern)",
+  "settings_security_confirm_passcode": "Bestätigen",
+  "settings_security_error_numeric": "Verwenden Sie nur Ziffern mit einer Länge von 4–8.",
+  "settings_security_error_mismatch": "Passcodes stimmen nicht überein.",
+  "common_change": "Ändern",
+  "common_set": "Satz",
+  "common_immediately": "Sofort",
+  "common_sec": "{value} Sek",
+  "@common_sec": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "common_min": "{value} min",
+  "@common_min": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "common_s": "{value}s",
+  "@common_s": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "settings_security_title": "Sicherheit",
+  "settings_security_app_lock": "App-Sperre",
+  "settings_security_app_lock_subtitle": "Schützen Sie den Zugriff nach dem Hintergrundbetrieb mit einem Passcode."
 }

@@ -2457,4 +2457,105 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get cast_device => 'Устройство';
+
+  @override
+  String get auth_enter_passcode => 'Введите свой пароль, чтобы продолжить.';
+
+  @override
+  String get auth_unlock => 'Разблокировать';
+
+  @override
+  String get auth_incorrect_passcode => 'Неправильный пароль';
+
+  @override
+  String get auth_app_locked => 'Приложение заблокировано';
+
+  @override
+  String get settings_security_passcode => 'Код доступа';
+
+  @override
+  String get settings_security_passcode_configured => 'Настроено';
+
+  @override
+  String get settings_security_passcode_not_configured => 'Не настроено';
+
+  @override
+  String get settings_security_passcode_saved => 'Код доступа сохранен.';
+
+  @override
+  String get settings_security_passcode_removed => 'Код доступа удален.';
+
+  @override
+  String get settings_security_enable_app_lock =>
+      'Включить блокировку приложения';
+
+  @override
+  String get settings_security_enable_app_lock_subtitle =>
+      'Требовать пароль при возобновлении/запуске приложения.';
+
+  @override
+  String get settings_security_lock_on_launch =>
+      'Блокировка запуска приложения';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle =>
+      'Запросите пароль сразу после открытия приложения.';
+
+  @override
+  String get settings_security_background_lock_timer =>
+      'Таймер блокировки фона';
+
+  @override
+  String get settings_security_background_lock_timer_subtitle =>
+      'Как долго приложение может оставаться в фоновом режиме перед блокировкой.';
+
+  @override
+  String get settings_security_set_passcode => 'Установить пароль';
+
+  @override
+  String get settings_security_passcode_prompt => 'Код доступа (4–8 цифр)';
+
+  @override
+  String get settings_security_confirm_passcode => 'Подтверждать';
+
+  @override
+  String get settings_security_error_numeric =>
+      'Используйте только цифры длиной 4–8.';
+
+  @override
+  String get settings_security_error_mismatch => 'Пароли не совпадают.';
+
+  @override
+  String get common_change => 'Изменять';
+
+  @override
+  String get common_set => 'Набор';
+
+  @override
+  String get common_immediately => 'Немедленно';
+
+  @override
+  String common_sec(int value) {
+    return '$value сек.';
+  }
+
+  @override
+  String common_min(int value) {
+    return '$value мин.';
+  }
+
+  @override
+  String common_s(int value) {
+    return '${value}s';
+  }
+
+  @override
+  String get settings_security_title => 'Безопасность';
+
+  @override
+  String get settings_security_app_lock => 'Блокировка приложения';
+
+  @override
+  String get settings_security_app_lock_subtitle =>
+      'Защитите доступ с помощью пароля после фонового режима.';
 }

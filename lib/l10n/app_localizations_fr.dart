@@ -2477,4 +2477,107 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get cast_device => 'Appareil';
+
+  @override
+  String get auth_enter_passcode => 'Entrez votre mot de passe pour continuer.';
+
+  @override
+  String get auth_unlock => 'Ouvrir';
+
+  @override
+  String get auth_incorrect_passcode => 'Mot de passe incorrect';
+
+  @override
+  String get auth_app_locked => 'Application verrouillée';
+
+  @override
+  String get settings_security_passcode => 'Code d\'accès';
+
+  @override
+  String get settings_security_passcode_configured => 'Configuré';
+
+  @override
+  String get settings_security_passcode_not_configured => 'Non configuré';
+
+  @override
+  String get settings_security_passcode_saved => 'Code d\'accès enregistré';
+
+  @override
+  String get settings_security_passcode_removed => 'Code d\'accès supprimé';
+
+  @override
+  String get settings_security_enable_app_lock =>
+      'Activer le verrouillage des applications';
+
+  @override
+  String get settings_security_enable_app_lock_subtitle =>
+      'Exiger un mot de passe lors de la reprise/du lancement de l\'application.';
+
+  @override
+  String get settings_security_lock_on_launch =>
+      'Verrouiller le lancement de l\'application';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle =>
+      'Demandez le mot de passe immédiatement lorsque l\'application s\'ouvre.';
+
+  @override
+  String get settings_security_background_lock_timer =>
+      'Minuterie de verrouillage en arrière-plan';
+
+  @override
+  String get settings_security_background_lock_timer_subtitle =>
+      'Combien de temps l\'application peut rester en arrière-plan avant de se verrouiller.';
+
+  @override
+  String get settings_security_set_passcode => 'Définir le mot de passe';
+
+  @override
+  String get settings_security_passcode_prompt =>
+      'Code d\'accès (4 à 8 chiffres)';
+
+  @override
+  String get settings_security_confirm_passcode => 'Confirmer';
+
+  @override
+  String get settings_security_error_numeric =>
+      'Utilisez uniquement des chiffres, d\'une longueur de 4 à 8.';
+
+  @override
+  String get settings_security_error_mismatch =>
+      'Les codes d\'accès ne correspondent pas.';
+
+  @override
+  String get common_change => 'Changement';
+
+  @override
+  String get common_set => 'Ensemble';
+
+  @override
+  String get common_immediately => 'Immédiatement';
+
+  @override
+  String common_sec(int value) {
+    return '$value s';
+  }
+
+  @override
+  String common_min(int value) {
+    return '$value min';
+  }
+
+  @override
+  String common_s(int value) {
+    return '${value}s';
+  }
+
+  @override
+  String get settings_security_title => 'Sécurité';
+
+  @override
+  String get settings_security_app_lock => 'Verrouillage d\'application';
+
+  @override
+  String get settings_security_app_lock_subtitle =>
+      'Protégez l’accès avec un mot de passe après la mise en arrière-plan.';
 }
