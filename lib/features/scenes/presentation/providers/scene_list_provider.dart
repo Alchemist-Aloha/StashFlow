@@ -65,16 +65,13 @@ class SceneSort extends _$SceneSort {
     final sort = prefs.getString(_sortKey) ?? 'date';
     final descending = prefs.getBool(_descKey) ?? true;
 
-    int? seed;
-    if (sort == 'random') {
-      seed = ref.watch(sceneRandomSeedProvider);
-    }
-
+    final seed = sort == 'random' ? ref.read(sceneRandomSeedProvider) : null;
     return (sort: sort, descending: descending, randomSeed: seed);
   }
 
   void setSort({String? sort, bool descending = true}) {
-    state = (sort: sort, descending: descending, randomSeed: state.randomSeed);
+    final seed = sort == 'random' ? ref.read(sceneRandomSeedProvider) : null;
+    state = (sort: sort, descending: descending, randomSeed: seed);
   }
 
   Future<void> saveAsDefault() async {
@@ -211,9 +208,9 @@ class SceneList extends _$SceneList {
     final organizedFilter = ref.watch(sceneOrganizedOnlyProvider);
     final repository = ref.read(sceneRepositoryProvider);
 
-    String? effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
-      effectiveSort = 'random_${sortConfig.randomSeed}';
+    var effectiveSort = sortConfig.sort;
+    if (effectiveSort == 'random') {
+      effectiveSort = 'random_${ref.watch(sceneRandomSeedProvider)}';
     }
 
     final scenes = await repository.findScenes(
@@ -286,9 +283,9 @@ class SceneList extends _$SceneList {
     final filter = ref.read(sceneFilterStateProvider);
     final organizedFilter = ref.read(sceneOrganizedOnlyProvider);
 
-    String? effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
-      effectiveSort = 'random_${sortConfig.randomSeed}';
+    var effectiveSort = sortConfig.sort;
+    if (effectiveSort == 'random') {
+      effectiveSort = 'random_${ref.read(sceneRandomSeedProvider)}';
     }
 
     try {
