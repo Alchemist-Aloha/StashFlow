@@ -497,20 +497,31 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     return Row(
       children: [
         if (scene.studioName != null)
-          GestureDetector(
-            onTap: canOpenStudio
-                ? () => context.push('/studios/studio/${scene.studioId}')
-                : null,
-            child: Text(
-              scene.studioName!,
-              style: context.textTheme.titleMedium?.copyWith(
-                color: canOpenStudio
-                    ? context.colors.primary
-                    : context.colors.onSurface,
-                fontWeight: FontWeight.w500,
-                decoration: canOpenStudio
-                    ? TextDecoration.underline
-                    : TextDecoration.none,
+          Semantics(
+            button: canOpenStudio,
+            label: canOpenStudio ? 'Open ${scene.studioName} details' : null,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: canOpenStudio
+                    ? () => context.push('/studios/studio/${scene.studioId}')
+                    : null,
+                borderRadius: BorderRadius.circular(4),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+                  child: Text(
+                    scene.studioName!,
+                    style: context.textTheme.titleMedium?.copyWith(
+                      color: canOpenStudio
+                          ? context.colors.primary
+                          : context.colors.onSurface,
+                      fontWeight: FontWeight.w500,
+                      decoration: canOpenStudio
+                          ? TextDecoration.underline
+                          : TextDecoration.none,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
