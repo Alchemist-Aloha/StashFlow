@@ -879,5 +879,55 @@
   "main_startup_failed": "StashFlow를 시작하지 못했습니다.",
   "main_startup_failed_desc": "앱 초기화가 완료되기 전에 시작 서비스가 실패했습니다.진단을 확인한 후 앱을 다시 시작하세요.",
   "common_searching_for": "검색 중: \"{query}\"",
-  "cast_device": "장치"
+  "cast_device": "장치",
+  "auth_enter_passcode": "계속하려면 비밀번호를 입력하세요.",
+  "auth_unlock": "터놓다",
+  "auth_incorrect_passcode": "잘못된 비밀번호",
+  "auth_app_locked": "앱이 잠겼습니다.",
+  "settings_security_passcode": "비밀번호",
+  "settings_security_passcode_configured": "구성됨",
+  "settings_security_passcode_not_configured": "구성되지 않음",
+  "settings_security_passcode_saved": "비밀번호가 저장되었습니다",
+  "settings_security_passcode_removed": "비밀번호가 삭제되었습니다.",
+  "settings_security_enable_app_lock": "앱 잠금 활성화",
+  "settings_security_enable_app_lock_subtitle": "앱 재개/실행 시 비밀번호가 필요합니다.",
+  "settings_security_lock_on_launch": "앱 실행 시 잠금",
+  "settings_security_lock_on_launch_subtitle": "앱이 열리면 즉시 비밀번호를 요청하세요.",
+  "settings_security_background_lock_timer": "백그라운드 잠금 타이머",
+  "settings_security_background_lock_timer_subtitle": "앱이 잠기기 전에 백그라운드에 머무를 수 있는 시간입니다.",
+  "settings_security_set_passcode": "비밀번호 설정",
+  "settings_security_passcode_prompt": "비밀번호(4~8자리)",
+  "settings_security_confirm_passcode": "확인하다",
+  "settings_security_error_numeric": "길이가 4~8인 숫자만 사용하세요.",
+  "settings_security_error_mismatch": "비밀번호가 일치하지 않습니다.",
+  "common_change": "변화",
+  "common_set": "세트",
+  "common_immediately": "즉시",
+  "common_sec": "{value}초",
+  "@common_sec": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "common_min": "{value}분",
+  "@common_min": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "common_s": "{value}s",
+  "@common_s": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "settings_security_title": "보안",
+  "settings_security_app_lock": "앱 잠금",
+  "settings_security_app_lock_subtitle": "백그라운드 후 비밀번호로 접근을 보호하세요."
 }

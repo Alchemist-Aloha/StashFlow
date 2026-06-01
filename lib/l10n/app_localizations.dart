@@ -4523,6 +4523,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Device'**
   String get cast_device;
+
+  /// No description provided for @auth_enter_passcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your passcode to continue.'**
+  String get auth_enter_passcode;
+
+  /// No description provided for @auth_unlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock'**
+  String get auth_unlock;
+
+  /// No description provided for @auth_incorrect_passcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect passcode'**
+  String get auth_incorrect_passcode;
+
+  /// No description provided for @auth_app_locked.
+  ///
+  /// In en, this message translates to:
+  /// **'App Locked'**
+  String get auth_app_locked;
+
+  /// No description provided for @settings_security_passcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcode'**
+  String get settings_security_passcode;
+
+  /// No description provided for @settings_security_passcode_configured.
+  ///
+  /// In en, this message translates to:
+  /// **'Configured'**
+  String get settings_security_passcode_configured;
+
+  /// No description provided for @settings_security_passcode_not_configured.
+  ///
+  /// In en, this message translates to:
+  /// **'Not configured'**
+  String get settings_security_passcode_not_configured;
+
+  /// No description provided for @settings_security_passcode_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcode saved'**
+  String get settings_security_passcode_saved;
+
+  /// No description provided for @settings_security_passcode_removed.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcode removed'**
+  String get settings_security_passcode_removed;
+
+  /// No description provided for @settings_security_enable_app_lock.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable app lock'**
+  String get settings_security_enable_app_lock;
+
+  /// No description provided for @settings_security_enable_app_lock_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Require passcode on app resume/launch.'**
+  String get settings_security_enable_app_lock_subtitle;
+
+  /// No description provided for @settings_security_lock_on_launch.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock on app launch'**
+  String get settings_security_lock_on_launch;
+
+  /// No description provided for @settings_security_lock_on_launch_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask for passcode immediately when app opens.'**
+  String get settings_security_lock_on_launch_subtitle;
+
+  /// No description provided for @settings_security_background_lock_timer.
+  ///
+  /// In en, this message translates to:
+  /// **'Background lock timer'**
+  String get settings_security_background_lock_timer;
+
+  /// No description provided for @settings_security_background_lock_timer_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How long the app can stay in background before locking.'**
+  String get settings_security_background_lock_timer_subtitle;
+
+  /// No description provided for @settings_security_set_passcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Set passcode'**
+  String get settings_security_set_passcode;
+
+  /// No description provided for @settings_security_passcode_prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcode (4-8 digits)'**
+  String get settings_security_passcode_prompt;
+
+  /// No description provided for @settings_security_confirm_passcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get settings_security_confirm_passcode;
+
+  /// No description provided for @settings_security_error_numeric.
+  ///
+  /// In en, this message translates to:
+  /// **'Use only digits, with length 4-8.'**
+  String get settings_security_error_numeric;
+
+  /// No description provided for @settings_security_error_mismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcodes do not match.'**
+  String get settings_security_error_mismatch;
+
+  /// No description provided for @common_change.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get common_change;
+
+  /// No description provided for @common_set.
+  ///
+  /// In en, this message translates to:
+  /// **'Set'**
+  String get common_set;
+
+  /// No description provided for @common_immediately.
+  ///
+  /// In en, this message translates to:
+  /// **'Immediately'**
+  String get common_immediately;
+
+  /// No description provided for @common_sec.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} sec'**
+  String common_sec(int value);
+
+  /// No description provided for @common_min.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} min'**
+  String common_min(int value);
+
+  /// No description provided for @common_s.
+  ///
+  /// In en, this message translates to:
+  /// **'{value}s'**
+  String common_s(int value);
+
+  /// No description provided for @settings_security_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get settings_security_title;
+
+  /// No description provided for @settings_security_app_lock.
+  ///
+  /// In en, this message translates to:
+  /// **'App lock'**
+  String get settings_security_app_lock;
+
+  /// No description provided for @settings_security_app_lock_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Protect access with a passcode after backgrounding.'**
+  String get settings_security_app_lock_subtitle;
 }
 
 class _AppLocalizationsDelegate

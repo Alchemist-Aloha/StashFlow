@@ -2425,4 +2425,102 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cast_device => 'Device';
+
+  @override
+  String get auth_enter_passcode => 'Enter your passcode to continue.';
+
+  @override
+  String get auth_unlock => 'Unlock';
+
+  @override
+  String get auth_incorrect_passcode => 'Incorrect passcode';
+
+  @override
+  String get auth_app_locked => 'App Locked';
+
+  @override
+  String get settings_security_passcode => 'Passcode';
+
+  @override
+  String get settings_security_passcode_configured => 'Configured';
+
+  @override
+  String get settings_security_passcode_not_configured => 'Not configured';
+
+  @override
+  String get settings_security_passcode_saved => 'Passcode saved';
+
+  @override
+  String get settings_security_passcode_removed => 'Passcode removed';
+
+  @override
+  String get settings_security_enable_app_lock => 'Enable app lock';
+
+  @override
+  String get settings_security_enable_app_lock_subtitle =>
+      'Require passcode on app resume/launch.';
+
+  @override
+  String get settings_security_lock_on_launch => 'Lock on app launch';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle =>
+      'Ask for passcode immediately when app opens.';
+
+  @override
+  String get settings_security_background_lock_timer => 'Background lock timer';
+
+  @override
+  String get settings_security_background_lock_timer_subtitle =>
+      'How long the app can stay in background before locking.';
+
+  @override
+  String get settings_security_set_passcode => 'Set passcode';
+
+  @override
+  String get settings_security_passcode_prompt => 'Passcode (4-8 digits)';
+
+  @override
+  String get settings_security_confirm_passcode => 'Confirm';
+
+  @override
+  String get settings_security_error_numeric =>
+      'Use only digits, with length 4-8.';
+
+  @override
+  String get settings_security_error_mismatch => 'Passcodes do not match.';
+
+  @override
+  String get common_change => 'Change';
+
+  @override
+  String get common_set => 'Set';
+
+  @override
+  String get common_immediately => 'Immediately';
+
+  @override
+  String common_sec(int value) {
+    return '$value sec';
+  }
+
+  @override
+  String common_min(int value) {
+    return '$value min';
+  }
+
+  @override
+  String common_s(int value) {
+    return '${value}s';
+  }
+
+  @override
+  String get settings_security_title => 'Security';
+
+  @override
+  String get settings_security_app_lock => 'App lock';
+
+  @override
+  String get settings_security_app_lock_subtitle =>
+      'Protect access with a passcode after backgrounding.';
 }

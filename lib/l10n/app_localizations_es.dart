@@ -2487,4 +2487,107 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get cast_device => 'Dispositivo';
+
+  @override
+  String get auth_enter_passcode => 'Ingrese su contraseña para continuar.';
+
+  @override
+  String get auth_unlock => 'Descubrir';
+
+  @override
+  String get auth_incorrect_passcode => 'Código de acceso incorrecto';
+
+  @override
+  String get auth_app_locked => 'Aplicación bloqueada';
+
+  @override
+  String get settings_security_passcode => 'Código de acceso';
+
+  @override
+  String get settings_security_passcode_configured => 'Configurado';
+
+  @override
+  String get settings_security_passcode_not_configured => 'No configurado';
+
+  @override
+  String get settings_security_passcode_saved => 'Código de acceso guardado';
+
+  @override
+  String get settings_security_passcode_removed => 'Código de acceso eliminado';
+
+  @override
+  String get settings_security_enable_app_lock =>
+      'Habilitar bloqueo de aplicaciones';
+
+  @override
+  String get settings_security_enable_app_lock_subtitle =>
+      'Requerir código de acceso al reanudar/iniciar la aplicación.';
+
+  @override
+  String get settings_security_lock_on_launch =>
+      'Bloquear al iniciar la aplicación';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle =>
+      'Solicite el código de acceso inmediatamente cuando se abra la aplicación.';
+
+  @override
+  String get settings_security_background_lock_timer =>
+      'Temporizador de bloqueo de fondo';
+
+  @override
+  String get settings_security_background_lock_timer_subtitle =>
+      'Cuánto tiempo puede permanecer la aplicación en segundo plano antes de bloquearse.';
+
+  @override
+  String get settings_security_set_passcode => 'Establecer contraseña';
+
+  @override
+  String get settings_security_passcode_prompt =>
+      'Código de acceso (4-8 dígitos)';
+
+  @override
+  String get settings_security_confirm_passcode => 'Confirmar';
+
+  @override
+  String get settings_security_error_numeric =>
+      'Utilice sólo dígitos, con una longitud de 4 a 8.';
+
+  @override
+  String get settings_security_error_mismatch =>
+      'Las contraseñas no coinciden.';
+
+  @override
+  String get common_change => 'Cambiar';
+
+  @override
+  String get common_set => 'Colocar';
+
+  @override
+  String get common_immediately => 'Inmediatamente';
+
+  @override
+  String common_sec(int value) {
+    return '$value seg';
+  }
+
+  @override
+  String common_min(int value) {
+    return '$value min';
+  }
+
+  @override
+  String common_s(int value) {
+    return '${value}s';
+  }
+
+  @override
+  String get settings_security_title => 'Seguridad';
+
+  @override
+  String get settings_security_app_lock => 'Bloqueo de aplicaciones';
+
+  @override
+  String get settings_security_app_lock_subtitle =>
+      'Proteja el acceso con una contraseña después de ponerlo en segundo plano.';
 }

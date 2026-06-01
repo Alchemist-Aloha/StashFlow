@@ -879,5 +879,55 @@
   "main_startup_failed": "StashFlow no pudo iniciarse",
   "main_startup_failed_desc": "Un servicio de inicio falló antes de que la aplicación pudiera terminar de inicializarse.Reinicie la aplicación después de verificar los diagnósticos.",
   "common_searching_for": "Buscando: \"{query}\"",
-  "cast_device": "Dispositivo"
+  "cast_device": "Dispositivo",
+  "auth_enter_passcode": "Ingrese su contraseña para continuar.",
+  "auth_unlock": "Descubrir",
+  "auth_incorrect_passcode": "Código de acceso incorrecto",
+  "auth_app_locked": "Aplicación bloqueada",
+  "settings_security_passcode": "Código de acceso",
+  "settings_security_passcode_configured": "Configurado",
+  "settings_security_passcode_not_configured": "No configurado",
+  "settings_security_passcode_saved": "Código de acceso guardado",
+  "settings_security_passcode_removed": "Código de acceso eliminado",
+  "settings_security_enable_app_lock": "Habilitar bloqueo de aplicaciones",
+  "settings_security_enable_app_lock_subtitle": "Requerir código de acceso al reanudar/iniciar la aplicación.",
+  "settings_security_lock_on_launch": "Bloquear al iniciar la aplicación",
+  "settings_security_lock_on_launch_subtitle": "Solicite el código de acceso inmediatamente cuando se abra la aplicación.",
+  "settings_security_background_lock_timer": "Temporizador de bloqueo de fondo",
+  "settings_security_background_lock_timer_subtitle": "Cuánto tiempo puede permanecer la aplicación en segundo plano antes de bloquearse.",
+  "settings_security_set_passcode": "Establecer contraseña",
+  "settings_security_passcode_prompt": "Código de acceso (4-8 dígitos)",
+  "settings_security_confirm_passcode": "Confirmar",
+  "settings_security_error_numeric": "Utilice sólo dígitos, con una longitud de 4 a 8.",
+  "settings_security_error_mismatch": "Las contraseñas no coinciden.",
+  "common_change": "Cambiar",
+  "common_set": "Colocar",
+  "common_immediately": "Inmediatamente",
+  "common_sec": "{value} seg",
+  "@common_sec": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "common_min": "{value} min",
+  "@common_min": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "common_s": "{value}s",
+  "@common_s": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "settings_security_title": "Seguridad",
+  "settings_security_app_lock": "Bloqueo de aplicaciones",
+  "settings_security_app_lock_subtitle": "Proteja el acceso con una contraseña después de ponerlo en segundo plano."
 }

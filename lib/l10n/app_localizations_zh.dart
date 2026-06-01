@@ -2352,6 +2352,100 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get cast_device => '设备';
+
+  @override
+  String get auth_enter_passcode => '输入您的密码以继续。';
+
+  @override
+  String get auth_unlock => '开锁';
+
+  @override
+  String get auth_incorrect_passcode => '密码不正确';
+
+  @override
+  String get auth_app_locked => '应用程序已锁定';
+
+  @override
+  String get settings_security_passcode => '密码';
+
+  @override
+  String get settings_security_passcode_configured => '已配置';
+
+  @override
+  String get settings_security_passcode_not_configured => '未配置';
+
+  @override
+  String get settings_security_passcode_saved => '密码已保存';
+
+  @override
+  String get settings_security_passcode_removed => '密码已删除';
+
+  @override
+  String get settings_security_enable_app_lock => '启用应用程序锁定';
+
+  @override
+  String get settings_security_enable_app_lock_subtitle => '应用程序恢复/启动时需要密码。';
+
+  @override
+  String get settings_security_lock_on_launch => '锁定应用程序启动';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle => '应用程序打开时立即询问密码。';
+
+  @override
+  String get settings_security_background_lock_timer => '后台锁定定时器';
+
+  @override
+  String get settings_security_background_lock_timer_subtitle =>
+      '应用程序在锁定之前可以在后台停留多长时间。';
+
+  @override
+  String get settings_security_set_passcode => '设置密码';
+
+  @override
+  String get settings_security_passcode_prompt => '密码（4-8位）';
+
+  @override
+  String get settings_security_confirm_passcode => '确认';
+
+  @override
+  String get settings_security_error_numeric => '仅使用数字，长度为 4-8。';
+
+  @override
+  String get settings_security_error_mismatch => '密码不匹配。';
+
+  @override
+  String get common_change => '改变';
+
+  @override
+  String get common_set => '放';
+
+  @override
+  String get common_immediately => '立即地';
+
+  @override
+  String common_sec(int value) {
+    return '$value 秒';
+  }
+
+  @override
+  String common_min(int value) {
+    return '$value 分钟';
+  }
+
+  @override
+  String common_s(int value) {
+    return '${value}s';
+  }
+
+  @override
+  String get settings_security_title => '安全';
+
+  @override
+  String get settings_security_app_lock => '应用锁';
+
+  @override
+  String get settings_security_app_lock_subtitle => '后台运行后使用密码保护访问。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -4702,6 +4796,100 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get cast_device => '设备';
+
+  @override
+  String get auth_enter_passcode => '输入您的密码以继续。';
+
+  @override
+  String get auth_unlock => '开锁';
+
+  @override
+  String get auth_incorrect_passcode => '密码不正确';
+
+  @override
+  String get auth_app_locked => '应用程序已锁定';
+
+  @override
+  String get settings_security_passcode => '密码';
+
+  @override
+  String get settings_security_passcode_configured => '已配置';
+
+  @override
+  String get settings_security_passcode_not_configured => '未配置';
+
+  @override
+  String get settings_security_passcode_saved => '密码已保存';
+
+  @override
+  String get settings_security_passcode_removed => '密码已删除';
+
+  @override
+  String get settings_security_enable_app_lock => '启用应用程序锁定';
+
+  @override
+  String get settings_security_enable_app_lock_subtitle => '应用程序恢复/启动时需要密码。';
+
+  @override
+  String get settings_security_lock_on_launch => '锁定应用程序启动';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle => '应用程序打开时立即询问密码。';
+
+  @override
+  String get settings_security_background_lock_timer => '后台锁定定时器';
+
+  @override
+  String get settings_security_background_lock_timer_subtitle =>
+      '应用程序在锁定之前可以在后台停留多长时间。';
+
+  @override
+  String get settings_security_set_passcode => '设置密码';
+
+  @override
+  String get settings_security_passcode_prompt => '密码（4-8位）';
+
+  @override
+  String get settings_security_confirm_passcode => '确认';
+
+  @override
+  String get settings_security_error_numeric => '仅使用数字，长度为 4-8。';
+
+  @override
+  String get settings_security_error_mismatch => '密码不匹配。';
+
+  @override
+  String get common_change => '改变';
+
+  @override
+  String get common_set => '放';
+
+  @override
+  String get common_immediately => '立即地';
+
+  @override
+  String common_sec(int value) {
+    return '$value 秒';
+  }
+
+  @override
+  String common_min(int value) {
+    return '$value 分钟';
+  }
+
+  @override
+  String common_s(int value) {
+    return '${value}s';
+  }
+
+  @override
+  String get settings_security_title => '安全';
+
+  @override
+  String get settings_security_app_lock => '应用锁';
+
+  @override
+  String get settings_security_app_lock_subtitle => '后台运行后使用密码保护访问。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7056,4 +7244,98 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get cast_device => '裝置';
+
+  @override
+  String get auth_enter_passcode => '輸入您的密碼以繼續。';
+
+  @override
+  String get auth_unlock => '開鎖';
+
+  @override
+  String get auth_incorrect_passcode => '密碼不正確';
+
+  @override
+  String get auth_app_locked => '應用程式已鎖定';
+
+  @override
+  String get settings_security_passcode => '密碼';
+
+  @override
+  String get settings_security_passcode_configured => '已配置';
+
+  @override
+  String get settings_security_passcode_not_configured => '未配置';
+
+  @override
+  String get settings_security_passcode_saved => '密碼已儲存';
+
+  @override
+  String get settings_security_passcode_removed => '密碼已刪除';
+
+  @override
+  String get settings_security_enable_app_lock => '啟用應用程式鎖定';
+
+  @override
+  String get settings_security_enable_app_lock_subtitle => '應用程式恢復/啟動時需要密碼。';
+
+  @override
+  String get settings_security_lock_on_launch => '鎖定應用程式啟動';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle => '應用程式開啟時立即詢問密碼。';
+
+  @override
+  String get settings_security_background_lock_timer => '後台鎖定定時器';
+
+  @override
+  String get settings_security_background_lock_timer_subtitle =>
+      '應用程式在鎖定之前可以在背景停留多長時間。';
+
+  @override
+  String get settings_security_set_passcode => '設定密碼';
+
+  @override
+  String get settings_security_passcode_prompt => '密碼（4-8位）';
+
+  @override
+  String get settings_security_confirm_passcode => '確認';
+
+  @override
+  String get settings_security_error_numeric => '僅使用數字，長度為 4-8。';
+
+  @override
+  String get settings_security_error_mismatch => '密碼不符。';
+
+  @override
+  String get common_change => '改變';
+
+  @override
+  String get common_set => '放';
+
+  @override
+  String get common_immediately => '立即地';
+
+  @override
+  String common_sec(int value) {
+    return '$value 秒';
+  }
+
+  @override
+  String common_min(int value) {
+    return '$value 分鐘';
+  }
+
+  @override
+  String common_s(int value) {
+    return '${value}s';
+  }
+
+  @override
+  String get settings_security_title => '安全';
+
+  @override
+  String get settings_security_app_lock => '應用鎖';
+
+  @override
+  String get settings_security_app_lock_subtitle => '後台運行後使用密碼保護存取。';
 }

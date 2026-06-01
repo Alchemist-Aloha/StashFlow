@@ -2481,4 +2481,105 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get cast_device => 'Dispositivo';
+
+  @override
+  String get auth_enter_passcode => 'Inserisci il tuo passcode per continuare.';
+
+  @override
+  String get auth_unlock => 'Sbloccare';
+
+  @override
+  String get auth_incorrect_passcode => 'Codice di accesso errato';
+
+  @override
+  String get auth_app_locked => 'Applicazione bloccata';
+
+  @override
+  String get settings_security_passcode => 'Codice di accesso';
+
+  @override
+  String get settings_security_passcode_configured => 'Configurato';
+
+  @override
+  String get settings_security_passcode_not_configured => 'Non configurato';
+
+  @override
+  String get settings_security_passcode_saved => 'Codice di accesso salvato';
+
+  @override
+  String get settings_security_passcode_removed => 'Codice rimosso';
+
+  @override
+  String get settings_security_enable_app_lock => 'Abilita il blocco dell\'app';
+
+  @override
+  String get settings_security_enable_app_lock_subtitle =>
+      'Richiedi il passcode al ripristino/avvio dell\'app.';
+
+  @override
+  String get settings_security_lock_on_launch => 'Blocca all\'avvio dell\'app';
+
+  @override
+  String get settings_security_lock_on_launch_subtitle =>
+      'Richiedi immediatamente il passcode all\'apertura dell\'app.';
+
+  @override
+  String get settings_security_background_lock_timer =>
+      'Temporizzatore di blocco dello sfondo';
+
+  @override
+  String get settings_security_background_lock_timer_subtitle =>
+      'Per quanto tempo l\'app può rimanere in background prima di bloccarsi.';
+
+  @override
+  String get settings_security_set_passcode => 'Imposta il codice di accesso';
+
+  @override
+  String get settings_security_passcode_prompt =>
+      'Codice di accesso (4-8 cifre)';
+
+  @override
+  String get settings_security_confirm_passcode => 'Confermare';
+
+  @override
+  String get settings_security_error_numeric =>
+      'Utilizzare solo cifre, con lunghezza compresa tra 4 e 8.';
+
+  @override
+  String get settings_security_error_mismatch =>
+      'I codici di accesso non corrispondono.';
+
+  @override
+  String get common_change => 'Modifica';
+
+  @override
+  String get common_set => 'Impostato';
+
+  @override
+  String get common_immediately => 'Immediatamente';
+
+  @override
+  String common_sec(int value) {
+    return '$value sec';
+  }
+
+  @override
+  String common_min(int value) {
+    return '$value min';
+  }
+
+  @override
+  String common_s(int value) {
+    return '${value}s';
+  }
+
+  @override
+  String get settings_security_title => 'Sicurezza';
+
+  @override
+  String get settings_security_app_lock => 'Blocco dell\'app';
+
+  @override
+  String get settings_security_app_lock_subtitle =>
+      'Proteggi l\'accesso con un passcode dopo il background.';
 }
