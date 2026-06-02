@@ -120,10 +120,40 @@ class SceneSavedFilterConfig {
   static Map<String, dynamic> _fromServerObjectFilter(
     Map<String, dynamic> objectFilter,
   ) {
-    return {
-      for (final entry in objectFilter.entries)
-        _serverToLocalKeys[entry.key] ?? entry.key: entry.value,
-    };
+    final output = <String, dynamic>{};
+    for (final entry in objectFilter.entries) {
+      final localKey = _serverToLocalKeys[entry.key] ?? entry.key;
+      final normalized = _normalizeServerValue(localKey, entry.value);
+      if (normalized != _skipValue) {
+        output[localKey] = normalized;
+      }
+    }
+    return output;
+  }
+
+  static Object? _normalizeServerValue(String localKey, Object? value) {
+    if (_booleanFields.contains(localKey)) {
+      return _readBooleanCriterionValue(value) ?? _skipValue;
+    }
+
+    // Stash's is_missing value is a field name. StashFlow currently models it
+    // as bool, so loading it would crash or lose meaning.
+    if (localKey == 'isMissing') return _skipValue;
+
+    return value;
+  }
+
+  static bool? _readBooleanCriterionValue(Object? value) {
+    final rawValue = value is Map ? value['value'] : value;
+    if (rawValue is bool) return rawValue;
+    if (rawValue is String) {
+      return switch (rawValue.toLowerCase()) {
+        'true' => true,
+        'false' => false,
+        _ => null,
+      };
+    }
+    return null;
   }
 
   static const _localToServerKeys = {
@@ -153,4 +183,13 @@ class SceneSavedFilterConfig {
   static final _serverToLocalKeys = {
     for (final entry in _localToServerKeys.entries) entry.value: entry.key,
   };
+
+  static const _booleanFields = {
+    'organized',
+    'interactive',
+    'hasMarkers',
+    'isMissing',
+  };
+
+  static const _skipValue = Object();
 }

@@ -73,5 +73,23 @@ void main() {
       expect(config.filter.lastPlayedAt?.value, '2025-01-01');
       expect(config.filter.performers?.value, ['3']);
     });
+
+    test('normalizes official boolean criterion maps without crashing', () {
+      final config = SceneSavedFilterConfig.fromServerPayload(
+        id: '13',
+        name: 'Boolean criteria',
+        objectFilter: {
+          'organized': {'value': 'true', 'modifier': 'EQUALS'},
+          'interactive': {'value': 'false', 'modifier': 'EQUALS'},
+          'has_markers': {'value': 'true', 'modifier': 'EQUALS'},
+          'is_missing': {'value': 'title', 'modifier': 'EQUALS'},
+        },
+      );
+
+      expect(config.filter.organized, true);
+      expect(config.filter.interactive, false);
+      expect(config.filter.hasMarkers, true);
+      expect(config.filter.isMissing, isNull);
+    });
   });
 }
