@@ -84,6 +84,33 @@ query FindScenes($filter: FindFilterType, $scene_filter: SceneFilterType) {
   }
 }
 
+fragment SceneSavedFilterData on SavedFilter {
+  id
+  mode
+  name
+  find_filter {
+    q
+    page
+    per_page
+    sort
+    direction
+  }
+  object_filter
+  ui_options
+}
+
+query FindSceneSavedFilters {
+  findSavedFilters(mode: SCENES) {
+    ...SceneSavedFilterData
+  }
+}
+
+mutation SaveSceneSavedFilter($input: SaveFilterInput!) {
+  saveFilter(input: $input) {
+    ...SceneSavedFilterData
+  }
+}
+
 query FindScene($id: ID!) {
   findScene(id: $id) {
     ...SceneData

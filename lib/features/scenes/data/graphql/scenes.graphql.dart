@@ -4321,6 +4321,595 @@ class _CopyWithStubImpl$Fragment$SceneData$tags<TRes>
   call({String? id, String? name, String? $__typename}) => _res;
 }
 
+class Fragment$SceneSavedFilterData {
+  Fragment$SceneSavedFilterData({
+    required this.id,
+    required this.mode,
+    required this.name,
+    this.find_filter,
+    this.object_filter,
+    this.ui_options,
+    this.$__typename = 'SavedFilter',
+  });
+
+  factory Fragment$SceneSavedFilterData.fromJson(Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$mode = json['mode'];
+    final l$name = json['name'];
+    final l$find_filter = json['find_filter'];
+    final l$object_filter = json['object_filter'];
+    final l$ui_options = json['ui_options'];
+    final l$$__typename = json['__typename'];
+    return Fragment$SceneSavedFilterData(
+      id: (l$id as String),
+      mode: fromJson$Enum$FilterMode((l$mode as String)),
+      name: (l$name as String),
+      find_filter: l$find_filter == null
+          ? null
+          : Fragment$SceneSavedFilterData$find_filter.fromJson(
+              (l$find_filter as Map<String, dynamic>),
+            ),
+      object_filter: (l$object_filter as String?),
+      ui_options: (l$ui_options as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final Enum$FilterMode mode;
+
+  final String name;
+
+  final Fragment$SceneSavedFilterData$find_filter? find_filter;
+
+  final String? object_filter;
+
+  final String? ui_options;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$mode = mode;
+    _resultData['mode'] = toJson$Enum$FilterMode(l$mode);
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$find_filter = find_filter;
+    _resultData['find_filter'] = l$find_filter?.toJson();
+    final l$object_filter = object_filter;
+    _resultData['object_filter'] = l$object_filter;
+    final l$ui_options = ui_options;
+    _resultData['ui_options'] = l$ui_options;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$mode = mode;
+    final l$name = name;
+    final l$find_filter = find_filter;
+    final l$object_filter = object_filter;
+    final l$ui_options = ui_options;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$mode,
+      l$name,
+      l$find_filter,
+      l$object_filter,
+      l$ui_options,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$SceneSavedFilterData ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$mode = mode;
+    final lOther$mode = other.mode;
+    if (l$mode != lOther$mode) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$find_filter = find_filter;
+    final lOther$find_filter = other.find_filter;
+    if (l$find_filter != lOther$find_filter) {
+      return false;
+    }
+    final l$object_filter = object_filter;
+    final lOther$object_filter = other.object_filter;
+    if (l$object_filter != lOther$object_filter) {
+      return false;
+    }
+    final l$ui_options = ui_options;
+    final lOther$ui_options = other.ui_options;
+    if (l$ui_options != lOther$ui_options) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$SceneSavedFilterData
+    on Fragment$SceneSavedFilterData {
+  CopyWith$Fragment$SceneSavedFilterData<Fragment$SceneSavedFilterData>
+  get copyWith => CopyWith$Fragment$SceneSavedFilterData(this, (i) => i);
+}
+
+abstract class CopyWith$Fragment$SceneSavedFilterData<TRes> {
+  factory CopyWith$Fragment$SceneSavedFilterData(
+    Fragment$SceneSavedFilterData instance,
+    TRes Function(Fragment$SceneSavedFilterData) then,
+  ) = _CopyWithImpl$Fragment$SceneSavedFilterData;
+
+  factory CopyWith$Fragment$SceneSavedFilterData.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$SceneSavedFilterData;
+
+  TRes call({
+    String? id,
+    Enum$FilterMode? mode,
+    String? name,
+    Fragment$SceneSavedFilterData$find_filter? find_filter,
+    String? object_filter,
+    String? ui_options,
+    String? $__typename,
+  });
+  CopyWith$Fragment$SceneSavedFilterData$find_filter<TRes> get find_filter;
+}
+
+class _CopyWithImpl$Fragment$SceneSavedFilterData<TRes>
+    implements CopyWith$Fragment$SceneSavedFilterData<TRes> {
+  _CopyWithImpl$Fragment$SceneSavedFilterData(this._instance, this._then);
+
+  final Fragment$SceneSavedFilterData _instance;
+
+  final TRes Function(Fragment$SceneSavedFilterData) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? mode = _undefined,
+    Object? name = _undefined,
+    Object? find_filter = _undefined,
+    Object? object_filter = _undefined,
+    Object? ui_options = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Fragment$SceneSavedFilterData(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      mode: mode == _undefined || mode == null
+          ? _instance.mode
+          : (mode as Enum$FilterMode),
+      name: name == _undefined || name == null
+          ? _instance.name
+          : (name as String),
+      find_filter: find_filter == _undefined
+          ? _instance.find_filter
+          : (find_filter as Fragment$SceneSavedFilterData$find_filter?),
+      object_filter: object_filter == _undefined
+          ? _instance.object_filter
+          : (object_filter as String?),
+      ui_options: ui_options == _undefined
+          ? _instance.ui_options
+          : (ui_options as String?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+
+  CopyWith$Fragment$SceneSavedFilterData$find_filter<TRes> get find_filter {
+    final local$find_filter = _instance.find_filter;
+    return local$find_filter == null
+        ? CopyWith$Fragment$SceneSavedFilterData$find_filter.stub(
+            _then(_instance),
+          )
+        : CopyWith$Fragment$SceneSavedFilterData$find_filter(
+            local$find_filter,
+            (e) => call(find_filter: e),
+          );
+  }
+}
+
+class _CopyWithStubImpl$Fragment$SceneSavedFilterData<TRes>
+    implements CopyWith$Fragment$SceneSavedFilterData<TRes> {
+  _CopyWithStubImpl$Fragment$SceneSavedFilterData(this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    Enum$FilterMode? mode,
+    String? name,
+    Fragment$SceneSavedFilterData$find_filter? find_filter,
+    String? object_filter,
+    String? ui_options,
+    String? $__typename,
+  }) => _res;
+
+  CopyWith$Fragment$SceneSavedFilterData$find_filter<TRes> get find_filter =>
+      CopyWith$Fragment$SceneSavedFilterData$find_filter.stub(_res);
+}
+
+const fragmentDefinitionSceneSavedFilterData = FragmentDefinitionNode(
+  name: NameNode(value: 'SceneSavedFilterData'),
+  typeCondition: TypeConditionNode(
+    on: NamedTypeNode(name: NameNode(value: 'SavedFilter'), isNonNull: false),
+  ),
+  directives: [],
+  selectionSet: SelectionSetNode(
+    selections: [
+      FieldNode(
+        name: NameNode(value: 'id'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+      FieldNode(
+        name: NameNode(value: 'mode'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+      FieldNode(
+        name: NameNode(value: 'name'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+      FieldNode(
+        name: NameNode(value: 'find_filter'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: SelectionSetNode(
+          selections: [
+            FieldNode(
+              name: NameNode(value: 'q'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'page'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'per_page'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'sort'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'direction'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: '__typename'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+          ],
+        ),
+      ),
+      FieldNode(
+        name: NameNode(value: 'object_filter'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+      FieldNode(
+        name: NameNode(value: 'ui_options'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+      FieldNode(
+        name: NameNode(value: '__typename'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+    ],
+  ),
+);
+const documentNodeFragmentSceneSavedFilterData = DocumentNode(
+  definitions: [fragmentDefinitionSceneSavedFilterData],
+);
+
+extension ClientExtension$Fragment$SceneSavedFilterData
+    on graphql.GraphQLClient {
+  void writeFragment$SceneSavedFilterData({
+    required Fragment$SceneSavedFilterData data,
+    required Map<String, dynamic> idFields,
+    bool broadcast = true,
+  }) => this.writeFragment(
+    graphql.FragmentRequest(
+      idFields: idFields,
+      fragment: const graphql.Fragment(
+        fragmentName: 'SceneSavedFilterData',
+        document: documentNodeFragmentSceneSavedFilterData,
+      ),
+    ),
+    data: data.toJson(),
+    broadcast: broadcast,
+  );
+
+  Fragment$SceneSavedFilterData? readFragment$SceneSavedFilterData({
+    required Map<String, dynamic> idFields,
+    bool optimistic = true,
+  }) {
+    final result = this.readFragment(
+      graphql.FragmentRequest(
+        idFields: idFields,
+        fragment: const graphql.Fragment(
+          fragmentName: 'SceneSavedFilterData',
+          document: documentNodeFragmentSceneSavedFilterData,
+        ),
+      ),
+      optimistic: optimistic,
+    );
+    return result == null
+        ? null
+        : Fragment$SceneSavedFilterData.fromJson(result);
+  }
+}
+
+class Fragment$SceneSavedFilterData$find_filter {
+  Fragment$SceneSavedFilterData$find_filter({
+    this.q,
+    this.page,
+    this.per_page,
+    this.sort,
+    this.direction,
+    this.$__typename = 'SavedFindFilterType',
+  });
+
+  factory Fragment$SceneSavedFilterData$find_filter.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$q = json['q'];
+    final l$page = json['page'];
+    final l$per_page = json['per_page'];
+    final l$sort = json['sort'];
+    final l$direction = json['direction'];
+    final l$$__typename = json['__typename'];
+    return Fragment$SceneSavedFilterData$find_filter(
+      q: (l$q as String?),
+      page: (l$page as int?),
+      per_page: (l$per_page as int?),
+      sort: (l$sort as String?),
+      direction: l$direction == null
+          ? null
+          : fromJson$Enum$SortDirectionEnum((l$direction as String)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String? q;
+
+  final int? page;
+
+  final int? per_page;
+
+  final String? sort;
+
+  final Enum$SortDirectionEnum? direction;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$q = q;
+    _resultData['q'] = l$q;
+    final l$page = page;
+    _resultData['page'] = l$page;
+    final l$per_page = per_page;
+    _resultData['per_page'] = l$per_page;
+    final l$sort = sort;
+    _resultData['sort'] = l$sort;
+    final l$direction = direction;
+    _resultData['direction'] = l$direction == null
+        ? null
+        : toJson$Enum$SortDirectionEnum(l$direction);
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$q = q;
+    final l$page = page;
+    final l$per_page = per_page;
+    final l$sort = sort;
+    final l$direction = direction;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$q,
+      l$page,
+      l$per_page,
+      l$sort,
+      l$direction,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$SceneSavedFilterData$find_filter ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$q = q;
+    final lOther$q = other.q;
+    if (l$q != lOther$q) {
+      return false;
+    }
+    final l$page = page;
+    final lOther$page = other.page;
+    if (l$page != lOther$page) {
+      return false;
+    }
+    final l$per_page = per_page;
+    final lOther$per_page = other.per_page;
+    if (l$per_page != lOther$per_page) {
+      return false;
+    }
+    final l$sort = sort;
+    final lOther$sort = other.sort;
+    if (l$sort != lOther$sort) {
+      return false;
+    }
+    final l$direction = direction;
+    final lOther$direction = other.direction;
+    if (l$direction != lOther$direction) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$SceneSavedFilterData$find_filter
+    on Fragment$SceneSavedFilterData$find_filter {
+  CopyWith$Fragment$SceneSavedFilterData$find_filter<
+    Fragment$SceneSavedFilterData$find_filter
+  >
+  get copyWith =>
+      CopyWith$Fragment$SceneSavedFilterData$find_filter(this, (i) => i);
+}
+
+abstract class CopyWith$Fragment$SceneSavedFilterData$find_filter<TRes> {
+  factory CopyWith$Fragment$SceneSavedFilterData$find_filter(
+    Fragment$SceneSavedFilterData$find_filter instance,
+    TRes Function(Fragment$SceneSavedFilterData$find_filter) then,
+  ) = _CopyWithImpl$Fragment$SceneSavedFilterData$find_filter;
+
+  factory CopyWith$Fragment$SceneSavedFilterData$find_filter.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$SceneSavedFilterData$find_filter;
+
+  TRes call({
+    String? q,
+    int? page,
+    int? per_page,
+    String? sort,
+    Enum$SortDirectionEnum? direction,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Fragment$SceneSavedFilterData$find_filter<TRes>
+    implements CopyWith$Fragment$SceneSavedFilterData$find_filter<TRes> {
+  _CopyWithImpl$Fragment$SceneSavedFilterData$find_filter(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$SceneSavedFilterData$find_filter _instance;
+
+  final TRes Function(Fragment$SceneSavedFilterData$find_filter) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? q = _undefined,
+    Object? page = _undefined,
+    Object? per_page = _undefined,
+    Object? sort = _undefined,
+    Object? direction = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Fragment$SceneSavedFilterData$find_filter(
+      q: q == _undefined ? _instance.q : (q as String?),
+      page: page == _undefined ? _instance.page : (page as int?),
+      per_page: per_page == _undefined
+          ? _instance.per_page
+          : (per_page as int?),
+      sort: sort == _undefined ? _instance.sort : (sort as String?),
+      direction: direction == _undefined
+          ? _instance.direction
+          : (direction as Enum$SortDirectionEnum?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Fragment$SceneSavedFilterData$find_filter<TRes>
+    implements CopyWith$Fragment$SceneSavedFilterData$find_filter<TRes> {
+  _CopyWithStubImpl$Fragment$SceneSavedFilterData$find_filter(this._res);
+
+  TRes _res;
+
+  call({
+    String? q,
+    int? page,
+    int? per_page,
+    String? sort,
+    Enum$SortDirectionEnum? direction,
+    String? $__typename,
+  }) => _res;
+}
+
 class Variables$Query$FindScenes {
   factory Variables$Query$FindScenes({
     Input$FindFilterType? filter,
@@ -4972,6 +5561,737 @@ class _CopyWithStubImpl$Query$FindScenes$findScenes<TRes>
   }) => _res;
 
   scenes(_fn) => _res;
+}
+
+class Query$FindSceneSavedFilters {
+  Query$FindSceneSavedFilters({
+    required this.findSavedFilters,
+    this.$__typename = 'Query',
+  });
+
+  factory Query$FindSceneSavedFilters.fromJson(Map<String, dynamic> json) {
+    final l$findSavedFilters = json['findSavedFilters'];
+    final l$$__typename = json['__typename'];
+    return Query$FindSceneSavedFilters(
+      findSavedFilters: (l$findSavedFilters as List<dynamic>)
+          .map(
+            (e) => Fragment$SceneSavedFilterData.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final List<Fragment$SceneSavedFilterData> findSavedFilters;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$findSavedFilters = findSavedFilters;
+    _resultData['findSavedFilters'] = l$findSavedFilters
+        .map((e) => e.toJson())
+        .toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$findSavedFilters = findSavedFilters;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      Object.hashAll(l$findSavedFilters.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$FindSceneSavedFilters ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$findSavedFilters = findSavedFilters;
+    final lOther$findSavedFilters = other.findSavedFilters;
+    if (l$findSavedFilters.length != lOther$findSavedFilters.length) {
+      return false;
+    }
+    for (int i = 0; i < l$findSavedFilters.length; i++) {
+      final l$findSavedFilters$entry = l$findSavedFilters[i];
+      final lOther$findSavedFilters$entry = lOther$findSavedFilters[i];
+      if (l$findSavedFilters$entry != lOther$findSavedFilters$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$FindSceneSavedFilters
+    on Query$FindSceneSavedFilters {
+  CopyWith$Query$FindSceneSavedFilters<Query$FindSceneSavedFilters>
+  get copyWith => CopyWith$Query$FindSceneSavedFilters(this, (i) => i);
+}
+
+abstract class CopyWith$Query$FindSceneSavedFilters<TRes> {
+  factory CopyWith$Query$FindSceneSavedFilters(
+    Query$FindSceneSavedFilters instance,
+    TRes Function(Query$FindSceneSavedFilters) then,
+  ) = _CopyWithImpl$Query$FindSceneSavedFilters;
+
+  factory CopyWith$Query$FindSceneSavedFilters.stub(TRes res) =
+      _CopyWithStubImpl$Query$FindSceneSavedFilters;
+
+  TRes call({
+    List<Fragment$SceneSavedFilterData>? findSavedFilters,
+    String? $__typename,
+  });
+  TRes findSavedFilters(
+    Iterable<Fragment$SceneSavedFilterData> Function(
+      Iterable<
+        CopyWith$Fragment$SceneSavedFilterData<Fragment$SceneSavedFilterData>
+      >,
+    )
+    _fn,
+  );
+}
+
+class _CopyWithImpl$Query$FindSceneSavedFilters<TRes>
+    implements CopyWith$Query$FindSceneSavedFilters<TRes> {
+  _CopyWithImpl$Query$FindSceneSavedFilters(this._instance, this._then);
+
+  final Query$FindSceneSavedFilters _instance;
+
+  final TRes Function(Query$FindSceneSavedFilters) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? findSavedFilters = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$FindSceneSavedFilters(
+      findSavedFilters:
+          findSavedFilters == _undefined || findSavedFilters == null
+          ? _instance.findSavedFilters
+          : (findSavedFilters as List<Fragment$SceneSavedFilterData>),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+
+  TRes findSavedFilters(
+    Iterable<Fragment$SceneSavedFilterData> Function(
+      Iterable<
+        CopyWith$Fragment$SceneSavedFilterData<Fragment$SceneSavedFilterData>
+      >,
+    )
+    _fn,
+  ) => call(
+    findSavedFilters: _fn(
+      _instance.findSavedFilters.map(
+        (e) => CopyWith$Fragment$SceneSavedFilterData(e, (i) => i),
+      ),
+    ).toList(),
+  );
+}
+
+class _CopyWithStubImpl$Query$FindSceneSavedFilters<TRes>
+    implements CopyWith$Query$FindSceneSavedFilters<TRes> {
+  _CopyWithStubImpl$Query$FindSceneSavedFilters(this._res);
+
+  TRes _res;
+
+  call({
+    List<Fragment$SceneSavedFilterData>? findSavedFilters,
+    String? $__typename,
+  }) => _res;
+
+  findSavedFilters(_fn) => _res;
+}
+
+const documentNodeQueryFindSceneSavedFilters = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.query,
+      name: NameNode(value: 'FindSceneSavedFilters'),
+      variableDefinitions: [],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'findSavedFilters'),
+            alias: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'mode'),
+                value: EnumValueNode(name: NameNode(value: 'SCENES')),
+              ),
+            ],
+            directives: [],
+            selectionSet: SelectionSetNode(
+              selections: [
+                FragmentSpreadNode(
+                  name: NameNode(value: 'SceneSavedFilterData'),
+                  directives: [],
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ],
+      ),
+    ),
+    fragmentDefinitionSceneSavedFilterData,
+  ],
+);
+Query$FindSceneSavedFilters _parserFn$Query$FindSceneSavedFilters(
+  Map<String, dynamic> data,
+) => Query$FindSceneSavedFilters.fromJson(data);
+typedef OnQueryComplete$Query$FindSceneSavedFilters =
+    FutureOr<void> Function(
+      Map<String, dynamic>?,
+      Query$FindSceneSavedFilters?,
+    );
+
+class Options$Query$FindSceneSavedFilters
+    extends graphql.QueryOptions<Query$FindSceneSavedFilters> {
+  Options$Query$FindSceneSavedFilters({
+    String? operationName,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$FindSceneSavedFilters? typedOptimisticResult,
+    Duration? pollInterval,
+    graphql.Context? context,
+    OnQueryComplete$Query$FindSceneSavedFilters? onComplete,
+    graphql.OnQueryError? onError,
+  }) : onCompleteWithParsed = onComplete,
+       super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         pollInterval: pollInterval,
+         context: context,
+         onComplete: onComplete == null
+             ? null
+             : (data) => onComplete(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Query$FindSceneSavedFilters(data),
+               ),
+         onError: onError,
+         document: documentNodeQueryFindSceneSavedFilters,
+         parserFn: _parserFn$Query$FindSceneSavedFilters,
+       );
+
+  final OnQueryComplete$Query$FindSceneSavedFilters? onCompleteWithParsed;
+
+  @override
+  List<Object?> get properties => [
+    ...super.onComplete == null
+        ? super.properties
+        : super.properties.where((property) => property != onComplete),
+    onCompleteWithParsed,
+  ];
+}
+
+class WatchOptions$Query$FindSceneSavedFilters
+    extends graphql.WatchQueryOptions<Query$FindSceneSavedFilters> {
+  WatchOptions$Query$FindSceneSavedFilters({
+    String? operationName,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$FindSceneSavedFilters? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeQueryFindSceneSavedFilters,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Query$FindSceneSavedFilters,
+       );
+}
+
+class FetchMoreOptions$Query$FindSceneSavedFilters
+    extends graphql.FetchMoreOptions {
+  FetchMoreOptions$Query$FindSceneSavedFilters({
+    required graphql.UpdateQuery updateQuery,
+  }) : super(
+         updateQuery: updateQuery,
+         document: documentNodeQueryFindSceneSavedFilters,
+       );
+}
+
+extension ClientExtension$Query$FindSceneSavedFilters on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Query$FindSceneSavedFilters>>
+  query$FindSceneSavedFilters([
+    Options$Query$FindSceneSavedFilters? options,
+  ]) async =>
+      await this.query(options ?? Options$Query$FindSceneSavedFilters());
+
+  graphql.ObservableQuery<Query$FindSceneSavedFilters>
+  watchQuery$FindSceneSavedFilters([
+    WatchOptions$Query$FindSceneSavedFilters? options,
+  ]) => this.watchQuery(options ?? WatchOptions$Query$FindSceneSavedFilters());
+
+  void writeQuery$FindSceneSavedFilters({
+    required Query$FindSceneSavedFilters data,
+    bool broadcast = true,
+  }) => this.writeQuery(
+    graphql.Request(
+      operation: graphql.Operation(
+        document: documentNodeQueryFindSceneSavedFilters,
+      ),
+    ),
+    data: data.toJson(),
+    broadcast: broadcast,
+  );
+
+  Query$FindSceneSavedFilters? readQuery$FindSceneSavedFilters({
+    bool optimistic = true,
+  }) {
+    final result = this.readQuery(
+      graphql.Request(
+        operation: graphql.Operation(
+          document: documentNodeQueryFindSceneSavedFilters,
+        ),
+      ),
+      optimistic: optimistic,
+    );
+    return result == null ? null : Query$FindSceneSavedFilters.fromJson(result);
+  }
+}
+
+class Variables$Mutation$SaveSceneSavedFilter {
+  factory Variables$Mutation$SaveSceneSavedFilter({
+    required Input$SaveFilterInput input,
+  }) => Variables$Mutation$SaveSceneSavedFilter._({r'input': input});
+
+  Variables$Mutation$SaveSceneSavedFilter._(this._$data);
+
+  factory Variables$Mutation$SaveSceneSavedFilter.fromJson(
+    Map<String, dynamic> data,
+  ) {
+    final result$data = <String, dynamic>{};
+    final l$input = data['input'];
+    result$data['input'] = Input$SaveFilterInput.fromJson(
+      (l$input as Map<String, dynamic>),
+    );
+    return Variables$Mutation$SaveSceneSavedFilter._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  Input$SaveFilterInput get input => (_$data['input'] as Input$SaveFilterInput);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$input = input;
+    result$data['input'] = l$input.toJson();
+    return result$data;
+  }
+
+  CopyWith$Variables$Mutation$SaveSceneSavedFilter<
+    Variables$Mutation$SaveSceneSavedFilter
+  >
+  get copyWith =>
+      CopyWith$Variables$Mutation$SaveSceneSavedFilter(this, (i) => i);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Mutation$SaveSceneSavedFilter ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$input = input;
+    final lOther$input = other.input;
+    if (l$input != lOther$input) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$input = input;
+    return Object.hashAll([l$input]);
+  }
+}
+
+abstract class CopyWith$Variables$Mutation$SaveSceneSavedFilter<TRes> {
+  factory CopyWith$Variables$Mutation$SaveSceneSavedFilter(
+    Variables$Mutation$SaveSceneSavedFilter instance,
+    TRes Function(Variables$Mutation$SaveSceneSavedFilter) then,
+  ) = _CopyWithImpl$Variables$Mutation$SaveSceneSavedFilter;
+
+  factory CopyWith$Variables$Mutation$SaveSceneSavedFilter.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Mutation$SaveSceneSavedFilter;
+
+  TRes call({Input$SaveFilterInput? input});
+}
+
+class _CopyWithImpl$Variables$Mutation$SaveSceneSavedFilter<TRes>
+    implements CopyWith$Variables$Mutation$SaveSceneSavedFilter<TRes> {
+  _CopyWithImpl$Variables$Mutation$SaveSceneSavedFilter(
+    this._instance,
+    this._then,
+  );
+
+  final Variables$Mutation$SaveSceneSavedFilter _instance;
+
+  final TRes Function(Variables$Mutation$SaveSceneSavedFilter) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? input = _undefined}) => _then(
+    Variables$Mutation$SaveSceneSavedFilter._({
+      ..._instance._$data,
+      if (input != _undefined && input != null)
+        'input': (input as Input$SaveFilterInput),
+    }),
+  );
+}
+
+class _CopyWithStubImpl$Variables$Mutation$SaveSceneSavedFilter<TRes>
+    implements CopyWith$Variables$Mutation$SaveSceneSavedFilter<TRes> {
+  _CopyWithStubImpl$Variables$Mutation$SaveSceneSavedFilter(this._res);
+
+  TRes _res;
+
+  call({Input$SaveFilterInput? input}) => _res;
+}
+
+class Mutation$SaveSceneSavedFilter {
+  Mutation$SaveSceneSavedFilter({
+    required this.saveFilter,
+    this.$__typename = 'Mutation',
+  });
+
+  factory Mutation$SaveSceneSavedFilter.fromJson(Map<String, dynamic> json) {
+    final l$saveFilter = json['saveFilter'];
+    final l$$__typename = json['__typename'];
+    return Mutation$SaveSceneSavedFilter(
+      saveFilter: Fragment$SceneSavedFilterData.fromJson(
+        (l$saveFilter as Map<String, dynamic>),
+      ),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Fragment$SceneSavedFilterData saveFilter;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$saveFilter = saveFilter;
+    _resultData['saveFilter'] = l$saveFilter.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$saveFilter = saveFilter;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$saveFilter, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$SaveSceneSavedFilter ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$saveFilter = saveFilter;
+    final lOther$saveFilter = other.saveFilter;
+    if (l$saveFilter != lOther$saveFilter) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$SaveSceneSavedFilter
+    on Mutation$SaveSceneSavedFilter {
+  CopyWith$Mutation$SaveSceneSavedFilter<Mutation$SaveSceneSavedFilter>
+  get copyWith => CopyWith$Mutation$SaveSceneSavedFilter(this, (i) => i);
+}
+
+abstract class CopyWith$Mutation$SaveSceneSavedFilter<TRes> {
+  factory CopyWith$Mutation$SaveSceneSavedFilter(
+    Mutation$SaveSceneSavedFilter instance,
+    TRes Function(Mutation$SaveSceneSavedFilter) then,
+  ) = _CopyWithImpl$Mutation$SaveSceneSavedFilter;
+
+  factory CopyWith$Mutation$SaveSceneSavedFilter.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$SaveSceneSavedFilter;
+
+  TRes call({Fragment$SceneSavedFilterData? saveFilter, String? $__typename});
+  CopyWith$Fragment$SceneSavedFilterData<TRes> get saveFilter;
+}
+
+class _CopyWithImpl$Mutation$SaveSceneSavedFilter<TRes>
+    implements CopyWith$Mutation$SaveSceneSavedFilter<TRes> {
+  _CopyWithImpl$Mutation$SaveSceneSavedFilter(this._instance, this._then);
+
+  final Mutation$SaveSceneSavedFilter _instance;
+
+  final TRes Function(Mutation$SaveSceneSavedFilter) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? saveFilter = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Mutation$SaveSceneSavedFilter(
+      saveFilter: saveFilter == _undefined || saveFilter == null
+          ? _instance.saveFilter
+          : (saveFilter as Fragment$SceneSavedFilterData),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+
+  CopyWith$Fragment$SceneSavedFilterData<TRes> get saveFilter {
+    final local$saveFilter = _instance.saveFilter;
+    return CopyWith$Fragment$SceneSavedFilterData(
+      local$saveFilter,
+      (e) => call(saveFilter: e),
+    );
+  }
+}
+
+class _CopyWithStubImpl$Mutation$SaveSceneSavedFilter<TRes>
+    implements CopyWith$Mutation$SaveSceneSavedFilter<TRes> {
+  _CopyWithStubImpl$Mutation$SaveSceneSavedFilter(this._res);
+
+  TRes _res;
+
+  call({Fragment$SceneSavedFilterData? saveFilter, String? $__typename}) =>
+      _res;
+
+  CopyWith$Fragment$SceneSavedFilterData<TRes> get saveFilter =>
+      CopyWith$Fragment$SceneSavedFilterData.stub(_res);
+}
+
+const documentNodeMutationSaveSceneSavedFilter = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.mutation,
+      name: NameNode(value: 'SaveSceneSavedFilter'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'input')),
+          type: NamedTypeNode(
+            name: NameNode(value: 'SaveFilterInput'),
+            isNonNull: true,
+          ),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'saveFilter'),
+            alias: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'input'),
+                value: VariableNode(name: NameNode(value: 'input')),
+              ),
+            ],
+            directives: [],
+            selectionSet: SelectionSetNode(
+              selections: [
+                FragmentSpreadNode(
+                  name: NameNode(value: 'SceneSavedFilterData'),
+                  directives: [],
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ],
+      ),
+    ),
+    fragmentDefinitionSceneSavedFilterData,
+  ],
+);
+Mutation$SaveSceneSavedFilter _parserFn$Mutation$SaveSceneSavedFilter(
+  Map<String, dynamic> data,
+) => Mutation$SaveSceneSavedFilter.fromJson(data);
+typedef OnMutationCompleted$Mutation$SaveSceneSavedFilter =
+    FutureOr<void> Function(
+      Map<String, dynamic>?,
+      Mutation$SaveSceneSavedFilter?,
+    );
+
+class Options$Mutation$SaveSceneSavedFilter
+    extends graphql.MutationOptions<Mutation$SaveSceneSavedFilter> {
+  Options$Mutation$SaveSceneSavedFilter({
+    String? operationName,
+    required Variables$Mutation$SaveSceneSavedFilter variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$SaveSceneSavedFilter? typedOptimisticResult,
+    graphql.Context? context,
+    OnMutationCompleted$Mutation$SaveSceneSavedFilter? onCompleted,
+    graphql.OnMutationUpdate<Mutation$SaveSceneSavedFilter>? update,
+    graphql.OnError? onError,
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Mutation$SaveSceneSavedFilter(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationSaveSceneSavedFilter,
+         parserFn: _parserFn$Mutation$SaveSceneSavedFilter,
+       );
+
+  final OnMutationCompleted$Mutation$SaveSceneSavedFilter?
+  onCompletedWithParsed;
+
+  @override
+  List<Object?> get properties => [
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
+}
+
+class WatchOptions$Mutation$SaveSceneSavedFilter
+    extends graphql.WatchQueryOptions<Mutation$SaveSceneSavedFilter> {
+  WatchOptions$Mutation$SaveSceneSavedFilter({
+    String? operationName,
+    required Variables$Mutation$SaveSceneSavedFilter variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$SaveSceneSavedFilter? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeMutationSaveSceneSavedFilter,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Mutation$SaveSceneSavedFilter,
+       );
+}
+
+extension ClientExtension$Mutation$SaveSceneSavedFilter
+    on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Mutation$SaveSceneSavedFilter>>
+  mutate$SaveSceneSavedFilter(
+    Options$Mutation$SaveSceneSavedFilter options,
+  ) async => await this.mutate(options);
+
+  graphql.ObservableQuery<Mutation$SaveSceneSavedFilter>
+  watchMutation$SaveSceneSavedFilter(
+    WatchOptions$Mutation$SaveSceneSavedFilter options,
+  ) => this.watchMutation(options);
 }
 
 class Variables$Query$FindScene {

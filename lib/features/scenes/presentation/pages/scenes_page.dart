@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'dart:math';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
+import '../../domain/entities/scene_saved_filter_config.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/playback_queue_provider.dart';
@@ -19,6 +20,7 @@ import '../../../../core/utils/responsive.dart';
 import '../../../../core/utils/app_log_store.dart';
 
 import '../widgets/scene_filter_panel.dart';
+import '../widgets/scene_saved_filter_dialog.dart';
 import '../../../../core/presentation/widgets/grid_utils.dart';
 
 enum _SceneSortField {
@@ -140,7 +142,16 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
 
   /// Syncs the local UI sort state with the [sceneListProvider] and triggers a fetch.
   void _applyServerSort() {
-    final sortKey = switch (_sortField) {
+    ref
+        .read(sceneSortProvider.notifier)
+        .setSort(
+          sort: _sortKeyForField(_sortField),
+          descending: _sortDescending,
+        );
+  }
+
+  String _sortKeyForField(_SceneSortField field) {
+    return switch (field) {
       _SceneSortField.date => 'date',
       _SceneSortField.rating => 'rating',
       _SceneSortField.playCount => 'play_count',
@@ -171,9 +182,41 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       _SceneSortField.groupSceneNumber => 'group_scene_number',
       _SceneSortField.code => 'code',
     };
-    ref
-        .read(sceneSortProvider.notifier)
-        .setSort(sort: sortKey, descending: _sortDescending);
+  }
+
+  _SceneSortField _sortFieldForKey(String? sort) {
+    return switch (sort) {
+      'date' => _SceneSortField.date,
+      'rating' => _SceneSortField.rating,
+      'play_count' => _SceneSortField.playCount,
+      'title' => _SceneSortField.title,
+      'duration' => _SceneSortField.duration,
+      'bitrate' => _SceneSortField.bitrate,
+      'framerate' => _SceneSortField.framerate,
+      'updated_at' => _SceneSortField.updatedAt,
+      'created_at' => _SceneSortField.createdAt,
+      'random' => _SceneSortField.random,
+      'file_count' => _SceneSortField.fileCount,
+      'filesize' => _SceneSortField.filesize,
+      'resolution' => _SceneSortField.resolution,
+      'last_played_at' => _SceneSortField.lastPlayedAt,
+      'resume_time' => _SceneSortField.resumeTime,
+      'play_duration' => _SceneSortField.playDuration,
+      'interactive' => _SceneSortField.interactive,
+      'interactive_speed' => _SceneSortField.interactiveSpeed,
+      'perceptual_similarity' => _SceneSortField.perceptualSimilarity,
+      'performer_age' => _SceneSortField.performerAge,
+      'studio' => _SceneSortField.studio,
+      'path' => _SceneSortField.path,
+      'file_mod_time' => _SceneSortField.fileModTime,
+      'tag_count' => _SceneSortField.tagCount,
+      'performer_count' => _SceneSortField.performerCount,
+      'o_counter' => _SceneSortField.oCounter,
+      'last_o_at' => _SceneSortField.lastOAt,
+      'group_scene_number' => _SceneSortField.groupSceneNumber,
+      'code' => _SceneSortField.code,
+      _ => _SceneSortField.date,
+    };
   }
 
   /// Opens the "Casino mode" random scene view.
@@ -414,6 +457,46 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     );
   }
 
+  void _showSavedFilterDialog() {
+    final sortConfig = ref.read(sceneSortProvider);
+    final filter = ref.read(sceneFilterStateProvider);
+    final organizedFilter = ref.read(sceneOrganizedOnlyProvider);
+    final effectiveFilter = filter.copyWith(
+      organized: organizedFilter.toBool() ?? filter.organized,
+    );
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => SceneSavedFilterDialog(
+        searchQuery: ref.read(sceneSearchQueryProvider),
+        sort: sortConfig.sort,
+        descending: sortConfig.descending,
+        filter: effectiveFilter,
+        onLoad: _applySavedFilterConfig,
+      ),
+    );
+  }
+
+  void _applySavedFilterConfig(SceneSavedFilterConfig config) {
+    setState(() {
+      _sortField = _sortFieldForKey(config.sort);
+      _sortDescending = config.descending;
+    });
+
+    ref.read(sceneSearchQueryProvider.notifier).update(config.searchQuery);
+    ref
+        .read(sceneFilterStateProvider.notifier)
+        .update(config.filter.copyWith(organized: null));
+    ref
+        .read(sceneOrganizedOnlyProvider.notifier)
+        .set(OrganizedFilter.fromBool(config.filter.organized));
+    ref
+        .read(sceneSortProvider.notifier)
+        .setSort(sort: config.sort ?? 'date', descending: config.descending);
+    ref.invalidate(sceneListProvider);
+  }
+
   @override
   Widget build(BuildContext context) {
     // Fullscreen auto-exit is handled by the SceneDetailsPage so the
@@ -527,6 +610,11 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                 ),
               ),
           ],
+        ),
+        IconButton(
+          tooltip: 'Saved filters',
+          icon: const Icon(Icons.bookmarks_outlined),
+          onPressed: _showSavedFilterDialog,
         ),
       ],
       gridDelegate: isGridView
