@@ -119,7 +119,7 @@ class _SceneSavedFilterDialogState
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Saved scene filters',
+                        'Save active scene settings',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
@@ -131,6 +131,13 @@ class _SceneSavedFilterDialogState
                   ],
                 ),
                 const SizedBox(height: 16),
+                _ActiveSettingsSummary(
+                  searchQuery: widget.searchQuery,
+                  sort: widget.sort,
+                  descending: widget.descending,
+                  filter: widget.filter,
+                ),
+                const SizedBox(height: 16),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -139,7 +146,7 @@ class _SceneSavedFilterDialogState
                         controller: _nameController,
                         enabled: !_saving,
                         decoration: const InputDecoration(
-                          labelText: 'Filter name',
+                          labelText: 'Server preset name',
                           helperText: 'Existing names are overwritten',
                           border: OutlineInputBorder(),
                         ),
@@ -183,6 +190,58 @@ class _SceneSavedFilterDialogState
               ],
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+class _ActiveSettingsSummary extends StatelessWidget {
+  const _ActiveSettingsSummary({
+    required this.searchQuery,
+    required this.sort,
+    required this.descending,
+    required this.filter,
+  });
+
+  final String searchQuery;
+  final String? sort;
+  final bool descending;
+  final SceneFilter filter;
+
+  @override
+  Widget build(BuildContext context) {
+    final activeFilterCount = filter
+        .toJson()
+        .values
+        .where((value) => value != null)
+        .length;
+    final sortLabel = '${sort ?? 'date'} ${descending ? 'DESC' : 'ASC'}';
+
+    return Material(
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Current active settings will be saved to the server.',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                Chip(label: Text('Sort: $sortLabel')),
+                Chip(label: Text('Filters: $activeFilterCount')),
+                if (searchQuery.isNotEmpty)
+                  Chip(label: Text('Search: $searchQuery')),
+              ],
+            ),
+          ],
         ),
       ),
     );
