@@ -929,5 +929,6 @@
   },
   "settings_security_title": "Seguridad",
   "settings_security_app_lock": "Bloqueo de aplicaciones",
-  "settings_security_app_lock_subtitle": "Proteja el acceso con una contraseña después de ponerlo en segundo plano."
+  "settings_security_app_lock_subtitle": "Proteja el acceso con una contraseña después de ponerlo en segundo plano.",
+  "common_saved_filters": "Filtros guardados"
 }

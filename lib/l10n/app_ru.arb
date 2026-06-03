@@ -929,5 +929,6 @@
   },
   "settings_security_title": "Безопасность",
   "settings_security_app_lock": "Блокировка приложения",
-  "settings_security_app_lock_subtitle": "Защитите доступ с помощью пароля после фонового режима."
+  "settings_security_app_lock_subtitle": "Защитите доступ с помощью пароля после фонового режима.",
+  "common_saved_filters": "Сохраненные фильтры"
 }

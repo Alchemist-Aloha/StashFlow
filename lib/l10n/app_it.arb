@@ -934,5 +934,6 @@
   },
   "settings_security_title": "Sicurezza",
   "settings_security_app_lock": "Blocco dell'app",
-  "settings_security_app_lock_subtitle": "Proteggi l'accesso con un passcode dopo il background."
+  "settings_security_app_lock_subtitle": "Proteggi l'accesso con un passcode dopo il background.",
+  "common_saved_filters": "Filtri salvati"
 }

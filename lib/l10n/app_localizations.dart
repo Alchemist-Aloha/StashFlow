@@ -4697,6 +4697,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Protect access with a passcode after backgrounding.'**
   String get settings_security_app_lock_subtitle;
+
+  /// No description provided for @common_saved_filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved filters'**
+  String get common_saved_filters;
 }
 
 class _AppLocalizationsDelegate

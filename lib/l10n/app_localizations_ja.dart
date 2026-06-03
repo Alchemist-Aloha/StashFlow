@@ -2473,4 +2473,7 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get settings_security_app_lock_subtitle =>
       'バックグラウンド化後はパスコードでアクセスを保護します。';
+
+  @override
+  String get common_saved_filters => '保存されたフィルター';
 }

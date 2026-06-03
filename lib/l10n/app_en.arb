@@ -1049,5 +1049,6 @@
   },
   "settings_security_title": "Security",
   "settings_security_app_lock": "App lock",
-  "settings_security_app_lock_subtitle": "Protect access with a passcode after backgrounding."
+  "settings_security_app_lock_subtitle": "Protect access with a passcode after backgrounding.",
+  "common_saved_filters": "Saved filters"
 }
