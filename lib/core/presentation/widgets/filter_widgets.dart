@@ -233,9 +233,7 @@ class IntCriterionInput extends StatelessWidget {
                 SizedBox(width: context.dimensions.spacingSmall),
                 Expanded(
                   child: TextFormField(
-                    key: ValueKey(
-                      'int-primary-$label-$modifier-${value?.value}',
-                    ),
+                    key: ValueKey('int-primary-$label-$modifier'),
                     textInputAction: TextInputAction.next,
                     keyboardType: TextInputType.number,
                     initialValue: value?.value.toString() ?? '',
@@ -261,9 +259,7 @@ class IntCriterionInput extends StatelessWidget {
                 SizedBox(width: context.dimensions.spacingSmall),
                 Expanded(
                   child: TextFormField(
-                    key: ValueKey(
-                      'int-secondary-$label-$modifier-${value?.value2}',
-                    ),
+                    key: ValueKey('int-secondary-$label-$modifier'),
                     textInputAction: TextInputAction.next,
                     keyboardType: TextInputType.number,
                     initialValue: value?.value2?.toString() ?? '',
@@ -500,9 +496,7 @@ class DateCriterionInput extends StatelessWidget {
                 SizedBox(width: context.dimensions.spacingSmall),
                 Expanded(
                   child: TextFormField(
-                    key: ValueKey(
-                      'date-primary-$label-$modifier-${value?.value}',
-                    ),
+                    key: ValueKey('date-primary-$label-$modifier'),
                     textInputAction: TextInputAction.next,
                     initialValue: value?.value ?? '',
                     decoration: InputDecoration(
@@ -524,9 +518,7 @@ class DateCriterionInput extends StatelessWidget {
                 SizedBox(width: context.dimensions.spacingSmall),
                 Expanded(
                   child: TextFormField(
-                    key: ValueKey(
-                      'date-secondary-$label-$modifier-${value?.value2}',
-                    ),
+                    key: ValueKey('date-secondary-$label-$modifier'),
                     textInputAction: TextInputAction.next,
                     initialValue: value?.value2 ?? '',
                     decoration: InputDecoration(

@@ -89,6 +89,57 @@ void main() {
     );
 
     testWidgets(
+      'IntCriterionInput keeps focus while typing into a between field',
+      (tester) async {
+        IntCriterion? criterion = const IntCriterion(value: 10);
+
+        await pumpTestWidget(
+          tester,
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return Scaffold(
+                body: IntCriterionInput(
+                  label: 'Rating',
+                  value: criterion,
+                  onChanged: (next) => setState(() => criterion = next),
+                ),
+              );
+            },
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Equals'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Between').last);
+        await tester.pumpAndSettle();
+
+        final firstField = find.byType(TextFormField).first;
+        await tester.tap(firstField);
+        await tester.pump();
+
+        expect(
+          tester
+              .widget<EditableText>(find.byType(EditableText).first)
+              .focusNode
+              .hasFocus,
+          isTrue,
+        );
+
+        await tester.enterText(firstField, '1');
+        await tester.pump();
+
+        expect(
+          tester
+              .widget<EditableText>(find.byType(EditableText).first)
+              .focusNode
+              .hasFocus,
+          isTrue,
+        );
+      },
+    );
+
+    testWidgets(
       'DateCriterionInput shows a second value field for between operators',
       (tester) async {
         DateCriterion? criterion = const DateCriterion(value: '2024-01-01');
