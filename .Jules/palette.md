@@ -1,3 +1,3 @@
-## 2024-05-18 - Replacing Raw GestureDetector Text Links with Semantics and InkWell
-**Learning:** Found that custom plain text links used for navigation (like clicking on a Studio name to open its details) were wrapped in a basic `GestureDetector` without providing accessibility roles, hover states, or touch feedback. This makes them invisible to screen readers as interactive elements and feels "dead" to touch or mouse interaction.
-**Action:** Replaced the `GestureDetector` wrapper with `Semantics(button: true)` + `Material` + `InkWell`. By adding a small `padding: EdgeInsets.symmetric(horizontal: 2, vertical: 1)` to the `InkWell`, it gives the ripple animation room to breathe while keeping the layout footprint minimal.
+## 2026-06-03 - Localized Tooltips
+**Learning:** Found several floating action buttons and icon buttons using hardcoded English strings ('Saved filters') for their tooltips. Hardcoded strings harm accessibility for non-English screen reader users.
+**Action:** When working on tooltips, always grep for hardcoded strings and map them to `context.l10n` keys to ensure translations apply properly.

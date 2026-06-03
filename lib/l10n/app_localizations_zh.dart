@@ -787,10 +787,34 @@ class AppLocalizationsZh extends AppLocalizations {
   String get filter_less_than => '小于';
 
   @override
+  String get filter_includes => 'Includes';
+
+  @override
+  String get filter_excludes => 'Excludes';
+
+  @override
+  String get filter_includes_all => 'Includes All';
+
+  @override
   String get filter_is_null => '为空';
 
   @override
   String get filter_not_null => '不为空';
+
+  @override
+  String get filter_matches_regex => 'Matches Regex';
+
+  @override
+  String get filter_not_matches_regex => 'Does Not Match Regex';
+
+  @override
+  String get filter_between => 'Between';
+
+  @override
+  String get filter_not_between => 'Not Between';
+
+  @override
+  String get filter_value_secondary => 'Second Value';
 
   @override
   String get images_resolution_title => '分辨率';
@@ -2446,6 +2470,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settings_security_app_lock_subtitle => '后台运行后使用密码保护访问。';
+
+  @override
+  String get common_saved_filters => '保存的筛选';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).

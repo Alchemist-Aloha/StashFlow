@@ -12,10 +12,7 @@ class GraphQLSceneSavedFilterRepository {
   final GraphQLSavedFilterRepository _repository;
 
   Future<List<SceneSavedFilterConfig>> findAll() async {
-    return _repository.findAll(
-      mode: 'SCENES',
-      fromRaw: _fromRawSavedFilter,
-    );
+    return _repository.findAll(mode: 'SCENES', fromRaw: _fromRawSavedFilter);
   }
 
   Future<SceneSavedFilterConfig> save(SceneSavedFilterConfig config) async {
@@ -23,6 +20,10 @@ class GraphQLSceneSavedFilterRepository {
       input: config.toSaveInput(),
       fromRaw: _fromRawSavedFilter,
     );
+  }
+
+  Future<bool> delete(String id) async {
+    return _repository.delete(id: id);
   }
 
   SceneSavedFilterConfig _fromRawSavedFilter(Map<String, dynamic> filter) {

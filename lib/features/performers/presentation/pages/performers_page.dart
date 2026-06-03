@@ -390,33 +390,39 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
         activeFilterCount: _activeFilterCount(filter),
         defaultSortLabel: 'name',
         saveSuccessMessage: 'Performer filter saved to server',
-        loadPresets: () => ref.read(savedFilterRepositoryProvider).findAll(
-          mode: 'PERFORMERS',
-          fromRaw: (raw) => PerformerSavedFilterConfig.fromServerPayload(
-            id: raw['id'] as String,
-            name: raw['name'] as String,
-            findFilter: raw['find_filter'],
-            objectFilter: raw['object_filter'],
-          ),
-        ),
-        savePreset: ({required String name, String? existingId}) {
-          return ref.read(savedFilterRepositoryProvider).save(
-            input: PerformerSavedFilterConfig.current(
-              id: existingId,
-              name: name,
-              searchQuery: ref.read(performerSearchQueryProvider),
-              sort: sortConfig.sort,
-              descending: sortConfig.descending,
-              filter: ref.read(performerFilterStateProvider),
-            ).toSaveInput(),
-            fromRaw: (raw) => PerformerSavedFilterConfig.fromServerPayload(
-              id: raw['id'] as String,
-              name: raw['name'] as String,
-              findFilter: raw['find_filter'],
-              objectFilter: raw['object_filter'],
+        loadPresets: () => ref
+            .read(savedFilterRepositoryProvider)
+            .findAll(
+              mode: 'PERFORMERS',
+              fromRaw: (raw) => PerformerSavedFilterConfig.fromServerPayload(
+                id: raw['id'] as String,
+                name: raw['name'] as String,
+                findFilter: raw['find_filter'],
+                objectFilter: raw['object_filter'],
+              ),
             ),
-          );
+        savePreset: ({required String name, String? existingId}) {
+          return ref
+              .read(savedFilterRepositoryProvider)
+              .save(
+                input: PerformerSavedFilterConfig.current(
+                  id: existingId,
+                  name: name,
+                  searchQuery: ref.read(performerSearchQueryProvider),
+                  sort: sortConfig.sort,
+                  descending: sortConfig.descending,
+                  filter: ref.read(performerFilterStateProvider),
+                ).toSaveInput(),
+                fromRaw: (raw) => PerformerSavedFilterConfig.fromServerPayload(
+                  id: raw['id'] as String,
+                  name: raw['name'] as String,
+                  findFilter: raw['find_filter'],
+                  objectFilter: raw['object_filter'],
+                ),
+              );
         },
+        deletePreset: (id) =>
+            ref.read(savedFilterRepositoryProvider).delete(id: id),
         onLoad: _applySavedFilterConfig,
       ),
     );
@@ -501,11 +507,10 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                   constraints: const BoxConstraints(minWidth: 8, minHeight: 8),
                 ),
               ),
-
           ],
         ),
         IconButton(
-          tooltip: 'Saved filters',
+          tooltip: context.l10n.common_saved_filters,
           icon: const Icon(Icons.bookmarks_outlined),
           onPressed: _showSavedFilterDialog,
         ),
@@ -525,9 +530,8 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
           onTap: () => context.push('/performers/performer/${performer.id}'),
         );
       },
-      loadingItemBuilder: (context, isGrid, index) => PerformerCard.skeleton(
-        memCacheWidth: 300,
-      ),
+      loadingItemBuilder: (context, isGrid, index) =>
+          PerformerCard.skeleton(memCacheWidth: 300),
 
       floatingActionButton: randomNavigationEnabled
           ? performersAsync.maybeWhen(

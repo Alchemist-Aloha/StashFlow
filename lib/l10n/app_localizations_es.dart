@@ -801,10 +801,34 @@ class AppLocalizationsEs extends AppLocalizations {
   String get filter_less_than => 'Menor que';
 
   @override
+  String get filter_includes => 'Includes';
+
+  @override
+  String get filter_excludes => 'Excludes';
+
+  @override
+  String get filter_includes_all => 'Includes All';
+
+  @override
   String get filter_is_null => 'Es nulo';
 
   @override
   String get filter_not_null => 'No es nulo';
+
+  @override
+  String get filter_matches_regex => 'Matches Regex';
+
+  @override
+  String get filter_not_matches_regex => 'Does Not Match Regex';
+
+  @override
+  String get filter_between => 'Between';
+
+  @override
+  String get filter_not_between => 'Not Between';
+
+  @override
+  String get filter_value_secondary => 'Second Value';
 
   @override
   String get images_resolution_title => 'Resolución';
@@ -2590,4 +2614,7 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get settings_security_app_lock_subtitle =>
       'Proteja el acceso con una contraseña después de ponerlo en segundo plano.';
+
+  @override
+  String get common_saved_filters => 'Filtros guardados';
 }

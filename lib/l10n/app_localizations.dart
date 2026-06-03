@@ -1566,6 +1566,24 @@ abstract class AppLocalizations {
   /// **'Less Than'**
   String get filter_less_than;
 
+  /// No description provided for @filter_includes.
+  ///
+  /// In en, this message translates to:
+  /// **'Includes'**
+  String get filter_includes;
+
+  /// No description provided for @filter_excludes.
+  ///
+  /// In en, this message translates to:
+  /// **'Excludes'**
+  String get filter_excludes;
+
+  /// No description provided for @filter_includes_all.
+  ///
+  /// In en, this message translates to:
+  /// **'Includes All'**
+  String get filter_includes_all;
+
   /// No description provided for @filter_is_null.
   ///
   /// In en, this message translates to:
@@ -1577,6 +1595,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not Null'**
   String get filter_not_null;
+
+  /// No description provided for @filter_matches_regex.
+  ///
+  /// In en, this message translates to:
+  /// **'Matches Regex'**
+  String get filter_matches_regex;
+
+  /// No description provided for @filter_not_matches_regex.
+  ///
+  /// In en, this message translates to:
+  /// **'Does Not Match Regex'**
+  String get filter_not_matches_regex;
+
+  /// No description provided for @filter_between.
+  ///
+  /// In en, this message translates to:
+  /// **'Between'**
+  String get filter_between;
+
+  /// No description provided for @filter_not_between.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Between'**
+  String get filter_not_between;
+
+  /// No description provided for @filter_value_secondary.
+  ///
+  /// In en, this message translates to:
+  /// **'Second Value'**
+  String get filter_value_secondary;
 
   /// No description provided for @images_resolution_title.
   ///
@@ -4697,6 +4745,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Protect access with a passcode after backgrounding.'**
   String get settings_security_app_lock_subtitle;
+
+  /// No description provided for @common_saved_filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved filters'**
+  String get common_saved_filters;
 }
 
 class _AppLocalizationsDelegate

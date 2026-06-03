@@ -6892,7 +6892,7 @@ class _CopyWithStubImpl$Input$StashIDsCriterionInput<TRes>
 class Input$CustomFieldCriterionInput {
   factory Input$CustomFieldCriterionInput({
     required String field,
-    List<String>? value,
+    List<Object>? value,
     required Enum$CriterionModifier modifier,
   }) => Input$CustomFieldCriterionInput._({
     r'field': field,
@@ -6909,7 +6909,7 @@ class Input$CustomFieldCriterionInput {
     if (data.containsKey('value')) {
       final l$value = data['value'];
       result$data['value'] = (l$value as List<dynamic>?)
-          ?.map((e) => (e as String))
+          ?.map((e) => (e as Object))
           .toList();
     }
     final l$modifier = data['modifier'];
@@ -6923,7 +6923,7 @@ class Input$CustomFieldCriterionInput {
 
   String get field => (_$data['field'] as String);
 
-  List<String>? get value => (_$data['value'] as List<String>?);
+  List<Object>? get value => (_$data['value'] as List<Object>?);
 
   Enum$CriterionModifier get modifier =>
       (_$data['modifier'] as Enum$CriterionModifier);
@@ -7013,7 +7013,7 @@ abstract class CopyWith$Input$CustomFieldCriterionInput<TRes> {
 
   TRes call({
     String? field,
-    List<String>? value,
+    List<Object>? value,
     Enum$CriterionModifier? modifier,
   });
 }
@@ -7036,7 +7036,7 @@ class _CopyWithImpl$Input$CustomFieldCriterionInput<TRes>
     Input$CustomFieldCriterionInput._({
       ..._instance._$data,
       if (field != _undefined && field != null) 'field': (field as String),
-      if (value != _undefined) 'value': (value as List<String>?),
+      if (value != _undefined) 'value': (value as List<Object>?),
       if (modifier != _undefined && modifier != null)
         'modifier': (modifier as Enum$CriterionModifier),
     }),
@@ -7051,7 +7051,7 @@ class _CopyWithStubImpl$Input$CustomFieldCriterionInput<TRes>
 
   call({
     String? field,
-    List<String>? value,
+    List<Object>? value,
     Enum$CriterionModifier? modifier,
   }) => _res;
 }
@@ -26058,8 +26058,8 @@ class Input$SaveFilterInput {
     required Enum$FilterMode mode,
     required String name,
     Input$FindFilterType? find_filter,
-    String? object_filter,
-    String? ui_options,
+    Map<String, dynamic>? object_filter,
+    Map<String, dynamic>? ui_options,
   }) => Input$SaveFilterInput._({
     if (id != null) r'id': id,
     r'mode': mode,
@@ -26091,11 +26091,11 @@ class Input$SaveFilterInput {
     }
     if (data.containsKey('object_filter')) {
       final l$object_filter = data['object_filter'];
-      result$data['object_filter'] = (l$object_filter as String?);
+      result$data['object_filter'] = (l$object_filter as Map<String, dynamic>?);
     }
     if (data.containsKey('ui_options')) {
       final l$ui_options = data['ui_options'];
-      result$data['ui_options'] = (l$ui_options as String?);
+      result$data['ui_options'] = (l$ui_options as Map<String, dynamic>?);
     }
     return Input$SaveFilterInput._(result$data);
   }
@@ -26111,9 +26111,11 @@ class Input$SaveFilterInput {
   Input$FindFilterType? get find_filter =>
       (_$data['find_filter'] as Input$FindFilterType?);
 
-  String? get object_filter => (_$data['object_filter'] as String?);
+  Map<String, dynamic>? get object_filter =>
+      (_$data['object_filter'] as Map<String, dynamic>?);
 
-  String? get ui_options => (_$data['ui_options'] as String?);
+  Map<String, dynamic>? get ui_options =>
+      (_$data['ui_options'] as Map<String, dynamic>?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -26232,8 +26234,8 @@ abstract class CopyWith$Input$SaveFilterInput<TRes> {
     Enum$FilterMode? mode,
     String? name,
     Input$FindFilterType? find_filter,
-    String? object_filter,
-    String? ui_options,
+    Map<String, dynamic>? object_filter,
+    Map<String, dynamic>? ui_options,
   });
   CopyWith$Input$FindFilterType<TRes> get find_filter;
 }
@@ -26264,8 +26266,9 @@ class _CopyWithImpl$Input$SaveFilterInput<TRes>
       if (find_filter != _undefined)
         'find_filter': (find_filter as Input$FindFilterType?),
       if (object_filter != _undefined)
-        'object_filter': (object_filter as String?),
-      if (ui_options != _undefined) 'ui_options': (ui_options as String?),
+        'object_filter': (object_filter as Map<String, dynamic>?),
+      if (ui_options != _undefined)
+        'ui_options': (ui_options as Map<String, dynamic>?),
     }),
   );
 
@@ -26291,8 +26294,8 @@ class _CopyWithStubImpl$Input$SaveFilterInput<TRes>
     Enum$FilterMode? mode,
     String? name,
     Input$FindFilterType? find_filter,
-    String? object_filter,
-    String? ui_options,
+    Map<String, dynamic>? object_filter,
+    Map<String, dynamic>? ui_options,
   }) => _res;
 
   CopyWith$Input$FindFilterType<TRes> get find_filter =>
@@ -26393,8 +26396,8 @@ class Input$SetDefaultFilterInput {
   factory Input$SetDefaultFilterInput({
     required Enum$FilterMode mode,
     Input$FindFilterType? find_filter,
-    String? object_filter,
-    String? ui_options,
+    Map<String, dynamic>? object_filter,
+    Map<String, dynamic>? ui_options,
   }) => Input$SetDefaultFilterInput._({
     r'mode': mode,
     if (find_filter != null) r'find_filter': find_filter,
@@ -26418,11 +26421,11 @@ class Input$SetDefaultFilterInput {
     }
     if (data.containsKey('object_filter')) {
       final l$object_filter = data['object_filter'];
-      result$data['object_filter'] = (l$object_filter as String?);
+      result$data['object_filter'] = (l$object_filter as Map<String, dynamic>?);
     }
     if (data.containsKey('ui_options')) {
       final l$ui_options = data['ui_options'];
-      result$data['ui_options'] = (l$ui_options as String?);
+      result$data['ui_options'] = (l$ui_options as Map<String, dynamic>?);
     }
     return Input$SetDefaultFilterInput._(result$data);
   }
@@ -26434,9 +26437,11 @@ class Input$SetDefaultFilterInput {
   Input$FindFilterType? get find_filter =>
       (_$data['find_filter'] as Input$FindFilterType?);
 
-  String? get object_filter => (_$data['object_filter'] as String?);
+  Map<String, dynamic>? get object_filter =>
+      (_$data['object_filter'] as Map<String, dynamic>?);
 
-  String? get ui_options => (_$data['ui_options'] as String?);
+  Map<String, dynamic>? get ui_options =>
+      (_$data['ui_options'] as Map<String, dynamic>?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -26531,8 +26536,8 @@ abstract class CopyWith$Input$SetDefaultFilterInput<TRes> {
   TRes call({
     Enum$FilterMode? mode,
     Input$FindFilterType? find_filter,
-    String? object_filter,
-    String? ui_options,
+    Map<String, dynamic>? object_filter,
+    Map<String, dynamic>? ui_options,
   });
   CopyWith$Input$FindFilterType<TRes> get find_filter;
 }
@@ -26559,8 +26564,9 @@ class _CopyWithImpl$Input$SetDefaultFilterInput<TRes>
       if (find_filter != _undefined)
         'find_filter': (find_filter as Input$FindFilterType?),
       if (object_filter != _undefined)
-        'object_filter': (object_filter as String?),
-      if (ui_options != _undefined) 'ui_options': (ui_options as String?),
+        'object_filter': (object_filter as Map<String, dynamic>?),
+      if (ui_options != _undefined)
+        'ui_options': (ui_options as Map<String, dynamic>?),
     }),
   );
 
@@ -26584,8 +26590,8 @@ class _CopyWithStubImpl$Input$SetDefaultFilterInput<TRes>
   call({
     Enum$FilterMode? mode,
     Input$FindFilterType? find_filter,
-    String? object_filter,
-    String? ui_options,
+    Map<String, dynamic>? object_filter,
+    Map<String, dynamic>? ui_options,
   }) => _res;
 
   CopyWith$Input$FindFilterType<TRes> get find_filter =>
@@ -26908,7 +26914,7 @@ class Input$GalleryCreateInput {
     String? studio_id,
     List<String>? tag_ids,
     List<String>? performer_ids,
-    String? custom_fields,
+    Map<String, dynamic>? custom_fields,
   }) => Input$GalleryCreateInput._({
     r'title': title,
     if (code != null) r'code': code,
@@ -26990,7 +26996,7 @@ class Input$GalleryCreateInput {
     }
     if (data.containsKey('custom_fields')) {
       final l$custom_fields = data['custom_fields'];
-      result$data['custom_fields'] = (l$custom_fields as String?);
+      result$data['custom_fields'] = (l$custom_fields as Map<String, dynamic>?);
     }
     return Input$GalleryCreateInput._(result$data);
   }
@@ -27023,7 +27029,8 @@ class Input$GalleryCreateInput {
 
   List<String>? get performer_ids => (_$data['performer_ids'] as List<String>?);
 
-  String? get custom_fields => (_$data['custom_fields'] as String?);
+  Map<String, dynamic>? get custom_fields =>
+      (_$data['custom_fields'] as Map<String, dynamic>?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -27333,7 +27340,7 @@ abstract class CopyWith$Input$GalleryCreateInput<TRes> {
     String? studio_id,
     List<String>? tag_ids,
     List<String>? performer_ids,
-    String? custom_fields,
+    Map<String, dynamic>? custom_fields,
   });
 }
 
@@ -27380,7 +27387,7 @@ class _CopyWithImpl$Input$GalleryCreateInput<TRes>
       if (performer_ids != _undefined)
         'performer_ids': (performer_ids as List<String>?),
       if (custom_fields != _undefined)
-        'custom_fields': (custom_fields as String?),
+        'custom_fields': (custom_fields as Map<String, dynamic>?),
     }),
   );
 }
@@ -27405,7 +27412,7 @@ class _CopyWithStubImpl$Input$GalleryCreateInput<TRes>
     String? studio_id,
     List<String>? tag_ids,
     List<String>? performer_ids,
-    String? custom_fields,
+    Map<String, dynamic>? custom_fields,
   }) => _res;
 }
 
@@ -29397,7 +29404,7 @@ class Input$GroupCreateInput {
     List<Input$GroupDescriptionInput>? sub_groups,
     String? front_image,
     String? back_image,
-    String? custom_fields,
+    Map<String, dynamic>? custom_fields,
   }) => Input$GroupCreateInput._({
     r'name': name,
     if (aliases != null) r'aliases': aliases,
@@ -29492,7 +29499,7 @@ class Input$GroupCreateInput {
     }
     if (data.containsKey('custom_fields')) {
       final l$custom_fields = data['custom_fields'];
-      result$data['custom_fields'] = (l$custom_fields as String?);
+      result$data['custom_fields'] = (l$custom_fields as Map<String, dynamic>?);
     }
     return Input$GroupCreateInput._(result$data);
   }
@@ -29529,7 +29536,8 @@ class Input$GroupCreateInput {
 
   String? get back_image => (_$data['back_image'] as String?);
 
-  String? get custom_fields => (_$data['custom_fields'] as String?);
+  Map<String, dynamic>? get custom_fields =>
+      (_$data['custom_fields'] as Map<String, dynamic>?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -29858,7 +29866,7 @@ abstract class CopyWith$Input$GroupCreateInput<TRes> {
     List<Input$GroupDescriptionInput>? sub_groups,
     String? front_image,
     String? back_image,
-    String? custom_fields,
+    Map<String, dynamic>? custom_fields,
   });
   TRes containing_groups(
     Iterable<Input$GroupDescriptionInput>? Function(
@@ -29925,7 +29933,7 @@ class _CopyWithImpl$Input$GroupCreateInput<TRes>
       if (front_image != _undefined) 'front_image': (front_image as String?),
       if (back_image != _undefined) 'back_image': (back_image as String?),
       if (custom_fields != _undefined)
-        'custom_fields': (custom_fields as String?),
+        'custom_fields': (custom_fields as Map<String, dynamic>?),
     }),
   );
 
@@ -29981,7 +29989,7 @@ class _CopyWithStubImpl$Input$GroupCreateInput<TRes>
     List<Input$GroupDescriptionInput>? sub_groups,
     String? front_image,
     String? back_image,
-    String? custom_fields,
+    Map<String, dynamic>? custom_fields,
   }) => _res;
 
   containing_groups(_fn) => _res;
@@ -34592,7 +34600,7 @@ class _CopyWithStubImpl$Input$GeneratePreviewOptionsInput<TRes>
 }
 
 class Input$ScanMetaDataFilterInput {
-  factory Input$ScanMetaDataFilterInput({String? minModTime}) =>
+  factory Input$ScanMetaDataFilterInput({DateTime? minModTime}) =>
       Input$ScanMetaDataFilterInput._({
         if (minModTime != null) r'minModTime': minModTime,
       });
@@ -34603,20 +34611,22 @@ class Input$ScanMetaDataFilterInput {
     final result$data = <String, dynamic>{};
     if (data.containsKey('minModTime')) {
       final l$minModTime = data['minModTime'];
-      result$data['minModTime'] = (l$minModTime as String?);
+      result$data['minModTime'] = l$minModTime == null
+          ? null
+          : DateTime.parse((l$minModTime as String));
     }
     return Input$ScanMetaDataFilterInput._(result$data);
   }
 
   Map<String, dynamic> _$data;
 
-  String? get minModTime => (_$data['minModTime'] as String?);
+  DateTime? get minModTime => (_$data['minModTime'] as DateTime?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     if (_$data.containsKey('minModTime')) {
       final l$minModTime = minModTime;
-      result$data['minModTime'] = l$minModTime;
+      result$data['minModTime'] = l$minModTime?.toIso8601String();
     }
     return result$data;
   }
@@ -34663,7 +34673,7 @@ abstract class CopyWith$Input$ScanMetaDataFilterInput<TRes> {
   factory CopyWith$Input$ScanMetaDataFilterInput.stub(TRes res) =
       _CopyWithStubImpl$Input$ScanMetaDataFilterInput;
 
-  TRes call({String? minModTime});
+  TRes call({DateTime? minModTime});
 }
 
 class _CopyWithImpl$Input$ScanMetaDataFilterInput<TRes>
@@ -34679,7 +34689,7 @@ class _CopyWithImpl$Input$ScanMetaDataFilterInput<TRes>
   TRes call({Object? minModTime = _undefined}) => _then(
     Input$ScanMetaDataFilterInput._({
       ..._instance._$data,
-      if (minModTime != _undefined) 'minModTime': (minModTime as String?),
+      if (minModTime != _undefined) 'minModTime': (minModTime as DateTime?),
     }),
   );
 }
@@ -34690,7 +34700,7 @@ class _CopyWithStubImpl$Input$ScanMetaDataFilterInput<TRes>
 
   TRes _res;
 
-  call({String? minModTime}) => _res;
+  call({DateTime? minModTime}) => _res;
 }
 
 class Input$ScanMetadataInput {
@@ -37945,8 +37955,8 @@ class _CopyWithStubImpl$Input$MigrateInput<TRes>
 
 class Input$CustomFieldsInput {
   factory Input$CustomFieldsInput({
-    String? full,
-    String? partial,
+    Map<String, dynamic>? full,
+    Map<String, dynamic>? partial,
     List<String>? remove,
   }) => Input$CustomFieldsInput._({
     if (full != null) r'full': full,
@@ -37960,11 +37970,11 @@ class Input$CustomFieldsInput {
     final result$data = <String, dynamic>{};
     if (data.containsKey('full')) {
       final l$full = data['full'];
-      result$data['full'] = (l$full as String?);
+      result$data['full'] = (l$full as Map<String, dynamic>?);
     }
     if (data.containsKey('partial')) {
       final l$partial = data['partial'];
-      result$data['partial'] = (l$partial as String?);
+      result$data['partial'] = (l$partial as Map<String, dynamic>?);
     }
     if (data.containsKey('remove')) {
       final l$remove = data['remove'];
@@ -37977,9 +37987,10 @@ class Input$CustomFieldsInput {
 
   Map<String, dynamic> _$data;
 
-  String? get full => (_$data['full'] as String?);
+  Map<String, dynamic>? get full => (_$data['full'] as Map<String, dynamic>?);
 
-  String? get partial => (_$data['partial'] as String?);
+  Map<String, dynamic>? get partial =>
+      (_$data['partial'] as Map<String, dynamic>?);
 
   List<String>? get remove => (_$data['remove'] as List<String>?);
 
@@ -38075,7 +38086,11 @@ abstract class CopyWith$Input$CustomFieldsInput<TRes> {
   factory CopyWith$Input$CustomFieldsInput.stub(TRes res) =
       _CopyWithStubImpl$Input$CustomFieldsInput;
 
-  TRes call({String? full, String? partial, List<String>? remove});
+  TRes call({
+    Map<String, dynamic>? full,
+    Map<String, dynamic>? partial,
+    List<String>? remove,
+  });
 }
 
 class _CopyWithImpl$Input$CustomFieldsInput<TRes>
@@ -38095,8 +38110,8 @@ class _CopyWithImpl$Input$CustomFieldsInput<TRes>
   }) => _then(
     Input$CustomFieldsInput._({
       ..._instance._$data,
-      if (full != _undefined) 'full': (full as String?),
-      if (partial != _undefined) 'partial': (partial as String?),
+      if (full != _undefined) 'full': (full as Map<String, dynamic>?),
+      if (partial != _undefined) 'partial': (partial as Map<String, dynamic>?),
       if (remove != _undefined) 'remove': (remove as List<String>?),
     }),
   );
@@ -38108,7 +38123,11 @@ class _CopyWithStubImpl$Input$CustomFieldsInput<TRes>
 
   TRes _res;
 
-  call({String? full, String? partial, List<String>? remove}) => _res;
+  call({
+    Map<String, dynamic>? full,
+    Map<String, dynamic>? partial,
+    List<String>? remove,
+  }) => _res;
 }
 
 class Input$MigrateSceneScreenshotsInput {
@@ -39967,7 +39986,7 @@ class Input$PerformerCreateInput {
     String? hair_color,
     int? weight,
     bool? ignore_auto_tag,
-    String? custom_fields,
+    Map<String, dynamic>? custom_fields,
   }) => Input$PerformerCreateInput._({
     r'name': name,
     if (disambiguation != null) r'disambiguation': disambiguation,
@@ -40148,7 +40167,7 @@ class Input$PerformerCreateInput {
     }
     if (data.containsKey('custom_fields')) {
       final l$custom_fields = data['custom_fields'];
-      result$data['custom_fields'] = (l$custom_fields as String?);
+      result$data['custom_fields'] = (l$custom_fields as Map<String, dynamic>?);
     }
     return Input$PerformerCreateInput._(result$data);
   }
@@ -40221,7 +40240,8 @@ class Input$PerformerCreateInput {
 
   bool? get ignore_auto_tag => (_$data['ignore_auto_tag'] as bool?);
 
-  String? get custom_fields => (_$data['custom_fields'] as String?);
+  Map<String, dynamic>? get custom_fields =>
+      (_$data['custom_fields'] as Map<String, dynamic>?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -40835,7 +40855,7 @@ abstract class CopyWith$Input$PerformerCreateInput<TRes> {
     String? hair_color,
     int? weight,
     bool? ignore_auto_tag,
-    String? custom_fields,
+    Map<String, dynamic>? custom_fields,
   });
   TRes stash_ids(
     Iterable<Input$StashIDInput>? Function(
@@ -40930,7 +40950,7 @@ class _CopyWithImpl$Input$PerformerCreateInput<TRes>
       if (ignore_auto_tag != _undefined)
         'ignore_auto_tag': (ignore_auto_tag as bool?),
       if (custom_fields != _undefined)
-        'custom_fields': (custom_fields as String?),
+        'custom_fields': (custom_fields as Map<String, dynamic>?),
     }),
   );
 
@@ -40985,7 +41005,7 @@ class _CopyWithStubImpl$Input$PerformerCreateInput<TRes>
     String? hair_color,
     int? weight,
     bool? ignore_auto_tag,
-    String? custom_fields,
+    Map<String, dynamic>? custom_fields,
   }) => _res;
 
   stash_ids(_fn) => _res;
@@ -44235,7 +44255,7 @@ class Input$SceneCreateInput {
     String? cover_image,
     List<Input$StashIDInput>? stash_ids,
     List<String>? file_ids,
-    String? custom_fields,
+    Map<String, dynamic>? custom_fields,
   }) => Input$SceneCreateInput._({
     if (title != null) r'title': title,
     if (code != null) r'code': code,
@@ -44356,7 +44376,7 @@ class Input$SceneCreateInput {
     }
     if (data.containsKey('custom_fields')) {
       final l$custom_fields = data['custom_fields'];
-      result$data['custom_fields'] = (l$custom_fields as String?);
+      result$data['custom_fields'] = (l$custom_fields as Map<String, dynamic>?);
     }
     return Input$SceneCreateInput._(result$data);
   }
@@ -44402,7 +44422,8 @@ class Input$SceneCreateInput {
 
   List<String>? get file_ids => (_$data['file_ids'] as List<String>?);
 
-  String? get custom_fields => (_$data['custom_fields'] as String?);
+  Map<String, dynamic>? get custom_fields =>
+      (_$data['custom_fields'] as Map<String, dynamic>?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -44854,7 +44875,7 @@ abstract class CopyWith$Input$SceneCreateInput<TRes> {
     String? cover_image,
     List<Input$StashIDInput>? stash_ids,
     List<String>? file_ids,
-    String? custom_fields,
+    Map<String, dynamic>? custom_fields,
   });
   TRes groups(
     Iterable<Input$SceneGroupInput>? Function(
@@ -44933,7 +44954,7 @@ class _CopyWithImpl$Input$SceneCreateInput<TRes>
         'stash_ids': (stash_ids as List<Input$StashIDInput>?),
       if (file_ids != _undefined) 'file_ids': (file_ids as List<String>?),
       if (custom_fields != _undefined)
-        'custom_fields': (custom_fields as String?),
+        'custom_fields': (custom_fields as Map<String, dynamic>?),
     }),
   );
 
@@ -44996,7 +45017,7 @@ class _CopyWithStubImpl$Input$SceneCreateInput<TRes>
     String? cover_image,
     List<Input$StashIDInput>? stash_ids,
     List<String>? file_ids,
-    String? custom_fields,
+    Map<String, dynamic>? custom_fields,
   }) => _res;
 
   groups(_fn) => _res;
@@ -54108,7 +54129,7 @@ class Input$StudioCreateInput {
     List<String>? tag_ids,
     bool? ignore_auto_tag,
     bool? organized,
-    String? custom_fields,
+    Map<String, dynamic>? custom_fields,
   }) => Input$StudioCreateInput._({
     r'name': name,
     if (url != null) r'url': url,
@@ -54190,7 +54211,7 @@ class Input$StudioCreateInput {
     }
     if (data.containsKey('custom_fields')) {
       final l$custom_fields = data['custom_fields'];
-      result$data['custom_fields'] = (l$custom_fields as String?);
+      result$data['custom_fields'] = (l$custom_fields as Map<String, dynamic>?);
     }
     return Input$StudioCreateInput._(result$data);
   }
@@ -54224,7 +54245,8 @@ class Input$StudioCreateInput {
 
   bool? get organized => (_$data['organized'] as bool?);
 
-  String? get custom_fields => (_$data['custom_fields'] as String?);
+  Map<String, dynamic>? get custom_fields =>
+      (_$data['custom_fields'] as Map<String, dynamic>?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -54533,7 +54555,7 @@ abstract class CopyWith$Input$StudioCreateInput<TRes> {
     List<String>? tag_ids,
     bool? ignore_auto_tag,
     bool? organized,
-    String? custom_fields,
+    Map<String, dynamic>? custom_fields,
   });
   TRes stash_ids(
     Iterable<Input$StashIDInput>? Function(
@@ -54587,7 +54609,7 @@ class _CopyWithImpl$Input$StudioCreateInput<TRes>
         'ignore_auto_tag': (ignore_auto_tag as bool?),
       if (organized != _undefined) 'organized': (organized as bool?),
       if (custom_fields != _undefined)
-        'custom_fields': (custom_fields as String?),
+        'custom_fields': (custom_fields as Map<String, dynamic>?),
     }),
   );
 
@@ -54623,7 +54645,7 @@ class _CopyWithStubImpl$Input$StudioCreateInput<TRes>
     List<String>? tag_ids,
     bool? ignore_auto_tag,
     bool? organized,
-    String? custom_fields,
+    Map<String, dynamic>? custom_fields,
   }) => _res;
 
   stash_ids(_fn) => _res;
@@ -55690,7 +55712,7 @@ class Input$TagCreateInput {
     List<Input$StashIDInput>? stash_ids,
     List<String>? parent_ids,
     List<String>? child_ids,
-    String? custom_fields,
+    Map<String, dynamic>? custom_fields,
   }) => Input$TagCreateInput._({
     r'name': name,
     if (sort_name != null) r'sort_name': sort_name,
@@ -55757,7 +55779,7 @@ class Input$TagCreateInput {
     }
     if (data.containsKey('custom_fields')) {
       final l$custom_fields = data['custom_fields'];
-      result$data['custom_fields'] = (l$custom_fields as String?);
+      result$data['custom_fields'] = (l$custom_fields as Map<String, dynamic>?);
     }
     return Input$TagCreateInput._(result$data);
   }
@@ -55785,7 +55807,8 @@ class Input$TagCreateInput {
 
   List<String>? get child_ids => (_$data['child_ids'] as List<String>?);
 
-  String? get custom_fields => (_$data['custom_fields'] as String?);
+  Map<String, dynamic>? get custom_fields =>
+      (_$data['custom_fields'] as Map<String, dynamic>?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -56050,7 +56073,7 @@ abstract class CopyWith$Input$TagCreateInput<TRes> {
     List<Input$StashIDInput>? stash_ids,
     List<String>? parent_ids,
     List<String>? child_ids,
-    String? custom_fields,
+    Map<String, dynamic>? custom_fields,
   });
   TRes stash_ids(
     Iterable<Input$StashIDInput>? Function(
@@ -56098,7 +56121,7 @@ class _CopyWithImpl$Input$TagCreateInput<TRes>
       if (parent_ids != _undefined) 'parent_ids': (parent_ids as List<String>?),
       if (child_ids != _undefined) 'child_ids': (child_ids as List<String>?),
       if (custom_fields != _undefined)
-        'custom_fields': (custom_fields as String?),
+        'custom_fields': (custom_fields as Map<String, dynamic>?),
     }),
   );
 
@@ -56131,7 +56154,7 @@ class _CopyWithStubImpl$Input$TagCreateInput<TRes>
     List<Input$StashIDInput>? stash_ids,
     List<String>? parent_ids,
     List<String>? child_ids,
-    String? custom_fields,
+    Map<String, dynamic>? custom_fields,
   }) => _res;
 
   stash_ids(_fn) => _res;

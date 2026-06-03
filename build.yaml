@@ -21,3 +21,15 @@ targets:
             - schema: graphql/combined_schema.graphql
               queries_glob: lib/features/**/*.graphql
               output_directory: lib/core/data/graphql/__generated__
+          scalars:
+            Any:
+              type: Object
+            Map:
+              type: Map<String, dynamic>
+            Timestamp:
+              type: DateTime
+            Upload:
+              type: String
+            Time:
+              type: String
+

@@ -4349,8 +4349,8 @@ class Fragment$SceneSavedFilterData {
           : Fragment$SceneSavedFilterData$find_filter.fromJson(
               (l$find_filter as Map<String, dynamic>),
             ),
-      object_filter: (l$object_filter as String?),
-      ui_options: (l$ui_options as String?),
+      object_filter: (l$object_filter as Map<String, dynamic>?),
+      ui_options: (l$ui_options as Map<String, dynamic>?),
       $__typename: (l$$__typename as String),
     );
   }
@@ -4363,9 +4363,9 @@ class Fragment$SceneSavedFilterData {
 
   final Fragment$SceneSavedFilterData$find_filter? find_filter;
 
-  final String? object_filter;
+  final Map<String, dynamic>? object_filter;
 
-  final String? ui_options;
+  final Map<String, dynamic>? ui_options;
 
   final String $__typename;
 
@@ -4476,8 +4476,8 @@ abstract class CopyWith$Fragment$SceneSavedFilterData<TRes> {
     Enum$FilterMode? mode,
     String? name,
     Fragment$SceneSavedFilterData$find_filter? find_filter,
-    String? object_filter,
-    String? ui_options,
+    Map<String, dynamic>? object_filter,
+    Map<String, dynamic>? ui_options,
     String? $__typename,
   });
   CopyWith$Fragment$SceneSavedFilterData$find_filter<TRes> get find_filter;
@@ -4515,10 +4515,10 @@ class _CopyWithImpl$Fragment$SceneSavedFilterData<TRes>
           : (find_filter as Fragment$SceneSavedFilterData$find_filter?),
       object_filter: object_filter == _undefined
           ? _instance.object_filter
-          : (object_filter as String?),
+          : (object_filter as Map<String, dynamic>?),
       ui_options: ui_options == _undefined
           ? _instance.ui_options
-          : (ui_options as String?),
+          : (ui_options as Map<String, dynamic>?),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
@@ -4549,8 +4549,8 @@ class _CopyWithStubImpl$Fragment$SceneSavedFilterData<TRes>
     Enum$FilterMode? mode,
     String? name,
     Fragment$SceneSavedFilterData$find_filter? find_filter,
-    String? object_filter,
-    String? ui_options,
+    Map<String, dynamic>? object_filter,
+    Map<String, dynamic>? ui_options,
     String? $__typename,
   }) => _res;
 

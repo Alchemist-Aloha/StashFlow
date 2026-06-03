@@ -86,6 +86,20 @@ void main() {
         true,
       );
     });
+
+    test('delete forwards the saved filter id to destroySavedFilter', () async {
+      final client = _FakeGraphQLClient(
+        mutationData: {'__typename': 'Mutation', 'destroySavedFilter': true},
+      );
+
+      final repository = GraphQLSavedFilterRepository(client);
+      final deleted = await repository.delete(id: '42');
+
+      expect(deleted, isTrue);
+      expect(client.lastMutationVariables, {
+        'input': {'id': '42'},
+      });
+    });
   });
 }
 

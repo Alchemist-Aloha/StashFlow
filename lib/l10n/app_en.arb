@@ -269,8 +269,16 @@
   "filter_not_equals": "Not Equals",
   "filter_greater_than": "Greater Than",
   "filter_less_than": "Less Than",
+  "filter_includes": "Includes",
+  "filter_excludes": "Excludes",
+  "filter_includes_all": "Includes All",
   "filter_is_null": "Is Null",
   "filter_not_null": "Not Null",
+  "filter_matches_regex": "Matches Regex",
+  "filter_not_matches_regex": "Does Not Match Regex",
+  "filter_between": "Between",
+  "filter_not_between": "Not Between",
+  "filter_value_secondary": "Second Value",
   "images_resolution_title": "Resolution",
   "resolution_144p": "144p",
   "resolution_240p": "240p",
@@ -1049,5 +1057,6 @@
   },
   "settings_security_title": "Security",
   "settings_security_app_lock": "App lock",
-  "settings_security_app_lock_subtitle": "Protect access with a passcode after backgrounding."
+  "settings_security_app_lock_subtitle": "Protect access with a passcode after backgrounding.",
+  "common_saved_filters": "Saved filters"
 }

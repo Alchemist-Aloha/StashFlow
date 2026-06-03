@@ -15,7 +15,8 @@ class PerformerFilterPanel extends ConsumerStatefulWidget {
   const PerformerFilterPanel({super.key});
 
   @override
-  ConsumerState<PerformerFilterPanel> createState() => _PerformerFilterPanelState();
+  ConsumerState<PerformerFilterPanel> createState() =>
+      _PerformerFilterPanelState();
 }
 
 class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
@@ -71,7 +72,10 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
               Expanded(
                 child: SingleChildScrollView(
                   padding: EdgeInsets.only(
-                    bottom: bottomInset + safeBottom + context.dimensions.spacingLarge,
+                    bottom:
+                        bottomInset +
+                        safeBottom +
+                        context.dimensions.spacingLarge,
                   ),
                   child: Column(
                     children: [
@@ -123,7 +127,9 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(context.l10n.performers_filter_saved),
+                                content: Text(
+                                  context.l10n.performers_filter_saved,
+                                ),
                               ),
                             );
                           }
@@ -154,7 +160,8 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
         _buildBooleanFilter(
           'Favorite',
           _tempFilter.favorite,
-          (val) => setState(() => _tempFilter = _tempFilter.copyWith(favorite: val)),
+          (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(favorite: val)),
         ),
         _buildRatingFilter(),
         _buildGenderFilter(),
@@ -169,32 +176,39 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
         StringCriterionInput(
           label: context.l10n.performers_field_name,
           value: _tempFilter.name,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(name: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(name: val)),
         ),
         StringCriterionInput(
           label: context.l10n.performers_field_aliases,
           value: _tempFilter.aliases,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(aliases: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(aliases: val)),
         ),
         StringCriterionInput(
           label: context.l10n.performers_field_disambiguation,
           value: _tempFilter.disambiguation,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(disambiguation: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(disambiguation: val),
+          ),
         ),
         StringCriterionInput(
           label: context.l10n.performers_field_url,
           value: _tempFilter.url,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(url: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(url: val)),
         ),
         StringCriterionInput(
           label: context.l10n.performers_field_details,
           value: _tempFilter.details,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(details: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(details: val)),
         ),
         StringCriterionInput(
           label: context.l10n.performers_field_country,
           value: _tempFilter.country,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(country: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(country: val)),
         ),
       ],
     );
@@ -208,24 +222,33 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
           'Studios',
           'studio',
           _tempFilter.studios,
-          (val) => setState(() =>
-              _tempFilter = _tempFilter.copyWith(studios: val as HierarchicalMultiCriterion?)),
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(
+              studios: val as HierarchicalMultiCriterion?,
+            ),
+          ),
           true,
         ),
         _buildEntityFilter<Tag>(
           'Tags',
           'tag',
           _tempFilter.tags,
-          (val) => setState(() =>
-              _tempFilter = _tempFilter.copyWith(tags: val as HierarchicalMultiCriterion?)),
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(
+              tags: val as HierarchicalMultiCriterion?,
+            ),
+          ),
           true,
         ),
         _buildEntityFilter<Group>(
           'Groups',
           'group',
           _tempFilter.groups,
-          (val) => setState(() =>
-              _tempFilter = _tempFilter.copyWith(groups: val as HierarchicalMultiCriterion?)),
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(
+              groups: val as HierarchicalMultiCriterion?,
+            ),
+          ),
           true,
         ),
       ],
@@ -258,7 +281,8 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
                           ),
                         ],
                       ),
-                selected: (stars == 0 && _tempFilter.rating100 == null) ||
+                selected:
+                    (stars == 0 && _tempFilter.rating100 == null) ||
                     (stars > 0 &&
                         _tempFilter.rating100?.value == (stars - 1) * 20 &&
                         _tempFilter.rating100?.modifier ==
@@ -291,88 +315,116 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
         DateCriterionInput(
           label: context.l10n.performers_field_birthdate,
           value: _tempFilter.birthdate,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(birthdate: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(birthdate: val),
+          ),
         ),
         IntCriterionInput(
           label: context.l10n.performers_field_birth_year,
           value: _tempFilter.birthYear,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(birthYear: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(birthYear: val),
+          ),
         ),
         IntCriterionInput(
           label: context.l10n.performers_field_age,
           value: _tempFilter.age,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(age: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(age: val)),
         ),
         IntCriterionInput(
           label: context.l10n.performers_field_height_cm,
           value: _tempFilter.heightCm,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(heightCm: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(heightCm: val)),
         ),
         IntCriterionInput(
           label: context.l10n.performers_field_weight_kg,
           value: _tempFilter.weight,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(weight: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(weight: val)),
         ),
         IntCriterionInput(
           label: context.l10n.performers_field_penis_length,
           value: _tempFilter.penisLength,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(penisLength: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(penisLength: val),
+          ),
         ),
         _buildCircumcisedFilter(),
         StringCriterionInput(
           label: context.l10n.performers_field_hair_color,
           value: _tempFilter.hairColor,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(hairColor: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(hairColor: val),
+          ),
         ),
         StringCriterionInput(
           label: context.l10n.performers_field_eye_color,
           value: _tempFilter.eyeColor,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(eyeColor: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(eyeColor: val)),
         ),
         StringCriterionInput(
           label: context.l10n.performers_field_ethnicity,
           value: _tempFilter.ethnicity,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(ethnicity: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(ethnicity: val),
+          ),
         ),
         StringCriterionInput(
           label: context.l10n.performers_field_measurements,
           value: _tempFilter.measurements,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(measurements: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(measurements: val),
+          ),
         ),
         StringCriterionInput(
           label: context.l10n.performers_field_fake_tits,
           value: _tempFilter.fakeTits,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(fakeTits: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(fakeTits: val)),
         ),
         StringCriterionInput(
           label: context.l10n.performers_field_tattoos,
           value: _tempFilter.tattoos,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(tattoos: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(tattoos: val)),
         ),
         StringCriterionInput(
           label: context.l10n.performers_field_piercings,
           value: _tempFilter.piercings,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(piercings: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(piercings: val),
+          ),
         ),
         DateCriterionInput(
           label: context.l10n.performers_field_career_start,
           value: _tempFilter.careerStart,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(careerStart: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(careerStart: val),
+          ),
         ),
         DateCriterionInput(
           label: context.l10n.performers_field_career_end,
           value: _tempFilter.careerEnd,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(careerEnd: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(careerEnd: val),
+          ),
         ),
         DateCriterionInput(
           label: context.l10n.performers_field_deathdate,
           value: _tempFilter.deathDate,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(deathDate: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(deathDate: val),
+          ),
         ),
         IntCriterionInput(
           label: context.l10n.performers_field_death_year,
           value: _tempFilter.deathYear,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(deathYear: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(deathYear: val),
+          ),
         ),
       ],
     );
@@ -382,53 +434,83 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
     return FilterSection(
       title: context.l10n.filter_group_system,
       children: [
-        _buildBooleanFilter('Ignore Auto Tag', _tempFilter.ignoreAutoTag, (val) => setState(() => _tempFilter = _tempFilter.copyWith(ignoreAutoTag: val))),
-        _buildBooleanFilter('Is Missing', _tempFilter.isMissing, (val) => setState(() => _tempFilter = _tempFilter.copyWith(isMissing: val))),
+        _buildBooleanFilter(
+          'Ignore Auto Tag',
+          _tempFilter.ignoreAutoTag,
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(ignoreAutoTag: val),
+          ),
+        ),
+        _buildBooleanFilter(
+          'Is Missing',
+          _tempFilter.isMissing,
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(isMissing: val),
+          ),
+        ),
         IntCriterionInput(
           label: context.l10n.performers_field_scene_count,
           value: _tempFilter.sceneCount,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(sceneCount: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(sceneCount: val),
+          ),
         ),
         IntCriterionInput(
           label: context.l10n.performers_field_image_count,
           value: _tempFilter.imageCount,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(imageCount: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(imageCount: val),
+          ),
         ),
         IntCriterionInput(
           label: context.l10n.performers_field_gallery_count,
           value: _tempFilter.galleryCount,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(galleryCount: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(galleryCount: val),
+          ),
         ),
         IntCriterionInput(
           label: context.l10n.performers_field_play_count,
           value: _tempFilter.playCount,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(playCount: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(playCount: val),
+          ),
         ),
         IntCriterionInput(
           label: context.l10n.performers_field_o_counter,
           value: _tempFilter.oCounter,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(oCounter: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(oCounter: val)),
         ),
         IntCriterionInput(
           label: context.l10n.performers_field_tag_count,
           value: _tempFilter.tagCount,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(tagCount: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(tagCount: val)),
         ),
         DateCriterionInput(
           label: context.l10n.performers_field_created_at,
           value: _tempFilter.createdAt,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(createdAt: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(createdAt: val),
+          ),
         ),
         DateCriterionInput(
           label: context.l10n.performers_field_updated_at,
           value: _tempFilter.updatedAt,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(updatedAt: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(updatedAt: val),
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildBooleanFilter(String label, bool? value, ValueChanged<bool?> onChanged) {
+  Widget _buildBooleanFilter(
+    String label,
+    bool? value,
+    ValueChanged<bool?> onChanged,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -464,11 +546,21 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
   }
 
   Widget _buildGenderFilter() {
-    final genders = ['MALE', 'FEMALE', 'TRANSGENDER_MALE', 'TRANSGENDER_FEMALE', 'INTERSEX', 'NON_BINARY'];
+    final genders = [
+      'MALE',
+      'FEMALE',
+      'TRANSGENDER_MALE',
+      'TRANSGENDER_FEMALE',
+      'INTERSEX',
+      'NON_BINARY',
+    ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(context.l10n.performers_gender, style: context.textTheme.labelLarge),
+        Text(
+          context.l10n.performers_gender,
+          style: context.textTheme.labelLarge,
+        ),
         Wrap(
           spacing: context.dimensions.spacingSmall / 2,
           children: genders.map((g) {
@@ -478,14 +570,18 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {
-                  final current = List<String>.from(_tempFilter.gender?.value ?? []);
+                  final current = List<String>.from(
+                    _tempFilter.gender?.value ?? [],
+                  );
                   if (selected) {
                     current.add(g);
                   } else {
                     current.remove(g);
                   }
                   _tempFilter = _tempFilter.copyWith(
-                    gender: current.isEmpty ? null : MultiCriterion(value: current),
+                    gender: current.isEmpty
+                        ? null
+                        : MultiCriterion(value: current),
                   );
                 });
               },
@@ -501,16 +597,27 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(context.l10n.performers_circumcised, style: context.textTheme.labelLarge),
+        Text(
+          context.l10n.performers_circumcised,
+          style: context.textTheme.labelLarge,
+        ),
         Wrap(
           spacing: context.dimensions.spacingSmall / 2,
-          children: values.map((v) => ChoiceChip(
-            label: Text(v),
-            selected: _tempFilter.circumcised == v,
-            onSelected: (selected) {
-              setState(() => _tempFilter = _tempFilter.copyWith(circumcised: selected ? v : null));
-            },
-          )).toList(),
+          children: values
+              .map(
+                (v) => ChoiceChip(
+                  label: Text(v),
+                  selected: _tempFilter.circumcised == v,
+                  onSelected: (selected) {
+                    setState(
+                      () => _tempFilter = _tempFilter.copyWith(
+                        circumcised: selected ? v : null,
+                      ),
+                    );
+                  },
+                ),
+              )
+              .toList(),
         ),
       ],
     );
@@ -524,79 +631,82 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
     bool isHierarchical,
   ) {
     final List<String> selectedIds = criterion?.value ?? [];
-    
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(label, style: context.textTheme.labelLarge),
-              IconButton(
-                tooltip: context.l10n.common_add,
-                icon: const Icon(Icons.add_circle_outline),
-                onPressed: () async {
-                  final result = await showDialog<List<T>>(
-                    context: context,
-                    builder: (context) => EntityPicker<T>(
-                      title: context.l10n.common_select(label),
-                      providerType: providerType,
-                      multiSelect: true,
-                      initialSelection: selectedIds,
-                    ),
-                  );
-                  if (result != null) {
-                    final ids = result.map((e) {
-                      if (e is Studio) return e.id;
-                      if (e is Tag) return e.id;
-                      return '';
-                    }).toList();
-                    if (isHierarchical) {
-                      onChanged(HierarchicalMultiCriterion(
-                        value: ids,
-                        modifier: criterion?.modifier ?? CriterionModifier.includes,
-                      ));
-                    } else {
-                      onChanged(MultiCriterion(
-                        value: ids,
-                        modifier: criterion?.modifier ?? CriterionModifier.includes,
-                      ));
-                    }
-                  }
-                },
-              ),
-            ],
+    final modifier = criterion?.modifier ?? CriterionModifier.includes;
+
+    return SelectionCriterionInput(
+      label: label,
+      selectedIds: selectedIds,
+      modifier: modifier,
+      onModifierChanged: (next) {
+        onChanged(
+          _buildEntityCriterion(
+            ids: selectedIds,
+            modifier: next,
+            isHierarchical: isHierarchical,
           ),
-          if (selectedIds.isNotEmpty)
-            Wrap(
-              spacing: context.dimensions.spacingSmall / 2,
-              children: selectedIds.map((id) => Chip(
-                label: Text(id),
-                onDeleted: () {
-                  final newList = List<String>.from(selectedIds);
-                  newList.remove(id);
-                  if (newList.isEmpty) {
-                    onChanged(null);
-                  } else {
-                    if (isHierarchical) {
-                      onChanged(HierarchicalMultiCriterion(
-                        value: newList,
-                        modifier: criterion.modifier,
-                      ));
-                    } else {
-                      onChanged(MultiCriterion(
-                        value: newList,
-                        modifier: criterion.modifier,
-                      ));
-                    }
-                  }
-                },
-              )).toList(),
-            ),
-        ],
-      ),
+        );
+      },
+      onAddPressed: () async {
+        final result = await showDialog<List<T>>(
+          context: context,
+          builder: (context) => EntityPicker<T>(
+            title: context.l10n.common_select(label),
+            providerType: providerType,
+            multiSelect: true,
+            initialSelection: selectedIds,
+          ),
+        );
+        if (result == null) return;
+
+        final ids = result.map((entity) => _extractEntityId(entity)).toList();
+        if (ids.isEmpty) {
+          onChanged(null);
+          return;
+        }
+
+        onChanged(
+          _buildEntityCriterion(
+            ids: ids,
+            modifier: modifier,
+            isHierarchical: isHierarchical,
+          ),
+        );
+      },
+      onRemoveId: (id) {
+        final newList = List<String>.from(selectedIds)..remove(id);
+        if (newList.isEmpty) {
+          onChanged(null);
+          return;
+        }
+
+        onChanged(
+          _buildEntityCriterion(
+            ids: newList,
+            modifier: modifier,
+            isHierarchical: isHierarchical,
+          ),
+        );
+      },
+    );
+  }
+
+  dynamic _buildEntityCriterion({
+    required List<String> ids,
+    required CriterionModifier modifier,
+    required bool isHierarchical,
+  }) {
+    if (isHierarchical) {
+      return HierarchicalMultiCriterion(value: ids, modifier: modifier);
+    }
+    return MultiCriterion(value: ids, modifier: modifier);
+  }
+
+  String _extractEntityId(Object? entity) {
+    if (entity is Studio) return entity.id;
+    if (entity is Tag) return entity.id;
+    if (entity is Group) return entity.id;
+    throw StateError(
+      'Unsupported performer filter entity: ${entity.runtimeType}',
     );
   }
 }
