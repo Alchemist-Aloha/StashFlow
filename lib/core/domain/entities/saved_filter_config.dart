@@ -41,14 +41,14 @@ Map<String, dynamic> savedFilterBuildInput({
   int? perPage,
 }) {
   return {
-    if (id != null) 'id': id,
+    'id': ?id,
     'mode': mode,
     'name': name,
     'find_filter': {
       if (searchQuery.isNotEmpty) 'q': searchQuery,
       'page': 1,
-      if (perPage != null) 'per_page': perPage,
-      if (sort != null) 'sort': sort,
+      'per_page': ?perPage,
+      'sort': ?sort,
       'direction': descending ? 'DESC' : 'ASC',
     },
     'object_filter': objectFilter,

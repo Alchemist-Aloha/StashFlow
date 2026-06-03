@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/domain/entities/criterion.dart';
-import 'package:stash_app_flutter/features/galleries/domain/entities/gallery_filter.dart';
 import 'package:stash_app_flutter/features/galleries/domain/entities/gallery_saved_filter_config.dart';
 
 void main() {

@@ -1,7 +1,6 @@
 import 'package:graphql/client.dart';
 
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
-import '../../../../core/data/graphql/base_repository.dart';
 import '../../domain/entities/scene_saved_filter_config.dart';
 
 class GraphQLSceneSavedFilterRepository {

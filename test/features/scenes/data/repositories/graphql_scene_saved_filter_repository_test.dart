@@ -198,8 +198,8 @@ class _FakeGraphQLClient extends GraphQLClient {
   Future<QueryResult<TParsed>> query<TParsed>(
     QueryOptions<TParsed> options,
   ) async {
-    if (applyParserFn && queryData != null && options.parserFn != null) {
-      options.parserFn!(queryData!);
+    if (applyParserFn && queryData != null) {
+      options.parserFn(queryData!);
     }
     return QueryResult<TParsed>(
       source: QueryResultSource.network,
@@ -213,8 +213,8 @@ class _FakeGraphQLClient extends GraphQLClient {
     MutationOptions<TParsed> options,
   ) async {
     lastMutationVariables = options.variables;
-    if (applyParserFn && mutationData != null && options.parserFn != null) {
-      options.parserFn!(mutationData!);
+    if (applyParserFn && mutationData != null) {
+      options.parserFn(mutationData!);
     }
     return QueryResult<TParsed>(
       source: QueryResultSource.network,
