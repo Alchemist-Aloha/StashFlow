@@ -610,7 +610,6 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                   onPressed: () => context.push('/settings'),
                   tooltip: context.l10n.common_settings,
                 ),
-                ...widget.actions,
               ],
             ),
       body: Listener(
@@ -643,9 +642,11 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
             }
           }
         },
-        child: Column(
+        child: Stack(
           children: [
-            if (_currentQuery != null)
+            Column(
+              children: [
+                if (_currentQuery != null)
               Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: context.dimensions.spacingMedium,
@@ -930,8 +931,36 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
             ),
           ],
         ),
-      ),
-      floatingActionButton: widget.floatingActionButton,
-    );
+        if (widget.actions.isNotEmpty)
+          Positioned(
+            bottom: 16,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                decoration: BoxDecoration(
+                  color: context.colors.surfaceVariant.withValues(alpha: 0.95),
+                  borderRadius: BorderRadius.circular(32),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: widget.actions,
+                ),
+              ),
+            ),
+          ),
+      ],
+    ),
+  ),
+  floatingActionButton: widget.floatingActionButton,
+);
   }
 }
