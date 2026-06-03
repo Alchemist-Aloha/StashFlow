@@ -929,5 +929,6 @@
   },
   "settings_security_title": "安全",
   "settings_security_app_lock": "アプリロック",
-  "settings_security_app_lock_subtitle": "バックグラウンド化後はパスコードでアクセスを保護します。"
+  "settings_security_app_lock_subtitle": "バックグラウンド化後はパスコードでアクセスを保護します。",
+  "common_saved_filters": "保存されたフィルター"
 }

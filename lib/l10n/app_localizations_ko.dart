@@ -2472,4 +2472,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settings_security_app_lock_subtitle => '백그라운드 후 비밀번호로 접근을 보호하세요.';
+
+  @override
+  String get common_saved_filters => '저장된 필터';
 }

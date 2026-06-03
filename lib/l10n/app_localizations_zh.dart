@@ -2446,6 +2446,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settings_security_app_lock_subtitle => '后台运行后使用密码保护访问。';
+
+  @override
+  String get common_saved_filters => '保存的筛选';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).

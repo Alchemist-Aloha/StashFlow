@@ -2582,4 +2582,7 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get settings_security_app_lock_subtitle =>
       'Proteggi l\'accesso con un passcode dopo il background.';
+
+  @override
+  String get common_saved_filters => 'Filtri salvati';
 }

@@ -85,8 +85,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
       'scenes_size' => _TagSortOption.scenesSize,
       'gallery_count' || 'galleries_count' => _TagSortOption.galleryCount,
       'image_count' || 'images_count' => _TagSortOption.imageCount,
-      'performer_count' || 'performers_count' =>
-        _TagSortOption.performerCount,
+      'performer_count' || 'performers_count' => _TagSortOption.performerCount,
       'scenes_count' => _TagSortOption.sceneCount,
       'group_count' || 'groups_count' => _TagSortOption.groupCount,
       'marker_count' || 'scene_markers_count' => _TagSortOption.markerCount,
@@ -311,32 +310,36 @@ class _TagsPageState extends ConsumerState<TagsPage> {
         activeFilterCount: favoritesOnly ? 1 : 0,
         defaultSortLabel: 'name',
         saveSuccessMessage: 'Tag filter saved to server',
-        loadPresets: () => ref.read(savedFilterRepositoryProvider).findAll(
-          mode: 'TAGS',
-          fromRaw: (raw) => TagSavedFilterConfig.fromServerPayload(
-            id: raw['id'] as String,
-            name: raw['name'] as String,
-            findFilter: raw['find_filter'],
-            objectFilter: raw['object_filter'],
-          ),
-        ),
-        savePreset: ({required String name, String? existingId}) {
-          return ref.read(savedFilterRepositoryProvider).save(
-            input: TagSavedFilterConfig.current(
-              id: existingId,
-              name: name,
-              searchQuery: ref.read(tagSearchQueryProvider),
-              sort: sortConfig.sort,
-              descending: sortConfig.descending,
-              favorite: ref.read(tagFavoritesOnlyProvider),
-            ).toSaveInput(),
-            fromRaw: (raw) => TagSavedFilterConfig.fromServerPayload(
-              id: raw['id'] as String,
-              name: raw['name'] as String,
-              findFilter: raw['find_filter'],
-              objectFilter: raw['object_filter'],
+        loadPresets: () => ref
+            .read(savedFilterRepositoryProvider)
+            .findAll(
+              mode: 'TAGS',
+              fromRaw: (raw) => TagSavedFilterConfig.fromServerPayload(
+                id: raw['id'] as String,
+                name: raw['name'] as String,
+                findFilter: raw['find_filter'],
+                objectFilter: raw['object_filter'],
+              ),
             ),
-          );
+        savePreset: ({required String name, String? existingId}) {
+          return ref
+              .read(savedFilterRepositoryProvider)
+              .save(
+                input: TagSavedFilterConfig.current(
+                  id: existingId,
+                  name: name,
+                  searchQuery: ref.read(tagSearchQueryProvider),
+                  sort: sortConfig.sort,
+                  descending: sortConfig.descending,
+                  favorite: ref.read(tagFavoritesOnlyProvider),
+                ).toSaveInput(),
+                fromRaw: (raw) => TagSavedFilterConfig.fromServerPayload(
+                  id: raw['id'] as String,
+                  name: raw['name'] as String,
+                  findFilter: raw['find_filter'],
+                  objectFilter: raw['object_filter'],
+                ),
+              );
         },
         onLoad: _applySavedFilterConfig,
       ),
@@ -440,7 +443,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
           ],
         ),
         IconButton(
-          tooltip: 'Saved filters',
+          tooltip: context.l10n.common_saved_filters,
           icon: const Icon(Icons.bookmarks_outlined),
           onPressed: _showSavedFilterDialog,
         ),

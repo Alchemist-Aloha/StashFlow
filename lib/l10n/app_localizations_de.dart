@@ -2565,4 +2565,7 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get settings_security_app_lock_subtitle =>
       'Schützen Sie den Zugriff nach dem Hintergrundbetrieb mit einem Passcode.';
+
+  @override
+  String get common_saved_filters => 'Gespeicherte Filter';
 }

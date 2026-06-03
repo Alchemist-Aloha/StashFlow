@@ -2580,4 +2580,7 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get settings_security_app_lock_subtitle =>
       'Protégez l’accès avec un mot de passe après la mise en arrière-plan.';
+
+  @override
+  String get common_saved_filters => 'Filtres enregistrés';
 }

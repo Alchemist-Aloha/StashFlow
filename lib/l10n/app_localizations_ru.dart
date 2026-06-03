@@ -2558,4 +2558,7 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get settings_security_app_lock_subtitle =>
       'Защитите доступ с помощью пароля после фонового режима.';
+
+  @override
+  String get common_saved_filters => 'Сохраненные фильтры';
 }

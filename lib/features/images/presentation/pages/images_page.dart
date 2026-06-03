@@ -347,32 +347,36 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
         activeFilterCount: _activeFilterCount(effectiveFilter),
         defaultSortLabel: 'path',
         saveSuccessMessage: 'Image filter saved to server',
-        loadPresets: () => ref.read(savedFilterRepositoryProvider).findAll(
-          mode: 'IMAGES',
-          fromRaw: (raw) => ImageSavedFilterConfig.fromServerPayload(
-            id: raw['id'] as String,
-            name: raw['name'] as String,
-            findFilter: raw['find_filter'],
-            objectFilter: raw['object_filter'],
-          ),
-        ),
-        savePreset: ({required String name, String? existingId}) {
-          return ref.read(savedFilterRepositoryProvider).save(
-            input: ImageSavedFilterConfig.current(
-              id: existingId,
-              name: name,
-              searchQuery: ref.read(imageSearchQueryProvider),
-              sort: sortConfig.sort,
-              descending: sortConfig.descending,
-              filter: effectiveFilter,
-            ).toSaveInput(),
-            fromRaw: (raw) => ImageSavedFilterConfig.fromServerPayload(
-              id: raw['id'] as String,
-              name: raw['name'] as String,
-              findFilter: raw['find_filter'],
-              objectFilter: raw['object_filter'],
+        loadPresets: () => ref
+            .read(savedFilterRepositoryProvider)
+            .findAll(
+              mode: 'IMAGES',
+              fromRaw: (raw) => ImageSavedFilterConfig.fromServerPayload(
+                id: raw['id'] as String,
+                name: raw['name'] as String,
+                findFilter: raw['find_filter'],
+                objectFilter: raw['object_filter'],
+              ),
             ),
-          );
+        savePreset: ({required String name, String? existingId}) {
+          return ref
+              .read(savedFilterRepositoryProvider)
+              .save(
+                input: ImageSavedFilterConfig.current(
+                  id: existingId,
+                  name: name,
+                  searchQuery: ref.read(imageSearchQueryProvider),
+                  sort: sortConfig.sort,
+                  descending: sortConfig.descending,
+                  filter: effectiveFilter,
+                ).toSaveInput(),
+                fromRaw: (raw) => ImageSavedFilterConfig.fromServerPayload(
+                  id: raw['id'] as String,
+                  name: raw['name'] as String,
+                  findFilter: raw['find_filter'],
+                  objectFilter: raw['object_filter'],
+                ),
+              );
         },
         onLoad: _applySavedFilterConfig,
       ),
@@ -410,7 +414,8 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
       imageFilterStateProvider.select((s) => s.filter != const ImageFilter()),
     );
     final organizedFilter = ref.watch(imageOrganizedOnlyProvider);
-    final hasActiveFilters = filterActive || organizedFilter != OrganizedFilter.all;
+    final hasActiveFilters =
+        filterActive || organizedFilter != OrganizedFilter.all;
 
     int crossAxisCount = gridColumns ?? (isTablet ? 3 : (isMobile ? 2 : 5));
 
@@ -470,7 +475,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
           ],
         ),
         IconButton(
-          tooltip: 'Saved filters',
+          tooltip: context.l10n.common_saved_filters,
           icon: const Icon(Icons.bookmarks_outlined),
           onPressed: _showSavedFilterDialog,
         ),
@@ -478,11 +483,10 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
       searchHint: context.l10n.common_search_placeholder,
       onSearchChanged: _onSearchChanged,
       provider: imagesAsync,
-        itemBuilder: (context, image, memCacheWidth, memCacheHeight) =>
+      itemBuilder: (context, image, memCacheWidth, memCacheHeight) =>
           ImageCard(image: image, memCacheWidth: memCacheWidth),
-        loadingItemBuilder: (context, isGrid, index) => ImageCard.skeleton(
-        memCacheWidth: 300,
-        ),
+      loadingItemBuilder: (context, isGrid, index) =>
+          ImageCard.skeleton(memCacheWidth: 300),
       onRefresh: () => ref.read(imageListProvider.notifier).refresh(),
       onFetchNextPage: () =>
           ref.read(imageListProvider.notifier).fetchNextPage(),
