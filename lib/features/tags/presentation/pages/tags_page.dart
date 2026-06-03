@@ -9,7 +9,10 @@ import '../widgets/tag_filter_panel.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
+import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../domain/entities/tag.dart';
+import '../../domain/entities/tag_saved_filter_config.dart';
 
 enum _TagSortOption {
   name,
@@ -43,20 +46,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final sortConfig = ref.read(tagSortProvider);
       setState(() {
-        _sortOption = switch (sortConfig.sort) {
-          'name' => _TagSortOption.name,
-          'random' => _TagSortOption.random,
-          'scenes_duration' => _TagSortOption.scenesDuration,
-          'scenes_size' => _TagSortOption.scenesSize,
-          'gallery_count' => _TagSortOption.galleryCount,
-          'image_count' => _TagSortOption.imageCount,
-          'performer_count' => _TagSortOption.performerCount,
-          'scenes_count' => _TagSortOption.sceneCount,
-          'group_count' => _TagSortOption.groupCount,
-          'marker_count' => _TagSortOption.markerCount,
-          'studio_count' => _TagSortOption.studioCount,
-          _ => _TagSortOption.name,
-        };
+        _sortOption = _sortOptionForKey(sortConfig.sort);
         _sortDescending = sortConfig.descending;
       });
       _applyServerSort(_sortOption);
@@ -85,6 +75,24 @@ class _TagsPageState extends ConsumerState<TagsPage> {
     ref
         .read(tagListProvider.notifier)
         .setSort(sort: sortKey, descending: _sortDescending);
+  }
+
+  _TagSortOption _sortOptionForKey(String? sort) {
+    return switch (sort) {
+      'name' => _TagSortOption.name,
+      'random' => _TagSortOption.random,
+      'scenes_duration' => _TagSortOption.scenesDuration,
+      'scenes_size' => _TagSortOption.scenesSize,
+      'gallery_count' || 'galleries_count' => _TagSortOption.galleryCount,
+      'image_count' || 'images_count' => _TagSortOption.imageCount,
+      'performer_count' || 'performers_count' =>
+        _TagSortOption.performerCount,
+      'scenes_count' => _TagSortOption.sceneCount,
+      'group_count' || 'groups_count' => _TagSortOption.groupCount,
+      'marker_count' || 'scene_markers_count' => _TagSortOption.markerCount,
+      'studio_count' || 'studios_count' => _TagSortOption.studioCount,
+      _ => _TagSortOption.name,
+    };
   }
 
   String _sortLabel(_TagSortOption option) {
@@ -289,6 +297,66 @@ class _TagsPageState extends ConsumerState<TagsPage> {
     );
   }
 
+  void _showSavedFilterDialog() {
+    final sortConfig = ref.read(tagSortProvider);
+    final favoritesOnly = ref.read(tagFavoritesOnlyProvider);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => SavedFilterDialog<TagSavedFilterConfig>(
+        searchQuery: ref.read(tagSearchQueryProvider),
+        sort: sortConfig.sort,
+        descending: sortConfig.descending,
+        activeFilterCount: favoritesOnly ? 1 : 0,
+        defaultSortLabel: 'name',
+        saveSuccessMessage: 'Tag filter saved to server',
+        loadPresets: () => ref.read(savedFilterRepositoryProvider).findAll(
+          mode: 'TAGS',
+          fromRaw: (raw) => TagSavedFilterConfig.fromServerPayload(
+            id: raw['id'] as String,
+            name: raw['name'] as String,
+            findFilter: raw['find_filter'],
+            objectFilter: raw['object_filter'],
+          ),
+        ),
+        savePreset: ({required String name, String? existingId}) {
+          return ref.read(savedFilterRepositoryProvider).save(
+            input: TagSavedFilterConfig.current(
+              id: existingId,
+              name: name,
+              searchQuery: ref.read(tagSearchQueryProvider),
+              sort: sortConfig.sort,
+              descending: sortConfig.descending,
+              favorite: ref.read(tagFavoritesOnlyProvider),
+            ).toSaveInput(),
+            fromRaw: (raw) => TagSavedFilterConfig.fromServerPayload(
+              id: raw['id'] as String,
+              name: raw['name'] as String,
+              findFilter: raw['find_filter'],
+              objectFilter: raw['object_filter'],
+            ),
+          );
+        },
+        onLoad: _applySavedFilterConfig,
+      ),
+    );
+  }
+
+  void _applySavedFilterConfig(TagSavedFilterConfig config) {
+    setState(() {
+      _sortOption = _sortOptionForKey(config.sort);
+      _sortDescending = config.descending;
+    });
+
+    ref.read(tagSearchQueryProvider.notifier).update(config.searchQuery);
+    ref.read(tagListProvider.notifier).setFavoritesOnly(config.favorite);
+    ref
+        .read(tagSortProvider.notifier)
+        .setSort(sort: config.sort ?? 'name', descending: config.descending);
+    ref.invalidate(tagListProvider);
+  }
+
   Future<void> _openRandomTag() async {
     final randomTag = await ref
         .read(tagListProvider.notifier)
@@ -370,6 +438,11 @@ class _TagsPageState extends ConsumerState<TagsPage> {
                 ),
               ),
           ],
+        ),
+        IconButton(
+          tooltip: 'Saved filters',
+          icon: const Icon(Icons.bookmarks_outlined),
+          onPressed: _showSavedFilterDialog,
         ),
       ],
       padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingSmall),

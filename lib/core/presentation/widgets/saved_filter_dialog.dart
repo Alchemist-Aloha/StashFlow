@@ -1,0 +1,361 @@
+import 'package:flutter/material.dart';
+
+import '../../domain/entities/saved_filter_config.dart';
+import '../../utils/l10n_extensions.dart';
+import '../theme/app_theme.dart';
+
+class SavedFilterDialog<T extends SavedFilterConfig<dynamic>>
+    extends StatefulWidget {
+  const SavedFilterDialog({
+    super.key,
+    required this.searchQuery,
+    required this.sort,
+    required this.descending,
+    required this.activeFilterCount,
+    required this.defaultSortLabel,
+    required this.saveSuccessMessage,
+    required this.loadPresets,
+    required this.savePreset,
+    required this.onLoad,
+  });
+
+  final String searchQuery;
+  final String? sort;
+  final bool descending;
+  final int activeFilterCount;
+  final String defaultSortLabel;
+  final String saveSuccessMessage;
+  final Future<List<T>> Function() loadPresets;
+  final Future<T> Function({required String name, String? existingId})
+  savePreset;
+  final ValueChanged<T> onLoad;
+
+  @override
+  State<SavedFilterDialog<T>> createState() => _SavedFilterDialogState<T>();
+}
+
+class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
+    extends State<SavedFilterDialog<T>> {
+  late Future<List<T>> _savedFiltersFuture;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _savedFiltersFuture = widget.loadPresets();
+  }
+
+  Future<void> _save({
+    required List<T> existing,
+    required String name,
+  }) async {
+    if (name.isEmpty || _saving) return;
+
+    final match = existing
+        .where((filter) => filter.name.toLowerCase() == name.toLowerCase())
+        .firstOrNull;
+
+    setState(() => _saving = true);
+    try {
+      await widget.savePreset(name: name, existingId: match?.id);
+      setState(() {
+        _savedFiltersFuture = widget.loadPresets();
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(widget.saveSuccessMessage)),
+        );
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save filter: $error')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  Future<void> _promptSave(List<T> existing) async {
+    if (_saving) return;
+
+    final name = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => const _SavePresetNameDialog(),
+    );
+
+    if (!mounted || name == null) return;
+    await _save(existing: existing, name: name);
+  }
+
+  void _load(T config) {
+    widget.onLoad(config);
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final safeBottom = MediaQuery.paddingOf(context).bottom;
+
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          context.dimensions.spacingLarge,
+          context.dimensions.spacingLarge,
+          context.dimensions.spacingLarge,
+          context.dimensions.spacingLarge + safeBottom,
+        ),
+        child: FutureBuilder<List<T>>(
+          future: _savedFiltersFuture,
+          builder: (context, snapshot) {
+            final savedFilters = snapshot.data ?? const [];
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Saved Presets',
+                        style: context.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    TextButton.icon(
+                      onPressed: _saving ? null : () => _promptSave(savedFilters),
+                      icon: _saving
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.save_outlined),
+                      label: Text(context.l10n.common_save),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.close),
+                      tooltip: context.l10n.common_close,
+                    ),
+                  ],
+                ),
+                SizedBox(height: context.dimensions.spacingMedium),
+                Text('Current Settings', style: context.textTheme.labelLarge),
+                SizedBox(height: context.dimensions.spacingSmall),
+                _ActiveSettingsSummary(
+                  searchQuery: widget.searchQuery,
+                  sort: widget.sort,
+                  descending: widget.descending,
+                  activeFilterCount: widget.activeFilterCount,
+                  defaultSortLabel: widget.defaultSortLabel,
+                ),
+                SizedBox(height: context.dimensions.spacingSmall),
+                Text('Available Presets', style: context.textTheme.labelLarge),
+                SizedBox(height: context.dimensions.spacingSmall),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.sizeOf(context).height * 0.22,
+                  ),
+                  child: _SavedFilterList<T>(
+                    snapshot: snapshot,
+                    defaultSortLabel: widget.defaultSortLabel,
+                    onRetry: () {
+                      setState(() {
+                        _savedFiltersFuture = widget.loadPresets();
+                      });
+                    },
+                    onLoad: _load,
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _SavePresetNameDialog extends StatefulWidget {
+  const _SavePresetNameDialog();
+
+  @override
+  State<_SavePresetNameDialog> createState() => _SavePresetNameDialogState();
+}
+
+class _SavePresetNameDialogState extends State<_SavePresetNameDialog> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final name = _controller.text.trim();
+    if (name.isEmpty) return;
+    Navigator.of(context).pop(name);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Save Preset'),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: const InputDecoration(
+          labelText: 'Preset name',
+          helperText: 'Existing names are overwritten',
+          border: OutlineInputBorder(),
+        ),
+        onSubmitted: (_) => _submit(),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(context.l10n.common_cancel),
+        ),
+        FilledButton(onPressed: _submit, child: Text(context.l10n.common_save)),
+      ],
+    );
+  }
+}
+
+class _ActiveSettingsSummary extends StatelessWidget {
+  const _ActiveSettingsSummary({
+    required this.searchQuery,
+    required this.sort,
+    required this.descending,
+    required this.activeFilterCount,
+    required this.defaultSortLabel,
+  });
+
+  final String searchQuery;
+  final String? sort;
+  final bool descending;
+  final int activeFilterCount;
+  final String defaultSortLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final sortLabel =
+        '${sort ?? defaultSortLabel} ${descending ? 'DESC' : 'ASC'}';
+
+    return Material(
+      color: context.colors.surfaceVariant,
+      borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+      child: Padding(
+        padding: EdgeInsets.all(context.dimensions.spacingMedium),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Current active settings will be saved to the server.',
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+            ),
+            SizedBox(height: context.dimensions.spacingSmall),
+            Wrap(
+              spacing: context.dimensions.spacingSmall,
+              runSpacing: context.dimensions.spacingSmall,
+              children: [
+                Chip(
+                  visualDensity: VisualDensity.compact,
+                  label: Text('Sort: $sortLabel'),
+                ),
+                Chip(
+                  visualDensity: VisualDensity.compact,
+                  label: Text('Filters: $activeFilterCount'),
+                ),
+                if (searchQuery.isNotEmpty)
+                  Chip(
+                    visualDensity: VisualDensity.compact,
+                    label: Text('Search: $searchQuery'),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SavedFilterList<T extends SavedFilterConfig<dynamic>>
+    extends StatelessWidget {
+  const _SavedFilterList({
+    required this.snapshot,
+    required this.defaultSortLabel,
+    required this.onRetry,
+    required this.onLoad,
+  });
+
+  final AsyncSnapshot<List<T>> snapshot;
+  final String defaultSortLabel;
+  final VoidCallback onRetry;
+  final ValueChanged<T> onLoad;
+
+  @override
+  Widget build(BuildContext context) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (snapshot.hasError) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Failed to load presets: ${snapshot.error}'),
+            SizedBox(height: context.dimensions.spacingSmall),
+            OutlinedButton(
+              onPressed: onRetry,
+              child: Text(context.l10n.common_retry),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final filters = snapshot.data ?? const [];
+    if (filters.isEmpty) {
+      return const Center(child: Text('No saved presets'));
+    }
+
+    final sorted = [...filters]
+      ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+
+    return ListView.separated(
+      shrinkWrap: true,
+      itemCount: sorted.length,
+      separatorBuilder: (_, _) => const Divider(height: 1),
+      itemBuilder: (context, index) {
+        final filter = sorted[index];
+        final sortLabel =
+            '${filter.sort ?? defaultSortLabel} ${filter.descending ? 'DESC' : 'ASC'}';
+        return ListTile(
+          dense: true,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: context.dimensions.spacingSmall,
+          ),
+          title: Text(filter.name),
+          subtitle: Text(
+            [
+              if (filter.searchQuery.isNotEmpty) 'Search: ${filter.searchQuery}',
+              'Sort: $sortLabel',
+            ].join(' • '),
+          ),
+          trailing: const Icon(Icons.download_outlined),
+          onTap: () => onLoad(filter),
+        );
+      },
+    );
+  }
+}

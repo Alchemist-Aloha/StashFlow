@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'dart:math';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
+import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../providers/gallery_list_provider.dart';
 import '../../../images/presentation/providers/image_list_provider.dart';
 import '../../domain/entities/gallery.dart';
@@ -14,6 +16,7 @@ import '../../../../core/presentation/widgets/grid_utils.dart';
 
 import '../widgets/gallery_filter_panel.dart';
 import '../../domain/entities/gallery_filter.dart';
+import '../../domain/entities/gallery_saved_filter_config.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
@@ -55,21 +58,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final sortConfig = ref.read(gallerySortProvider);
       setState(() {
-        _sortOption = switch (sortConfig.sort) {
-          'date' => _GallerySortOption.date,
-          'title' => _GallerySortOption.title,
-          'path' => _GallerySortOption.path,
-          'rating100' || 'rating' => _GallerySortOption.rating,
-          'file_mod_time' => _GallerySortOption.fileModTime,
-          'tag_count' => _GallerySortOption.tagCount,
-          'performer_count' => _GallerySortOption.performerCount,
-          'random' => _GallerySortOption.random,
-          'images_count' || 'image_count' => _GallerySortOption.imageCount,
-          'zip_file_count' || 'file_count' => _GallerySortOption.fileCount,
-          'created_at' => _GallerySortOption.createdAt,
-          'updated_at' => _GallerySortOption.updatedAt,
-          _ => _GallerySortOption.path,
-        };
+        _sortOption = _sortOptionForKey(sortConfig.sort);
         _sortDescending = sortConfig.descending;
       });
       _applyServerSort();
@@ -98,6 +87,24 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
     ref
         .read(galleryListProvider.notifier)
         .setSort(sort: sortKey, descending: _sortDescending);
+  }
+
+  _GallerySortOption _sortOptionForKey(String? sort) {
+    return switch (sort) {
+      'date' => _GallerySortOption.date,
+      'title' => _GallerySortOption.title,
+      'path' => _GallerySortOption.path,
+      'rating100' || 'rating' => _GallerySortOption.rating,
+      'file_mod_time' => _GallerySortOption.fileModTime,
+      'tag_count' => _GallerySortOption.tagCount,
+      'performer_count' => _GallerySortOption.performerCount,
+      'random' => _GallerySortOption.random,
+      'images_count' || 'image_count' => _GallerySortOption.imageCount,
+      'zip_file_count' || 'file_count' => _GallerySortOption.fileCount,
+      'created_at' => _GallerySortOption.createdAt,
+      'updated_at' => _GallerySortOption.updatedAt,
+      _ => _GallerySortOption.path,
+    };
   }
 
   /// Opens a random gallery image view.
@@ -314,6 +321,79 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
     );
   }
 
+  int _activeFilterCount(GalleryFilter filter) {
+    return filter.toJson().values.where((value) => value != null).length;
+  }
+
+  void _showSavedFilterDialog() {
+    final sortConfig = ref.read(gallerySortProvider);
+    final filter = ref.read(galleryFilterStateProvider);
+    final organizedFilter = ref.read(galleryOrganizedOnlyProvider);
+    final effectiveFilter = filter.copyWith(
+      organized: organizedFilter.toBool() ?? filter.organized,
+    );
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => SavedFilterDialog<GallerySavedFilterConfig>(
+        searchQuery: ref.read(gallerySearchQueryProvider),
+        sort: sortConfig.sort,
+        descending: sortConfig.descending,
+        activeFilterCount: _activeFilterCount(effectiveFilter),
+        defaultSortLabel: 'path',
+        saveSuccessMessage: 'Gallery filter saved to server',
+        loadPresets: () => ref.read(savedFilterRepositoryProvider).findAll(
+          mode: 'GALLERIES',
+          fromRaw: (raw) => GallerySavedFilterConfig.fromServerPayload(
+            id: raw['id'] as String,
+            name: raw['name'] as String,
+            findFilter: raw['find_filter'],
+            objectFilter: raw['object_filter'],
+          ),
+        ),
+        savePreset: ({required String name, String? existingId}) {
+          return ref.read(savedFilterRepositoryProvider).save(
+            input: GallerySavedFilterConfig.current(
+              id: existingId,
+              name: name,
+              searchQuery: ref.read(gallerySearchQueryProvider),
+              sort: sortConfig.sort,
+              descending: sortConfig.descending,
+              filter: effectiveFilter,
+            ).toSaveInput(),
+            fromRaw: (raw) => GallerySavedFilterConfig.fromServerPayload(
+              id: raw['id'] as String,
+              name: raw['name'] as String,
+              findFilter: raw['find_filter'],
+              objectFilter: raw['object_filter'],
+            ),
+          );
+        },
+        onLoad: _applySavedFilterConfig,
+      ),
+    );
+  }
+
+  void _applySavedFilterConfig(GallerySavedFilterConfig config) {
+    setState(() {
+      _sortOption = _sortOptionForKey(config.sort);
+      _sortDescending = config.descending;
+    });
+
+    ref.read(gallerySearchQueryProvider.notifier).update(config.searchQuery);
+    ref
+        .read(galleryFilterStateProvider.notifier)
+        .update(config.filter.copyWith(organized: null));
+    ref
+        .read(galleryOrganizedOnlyProvider.notifier)
+        .set(OrganizedFilter.fromBool(config.filter.organized));
+    ref
+        .read(gallerySortProvider.notifier)
+        .setSort(sort: config.sort ?? 'path', descending: config.descending);
+    ref.invalidate(galleryListProvider);
+  }
+
   @override
   Widget build(BuildContext context) {
     final galleriesAsync = ref.watch(galleryListProvider);
@@ -397,6 +477,11 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
                 ),
               ),
           ],
+        ),
+        IconButton(
+          tooltip: 'Saved filters',
+          icon: const Icon(Icons.bookmarks_outlined),
+          onPressed: _showSavedFilterDialog,
         ),
         IconButton(
           icon: const Icon(Icons.image),

@@ -1,17 +1,16 @@
-import 'dart:convert';
-
+import '../../../../core/domain/entities/saved_filter_config.dart';
 import 'scene_filter.dart';
 
-class SceneSavedFilterConfig {
+class SceneSavedFilterConfig extends SavedFilterConfig<SceneFilter> {
   const SceneSavedFilterConfig({
-    this.id,
-    required this.name,
-    required this.searchQuery,
-    required this.sort,
-    required this.descending,
-    required this.filter,
-    this.perPage,
-  });
+    super.id,
+    required super.name,
+    required super.searchQuery,
+    required super.sort,
+    required super.descending,
+    required super.filter,
+    super.perPage,
+  }) : super(filterMode: 'SCENES');
 
   factory SceneSavedFilterConfig.current({
     String? id,
@@ -58,52 +57,26 @@ class SceneSavedFilterConfig {
     );
   }
 
-  final String? id;
-  final String name;
-  final String searchQuery;
-  final String? sort;
-  final bool descending;
-  final SceneFilter filter;
-  final int? perPage;
-
+  @override
   Map<String, dynamic> toSaveInput() {
-    return {
-      if (id != null) 'id': id,
-      'mode': 'SCENES',
-      'name': name,
-      'find_filter': {
-        if (searchQuery.isNotEmpty) 'q': searchQuery,
-        'page': 1,
-        if (perPage != null) 'per_page': perPage,
-        if (sort != null) 'sort': sort,
-        'direction': descending ? 'DESC' : 'ASC',
-      },
-      'object_filter': _toServerObjectFilter(filter),
-      'ui_options': <String, Object?>{},
-    };
+    return savedFilterBuildInput(
+      id: id,
+      mode: filterMode,
+      name: name,
+      searchQuery: searchQuery,
+      sort: sort,
+      descending: descending,
+      perPage: perPage,
+      objectFilter: _toServerObjectFilter(filter),
+    );
   }
 
   static Map<String, dynamic> _asMap(Object? value) {
-    if (value == null) return <String, dynamic>{};
-    if (value is Map<String, dynamic>) return Map<String, dynamic>.from(value);
-    if (value is Map) {
-      return value.map((key, value) => MapEntry(key.toString(), value));
-    }
-    if (value is String && value.trim().isNotEmpty) {
-      final decoded = jsonDecode(value);
-      if (decoded is Map<String, dynamic>) return decoded;
-      if (decoded is Map) {
-        return decoded.map((key, value) => MapEntry(key.toString(), value));
-      }
-    }
-    return <String, dynamic>{};
+    return savedFilterAsMap(value);
   }
 
   static Map<String, dynamic> _withoutNulls(Map<String, dynamic> value) {
-    return {
-      for (final entry in value.entries)
-        if (entry.value != null) entry.key: entry.value,
-    };
+    return savedFilterWithoutNulls(value);
   }
 
   static Map<String, dynamic> _toServerObjectFilter(SceneFilter filter) {
@@ -117,40 +90,23 @@ class SceneSavedFilterConfig {
   static Map<String, dynamic> _fromServerObjectFilter(
     Map<String, dynamic> objectFilter,
   ) {
-    final output = <String, dynamic>{};
-    for (final entry in objectFilter.entries) {
-      final localKey = _serverToLocalKeys[entry.key] ?? entry.key;
-      final normalized = _normalizeServerValue(localKey, entry.value);
-      if (normalized != _skipValue) {
-        output[localKey] = normalized;
-      }
-    }
-    return output;
+    return savedFilterFromServerObjectFilter(
+      objectFilter: objectFilter,
+      serverToLocalKeys: _serverToLocalKeys,
+      normalizeValue: _normalizeServerValue,
+    );
   }
 
   static Object? _normalizeServerValue(String localKey, Object? value) {
     if (_booleanFields.contains(localKey)) {
-      return _readBooleanCriterionValue(value) ?? _skipValue;
+      return savedFilterReadBooleanCriterionValue(value) ?? savedFilterSkipValue;
     }
 
     // Stash's is_missing value is a field name. StashFlow currently models it
     // as bool, so loading it would crash or lose meaning.
-    if (localKey == 'isMissing') return _skipValue;
+    if (localKey == 'isMissing') return savedFilterSkipValue;
 
     return value;
-  }
-
-  static bool? _readBooleanCriterionValue(Object? value) {
-    final rawValue = value is Map ? value['value'] : value;
-    if (rawValue is bool) return rawValue;
-    if (rawValue is String) {
-      return switch (rawValue.toLowerCase()) {
-        'true' => true,
-        'false' => false,
-        _ => null,
-      };
-    }
-    return null;
   }
 
   static const _localToServerKeys = {
@@ -187,6 +143,4 @@ class SceneSavedFilterConfig {
     'hasMarkers',
     'isMissing',
   };
-
-  static const _skipValue = Object();
 }

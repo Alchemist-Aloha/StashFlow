@@ -10,7 +10,10 @@ import '../../../setup/presentation/providers/navigation_customization_provider.
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
+import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../domain/entities/studio.dart';
+import '../../domain/entities/studio_saved_filter_config.dart';
 
 enum _StudioSortOption {
   name,
@@ -44,20 +47,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final sortConfig = ref.read(studioSortProvider);
       setState(() {
-        _sortOption = switch (sortConfig.sort) {
-          'name' => _StudioSortOption.name,
-          'tag_count' => _StudioSortOption.tagCount,
-          'random' => _StudioSortOption.random,
-          'rating' => _StudioSortOption.rating,
-          'scenes_duration' => _StudioSortOption.scenesDuration,
-          'scenes_size' => _StudioSortOption.scenesSize,
-          'latest_scene' => _StudioSortOption.latestScene,
-          'gallery_count' => _StudioSortOption.galleryCount,
-          'image_count' => _StudioSortOption.imageCount,
-          'scenes_count' => _StudioSortOption.sceneCount,
-          'child_count' => _StudioSortOption.childCount,
-          _ => _StudioSortOption.name,
-        };
+        _sortOption = _sortOptionForKey(sortConfig.sort);
         _sortDescending = sortConfig.descending;
       });
       _applyServerSort(_sortOption);
@@ -86,6 +76,23 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
     ref
         .read(studioListProvider.notifier)
         .setSort(sort: sortKey, descending: _sortDescending);
+  }
+
+  _StudioSortOption _sortOptionForKey(String? sort) {
+    return switch (sort) {
+      'name' => _StudioSortOption.name,
+      'tag_count' => _StudioSortOption.tagCount,
+      'random' => _StudioSortOption.random,
+      'rating' => _StudioSortOption.rating,
+      'scenes_duration' => _StudioSortOption.scenesDuration,
+      'scenes_size' => _StudioSortOption.scenesSize,
+      'latest_scene' => _StudioSortOption.latestScene,
+      'gallery_count' => _StudioSortOption.galleryCount,
+      'image_count' => _StudioSortOption.imageCount,
+      'scenes_count' => _StudioSortOption.sceneCount,
+      'child_count' => _StudioSortOption.childCount,
+      _ => _StudioSortOption.name,
+    };
   }
 
   String _sortLabel(_StudioSortOption option) {
@@ -294,6 +301,70 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
     );
   }
 
+  int _activeFilterCount(StudioFilter filter) {
+    return filter.toJson().values.where((value) => value != null).length;
+  }
+
+  void _showSavedFilterDialog() {
+    final sortConfig = ref.read(studioSortProvider);
+    final filter = ref.read(studioFilterStateProvider);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => SavedFilterDialog<StudioSavedFilterConfig>(
+        searchQuery: ref.read(studioSearchQueryProvider),
+        sort: sortConfig.sort,
+        descending: sortConfig.descending,
+        activeFilterCount: _activeFilterCount(filter),
+        defaultSortLabel: 'name',
+        saveSuccessMessage: 'Studio filter saved to server',
+        loadPresets: () => ref.read(savedFilterRepositoryProvider).findAll(
+          mode: 'STUDIOS',
+          fromRaw: (raw) => StudioSavedFilterConfig.fromServerPayload(
+            id: raw['id'] as String,
+            name: raw['name'] as String,
+            findFilter: raw['find_filter'],
+            objectFilter: raw['object_filter'],
+          ),
+        ),
+        savePreset: ({required String name, String? existingId}) {
+          return ref.read(savedFilterRepositoryProvider).save(
+            input: StudioSavedFilterConfig.current(
+              id: existingId,
+              name: name,
+              searchQuery: ref.read(studioSearchQueryProvider),
+              sort: sortConfig.sort,
+              descending: sortConfig.descending,
+              filter: ref.read(studioFilterStateProvider),
+            ).toSaveInput(),
+            fromRaw: (raw) => StudioSavedFilterConfig.fromServerPayload(
+              id: raw['id'] as String,
+              name: raw['name'] as String,
+              findFilter: raw['find_filter'],
+              objectFilter: raw['object_filter'],
+            ),
+          );
+        },
+        onLoad: _applySavedFilterConfig,
+      ),
+    );
+  }
+
+  void _applySavedFilterConfig(StudioSavedFilterConfig config) {
+    setState(() {
+      _sortOption = _sortOptionForKey(config.sort);
+      _sortDescending = config.descending;
+    });
+
+    ref.read(studioSearchQueryProvider.notifier).update(config.searchQuery);
+    ref.read(studioFilterStateProvider.notifier).update(config.filter);
+    ref
+        .read(studioSortProvider.notifier)
+        .setSort(sort: config.sort ?? 'name', descending: config.descending);
+    ref.invalidate(studioListProvider);
+  }
+
   Future<void> _openRandomStudio() async {
     final randomStudio = await ref
         .read(studioListProvider.notifier)
@@ -381,6 +452,11 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
               ),
 
           ],
+        ),
+        IconButton(
+          tooltip: 'Saved filters',
+          icon: const Icon(Icons.bookmarks_outlined),
+          onPressed: _showSavedFilterDialog,
         ),
       ],
       padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),

@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
+import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../../galleries/presentation/providers/gallery_list_provider.dart';
@@ -15,6 +17,7 @@ import '../../domain/entities/image.dart' as entity;
 
 import '../widgets/image_filter_panel.dart';
 import '../../domain/entities/image_filter.dart';
+import '../../domain/entities/image_saved_filter_config.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 
 enum _ImageSortOption {
@@ -54,23 +57,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final sortConfig = ref.read(imageSortProvider);
       setState(() {
-        _sortOption = switch (sortConfig.sort) {
-          'filesize' => _ImageSortOption.filesize,
-          'file_count' => _ImageSortOption.fileCount,
-          'date' => _ImageSortOption.date,
-          'resolution' => _ImageSortOption.resolution,
-          'title' => _ImageSortOption.title,
-          'path' => _ImageSortOption.path,
-          'rating100' || 'rating' => _ImageSortOption.rating,
-          'file_mod_time' => _ImageSortOption.fileModTime,
-          'tag_count' => _ImageSortOption.tagCount,
-          'performer_count' => _ImageSortOption.performerCount,
-          'random' => _ImageSortOption.random,
-          'o_counter' => _ImageSortOption.oCounter,
-          'created_at' => _ImageSortOption.createdAt,
-          'updated_at' => _ImageSortOption.updatedAt,
-          _ => _ImageSortOption.path,
-        };
+        _sortOption = _sortOptionForKey(sortConfig.sort);
         _sortDescending = sortConfig.descending;
       });
     });
@@ -100,6 +87,26 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
     ref
         .read(imageListProvider.notifier)
         .setSort(sort: sortKey, descending: _sortDescending);
+  }
+
+  _ImageSortOption _sortOptionForKey(String? sort) {
+    return switch (sort) {
+      'filesize' => _ImageSortOption.filesize,
+      'file_count' => _ImageSortOption.fileCount,
+      'date' => _ImageSortOption.date,
+      'resolution' => _ImageSortOption.resolution,
+      'title' => _ImageSortOption.title,
+      'path' => _ImageSortOption.path,
+      'rating100' || 'rating' => _ImageSortOption.rating,
+      'file_mod_time' => _ImageSortOption.fileModTime,
+      'tag_count' => _ImageSortOption.tagCount,
+      'performer_count' => _ImageSortOption.performerCount,
+      'random' => _ImageSortOption.random,
+      'o_counter' => _ImageSortOption.oCounter,
+      'created_at' => _ImageSortOption.createdAt,
+      'updated_at' => _ImageSortOption.updatedAt,
+      _ => _ImageSortOption.path,
+    };
   }
 
   String _sortOptionLabel(_ImageSortOption option) {
@@ -318,6 +325,79 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
     );
   }
 
+  int _activeFilterCount(ImageFilter filter) {
+    return filter.toJson().values.where((value) => value != null).length;
+  }
+
+  void _showSavedFilterDialog() {
+    final sortConfig = ref.read(imageSortProvider);
+    final filterState = ref.read(imageFilterStateProvider);
+    final organizedFilter = ref.read(imageOrganizedOnlyProvider);
+    final effectiveFilter = filterState.filter.copyWith(
+      organized: organizedFilter.toBool() ?? filterState.filter.organized,
+    );
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => SavedFilterDialog<ImageSavedFilterConfig>(
+        searchQuery: ref.read(imageSearchQueryProvider),
+        sort: sortConfig.sort,
+        descending: sortConfig.descending,
+        activeFilterCount: _activeFilterCount(effectiveFilter),
+        defaultSortLabel: 'path',
+        saveSuccessMessage: 'Image filter saved to server',
+        loadPresets: () => ref.read(savedFilterRepositoryProvider).findAll(
+          mode: 'IMAGES',
+          fromRaw: (raw) => ImageSavedFilterConfig.fromServerPayload(
+            id: raw['id'] as String,
+            name: raw['name'] as String,
+            findFilter: raw['find_filter'],
+            objectFilter: raw['object_filter'],
+          ),
+        ),
+        savePreset: ({required String name, String? existingId}) {
+          return ref.read(savedFilterRepositoryProvider).save(
+            input: ImageSavedFilterConfig.current(
+              id: existingId,
+              name: name,
+              searchQuery: ref.read(imageSearchQueryProvider),
+              sort: sortConfig.sort,
+              descending: sortConfig.descending,
+              filter: effectiveFilter,
+            ).toSaveInput(),
+            fromRaw: (raw) => ImageSavedFilterConfig.fromServerPayload(
+              id: raw['id'] as String,
+              name: raw['name'] as String,
+              findFilter: raw['find_filter'],
+              objectFilter: raw['object_filter'],
+            ),
+          );
+        },
+        onLoad: _applySavedFilterConfig,
+      ),
+    );
+  }
+
+  void _applySavedFilterConfig(ImageSavedFilterConfig config) {
+    setState(() {
+      _sortOption = _sortOptionForKey(config.sort);
+      _sortDescending = config.descending;
+    });
+
+    ref.read(imageSearchQueryProvider.notifier).update(config.searchQuery);
+    ref
+        .read(imageFilterStateProvider.notifier)
+        .updateFilter(config.filter.copyWith(organized: null));
+    ref
+        .read(imageOrganizedOnlyProvider.notifier)
+        .set(OrganizedFilter.fromBool(config.filter.organized));
+    ref
+        .read(imageSortProvider.notifier)
+        .setSort(sort: config.sort ?? 'path', descending: config.descending);
+    ref.invalidate(imageListProvider);
+  }
+
   @override
   Widget build(BuildContext context) {
     final imagesAsync = ref.watch(imageListProvider);
@@ -388,6 +468,11 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
                 ),
               ),
           ],
+        ),
+        IconButton(
+          tooltip: 'Saved filters',
+          icon: const Icon(Icons.bookmarks_outlined),
+          onPressed: _showSavedFilterDialog,
         ),
       ],
       searchHint: context.l10n.common_search_placeholder,
