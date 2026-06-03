@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import '../../../../core/data/graphql/schema.graphql.dart';
 import 'scene_filter.dart';
 
 class SceneSavedFilterConfig {
@@ -67,23 +66,21 @@ class SceneSavedFilterConfig {
   final SceneFilter filter;
   final int? perPage;
 
-  Input$SaveFilterInput toSaveInput() {
-    return Input$SaveFilterInput(
-      id: id,
-      mode: Enum$FilterMode.SCENES,
-      name: name,
-      find_filter: Input$FindFilterType(
-        q: searchQuery.isEmpty ? null : searchQuery,
-        page: 1,
-        per_page: perPage,
-        sort: sort,
-        direction: descending
-            ? Enum$SortDirectionEnum.DESC
-            : Enum$SortDirectionEnum.ASC,
-      ),
-      object_filter: jsonEncode(_toServerObjectFilter(filter)),
-      ui_options: jsonEncode(<String, Object?>{}),
-    );
+  Map<String, dynamic> toSaveInput() {
+    return {
+      if (id != null) 'id': id,
+      'mode': 'SCENES',
+      'name': name,
+      'find_filter': {
+        if (searchQuery.isNotEmpty) 'q': searchQuery,
+        'page': 1,
+        if (perPage != null) 'per_page': perPage,
+        if (sort != null) 'sort': sort,
+        'direction': descending ? 'DESC' : 'ASC',
+      },
+      'object_filter': _toServerObjectFilter(filter),
+      'ui_options': <String, Object?>{},
+    };
   }
 
   static Map<String, dynamic> _asMap(Object? value) {

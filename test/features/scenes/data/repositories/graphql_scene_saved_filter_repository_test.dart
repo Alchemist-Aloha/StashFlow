@@ -130,26 +130,77 @@ void main() {
       expect(input['name'], 'By path');
       expect(input['find_filter']['sort'], 'path');
       expect(input['find_filter']['direction'], 'ASC');
-      expect(input['object_filter'], contains('/stash'));
+      expect(input['object_filter'], isA<Map<String, dynamic>>());
+      expect(input['object_filter']['path']['value'], '/stash');
+      expect(input['ui_options'], isA<Map<String, dynamic>>());
     });
+
+    test(
+      'save accepts legacy string find_filter payloads without parser crashes',
+      () async {
+        final client = _FakeGraphQLClient(
+          mutationData: {
+            '__typename': 'Mutation',
+            'saveFilter': {
+              '__typename': 'SavedFilter',
+              'id': '10',
+              'mode': 'SCENES',
+              'name': 'Legacy payload',
+              'find_filter':
+                  '{"q":"clip","page":1,"per_page":25,"sort":"path","direction":"ASC"}',
+              'object_filter': {
+                'path': {'value': '/stash', 'modifier': 'INCLUDES'},
+              },
+              'ui_options': {},
+            },
+          },
+          applyParserFn: true,
+        );
+
+        final repository = GraphQLSceneSavedFilterRepository(client);
+        final saved = await repository.save(
+          SceneSavedFilterConfig.current(
+            name: 'Legacy payload',
+            searchQuery: 'clip',
+            sort: 'path',
+            descending: false,
+            filter: const SceneFilter(path: StringCriterion(value: '/stash')),
+            perPage: 25,
+          ),
+        );
+
+        expect(saved.id, '10');
+        expect(saved.searchQuery, 'clip');
+        expect(saved.sort, 'path');
+        expect(saved.descending, false);
+        expect(saved.filter.path?.value, '/stash');
+      },
+    );
   });
 }
 
 class _FakeGraphQLClient extends GraphQLClient {
-  _FakeGraphQLClient({this.queryData, this.mutationData})
-    : super(
-        cache: GraphQLCache(),
-        link: Link.function((request, [forward]) => const Stream.empty()),
-      );
+  _FakeGraphQLClient({
+    this.queryData,
+    this.mutationData,
+    this.applyParserFn = false,
+  }) : super(
+         cache: GraphQLCache(),
+         link: Link.function((request, [forward]) => const Stream.empty()),
+       );
 
   final Map<String, dynamic>? queryData;
   final Map<String, dynamic>? mutationData;
+  final bool applyParserFn;
   Map<String, dynamic>? lastMutationVariables;
 
   @override
   Future<QueryResult<TParsed>> query<TParsed>(
     QueryOptions<TParsed> options,
   ) async {
+    if (applyParserFn && queryData != null && options.parserFn != null) {
+      options.parserFn!(queryData!);
+    }
     return QueryResult<TParsed>(
       source: QueryResultSource.network,
       data: queryData,
@@ -162,6 +213,9 @@ class _FakeGraphQLClient extends GraphQLClient {
     MutationOptions<TParsed> options,
   ) async {
     lastMutationVariables = options.variables;
+    if (applyParserFn && mutationData != null && options.parserFn != null) {
+      options.parserFn!(mutationData!);
+    }
     return QueryResult<TParsed>(
       source: QueryResultSource.network,
       data: mutationData,

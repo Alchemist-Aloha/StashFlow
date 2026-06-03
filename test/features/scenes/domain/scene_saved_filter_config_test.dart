@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:stash_app_flutter/core/data/graphql/schema.graphql.dart';
 import 'package:stash_app_flutter/core/domain/entities/criterion.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_saved_filter_config.dart';
@@ -26,17 +25,18 @@ void main() {
 
       final input = config.toSaveInput();
 
-      expect(input.name, 'Favorites');
-      expect(input.mode, Enum$FilterMode.SCENES);
-      expect(input.find_filter?.q, 'studio search');
-      expect(input.find_filter?.sort, 'rating');
-      expect(input.find_filter?.direction, Enum$SortDirectionEnum.DESC);
-      expect(input.find_filter?.per_page, 60);
-      expect(input.object_filter, contains('"rating100"'));
-      expect(input.object_filter, contains('"tags"'));
-      expect(input.object_filter, contains('"organized":true'));
-      expect(input.object_filter, contains('"o_counter"'));
-      expect(input.object_filter, isNot(contains('"oCounter"')));
+      expect(input['name'], 'Favorites');
+      expect(input['mode'], 'SCENES');
+      expect(input['find_filter']['q'], 'studio search');
+      expect(input['find_filter']['sort'], 'rating');
+      expect(input['find_filter']['direction'], 'DESC');
+      expect(input['find_filter']['per_page'], 60);
+      expect(input['object_filter'], contains('rating100'));
+      expect(input['object_filter'], contains('tags'));
+      expect(input['object_filter']['organized'], true);
+      expect(input['object_filter'], contains('o_counter'));
+      expect(input['object_filter'], isNot(contains('oCounter')));
+      expect(input['ui_options'], isA<Map<String, dynamic>>());
     });
 
     test('loads official Stash scene filter and sort from server payload', () {

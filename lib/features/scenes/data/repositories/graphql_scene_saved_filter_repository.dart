@@ -1,4 +1,5 @@
 import 'package:graphql/client.dart';
+import 'package:graphql/client.dart' as graphql;
 
 import '../../../../core/data/graphql/base_repository.dart';
 import '../../domain/entities/scene_saved_filter_config.dart';
@@ -10,8 +11,12 @@ class GraphQLSceneSavedFilterRepository {
   final GraphQLClient client;
 
   Future<List<SceneSavedFilterConfig>> findAll() async {
-    final result = await client.query$FindSceneSavedFilters(
-      Options$Query$FindSceneSavedFilters(fetchPolicy: FetchPolicy.networkOnly),
+    final result = await client.query<Map<String, dynamic>>(
+      graphql.QueryOptions<Map<String, dynamic>>(
+        document: documentNodeQueryFindSceneSavedFilters,
+        fetchPolicy: FetchPolicy.networkOnly,
+        parserFn: (data) => data,
+      ),
     );
     BaseRepository.validateResult(result);
 
@@ -23,11 +28,11 @@ class GraphQLSceneSavedFilterRepository {
   }
 
   Future<SceneSavedFilterConfig> save(SceneSavedFilterConfig config) async {
-    final result = await client.mutate$SaveSceneSavedFilter(
-      Options$Mutation$SaveSceneSavedFilter(
-        variables: Variables$Mutation$SaveSceneSavedFilter(
-          input: config.toSaveInput(),
-        ),
+    final result = await client.mutate<Map<String, dynamic>>(
+      graphql.MutationOptions<Map<String, dynamic>>(
+        document: documentNodeMutationSaveSceneSavedFilter,
+        variables: {'input': config.toSaveInput()},
+        parserFn: (data) => data,
       ),
     );
     BaseRepository.validateResult(result);
