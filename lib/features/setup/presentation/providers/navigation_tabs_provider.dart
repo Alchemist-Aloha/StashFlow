@@ -97,9 +97,6 @@ class NavigationTabsNotifier extends Notifier<List<NavigationTab>> {
   /// Reorders tabs.
   Future<void> reorder(int oldIndex, int newIndex) async {
     final tabs = List<NavigationTab>.from(state);
-    if (oldIndex < newIndex) {
-      newIndex -= 1;
-    }
     final item = tabs.removeAt(oldIndex);
     tabs.insert(newIndex, item);
     await updateTabs(tabs);

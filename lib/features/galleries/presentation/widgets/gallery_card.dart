@@ -411,11 +411,10 @@ class GalleryCard extends ConsumerWidget {
 }
 
 class _SectionCard extends StatelessWidget {
-  const _SectionCard({required this.title, required this.child, this.trailing});
+  const _SectionCard({required this.title, required this.child});
 
   final String title;
   final Widget child;
-  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -438,7 +437,6 @@ class _SectionCard extends StatelessWidget {
                   style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
                 ),
               ),
-              if (trailing != null) ...[trailing!],
             ],
           ),
           const SizedBox(height: 8),

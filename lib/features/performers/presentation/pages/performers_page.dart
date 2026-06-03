@@ -12,6 +12,9 @@ import '../../../../core/presentation/providers/layout_settings_provider.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
+import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
+import '../../domain/entities/performer_saved_filter_config.dart';
 
 enum _PerformerSortOption {
   name,
@@ -56,31 +59,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final sortConfig = ref.read(performerSortProvider);
       setState(() {
-        _sortOption = switch (sortConfig.sort) {
-          'name' => _PerformerSortOption.name,
-          'height' => _PerformerSortOption.height,
-          'birthdate' => _PerformerSortOption.birthdate,
-          'tag_count' => _PerformerSortOption.tagCount,
-          'random' => _PerformerSortOption.random,
-          'rating' => _PerformerSortOption.rating,
-          'penis_length' => _PerformerSortOption.penisLength,
-          'play_count' => _PerformerSortOption.playCount,
-          'last_played_at' => _PerformerSortOption.lastPlayedAt,
-          'latest_scene' => _PerformerSortOption.latestScene,
-          'career_start' => _PerformerSortOption.careerStart,
-          'career_end' => _PerformerSortOption.careerEnd,
-          'weight' => _PerformerSortOption.weight,
-          'measurements' => _PerformerSortOption.measurements,
-          'scenes_duration' => _PerformerSortOption.scenesDuration,
-          'scenes_size' => _PerformerSortOption.scenesSize,
-          'scenes_count' => _PerformerSortOption.sceneCount,
-          'images_count' => _PerformerSortOption.imageCount,
-          'galleries_count' => _PerformerSortOption.galleryCount,
-          'o_counter' => _PerformerSortOption.oCounter,
-          'last_o_at' => _PerformerSortOption.lastOAt,
-          'created_at' => _PerformerSortOption.createdAt,
-          _ => _PerformerSortOption.name,
-        };
+        _sortOption = _sortOptionForKey(sortConfig.sort);
         _sortDescending = sortConfig.descending;
       });
       _applyServerSort(_sortOption);
@@ -120,6 +99,34 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
     ref
         .read(performerListProvider.notifier)
         .setSort(sort: sortKey, descending: _sortDescending);
+  }
+
+  _PerformerSortOption _sortOptionForKey(String? sort) {
+    return switch (sort) {
+      'name' => _PerformerSortOption.name,
+      'height' => _PerformerSortOption.height,
+      'birthdate' => _PerformerSortOption.birthdate,
+      'tag_count' => _PerformerSortOption.tagCount,
+      'random' => _PerformerSortOption.random,
+      'rating' => _PerformerSortOption.rating,
+      'penis_length' => _PerformerSortOption.penisLength,
+      'play_count' => _PerformerSortOption.playCount,
+      'last_played_at' => _PerformerSortOption.lastPlayedAt,
+      'latest_scene' => _PerformerSortOption.latestScene,
+      'career_start' => _PerformerSortOption.careerStart,
+      'career_end' => _PerformerSortOption.careerEnd,
+      'weight' => _PerformerSortOption.weight,
+      'measurements' => _PerformerSortOption.measurements,
+      'scenes_duration' => _PerformerSortOption.scenesDuration,
+      'scenes_size' => _PerformerSortOption.scenesSize,
+      'scenes_count' => _PerformerSortOption.sceneCount,
+      'images_count' => _PerformerSortOption.imageCount,
+      'galleries_count' => _PerformerSortOption.galleryCount,
+      'o_counter' => _PerformerSortOption.oCounter,
+      'last_o_at' => _PerformerSortOption.lastOAt,
+      'created_at' => _PerformerSortOption.createdAt,
+      _ => _PerformerSortOption.name,
+    };
   }
 
   String _sortLabel(_PerformerSortOption option) {
@@ -241,7 +248,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
                     constraints: BoxConstraints(
                       // Using MediaQuery.sizeOf(context) instead of MediaQuery.of(context).size
                       // to prevent unnecessary rebuilds when unrelated MediaQueryData properties change.
-                      maxHeight: MediaQuery.sizeOf(context).height * 0.35,
+                      maxHeight: MediaQuery.sizeOf(context).height * 0.22,
                     ),
                     child: Scrollbar(
                       thumbVisibility: true,
@@ -365,6 +372,70 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
     );
   }
 
+  int _activeFilterCount(PerformerFilter filter) {
+    return filter.toJson().values.where((value) => value != null).length;
+  }
+
+  void _showSavedFilterDialog() {
+    final sortConfig = ref.read(performerSortProvider);
+    final filter = ref.read(performerFilterStateProvider);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => SavedFilterDialog<PerformerSavedFilterConfig>(
+        searchQuery: ref.read(performerSearchQueryProvider),
+        sort: sortConfig.sort,
+        descending: sortConfig.descending,
+        activeFilterCount: _activeFilterCount(filter),
+        defaultSortLabel: 'name',
+        saveSuccessMessage: 'Performer filter saved to server',
+        loadPresets: () => ref.read(savedFilterRepositoryProvider).findAll(
+          mode: 'PERFORMERS',
+          fromRaw: (raw) => PerformerSavedFilterConfig.fromServerPayload(
+            id: raw['id'] as String,
+            name: raw['name'] as String,
+            findFilter: raw['find_filter'],
+            objectFilter: raw['object_filter'],
+          ),
+        ),
+        savePreset: ({required String name, String? existingId}) {
+          return ref.read(savedFilterRepositoryProvider).save(
+            input: PerformerSavedFilterConfig.current(
+              id: existingId,
+              name: name,
+              searchQuery: ref.read(performerSearchQueryProvider),
+              sort: sortConfig.sort,
+              descending: sortConfig.descending,
+              filter: ref.read(performerFilterStateProvider),
+            ).toSaveInput(),
+            fromRaw: (raw) => PerformerSavedFilterConfig.fromServerPayload(
+              id: raw['id'] as String,
+              name: raw['name'] as String,
+              findFilter: raw['find_filter'],
+              objectFilter: raw['object_filter'],
+            ),
+          );
+        },
+        onLoad: _applySavedFilterConfig,
+      ),
+    );
+  }
+
+  void _applySavedFilterConfig(PerformerSavedFilterConfig config) {
+    setState(() {
+      _sortOption = _sortOptionForKey(config.sort);
+      _sortDescending = config.descending;
+    });
+
+    ref.read(performerSearchQueryProvider.notifier).update(config.searchQuery);
+    ref.read(performerFilterStateProvider.notifier).update(config.filter);
+    ref
+        .read(performerSortProvider.notifier)
+        .setSort(sort: config.sort ?? 'name', descending: config.descending);
+    ref.invalidate(performerListProvider);
+  }
+
   @override
   Widget build(BuildContext context) {
     final performersAsync = ref.watch(performerListProvider);
@@ -432,6 +503,11 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
               ),
 
           ],
+        ),
+        IconButton(
+          tooltip: 'Saved filters',
+          icon: const Icon(Icons.bookmarks_outlined),
+          onPressed: _showSavedFilterDialog,
         ),
       ],
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

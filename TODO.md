@@ -1,5 +1,6 @@
 # Plan
 
+- Move Sort, Filter, and saved filters buttons to a pill widget locate dynamically above bottom panel or mini player
 - Add avif support
 - Add previous, next video navigation for cast player
 - Debug switching sorting between random and other options fails

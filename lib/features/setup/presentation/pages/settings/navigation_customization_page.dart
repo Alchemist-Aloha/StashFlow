@@ -16,7 +16,7 @@ class NavigationCustomizationPage extends ConsumerWidget {
       title: context.l10n.settings_interface_customize_tabs,
       child: ReorderableListView(
         padding: EdgeInsets.all(context.dimensions.spacingMedium),
-        onReorder: (oldIndex, newIndex) {
+        onReorderItem: (oldIndex, newIndex) {
           ref.read(navigationTabsProvider.notifier).reorder(oldIndex, newIndex);
         },
         children: [
