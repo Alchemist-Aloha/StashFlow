@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/utils/l10n_extensions.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../../domain/entities/scene_saved_filter_config.dart';
 import '../providers/scene_list_provider.dart';
@@ -28,7 +30,6 @@ class SceneSavedFilterDialog extends ConsumerStatefulWidget {
 
 class _SceneSavedFilterDialogState
     extends ConsumerState<SceneSavedFilterDialog> {
-  final _nameController = TextEditingController();
   late Future<List<SceneSavedFilterConfig>> _savedFiltersFuture;
   bool _saving = false;
 
@@ -38,18 +39,14 @@ class _SceneSavedFilterDialogState
     _savedFiltersFuture = _loadSavedFilters();
   }
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
-  }
-
   Future<List<SceneSavedFilterConfig>> _loadSavedFilters() {
     return ref.read(sceneSavedFilterRepositoryProvider).findAll();
   }
 
-  Future<void> _save(List<SceneSavedFilterConfig> existing) async {
-    final name = _nameController.text.trim();
+  Future<void> _save({
+    required List<SceneSavedFilterConfig> existing,
+    required String name,
+  }) async {
     if (name.isEmpty || _saving) return;
 
     final match = existing
@@ -70,7 +67,6 @@ class _SceneSavedFilterDialogState
               filter: widget.filter,
             ),
           );
-      _nameController.clear();
       setState(() {
         _savedFiltersFuture = _loadSavedFilters();
       });
@@ -90,6 +86,18 @@ class _SceneSavedFilterDialogState
     }
   }
 
+  Future<void> _promptSave(List<SceneSavedFilterConfig> existing) async {
+    if (_saving) return;
+
+    final name = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => const _SavePresetNameDialog(),
+    );
+
+    if (!mounted || name == null) return;
+    await _save(existing: existing, name: name);
+  }
+
   void _load(SceneSavedFilterConfig config) {
     widget.onLoad(config);
     Navigator.of(context).pop();
@@ -97,101 +105,186 @@ class _SceneSavedFilterDialogState
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.only(
-          left: 20,
-          right: 20,
-          top: 20,
-          bottom: MediaQuery.viewInsetsOf(context).bottom + 20,
-        ),
-        child: FutureBuilder<List<SceneSavedFilterConfig>>(
-          future: _savedFiltersFuture,
-          builder: (context, snapshot) {
-            final savedFilters = snapshot.data ?? const [];
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.bookmarks_outlined),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Save active scene settings',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.close),
-                      tooltip: 'Close',
-                    ),
-                  ],
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final safeBottom = MediaQuery.paddingOf(context).bottom;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final mediaSize = MediaQuery.sizeOf(context);
+        final width = constraints.hasBoundedWidth
+            ? constraints.maxWidth
+            : mediaSize.width;
+        final height = constraints.hasBoundedHeight
+            ? constraints.maxHeight * 0.9
+            : mediaSize.height * 0.9;
+
+        return SafeArea(
+          top: false,
+          child: SizedBox(
+            width: width,
+            height: height,
+            child: Container(
+              decoration: BoxDecoration(
+                color: context.colors.surface,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(AppTheme.radiusExtraLarge),
                 ),
-                const SizedBox(height: 16),
-                _ActiveSettingsSummary(
-                  searchQuery: widget.searchQuery,
-                  sort: widget.sort,
-                  descending: widget.descending,
-                  filter: widget.filter,
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _nameController,
-                        enabled: !_saving,
-                        decoration: const InputDecoration(
-                          labelText: 'Server preset name',
-                          helperText: 'Existing names are overwritten',
-                          border: OutlineInputBorder(),
+              ),
+              child: FutureBuilder<List<SceneSavedFilterConfig>>(
+                future: _savedFiltersFuture,
+                builder: (context, snapshot) {
+                  final savedFilters = snapshot.data ?? const [];
+                  return Column(
+                    children: [
+                      // Header
+                      Padding(
+                        padding: EdgeInsets.all(
+                          context.dimensions.spacingMedium,
                         ),
-                        onSubmitted: (_) => _save(savedFilters),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Saved Presets',
+                                style: context.textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: _saving
+                                  ? null
+                                  : () => _promptSave(savedFilters),
+                              icon: _saving
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : const Icon(Icons.save_outlined),
+                              tooltip: context.l10n.common_save,
+                            ),
+                            SizedBox(width: context.dimensions.spacingSmall),
+                            IconButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              icon: const Icon(Icons.close),
+                              tooltip: context.l10n.common_close,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    FilledButton.icon(
-                      onPressed: _saving ? null : () => _save(savedFilters),
-                      icon: _saving
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.save_outlined),
-                      label: const Text('Save'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Load from server',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 8),
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: MediaQuery.sizeOf(context).height * 0.45,
-                  ),
-                  child: _SavedFilterList(
-                    snapshot: snapshot,
-                    onRetry: () {
-                      setState(() {
-                        _savedFiltersFuture = _loadSavedFilters();
-                      });
-                    },
-                    onLoad: _load,
-                  ),
-                ),
-              ],
-            );
-          },
+                      const Divider(height: 1),
+                      // Content
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: EdgeInsets.only(
+                            bottom:
+                                bottomInset +
+                                safeBottom +
+                                context.dimensions.spacingLarge,
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.all(
+                              context.dimensions.spacingMedium,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _ActiveSettingsSummary(
+                                  searchQuery: widget.searchQuery,
+                                  sort: widget.sort,
+                                  descending: widget.descending,
+                                  filter: widget.filter,
+                                ),
+                                SizedBox(
+                                  height: context.dimensions.spacingLarge,
+                                ),
+                                Text(
+                                  'Load Preset',
+                                  style: context.textTheme.titleMedium,
+                                ),
+                                SizedBox(
+                                  height: context.dimensions.spacingSmall,
+                                ),
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxHeight:
+                                        MediaQuery.sizeOf(context).height *
+                                        0.45,
+                                  ),
+                                  child: _SavedFilterList(
+                                    snapshot: snapshot,
+                                    onRetry: () {
+                                      setState(() {
+                                        _savedFiltersFuture =
+                                            _loadSavedFilters();
+                                      });
+                                    },
+                                    onLoad: _load,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _SavePresetNameDialog extends StatefulWidget {
+  const _SavePresetNameDialog();
+
+  @override
+  State<_SavePresetNameDialog> createState() => _SavePresetNameDialogState();
+}
+
+class _SavePresetNameDialogState extends State<_SavePresetNameDialog> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final name = _controller.text.trim();
+    if (name.isEmpty) return;
+    Navigator.of(context).pop(name);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Save Preset'),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: const InputDecoration(
+          labelText: 'Preset name',
+          helperText: 'Existing names are overwritten',
+          border: OutlineInputBorder(),
         ),
+        onSubmitted: (_) => _submit(),
       ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(context.l10n.common_cancel),
+        ),
+        FilledButton(onPressed: _submit, child: Text(context.l10n.common_save)),
+      ],
     );
   }
 }
@@ -219,21 +312,21 @@ class _ActiveSettingsSummary extends StatelessWidget {
     final sortLabel = '${sort ?? 'date'} ${descending ? 'DESC' : 'ASC'}';
 
     return Material(
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      borderRadius: BorderRadius.circular(12),
+      color: context.colors.surfaceVariant,
+      borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(context.dimensions.spacingMedium),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Current active settings will be saved to the server.',
-              style: Theme.of(context).textTheme.bodyMedium,
+              'Current active settings will be saved.',
+              style: context.textTheme.bodyMedium,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: context.dimensions.spacingSmall),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: context.dimensions.spacingSmall,
+              runSpacing: context.dimensions.spacingSmall,
               children: [
                 Chip(label: Text('Sort: $sortLabel')),
                 Chip(label: Text('Filters: $activeFilterCount')),
@@ -270,9 +363,12 @@ class _SavedFilterList extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Failed to load saved filters: ${snapshot.error}'),
-            const SizedBox(height: 8),
-            OutlinedButton(onPressed: onRetry, child: const Text('Retry')),
+            Text('Failed to load presets: ${snapshot.error}'),
+            SizedBox(height: context.dimensions.spacingSmall),
+            OutlinedButton(
+              onPressed: onRetry,
+              child: Text(context.l10n.common_retry),
+            ),
           ],
         ),
       );
@@ -280,7 +376,7 @@ class _SavedFilterList extends StatelessWidget {
 
     final filters = snapshot.data ?? const [];
     if (filters.isEmpty) {
-      return const Center(child: Text('No saved scene filters on server'));
+      return const Center(child: Text('No saved presets'));
     }
 
     final sorted = [...filters]
