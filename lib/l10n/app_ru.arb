@@ -929,5 +929,18 @@
   },
   "settings_security_title": "Безопасность",
   "settings_security_app_lock": "Блокировка приложения",
-  "settings_security_app_lock_subtitle": "Защитите доступ с помощью пароля после фонового режима."
+  "settings_security_app_lock_subtitle": "Защитите доступ с помощью пароля после фонового режима.",
+  "saved_presets": "Сохраненные пресеты",
+  "current_settings": "Текущие настройки",
+  "available_presets": "Доступные пресеты",
+  "save_preset": "Сохранить предустановку",
+  "preset_name": "Имя предустановки",
+  "preset_name_helper": "Существующие имена перезаписываются.",
+  "current_active_settings_saved": "Текущие активные настройки будут сохранены на сервере.",
+  "no_saved_presets": "Нет сохраненных пресетов",
+  "preset_sort": "Сортировать: {value}",
+  "preset_filters": "Фильтры: {value}",
+  "preset_search": "Поиск: {value}",
+  "failed_to_save_filter": "Не удалось сохранить фильтр: {error}.",
+  "failed_to_load_presets": "Не удалось загрузить пресеты: {error}"
 }

@@ -929,5 +929,18 @@
   },
   "settings_security_title": "Seguridad",
   "settings_security_app_lock": "Bloqueo de aplicaciones",
-  "settings_security_app_lock_subtitle": "Proteja el acceso con una contraseña después de ponerlo en segundo plano."
+  "settings_security_app_lock_subtitle": "Proteja el acceso con una contraseña después de ponerlo en segundo plano.",
+  "saved_presets": "Preajustes guardados",
+  "current_settings": "Configuración actual",
+  "available_presets": "Presets disponibles",
+  "save_preset": "Guardar preestablecido",
+  "preset_name": "Nombre preestablecido",
+  "preset_name_helper": "Los nombres existentes se sobrescriben",
+  "current_active_settings_saved": "La configuración activa actual se guardará en el servidor.",
+  "no_saved_presets": "No hay ajustes preestablecidos guardados",
+  "preset_sort": "Ordenar: {value}",
+  "preset_filters": "Filtros: {value}",
+  "preset_search": "Buscar: {value}",
+  "failed_to_save_filter": "No se pudo guardar el filtro: {error}",
+  "failed_to_load_presets": "No se pudieron cargar los ajustes preestablecidos: {error}"
 }

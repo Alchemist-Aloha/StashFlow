@@ -950,5 +950,18 @@
   },
   "settings_security_title": "Sicherheit",
   "settings_security_app_lock": "App-Sperre",
-  "settings_security_app_lock_subtitle": "Schützen Sie den Zugriff nach dem Hintergrundbetrieb mit einem Passcode."
+  "settings_security_app_lock_subtitle": "Schützen Sie den Zugriff nach dem Hintergrundbetrieb mit einem Passcode.",
+  "saved_presets": "Gespeicherte Voreinstellungen",
+  "current_settings": "Aktuelle Einstellungen",
+  "available_presets": "Verfügbare Voreinstellungen",
+  "save_preset": "Voreinstellung speichern",
+  "preset_name": "Voreingestellter Name",
+  "preset_name_helper": "Vorhandene Namen werden überschrieben",
+  "current_active_settings_saved": "Die aktuell aktiven Einstellungen werden auf dem Server gespeichert.",
+  "no_saved_presets": "Keine gespeicherten Voreinstellungen",
+  "preset_sort": "Sortieren: {value}",
+  "preset_filters": "Filter: {value}",
+  "preset_search": "Suche: {value}",
+  "failed_to_save_filter": "Filter konnte nicht gespeichert werden: {error}",
+  "failed_to_load_presets": "Voreinstellungen konnten nicht geladen werden: {error}"
 }

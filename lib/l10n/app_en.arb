@@ -1049,5 +1049,53 @@
   },
   "settings_security_title": "Security",
   "settings_security_app_lock": "App lock",
-  "settings_security_app_lock_subtitle": "Protect access with a passcode after backgrounding."
+  "settings_security_app_lock_subtitle": "Protect access with a passcode after backgrounding.",
+  "saved_presets": "Saved Presets",
+  "current_settings": "Current Settings",
+  "available_presets": "Available Presets",
+  "save_preset": "Save Preset",
+  "preset_name": "Preset name",
+  "preset_name_helper": "Existing names are overwritten",
+  "current_active_settings_saved": "Current active settings will be saved to the server.",
+  "no_saved_presets": "No saved presets",
+  "preset_sort": "Sort: {value}",
+  "@preset_sort": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "preset_filters": "Filters: {value}",
+  "@preset_filters": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "preset_search": "Search: {value}",
+  "@preset_search": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failed_to_save_filter": "Failed to save filter: {error}",
+  "@failed_to_save_filter": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failed_to_load_presets": "Failed to load presets: {error}",
+  "@failed_to_load_presets": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

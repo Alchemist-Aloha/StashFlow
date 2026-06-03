@@ -929,5 +929,18 @@
   },
   "settings_security_title": "보안",
   "settings_security_app_lock": "앱 잠금",
-  "settings_security_app_lock_subtitle": "백그라운드 후 비밀번호로 접근을 보호하세요."
+  "settings_security_app_lock_subtitle": "백그라운드 후 비밀번호로 접근을 보호하세요.",
+  "saved_presets": "저장된 사전 설정",
+  "current_settings": "현재 설정",
+  "available_presets": "사용 가능한 사전 설정",
+  "save_preset": "사전 설정 저장",
+  "preset_name": "프리셋 이름",
+  "preset_name_helper": "기존 이름을 덮어씁니다.",
+  "current_active_settings_saved": "현재 활성 설정이 서버에 저장됩니다.",
+  "no_saved_presets": "저장된 사전 설정이 없습니다.",
+  "preset_sort": "정렬: {value}",
+  "preset_filters": "필터: {value}",
+  "preset_search": "검색: {value}",
+  "failed_to_save_filter": "필터를 저장하지 못했습니다: {error}",
+  "failed_to_load_presets": "사전 설정을 로드하지 못했습니다: {error}"
 }

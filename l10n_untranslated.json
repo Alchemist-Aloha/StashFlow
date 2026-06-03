@@ -1,1 +1,161 @@
-{}
+{
+  "de": [
+    "saved_presets",
+    "current_settings",
+    "available_presets",
+    "save_preset",
+    "preset_name",
+    "preset_name_helper",
+    "current_active_settings_saved",
+    "no_saved_presets",
+    "preset_sort",
+    "preset_filters",
+    "preset_search",
+    "failed_to_save_filter",
+    "failed_to_load_presets"
+  ],
+
+  "es": [
+    "saved_presets",
+    "current_settings",
+    "available_presets",
+    "save_preset",
+    "preset_name",
+    "preset_name_helper",
+    "current_active_settings_saved",
+    "no_saved_presets",
+    "preset_sort",
+    "preset_filters",
+    "preset_search",
+    "failed_to_save_filter",
+    "failed_to_load_presets"
+  ],
+
+  "fr": [
+    "saved_presets",
+    "current_settings",
+    "available_presets",
+    "save_preset",
+    "preset_name",
+    "preset_name_helper",
+    "current_active_settings_saved",
+    "no_saved_presets",
+    "preset_sort",
+    "preset_filters",
+    "preset_search",
+    "failed_to_save_filter",
+    "failed_to_load_presets"
+  ],
+
+  "it": [
+    "saved_presets",
+    "current_settings",
+    "available_presets",
+    "save_preset",
+    "preset_name",
+    "preset_name_helper",
+    "current_active_settings_saved",
+    "no_saved_presets",
+    "preset_sort",
+    "preset_filters",
+    "preset_search",
+    "failed_to_save_filter",
+    "failed_to_load_presets"
+  ],
+
+  "ja": [
+    "saved_presets",
+    "current_settings",
+    "available_presets",
+    "save_preset",
+    "preset_name",
+    "preset_name_helper",
+    "current_active_settings_saved",
+    "no_saved_presets",
+    "preset_sort",
+    "preset_filters",
+    "preset_search",
+    "failed_to_save_filter",
+    "failed_to_load_presets"
+  ],
+
+  "ko": [
+    "saved_presets",
+    "current_settings",
+    "available_presets",
+    "save_preset",
+    "preset_name",
+    "preset_name_helper",
+    "current_active_settings_saved",
+    "no_saved_presets",
+    "preset_sort",
+    "preset_filters",
+    "preset_search",
+    "failed_to_save_filter",
+    "failed_to_load_presets"
+  ],
+
+  "ru": [
+    "saved_presets",
+    "current_settings",
+    "available_presets",
+    "save_preset",
+    "preset_name",
+    "preset_name_helper",
+    "current_active_settings_saved",
+    "no_saved_presets",
+    "preset_sort",
+    "preset_filters",
+    "preset_search",
+    "failed_to_save_filter",
+    "failed_to_load_presets"
+  ],
+
+  "zh": [
+    "saved_presets",
+    "current_settings",
+    "available_presets",
+    "save_preset",
+    "preset_name",
+    "preset_name_helper",
+    "current_active_settings_saved",
+    "no_saved_presets",
+    "preset_sort",
+    "preset_filters",
+    "preset_search",
+    "failed_to_save_filter",
+    "failed_to_load_presets"
+  ],
+
+  "zh_Hans": [
+    "saved_presets",
+    "current_settings",
+    "available_presets",
+    "save_preset",
+    "preset_name",
+    "preset_name_helper",
+    "current_active_settings_saved",
+    "no_saved_presets",
+    "preset_sort",
+    "preset_filters",
+    "preset_search",
+    "failed_to_save_filter",
+    "failed_to_load_presets"
+  ],
+
+  "zh_Hant": [
+    "saved_presets",
+    "current_settings",
+    "available_presets",
+    "save_preset",
+    "preset_name",
+    "preset_name_helper",
+    "current_active_settings_saved",
+    "no_saved_presets",
+    "preset_sort",
+    "preset_filters",
+    "preset_search",
+    "failed_to_save_filter",
+    "failed_to_load_presets"
+  ]
+}

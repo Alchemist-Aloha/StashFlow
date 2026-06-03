@@ -2473,4 +2473,54 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get settings_security_app_lock_subtitle =>
       'バックグラウンド化後はパスコードでアクセスを保護します。';
+
+  @override
+  String get saved_presets => 'Saved Presets';
+
+  @override
+  String get current_settings => 'Current Settings';
+
+  @override
+  String get available_presets => 'Available Presets';
+
+  @override
+  String get save_preset => 'Save Preset';
+
+  @override
+  String get preset_name => 'Preset name';
+
+  @override
+  String get preset_name_helper => 'Existing names are overwritten';
+
+  @override
+  String get current_active_settings_saved =>
+      'Current active settings will be saved to the server.';
+
+  @override
+  String get no_saved_presets => 'No saved presets';
+
+  @override
+  String preset_sort(String value) {
+    return 'Sort: $value';
+  }
+
+  @override
+  String preset_filters(int value) {
+    return 'Filters: $value';
+  }
+
+  @override
+  String preset_search(String value) {
+    return 'Search: $value';
+  }
+
+  @override
+  String failed_to_save_filter(String error) {
+    return 'Failed to save filter: $error';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return 'Failed to load presets: $error';
+  }
 }

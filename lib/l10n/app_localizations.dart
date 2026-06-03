@@ -4697,6 +4697,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Protect access with a passcode after backgrounding.'**
   String get settings_security_app_lock_subtitle;
+
+  /// No description provided for @saved_presets.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Presets'**
+  String get saved_presets;
+
+  /// No description provided for @current_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Settings'**
+  String get current_settings;
+
+  /// No description provided for @available_presets.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Presets'**
+  String get available_presets;
+
+  /// No description provided for @save_preset.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Preset'**
+  String get save_preset;
+
+  /// No description provided for @preset_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset name'**
+  String get preset_name;
+
+  /// No description provided for @preset_name_helper.
+  ///
+  /// In en, this message translates to:
+  /// **'Existing names are overwritten'**
+  String get preset_name_helper;
+
+  /// No description provided for @current_active_settings_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Current active settings will be saved to the server.'**
+  String get current_active_settings_saved;
+
+  /// No description provided for @no_saved_presets.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved presets'**
+  String get no_saved_presets;
+
+  /// No description provided for @preset_sort.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: {value}'**
+  String preset_sort(String value);
+
+  /// No description provided for @preset_filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters: {value}'**
+  String preset_filters(int value);
+
+  /// No description provided for @preset_search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search: {value}'**
+  String preset_search(String value);
+
+  /// No description provided for @failed_to_save_filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save filter: {error}'**
+  String failed_to_save_filter(String error);
+
+  /// No description provided for @failed_to_load_presets.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load presets: {error}'**
+  String failed_to_load_presets(String error);
 }
 
 class _AppLocalizationsDelegate

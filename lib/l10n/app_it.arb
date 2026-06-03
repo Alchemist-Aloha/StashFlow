@@ -934,5 +934,18 @@
   },
   "settings_security_title": "Sicurezza",
   "settings_security_app_lock": "Blocco dell'app",
-  "settings_security_app_lock_subtitle": "Proteggi l'accesso con un passcode dopo il background."
+  "settings_security_app_lock_subtitle": "Proteggi l'accesso con un passcode dopo il background.",
+  "saved_presets": "Preimpostazioni salvate",
+  "current_settings": "Impostazioni correnti",
+  "available_presets": "Preset disponibili",
+  "save_preset": "Salva preimpostazione",
+  "preset_name": "Nome preimpostato",
+  "preset_name_helper": "I nomi esistenti vengono sovrascritti",
+  "current_active_settings_saved": "Le impostazioni attive correnti verranno salvate sul server.",
+  "no_saved_presets": "Nessun preset salvato",
+  "preset_sort": "Ordina: {value}",
+  "preset_filters": "Filtri: {value}",
+  "preset_search": "Cerca: {value}",
+  "failed_to_save_filter": "Impossibile salvare il filtro: {error}",
+  "failed_to_load_presets": "Impossibile caricare le preimpostazioni: {error}"
 }

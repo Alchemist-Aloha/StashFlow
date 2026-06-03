@@ -915,5 +915,18 @@
   },
   "settings_security_title": "安全",
   "settings_security_app_lock": "应用锁",
-  "settings_security_app_lock_subtitle": "后台运行后使用密码保护访问。"
+  "settings_security_app_lock_subtitle": "后台运行后使用密码保护访问。",
+  "saved_presets": "保存的预设",
+  "current_settings": "当前设置",
+  "available_presets": "可用预设",
+  "save_preset": "保存预设",
+  "preset_name": "预设名称",
+  "preset_name_helper": "现有名称被覆盖",
+  "current_active_settings_saved": "当前活动设置将保存到服务器。",
+  "no_saved_presets": "没有保存的预设",
+  "preset_sort": "排序：{value}",
+  "preset_filters": "过滤器：{value}",
+  "preset_search": "搜索：{value}",
+  "failed_to_save_filter": "无法保存过滤器：{error}",
+  "failed_to_load_presets": "无法加载预设：{error}"
 }

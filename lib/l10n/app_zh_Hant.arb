@@ -915,5 +915,18 @@
   },
   "settings_security_title": "安全",
   "settings_security_app_lock": "應用鎖",
-  "settings_security_app_lock_subtitle": "後台運行後使用密碼保護存取。"
+  "settings_security_app_lock_subtitle": "後台運行後使用密碼保護存取。",
+  "saved_presets": "儲存的預設",
+  "current_settings": "目前設定",
+  "available_presets": "可用預設",
+  "save_preset": "儲存預設",
+  "preset_name": "預設名稱",
+  "preset_name_helper": "現有名稱被覆蓋",
+  "current_active_settings_saved": "當前活動設定將儲存到伺服器。",
+  "no_saved_presets": "沒有儲存的預設",
+  "preset_sort": "排序：{value}",
+  "preset_filters": "過濾器：{value}",
+  "preset_search": "搜尋：{value}",
+  "failed_to_save_filter": "無法儲存過濾器：{error}",
+  "failed_to_load_presets": "無法載入預設：{error}"
 }
