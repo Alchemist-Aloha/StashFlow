@@ -42,6 +42,12 @@ const _saveFilterDocument = r'''
   }
 ''';
 
+const _deleteFilterDocument = r'''
+  mutation DestroySavedFilter($input: DestroyFilterInput!) {
+    destroySavedFilter(input: $input)
+  }
+''';
+
 final savedFilterRepositoryProvider = Provider<GraphQLSavedFilterRepository>((
   ref,
 ) {
@@ -94,5 +100,25 @@ class GraphQLSavedFilterRepository {
     }
 
     return fromRaw(saved);
+  }
+
+  Future<bool> delete({required String id}) async {
+    final result = await client.mutate<Map<String, dynamic>>(
+      MutationOptions<Map<String, dynamic>>(
+        document: gql(_deleteFilterDocument),
+        variables: {
+          'input': {'id': id},
+        },
+        parserFn: (data) => data,
+      ),
+    );
+    BaseRepository.validateResult(result);
+
+    final deleted = result.data?['destroySavedFilter'];
+    if (deleted is! bool) {
+      throw StateError('destroySavedFilter returned an invalid payload');
+    }
+
+    return deleted;
   }
 }

@@ -16,6 +16,7 @@ class SavedFilterDialog<T extends SavedFilterConfig<dynamic>>
     required this.saveSuccessMessage,
     required this.loadPresets,
     required this.savePreset,
+    required this.deletePreset,
     required this.onLoad,
   });
 
@@ -28,6 +29,7 @@ class SavedFilterDialog<T extends SavedFilterConfig<dynamic>>
   final Future<List<T>> Function() loadPresets;
   final Future<T> Function({required String name, String? existingId})
   savePreset;
+  final Future<bool> Function(String id) deletePreset;
   final ValueChanged<T> onLoad;
 
   @override
@@ -38,6 +40,8 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
     extends State<SavedFilterDialog<T>> {
   late Future<List<T>> _savedFiltersFuture;
   bool _saving = false;
+  bool _deleting = false;
+  String? _deletingId;
 
   @override
   void initState() {
@@ -45,11 +49,8 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
     _savedFiltersFuture = widget.loadPresets();
   }
 
-  Future<void> _save({
-    required List<T> existing,
-    required String name,
-  }) async {
-    if (name.isEmpty || _saving) return;
+  Future<void> _save({required List<T> existing, required String name}) async {
+    if (name.isEmpty || _saving || _deleting) return;
 
     final match = existing
         .where((filter) => filter.name.toLowerCase() == name.toLowerCase())
@@ -62,9 +63,9 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
         _savedFiltersFuture = widget.loadPresets();
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(widget.saveSuccessMessage)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(widget.saveSuccessMessage)));
       }
     } catch (error) {
       if (mounted) {
@@ -78,7 +79,7 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
   }
 
   Future<void> _promptSave(List<T> existing) async {
-    if (_saving) return;
+    if (_saving || _deleting) return;
 
     final name = await showDialog<String>(
       context: context,
@@ -92,6 +93,51 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
   void _load(T config) {
     widget.onLoad(config);
     Navigator.of(context).pop();
+  }
+
+  Future<void> _promptDelete(T config) async {
+    final id = config.id;
+    if (id == null || _saving || _deleting) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => _DeletePresetConfirmDialog(name: config.name),
+    );
+
+    if (!mounted || confirmed != true) return;
+
+    setState(() {
+      _deleting = true;
+      _deletingId = id;
+    });
+    try {
+      final deleted = await widget.deletePreset(id);
+      if (!deleted) {
+        throw StateError('Preset could not be deleted');
+      }
+
+      setState(() {
+        _savedFiltersFuture = widget.loadPresets();
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Preset deleted')));
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete preset: $error')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _deleting = false;
+          _deletingId = null;
+        });
+      }
+    }
   }
 
   @override
@@ -126,7 +172,9 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
                       ),
                     ),
                     TextButton.icon(
-                      onPressed: _saving ? null : () => _promptSave(savedFilters),
+                      onPressed: _saving || _deleting
+                          ? null
+                          : () => _promptSave(savedFilters),
                       icon: _saving
                           ? const SizedBox(
                               width: 16,
@@ -163,11 +211,14 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
                   child: _SavedFilterList<T>(
                     snapshot: snapshot,
                     defaultSortLabel: widget.defaultSortLabel,
+                    busy: _saving || _deleting,
+                    deletingId: _deletingId,
                     onRetry: () {
                       setState(() {
                         _savedFiltersFuture = widget.loadPresets();
                       });
                     },
+                    onDelete: _promptDelete,
                     onLoad: _load,
                   ),
                 ),
@@ -176,6 +227,30 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
           },
         ),
       ),
+    );
+  }
+}
+
+class _DeletePresetConfirmDialog extends StatelessWidget {
+  const _DeletePresetConfirmDialog({required this.name});
+
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Delete Preset'),
+      content: Text('Delete "$name"? This action cannot be undone.'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(context.l10n.common_cancel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          child: const Text('Delete'),
+        ),
+      ],
     );
   }
 }
@@ -293,13 +368,19 @@ class _SavedFilterList<T extends SavedFilterConfig<dynamic>>
   const _SavedFilterList({
     required this.snapshot,
     required this.defaultSortLabel,
+    required this.busy,
+    required this.deletingId,
     required this.onRetry,
+    required this.onDelete,
     required this.onLoad,
   });
 
   final AsyncSnapshot<List<T>> snapshot;
   final String defaultSortLabel;
+  final bool busy;
+  final String? deletingId;
   final VoidCallback onRetry;
+  final ValueChanged<T> onDelete;
   final ValueChanged<T> onLoad;
 
   @override
@@ -345,15 +426,29 @@ class _SavedFilterList<T extends SavedFilterConfig<dynamic>>
           contentPadding: EdgeInsets.symmetric(
             horizontal: context.dimensions.spacingSmall,
           ),
+          enabled: !busy,
           title: Text(filter.name),
           subtitle: Text(
             [
-              if (filter.searchQuery.isNotEmpty) 'Search: ${filter.searchQuery}',
+              if (filter.searchQuery.isNotEmpty)
+                'Search: ${filter.searchQuery}',
               'Sort: $sortLabel',
             ].join(' • '),
           ),
-          trailing: const Icon(Icons.download_outlined),
-          onTap: () => onLoad(filter),
+          trailing: filter.id == null
+              ? null
+              : IconButton(
+                  onPressed: busy ? null : () => onDelete(filter),
+                  tooltip: 'Delete preset',
+                  icon: deletingId == filter.id
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.delete_outline),
+                ),
+          onTap: busy ? null : () => onLoad(filter),
         );
       },
     );

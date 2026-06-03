@@ -42,8 +42,7 @@ class _SceneSavedFilterDialogState
           .length,
       defaultSortLabel: 'date',
       saveSuccessMessage: 'Scene filter saved to server',
-      loadPresets: () =>
-          ref.read(sceneSavedFilterRepositoryProvider).findAll(),
+      loadPresets: () => ref.read(sceneSavedFilterRepositoryProvider).findAll(),
       savePreset: ({required String name, String? existingId}) {
         return ref
             .read(sceneSavedFilterRepositoryProvider)
@@ -58,6 +57,8 @@ class _SceneSavedFilterDialogState
               ),
             );
       },
+      deletePreset: (id) =>
+          ref.read(sceneSavedFilterRepositoryProvider).delete(id),
       onLoad: widget.onLoad,
     );
   }

@@ -319,33 +319,39 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
         activeFilterCount: _activeFilterCount(filter),
         defaultSortLabel: 'name',
         saveSuccessMessage: 'Studio filter saved to server',
-        loadPresets: () => ref.read(savedFilterRepositoryProvider).findAll(
-          mode: 'STUDIOS',
-          fromRaw: (raw) => StudioSavedFilterConfig.fromServerPayload(
-            id: raw['id'] as String,
-            name: raw['name'] as String,
-            findFilter: raw['find_filter'],
-            objectFilter: raw['object_filter'],
-          ),
-        ),
-        savePreset: ({required String name, String? existingId}) {
-          return ref.read(savedFilterRepositoryProvider).save(
-            input: StudioSavedFilterConfig.current(
-              id: existingId,
-              name: name,
-              searchQuery: ref.read(studioSearchQueryProvider),
-              sort: sortConfig.sort,
-              descending: sortConfig.descending,
-              filter: ref.read(studioFilterStateProvider),
-            ).toSaveInput(),
-            fromRaw: (raw) => StudioSavedFilterConfig.fromServerPayload(
-              id: raw['id'] as String,
-              name: raw['name'] as String,
-              findFilter: raw['find_filter'],
-              objectFilter: raw['object_filter'],
+        loadPresets: () => ref
+            .read(savedFilterRepositoryProvider)
+            .findAll(
+              mode: 'STUDIOS',
+              fromRaw: (raw) => StudioSavedFilterConfig.fromServerPayload(
+                id: raw['id'] as String,
+                name: raw['name'] as String,
+                findFilter: raw['find_filter'],
+                objectFilter: raw['object_filter'],
+              ),
             ),
-          );
+        savePreset: ({required String name, String? existingId}) {
+          return ref
+              .read(savedFilterRepositoryProvider)
+              .save(
+                input: StudioSavedFilterConfig.current(
+                  id: existingId,
+                  name: name,
+                  searchQuery: ref.read(studioSearchQueryProvider),
+                  sort: sortConfig.sort,
+                  descending: sortConfig.descending,
+                  filter: ref.read(studioFilterStateProvider),
+                ).toSaveInput(),
+                fromRaw: (raw) => StudioSavedFilterConfig.fromServerPayload(
+                  id: raw['id'] as String,
+                  name: raw['name'] as String,
+                  findFilter: raw['find_filter'],
+                  objectFilter: raw['object_filter'],
+                ),
+              );
         },
+        deletePreset: (id) =>
+            ref.read(savedFilterRepositoryProvider).delete(id: id),
         onLoad: _applySavedFilterConfig,
       ),
     );
@@ -450,7 +456,6 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                   constraints: const BoxConstraints(minWidth: 8, minHeight: 8),
                 ),
               ),
-
           ],
         ),
         IconButton(
@@ -465,9 +470,9 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
           horizontal: context.dimensions.spacingMedium,
           vertical: 4,
         ),
-        color: Theme.of(context).colorScheme.primaryContainer.withValues(
-          alpha: 0.3,
-        ),
+        color: Theme.of(
+          context,
+        ).colorScheme.primaryContainer.withValues(alpha: 0.3),
         child: ListTile(
           onTap: () => context.push('/studios/studio/${studio.id}'),
           title: Text(
@@ -490,9 +495,9 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
             horizontal: context.dimensions.spacingMedium,
             vertical: 4,
           ),
-          color: Theme.of(context).colorScheme.primaryContainer.withValues(
-            alpha: 0.3,
-          ),
+          color: Theme.of(
+            context,
+          ).colorScheme.primaryContainer.withValues(alpha: 0.3),
           child: ListTile(
             title: Text(
               context.l10n.loading,

@@ -343,33 +343,39 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
         activeFilterCount: _activeFilterCount(effectiveFilter),
         defaultSortLabel: 'path',
         saveSuccessMessage: 'Gallery filter saved to server',
-        loadPresets: () => ref.read(savedFilterRepositoryProvider).findAll(
-          mode: 'GALLERIES',
-          fromRaw: (raw) => GallerySavedFilterConfig.fromServerPayload(
-            id: raw['id'] as String,
-            name: raw['name'] as String,
-            findFilter: raw['find_filter'],
-            objectFilter: raw['object_filter'],
-          ),
-        ),
-        savePreset: ({required String name, String? existingId}) {
-          return ref.read(savedFilterRepositoryProvider).save(
-            input: GallerySavedFilterConfig.current(
-              id: existingId,
-              name: name,
-              searchQuery: ref.read(gallerySearchQueryProvider),
-              sort: sortConfig.sort,
-              descending: sortConfig.descending,
-              filter: effectiveFilter,
-            ).toSaveInput(),
-            fromRaw: (raw) => GallerySavedFilterConfig.fromServerPayload(
-              id: raw['id'] as String,
-              name: raw['name'] as String,
-              findFilter: raw['find_filter'],
-              objectFilter: raw['object_filter'],
+        loadPresets: () => ref
+            .read(savedFilterRepositoryProvider)
+            .findAll(
+              mode: 'GALLERIES',
+              fromRaw: (raw) => GallerySavedFilterConfig.fromServerPayload(
+                id: raw['id'] as String,
+                name: raw['name'] as String,
+                findFilter: raw['find_filter'],
+                objectFilter: raw['object_filter'],
+              ),
             ),
-          );
+        savePreset: ({required String name, String? existingId}) {
+          return ref
+              .read(savedFilterRepositoryProvider)
+              .save(
+                input: GallerySavedFilterConfig.current(
+                  id: existingId,
+                  name: name,
+                  searchQuery: ref.read(gallerySearchQueryProvider),
+                  sort: sortConfig.sort,
+                  descending: sortConfig.descending,
+                  filter: effectiveFilter,
+                ).toSaveInput(),
+                fromRaw: (raw) => GallerySavedFilterConfig.fromServerPayload(
+                  id: raw['id'] as String,
+                  name: raw['name'] as String,
+                  findFilter: raw['find_filter'],
+                  objectFilter: raw['object_filter'],
+                ),
+              );
         },
+        deletePreset: (id) =>
+            ref.read(savedFilterRepositoryProvider).delete(id: id),
         onLoad: _applySavedFilterConfig,
       ),
     );
