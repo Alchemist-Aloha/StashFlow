@@ -929,5 +929,6 @@
   },
   "settings_security_title": "Sécurité",
   "settings_security_app_lock": "Verrouillage d'application",
-  "settings_security_app_lock_subtitle": "Protégez l’accès avec un mot de passe après la mise en arrière-plan."
+  "settings_security_app_lock_subtitle": "Protégez l’accès avec un mot de passe après la mise en arrière-plan.",
+  "common_saved_filters": "Filtres enregistrés"
 }

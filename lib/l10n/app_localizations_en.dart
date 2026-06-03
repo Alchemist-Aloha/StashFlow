@@ -2523,4 +2523,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settings_security_app_lock_subtitle =>
       'Protect access with a passcode after backgrounding.';
+
+  @override
+  String get common_saved_filters => 'Saved filters';
 }

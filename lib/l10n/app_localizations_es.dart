@@ -2590,4 +2590,7 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get settings_security_app_lock_subtitle =>
       'Proteja el acceso con una contraseña después de ponerlo en segundo plano.';
+
+  @override
+  String get common_saved_filters => 'Filtros guardados';
 }

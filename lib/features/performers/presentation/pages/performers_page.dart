@@ -510,7 +510,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
           ],
         ),
         IconButton(
-          tooltip: 'Saved filters',
+          tooltip: context.l10n.common_saved_filters,
           icon: const Icon(Icons.bookmarks_outlined),
           onPressed: _showSavedFilterDialog,
         ),

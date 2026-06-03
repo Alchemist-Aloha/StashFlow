@@ -950,5 +950,6 @@
   },
   "settings_security_title": "Sicherheit",
   "settings_security_app_lock": "App-Sperre",
-  "settings_security_app_lock_subtitle": "Schützen Sie den Zugriff nach dem Hintergrundbetrieb mit einem Passcode."
+  "settings_security_app_lock_subtitle": "Schützen Sie den Zugriff nach dem Hintergrundbetrieb mit einem Passcode.",
+  "common_saved_filters": "Gespeicherte Filter"
 }

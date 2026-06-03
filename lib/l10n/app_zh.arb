@@ -929,5 +929,6 @@
   },
   "settings_security_title": "安全",
   "settings_security_app_lock": "应用锁",
-  "settings_security_app_lock_subtitle": "后台运行后使用密码保护访问。"
+  "settings_security_app_lock_subtitle": "后台运行后使用密码保护访问。",
+  "common_saved_filters": "保存的筛选"
 }
