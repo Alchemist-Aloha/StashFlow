@@ -37,6 +37,7 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     this.customBody,
     this.gridDelegate,
     this.actions = const [],
+    this.actionsInTopPanel = false,
     this.sortBar,
     this.emptyMessage = 'No items found',
     this.onRefresh,
@@ -154,6 +155,9 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
   /// Optional builder used for loading placeholders.
   final Widget Function(BuildContext context, bool isGrid, int index)?
   loadingItemBuilder;
+
+  /// Whether to render [actions] in the top AppBar instead of the floating bottom pill.
+  final bool actionsInTopPanel;
 
   @override
   ConsumerState<ListPageScaffold<T>> createState() =>
@@ -610,6 +614,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                   onPressed: () => context.push('/settings'),
                   tooltip: context.l10n.common_settings,
                 ),
+                if (widget.actionsInTopPanel) ...widget.actions,
               ],
             ),
       body: Listener(
@@ -931,7 +936,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
             ),
           ],
         ),
-        if (widget.actions.isNotEmpty)
+        if (widget.actions.isNotEmpty && !widget.actionsInTopPanel)
           Positioned(
             bottom: 16,
             left: 0,

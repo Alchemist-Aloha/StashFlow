@@ -542,6 +542,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       searchHint: context.l10n.scenes_search_hint,
       onSearchChanged: _onSearchChanged,
       provider: scenesAsync,
+      actionsInTopPanel: isTiktokLayout,
       imageUrlBuilder: (scene) => scene.paths.screenshot,
       memCacheWidthBuilder: (context, isGrid) {
         if (!isGrid) return 640;
