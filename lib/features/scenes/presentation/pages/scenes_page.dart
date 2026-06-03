@@ -326,7 +326,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
                         constraints: BoxConstraints(
                           // Using MediaQuery.sizeOf(context) instead of MediaQuery.of(context).size
                           // to prevent unnecessary rebuilds when unrelated MediaQueryData properties change.
-                          maxHeight: MediaQuery.sizeOf(context).height * 0.35,
+                          maxHeight: MediaQuery.sizeOf(context).height * 0.22,
                         ),
                         child: Scrollbar(
                           thumbVisibility: true,
