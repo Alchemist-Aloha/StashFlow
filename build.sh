@@ -56,7 +56,7 @@ flutter pub get || { echo -e "${RED}flutter pub get failed!${NC}"; exit 1; }
 
 # 2. Run code generation (for graphql_codegen, freezed, etc.)
 echo -e "${YELLOW}Running code generation...${NC}"
-dart run build_runner build --delete-conflicting-outputs || { echo -e "${RED}Code generation failed!${NC}"; exit 1; }
+dart run build_runner build || { echo -e "${RED}Code generation failed!${NC}"; exit 1; }
 
 # Function to build a platform and handle errors (try/except logic)
 build_platform() {

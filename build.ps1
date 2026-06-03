@@ -88,7 +88,7 @@ if ($LASTEXITCODE -ne 0) {
 
 # 2. Run code generation
 Write-Info "Running code generation..."
-& dart run build_runner build --delete-conflicting-outputs
+& dart run build_runner build
 if ($LASTEXITCODE -ne 0) {
     Write-ErrorMsg "Code generation failed!"
     exit 1
