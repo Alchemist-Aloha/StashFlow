@@ -9,6 +9,8 @@ import '../../domain/entities/scene_saved_filter_config.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/playback_queue_provider.dart';
+import '../providers/player_view_mode.dart';
+import '../providers/video_player_provider.dart';
 import '../widgets/scene_card.dart';
 import '../widgets/tiktok_scenes_view.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
@@ -80,6 +82,34 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
 
   /// Remembers the last random scene ID to avoid consecutive duplicates in "Casino mode".
   String? _lastRandomSceneId;
+
+  void _handleLayoutModeTransition({
+    required bool? previousIsTiktok,
+    required bool isTiktok,
+  }) {
+    if (previousIsTiktok != true || isTiktok || !mounted) return;
+
+    final currentPath = GoRouter.of(
+      context,
+    ).routeInformationProvider.value.uri.path;
+    if (currentPath != '/scenes') return;
+
+    final playerState = ref.read(playerStateProvider);
+    final isFeedOwnedPlayback =
+        playerState.viewMode == PlayerViewMode.tiktok ||
+        playerState.streamSource == 'tiktok-promotion' ||
+        playerState.streamSource == 'tiktok-handoff';
+
+    ref.read(fullScreenModeProvider.notifier).set(false);
+
+    if (!isFeedOwnedPlayback) return;
+
+    AppLogStore.instance.add(
+      'ScenesPage: stopping feed playback after leaving TikTok layout',
+      source: 'scenes_page',
+    );
+    ref.read(playerStateProvider.notifier).stop();
+  }
 
   @override
   void initState() {
@@ -502,6 +532,10 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     // Fullscreen auto-exit is handled by the SceneDetailsPage so the
     // ScenesPage should not pop routes when the player toggles fullscreen.
     // This avoids double-pop behavior that could remove the details route.
+
+    ref.listen<bool>(sceneTiktokLayoutProvider, (previous, next) {
+      _handleLayoutModeTransition(previousIsTiktok: previous, isTiktok: next);
+    });
 
     final isTiktokLayout = ref.watch(sceneTiktokLayoutProvider);
     final isGridView = ref.watch(sceneGridLayoutProvider);
