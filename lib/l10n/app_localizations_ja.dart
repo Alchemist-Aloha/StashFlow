@@ -789,10 +789,34 @@ class AppLocalizationsJa extends AppLocalizations {
   String get filter_less_than => 'より小さい';
 
   @override
+  String get filter_includes => 'Includes';
+
+  @override
+  String get filter_excludes => 'Excludes';
+
+  @override
+  String get filter_includes_all => 'Includes All';
+
+  @override
   String get filter_is_null => 'ヌルです';
 
   @override
   String get filter_not_null => 'ヌルではありません';
+
+  @override
+  String get filter_matches_regex => 'Matches Regex';
+
+  @override
+  String get filter_not_matches_regex => 'Does Not Match Regex';
+
+  @override
+  String get filter_between => 'Between';
+
+  @override
+  String get filter_not_between => 'Not Between';
+
+  @override
+  String get filter_value_secondary => 'Second Value';
 
   @override
   String get images_resolution_title => '解像度';

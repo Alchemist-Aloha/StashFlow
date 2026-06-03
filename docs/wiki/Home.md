@@ -10,6 +10,7 @@ Welcome to the **StashFlow** wiki — a modern, multi-platform client for your [
 | [Building from Source](Building-from-Source) | Developer guide: build StashFlow yourself |
 | [Mobile Usage & Gestures](Mobile-Usage-Gestures) | Touch gestures for Android |
 | [Desktop Usage & Key Bindings](Desktop-Usage-Key-Bindings) | Keyboard shortcuts for Windows, macOS, and Linux |
+| [Advanced Filter Operators](Advanced-Filter-Operators) | How to use modifier-based filters inside the app |
 
 ---
 

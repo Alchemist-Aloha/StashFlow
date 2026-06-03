@@ -71,7 +71,8 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
               Expanded(
                 child: SingleChildScrollView(
                   padding: EdgeInsets.only(
-                    bottom: bottomInset +
+                    bottom:
+                        bottomInset +
                         safeBottom +
                         context.dimensions.spacingLarge,
                   ),
@@ -124,8 +125,9 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content:
-                                    Text(context.l10n.studios_filter_saved),
+                                content: Text(
+                                  context.l10n.studios_filter_saved,
+                                ),
                               ),
                             );
                           }
@@ -156,7 +158,8 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
         _buildBooleanFilter(
           'Favorite',
           _tempFilter.favorite,
-          (val) => setState(() => _tempFilter = _tempFilter.copyWith(favorite: val)),
+          (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(favorite: val)),
         ),
         _buildRatingFilter(),
       ],
@@ -170,22 +173,26 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
         StringCriterionInput(
           label: context.l10n.studios_field_name,
           value: _tempFilter.name,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(name: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(name: val)),
         ),
         StringCriterionInput(
           label: context.l10n.studios_field_details,
           value: _tempFilter.details,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(details: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(details: val)),
         ),
         StringCriterionInput(
           label: context.l10n.studios_field_aliases,
           value: _tempFilter.aliases,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(aliases: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(aliases: val)),
         ),
         StringCriterionInput(
           label: context.l10n.studios_field_url,
           value: _tempFilter.url,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(url: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(url: val)),
         ),
       ],
     );
@@ -201,8 +208,9 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
           'studio',
           _tempFilter.parentStudios,
           (val) => setState(
-            () => _tempFilter =
-                _tempFilter.copyWith(parentStudios: val as HierarchicalMultiCriterion?),
+            () => _tempFilter = _tempFilter.copyWith(
+              parentStudios: val as HierarchicalMultiCriterion?,
+            ),
           ),
           true,
         ),
@@ -211,14 +219,17 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
           'tag',
           _tempFilter.tags,
           (val) => setState(
-            () => _tempFilter = _tempFilter.copyWith(tags: val as HierarchicalMultiCriterion?),
+            () => _tempFilter = _tempFilter.copyWith(
+              tags: val as HierarchicalMultiCriterion?,
+            ),
           ),
           true,
         ),
         IntCriterionInput(
           label: context.l10n.studios_field_tag_count,
           value: _tempFilter.tagCount,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(tagCount: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(tagCount: val)),
         ),
       ],
     );
@@ -231,42 +242,58 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
         _buildBooleanFilter(
           'Is Missing',
           _tempFilter.isMissing,
-          (val) => setState(() => _tempFilter = _tempFilter.copyWith(isMissing: val)),
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(isMissing: val),
+          ),
         ),
         _buildBooleanFilter(
           'Ignore Auto Tag',
           _tempFilter.ignoreAutoTag,
-          (val) => setState(() => _tempFilter = _tempFilter.copyWith(ignoreAutoTag: val)),
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(ignoreAutoTag: val),
+          ),
         ),
         IntCriterionInput(
           label: context.l10n.studios_field_scene_count,
           value: _tempFilter.sceneCount,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(sceneCount: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(sceneCount: val),
+          ),
         ),
         IntCriterionInput(
           label: context.l10n.studios_field_image_count,
           value: _tempFilter.imageCount,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(imageCount: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(imageCount: val),
+          ),
         ),
         IntCriterionInput(
           label: context.l10n.studios_field_gallery_count,
           value: _tempFilter.galleryCount,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(galleryCount: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(galleryCount: val),
+          ),
         ),
         IntCriterionInput(
           label: context.l10n.studios_field_sub_studio_count,
           value: _tempFilter.childCount,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(childCount: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(childCount: val),
+          ),
         ),
         DateCriterionInput(
           label: context.l10n.studios_field_created_at,
           value: _tempFilter.createdAt,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(createdAt: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(createdAt: val),
+          ),
         ),
         DateCriterionInput(
           label: context.l10n.studios_field_updated_at,
           value: _tempFilter.updatedAt,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(updatedAt: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(updatedAt: val),
+          ),
         ),
       ],
     );
@@ -298,7 +325,8 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
                           ),
                         ],
                       ),
-                selected: (stars == 0 && _tempFilter.rating100 == null) ||
+                selected:
+                    (stars == 0 && _tempFilter.rating100 == null) ||
                     (stars > 0 &&
                         _tempFilter.rating100?.value == (stars - 1) * 20 &&
                         _tempFilter.rating100?.modifier ==
@@ -328,7 +356,10 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(context.l10n.common_organized, style: context.textTheme.labelLarge),
+        Text(
+          context.l10n.common_organized,
+          style: context.textTheme.labelLarge,
+        ),
         Wrap(
           spacing: context.dimensions.spacingSmall,
           children: OrganizedFilter.values.map((option) {
@@ -338,8 +369,11 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
                   OrganizedFilter.fromBool(_tempFilter.organized) == option,
               onSelected: (selected) {
                 if (selected) {
-                  setState(() => _tempFilter =
-                      _tempFilter.copyWith(organized: option.toBool()));
+                  setState(
+                    () => _tempFilter = _tempFilter.copyWith(
+                      organized: option.toBool(),
+                    ),
+                  );
                 }
               },
             );
@@ -350,7 +384,10 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
   }
 
   Widget _buildBooleanFilter(
-      String label, bool? value, ValueChanged<bool?> onChanged) {
+    String label,
+    bool? value,
+    ValueChanged<bool?> onChanged,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -393,86 +430,79 @@ class _StudioFilterPanelState extends ConsumerState<StudioFilterPanel> {
     bool isHierarchical,
   ) {
     final List<String> selectedIds = criterion?.value ?? [];
+    final modifier = criterion?.modifier ?? CriterionModifier.includes;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(label, style: context.textTheme.labelLarge),
-              IconButton(
-                tooltip: context.l10n.common_add,
-                icon: Icon(
-                  Icons.add_circle_outline,
-                  size: 24 * context.dimensions.fontSizeFactor,
-                ),
-                onPressed: () async {
-                  final result = await showDialog<List<T>>(
-                    context: context,
-                    builder: (context) => EntityPicker<T>(
-                      title: context.l10n.common_select(label),
-                      providerType: providerType,
-                      multiSelect: true,
-                      initialSelection: selectedIds,
-                    ),
-                  );
-                  if (result != null) {
-                    final ids = result.map((e) {
-                      if (e is Studio) return e.id;
-                      if (e is Tag) return e.id;
-                      return '';
-                    }).toList();
-                    if (isHierarchical) {
-                      onChanged(HierarchicalMultiCriterion(
-                        value: ids,
-                        modifier:
-                            criterion?.modifier ?? CriterionModifier.includes,
-                      ));
-                    } else {
-                      onChanged(MultiCriterion(
-                        value: ids,
-                        modifier:
-                            criterion?.modifier ?? CriterionModifier.includes,
-                      ));
-                    }
-                  }
-                },
-              ),
-            ],
+    return SelectionCriterionInput(
+      label: label,
+      selectedIds: selectedIds,
+      modifier: modifier,
+      onModifierChanged: (next) {
+        onChanged(
+          _buildEntityCriterion(
+            ids: selectedIds,
+            modifier: next,
+            isHierarchical: isHierarchical,
           ),
-          if (selectedIds.isNotEmpty)
-            Wrap(
-              spacing: context.dimensions.spacingSmall / 2,
-              children: selectedIds
-                  .map((id) => Chip(
-                        label: Text(id),
-                        onDeleted: () {
-                          final newList = List<String>.from(selectedIds);
-                          newList.remove(id);
-                          if (newList.isEmpty) {
-                            onChanged(null);
-                          } else {
-                            if (isHierarchical) {
-                              onChanged(HierarchicalMultiCriterion(
-                                value: newList,
-                                modifier: criterion.modifier,
-                              ));
-                            } else {
-                              onChanged(MultiCriterion(
-                                value: newList,
-                                modifier: criterion.modifier,
-                              ));
-                            }
-                          }
-                        },
-                      ))
-                  .toList(),
-            ),
-        ],
-      ),
+        );
+      },
+      onAddPressed: () async {
+        final result = await showDialog<List<T>>(
+          context: context,
+          builder: (context) => EntityPicker<T>(
+            title: context.l10n.common_select(label),
+            providerType: providerType,
+            multiSelect: true,
+            initialSelection: selectedIds,
+          ),
+        );
+        if (result == null) return;
+
+        final ids = result.map((entity) => _extractEntityId(entity)).toList();
+        if (ids.isEmpty) {
+          onChanged(null);
+          return;
+        }
+
+        onChanged(
+          _buildEntityCriterion(
+            ids: ids,
+            modifier: modifier,
+            isHierarchical: isHierarchical,
+          ),
+        );
+      },
+      onRemoveId: (id) {
+        final newList = List<String>.from(selectedIds)..remove(id);
+        if (newList.isEmpty) {
+          onChanged(null);
+          return;
+        }
+
+        onChanged(
+          _buildEntityCriterion(
+            ids: newList,
+            modifier: modifier,
+            isHierarchical: isHierarchical,
+          ),
+        );
+      },
     );
+  }
+
+  dynamic _buildEntityCriterion({
+    required List<String> ids,
+    required CriterionModifier modifier,
+    required bool isHierarchical,
+  }) {
+    if (isHierarchical) {
+      return HierarchicalMultiCriterion(value: ids, modifier: modifier);
+    }
+    return MultiCriterion(value: ids, modifier: modifier);
+  }
+
+  String _extractEntityId(Object? entity) {
+    if (entity is Studio) return entity.id;
+    if (entity is Tag) return entity.id;
+    throw StateError('Unsupported studio filter entity: ${entity.runtimeType}');
   }
 }

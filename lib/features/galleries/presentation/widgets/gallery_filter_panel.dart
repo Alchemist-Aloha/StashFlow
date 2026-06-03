@@ -75,7 +75,10 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
               Expanded(
                 child: SingleChildScrollView(
                   padding: EdgeInsets.only(
-                    bottom: bottomInset + safeBottom + context.dimensions.spacingLarge,
+                    bottom:
+                        bottomInset +
+                        safeBottom +
+                        context.dimensions.spacingLarge,
                   ),
                   child: Column(
                     children: [
@@ -137,7 +140,9 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(context.l10n.galleries_filter_saved),
+                                content: Text(
+                                  context.l10n.galleries_filter_saved,
+                                ),
                               ),
                             );
                           }
@@ -164,9 +169,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
     return FilterSection(
       title: context.l10n.filter_group_general,
       initiallyExpanded: true,
-      children: [
-        _buildRatingFilter(),
-      ],
+      children: [_buildRatingFilter()],
     );
   }
 
@@ -177,38 +180,46 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
         StringCriterionInput(
           label: context.l10n.galleries_field_title,
           value: _tempFilter.title,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(title: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(title: val)),
         ),
         StringCriterionInput(
           label: context.l10n.galleries_field_details,
           value: _tempFilter.details,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(details: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(details: val)),
         ),
         DateCriterionInput(
           label: context.l10n.galleries_field_date,
           value: _tempFilter.date,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(date: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(date: val)),
         ),
         IntCriterionInput(
           label: context.l10n.galleries_field_performer_age,
           value: _tempFilter.performerAge,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(performerAge: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(performerAge: val),
+          ),
         ),
         IntCriterionInput(
           label: context.l10n.galleries_field_performer_count,
           value: _tempFilter.performerCount,
-          onChanged: (val) =>
-              setState(() => _tempFilter = _tempFilter.copyWith(performerCount: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(performerCount: val),
+          ),
         ),
         IntCriterionInput(
           label: context.l10n.galleries_field_tag_count,
           value: _tempFilter.tagCount,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(tagCount: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(tagCount: val)),
         ),
         StringCriterionInput(
           label: context.l10n.galleries_field_url,
           value: _tempFilter.url,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(url: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(url: val)),
         ),
       ],
     );
@@ -224,7 +235,10 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
           'studio',
           _tempFilter.studios,
           (val) => setState(
-              () => _tempFilter = _tempFilter.copyWith(studios: val as HierarchicalMultiCriterion?)),
+            () => _tempFilter = _tempFilter.copyWith(
+              studios: val as HierarchicalMultiCriterion?,
+            ),
+          ),
           true,
         ),
         _buildEntityFilter<Performer>(
@@ -232,7 +246,10 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
           'performer',
           _tempFilter.performers,
           (val) => setState(
-              () => _tempFilter = _tempFilter.copyWith(performers: val as MultiCriterion?)),
+            () => _tempFilter = _tempFilter.copyWith(
+              performers: val as MultiCriterion?,
+            ),
+          ),
           false,
         ),
         _buildEntityFilter<Tag>(
@@ -240,15 +257,21 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
           'tag',
           _tempFilter.tags,
           (val) => setState(
-              () => _tempFilter = _tempFilter.copyWith(tags: val as HierarchicalMultiCriterion?)),
+            () => _tempFilter = _tempFilter.copyWith(
+              tags: val as HierarchicalMultiCriterion?,
+            ),
+          ),
           true,
         ),
         _buildEntityFilter<Tag>(
           'Performer Tags',
           'tag',
           _tempFilter.performerTags,
-          (val) => setState(() =>
-              _tempFilter = _tempFilter.copyWith(performerTags: val as HierarchicalMultiCriterion?)),
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(
+              performerTags: val as HierarchicalMultiCriterion?,
+            ),
+          ),
           true,
         ),
       ],
@@ -262,40 +285,68 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
         IntCriterionInput(
           label: context.l10n.galleries_field_id,
           value: _tempFilter.id,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(id: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(id: val)),
         ),
         StringCriterionInput(
           label: context.l10n.galleries_field_path,
           value: _tempFilter.path,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(path: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(path: val)),
         ),
         StringCriterionInput(
           label: context.l10n.galleries_field_checksum,
           value: _tempFilter.checksum,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(checksum: val)),
+          onChanged: (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(checksum: val)),
         ),
-        _buildBooleanFilter('Is Missing', _tempFilter.isMissing, (val) => setState(() => _tempFilter = _tempFilter.copyWith(isMissing: val))),
-        _buildBooleanFilter('Is Zip', _tempFilter.isZip, (val) => setState(() => _tempFilter = _tempFilter.copyWith(isZip: val))),
-        _buildBooleanFilter('Has Chapters', _tempFilter.hasChapters, (val) => setState(() => _tempFilter = _tempFilter.copyWith(hasChapters: val))),
+        _buildBooleanFilter(
+          'Is Missing',
+          _tempFilter.isMissing,
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(isMissing: val),
+          ),
+        ),
+        _buildBooleanFilter(
+          'Is Zip',
+          _tempFilter.isZip,
+          (val) =>
+              setState(() => _tempFilter = _tempFilter.copyWith(isZip: val)),
+        ),
+        _buildBooleanFilter(
+          'Has Chapters',
+          _tempFilter.hasChapters,
+          (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(hasChapters: val),
+          ),
+        ),
         IntCriterionInput(
           label: context.l10n.galleries_field_image_count,
           value: _tempFilter.imageCount,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(imageCount: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(imageCount: val),
+          ),
         ),
         IntCriterionInput(
           label: context.l10n.galleries_field_file_count,
           value: _tempFilter.fileCount,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(fileCount: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(fileCount: val),
+          ),
         ),
         DateCriterionInput(
           label: context.l10n.galleries_field_created_at,
           value: _tempFilter.createdAt,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(createdAt: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(createdAt: val),
+          ),
         ),
         DateCriterionInput(
           label: context.l10n.galleries_field_updated_at,
           value: _tempFilter.updatedAt,
-          onChanged: (val) => setState(() => _tempFilter = _tempFilter.copyWith(updatedAt: val)),
+          onChanged: (val) => setState(
+            () => _tempFilter = _tempFilter.copyWith(updatedAt: val),
+          ),
         ),
       ],
     );
@@ -305,7 +356,10 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(context.l10n.galleries_min_rating, style: context.textTheme.labelLarge),
+        Text(
+          context.l10n.galleries_min_rating,
+          style: context.textTheme.labelLarge,
+        ),
         Wrap(
           spacing: 4,
           children: [
@@ -324,15 +378,22 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                           ),
                         ],
                       ),
-                selected: (stars == 0 && _tempFilter.rating100 == null) || 
-                          (stars > 0 && _tempFilter.rating100?.value == (stars - 1) * 20 && _tempFilter.rating100?.modifier == CriterionModifier.greaterThan),
+                selected:
+                    (stars == 0 && _tempFilter.rating100 == null) ||
+                    (stars > 0 &&
+                        _tempFilter.rating100?.value == (stars - 1) * 20 &&
+                        _tempFilter.rating100?.modifier ==
+                            CriterionModifier.greaterThan),
                 onSelected: (_) {
                   setState(() {
                     if (stars == 0) {
                       _tempFilter = _tempFilter.copyWith(rating100: null);
                     } else {
                       _tempFilter = _tempFilter.copyWith(
-                        rating100: IntCriterion(value: (stars - 1) * 20, modifier: CriterionModifier.greaterThan),
+                        rating100: IntCriterion(
+                          value: (stars - 1) * 20,
+                          modifier: CriterionModifier.greaterThan,
+                        ),
                       );
                     }
                   });
@@ -348,7 +409,10 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(context.l10n.common_organized, style: context.textTheme.labelLarge),
+        Text(
+          context.l10n.common_organized,
+          style: context.textTheme.labelLarge,
+        ),
         Wrap(
           spacing: context.dimensions.spacingSmall,
           children: OrganizedFilter.values.map((option) {
@@ -367,7 +431,11 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
     );
   }
 
-  Widget _buildBooleanFilter(String label, bool? value, ValueChanged<bool?> onChanged) {
+  Widget _buildBooleanFilter(
+    String label,
+    bool? value,
+    ValueChanged<bool?> onChanged,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -410,80 +478,82 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
     bool isHierarchical,
   ) {
     final List<String> selectedIds = criterion?.value ?? [];
-    
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: context.dimensions.spacingSmall),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(label, style: context.textTheme.labelLarge),
-              IconButton(
-                tooltip: context.l10n.common_add,
-                icon: const Icon(Icons.add_circle_outline),
-                onPressed: () async {
-                  final result = await showDialog<List<T>>(
-                    context: context,
-                    builder: (context) => EntityPicker<T>(
-                      title: context.l10n.common_select(label),
-                      providerType: providerType,
-                      multiSelect: true,
-                      initialSelection: selectedIds,
-                    ),
-                  );
-                  if (result != null) {
-                    final ids = result.map((e) {
-                      if (e is Studio) return e.id;
-                      if (e is Performer) return e.id;
-                      if (e is Tag) return e.id;
-                      return '';
-                    }).toList();
-                    if (isHierarchical) {
-                      onChanged(HierarchicalMultiCriterion(
-                        value: ids,
-                        modifier: criterion?.modifier ?? CriterionModifier.includes,
-                      ));
-                    } else {
-                      onChanged(MultiCriterion(
-                        value: ids,
-                        modifier: criterion?.modifier ?? CriterionModifier.includes,
-                      ));
-                    }
-                  }
-                },
-              ),
-            ],
+    final modifier = criterion?.modifier ?? CriterionModifier.includes;
+
+    return SelectionCriterionInput(
+      label: label,
+      selectedIds: selectedIds,
+      modifier: modifier,
+      onModifierChanged: (next) {
+        onChanged(
+          _buildEntityCriterion(
+            ids: selectedIds,
+            modifier: next,
+            isHierarchical: isHierarchical,
           ),
-          if (selectedIds.isNotEmpty)
-            Wrap(
-              spacing: context.dimensions.spacingSmall / 2,
-              children: selectedIds.map((id) => Chip(
-                label: Text(id),
-                onDeleted: () {
-                  final newList = List<String>.from(selectedIds);
-                  newList.remove(id);
-                  if (newList.isEmpty) {
-                    onChanged(null);
-                  } else {
-                    if (isHierarchical) {
-                      onChanged(HierarchicalMultiCriterion(
-                        value: newList,
-                        modifier: criterion.modifier,
-                      ));
-                    } else {
-                      onChanged(MultiCriterion(
-                        value: newList,
-                        modifier: criterion.modifier,
-                      ));
-                    }
-                  }
-                },
-              )).toList(),
-            ),
-        ],
-      ),
+        );
+      },
+      onAddPressed: () async {
+        final result = await showDialog<List<T>>(
+          context: context,
+          builder: (context) => EntityPicker<T>(
+            title: context.l10n.common_select(label),
+            providerType: providerType,
+            multiSelect: true,
+            initialSelection: selectedIds,
+          ),
+        );
+        if (result == null) return;
+
+        final ids = result.map((entity) => _extractEntityId(entity)).toList();
+        if (ids.isEmpty) {
+          onChanged(null);
+          return;
+        }
+
+        onChanged(
+          _buildEntityCriterion(
+            ids: ids,
+            modifier: modifier,
+            isHierarchical: isHierarchical,
+          ),
+        );
+      },
+      onRemoveId: (id) {
+        final newList = List<String>.from(selectedIds)..remove(id);
+        if (newList.isEmpty) {
+          onChanged(null);
+          return;
+        }
+
+        onChanged(
+          _buildEntityCriterion(
+            ids: newList,
+            modifier: modifier,
+            isHierarchical: isHierarchical,
+          ),
+        );
+      },
+    );
+  }
+
+  dynamic _buildEntityCriterion({
+    required List<String> ids,
+    required CriterionModifier modifier,
+    required bool isHierarchical,
+  }) {
+    if (isHierarchical) {
+      return HierarchicalMultiCriterion(value: ids, modifier: modifier);
+    }
+    return MultiCriterion(value: ids, modifier: modifier);
+  }
+
+  String _extractEntityId(Object? entity) {
+    if (entity is Studio) return entity.id;
+    if (entity is Performer) return entity.id;
+    if (entity is Tag) return entity.id;
+    throw StateError(
+      'Unsupported gallery filter entity: ${entity.runtimeType}',
     );
   }
 }
