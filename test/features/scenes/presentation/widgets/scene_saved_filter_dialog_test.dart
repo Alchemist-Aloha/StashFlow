@@ -80,6 +80,14 @@ void main() {
       await tester.tap(find.text('Open'));
       await tester.pumpAndSettle();
 
+      expect(find.text('Current Settings'), findsOneWidget);
+      expect(find.text('Available Presets'), findsOneWidget);
+
+      final dialogSize = tester.getSize(find.byType(SceneSavedFilterDialog));
+      final screenHeight =
+          tester.view.physicalSize.height / tester.view.devicePixelRatio;
+      expect(dialogSize.height, lessThan(screenHeight * 0.8));
+
       expect(find.text('Preset name'), findsNothing);
 
       await tester.tap(find.byIcon(Icons.save_outlined).first);

@@ -105,139 +105,86 @@ class _SceneSavedFilterDialogState
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
     final safeBottom = MediaQuery.paddingOf(context).bottom;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final mediaSize = MediaQuery.sizeOf(context);
-        final width = constraints.hasBoundedWidth
-            ? constraints.maxWidth
-            : mediaSize.width;
-        final height = constraints.hasBoundedHeight
-            ? constraints.maxHeight * 0.9
-            : mediaSize.height * 0.9;
-
-        return SafeArea(
-          top: false,
-          child: SizedBox(
-            width: width,
-            height: height,
-            child: Container(
-              decoration: BoxDecoration(
-                color: context.colors.surface,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(AppTheme.radiusExtraLarge),
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          context.dimensions.spacingLarge,
+          context.dimensions.spacingLarge,
+          context.dimensions.spacingLarge,
+          context.dimensions.spacingLarge + safeBottom,
+        ),
+        child: FutureBuilder<List<SceneSavedFilterConfig>>(
+          future: _savedFiltersFuture,
+          builder: (context, snapshot) {
+            final savedFilters = snapshot.data ?? const [];
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Saved Presets',
+                        style: context.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    TextButton.icon(
+                      onPressed: _saving
+                          ? null
+                          : () => _promptSave(savedFilters),
+                      icon: _saving
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.save_outlined),
+                      label: Text(context.l10n.common_save),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.close),
+                      tooltip: context.l10n.common_close,
+                    ),
+                  ],
                 ),
-              ),
-              child: FutureBuilder<List<SceneSavedFilterConfig>>(
-                future: _savedFiltersFuture,
-                builder: (context, snapshot) {
-                  final savedFilters = snapshot.data ?? const [];
-                  return Column(
-                    children: [
-                      // Header
-                      Padding(
-                        padding: EdgeInsets.all(
-                          context.dimensions.spacingMedium,
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                'Saved Presets',
-                                style: context.textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: _saving
-                                  ? null
-                                  : () => _promptSave(savedFilters),
-                              icon: _saving
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : const Icon(Icons.save_outlined),
-                              tooltip: context.l10n.common_save,
-                            ),
-                            SizedBox(width: context.dimensions.spacingSmall),
-                            IconButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              icon: const Icon(Icons.close),
-                              tooltip: context.l10n.common_close,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Divider(height: 1),
-                      // Content
-                      Expanded(
-                        child: SingleChildScrollView(
-                          padding: EdgeInsets.only(
-                            bottom:
-                                bottomInset +
-                                safeBottom +
-                                context.dimensions.spacingLarge,
-                          ),
-                          child: Padding(
-                            padding: EdgeInsets.all(
-                              context.dimensions.spacingMedium,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _ActiveSettingsSummary(
-                                  searchQuery: widget.searchQuery,
-                                  sort: widget.sort,
-                                  descending: widget.descending,
-                                  filter: widget.filter,
-                                ),
-                                SizedBox(
-                                  height: context.dimensions.spacingLarge,
-                                ),
-                                Text(
-                                  'Load Preset',
-                                  style: context.textTheme.titleMedium,
-                                ),
-                                SizedBox(
-                                  height: context.dimensions.spacingSmall,
-                                ),
-                                ConstrainedBox(
-                                  constraints: BoxConstraints(
-                                    maxHeight:
-                                        MediaQuery.sizeOf(context).height *
-                                        0.45,
-                                  ),
-                                  child: _SavedFilterList(
-                                    snapshot: snapshot,
-                                    onRetry: () {
-                                      setState(() {
-                                        _savedFiltersFuture =
-                                            _loadSavedFilters();
-                                      });
-                                    },
-                                    onLoad: _load,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
-          ),
-        );
-      },
+                SizedBox(height: context.dimensions.spacingMedium),
+                Text('Current Settings', style: context.textTheme.labelLarge),
+                SizedBox(height: context.dimensions.spacingSmall),
+                _ActiveSettingsSummary(
+                  searchQuery: widget.searchQuery,
+                  sort: widget.sort,
+                  descending: widget.descending,
+                  filter: widget.filter,
+                ),
+                SizedBox(height: context.dimensions.spacingSmall),
+                Text('Available Presets', style: context.textTheme.labelLarge),
+                SizedBox(height: context.dimensions.spacingSmall),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.sizeOf(context).height * 0.22,
+                  ),
+                  child: _SavedFilterList(
+                    snapshot: snapshot,
+                    onRetry: () {
+                      setState(() {
+                        _savedFiltersFuture = _loadSavedFilters();
+                      });
+                    },
+                    onLoad: _load,
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 }
@@ -320,18 +267,29 @@ class _ActiveSettingsSummary extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Current active settings will be saved.',
-              style: context.textTheme.bodyMedium,
+              'Current active settings will be saved to the server.',
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
             ),
             SizedBox(height: context.dimensions.spacingSmall),
             Wrap(
               spacing: context.dimensions.spacingSmall,
               runSpacing: context.dimensions.spacingSmall,
               children: [
-                Chip(label: Text('Sort: $sortLabel')),
-                Chip(label: Text('Filters: $activeFilterCount')),
+                Chip(
+                  visualDensity: VisualDensity.compact,
+                  label: Text('Sort: $sortLabel'),
+                ),
+                Chip(
+                  visualDensity: VisualDensity.compact,
+                  label: Text('Filters: $activeFilterCount'),
+                ),
                 if (searchQuery.isNotEmpty)
-                  Chip(label: Text('Search: $searchQuery')),
+                  Chip(
+                    visualDensity: VisualDensity.compact,
+                    label: Text('Search: $searchQuery'),
+                  ),
               ],
             ),
           ],
@@ -391,6 +349,10 @@ class _SavedFilterList extends StatelessWidget {
         final sortLabel =
             '${filter.sort ?? 'default'} ${filter.descending ? 'DESC' : 'ASC'}';
         return ListTile(
+          dense: true,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: context.dimensions.spacingSmall,
+          ),
           title: Text(filter.name),
           subtitle: Text(
             [
