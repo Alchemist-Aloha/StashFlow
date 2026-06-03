@@ -358,10 +358,10 @@ class _ShellPageState extends ConsumerState<ShellPage> {
     Widget bodyContent = Stack(
       children: [
         Positioned.fill(
-          bottom: !hideMiniPlayer ? 66.0 : 0.0,
+          bottom: (!hideMiniPlayer && activeSceneId != null) ? 66.0 : 0.0,
           child: RepaintBoundary(child: navigationShell),
         ),
-        if (!hideMiniPlayer)
+        if (!hideMiniPlayer && activeSceneId != null)
           const Positioned(left: 0, right: 0, bottom: 0, child: MiniPlayer()),
         const Positioned.fill(child: GlobalFullscreenOverlay()),
       ],
