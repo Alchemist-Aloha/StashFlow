@@ -281,12 +281,25 @@ class PlaybackQueue extends _$PlaybackQueue {
       var nextIndex = queue.currentIndex;
       if (nextSequence.isEmpty) {
         nextIndex = -1;
-      } else if (queue.currentIndex == removedIndex) {
-        nextIndex = (removedIndex - 1).clamp(0, nextSequence.length - 1);
-      } else if (queue.currentIndex > removedIndex) {
-        nextIndex = queue.currentIndex - 1;
-      } else if (queue.currentIndex >= nextSequence.length) {
-        nextIndex = nextSequence.length - 1;
+      } else if (queue.currentIndex < 0) {
+        nextIndex = -1;
+      } else {
+        final currentSceneWasRemoved =
+            queue.currentIndex < queue.sequence.length &&
+            queue.sequence[queue.currentIndex].id == sceneId;
+        final remainingBeforeCurrent = queue.sequence
+            .take(queue.currentIndex)
+            .where((scene) => scene.id != sceneId)
+            .length;
+
+        if (currentSceneWasRemoved) {
+          nextIndex = (remainingBeforeCurrent - 1).clamp(
+            0,
+            nextSequence.length - 1,
+          );
+        } else {
+          nextIndex = remainingBeforeCurrent.clamp(0, nextSequence.length - 1);
+        }
       }
 
       AppLogStore.instance.add(

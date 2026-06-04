@@ -217,6 +217,125 @@ void main() {
     expect(mockRepo.deletedSceneDeleteGenerated, isTrue);
   });
 
+  testWidgets('SceneDetailsPage cancel leaves scene and queue unchanged', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final deletedScene = sceneWithoutStudio('s1', 'Deleted Scene');
+    final nextScene = sceneWithoutStudio('s2', 'Next Scene');
+    final mockRepo = MockSceneRepository()..withData([deletedScene, nextScene]);
+    final container = ProviderContainer(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        sceneRepositoryProvider.overrideWithValue(mockRepo),
+      ],
+    );
+    addTearDown(container.dispose);
+    container.read(playbackQueueProvider.notifier).setSequence([
+      deletedScene,
+      nextScene,
+    ], 0);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: AppTheme.lightTheme,
+          routerConfig: GoRouter(
+            routes: [
+              GoRoute(
+                path: '/',
+                builder: (context, state) =>
+                    SceneDetailsPage(sceneId: deletedScene.id),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    await tester.tap(find.byIcon(Icons.delete_outline));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+
+    final queueState = container.read(playbackQueueProvider);
+    expect(mockRepo.deletedSceneId, isNull);
+    expect(queueState.sequence.map((scene) => scene.id), ['s1', 's2']);
+    expect(queueState.currentIndex, 0);
+    expect(find.text('Deleted Scene'), findsOneWidget);
+  });
+
+  testWidgets('SceneDetailsPage failed deletion preserves queue and route', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final deletedScene = sceneWithoutStudio('s1', 'Deleted Scene');
+    final nextScene = sceneWithoutStudio('s2', 'Next Scene');
+    final mockRepo = MockSceneRepository()..withData([deletedScene, nextScene]);
+    final container = ProviderContainer(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        sceneRepositoryProvider.overrideWithValue(mockRepo),
+      ],
+    );
+    addTearDown(container.dispose);
+    container.read(playbackQueueProvider.notifier).setSequence([
+      deletedScene,
+      nextScene,
+    ], 0);
+    final router = GoRouter(
+      initialLocation: '/scenes/scene/${deletedScene.id}',
+      routes: [
+        GoRoute(
+          path: '/scenes',
+          builder: (context, state) => const Scaffold(body: Text('Scene list')),
+          routes: [
+            GoRoute(
+              path: 'scene/:id',
+              builder: (context, state) =>
+                  SceneDetailsPage(sceneId: state.pathParameters['id']!),
+            ),
+          ],
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: AppTheme.lightTheme,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    mockRepo.withError('server refused deletion');
+    await tester.tap(find.byIcon(Icons.delete_outline));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
+    await tester.pumpAndSettle();
+
+    final queueState = container.read(playbackQueueProvider);
+    expect(router.routeInformationProvider.value.uri.path, '/scenes/scene/s1');
+    expect(queueState.sequence.map((scene) => scene.id), ['s1', 's2']);
+    expect(queueState.currentIndex, 0);
+    expect(find.textContaining('Failed to delete scene'), findsOneWidget);
+  });
+
   testWidgets('SceneDetailsPage removes deleted scene from playback queue', (
     tester,
   ) async {
