@@ -55,4 +55,9 @@ abstract class SceneRepository {
     double? resumeTime,
     double? playDuration,
   });
+  Future<void> deleteScene(
+    String id, {
+    required bool deleteFile,
+    bool deleteGenerated = true,
+  });
 }

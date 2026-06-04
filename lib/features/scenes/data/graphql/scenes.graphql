@@ -154,6 +154,16 @@ mutation SceneSaveActivity($id: ID!, $resume_time: Float, $play_duration: Float)
   sceneSaveActivity(id: $id, resume_time: $resume_time, playDuration: $play_duration)
 }
 
+mutation SceneDestroy($id: ID!, $delete_file: Boolean, $delete_generated: Boolean) {
+  sceneDestroy(
+    input: {
+      id: $id
+      delete_file: $delete_file
+      delete_generated: $delete_generated
+    }
+  )
+}
+
 query ListScrapers($types: [ScrapeContentType!]!) {
   listScrapers(types: $types) {
     id

@@ -275,5 +275,46 @@ void main() {
         expect(state.currentIndex, 0);
       },
     );
+
+    test('removeScene removes deleted scene from every retained queue', () {
+      final container = createContainer();
+      final deleted = mockScene(id: 'deleted', title: 'Deleted');
+      final main1 = mockScene(id: 'main-1', title: 'Main 1');
+      final main3 = mockScene(id: 'main-3', title: 'Main 3');
+      final local2 = mockScene(id: 'local-2', title: 'Local 2');
+
+      final queue = container.read(playbackQueueProvider.notifier);
+      queue.setSequence(
+        [main1, deleted, main3],
+        1,
+        queueId: PlaybackQueueIds.main,
+      );
+      queue.setSequence([deleted, local2], 0, queueId: 'studio:s1:strip');
+      queue.activateQueue(PlaybackQueueIds.main);
+
+      queue.removeScene('deleted');
+
+      final state = container.read(playbackQueueProvider);
+      expect(state.sequence.map((scene) => scene.id), ['main-1', 'main-3']);
+      expect(state.currentIndex, 0);
+
+      final localQueue = state.queues['studio:s1:strip']!;
+      expect(localQueue.sequence.map((scene) => scene.id), ['local-2']);
+      expect(localQueue.currentIndex, 0);
+    });
+
+    test('removeScene clears current index when queue becomes empty', () {
+      final container = createContainer();
+      final deleted = mockScene(id: 'deleted', title: 'Deleted');
+
+      final queue = container.read(playbackQueueProvider.notifier);
+      queue.setSequence([deleted], 0);
+
+      queue.removeScene('deleted');
+
+      final state = container.read(playbackQueueProvider);
+      expect(state.sequence, isEmpty);
+      expect(state.currentIndex, -1);
+    });
   });
 }

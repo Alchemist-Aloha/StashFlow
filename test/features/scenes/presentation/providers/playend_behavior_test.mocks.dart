@@ -269,6 +269,23 @@ class MockSceneRepository extends _i1.Mock implements _i8.SceneRepository {
             returnValueForMissingStub: _i6.Future<void>.value(),
           )
           as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> deleteScene(
+    String? id, {
+    required bool? deleteFile,
+    bool? deleteGenerated = true,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #deleteScene,
+              [id],
+              {#deleteFile: deleteFile, #deleteGenerated: deleteGenerated},
+            ),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
 }
 
 /// A class which mocks [Player].

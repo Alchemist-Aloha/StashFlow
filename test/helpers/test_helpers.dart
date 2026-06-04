@@ -49,6 +49,10 @@ abstract class MockRepositoryState<T> {
 
 class MockSceneRepository extends MockRepositoryState<Scene>
     implements SceneRepository {
+  String? deletedSceneId;
+  bool? deletedSceneDeleteFile;
+  bool? deletedSceneDeleteGenerated;
+
   @override
   Future<List<Scene>> findScenes({
     int? page,
@@ -151,6 +155,19 @@ class MockSceneRepository extends MockRepositoryState<Scene>
     double? playDuration,
   }) async {
     if (shouldThrow) throw Exception(errorMessage);
+  }
+
+  @override
+  Future<void> deleteScene(
+    String id, {
+    required bool deleteFile,
+    bool deleteGenerated = true,
+  }) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    deletedSceneId = id;
+    deletedSceneDeleteFile = deleteFile;
+    deletedSceneDeleteGenerated = deleteGenerated;
+    data.removeWhere((scene) => scene.id == id);
   }
 }
 
@@ -346,9 +363,7 @@ Future<void> pumpTestWidget(
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         routerConfig: GoRouter(
-          routes: [
-            GoRoute(path: '/', builder: (context, state) => child),
-          ],
+          routes: [GoRoute(path: '/', builder: (context, state) => child)],
         ),
       ),
     ),
@@ -367,7 +382,7 @@ extension CommonFindersExtension on CommonFinders {
   }
 
   Finder retryButton() => find.descendant(
-        of: find.byType(ErrorStateView),
-        matching: find.byType(FilledButton),
-      );
+    of: find.byType(ErrorStateView),
+    matching: find.byType(FilledButton),
+  );
 }

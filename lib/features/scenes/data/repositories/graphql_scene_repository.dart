@@ -558,4 +558,22 @@ class GraphQLSceneRepository implements SceneRepository {
     );
     BaseRepository.validateResult(result);
   }
+
+  @override
+  Future<void> deleteScene(
+    String id, {
+    required bool deleteFile,
+    bool deleteGenerated = true,
+  }) async {
+    final result = await client.mutate$SceneDestroy(
+      Options$Mutation$SceneDestroy(
+        variables: Variables$Mutation$SceneDestroy(
+          id: id,
+          delete_file: deleteFile,
+          delete_generated: deleteGenerated,
+        ),
+      ),
+    );
+    BaseRepository.validateResult(result);
+  }
 }

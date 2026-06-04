@@ -255,6 +255,54 @@ class PlaybackQueue extends _$PlaybackQueue {
     }
   }
 
+  /// Removes a scene from every retained playback queue.
+  ///
+  /// If the removed scene was the current item, prefer the previous item so
+  /// back-navigation to the previous details page keeps queue state aligned.
+  void removeScene(String sceneId) {
+    if (sceneId.isEmpty) return;
+
+    final nextQueues = <String, PlaybackQueueSnapshot>{};
+    var changed = false;
+
+    for (final entry in state.queues.entries) {
+      final queue = entry.value;
+      final removedIndex = queue.sequence.indexWhere((s) => s.id == sceneId);
+      if (removedIndex == -1) {
+        nextQueues[entry.key] = queue;
+        continue;
+      }
+
+      changed = true;
+      final nextSequence = queue.sequence
+          .where((scene) => scene.id != sceneId)
+          .toList(growable: false);
+
+      var nextIndex = queue.currentIndex;
+      if (nextSequence.isEmpty) {
+        nextIndex = -1;
+      } else if (queue.currentIndex == removedIndex) {
+        nextIndex = (removedIndex - 1).clamp(0, nextSequence.length - 1);
+      } else if (queue.currentIndex > removedIndex) {
+        nextIndex = queue.currentIndex - 1;
+      } else if (queue.currentIndex >= nextSequence.length) {
+        nextIndex = nextSequence.length - 1;
+      }
+
+      AppLogStore.instance.add(
+        'PlaybackQueue removeScene: queue=${entry.key} scene=$sceneId removedIndex=$removedIndex nextIndex=$nextIndex nextLen=${nextSequence.length}',
+        source: 'playback_queue',
+      );
+      nextQueues[entry.key] = PlaybackQueueSnapshot(
+        sequence: nextSequence,
+        currentIndex: nextIndex,
+      );
+    }
+
+    if (!changed) return;
+    state = state.copyWith(queues: nextQueues);
+  }
+
   /// Returns the next scene in the sequence, if any.
   Scene? getNextScene() {
     AppLogStore.instance.add(

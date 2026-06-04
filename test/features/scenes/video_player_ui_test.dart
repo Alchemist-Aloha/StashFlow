@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
+import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_details_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_video_player.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 
 import '../../helpers/test_helpers.dart';
@@ -32,7 +37,7 @@ void main() {
     interactive: false,
     resumeTime: null,
     playCount: 10,
-        playDuration: 0,
+    playDuration: 0,
     files: [],
     paths: const ScenePaths(
       screenshot: null,
@@ -50,6 +55,36 @@ void main() {
     tagNames: [],
   );
 
+  Scene sceneWithoutStudio(String id, String title) {
+    return Scene(
+      id: id,
+      title: title,
+      date: DateTime(2024, 1, 1),
+      rating100: 0,
+      oCounter: 0,
+      organized: true,
+      interactive: false,
+      resumeTime: null,
+      playCount: 0,
+      playDuration: 0,
+      files: [],
+      paths: ScenePaths(
+        screenshot: null,
+        preview: null,
+        stream: 'http://test.com/$id.mp4',
+      ),
+      urls: const [],
+      studioId: null,
+      studioName: null,
+      studioImagePath: null,
+      performerIds: const [],
+      performerNames: const [],
+      performerImagePaths: const [],
+      tagIds: const [],
+      tagNames: const [],
+    );
+  }
+
   testWidgets('SceneDetailsPage renders scene info', (tester) async {
     tester.view.physicalSize = const Size(1200, 1600);
     tester.view.devicePixelRatio = 1.0;
@@ -60,9 +95,7 @@ void main() {
     await pumpTestWidget(
       tester,
       prefs: prefs,
-      overrides: [
-        sceneRepositoryProvider.overrideWithValue(mockRepo),
-      ],
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
       child: SceneDetailsPage(sceneId: testScene.id),
     );
     await tester.pump(const Duration(seconds: 1));
@@ -81,9 +114,7 @@ void main() {
     await pumpTestWidget(
       tester,
       prefs: prefs,
-      overrides: [
-        sceneRepositoryProvider.overrideWithValue(mockRepo),
-      ],
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
       child: SceneDetailsPage(sceneId: testScene.id),
     );
     await tester.pump(const Duration(seconds: 1));
@@ -116,9 +147,7 @@ void main() {
     await pumpTestWidget(
       tester,
       prefs: prefs,
-      overrides: [
-        sceneRepositoryProvider.overrideWithValue(mockRepo),
-      ],
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
       child: SceneDetailsPage(sceneId: testScene.id),
     );
     await tester.pump(const Duration(seconds: 1));
@@ -127,6 +156,232 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.water_drop_outlined));
     await tester.pump(const Duration(milliseconds: 500));
+  });
+
+  testWidgets('SceneDetailsPage deletes metadata only by default', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final mockRepo = MockSceneRepository()..withData([testScene]);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+      child: SceneDetailsPage(sceneId: testScene.id),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    await tester.tap(find.byIcon(Icons.delete_outline));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Delete scene'), findsOneWidget);
+    expect(find.textContaining('Delete metadata only'), findsOneWidget);
+    expect(find.text('Files'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
+    await tester.pumpAndSettle();
+
+    expect(mockRepo.deletedSceneId, testScene.id);
+    expect(mockRepo.deletedSceneDeleteFile, isFalse);
+    expect(mockRepo.deletedSceneDeleteGenerated, isTrue);
+  });
+
+  testWidgets('SceneDetailsPage can delete scene files', (tester) async {
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final mockRepo = MockSceneRepository()..withData([testScene]);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+      child: SceneDetailsPage(sceneId: testScene.id),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    await tester.tap(find.byIcon(Icons.delete_outline));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Files'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
+    await tester.pumpAndSettle();
+
+    expect(mockRepo.deletedSceneId, testScene.id);
+    expect(mockRepo.deletedSceneDeleteFile, isTrue);
+    expect(mockRepo.deletedSceneDeleteGenerated, isTrue);
+  });
+
+  testWidgets('SceneDetailsPage removes deleted scene from playback queue', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final previousScene = sceneWithoutStudio('s0', 'Previous Scene');
+    final deletedScene = sceneWithoutStudio('s1', 'Deleted Scene');
+    final nextScene = sceneWithoutStudio('s2', 'Next Scene');
+    final mockRepo = MockSceneRepository()
+      ..withData([previousScene, deletedScene, nextScene]);
+    final container = ProviderContainer(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        sceneRepositoryProvider.overrideWithValue(mockRepo),
+      ],
+    );
+    addTearDown(container.dispose);
+    container.read(playbackQueueProvider.notifier).setSequence([
+      previousScene,
+      deletedScene,
+      nextScene,
+    ], 1);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: AppTheme.lightTheme,
+          routerConfig: GoRouter(
+            routes: [
+              GoRoute(
+                path: '/',
+                builder: (context, state) =>
+                    SceneDetailsPage(sceneId: deletedScene.id),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    await tester.tap(find.byIcon(Icons.delete_outline));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
+    await tester.pumpAndSettle();
+
+    final queueState = container.read(playbackQueueProvider);
+    expect(queueState.sequence.map((scene) => scene.id), ['s0', 's2']);
+    expect(queueState.currentIndex, 0);
+  });
+
+  testWidgets(
+    'SceneDetailsPage deletion redirects direct details to scene list',
+    (tester) async {
+      tester.view.physicalSize = const Size(1200, 1600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final deletedScene = sceneWithoutStudio('s1', 'Deleted Scene');
+      final mockRepo = MockSceneRepository()..withData([deletedScene]);
+      final router = GoRouter(
+        initialLocation: '/scenes/scene/${deletedScene.id}',
+        routes: [
+          GoRoute(
+            path: '/scenes',
+            builder: (context, state) =>
+                const Scaffold(body: Text('Scene list')),
+            routes: [
+              GoRoute(
+                path: 'scene/:id',
+                builder: (context, state) =>
+                    SceneDetailsPage(sceneId: state.pathParameters['id']!),
+              ),
+            ],
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            sceneRepositoryProvider.overrideWithValue(mockRepo),
+          ],
+          child: MaterialApp.router(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            theme: AppTheme.lightTheme,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await tester.pump(const Duration(seconds: 1));
+
+      await tester.tap(find.byIcon(Icons.delete_outline));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
+      await tester.pumpAndSettle();
+
+      expect(router.routeInformationProvider.value.uri.path, '/scenes');
+      expect(find.text('Scene list'), findsOneWidget);
+    },
+  );
+
+  testWidgets('SceneDetailsPage deletion pops to previous scene details', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final previousScene = sceneWithoutStudio('s0', 'Previous Scene');
+    final deletedScene = sceneWithoutStudio('s1', 'Deleted Scene');
+    final mockRepo = MockSceneRepository()
+      ..withData([previousScene, deletedScene]);
+    final router = GoRouter(
+      initialLocation: '/scenes/scene/${previousScene.id}',
+      routes: [
+        GoRoute(
+          path: '/scenes',
+          builder: (context, state) => const Scaffold(body: Text('Scene list')),
+          routes: [
+            GoRoute(
+              path: 'scene/:id',
+              builder: (context, state) =>
+                  SceneDetailsPage(sceneId: state.pathParameters['id']!),
+            ),
+          ],
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          sceneRepositoryProvider.overrideWithValue(mockRepo),
+        ],
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: AppTheme.lightTheme,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pump(const Duration(seconds: 1));
+    router.push('/scenes/scene/${deletedScene.id}');
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.delete_outline));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
+    await tester.pumpAndSettle();
+
+    expect(
+      router.routeInformationProvider.value.uri.path,
+      '/scenes/scene/${previousScene.id}',
+    );
+    expect(find.text('Previous Scene'), findsOneWidget);
   });
 
   testWidgets('SceneDetailsPage constrains video height', (tester) async {
@@ -142,9 +397,7 @@ void main() {
     await pumpTestWidget(
       tester,
       prefs: prefs,
-      overrides: [
-        sceneRepositoryProvider.overrideWithValue(mockRepo),
-      ],
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
       child: SceneDetailsPage(sceneId: testScene.id),
     );
     await tester.pumpAndSettle();

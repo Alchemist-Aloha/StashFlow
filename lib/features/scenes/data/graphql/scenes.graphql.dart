@@ -9719,6 +9719,431 @@ extension ClientExtension$Mutation$SceneSaveActivity on graphql.GraphQLClient {
   ) => this.watchMutation(options);
 }
 
+class Variables$Mutation$SceneDestroy {
+  factory Variables$Mutation$SceneDestroy({
+    required String id,
+    bool? delete_file,
+    bool? delete_generated,
+  }) => Variables$Mutation$SceneDestroy._({
+    r'id': id,
+    if (delete_file != null) r'delete_file': delete_file,
+    if (delete_generated != null) r'delete_generated': delete_generated,
+  });
+
+  Variables$Mutation$SceneDestroy._(this._$data);
+
+  factory Variables$Mutation$SceneDestroy.fromJson(Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    final l$id = data['id'];
+    result$data['id'] = (l$id as String);
+    if (data.containsKey('delete_file')) {
+      final l$delete_file = data['delete_file'];
+      result$data['delete_file'] = (l$delete_file as bool?);
+    }
+    if (data.containsKey('delete_generated')) {
+      final l$delete_generated = data['delete_generated'];
+      result$data['delete_generated'] = (l$delete_generated as bool?);
+    }
+    return Variables$Mutation$SceneDestroy._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get id => (_$data['id'] as String);
+
+  bool? get delete_file => (_$data['delete_file'] as bool?);
+
+  bool? get delete_generated => (_$data['delete_generated'] as bool?);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$id = id;
+    result$data['id'] = l$id;
+    if (_$data.containsKey('delete_file')) {
+      final l$delete_file = delete_file;
+      result$data['delete_file'] = l$delete_file;
+    }
+    if (_$data.containsKey('delete_generated')) {
+      final l$delete_generated = delete_generated;
+      result$data['delete_generated'] = l$delete_generated;
+    }
+    return result$data;
+  }
+
+  CopyWith$Variables$Mutation$SceneDestroy<Variables$Mutation$SceneDestroy>
+  get copyWith => CopyWith$Variables$Mutation$SceneDestroy(this, (i) => i);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Mutation$SceneDestroy ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$delete_file = delete_file;
+    final lOther$delete_file = other.delete_file;
+    if (_$data.containsKey('delete_file') !=
+        other._$data.containsKey('delete_file')) {
+      return false;
+    }
+    if (l$delete_file != lOther$delete_file) {
+      return false;
+    }
+    final l$delete_generated = delete_generated;
+    final lOther$delete_generated = other.delete_generated;
+    if (_$data.containsKey('delete_generated') !=
+        other._$data.containsKey('delete_generated')) {
+      return false;
+    }
+    if (l$delete_generated != lOther$delete_generated) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$delete_file = delete_file;
+    final l$delete_generated = delete_generated;
+    return Object.hashAll([
+      l$id,
+      _$data.containsKey('delete_file') ? l$delete_file : const {},
+      _$data.containsKey('delete_generated') ? l$delete_generated : const {},
+    ]);
+  }
+}
+
+abstract class CopyWith$Variables$Mutation$SceneDestroy<TRes> {
+  factory CopyWith$Variables$Mutation$SceneDestroy(
+    Variables$Mutation$SceneDestroy instance,
+    TRes Function(Variables$Mutation$SceneDestroy) then,
+  ) = _CopyWithImpl$Variables$Mutation$SceneDestroy;
+
+  factory CopyWith$Variables$Mutation$SceneDestroy.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Mutation$SceneDestroy;
+
+  TRes call({String? id, bool? delete_file, bool? delete_generated});
+}
+
+class _CopyWithImpl$Variables$Mutation$SceneDestroy<TRes>
+    implements CopyWith$Variables$Mutation$SceneDestroy<TRes> {
+  _CopyWithImpl$Variables$Mutation$SceneDestroy(this._instance, this._then);
+
+  final Variables$Mutation$SceneDestroy _instance;
+
+  final TRes Function(Variables$Mutation$SceneDestroy) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? delete_file = _undefined,
+    Object? delete_generated = _undefined,
+  }) => _then(
+    Variables$Mutation$SceneDestroy._({
+      ..._instance._$data,
+      if (id != _undefined && id != null) 'id': (id as String),
+      if (delete_file != _undefined) 'delete_file': (delete_file as bool?),
+      if (delete_generated != _undefined)
+        'delete_generated': (delete_generated as bool?),
+    }),
+  );
+}
+
+class _CopyWithStubImpl$Variables$Mutation$SceneDestroy<TRes>
+    implements CopyWith$Variables$Mutation$SceneDestroy<TRes> {
+  _CopyWithStubImpl$Variables$Mutation$SceneDestroy(this._res);
+
+  TRes _res;
+
+  call({String? id, bool? delete_file, bool? delete_generated}) => _res;
+}
+
+class Mutation$SceneDestroy {
+  Mutation$SceneDestroy({
+    required this.sceneDestroy,
+    this.$__typename = 'Mutation',
+  });
+
+  factory Mutation$SceneDestroy.fromJson(Map<String, dynamic> json) {
+    final l$sceneDestroy = json['sceneDestroy'];
+    final l$$__typename = json['__typename'];
+    return Mutation$SceneDestroy(
+      sceneDestroy: (l$sceneDestroy as bool),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool sceneDestroy;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$sceneDestroy = sceneDestroy;
+    _resultData['sceneDestroy'] = l$sceneDestroy;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$sceneDestroy = sceneDestroy;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$sceneDestroy, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$SceneDestroy || runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$sceneDestroy = sceneDestroy;
+    final lOther$sceneDestroy = other.sceneDestroy;
+    if (l$sceneDestroy != lOther$sceneDestroy) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$SceneDestroy on Mutation$SceneDestroy {
+  CopyWith$Mutation$SceneDestroy<Mutation$SceneDestroy> get copyWith =>
+      CopyWith$Mutation$SceneDestroy(this, (i) => i);
+}
+
+abstract class CopyWith$Mutation$SceneDestroy<TRes> {
+  factory CopyWith$Mutation$SceneDestroy(
+    Mutation$SceneDestroy instance,
+    TRes Function(Mutation$SceneDestroy) then,
+  ) = _CopyWithImpl$Mutation$SceneDestroy;
+
+  factory CopyWith$Mutation$SceneDestroy.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$SceneDestroy;
+
+  TRes call({bool? sceneDestroy, String? $__typename});
+}
+
+class _CopyWithImpl$Mutation$SceneDestroy<TRes>
+    implements CopyWith$Mutation$SceneDestroy<TRes> {
+  _CopyWithImpl$Mutation$SceneDestroy(this._instance, this._then);
+
+  final Mutation$SceneDestroy _instance;
+
+  final TRes Function(Mutation$SceneDestroy) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? sceneDestroy = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Mutation$SceneDestroy(
+      sceneDestroy: sceneDestroy == _undefined || sceneDestroy == null
+          ? _instance.sceneDestroy
+          : (sceneDestroy as bool),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Mutation$SceneDestroy<TRes>
+    implements CopyWith$Mutation$SceneDestroy<TRes> {
+  _CopyWithStubImpl$Mutation$SceneDestroy(this._res);
+
+  TRes _res;
+
+  call({bool? sceneDestroy, String? $__typename}) => _res;
+}
+
+const documentNodeMutationSceneDestroy = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.mutation,
+      name: NameNode(value: 'SceneDestroy'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'id')),
+          type: NamedTypeNode(name: NameNode(value: 'ID'), isNonNull: true),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'delete_file')),
+          type: NamedTypeNode(
+            name: NameNode(value: 'Boolean'),
+            isNonNull: false,
+          ),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'delete_generated')),
+          type: NamedTypeNode(
+            name: NameNode(value: 'Boolean'),
+            isNonNull: false,
+          ),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'sceneDestroy'),
+            alias: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'input'),
+                value: ObjectValueNode(
+                  fields: [
+                    ObjectFieldNode(
+                      name: NameNode(value: 'id'),
+                      value: VariableNode(name: NameNode(value: 'id')),
+                    ),
+                    ObjectFieldNode(
+                      name: NameNode(value: 'delete_file'),
+                      value: VariableNode(name: NameNode(value: 'delete_file')),
+                    ),
+                    ObjectFieldNode(
+                      name: NameNode(value: 'delete_generated'),
+                      value: VariableNode(
+                        name: NameNode(value: 'delete_generated'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ],
+      ),
+    ),
+  ],
+);
+Mutation$SceneDestroy _parserFn$Mutation$SceneDestroy(
+  Map<String, dynamic> data,
+) => Mutation$SceneDestroy.fromJson(data);
+typedef OnMutationCompleted$Mutation$SceneDestroy =
+    FutureOr<void> Function(Map<String, dynamic>?, Mutation$SceneDestroy?);
+
+class Options$Mutation$SceneDestroy
+    extends graphql.MutationOptions<Mutation$SceneDestroy> {
+  Options$Mutation$SceneDestroy({
+    String? operationName,
+    required Variables$Mutation$SceneDestroy variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$SceneDestroy? typedOptimisticResult,
+    graphql.Context? context,
+    OnMutationCompleted$Mutation$SceneDestroy? onCompleted,
+    graphql.OnMutationUpdate<Mutation$SceneDestroy>? update,
+    graphql.OnError? onError,
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null ? null : _parserFn$Mutation$SceneDestroy(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationSceneDestroy,
+         parserFn: _parserFn$Mutation$SceneDestroy,
+       );
+
+  final OnMutationCompleted$Mutation$SceneDestroy? onCompletedWithParsed;
+
+  @override
+  List<Object?> get properties => [
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
+}
+
+class WatchOptions$Mutation$SceneDestroy
+    extends graphql.WatchQueryOptions<Mutation$SceneDestroy> {
+  WatchOptions$Mutation$SceneDestroy({
+    String? operationName,
+    required Variables$Mutation$SceneDestroy variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$SceneDestroy? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeMutationSceneDestroy,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Mutation$SceneDestroy,
+       );
+}
+
+extension ClientExtension$Mutation$SceneDestroy on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Mutation$SceneDestroy>> mutate$SceneDestroy(
+    Options$Mutation$SceneDestroy options,
+  ) async => await this.mutate(options);
+
+  graphql.ObservableQuery<Mutation$SceneDestroy> watchMutation$SceneDestroy(
+    WatchOptions$Mutation$SceneDestroy options,
+  ) => this.watchMutation(options);
+}
+
 class Variables$Query$ListScrapers {
   factory Variables$Query$ListScrapers({
     required List<Enum$ScrapeContentType> types,
