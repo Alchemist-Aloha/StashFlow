@@ -84,6 +84,58 @@ query FindScenes($filter: FindFilterType, $scene_filter: SceneFilterType) {
   }
 }
 
+query FindDuplicateScenes($distance: Int, $duration_diff: Float) {
+  findDuplicateScenes(distance: $distance, duration_diff: $duration_diff) {
+    id
+    title
+    organized
+    o_counter
+    files {
+      id
+      path
+      size
+      mod_time
+      duration
+      width
+      height
+      bit_rate
+      video_codec
+    }
+    paths {
+      sprite
+    }
+    tags {
+      id
+    }
+    performers {
+      id
+    }
+    groups {
+      group {
+        id
+      }
+    }
+    scene_markers {
+      id
+    }
+    galleries {
+      id
+    }
+  }
+}
+
+query CountScenesMissingPhash {
+  findScenes(
+    filter: { per_page: 0 }
+    scene_filter: {
+      is_missing: "phash"
+      file_count: { modifier: GREATER_THAN, value: 0 }
+    }
+  ) {
+    count
+  }
+}
+
 fragment SceneSavedFilterData on SavedFilter {
   id
   mode

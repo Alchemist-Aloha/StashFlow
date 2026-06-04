@@ -340,11 +340,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
     final isGrid = widget.gridDelegate != null;
     final headers = ref.read(mediaHeadersProvider);
 
-    final prefetchDistance =
-        _memoizedPrefetchDistance ??= _getEffectivePrefetchDistance(
-          context,
-          responsiveDelegate,
-        );
+    final prefetchDistance = _memoizedPrefetchDistance ??=
+        _getEffectivePrefetchDistance(context, responsiveDelegate);
 
     int? memCacheWidth = _memoizedMemCacheWidth;
     if (memCacheWidth == null) {
@@ -610,6 +607,11 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                       },
                 ),
                 IconButton(
+                  icon: const Icon(Icons.construction),
+                  onPressed: () => context.push('/tools'),
+                  tooltip: 'Tools',
+                ),
+                IconButton(
                   icon: const Icon(Icons.settings),
                   onPressed: () => context.push('/settings'),
                   tooltip: context.l10n.common_settings,
@@ -652,320 +654,337 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
             Column(
               children: [
                 if (_currentQuery != null)
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: context.dimensions.spacingMedium,
-                  vertical: context.dimensions.spacingSmall,
-                ),
-                color: context.colors.surfaceVariant,
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.search,
-                      size: 16 * context.dimensions.fontSizeFactor,
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: context.dimensions.spacingMedium,
+                      vertical: context.dimensions.spacingSmall,
                     ),
-                    SizedBox(width: context.dimensions.spacingSmall),
-                    Expanded(
-                      child: Text(
-                        context.l10n.common_searching_for(_currentQuery ?? ''),
-                        style: context.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
+                    color: context.colors.surfaceVariant,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.search,
+                          size: 16 * context.dimensions.fontSizeFactor,
                         ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    IconButton(
-                      tooltip: context.l10n.common_close,
-                      icon: Icon(
-                        Icons.close,
-                        size: 20 * context.dimensions.fontSizeFactor,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _currentQuery = null;
-                        });
-                        widget.onSearchChanged('');
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            if (widget.sortBar != null) widget.sortBar!,
-            Expanded(
-              child: widget.provider.when(
-                data: (items) {
-                  _handleInitialPrefetch(
-                    items,
-                    responsiveDelegate,
-                    screenWidth,
-                  );
-
-                  if (items.isEmpty && widget.customBody == null) {
-                    return RefreshIndicator(
-                      onRefresh: widget.onRefresh ?? () async {},
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        child: SizedBox(
-                          height: MediaQuery.sizeOf(context).height * 0.7,
-                          child: Center(
-                            child: Text(
-                              widget.emptyMessage == 'No items found'
-                                  ? context.l10n.common_no_items
-                                  : widget.emptyMessage,
-                              style: context.textTheme.bodyMedium?.copyWith(
-                                color: context.colors.onSurface.withValues(
-                                  alpha: 0.7,
-                                ),
-                              ),
+                        SizedBox(width: context.dimensions.spacingSmall),
+                        Expanded(
+                          child: Text(
+                            context.l10n.common_searching_for(
+                              _currentQuery ?? '',
                             ),
+                            style: context.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                      ),
-                    );
-                  }
-
-                  int? memCacheWidth;
-                  if (widget.itemBuilder != null) {
-                    if (widget.memCacheWidthBuilder != null) {
-                      memCacheWidth = widget.memCacheWidthBuilder!(
-                        context,
-                        isGrid,
-                      );
-                    } else {
-                      if (fixedDelegate != null) {
-                        memCacheWidth =
-                            (screenWidth / fixedDelegate.crossAxisCount * 1.5)
-                                .toInt();
-                      } else {
-                        memCacheWidth = screenWidth > 600
-                            ? 600
-                            : screenWidth.toInt();
-                      }
-                    }
-                  }
-
-                  Widget body =
-                      widget.customBody ??
-                      (isGrid
-                          ? (widget.useMasonry
-                                ? MasonryGridView.builder(
-                                    controller: widget.scrollController,
-                                    padding: widget.padding,
-                                    gridDelegate:
-                                        SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount:
-                                              fixedDelegate?.crossAxisCount ??
-                                              1,
-                                        ),
-                                    mainAxisSpacing:
-                                        fixedDelegate?.mainAxisSpacing ?? 0.0,
-                                    crossAxisSpacing:
-                                        fixedDelegate?.crossAxisSpacing ?? 0.0,
-                                    itemCount: items.length,
-                                    itemBuilder: (context, index) {
-                                      if (index == 0 &&
-                                          widget.imageUrlBuilder != null &&
-                                          _measuredItemExtent == null) {
-                                        WidgetsBinding.instance
-                                            .addPostFrameCallback((_) {
-                                              if (_measuredItemExtent == null &&
-                                                  _firstItemKey
-                                                          .currentContext !=
-                                                      null) {
-                                                final size = _firstItemKey
-                                                    .currentContext!
-                                                    .size;
-                                                if (size != null) {
-                                                  setState(() {
-                                                    _measuredItemExtent =
-                                                        size.height;
-                                                  });
-                                                }
-                                              }
-                                            });
-                                      }
-
-                                      return RepaintBoundary(
-                                        child: KeyedSubtree(
-                                          key: index == 0
-                                              ? _firstItemKey
-                                              : null,
-                                          child: widget.itemBuilder!(
-                                            context,
-                                            items[index],
-                                            memCacheWidth,
-                                            null,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  )
-                                : GridView.builder(
-                                    controller: widget.scrollController,
-                                    padding: widget.padding,
-                                    gridDelegate: responsiveDelegate!,
-                                    itemCount: items.length,
-                                    itemBuilder: (context, index) {
-                                      if (index == 0 &&
-                                          widget.imageUrlBuilder != null &&
-                                          _measuredItemExtent == null) {
-                                        WidgetsBinding.instance
-                                            .addPostFrameCallback((_) {
-                                              if (_measuredItemExtent == null &&
-                                                  _firstItemKey
-                                                          .currentContext !=
-                                                      null) {
-                                                final size = _firstItemKey
-                                                    .currentContext!
-                                                    .size;
-                                                if (size != null) {
-                                                  setState(() {
-                                                    _measuredItemExtent =
-                                                        size.height;
-                                                  });
-                                                }
-                                              }
-                                            });
-                                      }
-
-                                      return RepaintBoundary(
-                                        child: KeyedSubtree(
-                                          key: index == 0
-                                              ? _firstItemKey
-                                              : null,
-                                          child: widget.itemBuilder!(
-                                            context,
-                                            items[index],
-                                            memCacheWidth,
-                                            null,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ))
-                          : ListView.builder(
-                              controller: widget.scrollController,
-                              padding: widget.padding,
-                              itemCount: items.length,
-                              itemExtent: widget.itemExtent,
-                              itemBuilder: (context, index) {
-                                if (index == 0 &&
-                                    widget.imageUrlBuilder != null &&
-                                    widget.itemExtent == null &&
-                                    _measuredItemExtent == null) {
-                                  WidgetsBinding.instance.addPostFrameCallback((
-                                    _,
-                                  ) {
-                                    if (_measuredItemExtent == null &&
-                                        _firstItemKey.currentContext != null) {
-                                      final size =
-                                          _firstItemKey.currentContext!.size;
-                                      if (size != null) {
-                                        setState(() {
-                                          _measuredItemExtent = size.height;
-                                        });
-                                      }
-                                    }
-                                  });
-                                }
-
-                                return RepaintBoundary(
-                                  child: KeyedSubtree(
-                                    key: index == 0 ? _firstItemKey : null,
-                                    child: widget.itemBuilder!(
-                                      context,
-                                      items[index],
-                                      memCacheWidth,
-                                      null,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ));
-
-                  if (widget.onRefresh != null) {
-                    body = RefreshIndicator(
-                      onRefresh: widget.onRefresh!,
-                      child: body,
-                    );
-                  }
-
-                  return NotificationListener<ScrollNotification>(
-                    onNotification: (ScrollNotification scrollInfo) {
-                      if (shouldLoadNextPage(scrollInfo.metrics)) {
-                        widget.onFetchNextPage?.call();
-                      }
-                      _handleScrollPrefetch(
-                        scrollInfo,
+                        IconButton(
+                          tooltip: context.l10n.common_close,
+                          icon: Icon(
+                            Icons.close,
+                            size: 20 * context.dimensions.fontSizeFactor,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _currentQuery = null;
+                            });
+                            widget.onSearchChanged('');
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                if (widget.sortBar != null) widget.sortBar!,
+                Expanded(
+                  child: widget.provider.when(
+                    data: (items) {
+                      _handleInitialPrefetch(
                         items,
                         responsiveDelegate,
                         screenWidth,
                       );
-                      return false;
-                    },
-                    child: body,
-                  );
-                },
-                loading: () {
-                  final loadingItemBuilder = widget.loadingItemBuilder;
 
-                  if (isGrid) {
-                    return GridView.builder(
-                      padding: widget.padding,
-                      gridDelegate: responsiveDelegate!,
-                      itemCount: 8,
-                      itemBuilder: (context, index) =>
-                          loadingItemBuilder != null
-                          ? loadingItemBuilder(context, true, index)
-                          : SceneCard.skeleton(isGrid: true),
-                    );
-                  }
-                  return ListView.builder(
-                    padding: widget.padding,
-                    itemCount: 5,
-                    itemBuilder: (context, index) => loadingItemBuilder != null
-                        ? loadingItemBuilder(context, false, index)
-                        : SceneCard.skeleton(isGrid: false),
-                  );
-                },
-                error: (err, stack) => ErrorStateView(
-                  message: context.l10n.common_error(err.toString()),
-                  onRetry: widget.onRefresh,
+                      if (items.isEmpty && widget.customBody == null) {
+                        return RefreshIndicator(
+                          onRefresh: widget.onRefresh ?? () async {},
+                          child: SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: SizedBox(
+                              height: MediaQuery.sizeOf(context).height * 0.7,
+                              child: Center(
+                                child: Text(
+                                  widget.emptyMessage == 'No items found'
+                                      ? context.l10n.common_no_items
+                                      : widget.emptyMessage,
+                                  style: context.textTheme.bodyMedium?.copyWith(
+                                    color: context.colors.onSurface.withValues(
+                                      alpha: 0.7,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+
+                      int? memCacheWidth;
+                      if (widget.itemBuilder != null) {
+                        if (widget.memCacheWidthBuilder != null) {
+                          memCacheWidth = widget.memCacheWidthBuilder!(
+                            context,
+                            isGrid,
+                          );
+                        } else {
+                          if (fixedDelegate != null) {
+                            memCacheWidth =
+                                (screenWidth /
+                                        fixedDelegate.crossAxisCount *
+                                        1.5)
+                                    .toInt();
+                          } else {
+                            memCacheWidth = screenWidth > 600
+                                ? 600
+                                : screenWidth.toInt();
+                          }
+                        }
+                      }
+
+                      Widget body =
+                          widget.customBody ??
+                          (isGrid
+                              ? (widget.useMasonry
+                                    ? MasonryGridView.builder(
+                                        controller: widget.scrollController,
+                                        padding: widget.padding,
+                                        gridDelegate:
+                                            SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount:
+                                                  fixedDelegate
+                                                      ?.crossAxisCount ??
+                                                  1,
+                                            ),
+                                        mainAxisSpacing:
+                                            fixedDelegate?.mainAxisSpacing ??
+                                            0.0,
+                                        crossAxisSpacing:
+                                            fixedDelegate?.crossAxisSpacing ??
+                                            0.0,
+                                        itemCount: items.length,
+                                        itemBuilder: (context, index) {
+                                          if (index == 0 &&
+                                              widget.imageUrlBuilder != null &&
+                                              _measuredItemExtent == null) {
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback((_) {
+                                                  if (_measuredItemExtent ==
+                                                          null &&
+                                                      _firstItemKey
+                                                              .currentContext !=
+                                                          null) {
+                                                    final size = _firstItemKey
+                                                        .currentContext!
+                                                        .size;
+                                                    if (size != null) {
+                                                      setState(() {
+                                                        _measuredItemExtent =
+                                                            size.height;
+                                                      });
+                                                    }
+                                                  }
+                                                });
+                                          }
+
+                                          return RepaintBoundary(
+                                            child: KeyedSubtree(
+                                              key: index == 0
+                                                  ? _firstItemKey
+                                                  : null,
+                                              child: widget.itemBuilder!(
+                                                context,
+                                                items[index],
+                                                memCacheWidth,
+                                                null,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    : GridView.builder(
+                                        controller: widget.scrollController,
+                                        padding: widget.padding,
+                                        gridDelegate: responsiveDelegate!,
+                                        itemCount: items.length,
+                                        itemBuilder: (context, index) {
+                                          if (index == 0 &&
+                                              widget.imageUrlBuilder != null &&
+                                              _measuredItemExtent == null) {
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback((_) {
+                                                  if (_measuredItemExtent ==
+                                                          null &&
+                                                      _firstItemKey
+                                                              .currentContext !=
+                                                          null) {
+                                                    final size = _firstItemKey
+                                                        .currentContext!
+                                                        .size;
+                                                    if (size != null) {
+                                                      setState(() {
+                                                        _measuredItemExtent =
+                                                            size.height;
+                                                      });
+                                                    }
+                                                  }
+                                                });
+                                          }
+
+                                          return RepaintBoundary(
+                                            child: KeyedSubtree(
+                                              key: index == 0
+                                                  ? _firstItemKey
+                                                  : null,
+                                              child: widget.itemBuilder!(
+                                                context,
+                                                items[index],
+                                                memCacheWidth,
+                                                null,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ))
+                              : ListView.builder(
+                                  controller: widget.scrollController,
+                                  padding: widget.padding,
+                                  itemCount: items.length,
+                                  itemExtent: widget.itemExtent,
+                                  itemBuilder: (context, index) {
+                                    if (index == 0 &&
+                                        widget.imageUrlBuilder != null &&
+                                        widget.itemExtent == null &&
+                                        _measuredItemExtent == null) {
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback((_) {
+                                            if (_measuredItemExtent == null &&
+                                                _firstItemKey.currentContext !=
+                                                    null) {
+                                              final size = _firstItemKey
+                                                  .currentContext!
+                                                  .size;
+                                              if (size != null) {
+                                                setState(() {
+                                                  _measuredItemExtent =
+                                                      size.height;
+                                                });
+                                              }
+                                            }
+                                          });
+                                    }
+
+                                    return RepaintBoundary(
+                                      child: KeyedSubtree(
+                                        key: index == 0 ? _firstItemKey : null,
+                                        child: widget.itemBuilder!(
+                                          context,
+                                          items[index],
+                                          memCacheWidth,
+                                          null,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ));
+
+                      if (widget.onRefresh != null) {
+                        body = RefreshIndicator(
+                          onRefresh: widget.onRefresh!,
+                          child: body,
+                        );
+                      }
+
+                      return NotificationListener<ScrollNotification>(
+                        onNotification: (ScrollNotification scrollInfo) {
+                          if (shouldLoadNextPage(scrollInfo.metrics)) {
+                            widget.onFetchNextPage?.call();
+                          }
+                          _handleScrollPrefetch(
+                            scrollInfo,
+                            items,
+                            responsiveDelegate,
+                            screenWidth,
+                          );
+                          return false;
+                        },
+                        child: body,
+                      );
+                    },
+                    loading: () {
+                      final loadingItemBuilder = widget.loadingItemBuilder;
+
+                      if (isGrid) {
+                        return GridView.builder(
+                          padding: widget.padding,
+                          gridDelegate: responsiveDelegate!,
+                          itemCount: 8,
+                          itemBuilder: (context, index) =>
+                              loadingItemBuilder != null
+                              ? loadingItemBuilder(context, true, index)
+                              : SceneCard.skeleton(isGrid: true),
+                        );
+                      }
+                      return ListView.builder(
+                        padding: widget.padding,
+                        itemCount: 5,
+                        itemBuilder: (context, index) =>
+                            loadingItemBuilder != null
+                            ? loadingItemBuilder(context, false, index)
+                            : SceneCard.skeleton(isGrid: false),
+                      );
+                    },
+                    error: (err, stack) => ErrorStateView(
+                      message: context.l10n.common_error(err.toString()),
+                      onRetry: widget.onRefresh,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (widget.actions.isNotEmpty && !widget.actionsInTopPanel)
+              Positioned(
+                bottom: 16,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: context.colors.surfaceVariant.withValues(
+                        alpha: 0.95,
+                      ),
+                      borderRadius: BorderRadius.circular(32),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.2),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: widget.actions,
+                    ),
+                  ),
                 ),
               ),
-            ),
           ],
         ),
-        if (widget.actions.isNotEmpty && !widget.actionsInTopPanel)
-          Positioned(
-            bottom: 16,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                decoration: BoxDecoration(
-                  color: context.colors.surfaceVariant.withValues(alpha: 0.95),
-                  borderRadius: BorderRadius.circular(32),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: widget.actions,
-                ),
-              ),
-            ),
-          ),
-      ],
-    ),
-  ),
-  floatingActionButton: widget.floatingActionButton,
-);
+      ),
+      floatingActionButton: widget.floatingActionButton,
+    );
   }
 }

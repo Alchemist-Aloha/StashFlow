@@ -1,4 +1,5 @@
 import '../entities/scene.dart';
+import '../entities/scene_deduplication.dart';
 import '../entities/scene_filter.dart';
 import '../models/scraper.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
@@ -60,4 +61,9 @@ abstract class SceneRepository {
     required bool deleteFile,
     bool deleteGenerated = true,
   });
+  Future<List<SceneDuplicateGroup>> findDuplicateScenes({
+    int distance = 0,
+    double durationDiff = 1,
+  });
+  Future<int> countScenesMissingPhash();
 }

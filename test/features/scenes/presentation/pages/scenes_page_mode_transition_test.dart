@@ -7,6 +7,7 @@ import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dar
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
+import 'package:stash_app_flutter/features/scenes/domain/entities/scene_deduplication.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
 import 'package:stash_app_flutter/features/scenes/domain/models/scraper.dart';
 import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
@@ -93,6 +94,22 @@ class _FakeSceneRepository implements SceneRepository {
   Future<Map<String, List<Map<String, dynamic>>>> findTagCandidates(
     List<String> tags,
   ) async => {};
+
+  @override
+  Future<void> deleteScene(
+    String id, {
+    required bool deleteFile,
+    bool deleteGenerated = true,
+  }) async {}
+
+  @override
+  Future<List<SceneDuplicateGroup>> findDuplicateScenes({
+    int distance = 0,
+    double durationDiff = 1,
+  }) async => [];
+
+  @override
+  Future<int> countScenesMissingPhash() async => 0;
 }
 
 class _TestSceneTiktokLayout extends SceneTiktokLayout {

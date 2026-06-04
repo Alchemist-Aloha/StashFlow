@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/data/graphql/graphql_client.dart';
 import '../../scenes/domain/entities/scene.dart';
 import '../../scenes/presentation/pages/scenes_page.dart';
+import '../../scenes/presentation/pages/scene_deduplication_page.dart';
 import '../../scenes/presentation/pages/scene_details_page.dart';
 import '../../scenes/presentation/pages/scene_edit_page.dart';
 import '../../performers/domain/entities/performer.dart';
@@ -38,6 +39,7 @@ import '../../setup/presentation/pages/settings/keybind_settings_page.dart';
 import '../../setup/presentation/pages/settings/storage_settings_page.dart';
 import '../../setup/presentation/pages/settings/security_settings_page.dart';
 import '../../setup/presentation/debug_log_viewer_page.dart';
+import '../../tools/presentation/pages/tools_page.dart';
 import 'shell_page.dart';
 
 part 'router.g.dart';
@@ -371,6 +373,16 @@ GoRouter router(Ref ref) {
           GoRoute(
             path: 'logs',
             builder: (context, state) => const DebugLogViewerPage(),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/tools',
+        builder: (context, state) => const ToolsPage(),
+        routes: [
+          GoRoute(
+            path: 'scene-deduplication',
+            builder: (context, state) => const SceneDeduplicationPage(),
           ),
         ],
       ),

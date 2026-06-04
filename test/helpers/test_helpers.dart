@@ -13,6 +13,7 @@ import 'package:stash_app_flutter/features/studios/domain/repositories/studio_re
 import 'package:stash_app_flutter/features/tags/domain/repositories/tag_repository.dart';
 import 'package:stash_app_flutter/features/images/domain/repositories/image_repository.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
+import 'package:stash_app_flutter/features/scenes/domain/entities/scene_deduplication.dart';
 import 'package:stash_app_flutter/features/performers/domain/entities/performer.dart';
 import 'package:stash_app_flutter/features/studios/domain/entities/studio.dart';
 import 'package:stash_app_flutter/features/tags/domain/entities/tag.dart';
@@ -52,6 +53,11 @@ class MockSceneRepository extends MockRepositoryState<Scene>
   String? deletedSceneId;
   bool? deletedSceneDeleteFile;
   bool? deletedSceneDeleteGenerated;
+  List<SceneDuplicateGroup> duplicateGroups = [];
+  int missingPhashCount = 0;
+  int? lastDuplicateDistance;
+  double? lastDuplicateDurationDiff;
+  int duplicateFetchCount = 0;
 
   @override
   Future<List<Scene>> findScenes({
@@ -168,6 +174,24 @@ class MockSceneRepository extends MockRepositoryState<Scene>
     deletedSceneDeleteFile = deleteFile;
     deletedSceneDeleteGenerated = deleteGenerated;
     data.removeWhere((scene) => scene.id == id);
+  }
+
+  @override
+  Future<List<SceneDuplicateGroup>> findDuplicateScenes({
+    int distance = 0,
+    double durationDiff = 1,
+  }) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    duplicateFetchCount += 1;
+    lastDuplicateDistance = distance;
+    lastDuplicateDurationDiff = durationDiff;
+    return duplicateGroups;
+  }
+
+  @override
+  Future<int> countScenesMissingPhash() async {
+    if (shouldThrow) throw Exception(errorMessage);
+    return missingPhashCount;
   }
 }
 

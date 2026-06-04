@@ -6,6 +6,7 @@ import '../../../../core/data/graphql/url_resolver.dart';
 import 'package:stash_app_flutter/core/domain/entities/criterion.dart'
     as domain;
 import '../../domain/entities/scene.dart';
+import '../../domain/entities/scene_deduplication.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../../domain/repositories/scene_repository.dart';
 import '../../domain/models/scraper.dart';
@@ -575,5 +576,90 @@ class GraphQLSceneRepository implements SceneRepository {
       ),
     );
     BaseRepository.validateResult(result);
+  }
+
+  @override
+  Future<List<SceneDuplicateGroup>> findDuplicateScenes({
+    int distance = 0,
+    double durationDiff = 1,
+  }) async {
+    final result = await client.query$FindDuplicateScenes(
+      Options$Query$FindDuplicateScenes(
+        fetchPolicy: FetchPolicy.noCache,
+        variables: Variables$Query$FindDuplicateScenes(
+          distance: distance,
+          duration_diff: durationDiff,
+        ),
+      ),
+    );
+    BaseRepository.validateResult(result);
+
+    final groups = result.parsedData?.findDuplicateScenes ?? [];
+    return sortDuplicateGroupsBySize(
+      groups
+          .map(
+            (group) => SceneDuplicateGroup(
+              scenes: group.map(_mapDuplicateScene).toList(growable: false),
+            ),
+          )
+          .toList(growable: false),
+    );
+  }
+
+  @override
+  Future<int> countScenesMissingPhash() async {
+    final result = await client.query$CountScenesMissingPhash(
+      Options$Query$CountScenesMissingPhash(fetchPolicy: FetchPolicy.noCache),
+    );
+    BaseRepository.validateResult(result);
+    return result.parsedData?.findScenes.count ?? 0;
+  }
+
+  SceneDuplicateScene _mapDuplicateScene(
+    Query$FindDuplicateScenes$findDuplicateScenes scene,
+  ) {
+    final files = scene.files.map(_mapDuplicateFile).toList(growable: false);
+    return SceneDuplicateScene(
+      id: scene.id,
+      title: (scene.title ?? '').trim().isNotEmpty
+          ? scene.title!.trim()
+          : _fileNameFromPath(files.firstOrNull?.path ?? ''),
+      path: files.firstOrNull?.path,
+      spritePath: resolveGraphqlMediaUrl(
+        rawUrl: scene.paths.sprite,
+        graphqlEndpoint: _graphqlEndpoint,
+      ),
+      organized: scene.organized,
+      oCounter: scene.o_counter ?? 0,
+      tagCount: scene.tags.length,
+      performerCount: scene.performers.length,
+      groupCount: scene.groups.length,
+      markerCount: scene.scene_markers.length,
+      galleryCount: scene.galleries.length,
+      fileCount: files.length,
+      files: files,
+    );
+  }
+
+  SceneDuplicateFile _mapDuplicateFile(
+    Query$FindDuplicateScenes$findDuplicateScenes$files file,
+  ) {
+    return SceneDuplicateFile(
+      id: file.id,
+      path: file.path,
+      size: int.tryParse(file.size) ?? 0,
+      width: file.width,
+      height: file.height,
+      bitRate: file.bit_rate,
+      duration: file.duration,
+      videoCodec: file.video_codec,
+      modTime: DateTime.tryParse(file.mod_time),
+    );
+  }
+
+  String _fileNameFromPath(String path) {
+    if (path.isEmpty) return '';
+    final normalized = path.replaceAll('\\', '/');
+    return normalized.split('/').last;
   }
 }

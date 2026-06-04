@@ -134,10 +134,10 @@ void main() {
       // Now, Search view is open
       expect(find.byType(TextField), findsOneWidget);
       expect(find.text('Search hint...'), findsOneWidget); // Hint text
-      
+
       // Type in search field
       await tester.enterText(find.byType(TextField), 'hello');
-      
+
       // Submit search to close view and trigger callback
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pump();
@@ -153,6 +153,29 @@ void main() {
 
       // Back to initial state, search query cleared
       expect(searchQuery, '');
+    });
+
+    testWidgets('places tools button between search and settings actions', (
+      WidgetTester tester,
+    ) async {
+      await pumpTestWidget(
+        tester,
+        child: ListPageScaffold<String>(
+          title: 'Test Title',
+          searchHint: 'Search...',
+          onSearchChanged: (_) {},
+          provider: const AsyncValue.data(['Item 1']),
+          itemBuilder: (context, item, mw, mh) => Text(item),
+        ),
+      );
+      await tester.pump();
+
+      final searchX = tester.getCenter(find.byIcon(Icons.search)).dx;
+      final toolsX = tester.getCenter(find.byIcon(Icons.construction)).dx;
+      final settingsX = tester.getCenter(find.byIcon(Icons.settings)).dx;
+
+      expect(searchX, lessThan(toolsX));
+      expect(toolsX, lessThan(settingsX));
     });
 
     testWidgets('displays custom sortBar', (WidgetTester tester) async {
