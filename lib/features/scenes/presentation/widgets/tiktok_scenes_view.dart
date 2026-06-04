@@ -69,6 +69,9 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
   /// Initialization futures to prevent redundant setup calls.
   final Map<String, Future<void>> _initFutures = {};
 
+  VideoController? _lastKnownGlobalController;
+  bool _allowMainPageGravityOrientation = true;
+
   @override
   void initState() {
     super.initState();
@@ -80,7 +83,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
     _manageTimer?.cancel();
     _pageController.dispose();
 
-    final globalController = ref.read(playerStateProvider).videoController;
+    final globalController = _lastKnownGlobalController;
     for (final id in _controllers.keys) {
       if (_controllers[id] != globalController) {
         _players[id]?.dispose();
@@ -95,12 +98,9 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
     _controllers.clear();
     WakelockPlus.disable();
 
-    final allowMainPageGravityOrientation = ref.read(
-      mainPageGravityOrientationProvider,
-    );
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     SystemChrome.setPreferredOrientations(
-      allowMainPageGravityOrientation
+      _allowMainPageGravityOrientation
           ? [
               DeviceOrientation.portraitUp,
               DeviceOrientation.portraitDown,
@@ -347,6 +347,12 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 
   @override
   Widget build(BuildContext context) {
+    _lastKnownGlobalController = ref.watch(
+      playerStateProvider.select((state) => state.videoController),
+    );
+    _allowMainPageGravityOrientation = ref.watch(
+      mainPageGravityOrientationProvider,
+    );
     final scenesAsync = ref.watch(sceneListProvider);
     final playerState = ref.watch(playerStateProvider);
 
@@ -1104,9 +1110,7 @@ class _OverlayButton extends StatelessWidget {
       onPressed: onTap,
       tooltip: tooltip,
       padding: const EdgeInsets.all(12),
-      style: IconButton.styleFrom(
-        foregroundColor: Colors.white,
-      ),
+      style: IconButton.styleFrom(foregroundColor: Colors.white),
       icon: Icon(
         icon,
         size: 28,
