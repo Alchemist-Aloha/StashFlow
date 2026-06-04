@@ -6394,7 +6394,7 @@ class Query$FindDuplicateScenes$findDuplicateScenes {
     final l$galleries = json['galleries'];
     final l$$__typename = json['__typename'];
     return Query$FindDuplicateScenes$findDuplicateScenes(
-      id: (l$id as String),
+      id: '${l$id}',
       title: (l$title as String?),
       organized: (l$organized as bool),
       o_counter: (l$o_counter as int?),
@@ -6447,7 +6447,7 @@ class Query$FindDuplicateScenes$findDuplicateScenes {
                 ),
           )
           .toList(),
-      $__typename: (l$$__typename as String),
+      $__typename: '${l$$__typename}',
     );
   }
 
@@ -7024,16 +7024,16 @@ class Query$FindDuplicateScenes$findDuplicateScenes$files {
     final l$video_codec = json['video_codec'];
     final l$$__typename = json['__typename'];
     return Query$FindDuplicateScenes$findDuplicateScenes$files(
-      id: (l$id as String),
-      path: (l$path as String),
-      size: (l$size as String),
-      mod_time: (l$mod_time as String),
+      id: '${l$id}',
+      path: '${l$path}',
+      size: '${l$size}',
+      mod_time: '${l$mod_time}',
       duration: (l$duration as num).toDouble(),
       width: (l$width as int),
       height: (l$height as int),
       bit_rate: (l$bit_rate as int),
-      video_codec: (l$video_codec as String),
-      $__typename: (l$$__typename as String),
+      video_codec: '${l$video_codec}',
+      $__typename: '${l$$__typename}',
     );
   }
 
