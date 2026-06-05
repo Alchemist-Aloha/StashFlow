@@ -256,6 +256,45 @@ void main() {
       expect(deleteTopLeft.dy, greaterThan(openTopLeft.dy));
     },
   );
+
+  testWidgets('SceneDeduplicationPage lazily renders visible groups only', (
+    tester,
+  ) async {
+    final repo = MockSceneRepository()
+      ..duplicateGroups = List.generate(
+        40,
+        (index) => SceneDuplicateGroup(
+          scenes: [
+            duplicateScene(id: 'a$index', fileSize: 200),
+            duplicateScene(id: 'b$index', fileSize: 100),
+          ],
+        ),
+      );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          sceneRepositoryProvider.overrideWithValue(repo),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: AppTheme.lightTheme,
+          home: const SceneDeduplicationPage(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Duplicate Set 1'), findsOneWidget);
+    expect(find.text('Duplicate Set 20'), findsNothing);
+
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, -4000));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Duplicate Set 20'), findsOneWidget);
+  });
 }
 
 SceneDuplicateScene duplicateScene({

@@ -333,45 +333,72 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
     final stashBoxesAsync = ref.watch(stashBoxEndpointsProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Scene Tagger')),
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildControls(stashBoxesAsync),
             const SizedBox(height: 16),
-            if (_loadError != null)
-              _ErrorBanner(message: _loadError!, onRetry: _loadScenes)
-            else if (_loadingScenes)
-              const Center(child: CircularProgressIndicator())
-            else ...[
-              Text(
-                _mode == _TaggerMode.randomUnorganized
-                    ? '$_scrapedCount checked • ${_scenes.length} matches'
-                    : '${_scenes.length} scenes on this page',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 12),
-              if (_scenes.isEmpty)
-                Center(
-                  child: Text(
-                    _mode == _TaggerMode.randomUnorganized
-                        ? 'No matched scenes yet.'
-                        : 'No scenes match this configuration.',
-                  ),
-                )
-              else
-                for (final scene in _scenes)
-                  _TaggerSceneCard(
-                    scene: scene,
-                    result: _results[scene.id],
-                    onOpen: () => context.go('/scene/${scene.id}'),
-                    onApply: (scraped) => _applyScrapedScene(scene, scraped),
-                  ),
-            ],
+            Expanded(child: _buildResultList(context)),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildResultList(BuildContext context) {
+    if (_loadError != null) {
+      return _ErrorBanner(message: _loadError!, onRetry: _loadScenes);
+    }
+    if (_loadingScenes) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final summary = _mode == _TaggerMode.randomUnorganized
+        ? '$_scrapedCount checked • ${_scenes.length} matches'
+        : '${_scenes.length} scenes on this page';
+    if (_scenes.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(summary, style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 12),
+          Expanded(
+            child: Center(
+              child: Text(
+                _mode == _TaggerMode.randomUnorganized
+                    ? 'No matched scenes yet.'
+                    : 'No scenes match this configuration.',
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return ListView.builder(
+      key: ValueKey('scene_tagger_results_${_mode.name}'),
+      itemCount: _scenes.length + 1,
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Text(
+              summary,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          );
+        }
+        final scene = _scenes[index - 1];
+        return _TaggerSceneCard(
+          key: ValueKey('tagger_scene_${scene.id}'),
+          scene: scene,
+          result: _results[scene.id],
+          onOpen: () => context.push('/scene/${scene.id}'),
+          onApply: (scraped) => _applyScrapedScene(scene, scraped),
+        );
+      },
     );
   }
 
@@ -584,6 +611,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
 
 class _TaggerSceneCard extends StatelessWidget {
   const _TaggerSceneCard({
+    super.key,
     required this.scene,
     required this.result,
     required this.onOpen,

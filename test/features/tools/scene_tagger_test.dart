@@ -310,6 +310,42 @@ void main() {
       expect(find.text('No match found'), findsNothing);
     },
   );
+
+  testWidgets('SceneTaggerPage lazily renders long scene lists', (
+    tester,
+  ) async {
+    final repo = MockSceneRepository()
+      ..setData(
+        List.generate(
+          60,
+          (index) => toolTaggerScene(
+            id: 'scene-$index',
+            title: 'Local Scene $index',
+          ),
+        ),
+      );
+
+    await _pumpSceneTagger(
+      tester,
+      prefs: prefs,
+      repo: repo,
+      stashBoxes: [
+        StashBoxEndpoint(
+          name: 'Primary Box',
+          endpoint: 'https://box.test/graphql',
+        ),
+      ],
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Local Scene 0'), findsWidgets);
+    expect(find.text('Local Scene 59'), findsNothing);
+
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, -4000));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Local Scene 59'), findsOneWidget);
+  });
 }
 
 Future<void> _pumpSceneTagger(

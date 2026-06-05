@@ -199,7 +199,7 @@ class _SceneDeduplicationPageState
               ? 1
               : ((groups.length + _pageSize - 1) ~/ _pageSize);
 
-          return SingleChildScrollView(
+          return Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -254,55 +254,95 @@ class _SceneDeduplicationPageState
                   ),
                 ],
                 const SizedBox(height: 16),
-                Text(
-                  '${groups.length} duplicate sets',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                if (groups.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.only(top: 24),
-                    child: Center(child: Text('No duplicates found.')),
-                  )
-                else ...[
-                  const SizedBox(height: 12),
-                  for (final (index, group) in visibleGroups.indexed)
-                    _DuplicateGroupCard(
-                      groupNumber: ((_page - 1) * _pageSize) + index + 1,
-                      group: group,
-                      selectedSceneIds: _selectedSceneIds,
-                      onSceneSelectionChanged: (sceneId, selected) {
-                        setState(() {
-                          if (selected) {
-                            _selectedSceneIds.add(sceneId);
-                          } else {
-                            _selectedSceneIds.remove(sceneId);
-                          }
-                        });
-                      },
-                      onDeleteScene: (sceneId) => _confirmDelete({sceneId}),
-                    ),
-                  _PaginationBar(
-                    page: _page,
+                Expanded(
+                  child: _buildGroupList(
+                    context,
+                    groups: groups,
+                    visibleGroups: visibleGroups,
                     totalPages: totalPages,
-                    onPrevious: _page > 1
-                        ? () => setState(() {
-                            _page -= 1;
-                            _selectedSceneIds.clear();
-                          })
-                        : null,
-                    onNext: _page < totalPages
-                        ? () => setState(() {
-                            _page += 1;
-                            _selectedSceneIds.clear();
-                          })
-                        : null,
                   ),
-                ],
+                ),
               ],
             ),
           );
         },
       ),
+    );
+  }
+
+  Widget _buildGroupList(
+    BuildContext context, {
+    required List<SceneDuplicateGroup> groups,
+    required List<SceneDuplicateGroup> visibleGroups,
+    required int totalPages,
+  }) {
+    if (groups.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            '${groups.length} duplicate sets',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 24),
+          const Expanded(child: Center(child: Text('No duplicates found.'))),
+        ],
+      );
+    }
+
+    return ListView.builder(
+      key: ValueKey('scene_dedup_groups_$_page-$_pageSize'),
+      itemCount: visibleGroups.length + 2,
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Text(
+              '${groups.length} duplicate sets',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          );
+        }
+        if (index == visibleGroups.length + 1) {
+          return _PaginationBar(
+            page: _page,
+            totalPages: totalPages,
+            onPrevious: _page > 1
+                ? () => setState(() {
+                    _page -= 1;
+                    _selectedSceneIds.clear();
+                  })
+                : null,
+            onNext: _page < totalPages
+                ? () => setState(() {
+                    _page += 1;
+                    _selectedSceneIds.clear();
+                  })
+                : null,
+          );
+        }
+
+        final groupIndex = index - 1;
+        final group = visibleGroups[groupIndex];
+        return _DuplicateGroupCard(
+          key: ValueKey(
+            'duplicate_group_${((_page - 1) * _pageSize) + groupIndex + 1}',
+          ),
+          groupNumber: ((_page - 1) * _pageSize) + groupIndex + 1,
+          group: group,
+          selectedSceneIds: _selectedSceneIds,
+          onSceneSelectionChanged: (sceneId, selected) {
+            setState(() {
+              if (selected) {
+                _selectedSceneIds.add(sceneId);
+              } else {
+                _selectedSceneIds.remove(sceneId);
+              }
+            });
+          },
+          onDeleteScene: (sceneId) => _confirmDelete({sceneId}),
+        );
+      },
     );
   }
 }
@@ -525,6 +565,7 @@ class _Controls extends StatelessWidget {
 
 class _DuplicateGroupCard extends StatelessWidget {
   const _DuplicateGroupCard({
+    super.key,
     required this.groupNumber,
     required this.group,
     required this.selectedSceneIds,
