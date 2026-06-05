@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../features/setup/domain/models/server_profile.dart';
+import '../../../features/setup/presentation/providers/profile_credentials_provider.dart';
 import '../../../features/setup/presentation/providers/server_profiles_provider.dart';
 import '../preferences/secure_storage_provider.dart';
 import '../preferences/shared_preferences_provider.dart';
@@ -160,7 +161,10 @@ class AuthProvider extends Notifier<AuthState> {
     if (trimmed.isEmpty) {
       await secureStorage.delete(key: _getUsernameKey(profile.id));
     } else {
-      await secureStorage.write(key: _getUsernameKey(profile.id), value: trimmed);
+      await secureStorage.write(
+        key: _getUsernameKey(profile.id),
+        value: trimmed,
+      );
     }
 
     state = state.copyWith(username: trimmed, clearError: true);
@@ -175,7 +179,10 @@ class AuthProvider extends Notifier<AuthState> {
     if (password.isEmpty) {
       await secureStorage.delete(key: _getPasswordKey(profile.id));
     } else {
-      await secureStorage.write(key: _getPasswordKey(profile.id), value: password);
+      await secureStorage.write(
+        key: _getPasswordKey(profile.id),
+        value: password,
+      );
     }
 
     state = state.copyWith(password: password, clearError: true);
@@ -222,7 +229,9 @@ class AuthProvider extends Notifier<AuthState> {
       );
 
       if (!ok) {
-        debugPrint('AuthProvider: Login failed (invalid credentials or server error).');
+        debugPrint(
+          'AuthProvider: Login failed (invalid credentials or server error).',
+        );
         state = state.copyWith(
           loginStatus: AuthLoginStatus.error,
           errorMessage: 'Invalid username or password.',
@@ -233,14 +242,19 @@ class AuthProvider extends Notifier<AuthState> {
       final cookieHeader = await service.cookieHeaderFor(
         requestUri: endpointUri,
       );
-      debugPrint('AuthProvider: Cookie header acquired: ${cookieHeader.isNotEmpty}');
+      debugPrint(
+        'AuthProvider: Cookie header acquired: ${cookieHeader.isNotEmpty}',
+      );
       final secureStorage = ref.read(secureStorageProvider);
       if (cookieHeader.isEmpty) {
         await secureStorage.delete(key: _getCookieHeaderKey(profile.id));
       } else {
         await secureStorage.write(
-            key: _getCookieHeaderKey(profile.id), value: cookieHeader);
+          key: _getCookieHeaderKey(profile.id),
+          value: cookieHeader,
+        );
       }
+      ref.invalidate(profileCookieHeaderProvider(profile.id));
 
       state = state.copyWith(
         cookieHeader: cookieHeader,
@@ -295,8 +309,11 @@ class AuthProvider extends Notifier<AuthState> {
       await secureStorage.delete(key: _getCookieHeaderKey(profile.id));
     } else {
       await secureStorage.write(
-          key: _getCookieHeaderKey(profile.id), value: cookieHeader);
+        key: _getCookieHeaderKey(profile.id),
+        value: cookieHeader,
+      );
     }
+    ref.invalidate(profileCookieHeaderProvider(profile.id));
 
     state = state.copyWith(
       cookieHeader: cookieHeader,

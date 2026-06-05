@@ -14,7 +14,7 @@ class ServerProfiles extends _$ServerProfiles {
   List<ServerProfile> build() {
     final prefs = ref.watch(sharedPreferencesProvider);
     final profilesJson = prefs.getString('server_profiles');
-    
+
     if (profilesJson == null) {
       final legacyUrl = prefs.getString('server_base_url');
       if (legacyUrl != null && legacyUrl.isNotEmpty) {
@@ -24,9 +24,10 @@ class ServerProfiles extends _$ServerProfiles {
           name: 'Default',
           baseUrl: legacyUrl,
           authMode: _getLegacyAuthMode(),
-          allowWebPasswordLogin: prefs.getBool('allow_web_password_login') ?? false,
+          allowWebPasswordLogin:
+              prefs.getBool('allow_web_password_login') ?? false,
         );
-        
+
         Future.microtask(() => _migrateCredentials(profile));
         return [profile];
       }
@@ -52,10 +53,25 @@ class ServerProfiles extends _$ServerProfiles {
     final username = await secureStorage.read(key: 'server_username');
     final password = await secureStorage.read(key: 'server_password');
 
-    if (apiKey != null) await secureStorage.write(key: 'profile_${profile.id}_api_key', value: apiKey);
-    if (username != null) await secureStorage.write(key: 'profile_${profile.id}_username', value: username);
-    if (password != null) await secureStorage.write(key: 'profile_${profile.id}_password', value: password);
-    
+    if (apiKey != null) {
+      await secureStorage.write(
+        key: 'profile_${profile.id}_api_key',
+        value: apiKey,
+      );
+    }
+    if (username != null) {
+      await secureStorage.write(
+        key: 'profile_${profile.id}_username',
+        value: username,
+      );
+    }
+    if (password != null) {
+      await secureStorage.write(
+        key: 'profile_${profile.id}_password',
+        value: password,
+      );
+    }
+
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setString('active_server_profile_id', profile.id);
     await saveProfiles(state);
@@ -63,13 +79,22 @@ class ServerProfiles extends _$ServerProfiles {
 
   Future<void> saveProfiles(List<ServerProfile> profiles) async {
     final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setString('server_profiles', jsonEncode(profiles.map((e) => e.toJson()).toList()));
+    await prefs.setString(
+      'server_profiles',
+      jsonEncode(profiles.map((e) => e.toJson()).toList()),
+    );
     state = profiles;
   }
 
   Future<void> addProfile(ServerProfile profile) async {
+    final shouldActivate =
+        state.isEmpty ||
+        (ref.read(activeServerProfileIdProvider) ?? '').isEmpty;
     final newList = [...state, profile];
     await saveProfiles(newList);
+    if (shouldActivate) {
+      await ref.read(activeServerProfileIdProvider.notifier).set(profile.id);
+    }
   }
 
   Future<void> updateProfile(ServerProfile profile) async {
@@ -86,13 +111,22 @@ class ServerProfiles extends _$ServerProfiles {
   }) async {
     final secureStorage = ref.read(secureStorageProvider);
     if (apiKey != null) {
-      await secureStorage.write(key: 'profile_${profileId}_api_key', value: apiKey);
+      await secureStorage.write(
+        key: 'profile_${profileId}_api_key',
+        value: apiKey,
+      );
     }
     if (username != null) {
-      await secureStorage.write(key: 'profile_${profileId}_username', value: username);
+      await secureStorage.write(
+        key: 'profile_${profileId}_username',
+        value: username,
+      );
     }
     if (password != null) {
-      await secureStorage.write(key: 'profile_${profileId}_password', value: password);
+      await secureStorage.write(
+        key: 'profile_${profileId}_password',
+        value: password,
+      );
     }
     if (cookieHeader != null) {
       await secureStorage.write(
@@ -111,18 +145,20 @@ class ServerProfiles extends _$ServerProfiles {
   Future<void> removeProfile(String id) async {
     final newList = state.where((e) => e.id != id).toList();
     await saveProfiles(newList);
-    
+
     // Cleanup secure storage
     final secureStorage = ref.read(secureStorageProvider);
     await secureStorage.delete(key: 'profile_${id}_api_key');
     await secureStorage.delete(key: 'profile_${id}_username');
     await secureStorage.delete(key: 'profile_${id}_password');
     await secureStorage.delete(key: 'profile_${id}_cookie_header');
-    
+
     // If active profile was removed, reset active profile id
     final activeId = ref.read(activeServerProfileIdProvider);
     if (activeId == id) {
-      await ref.read(activeServerProfileIdProvider.notifier).set(newList.isNotEmpty ? newList.first.id : '');
+      await ref
+          .read(activeServerProfileIdProvider.notifier)
+          .set(newList.isNotEmpty ? newList.first.id : '');
     }
   }
 }
@@ -149,5 +185,8 @@ ServerProfile? activeProfile(Ref ref) {
   if (activeId == null || profiles.isEmpty) {
     return profiles.isNotEmpty ? profiles.first : null;
   }
-  return profiles.firstWhere((e) => e.id == activeId, orElse: () => profiles.first);
+  return profiles.firstWhere(
+    (e) => e.id == activeId,
+    orElse: () => profiles.first,
+  );
 }
