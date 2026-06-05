@@ -26,6 +26,21 @@ class ToolsPage extends StatelessWidget {
               onTap: () => context.go('/tools/scene-deduplication'),
             ),
           ),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.sell_outlined),
+              title: Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () => context.go('/tools/scene-tagger'),
+                  child: const Text('Scene Tagger'),
+                ),
+              ),
+              subtitle: const Text('Scrape current scene pages with Stash-box'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.go('/tools/scene-tagger'),
+            ),
+          ),
         ],
       ),
     );

@@ -216,6 +216,50 @@ void main() {
     expect(find.text('Scene a'), findsOneWidget);
     expect(find.text('Scene b'), findsOneWidget);
   });
+
+  testWidgets(
+    'SceneDeduplicationPage stacks duplicate scene actions on mobile',
+    (tester) async {
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(390, 844);
+
+      final repo = MockSceneRepository()
+        ..duplicateGroups = [
+          SceneDuplicateGroup(
+            scenes: [
+              duplicateScene(id: 'a', fileSize: 200),
+              duplicateScene(id: 'b', fileSize: 100),
+            ],
+          ),
+        ];
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            sceneRepositoryProvider.overrideWithValue(repo),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            theme: AppTheme.lightTheme,
+            home: const SceneDeduplicationPage(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final openScene = find.byTooltip('Open scene').first;
+      final deleteScene = find.byTooltip('Delete').first;
+      final openTopLeft = tester.getTopLeft(openScene);
+      final deleteTopLeft = tester.getTopLeft(deleteScene);
+
+      expect(deleteTopLeft.dx, openTopLeft.dx);
+      expect(deleteTopLeft.dy, greaterThan(openTopLeft.dy));
+    },
+  );
 }
 
 SceneDuplicateScene duplicateScene({

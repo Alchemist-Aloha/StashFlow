@@ -340,15 +340,40 @@ class _Controls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isCompact = MediaQuery.sizeOf(context).width < 600;
+    final theme = Theme.of(context);
+    final buttonStyle = _compactButtonStyle(theme, isCompact);
+    final dropdownWidth = isCompact ? 154.0 : null;
+    final dropdownInputDecoration = isCompact
+        ? const InputDecorationTheme(
+            isDense: true,
+            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          )
+        : null;
+    final menuItemStyle = isCompact
+        ? ButtonStyle(
+            visualDensity: VisualDensity.compact,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            minimumSize: const WidgetStatePropertyAll(Size.fromHeight(36)),
+            padding: const WidgetStatePropertyAll(
+              EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            ),
+            textStyle: WidgetStatePropertyAll(theme.textTheme.labelMedium),
+          )
+        : null;
+
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(isCompact ? 12 : 16),
         child: Wrap(
-          spacing: 12,
-          runSpacing: 12,
+          spacing: isCompact ? 8 : 12,
+          runSpacing: isCompact ? 8 : 12,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             DropdownMenu<int>(
+              width: dropdownWidth,
+              textStyle: isCompact ? theme.textTheme.bodySmall : null,
+              inputDecorationTheme: dropdownInputDecoration,
               initialSelection: distance,
               label: const Text('Search Accuracy'),
               dropdownMenuEntries: _SceneDeduplicationPageState
@@ -358,6 +383,7 @@ class _Controls extends StatelessWidget {
                     (entry) => DropdownMenuEntry<int>(
                       value: entry.key,
                       label: entry.value,
+                      style: menuItemStyle,
                     ),
                   )
                   .toList(growable: false),
@@ -366,6 +392,9 @@ class _Controls extends StatelessWidget {
               },
             ),
             DropdownMenu<double>(
+              width: dropdownWidth,
+              textStyle: isCompact ? theme.textTheme.bodySmall : null,
+              inputDecorationTheme: dropdownInputDecoration,
               initialSelection: durationDiff,
               label: const Text('Duration Difference'),
               dropdownMenuEntries: _SceneDeduplicationPageState._durationOptions
@@ -375,6 +404,7 @@ class _Controls extends StatelessWidget {
                       label: value.toStringAsFixed(
                         value.truncateToDouble() == value ? 0 : 1,
                       ),
+                      style: menuItemStyle,
                     ),
                   )
                   .toList(growable: false),
@@ -383,12 +413,18 @@ class _Controls extends StatelessWidget {
               },
             ),
             DropdownMenu<int>(
+              width: dropdownWidth,
+              textStyle: isCompact ? theme.textTheme.bodySmall : null,
+              inputDecorationTheme: dropdownInputDecoration,
               initialSelection: pageSize,
               label: const Text('Page Size'),
               dropdownMenuEntries: _SceneDeduplicationPageState._pageSizeOptions
                   .map(
-                    (value) =>
-                        DropdownMenuEntry<int>(value: value, label: '$value'),
+                    (value) => DropdownMenuEntry<int>(
+                      value: value,
+                      label: '$value',
+                      style: menuItemStyle,
+                    ),
                   )
                   .toList(growable: false),
               onSelected: (value) {
@@ -396,6 +432,10 @@ class _Controls extends StatelessWidget {
               },
             ),
             FilterChip(
+              visualDensity: isCompact ? VisualDensity.compact : null,
+              materialTapTargetSize: isCompact
+                  ? MaterialTapTargetSize.shrinkWrap
+                  : null,
               selected: safeSelect,
               label: const Text('Only select matching codecs'),
               onSelected: onSafeSelectChanged,
@@ -403,32 +443,41 @@ class _Controls extends StatelessWidget {
             PopupMenuButton<DuplicateSelectionMode>(
               tooltip: 'Select scenes',
               onSelected: onSelectMode,
-              itemBuilder: (context) => const [
+              constraints: isCompact
+                  ? const BoxConstraints(minWidth: 196, maxWidth: 240)
+                  : null,
+              itemBuilder: (context) => [
                 PopupMenuItem(
                   value: DuplicateSelectionMode.allButLargestResolution,
-                  child: Text('All but largest resolution'),
+                  height: isCompact ? 36 : kMinInteractiveDimension,
+                  child: const Text('All but largest resolution'),
                 ),
                 PopupMenuItem(
                   value: DuplicateSelectionMode.allButLargestFile,
-                  child: Text('All but largest file'),
+                  height: isCompact ? 36 : kMinInteractiveDimension,
+                  child: const Text('All but largest file'),
                 ),
                 PopupMenuItem(
                   value: DuplicateSelectionMode.allButOldest,
-                  child: Text('All but oldest'),
+                  height: isCompact ? 36 : kMinInteractiveDimension,
+                  child: const Text('All but oldest'),
                 ),
                 PopupMenuItem(
                   value: DuplicateSelectionMode.allButYoungest,
-                  child: Text('All but youngest'),
+                  height: isCompact ? 36 : kMinInteractiveDimension,
+                  child: const Text('All but youngest'),
                 ),
               ],
               child: FilledButton.tonalIcon(
                 onPressed: null,
+                style: buttonStyle,
                 icon: const Icon(Icons.select_all),
                 label: const Text('Select'),
               ),
             ),
             OutlinedButton.icon(
               onPressed: onSelectNone,
+              style: buttonStyle,
               icon: const Icon(Icons.clear),
               label: const Text('Select none'),
             ),
@@ -436,6 +485,7 @@ class _Controls extends StatelessWidget {
               onPressed: selectedCount == 0 || deleting
                   ? null
                   : onDeleteSelected,
+              style: buttonStyle,
               icon: deleting
                   ? const SizedBox(
                       width: 18,
@@ -449,6 +499,7 @@ class _Controls extends StatelessWidget {
               message: 'Merge editing is not wired in StashFlow yet.',
               child: FilledButton.tonalIcon(
                 onPressed: null,
+                style: buttonStyle,
                 icon: const Icon(Icons.merge),
                 label: const Text('Merge'),
               ),
@@ -456,6 +507,18 @@ class _Controls extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  ButtonStyle? _compactButtonStyle(ThemeData theme, bool isCompact) {
+    if (!isCompact) return null;
+    return FilledButton.styleFrom(
+      visualDensity: VisualDensity.compact,
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      minimumSize: const Size(0, 36),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      iconSize: 18,
+      textStyle: theme.textTheme.labelMedium,
     );
   }
 }
@@ -548,20 +611,41 @@ class _DuplicateSceneTile extends StatelessWidget {
           if (scene.galleryCount > 0) Text('${scene.galleryCount} galleries'),
         ],
       ),
-      secondary: Wrap(
-        spacing: 4,
-        children: [
-          IconButton(
-            tooltip: 'Open scene',
-            icon: const Icon(Icons.open_in_new),
-            onPressed: () => context.push('/scenes/scene/${scene.id}'),
-          ),
-          IconButton(
-            tooltip: 'Delete',
-            icon: const Icon(Icons.delete_outline),
-            onPressed: onDelete,
-          ),
-        ],
+      secondary: SizedBox(
+        width: 32,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              tooltip: 'Open scene',
+              iconSize: 18,
+              style: IconButton.styleFrom(
+                fixedSize: const Size(28, 28),
+                minimumSize: const Size(28, 28),
+                maximumSize: const Size(28, 28),
+                padding: EdgeInsets.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.compact,
+              ),
+              icon: const Icon(Icons.open_in_new),
+              onPressed: () => context.push('/scenes/scene/${scene.id}'),
+            ),
+            IconButton(
+              tooltip: 'Delete',
+              iconSize: 18,
+              style: IconButton.styleFrom(
+                fixedSize: const Size(28, 28),
+                minimumSize: const Size(28, 28),
+                maximumSize: const Size(28, 28),
+                padding: EdgeInsets.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.compact,
+              ),
+              icon: const Icon(Icons.delete_outline),
+              onPressed: onDelete,
+            ),
+          ],
+        ),
       ),
     );
   }
