@@ -7,6 +7,8 @@ import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 import 'core/data/cache/app_cache_service.dart';
 import 'features/navigation/presentation/router.dart';
 import 'core/data/preferences/secure_storage_provider.dart';
@@ -67,7 +69,17 @@ Future<void> main() async {
     } catch (_) {
       // Ignore if PaintingBinding isn't available in some test environments.
     }
-    await initHiveForFlutter();
+    // Initialize Hive for the GraphQL cache in a OS-managed cache directory
+    // instead of the persistent app documents directory. This prevents the
+    // GraphQL cache (which can contain large base64-encoded images from
+    // scraping operations) from consuming GB-level persistent storage.
+    // Android clears this directory automatically when storage is low.
+    if (!kIsWeb) {
+      final cacheDir = await getTemporaryDirectory();
+      final hivePath = p.join(cacheDir.path, 'stash_graphql_cache');
+      HiveStore.init(onPath: hivePath);
+    }
+    await HiveStore.open();
     PipMode.initialize();
 
     if (!isTestMode) {

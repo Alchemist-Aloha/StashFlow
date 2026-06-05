@@ -110,14 +110,17 @@ class AppCacheService {
   }
 
   Future<int> getDatabaseCacheSizeMb() async {
-    final appDir = await _applicationDocumentsDirectoryProvider();
-    final hiveDir = Directory(p.join(appDir.path, 'stash_hive'));
+    final hiveDir = Directory(p.join(
+      (await _temporaryDirectoryProvider()).path,
+      'stash_graphql_cache',
+    ));
 
     int bytes = await _calculateDirSize(hiveDir);
 
-    // Also check for root hive files
+    // Also check for root hive files in the temp directory
     try {
-      await for (final entity in appDir.list(recursive: false)) {
+      final tempDir = await _temporaryDirectoryProvider();
+      await for (final entity in tempDir.list(recursive: false)) {
         if (entity is File &&
             (entity.path.endsWith('.hive') || entity.path.endsWith('.lock'))) {
           bytes += await entity.length();
@@ -126,7 +129,7 @@ class AppCacheService {
     } catch (_) {}
 
     debugPrint(
-      'AppCacheService: Database cache size: $bytes bytes in ${appDir.path}',
+      'AppCacheService: Database cache size: $bytes bytes in ${hiveDir.path}',
     );
     return bytes ~/ (1024 * 1024);
   }
@@ -219,36 +222,47 @@ class AppCacheService {
 
   Future<void> clearDatabaseCache() async {
     debugPrint('AppCacheService: Clearing database cache...');
-    final appDir = await _applicationDocumentsDirectoryProvider();
-    final hiveDir = Directory(p.join(appDir.path, 'stash_hive'));
+    final hiveDir = Directory(p.join(
+      (await _temporaryDirectoryProvider()).path,
+      'stash_graphql_cache',
+    ));
 
     final errors = <Object>[];
     if (await hiveDir.exists()) {
       try {
         await hiveDir.delete(recursive: true);
-        debugPrint('AppCacheService: stash_hive deleted');
+        debugPrint('AppCacheService: stash_graphql_cache deleted');
       } catch (e) {
-        debugPrint('AppCacheService: Error deleting stash_hive: $e');
+        debugPrint(
+          'AppCacheService: Error deleting stash_graphql_cache: $e',
+        );
         errors.add(e);
       }
     }
 
-    // Also delete root hive files (excluding essential ones if any, but hive files are usually safe to clear for cache)
+    // Also clean up any legacy hive files in the old app documents location
     try {
+      final appDir = await _applicationDocumentsDirectoryProvider();
       await for (final entity in appDir.list(recursive: false)) {
         final path = entity.path;
         if (entity is File &&
             (path.endsWith('.hive') || path.endsWith('.lock'))) {
-          // Don't delete shared_preferences if it's there (though usually it's in a different spot)
           if (!path.contains('shared_preferences') &&
               !path.contains('flutter_secure_storage')) {
             await entity.delete();
           }
         }
       }
-      debugPrint('AppCacheService: Root hive files deleted');
+      // Also try the old stash_hive directory if it still exists
+      final oldHiveDir = Directory(p.join(appDir.path, 'stash_hive'));
+      if (await oldHiveDir.exists()) {
+        await oldHiveDir.delete(recursive: true);
+        debugPrint('AppCacheService: legacy stash_hive deleted');
+      }
     } catch (e) {
-      debugPrint('AppCacheService: Error deleting root hive files: $e');
+      debugPrint(
+        'AppCacheService: Error cleaning legacy hive files: $e',
+      );
       errors.add(e);
     }
     if (errors.isNotEmpty) {
