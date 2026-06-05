@@ -55,6 +55,7 @@ class _SceneDeduplicationPageState
   int _pageSize = 20;
   bool _safeSelect = true;
   bool _deleting = false;
+  bool _configExpanded = true;
   final Set<String> _selectedSceneIds = {};
 
   late Future<_SceneDeduplicationData> _future;
@@ -204,46 +205,80 @@ class _SceneDeduplicationPageState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _Controls(
-                  distance: _distance,
-                  durationDiff: _durationDiff,
-                  pageSize: _pageSize,
-                  safeSelect: _safeSelect,
-                  selectedCount: _selectedSceneIds.length,
-                  deleting: _deleting,
-                  onDistanceChanged: (value) {
-                    setState(() {
-                      _distance = value;
-                      _page = 1;
-                      _selectedSceneIds.clear();
-                      _future = _load();
-                    });
-                  },
-                  onDurationChanged: (value) {
-                    setState(() {
-                      _durationDiff = value;
-                      _page = 1;
-                      _selectedSceneIds.clear();
-                      _future = _load();
-                    });
-                  },
-                  onPageSizeChanged: (value) {
-                    setState(() {
-                      _pageSize = value;
-                      _page = 1;
-                      _selectedSceneIds.clear();
-                    });
-                  },
-                  onSafeSelectChanged: (value) {
-                    setState(() {
-                      _safeSelect = value;
-                    });
-                  },
-                  onSelectNone: () {
-                    setState(_selectedSceneIds.clear);
-                  },
-                  onSelectMode: (mode) => _setSelection(groups, mode),
-                  onDeleteSelected: () => _confirmDelete(_selectedSceneIds),
+                InkWell(
+                  onTap: () => setState(
+                    () => _configExpanded = !_configExpanded,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 4,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          _configExpanded
+                              ? Icons.expand_less
+                              : Icons.expand_more,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Configuration',
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                AnimatedCrossFade(
+                  firstChild: const SizedBox.shrink(),
+                  secondChild: _Controls(
+                    distance: _distance,
+                    durationDiff: _durationDiff,
+                    pageSize: _pageSize,
+                    safeSelect: _safeSelect,
+                    selectedCount: _selectedSceneIds.length,
+                    deleting: _deleting,
+                    onDistanceChanged: (value) {
+                      setState(() {
+                        _distance = value;
+                        _page = 1;
+                        _selectedSceneIds.clear();
+                        _future = _load();
+                      });
+                    },
+                    onDurationChanged: (value) {
+                      setState(() {
+                        _durationDiff = value;
+                        _page = 1;
+                        _selectedSceneIds.clear();
+                        _future = _load();
+                      });
+                    },
+                    onPageSizeChanged: (value) {
+                      setState(() {
+                        _pageSize = value;
+                        _page = 1;
+                        _selectedSceneIds.clear();
+                      });
+                    },
+                    onSafeSelectChanged: (value) {
+                      setState(() {
+                        _safeSelect = value;
+                      });
+                    },
+                    onSelectNone: () {
+                      setState(_selectedSceneIds.clear);
+                    },
+                    onSelectMode: (mode) => _setSelection(groups, mode),
+                    onDeleteSelected: () => _confirmDelete(_selectedSceneIds),
+                  ),
+                  crossFadeState: _configExpanded
+                      ? CrossFadeState.showSecond
+                      : CrossFadeState.showFirst,
+                  duration: const Duration(milliseconds: 200),
                 ),
                 if (data.missingPhashCount > 0) ...[
                   const SizedBox(height: 12),

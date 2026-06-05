@@ -70,6 +70,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
   bool _loadingScenes = true;
   bool _scraping = false;
   bool _stopRequested = false;
+  bool _configExpanded = true;
   int _scrapedCount = 0;
   String? _loadError;
 
@@ -338,7 +339,42 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildControls(stashBoxesAsync),
+            InkWell(
+              onTap: () => setState(
+                () => _configExpanded = !_configExpanded,
+              ),
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 4,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      _configExpanded
+                          ? Icons.expand_less
+                          : Icons.expand_more,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Configuration',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            AnimatedCrossFade(
+              firstChild: const SizedBox.shrink(),
+              secondChild: _buildControls(stashBoxesAsync),
+              crossFadeState: _configExpanded
+                  ? CrossFadeState.showSecond
+                  : CrossFadeState.showFirst,
+              duration: const Duration(milliseconds: 200),
+            ),
+            if (_configExpanded) const SizedBox(height: 8),
             const SizedBox(height: 16),
             Expanded(child: _buildResultList(context)),
           ],
