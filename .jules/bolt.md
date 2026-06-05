@@ -39,3 +39,7 @@
 ## 2024-05-18 - Throttle ScrollNotification by Index
 **Learning:** `NotificationListener<ScrollNotification>` fires rapidly on every single frame during scrolling. Without throttling, complex processing like loop iterations and hash lookups inside the callback create significant GC pressure and stutter. Using the `visibleIndex` calculation to throttle the callback ensures logic only executes when new content is actually coming into view.
 **Action:** Always capture a `var lastVisibleIndex = -1;` within the `build` method closure (which resets securely on rebuilds) and short-circuit the scroll callback (`if (visibleIndex == lastVisibleIndex) return false;`) before executing heavy operations.
+
+## 2024-05-18 - Defer expensive scroll prefetch lookups
+**Learning:** During rapid scroll events (`NotificationListener<ScrollNotification>`), calculating the visible index and applying an early return *before* executing expensive lookups (like `ref.read` or layout constraints) drastically reduces per-frame overhead.
+**Action:** Always short-circuit scroll listeners using index tracking at the very top of the callback.
