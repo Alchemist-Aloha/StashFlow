@@ -203,40 +203,45 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
 
     final repository = ref.read(sceneRepositoryProvider);
     final randomSort = 'random_${DateTime.now().microsecondsSinceEpoch}';
-    var page = 1;
 
-    while (!_stopRequested) {
-      final scenes = await repository.findScenes(
-        page: page,
-        perPage: 1,
+    try {
+      final candidates = await repository.findScenes(
+        page: 1,
+        perPage: _pageSize,
         sort: randomSort,
         descending: true,
         organized: false,
         sceneFilter: SceneFilter.empty(),
       );
-      if (!mounted || _stopRequested || scenes.isEmpty) break;
+      if (!mounted || _stopRequested) return;
 
-      final scene = scenes.first;
-      try {
-        final matches = await repository.scrapeSingleScene(
-          stashBoxEndpoint: stashBoxEndpoint,
-          sceneId: scene.id,
-        );
-        if (!mounted) return;
-        setState(() {
-          _scrapedCount += 1;
-          if (matches.isNotEmpty) {
-            _scenes = [..._scenes, scene];
-            _results[scene.id] = _TaggerResult.matches(matches);
-          }
-        });
-      } catch (error) {
-        if (!mounted) return;
-        setState(() {
-          _scrapedCount += 1;
-        });
+      for (final scene in candidates) {
+        if (_stopRequested) break;
+        try {
+          final matches = await repository.scrapeSingleScene(
+            stashBoxEndpoint: stashBoxEndpoint,
+            sceneId: scene.id,
+          );
+          if (!mounted) return;
+          setState(() {
+            _scrapedCount += 1;
+            if (matches.isNotEmpty) {
+              _scenes = [..._scenes, scene];
+              _results[scene.id] = _TaggerResult.matches(matches);
+            }
+          });
+        } catch (error) {
+          if (!mounted) return;
+          setState(() {
+            _scrapedCount += 1;
+          });
+        }
       }
-      page += 1;
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _loadError = error.toString();
+      });
     }
 
     _finishScraping();

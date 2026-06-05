@@ -55,8 +55,9 @@ void main() {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Scene Tagger'));
+    await tester.tap(find.widgetWithText(TextButton, 'Scene Tagger'));
     await tester.pumpAndSettle();
 
     expect(
@@ -135,9 +136,10 @@ void main() {
       final repo = MockSceneRepository()
         ..findScenesResponses.addAll([
           <Scene>[],
-          [toolTaggerScene(id: 'random-miss', title: 'Random Miss')],
-          [toolTaggerScene(id: 'random-hit', title: 'Random Hit')],
-          <Scene>[],
+          [
+            toolTaggerScene(id: 'random-miss', title: 'Random Miss'),
+            toolTaggerScene(id: 'random-hit', title: 'Random Hit'),
+          ],
         ])
         ..scrapedScenesBySceneId['random-hit'] = [
           const ScrapedScene(
@@ -171,9 +173,9 @@ void main() {
         'random-miss',
         'random-hit',
       ]);
-      expect(repo.findSceneCalls.skip(1).map((call) => call.page), [1, 2, 3]);
+      expect(repo.findSceneCalls.skip(1).map((call) => call.page), [1]);
       expect(repo.findSceneCalls.skip(1).map((call) => call.perPage).toSet(), {
-        1,
+        25,
       });
       expect(
         repo.findSceneCalls.skip(1).map((call) => call.organized).toSet(),
