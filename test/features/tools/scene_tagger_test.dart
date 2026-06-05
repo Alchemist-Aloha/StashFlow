@@ -57,7 +57,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.widgetWithText(TextButton, 'Scene Tagger'));
+    await tester.tap(find.text('Scene Tagger'));
     await tester.pumpAndSettle();
 
     expect(find.text('Tagger target'), findsOneWidget);

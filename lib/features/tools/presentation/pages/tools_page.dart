@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../setup/presentation/widgets/settings_page_shell.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
+
 class ToolsPage extends StatelessWidget {
   const ToolsPage({super.key});
 
@@ -27,44 +30,50 @@ class ToolsPage extends StatelessWidget {
                 ),
           title: const Text('Tools'),
         ),
-        body: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.difference),
-                title: Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton(
-                    onPressed: () => context.push('/tools/scene-deduplication'),
-                    child: const Text('Scene Deduplication'),
+        body: SafeArea(
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 920),
+              child: ListView(
+                padding: EdgeInsets.all(context.dimensions.spacingLarge),
+                children: [
+                  const SettingsSectionCard(
+                    title: 'Tools',
+                    subtitle: 'Maintenance and metadata workflows for scenes.',
+                    child: _ToolsActions(),
                   ),
-                ),
-                subtitle: const Text('Find and manage duplicate scenes'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => context.push('/tools/scene-deduplication'),
+                ],
               ),
             ),
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.sell_outlined),
-                title: Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton(
-                    onPressed: () => context.push('/tools/scene-tagger'),
-                    child: const Text('Scene Tagger'),
-                  ),
-                ),
-                subtitle: const Text(
-                  'Scrape current scene pages with Stash-box',
-                ),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => context.push('/tools/scene-tagger'),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
+    );
+  }
+}
+
+class _ToolsActions extends StatelessWidget {
+  const _ToolsActions();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SettingsActionCard(
+          icon: Icons.difference_rounded,
+          title: 'Scene Deduplication',
+          subtitle: 'Find and manage duplicate scenes.',
+          onTap: () => context.push('/tools/scene-deduplication'),
+        ),
+        SizedBox(height: context.dimensions.spacingMedium),
+        SettingsActionCard(
+          icon: Icons.sell_rounded,
+          title: 'Scene Tagger',
+          subtitle: 'Scrape current scene pages with Stash-box.',
+          onTap: () => context.push('/tools/scene-tagger'),
+        ),
+      ],
     );
   }
 }
