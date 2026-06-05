@@ -7,6 +7,7 @@ import '../../scenes/presentation/pages/scenes_page.dart';
 import '../../scenes/presentation/pages/scene_deduplication_page.dart';
 import '../../scenes/presentation/pages/scene_details_page.dart';
 import '../../scenes/presentation/pages/scene_edit_page.dart';
+import '../../scenes/presentation/pages/scene_tagger_page.dart';
 import '../../performers/domain/entities/performer.dart';
 import '../../performers/presentation/pages/performers_page.dart';
 import '../../performers/presentation/pages/performer_details_page.dart';
@@ -383,6 +384,10 @@ GoRouter router(Ref ref) {
           GoRoute(
             path: 'scene-deduplication',
             builder: (context, state) => const SceneDeduplicationPage(),
+          ),
+          GoRoute(
+            path: 'scene-tagger',
+            builder: (context, state) => const SceneTaggerPage(),
           ),
         ],
       ),

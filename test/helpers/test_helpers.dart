@@ -58,6 +58,26 @@ class MockSceneRepository extends MockRepositoryState<Scene>
   int? lastDuplicateDistance;
   double? lastDuplicateDurationDiff;
   int duplicateFetchCount = 0;
+  int? lastFindScenesPage;
+  int? lastFindScenesPerPage;
+  String? lastFindScenesFilter;
+  String? lastFindScenesSort;
+  bool? lastFindScenesDescending;
+  SceneFilter? lastFindScenesSceneFilter;
+  final List<({String? sceneId, String? stashBoxEndpoint, String? scraperId})>
+  scrapeSceneCalls = [];
+  final Map<String, List<ScrapedScene>> scrapedScenesBySceneId = {};
+  final List<
+    ({
+      String sceneId,
+      ScrapedScene scraped,
+      bool mergeValues,
+      List<String>? performerIds,
+      List<String>? tagIds,
+      String? studioId,
+    })
+  >
+  savedScrapedScenes = [];
 
   @override
   Future<List<Scene>> findScenes({
@@ -74,6 +94,12 @@ class MockSceneRepository extends MockRepositoryState<Scene>
     SceneFilter? sceneFilter,
   }) async {
     if (shouldThrow) throw Exception(errorMessage);
+    lastFindScenesPage = page;
+    lastFindScenesPerPage = perPage;
+    lastFindScenesFilter = filter;
+    lastFindScenesSort = sort;
+    lastFindScenesDescending = descending;
+    lastFindScenesSceneFilter = sceneFilter;
     return data;
   }
 
@@ -97,7 +123,12 @@ class MockSceneRepository extends MockRepositoryState<Scene>
     String? query,
   }) async {
     if (shouldThrow) throw Exception(errorMessage);
-    return [];
+    scrapeSceneCalls.add((
+      sceneId: sceneId,
+      stashBoxEndpoint: stashBoxEndpoint,
+      scraperId: scraperId,
+    ));
+    return scrapedScenesBySceneId[sceneId] ?? [];
   }
 
   @override
@@ -121,6 +152,14 @@ class MockSceneRepository extends MockRepositoryState<Scene>
     String? studioId,
   }) async {
     if (shouldThrow) throw Exception(errorMessage);
+    savedScrapedScenes.add((
+      sceneId: sceneId,
+      scraped: scraped,
+      mergeValues: mergeValues,
+      performerIds: performerIds,
+      tagIds: tagIds,
+      studioId: studioId,
+    ));
   }
 
   @override
