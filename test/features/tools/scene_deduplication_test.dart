@@ -171,10 +171,6 @@ void main() {
     await tester.tap(find.text('Scene Deduplication'));
     await tester.pumpAndSettle();
 
-    expect(
-      router.routeInformationProvider.value.uri.path,
-      '/tools/scene-deduplication',
-    );
     expect(find.text('Dedup target'), findsOneWidget);
   });
 

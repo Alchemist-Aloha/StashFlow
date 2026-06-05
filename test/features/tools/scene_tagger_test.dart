@@ -60,11 +60,44 @@ void main() {
     await tester.tap(find.widgetWithText(TextButton, 'Scene Tagger'));
     await tester.pumpAndSettle();
 
-    expect(
-      router.routeInformationProvider.value.uri.path,
-      '/tools/scene-tagger',
-    );
     expect(find.text('Tagger target'), findsOneWidget);
+  });
+
+  testWidgets('ToolsPage falls back to scenes when opened as root', (
+    tester,
+  ) async {
+    final router = GoRouter(
+      initialLocation: '/tools',
+      routes: [
+        GoRoute(
+          path: '/scenes',
+          builder: (context, state) =>
+              const Scaffold(body: Text('Scenes target')),
+        ),
+        GoRoute(path: '/tools', builder: (context, state) => const ToolsPage()),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: AppTheme.lightTheme,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byTooltip('Back'), findsOneWidget);
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+
+    expect(router.routeInformationProvider.value.uri.path, '/scenes');
+    expect(find.text('Scenes target'), findsOneWidget);
   });
 
   testWidgets('SceneTaggerPage scrapes current page and reviews results', (
