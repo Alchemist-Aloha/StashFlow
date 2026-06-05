@@ -168,7 +168,7 @@ class GlobalPlayerState {
     this.prewarmLatencyMs,
     this.playEndBehavior = VideoEndBehavior.stop,
     this.showVideoDebugInfo = false,
-    this.useDoubleTapSeek = true,
+    this.useDoubleTapSeek = false,
     this.enableBackgroundPlayback = false,
     this.enableNativePip = false,
     this.videoGravityOrientation = true,
