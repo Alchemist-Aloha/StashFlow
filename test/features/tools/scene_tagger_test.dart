@@ -134,11 +134,14 @@ void main() {
     expect(find.text('Scene Tagger'), findsOneWidget);
     expect(repo.lastFindScenesPage, 1);
     expect(repo.lastFindScenesPerPage, 25);
-    expect(find.text('Local A'), findsWidgets);
-    expect(find.text('Local B'), findsWidgets);
 
     await tester.tap(find.text('Start tagging'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.text('Configuration'));
     await tester.pumpAndSettle();
+
+    expect(find.text('Local A'), findsWidgets);
 
     expect(repo.scrapeSceneCalls.map((call) => call.sceneId), [
       'scene-a',
@@ -152,10 +155,10 @@ void main() {
     expect(find.text('Remote Studio'), findsOneWidget);
     expect(find.text('Remote Performer'), findsOneWidget);
     expect(find.text('Remote Tag'), findsOneWidget);
-    expect(find.text('No match found'), findsOneWidget);
 
-    await tester.ensureVisible(find.text('Apply').first);
-    await tester.tap(find.text('Apply').first);
+    final applyButton = find.widgetWithText(FilledButton, 'Apply').first;
+    await tester.ensureVisible(applyButton);
+    await tester.tap(applyButton);
     await tester.pumpAndSettle();
 
     expect(repo.savedScrapedScenes, hasLength(1));
@@ -220,6 +223,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    await tester.tap(find.text('Configuration'));
+    await tester.pumpAndSettle();
+
     final openButton = find.byIcon(Icons.open_in_new);
     await tester.ensureVisible(openButton);
     final iconButton = tester.widget<IconButton>(
@@ -281,6 +287,9 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Start tagging'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.tap(find.text('Configuration'));
       await tester.pumpAndSettle();
 
       expect(repo.scrapeSceneCalls.map((call) => call.sceneId), [
@@ -305,6 +314,11 @@ void main() {
       expect(find.text('Random Miss'), findsNothing);
       expect(find.text('Random Hit'), findsWidgets);
       expect(find.text('Matched Random Scene'), findsOneWidget);
+      await tester.drag(
+        find.byKey(const ValueKey('scene_tagger_results_randomUnorganized')),
+        const Offset(0, -1200),
+      );
+      await tester.pumpAndSettle();
       expect(find.text('Random Hit 2'), findsWidgets);
       expect(find.text('Matched Random Scene 2'), findsOneWidget);
       expect(find.text('No match found'), findsNothing);
@@ -318,10 +332,8 @@ void main() {
       ..setData(
         List.generate(
           60,
-          (index) => toolTaggerScene(
-            id: 'scene-$index',
-            title: 'Local Scene $index',
-          ),
+          (index) =>
+              toolTaggerScene(id: 'scene-$index', title: 'Local Scene $index'),
         ),
       );
 
@@ -338,13 +350,134 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Local Scene 0'), findsWidgets);
-    expect(find.text('Local Scene 59'), findsNothing);
-
-    await tester.drag(find.byType(Scrollable).first, const Offset(0, -4000));
+    await tester.tap(find.text('Configuration'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Local Scene 59'), findsOneWidget);
+    expect(find.text('Local Scene 0'), findsWidgets);
+    expect(find.text('Local Scene 59'), findsNothing);
+  });
+
+  testWidgets(
+    'SceneTaggerPage applies the selected scraped result and shows expanded metadata',
+    (tester) async {
+      final repo = MockSceneRepository()
+        ..setData([toolTaggerScene(id: 'scene-a', title: 'Local A')])
+        ..scrapedScenesBySceneId['scene-a'] = [
+          const ScrapedScene(
+            title: 'Scraped A',
+            details: 'Remote details A',
+            image: 'https://images.test/a.jpg',
+            studio: ScrapedStudio(
+              name: 'Remote Studio A',
+              storedId: 'studio-a',
+            ),
+          ),
+          const ScrapedScene(
+            title: 'Scraped B',
+            details: 'Remote details B',
+            image: 'https://images.test/b.jpg',
+            studio: ScrapedStudio(
+              name: 'Remote Studio B',
+              storedId: 'studio-b',
+            ),
+          ),
+        ];
+
+      await _pumpSceneTagger(
+        tester,
+        prefs: prefs,
+        repo: repo,
+        stashBoxes: [
+          StashBoxEndpoint(
+            name: 'Primary Box',
+            endpoint: 'https://box.test/graphql',
+          ),
+        ],
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Start tagging'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.tap(find.text('Configuration'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 250));
+
+      expect(find.text('/media/scene-a.mp4'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('selected_scraped_image_scene-a')),
+        findsOneWidget,
+      );
+      expect(find.text('Show 1 more result'), findsOneWidget);
+
+      final showMoreButton = find.widgetWithText(
+        TextButton,
+        'Show 1 more result',
+      );
+      await tester.ensureVisible(showMoreButton);
+      await tester.tap(showMoreButton);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 250));
+
+      expect(find.text('Scraped B'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('expanded_scraped_image_scene-a_1')),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.byKey(const ValueKey('select_scraped_scene-a_1')));
+      await tester.pump();
+
+      await tester.tap(find.text('Apply'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 250));
+
+      expect(repo.savedScrapedScenes, hasLength(1));
+      expect(repo.savedScrapedScenes.single.scraped.title, 'Scraped B');
+      expect(find.text('Applied'), findsOneWidget);
+    },
+  );
+
+  testWidgets('SceneTaggerPage preview starts as a thumbnail-first control', (
+    tester,
+  ) async {
+    final repo = MockSceneRepository()
+      ..setData([
+        toolTaggerScene(
+          id: 'scene-a',
+          title: 'Local A',
+          screenshotPath: '/scene/scene-a/screenshot',
+          previewPath: '/scene/scene-a/preview',
+          streamPath: '/scene/scene-a/stream',
+        ),
+      ]);
+
+    await _pumpSceneTagger(
+      tester,
+      prefs: prefs,
+      repo: repo,
+      stashBoxes: [
+        StashBoxEndpoint(
+          name: 'Primary Box',
+          endpoint: 'https://box.test/graphql',
+        ),
+      ],
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
+    await tester.tap(find.text('Configuration'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
+
+    expect(
+      find.byKey(const ValueKey('scene_preview_thumbnail_scene-a')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('scene_preview_activate_scene-a')),
+      findsOneWidget,
+    );
+    expect(find.byTooltip('Pause preview'), findsNothing);
   });
 }
 
@@ -354,6 +487,13 @@ Future<void> _pumpSceneTagger(
   required MockSceneRepository repo,
   required List<StashBoxEndpoint> stashBoxes,
 }) async {
+  tester.view.physicalSize = const Size(1400, 2200);
+  tester.view.devicePixelRatio = 1.0;
+  addTearDown(() {
+    tester.view.resetPhysicalSize();
+    tester.view.resetDevicePixelRatio();
+  });
+
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
@@ -375,6 +515,9 @@ Scene toolTaggerScene({
   required String id,
   required String title,
   String? details,
+  String? screenshotPath,
+  String? previewPath,
+  String? streamPath,
 }) {
   return Scene(
     id: id,
@@ -402,10 +545,10 @@ Scene toolTaggerScene({
         fingerprints: [Fingerprint(type: 'phash', value: 'abcdef')],
       ),
     ],
-    paths: const ScenePaths(
-      screenshot: null,
-      preview: null,
-      stream: null,
+    paths: ScenePaths(
+      screenshot: screenshotPath,
+      preview: previewPath,
+      stream: streamPath,
       caption: null,
       vtt: null,
       sprite: null,

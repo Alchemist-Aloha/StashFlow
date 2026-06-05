@@ -1,9 +1,19 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 
+import '../../../../core/data/auth/auth_provider.dart';
+import '../../../../core/data/graphql/graphql_client.dart';
+import '../../../../core/data/graphql/media_headers_provider.dart';
+import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/domain/entities/scraped/scraped_scene.dart';
 import '../../../../core/domain/entities/scraped/scraped_tag.dart';
+import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 import '../../../setup/presentation/providers/stashbox_provider.dart';
 import '../../domain/entities/scene.dart';
@@ -20,19 +30,22 @@ class SceneTaggerPage extends ConsumerStatefulWidget {
 }
 
 class _TaggerResult {
-  const _TaggerResult._({this.matches, this.error, this.saved = false});
+  const _TaggerResult._({this.matches, this.error, this.appliedMatchIndex});
 
   const _TaggerResult.matches(List<ScrapedScene> matches)
     : this._(matches: matches);
 
   const _TaggerResult.error(String error) : this._(error: error);
 
-  _TaggerResult copyWithSaved() =>
-      _TaggerResult._(matches: matches, error: error, saved: true);
+  _TaggerResult copyWithApplied(int appliedMatchIndex) => _TaggerResult._(
+    matches: matches,
+    error: error,
+    appliedMatchIndex: appliedMatchIndex,
+  );
 
   final List<ScrapedScene>? matches;
   final String? error;
-  final bool saved;
+  final int? appliedMatchIndex;
 }
 
 enum _TaggerMode {
@@ -60,6 +73,8 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
   late Future<List<SceneSavedFilterConfig>> _presetsFuture;
   List<Scene> _scenes = [];
   final Map<String, _TaggerResult> _results = {};
+  final Map<String, int> _selectedMatchIndexes = {};
+  final Set<String> _expandedSceneIds = <String>{};
   _TaggerMode _mode = _TaggerMode.currentPage;
   int _pageSize = 25;
   String? _sort = 'date';
@@ -73,6 +88,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
   bool _configExpanded = true;
   int _scrapedCount = 0;
   String? _loadError;
+  String? _activePreviewSceneId;
 
   @override
   void initState() {
@@ -92,6 +108,9 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
       _loadingScenes = true;
       _loadError = null;
       _results.clear();
+      _selectedMatchIndexes.clear();
+      _expandedSceneIds.clear();
+      _activePreviewSceneId = null;
       _scrapedCount = 0;
     });
 
@@ -134,6 +153,9 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
     setState(() {
       _scenes = [];
       _results.clear();
+      _selectedMatchIndexes.clear();
+      _expandedSceneIds.clear();
+      _activePreviewSceneId = null;
       _scrapedCount = 0;
       _loadError = null;
     });
@@ -165,6 +187,9 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
       _stopRequested = false;
       _scrapedCount = 0;
       _results.clear();
+      _selectedMatchIndexes.clear();
+      _expandedSceneIds.clear();
+      _activePreviewSceneId = null;
     });
 
     final repository = ref.read(sceneRepositoryProvider);
@@ -178,6 +203,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
         if (!mounted) return;
         setState(() {
           _results[scene.id] = _TaggerResult.matches(matches);
+          _selectedMatchIndexes[scene.id] = 0;
           _scrapedCount += 1;
         });
       } catch (error) {
@@ -199,6 +225,9 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
       _stopRequested = false;
       _scrapedCount = 0;
       _results.clear();
+      _selectedMatchIndexes.clear();
+      _expandedSceneIds.clear();
+      _activePreviewSceneId = null;
       _scenes = [];
     });
 
@@ -231,6 +260,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
               if (matches.isNotEmpty) {
                 _scenes = [..._scenes, scene];
                 _results[scene.id] = _TaggerResult.matches(matches);
+                _selectedMatchIndexes[scene.id] = 0;
               }
             });
           } catch (error) {
@@ -262,7 +292,24 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
     }
   }
 
-  Future<void> _applyScrapedScene(Scene scene, ScrapedScene scraped) async {
+  int _selectedMatchIndex(String sceneId, List<ScrapedScene>? matches) {
+    final available = matches?.length ?? 0;
+    if (available <= 1) {
+      return 0;
+    }
+    final current = _selectedMatchIndexes[sceneId] ?? 0;
+    if (current < 0) return 0;
+    if (current >= available) return available - 1;
+    return current;
+  }
+
+  Future<void> _applySelectedScrapedScene(Scene scene) async {
+    final result = _results[scene.id];
+    final matches = result?.matches;
+    if (matches == null || matches.isEmpty) return;
+    final selectedIndex = _selectedMatchIndex(scene.id, matches);
+    final scraped = matches[selectedIndex];
+
     try {
       await ref
           .read(sceneRepositoryProvider)
@@ -279,7 +326,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
       if (!mounted) return;
       setState(() {
         _results[scene.id] =
-            _results[scene.id]?.copyWithSaved() ??
+            _results[scene.id]?.copyWithApplied(selectedIndex) ??
             const _TaggerResult.matches([]);
       });
       ScaffoldMessenger.of(
@@ -340,21 +387,14 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             InkWell(
-              onTap: () => setState(
-                () => _configExpanded = !_configExpanded,
-              ),
+              onTap: () => setState(() => _configExpanded = !_configExpanded),
               borderRadius: BorderRadius.circular(12),
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 4,
-                ),
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                 child: Row(
                   children: [
                     Icon(
-                      _configExpanded
-                          ? Icons.expand_less
-                          : Icons.expand_more,
+                      _configExpanded ? Icons.expand_less : Icons.expand_more,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -395,12 +435,13 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
         ? '$_scrapedCount checked • ${_scenes.length} matches'
         : '${_scenes.length} scenes on this page';
     if (_scenes.isEmpty) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      return ListView(
+        padding: EdgeInsets.zero,
         children: [
           Text(summary, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 12),
-          Expanded(
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 32),
             child: Center(
               child: Text(
                 _mode == _TaggerMode.randomUnorganized
@@ -427,12 +468,39 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
           );
         }
         final scene = _scenes[index - 1];
+        final result = _results[scene.id];
+        final selectedMatchIndex = _selectedMatchIndex(
+          scene.id,
+          result?.matches,
+        );
         return _TaggerSceneCard(
           key: ValueKey('tagger_scene_${scene.id}'),
           scene: scene,
-          result: _results[scene.id],
-          onOpen: () => context.push('/scene/${scene.id}'),
-          onApply: (scraped) => _applyScrapedScene(scene, scraped),
+          result: result,
+          selectedMatchIndex: selectedMatchIndex,
+          expanded: _expandedSceneIds.contains(scene.id),
+          isPreviewActive: _activePreviewSceneId == scene.id,
+          onOpen: () => context.go('/scene/${scene.id}'),
+          onApply: () => _applySelectedScrapedScene(scene),
+          onSelectMatch: (selectedIndex) {
+            setState(() {
+              _selectedMatchIndexes[scene.id] = selectedIndex;
+            });
+          },
+          onToggleExpanded: () {
+            setState(() {
+              if (_expandedSceneIds.contains(scene.id)) {
+                _expandedSceneIds.remove(scene.id);
+              } else {
+                _expandedSceneIds.add(scene.id);
+              }
+            });
+          },
+          onPreviewActivate: () {
+            setState(() {
+              _activePreviewSceneId = scene.id;
+            });
+          },
         );
       },
     );
@@ -650,30 +718,57 @@ class _TaggerSceneCard extends StatelessWidget {
     super.key,
     required this.scene,
     required this.result,
+    required this.selectedMatchIndex,
+    required this.expanded,
+    required this.isPreviewActive,
     required this.onOpen,
     required this.onApply,
+    required this.onSelectMatch,
+    required this.onToggleExpanded,
+    required this.onPreviewActivate,
   });
 
   final Scene scene;
   final _TaggerResult? result;
+  final int selectedMatchIndex;
+  final bool expanded;
+  final bool isPreviewActive;
   final VoidCallback onOpen;
-  final ValueChanged<ScrapedScene> onApply;
+  final VoidCallback onApply;
+  final ValueChanged<int> onSelectMatch;
+  final VoidCallback onToggleExpanded;
+  final VoidCallback onPreviewActivate;
 
   @override
   Widget build(BuildContext context) {
-    final scraped = result?.matches?.firstOrNull;
+    final matches = result?.matches ?? const <ScrapedScene>[];
+    final hasMatches = matches.isNotEmpty;
+    final safeSelectedIndex = hasMatches
+        ? selectedMatchIndex.clamp(0, matches.length - 1)
+        : 0;
+    final scraped = hasMatches ? matches[safeSelectedIndex] : null;
+    final isSelectedApplied = result?.appliedMatchIndex == safeSelectedIndex;
     final isWide = MediaQuery.sizeOf(context).width >= 720;
     final comparison = isWide
         ? Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: _LocalSceneSummary(scene: scene)),
+              Expanded(
+                child: _LocalSceneSummary(
+                  scene: scene,
+                  isPreviewActive: isPreviewActive,
+                  onPreviewActivate: onPreviewActivate,
+                ),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: _ScrapedSceneSummary(
+                  sceneId: scene.id,
                   scraped: scraped,
                   error: result?.error,
-                  saved: result?.saved ?? false,
+                  title: isSelectedApplied
+                      ? 'Scraped metadata - applied'
+                      : 'Scraped metadata',
                 ),
               ),
             ],
@@ -681,12 +776,19 @@ class _TaggerSceneCard extends StatelessWidget {
         : Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _LocalSceneSummary(scene: scene),
+              _LocalSceneSummary(
+                scene: scene,
+                isPreviewActive: isPreviewActive,
+                onPreviewActivate: onPreviewActivate,
+              ),
               const SizedBox(height: 12),
               _ScrapedSceneSummary(
+                sceneId: scene.id,
                 scraped: scraped,
                 error: result?.error,
-                saved: result?.saved ?? false,
+                title: isSelectedApplied
+                    ? 'Scraped metadata - applied'
+                    : 'Scraped metadata',
               ),
             ],
           );
@@ -715,6 +817,36 @@ class _TaggerSceneCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             comparison,
+            if (matches.length > 1) ...[
+              const SizedBox(height: 12),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: onToggleExpanded,
+                  icon: Icon(expanded ? Icons.expand_less : Icons.expand_more),
+                  label: Text(
+                    expanded
+                        ? 'Collapse results'
+                        : 'Show ${matches.length - 1} more result${matches.length == 2 ? '' : 's'}',
+                  ),
+                ),
+              ),
+            ],
+            if (expanded && matches.length > 1) ...[
+              const SizedBox(height: 8),
+              for (var index = 0; index < matches.length; index++) ...[
+                _ExpandedScrapedMatchCard(
+                  sceneId: scene.id,
+                  index: index,
+                  total: matches.length,
+                  scraped: matches[index],
+                  selected: index == safeSelectedIndex,
+                  applied: result?.appliedMatchIndex == index,
+                  onSelect: () => onSelectMatch(index),
+                ),
+                if (index < matches.length - 1) const SizedBox(height: 8),
+              ],
+            ],
             const SizedBox(height: 12),
             Wrap(
               alignment: WrapAlignment.end,
@@ -722,10 +854,10 @@ class _TaggerSceneCard extends StatelessWidget {
               children: [
                 TextButton(onPressed: () {}, child: const Text('Skip')),
                 FilledButton(
-                  onPressed: scraped == null || (result?.saved ?? false)
+                  onPressed: scraped == null || isSelectedApplied
                       ? null
-                      : () => onApply(scraped),
-                  child: Text(result?.saved == true ? 'Applied' : 'Apply'),
+                      : onApply,
+                  child: Text(isSelectedApplied ? 'Applied' : 'Apply'),
                 ),
               ],
             ),
@@ -737,14 +869,25 @@ class _TaggerSceneCard extends StatelessWidget {
 }
 
 class _LocalSceneSummary extends StatelessWidget {
-  const _LocalSceneSummary({required this.scene});
+  const _LocalSceneSummary({
+    required this.scene,
+    required this.isPreviewActive,
+    required this.onPreviewActivate,
+  });
 
   final Scene scene;
+  final bool isPreviewActive;
+  final VoidCallback onPreviewActivate;
 
   @override
   Widget build(BuildContext context) {
     return _MetadataPanel(
       title: 'Local scene',
+      media: _ScenePreviewPlayer(
+        scene: scene,
+        isActive: isPreviewActive,
+        onActivate: onPreviewActivate,
+      ),
       rows: [
         ('Title', scene.title),
         if (scene.details != null && scene.details!.isNotEmpty)
@@ -758,6 +901,8 @@ class _LocalSceneSummary extends StatelessWidget {
             '${scene.files.first.width ?? 0}x${scene.files.first.height ?? 0}'
                 ' • ${_formatDuration(scene.files.first.duration)}',
           ),
+        if (scene.path != null && scene.path!.trim().isNotEmpty)
+          ('Path', scene.path!.trim()),
       ],
     );
   }
@@ -765,32 +910,42 @@ class _LocalSceneSummary extends StatelessWidget {
 
 class _ScrapedSceneSummary extends StatelessWidget {
   const _ScrapedSceneSummary({
+    required this.sceneId,
     required this.scraped,
     required this.error,
-    required this.saved,
+    required this.title,
   });
 
+  final String sceneId;
   final ScrapedScene? scraped;
   final String? error;
-  final bool saved;
+  final String title;
 
   @override
   Widget build(BuildContext context) {
     if (error != null) {
-      return _MetadataPanel(
-        title: 'Scraped metadata',
-        rows: [('Error', error!)],
-      );
+      return _MetadataPanel(title: title, rows: [('Error', error!)]);
     }
     if (scraped == null) {
-      return const _MetadataPanel(
-        title: 'Scraped metadata',
-        rows: [('Status', 'No match found')],
-      );
+      return _MetadataPanel(title: title, rows: [('Status', 'No match found')]);
     }
 
     return _MetadataPanel(
-      title: saved ? 'Scraped metadata - applied' : 'Scraped metadata',
+      title: title,
+      media: scraped!.image == null || scraped!.image!.trim().isEmpty
+          ? null
+          : ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: SizedBox(
+                height: 180,
+                width: double.infinity,
+                child: StashImage(
+                  key: ValueKey('selected_scraped_image_$sceneId'),
+                  imageUrl: scraped!.image,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
       rows: [
         if (scraped!.title != null) ('Title', scraped!.title!),
         if (scraped!.details != null) ('Details', scraped!.details!),
@@ -805,11 +960,76 @@ class _ScrapedSceneSummary extends StatelessWidget {
   }
 }
 
+class _ExpandedScrapedMatchCard extends StatelessWidget {
+  const _ExpandedScrapedMatchCard({
+    required this.sceneId,
+    required this.index,
+    required this.total,
+    required this.scraped,
+    required this.selected,
+    required this.applied,
+    required this.onSelect,
+  });
+
+  final String sceneId;
+  final int index;
+  final int total;
+  final ScrapedScene scraped;
+  final bool selected;
+  final bool applied;
+  final VoidCallback onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    return _MetadataPanel(
+      title: 'Result ${index + 1} of $total${applied ? ' - applied' : ''}',
+      headerTrailing: selected
+          ? const Chip(label: Text('Selected'))
+          : OutlinedButton(
+              key: ValueKey('select_scraped_${sceneId}_$index'),
+              onPressed: onSelect,
+              child: const Text('Select'),
+            ),
+      media: scraped.image == null || scraped.image!.trim().isEmpty
+          ? null
+          : ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: SizedBox(
+                height: 140,
+                width: double.infinity,
+                child: StashImage(
+                  key: ValueKey('expanded_scraped_image_${sceneId}_$index'),
+                  imageUrl: scraped.image,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+      rows: [
+        if (scraped.title != null) ('Title', scraped.title!),
+        if (scraped.details != null) ('Details', scraped.details!),
+        if (scraped.date != null)
+          ('Date', scraped.date!.toIso8601String().split('T').first),
+        ('Studio', scraped.studio?.name ?? 'None'),
+        ('Performers', _joinOrNone(scraped.performers.map((p) => p.name))),
+        ('Tags', _joinOrNone(scraped.tags.map((t) => t.name))),
+        if (scraped.urls.isNotEmpty) ('URLs', scraped.urls.join(', ')),
+      ],
+    );
+  }
+}
+
 class _MetadataPanel extends StatelessWidget {
-  const _MetadataPanel({required this.title, required this.rows});
+  const _MetadataPanel({
+    required this.title,
+    required this.rows,
+    this.media,
+    this.headerTrailing,
+  });
 
   final String title;
   final List<(String, String)> rows;
+  final Widget? media;
+  final Widget? headerTrailing;
 
   @override
   Widget build(BuildContext context) {
@@ -826,7 +1046,12 @@ class _MetadataPanel extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(title, style: Theme.of(context).textTheme.titleSmall),
-            const SizedBox(height: 8),
+            if (headerTrailing != null) ...[
+              const SizedBox(height: 8),
+              Align(alignment: Alignment.centerLeft, child: headerTrailing!),
+            ],
+            if (media != null) ...[const SizedBox(height: 8), media!],
+            if (rows.isNotEmpty) const SizedBox(height: 8),
             for (final row in rows)
               Padding(
                 padding: const EdgeInsets.only(bottom: 6),
@@ -891,4 +1116,438 @@ String _formatDuration(double? seconds) {
   final minutes = total ~/ 60;
   final remaining = total % 60;
   return '${minutes}m ${remaining}s';
+}
+
+class _ScenePreviewPlayer extends ConsumerStatefulWidget {
+  const _ScenePreviewPlayer({
+    required this.scene,
+    required this.isActive,
+    required this.onActivate,
+  });
+
+  final Scene scene;
+  final bool isActive;
+  final VoidCallback onActivate;
+
+  @override
+  ConsumerState<_ScenePreviewPlayer> createState() =>
+      _ScenePreviewPlayerState();
+}
+
+class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
+  Player? _player;
+  VideoController? _controller;
+  StreamSubscription<bool>? _playingSubscription;
+  StreamSubscription<Duration>? _positionSubscription;
+  StreamSubscription<Duration>? _durationSubscription;
+  StreamSubscription<Object>? _errorSubscription;
+  bool _initializing = false;
+  bool _isPlaying = false;
+  bool _isScrubbing = false;
+  double _scrubValueMs = 0;
+  Duration _position = Duration.zero;
+  Duration _duration = Duration.zero;
+  String? _error;
+
+  String? get _thumbnailUrl {
+    final screenshot = widget.scene.paths.screenshot?.trim();
+    if (screenshot != null && screenshot.isNotEmpty) {
+      return screenshot;
+    }
+    final preview = widget.scene.paths.preview?.trim();
+    if (preview != null && preview.isNotEmpty) {
+      return preview;
+    }
+    return null;
+  }
+
+  String? get _streamUrl {
+    final raw = widget.scene.paths.stream?.trim();
+    if (raw == null || raw.isEmpty) {
+      return null;
+    }
+    final graphqlEndpoint = Uri.tryParse(ref.read(serverUrlProvider));
+    if (graphqlEndpoint == null) {
+      return raw;
+    }
+    return resolveGraphqlMediaUrl(
+      rawUrl: raw,
+      graphqlEndpoint: graphqlEndpoint,
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant _ScenePreviewPlayer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.scene.id != widget.scene.id) {
+      unawaited(_disposePlayer());
+      return;
+    }
+    if (oldWidget.isActive && !widget.isActive) {
+      unawaited(_disposePlayer());
+      return;
+    }
+    if (!oldWidget.isActive && widget.isActive) {
+      unawaited(_ensurePlayerAndPlay());
+    }
+  }
+
+  @override
+  void dispose() {
+    unawaited(_disposePlayer());
+    super.dispose();
+  }
+
+  Future<void> _ensurePlayerAndPlay() async {
+    if (_initializing) return;
+    final streamUrl = _streamUrl;
+    if (streamUrl == null || streamUrl.isEmpty) {
+      setState(() {
+        _error = 'Preview unavailable';
+      });
+      return;
+    }
+
+    if (_player != null && _controller != null) {
+      setState(() {
+        _error = null;
+      });
+      await _player!.play();
+      return;
+    }
+
+    setState(() {
+      _initializing = true;
+      _error = null;
+    });
+
+    final player = Player();
+    final controller = VideoController(player);
+    _player = player;
+    _controller = controller;
+
+    _playingSubscription = player.stream.playing.listen((playing) {
+      if (!mounted) return;
+      setState(() {
+        _isPlaying = playing;
+      });
+    });
+    _positionSubscription = player.stream.position.listen((position) {
+      if (!mounted) return;
+      setState(() {
+        _position = position;
+      });
+    });
+    _durationSubscription = player.stream.duration.listen((duration) {
+      if (!mounted) return;
+      setState(() {
+        _duration = duration;
+      });
+    });
+    _errorSubscription = player.stream.error.listen((error) {
+      if (!mounted) return;
+      setState(() {
+        _error = error.toString();
+      });
+    });
+
+    try {
+      final headers = ref.read(mediaPlaybackHeadersProvider);
+      var effectiveStreamUrl = streamUrl;
+      var effectiveHeaders = headers;
+      if (kIsWeb) {
+        final authState = ref.read(authProvider);
+        final apiKey = ref.read(serverApiKeyProvider);
+        final serverUrl = ref.read(serverUrlProvider);
+        effectiveStreamUrl = applyWebMediaAuthFallback(
+          url: streamUrl,
+          authMode: authState.mode,
+          apiKey: apiKey,
+          username: authState.username,
+          password: authState.password,
+          graphqlEndpoint: Uri.tryParse(serverUrl),
+        );
+        effectiveHeaders = const <String, String>{};
+      }
+
+      await player.open(
+        Media(effectiveStreamUrl, httpHeaders: effectiveHeaders),
+        play: true,
+      );
+    } catch (error) {
+      _error = error.toString();
+    } finally {
+      if (mounted) {
+        setState(() {
+          _initializing = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _disposePlayer() async {
+    await _playingSubscription?.cancel();
+    await _positionSubscription?.cancel();
+    await _durationSubscription?.cancel();
+    await _errorSubscription?.cancel();
+    _playingSubscription = null;
+    _positionSubscription = null;
+    _durationSubscription = null;
+    _errorSubscription = null;
+
+    final player = _player;
+    _player = null;
+    _controller = null;
+    if (player != null) {
+      await player.dispose();
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _initializing = false;
+      _isPlaying = false;
+      _isScrubbing = false;
+      _scrubValueMs = 0;
+      _position = Duration.zero;
+      _duration = Duration.zero;
+      _error = null;
+    });
+  }
+
+  Future<void> _togglePlayback() async {
+    final player = _player;
+    if (player == null) {
+      widget.onActivate();
+      return;
+    }
+    if (_isPlaying) {
+      await player.pause();
+    } else {
+      await player.play();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = _controller;
+    final hasActiveVideo = widget.isActive && controller != null;
+    final thumbnailUrl = _thumbnailUrl;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: ColoredBox(
+        color: Colors.black,
+        child: AspectRatio(
+          aspectRatio: 16 / 9,
+          child: hasActiveVideo
+              ? Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Video(controller: controller),
+                    if (_initializing)
+                      const Center(child: CircularProgressIndicator()),
+                    if (_error != null && _error!.isNotEmpty)
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Text(
+                            _error!,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    Positioned(
+                      left: 8,
+                      right: 8,
+                      bottom: 8,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.68),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                children: [
+                                  IconButton(
+                                    tooltip: _isPlaying
+                                        ? 'Pause preview'
+                                        : 'Play preview',
+                                    onPressed: _togglePlayback,
+                                    icon: Icon(
+                                      _isPlaying
+                                          ? Icons.pause
+                                          : Icons.play_arrow,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: _PreviewProgressBar(
+                                      duration: _duration,
+                                      position: _position,
+                                      isScrubbing: _isScrubbing,
+                                      scrubValueMs: _scrubValueMs,
+                                      onChangeStart: (value) {
+                                        setState(() {
+                                          _isScrubbing = true;
+                                          _scrubValueMs = value;
+                                        });
+                                      },
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _scrubValueMs = value;
+                                        });
+                                      },
+                                      onChangeEnd: (value) async {
+                                        final player = _player;
+                                        setState(() {
+                                          _isScrubbing = false;
+                                          _scrubValueMs = value;
+                                        });
+                                        if (player != null) {
+                                          await player.seek(
+                                            Duration(
+                                              milliseconds: value.round(),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: Text(
+                                  '${_formatPosition(_isScrubbing ? Duration(milliseconds: _scrubValueMs.round()) : _position)} / ${_formatPosition(_duration)}',
+                                  style: Theme.of(context).textTheme.labelSmall
+                                      ?.copyWith(color: Colors.white70),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              : Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    if (thumbnailUrl != null)
+                      StashImage(
+                        key: ValueKey(
+                          'scene_preview_thumbnail_${widget.scene.id}',
+                        ),
+                        imageUrl: thumbnailUrl,
+                        fit: BoxFit.cover,
+                      )
+                    else
+                      const Center(
+                        child: Icon(
+                          Icons.movie_outlined,
+                          color: Colors.white54,
+                          size: 40,
+                        ),
+                      ),
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.28),
+                      ),
+                    ),
+                    Center(
+                      child: FilledButton.icon(
+                        key: ValueKey(
+                          'scene_preview_activate_${widget.scene.id}',
+                        ),
+                        onPressed: _streamUrl == null
+                            ? null
+                            : widget.onActivate,
+                        icon: const Icon(Icons.play_arrow),
+                        label: const Text('Preview'),
+                      ),
+                    ),
+                    if (_error != null && _error!.isNotEmpty)
+                      Positioned(
+                        left: 8,
+                        right: 8,
+                        bottom: 8,
+                        child: Text(
+                          _error!,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(color: Colors.white70),
+                        ),
+                      ),
+                  ],
+                ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PreviewProgressBar extends StatelessWidget {
+  const _PreviewProgressBar({
+    required this.duration,
+    required this.position,
+    required this.isScrubbing,
+    required this.scrubValueMs,
+    required this.onChangeStart,
+    required this.onChanged,
+    required this.onChangeEnd,
+  });
+
+  final Duration duration;
+  final Duration position;
+  final bool isScrubbing;
+  final double scrubValueMs;
+  final ValueChanged<double> onChangeStart;
+  final ValueChanged<double> onChanged;
+  final ValueChanged<double> onChangeEnd;
+
+  @override
+  Widget build(BuildContext context) {
+    final maxMs = duration.inMilliseconds <= 0
+        ? 1.0
+        : duration.inMilliseconds.toDouble();
+    final value =
+        (isScrubbing
+                ? scrubValueMs.clamp(0, maxMs)
+                : position.inMilliseconds.toDouble().clamp(0, maxMs))
+            .toDouble();
+    return SliderTheme(
+      data: SliderTheme.of(context).copyWith(
+        trackHeight: 3,
+        thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5),
+        overlayShape: const RoundSliderOverlayShape(overlayRadius: 10),
+        inactiveTrackColor: Colors.white24,
+        activeTrackColor: Colors.white,
+        thumbColor: Colors.white,
+      ),
+      child: Slider(
+        min: 0,
+        max: maxMs,
+        value: value,
+        onChangeStart: onChangeStart,
+        onChanged: onChanged,
+        onChangeEnd: onChangeEnd,
+      ),
+    );
+  }
+}
+
+String _formatPosition(Duration value) {
+  final totalSeconds = value.inSeconds;
+  final hours = totalSeconds ~/ 3600;
+  final minutes = (totalSeconds % 3600) ~/ 60;
+  final seconds = totalSeconds % 60;
+  if (hours > 0) {
+    return '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+  return '$minutes:${seconds.toString().padLeft(2, '0')}';
 }
