@@ -163,6 +163,76 @@ void main() {
     expect(repo.savedScrapedScenes.single.scraped.title, 'Scraped A');
   });
 
+  testWidgets('SceneTaggerPage opens scene details from tools route', (
+    tester,
+  ) async {
+    final repo = MockSceneRepository()
+      ..setData([toolTaggerScene(id: 'scene-a', title: 'Local A')]);
+
+    final router = GoRouter(
+      initialLocation: '/tools/scene-tagger',
+      routes: [
+        GoRoute(
+          path: '/tools',
+          builder: (context, state) => const ToolsPage(),
+          routes: [
+            GoRoute(
+              path: 'scene-tagger',
+              builder: (context, state) => const SceneTaggerPage(),
+            ),
+          ],
+        ),
+        GoRoute(
+          path: '/scenes',
+          builder: (context, state) =>
+              const Scaffold(body: Text('Scene list target')),
+        ),
+        GoRoute(
+          path: '/scene/:id',
+          builder: (context, state) => Scaffold(
+            body: Text('Scene details ${state.pathParameters['id']}'),
+          ),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          sceneRepositoryProvider.overrideWithValue(repo),
+          stashBoxEndpointsProvider.overrideWith(
+            (ref) async => [
+              StashBoxEndpoint(
+                name: 'Primary Box',
+                endpoint: 'https://box.test/graphql',
+              ),
+            ],
+          ),
+        ],
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: AppTheme.lightTheme,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final openButton = find.byIcon(Icons.open_in_new);
+    await tester.ensureVisible(openButton);
+    final iconButton = tester.widget<IconButton>(
+      find.ancestor(of: openButton, matching: find.byType(IconButton)),
+    );
+    iconButton.onPressed!();
+    await tester.pumpAndSettle();
+
+    expect(router.routeInformationProvider.value.uri.path, '/scene/scene-a');
+    expect(find.text('Scene details scene-a'), findsOneWidget);
+    expect(find.text('Scene list target'), findsNothing);
+  });
+
   testWidgets(
     'SceneTaggerPage random unorganized mode shows only matched scenes',
     (tester) async {

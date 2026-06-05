@@ -365,7 +365,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                   _TaggerSceneCard(
                     scene: scene,
                     result: _results[scene.id],
-                    onOpen: () => context.push('/scenes/scene/${scene.id}'),
+                    onOpen: () => context.go('/scene/${scene.id}'),
                     onApply: (scraped) => _applyScrapedScene(scene, scraped),
                   ),
             ],
