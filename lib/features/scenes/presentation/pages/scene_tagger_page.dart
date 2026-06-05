@@ -30,22 +30,15 @@ class SceneTaggerPage extends ConsumerStatefulWidget {
 }
 
 class _TaggerResult {
-  const _TaggerResult._({this.matches, this.error, this.appliedMatchIndex});
+  const _TaggerResult._({this.matches, this.error});
 
   const _TaggerResult.matches(List<ScrapedScene> matches)
     : this._(matches: matches);
 
   const _TaggerResult.error(String error) : this._(error: error);
 
-  _TaggerResult copyWithApplied(int appliedMatchIndex) => _TaggerResult._(
-    matches: matches,
-    error: error,
-    appliedMatchIndex: appliedMatchIndex,
-  );
-
   final List<ScrapedScene>? matches;
   final String? error;
-  final int? appliedMatchIndex;
 }
 
 enum _TaggerMode {
@@ -292,6 +285,20 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
     }
   }
 
+  void _removeSceneFromResults(String sceneId) {
+    setState(() {
+      _scenes = _scenes
+          .where((scene) => scene.id != sceneId)
+          .toList(growable: false);
+      _results.remove(sceneId);
+      _selectedMatchIndexes.remove(sceneId);
+      _expandedSceneIds.remove(sceneId);
+      if (_activePreviewSceneId == sceneId) {
+        _activePreviewSceneId = null;
+      }
+    });
+  }
+
   int _selectedMatchIndex(String sceneId, List<ScrapedScene>? matches) {
     final available = matches?.length ?? 0;
     if (available <= 1) {
@@ -324,11 +331,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
             studioId: scraped.studio?.storedId ?? scraped.studioId,
           );
       if (!mounted) return;
-      setState(() {
-        _results[scene.id] =
-            _results[scene.id]?.copyWithApplied(selectedIndex) ??
-            const _TaggerResult.matches([]);
-      });
+      _removeSceneFromResults(scene.id);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Saved ${scene.title}')));
@@ -482,6 +485,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
           isPreviewActive: _activePreviewSceneId == scene.id,
           onOpen: () => context.go('/scene/${scene.id}'),
           onApply: () => _applySelectedScrapedScene(scene),
+          onSkip: () => _removeSceneFromResults(scene.id),
           onSelectMatch: (selectedIndex) {
             setState(() {
               _selectedMatchIndexes[scene.id] = selectedIndex;
@@ -723,6 +727,7 @@ class _TaggerSceneCard extends StatelessWidget {
     required this.isPreviewActive,
     required this.onOpen,
     required this.onApply,
+    required this.onSkip,
     required this.onSelectMatch,
     required this.onToggleExpanded,
     required this.onPreviewActivate,
@@ -735,6 +740,7 @@ class _TaggerSceneCard extends StatelessWidget {
   final bool isPreviewActive;
   final VoidCallback onOpen;
   final VoidCallback onApply;
+  final VoidCallback onSkip;
   final ValueChanged<int> onSelectMatch;
   final VoidCallback onToggleExpanded;
   final VoidCallback onPreviewActivate;
@@ -747,7 +753,6 @@ class _TaggerSceneCard extends StatelessWidget {
         ? selectedMatchIndex.clamp(0, matches.length - 1)
         : 0;
     final scraped = hasMatches ? matches[safeSelectedIndex] : null;
-    final isSelectedApplied = result?.appliedMatchIndex == safeSelectedIndex;
     final isWide = MediaQuery.sizeOf(context).width >= 720;
     final comparison = isWide
         ? Row(
@@ -766,9 +771,7 @@ class _TaggerSceneCard extends StatelessWidget {
                   sceneId: scene.id,
                   scraped: scraped,
                   error: result?.error,
-                  title: isSelectedApplied
-                      ? 'Scraped metadata - applied'
-                      : 'Scraped metadata',
+                  title: 'Scraped metadata',
                 ),
               ),
             ],
@@ -786,9 +789,7 @@ class _TaggerSceneCard extends StatelessWidget {
                 sceneId: scene.id,
                 scraped: scraped,
                 error: result?.error,
-                title: isSelectedApplied
-                    ? 'Scraped metadata - applied'
-                    : 'Scraped metadata',
+                title: 'Scraped metadata',
               ),
             ],
           );
@@ -841,7 +842,6 @@ class _TaggerSceneCard extends StatelessWidget {
                   total: matches.length,
                   scraped: matches[index],
                   selected: index == safeSelectedIndex,
-                  applied: result?.appliedMatchIndex == index,
                   onSelect: () => onSelectMatch(index),
                 ),
                 if (index < matches.length - 1) const SizedBox(height: 8),
@@ -852,12 +852,10 @@ class _TaggerSceneCard extends StatelessWidget {
               alignment: WrapAlignment.end,
               spacing: 8,
               children: [
-                TextButton(onPressed: () {}, child: const Text('Skip')),
+                TextButton(onPressed: onSkip, child: const Text('Skip')),
                 FilledButton(
-                  onPressed: scraped == null || isSelectedApplied
-                      ? null
-                      : onApply,
-                  child: Text(isSelectedApplied ? 'Applied' : 'Apply'),
+                  onPressed: scraped == null ? null : onApply,
+                  child: const Text('Apply'),
                 ),
               ],
             ),
@@ -967,7 +965,6 @@ class _ExpandedScrapedMatchCard extends StatelessWidget {
     required this.total,
     required this.scraped,
     required this.selected,
-    required this.applied,
     required this.onSelect,
   });
 
@@ -976,13 +973,12 @@ class _ExpandedScrapedMatchCard extends StatelessWidget {
   final int total;
   final ScrapedScene scraped;
   final bool selected;
-  final bool applied;
   final VoidCallback onSelect;
 
   @override
   Widget build(BuildContext context) {
     return _MetadataPanel(
-      title: 'Result ${index + 1} of $total${applied ? ' - applied' : ''}',
+      title: 'Result ${index + 1} of $total',
       headerTrailing: selected
           ? const Chip(label: Text('Selected'))
           : OutlinedButton(

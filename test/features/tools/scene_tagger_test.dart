@@ -358,7 +358,7 @@ void main() {
   });
 
   testWidgets(
-    'SceneTaggerPage applies the selected scraped result and shows expanded metadata',
+    'SceneTaggerPage applies the selected scraped result, shows cover image, and removes the item',
     (tester) async {
       final repo = MockSceneRepository()
         ..setData([toolTaggerScene(id: 'scene-a', title: 'Local A')])
@@ -434,9 +434,59 @@ void main() {
 
       expect(repo.savedScrapedScenes, hasLength(1));
       expect(repo.savedScrapedScenes.single.scraped.title, 'Scraped B');
-      expect(find.text('Applied'), findsOneWidget);
+      expect(find.text('Local A'), findsNothing);
+      expect(
+        find.byKey(const ValueKey('selected_scraped_image_scene-a')),
+        findsNothing,
+      );
     },
   );
+
+  testWidgets('SceneTaggerPage skip removes the item from the list', (
+    tester,
+  ) async {
+    final repo = MockSceneRepository()
+      ..setData([toolTaggerScene(id: 'scene-a', title: 'Local A')])
+      ..scrapedScenesBySceneId['scene-a'] = [
+        const ScrapedScene(
+          title: 'Scraped A',
+          image: 'https://images.test/a.jpg',
+        ),
+      ];
+
+    await _pumpSceneTagger(
+      tester,
+      prefs: prefs,
+      repo: repo,
+      stashBoxes: [
+        StashBoxEndpoint(
+          name: 'Primary Box',
+          endpoint: 'https://box.test/graphql',
+        ),
+      ],
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Start tagging'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.text('Configuration'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
+
+    expect(find.text('Local A'), findsWidgets);
+    expect(
+      find.byKey(const ValueKey('selected_scraped_image_scene-a')),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.text('Skip'));
+    await tester.pump();
+
+    expect(find.text('Local A'), findsNothing);
+    expect(find.text('0 scenes on this page'), findsOneWidget);
+    expect(repo.savedScrapedScenes, isEmpty);
+  });
 
   testWidgets('SceneTaggerPage preview starts as a thumbnail-first control', (
     tester,
