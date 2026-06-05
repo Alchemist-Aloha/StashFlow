@@ -419,6 +419,7 @@ class GraphQLSceneRepository implements SceneRepository {
   }) async {
     final result = await client.query$ScrapeSingleScene(
       Options$Query$ScrapeSingleScene(
+        fetchPolicy: FetchPolicy.noCache,
         variables: Variables$Query$ScrapeSingleScene(
           source: Input$ScraperSourceInput(
             scraper_id: scraperId,
@@ -434,13 +435,17 @@ class GraphQLSceneRepository implements SceneRepository {
     final List<Query$ScrapeSingleScene$scrapeSingleScene> raw =
         result.parsedData?.scrapeSingleScene ?? [];
 
-    return raw.map((e) => ScrapedScene.fromJson(e.toJson())).toList();
+    return raw
+        .map((e) => ScrapedScene.fromJson(e.toJson()))
+        .map(_stripScrapedImages)
+        .toList();
   }
 
   @override
   Future<ScrapedScene?> scrapeSceneURL(String url) async {
     final result = await client.query$ScrapeSceneURL(
       Options$Query$ScrapeSceneURL(
+        fetchPolicy: FetchPolicy.noCache,
         variables: Variables$Query$ScrapeSceneURL(url: url),
       ),
     );
@@ -448,7 +453,10 @@ class GraphQLSceneRepository implements SceneRepository {
     BaseRepository.validateResult(result);
 
     final raw = result.parsedData?.scrapeSceneURL;
-    return raw != null ? ScrapedScene.fromJson(raw.toJson()) : null;
+    if (raw == null) return null;
+    return _stripScrapedImages(
+      ScrapedScene.fromJson(raw.toJson()),
+    );
   }
 
   @override
@@ -654,6 +662,20 @@ class GraphQLSceneRepository implements SceneRepository {
       duration: file.duration,
       videoCodec: file.video_codec,
       modTime: DateTime.tryParse(file.mod_time),
+    );
+  }
+
+  /// Strip base64-encoded image data from scraped entities to avoid
+  /// caching large binary payloads in the Hive GraphQL cache.
+  /// Each scraped scene can carry 200–400 KB of image data that is never
+  /// persisted to the local DB and only useful during the current session.
+  ScrapedScene _stripScrapedImages(ScrapedScene scene) {
+    return scene.copyWith(
+      image: null,
+      studio: scene.studio?.copyWith(image: null),
+      performers: scene.performers
+          .map((p) => p.copyWith(image: null, images: const []))
+          .toList(),
     );
   }
 
