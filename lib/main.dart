@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
@@ -5,6 +7,7 @@ import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'core/data/cache/app_cache_service.dart';
 import 'features/navigation/presentation/router.dart';
 import 'core/data/preferences/secure_storage_provider.dart';
 import 'core/data/preferences/shared_preferences_provider.dart';
@@ -126,6 +129,8 @@ Future<void> main() async {
       return false;
     };
 
+    unawaited(_enforceStartupCacheLimits(sharedPreferences));
+
     runApp(
       ProviderScope(
         overrides: [
@@ -145,6 +150,29 @@ Future<void> main() async {
   } catch (error, stackTrace) {
     AppLogStore.instance.add('$error\n$stackTrace', source: 'startup_error');
     runApp(StartupErrorApp(error: error, stackTrace: stackTrace));
+  }
+}
+
+Future<void> _enforceStartupCacheLimits(SharedPreferences prefs) async {
+  final imageLimitMb = prefs.getInt('max_image_cache_size_mb') ?? 500;
+  final videoLimitMb = prefs.getInt('max_video_cache_size_mb') ?? 1024;
+
+  debugPrint(
+    'Startup: enforcing cache limits image=${imageLimitMb}MB '
+    'video=${videoLimitMb}MB',
+  );
+
+  try {
+    final service = AppCacheService();
+    await service.enforceImageCacheLimit(imageLimitMb);
+    await service.enforceVideoCacheLimit(videoLimitMb);
+    debugPrint('Startup: cache limit enforcement completed');
+  } catch (error, stackTrace) {
+    debugPrint('Startup: cache limit enforcement failed: $error');
+    AppLogStore.instance.add(
+      '$error\n$stackTrace',
+      source: 'cache_limit_enforcement',
+    );
   }
 }
 
