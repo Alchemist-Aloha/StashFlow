@@ -173,11 +173,22 @@ void main() {
             toolTaggerScene(id: 'random-miss', title: 'Random Miss'),
             toolTaggerScene(id: 'random-hit', title: 'Random Hit'),
           ],
+          [toolTaggerScene(id: 'random-hit-2', title: 'Random Hit 2')],
+          <Scene>[],
         ])
         ..scrapedScenesBySceneId['random-hit'] = [
           const ScrapedScene(
             title: 'Matched Random Scene',
             studio: ScrapedStudio(name: 'Matched Studio', storedId: 'studio-1'),
+          ),
+        ]
+        ..scrapedScenesBySceneId['random-hit-2'] = [
+          const ScrapedScene(
+            title: 'Matched Random Scene 2',
+            studio: ScrapedStudio(
+              name: 'Matched Studio 2',
+              storedId: 'studio-2',
+            ),
           ),
         ];
 
@@ -205,8 +216,9 @@ void main() {
       expect(repo.scrapeSceneCalls.map((call) => call.sceneId), [
         'random-miss',
         'random-hit',
+        'random-hit-2',
       ]);
-      expect(repo.findSceneCalls.skip(1).map((call) => call.page), [1]);
+      expect(repo.findSceneCalls.skip(1).map((call) => call.page), [1, 2, 3]);
       expect(repo.findSceneCalls.skip(1).map((call) => call.perPage).toSet(), {
         25,
       });
@@ -223,6 +235,8 @@ void main() {
       expect(find.text('Random Miss'), findsNothing);
       expect(find.text('Random Hit'), findsWidgets);
       expect(find.text('Matched Random Scene'), findsOneWidget);
+      expect(find.text('Random Hit 2'), findsWidgets);
+      expect(find.text('Matched Random Scene 2'), findsOneWidget);
       expect(find.text('No match found'), findsNothing);
     },
   );
