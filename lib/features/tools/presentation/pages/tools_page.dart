@@ -17,13 +17,13 @@ class ToolsPage extends StatelessWidget {
               title: Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton(
-                  onPressed: () => context.go('/tools/scene-deduplication'),
+                  onPressed: () => context.push('/tools/scene-deduplication'),
                   child: const Text('Scene Deduplication'),
                 ),
               ),
               subtitle: const Text('Find and manage duplicate scenes'),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.go('/tools/scene-deduplication'),
+              onTap: () => context.push('/tools/scene-deduplication'),
             ),
           ),
           Card(
@@ -32,13 +32,13 @@ class ToolsPage extends StatelessWidget {
               title: Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton(
-                  onPressed: () => context.go('/tools/scene-tagger'),
+                  onPressed: () => context.push('/tools/scene-tagger'),
                   child: const Text('Scene Tagger'),
                 ),
               ),
               subtitle: const Text('Scrape current scene pages with Stash-box'),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.go('/tools/scene-tagger'),
+              onTap: () => context.push('/tools/scene-tagger'),
             ),
           ),
         ],

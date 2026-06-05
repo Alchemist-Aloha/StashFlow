@@ -64,6 +64,19 @@ class MockSceneRepository extends MockRepositoryState<Scene>
   String? lastFindScenesSort;
   bool? lastFindScenesDescending;
   SceneFilter? lastFindScenesSceneFilter;
+  final List<
+    ({
+      int? page,
+      int? perPage,
+      String? filter,
+      String? sort,
+      bool descending,
+      bool? organized,
+      SceneFilter? sceneFilter,
+    })
+  >
+  findSceneCalls = [];
+  final List<List<Scene>> findScenesResponses = [];
   final List<({String? sceneId, String? stashBoxEndpoint, String? scraperId})>
   scrapeSceneCalls = [];
   final Map<String, List<ScrapedScene>> scrapedScenesBySceneId = {};
@@ -100,6 +113,18 @@ class MockSceneRepository extends MockRepositoryState<Scene>
     lastFindScenesSort = sort;
     lastFindScenesDescending = descending;
     lastFindScenesSceneFilter = sceneFilter;
+    findSceneCalls.add((
+      page: page,
+      perPage: perPage,
+      filter: filter,
+      sort: sort,
+      descending: descending,
+      organized: organized,
+      sceneFilter: sceneFilter,
+    ));
+    if (findScenesResponses.isNotEmpty) {
+      return findScenesResponses.removeAt(0);
+    }
     return data;
   }
 

@@ -128,6 +128,69 @@ void main() {
     expect(repo.savedScrapedScenes.single.sceneId, 'scene-a');
     expect(repo.savedScrapedScenes.single.scraped.title, 'Scraped A');
   });
+
+  testWidgets(
+    'SceneTaggerPage random unorganized mode shows only matched scenes',
+    (tester) async {
+      final repo = MockSceneRepository()
+        ..findScenesResponses.addAll([
+          <Scene>[],
+          [toolTaggerScene(id: 'random-miss', title: 'Random Miss')],
+          [toolTaggerScene(id: 'random-hit', title: 'Random Hit')],
+          <Scene>[],
+        ])
+        ..scrapedScenesBySceneId['random-hit'] = [
+          const ScrapedScene(
+            title: 'Matched Random Scene',
+            studio: ScrapedStudio(name: 'Matched Studio', storedId: 'studio-1'),
+          ),
+        ];
+
+      await _pumpSceneTagger(
+        tester,
+        prefs: prefs,
+        repo: repo,
+        stashBoxes: [
+          StashBoxEndpoint(
+            name: 'Primary Box',
+            endpoint: 'https://box.test/graphql',
+          ),
+        ],
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Current page').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Random unorganized').last);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Start tagging'));
+      await tester.pumpAndSettle();
+
+      expect(repo.scrapeSceneCalls.map((call) => call.sceneId), [
+        'random-miss',
+        'random-hit',
+      ]);
+      expect(repo.findSceneCalls.skip(1).map((call) => call.page), [1, 2, 3]);
+      expect(repo.findSceneCalls.skip(1).map((call) => call.perPage).toSet(), {
+        1,
+      });
+      expect(
+        repo.findSceneCalls.skip(1).map((call) => call.organized).toSet(),
+        {false},
+      );
+      expect(
+        repo.findSceneCalls
+            .skip(1)
+            .every((call) => call.sort?.startsWith('random_') ?? false),
+        isTrue,
+      );
+      expect(find.text('Random Miss'), findsNothing);
+      expect(find.text('Random Hit'), findsWidgets);
+      expect(find.text('Matched Random Scene'), findsOneWidget);
+      expect(find.text('No match found'), findsNothing);
+    },
+  );
 }
 
 Future<void> _pumpSceneTagger(

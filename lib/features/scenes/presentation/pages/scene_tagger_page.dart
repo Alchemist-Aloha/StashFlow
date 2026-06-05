@@ -35,6 +35,16 @@ class _TaggerResult {
   final bool saved;
 }
 
+enum _TaggerMode {
+  currentPage('current_page', 'Current page'),
+  randomUnorganized('random_unorganized', 'Random unorganized');
+
+  const _TaggerMode(this.value, this.label);
+
+  final String value;
+  final String label;
+}
+
 class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
   static const _pageSizeOptions = [10, 25, 50, 100];
   static const _sortOptions = <String, String>{
@@ -50,6 +60,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
   late Future<List<SceneSavedFilterConfig>> _presetsFuture;
   List<Scene> _scenes = [];
   final Map<String, _TaggerResult> _results = {};
+  _TaggerMode _mode = _TaggerMode.currentPage;
   int _pageSize = 25;
   String? _sort = 'date';
   bool _descending = true;
@@ -118,7 +129,35 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
     }
   }
 
+  void _clearRandomModeList() {
+    setState(() {
+      _scenes = [];
+      _results.clear();
+      _scrapedCount = 0;
+      _loadError = null;
+    });
+  }
+
+  void _reloadForMode() {
+    if (_mode == _TaggerMode.currentPage) {
+      _loadScenes();
+    } else {
+      _clearRandomModeList();
+    }
+  }
+
   Future<void> _startTagging(String stashBoxEndpoint) async {
+    switch (_mode) {
+      case _TaggerMode.currentPage:
+        await _startCurrentPageTagging(stashBoxEndpoint);
+        break;
+      case _TaggerMode.randomUnorganized:
+        await _startRandomUnorganizedTagging(stashBoxEndpoint);
+        break;
+    }
+  }
+
+  Future<void> _startCurrentPageTagging(String stashBoxEndpoint) async {
     if (_scraping || _scenes.isEmpty) return;
     setState(() {
       _scraping = true;
@@ -149,6 +188,61 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
       }
     }
 
+    _finishScraping();
+  }
+
+  Future<void> _startRandomUnorganizedTagging(String stashBoxEndpoint) async {
+    if (_scraping) return;
+    setState(() {
+      _scraping = true;
+      _stopRequested = false;
+      _scrapedCount = 0;
+      _results.clear();
+      _scenes = [];
+    });
+
+    final repository = ref.read(sceneRepositoryProvider);
+    final randomSort = 'random_${DateTime.now().microsecondsSinceEpoch}';
+    var page = 1;
+
+    while (!_stopRequested) {
+      final scenes = await repository.findScenes(
+        page: page,
+        perPage: 1,
+        sort: randomSort,
+        descending: true,
+        organized: false,
+        sceneFilter: SceneFilter.empty(),
+      );
+      if (!mounted || _stopRequested || scenes.isEmpty) break;
+
+      final scene = scenes.first;
+      try {
+        final matches = await repository.scrapeSingleScene(
+          stashBoxEndpoint: stashBoxEndpoint,
+          sceneId: scene.id,
+        );
+        if (!mounted) return;
+        setState(() {
+          _scrapedCount += 1;
+          if (matches.isNotEmpty) {
+            _scenes = [..._scenes, scene];
+            _results[scene.id] = _TaggerResult.matches(matches);
+          }
+        });
+      } catch (error) {
+        if (!mounted) return;
+        setState(() {
+          _scrapedCount += 1;
+        });
+      }
+      page += 1;
+    }
+
+    _finishScraping();
+  }
+
+  void _finishScraping() {
     if (mounted) {
       setState(() {
         _scraping = false;
@@ -205,7 +299,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
         _pageSize = preset.perPage!;
       }
     });
-    _loadScenes();
+    _reloadForMode();
   }
 
   Future<void> _openFilterPanel() async {
@@ -221,7 +315,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
       _filter = ref.read(sceneFilterStateProvider);
       _organized = ref.read(sceneOrganizedOnlyProvider);
     });
-    await _loadScenes();
+    _reloadForMode();
   }
 
   @override
@@ -242,12 +336,20 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
               const Center(child: CircularProgressIndicator())
             else ...[
               Text(
-                '${_scenes.length} scenes on this page',
+                _mode == _TaggerMode.randomUnorganized
+                    ? '$_scrapedCount checked • ${_scenes.length} matches'
+                    : '${_scenes.length} scenes on this page',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 12),
               if (_scenes.isEmpty)
-                const Center(child: Text('No scenes match this configuration.'))
+                Center(
+                  child: Text(
+                    _mode == _TaggerMode.randomUnorganized
+                        ? 'No matched scenes yet.'
+                        : 'No scenes match this configuration.',
+                  ),
+                )
               else
                 for (final scene in _scenes)
                   _TaggerSceneCard(
@@ -304,7 +406,37 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                     setState(() {
                       _pageSize = value;
                     });
-                    _loadScenes();
+                    _reloadForMode();
+                  },
+                ),
+                DropdownMenu<String>(
+                  width: compact ? 190 : 210,
+                  initialSelection: _mode.value,
+                  label: const Text('Mode'),
+                  dropdownMenuEntries: _TaggerMode.values
+                      .map(
+                        (mode) => DropdownMenuEntry(
+                          value: mode.value,
+                          label: mode.label,
+                        ),
+                      )
+                      .toList(growable: false),
+                  onSelected: (value) {
+                    final selected = _TaggerMode.values.firstWhere(
+                      (mode) => mode.value == value,
+                      orElse: () => _TaggerMode.currentPage,
+                    );
+                    setState(() {
+                      _mode = selected;
+                      _results.clear();
+                      _scrapedCount = 0;
+                      if (_mode == _TaggerMode.randomUnorganized) {
+                        _scenes = [];
+                      }
+                    });
+                    if (_mode == _TaggerMode.currentPage) {
+                      _loadScenes();
+                    }
                   },
                 ),
                 DropdownMenu<String>(
@@ -323,7 +455,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                     setState(() {
                       _sort = value;
                     });
-                    _loadScenes();
+                    _reloadForMode();
                   },
                 ),
                 SegmentedButton<bool>(
@@ -336,7 +468,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                     setState(() {
                       _descending = selection.first;
                     });
-                    _loadScenes();
+                    _reloadForMode();
                   },
                 ),
                 OutlinedButton.icon(
@@ -401,7 +533,12 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                       },
                     ),
                     FilledButton.icon(
-                      onPressed: endpoint == null || _scraping || _loadingScenes
+                      onPressed:
+                          endpoint == null ||
+                              _scraping ||
+                              _loadingScenes ||
+                              (_mode == _TaggerMode.currentPage &&
+                                  _scenes.isEmpty)
                           ? null
                           : () => _startTagging(endpoint),
                       icon: const Icon(Icons.sell),
@@ -417,7 +554,11 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                         icon: const Icon(Icons.stop),
                         label: const Text('Stop'),
                       ),
-                    Text('$_scrapedCount / ${_scenes.length}'),
+                    Text(
+                      _mode == _TaggerMode.randomUnorganized
+                          ? '$_scrapedCount checked'
+                          : '$_scrapedCount / ${_scenes.length}',
+                    ),
                   ],
                 );
               },
