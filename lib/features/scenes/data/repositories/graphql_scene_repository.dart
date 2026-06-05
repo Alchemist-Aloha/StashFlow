@@ -454,9 +454,7 @@ class GraphQLSceneRepository implements SceneRepository {
 
     final raw = result.parsedData?.scrapeSceneURL;
     if (raw == null) return null;
-    return _stripScrapedImages(
-      ScrapedScene.fromJson(raw.toJson()),
-    );
+    return _stripScrapedImages(ScrapedScene.fromJson(raw.toJson()));
   }
 
   @override
@@ -489,6 +487,7 @@ class GraphQLSceneRepository implements SceneRepository {
       title: scraped.title,
       details: scraped.details,
       date: scraped.date?.toIso8601String().split('T').first,
+      organized: true,
       urls: scraped.urls,
       studio_id: studioId ?? scraped.studioId ?? scraped.studio?.storedId,
       performer_ids: performerIds,

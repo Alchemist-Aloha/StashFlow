@@ -85,6 +85,7 @@ class MockSceneRepository extends MockRepositoryState<Scene>
       String sceneId,
       ScrapedScene scraped,
       bool mergeValues,
+      bool organized,
       List<String>? performerIds,
       List<String>? tagIds,
       String? studioId,
@@ -181,10 +182,15 @@ class MockSceneRepository extends MockRepositoryState<Scene>
       sceneId: sceneId,
       scraped: scraped,
       mergeValues: mergeValues,
+      organized: true,
       performerIds: performerIds,
       tagIds: tagIds,
       studioId: studioId,
     ));
+    data = [
+      for (final scene in data)
+        if (scene.id == sceneId) scene.copyWith(organized: true) else scene,
+    ];
   }
 
   @override

@@ -434,6 +434,11 @@ void main() {
 
       expect(repo.savedScrapedScenes, hasLength(1));
       expect(repo.savedScrapedScenes.single.scraped.title, 'Scraped B');
+      expect(repo.savedScrapedScenes.single.organized, isTrue);
+      expect(
+        repo.data.singleWhere((scene) => scene.id == 'scene-a').organized,
+        isTrue,
+      );
       expect(find.text('Local A'), findsNothing);
       expect(
         find.byKey(const ValueKey('selected_scraped_image_scene-a')),
