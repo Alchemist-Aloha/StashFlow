@@ -1379,7 +1379,7 @@ class _PreviewNativeControls extends StatelessWidget {
   }
 }
 
-class _ScrapedImagePreview extends StatelessWidget {
+class _ScrapedImagePreview extends StatefulWidget {
   const _ScrapedImagePreview({
     super.key,
     required this.image,
@@ -1390,23 +1390,51 @@ class _ScrapedImagePreview extends StatelessWidget {
   final double height;
 
   @override
+  State<_ScrapedImagePreview> createState() => _ScrapedImagePreviewState();
+}
+
+class _ScrapedImagePreviewState extends State<_ScrapedImagePreview> {
+  late String _trimmedImage;
+  Uint8List? _imageBytes;
+
+  @override
+  void initState() {
+    super.initState();
+    _updateCachedImage();
+  }
+
+  @override
+  void didUpdateWidget(covariant _ScrapedImagePreview oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.image != widget.image) {
+      _updateCachedImage();
+    }
+  }
+
+  void _updateCachedImage() {
+    _trimmedImage = widget.image.trim();
+    _imageBytes = _scrapedImageBytes(_trimmedImage);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final trimmed = image.trim();
-    final imageBytes = _scrapedImageBytes(trimmed);
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: SizedBox(
-        height: height,
-        width: double.infinity,
-        child: imageBytes != null
-            ? Image.memory(
-                excludeFromSemantics: true,
-                imageBytes,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    const _ScrapedImageFallback(),
-              )
-            : StashImage(imageUrl: trimmed, fit: BoxFit.cover),
+    return RepaintBoundary(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: SizedBox(
+          height: widget.height,
+          width: double.infinity,
+          child: _imageBytes != null
+              ? Image.memory(
+                  excludeFromSemantics: true,
+                  _imageBytes!,
+                  fit: BoxFit.cover,
+                  gaplessPlayback: true,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const _ScrapedImageFallback(),
+                )
+              : StashImage(imageUrl: _trimmedImage, fit: BoxFit.cover),
+        ),
       ),
     );
   }
