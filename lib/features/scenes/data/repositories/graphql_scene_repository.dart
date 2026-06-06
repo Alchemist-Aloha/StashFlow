@@ -12,6 +12,7 @@ import '../../domain/repositories/scene_repository.dart';
 import '../../domain/models/scraper.dart';
 import '../graphql/scenes.graphql.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
+import '../utils/scrape_normalizer.dart';
 
 class GraphQLSceneRepository implements SceneRepository {
   final GraphQLClient client;
@@ -482,6 +483,7 @@ class GraphQLSceneRepository implements SceneRepository {
     List<String>? tagIds,
     String? studioId,
   }) async {
+    final coverImage = normalizedSceneCoverImage(scraped.image);
     final input = Input$SceneUpdateInput(
       id: sceneId,
       title: scraped.title,
@@ -489,6 +491,7 @@ class GraphQLSceneRepository implements SceneRepository {
       date: scraped.date?.toIso8601String().split('T').first,
       organized: true,
       urls: scraped.urls,
+      cover_image: coverImage,
       studio_id: studioId ?? scraped.studioId ?? scraped.studio?.storedId,
       performer_ids: performerIds,
       tag_ids: tagIds,
@@ -664,16 +667,26 @@ class GraphQLSceneRepository implements SceneRepository {
     );
   }
 
-  /// Strip base64-encoded image data from scraped entities to avoid
+  /// Strip only embedded image payloads from scraped entities to avoid
   /// caching large binary payloads in the Hive GraphQL cache.
-  /// Each scraped scene can carry 200–400 KB of image data that is never
-  /// persisted to the local DB and only useful during the current session.
+  /// Remote image URLs are preserved so the UI can still show scraped covers.
   ScrapedScene _stripScrapedImages(ScrapedScene scene) {
     return scene.copyWith(
-      image: null,
-      studio: scene.studio?.copyWith(image: null),
+      image: isScrapedImageDataUrl(scene.image) ? null : scene.image,
+      studio: scene.studio?.copyWith(
+        image: isScrapedImageDataUrl(scene.studio?.image)
+            ? null
+            : scene.studio?.image,
+      ),
       performers: scene.performers
-          .map((p) => p.copyWith(image: null, images: const []))
+          .map(
+            (p) => p.copyWith(
+              image: isScrapedImageDataUrl(p.image) ? null : p.image,
+              images: p.images
+                  .where((image) => !isScrapedImageDataUrl(image))
+                  .toList(growable: false),
+            ),
+          )
           .toList(),
     );
   }

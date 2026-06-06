@@ -534,6 +534,46 @@ void main() {
     );
     expect(find.byTooltip('Pause preview'), findsNothing);
   });
+
+  testWidgets('SceneTaggerPage renders scraped data-url images', (
+    tester,
+  ) async {
+    final repo = MockSceneRepository()
+      ..setData([toolTaggerScene(id: 'scene-a', title: 'Local A')])
+      ..scrapedScenesBySceneId['scene-a'] = [
+        const ScrapedScene(
+          title: 'Scraped A',
+          image:
+              'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4//8/AwAI/AL+X9n6VQAAAABJRU5ErkJggg==',
+        ),
+      ];
+
+    await _pumpSceneTagger(
+      tester,
+      prefs: prefs,
+      repo: repo,
+      stashBoxes: [
+        StashBoxEndpoint(
+          name: 'Primary Box',
+          endpoint: 'https://box.test/graphql',
+        ),
+      ],
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Start tagging'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.text('Configuration'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
+
+    expect(
+      find.byKey(const ValueKey('selected_scraped_image_scene-a')),
+      findsOneWidget,
+    );
+    expect(find.byType(Image), findsWidgets);
+  });
 }
 
 Future<void> _pumpSceneTagger(

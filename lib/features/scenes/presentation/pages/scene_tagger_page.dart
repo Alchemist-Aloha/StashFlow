@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ import '../../../setup/presentation/providers/stashbox_provider.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../../domain/entities/scene_saved_filter_config.dart';
+import '../../data/utils/scrape_normalizer.dart';
 import '../providers/scene_list_provider.dart';
 import '../widgets/scene_filter_panel.dart';
 
@@ -932,17 +934,10 @@ class _ScrapedSceneSummary extends StatelessWidget {
       title: title,
       media: scraped!.image == null || scraped!.image!.trim().isEmpty
           ? null
-          : ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: SizedBox(
-                height: 180,
-                width: double.infinity,
-                child: StashImage(
-                  key: ValueKey('selected_scraped_image_$sceneId'),
-                  imageUrl: scraped!.image,
-                  fit: BoxFit.cover,
-                ),
-              ),
+          : _ScrapedImagePreview(
+              key: ValueKey('selected_scraped_image_$sceneId'),
+              image: scraped!.image!,
+              height: 180,
             ),
       rows: [
         if (scraped!.title != null) ('Title', scraped!.title!),
@@ -988,17 +983,10 @@ class _ExpandedScrapedMatchCard extends StatelessWidget {
             ),
       media: scraped.image == null || scraped.image!.trim().isEmpty
           ? null
-          : ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: SizedBox(
-                height: 140,
-                width: double.infinity,
-                child: StashImage(
-                  key: ValueKey('expanded_scraped_image_${sceneId}_$index'),
-                  imageUrl: scraped.image,
-                  fit: BoxFit.cover,
-                ),
-              ),
+          : _ScrapedImagePreview(
+              key: ValueKey('expanded_scraped_image_${sceneId}_$index'),
+              image: scraped.image!,
+              height: 140,
             ),
       rows: [
         if (scraped.title != null) ('Title', scraped.title!),
@@ -1546,4 +1534,49 @@ String _formatPosition(Duration value) {
     return '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
   return '$minutes:${seconds.toString().padLeft(2, '0')}';
+}
+
+class _ScrapedImagePreview extends StatelessWidget {
+  const _ScrapedImagePreview({
+    super.key,
+    required this.image,
+    required this.height,
+  });
+
+  final String image;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    final trimmed = image.trim();
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: SizedBox(
+        height: height,
+        width: double.infinity,
+        child: isScrapedImageDataUrl(trimmed)
+            ? Image.memory(
+                excludeFromSemantics: true,
+                base64Decode(trimmed.split(',').last),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    const _ScrapedImageFallback(),
+              )
+            : StashImage(imageUrl: trimmed, fit: BoxFit.cover),
+      ),
+    );
+  }
+}
+
+class _ScrapedImageFallback extends StatelessWidget {
+  const _ScrapedImageFallback();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return ColoredBox(
+      color: colors.surfaceContainerHighest,
+      child: Icon(Icons.broken_image_outlined, color: colors.onSurfaceVariant),
+    );
+  }
 }

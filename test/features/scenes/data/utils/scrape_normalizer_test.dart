@@ -37,10 +37,10 @@ void main() {
 
       final input = buildSceneUpdateInputFromScraped(scene);
 
-      expect(
-        input['urls'],
-        ['http://example.com/scene', 'https://ok.example/path'],
-      );
+      expect(input['urls'], [
+        'http://example.com/scene',
+        'https://ok.example/path',
+      ]);
     });
 
     test('adds data url prefix for raw image base64', () {
@@ -54,6 +54,12 @@ void main() {
       final scene = ScrapedScene(image: dataUrl);
       final input = buildSceneUpdateInputFromScraped(scene);
       expect(input['cover_image'], dataUrl);
+    });
+
+    test('does not map remote image urls to cover_image', () {
+      final scene = ScrapedScene(image: 'https://images.test/cover.jpg');
+      final input = buildSceneUpdateInputFromScraped(scene);
+      expect(input.containsKey('cover_image'), isFalse);
     });
 
     test('includes studio_id when present', () {
