@@ -1121,16 +1121,8 @@ class _ScenePreviewPlayer extends ConsumerStatefulWidget {
 class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
   Player? _player;
   VideoController? _controller;
-  StreamSubscription<bool>? _playingSubscription;
-  StreamSubscription<Duration>? _positionSubscription;
-  StreamSubscription<Duration>? _durationSubscription;
   StreamSubscription<Object>? _errorSubscription;
   bool _initializing = false;
-  bool _isPlaying = false;
-  bool _isScrubbing = false;
-  double _scrubValueMs = 0;
-  Duration _position = Duration.zero;
-  Duration _duration = Duration.zero;
   String? _error;
 
   String? get _thumbnailUrl {
@@ -1210,24 +1202,6 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
     _player = player;
     _controller = controller;
 
-    _playingSubscription = player.stream.playing.listen((playing) {
-      if (!mounted) return;
-      setState(() {
-        _isPlaying = playing;
-      });
-    });
-    _positionSubscription = player.stream.position.listen((position) {
-      if (!mounted) return;
-      setState(() {
-        _position = position;
-      });
-    });
-    _durationSubscription = player.stream.duration.listen((duration) {
-      if (!mounted) return;
-      setState(() {
-        _duration = duration;
-      });
-    });
     _errorSubscription = player.stream.error.listen((error) {
       if (!mounted) return;
       setState(() {
@@ -1270,13 +1244,7 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
   }
 
   Future<void> _disposePlayer() async {
-    await _playingSubscription?.cancel();
-    await _positionSubscription?.cancel();
-    await _durationSubscription?.cancel();
     await _errorSubscription?.cancel();
-    _playingSubscription = null;
-    _positionSubscription = null;
-    _durationSubscription = null;
     _errorSubscription = null;
 
     final player = _player;
@@ -1289,26 +1257,8 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
     if (!mounted) return;
     setState(() {
       _initializing = false;
-      _isPlaying = false;
-      _isScrubbing = false;
-      _scrubValueMs = 0;
-      _position = Duration.zero;
-      _duration = Duration.zero;
       _error = null;
     });
-  }
-
-  Future<void> _togglePlayback() async {
-    final player = _player;
-    if (player == null) {
-      widget.onActivate();
-      return;
-    }
-    if (_isPlaying) {
-      await player.pause();
-    } else {
-      await player.play();
-    }
   }
 
   @override
@@ -1327,7 +1277,9 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
               ? Stack(
                   fit: StackFit.expand,
                   children: [
-                    Video(controller: controller),
+                    _PreviewNativeControls(
+                      child: Video(controller: controller),
+                    ),
                     if (_initializing)
                       const Center(child: CircularProgressIndicator()),
                     if (_error != null && _error!.isNotEmpty)
@@ -1341,82 +1293,6 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
                           ),
                         ),
                       ),
-                    Positioned(
-                      left: 8,
-                      right: 8,
-                      bottom: 8,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.68),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Row(
-                                children: [
-                                  IconButton(
-                                    tooltip: _isPlaying
-                                        ? 'Pause preview'
-                                        : 'Play preview',
-                                    onPressed: _togglePlayback,
-                                    icon: Icon(
-                                      _isPlaying
-                                          ? Icons.pause
-                                          : Icons.play_arrow,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: _PreviewProgressBar(
-                                      duration: _duration,
-                                      position: _position,
-                                      isScrubbing: _isScrubbing,
-                                      scrubValueMs: _scrubValueMs,
-                                      onChangeStart: (value) {
-                                        setState(() {
-                                          _isScrubbing = true;
-                                          _scrubValueMs = value;
-                                        });
-                                      },
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _scrubValueMs = value;
-                                        });
-                                      },
-                                      onChangeEnd: (value) async {
-                                        final player = _player;
-                                        setState(() {
-                                          _isScrubbing = false;
-                                          _scrubValueMs = value;
-                                        });
-                                        if (player != null) {
-                                          await player.seek(
-                                            Duration(
-                                              milliseconds: value.round(),
-                                            ),
-                                          );
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: Text(
-                                  '${_formatPosition(_isScrubbing ? Duration(milliseconds: _scrubValueMs.round()) : _position)} / ${_formatPosition(_duration)}',
-                                  style: Theme.of(context).textTheme.labelSmall
-                                      ?.copyWith(color: Colors.white70),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
                 )
               : Stack(
@@ -1475,65 +1351,32 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
   }
 }
 
-class _PreviewProgressBar extends StatelessWidget {
-  const _PreviewProgressBar({
-    required this.duration,
-    required this.position,
-    required this.isScrubbing,
-    required this.scrubValueMs,
-    required this.onChangeStart,
-    required this.onChanged,
-    required this.onChangeEnd,
-  });
+class _PreviewNativeControls extends StatelessWidget {
+  const _PreviewNativeControls({required this.child});
 
-  final Duration duration;
-  final Duration position;
-  final bool isScrubbing;
-  final double scrubValueMs;
-  final ValueChanged<double> onChangeStart;
-  final ValueChanged<double> onChanged;
-  final ValueChanged<double> onChangeEnd;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    final maxMs = duration.inMilliseconds <= 0
-        ? 1.0
-        : duration.inMilliseconds.toDouble();
-    final value =
-        (isScrubbing
-                ? scrubValueMs.clamp(0, maxMs)
-                : position.inMilliseconds.toDouble().clamp(0, maxMs))
-            .toDouble();
-    return SliderTheme(
-      data: SliderTheme.of(context).copyWith(
-        trackHeight: 3,
-        thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5),
-        overlayShape: const RoundSliderOverlayShape(overlayRadius: 10),
-        inactiveTrackColor: Colors.white24,
-        activeTrackColor: Colors.white,
-        thumbColor: Colors.white,
-      ),
-      child: Slider(
-        min: 0,
-        max: maxMs,
-        value: value,
-        onChangeStart: onChangeStart,
-        onChanged: onChanged,
-        onChangeEnd: onChangeEnd,
+    const mobileControls = MaterialVideoControlsThemeData(
+      bottomButtonBarMargin: EdgeInsets.only(left: 16, right: 8, bottom: 56),
+      seekBarMargin: EdgeInsets.only(left: 16, right: 16, bottom: 56),
+    );
+    const desktopControls = MaterialDesktopVideoControlsThemeData(
+      bottomButtonBarMargin: EdgeInsets.fromLTRB(16, 0, 16, 12),
+      seekBarMargin: EdgeInsets.fromLTRB(16, 0, 16, 12),
+    );
+
+    return MaterialVideoControlsTheme(
+      normal: mobileControls,
+      fullscreen: mobileControls,
+      child: MaterialDesktopVideoControlsTheme(
+        normal: desktopControls,
+        fullscreen: desktopControls,
+        child: child,
       ),
     );
   }
-}
-
-String _formatPosition(Duration value) {
-  final totalSeconds = value.inSeconds;
-  final hours = totalSeconds ~/ 3600;
-  final minutes = (totalSeconds % 3600) ~/ 60;
-  final seconds = totalSeconds % 60;
-  if (hours > 0) {
-    return '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-  }
-  return '$minutes:${seconds.toString().padLeft(2, '0')}';
 }
 
 class _ScrapedImagePreview extends StatelessWidget {
