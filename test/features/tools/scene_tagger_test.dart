@@ -9,6 +9,7 @@ import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dar
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_studio.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_tag.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/presentation/widgets/stash_image.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_tagger_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
@@ -573,6 +574,59 @@ void main() {
       findsOneWidget,
     );
     expect(find.byType(Image), findsWidgets);
+  });
+
+  testWidgets('SceneTaggerPage renders raw base64 scraped images', (
+    tester,
+  ) async {
+    final repo = MockSceneRepository()
+      ..setData([toolTaggerScene(id: 'scene-a', title: 'Local A')])
+      ..scrapedScenesBySceneId['scene-a'] = [
+        const ScrapedScene(
+          title: 'Scraped A',
+          image:
+              'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4//8/AwAI/AL+X9n6VQAAAABJRU5ErkJggg==',
+        ),
+      ];
+
+    await _pumpSceneTagger(
+      tester,
+      prefs: prefs,
+      repo: repo,
+      stashBoxes: [
+        StashBoxEndpoint(
+          name: 'Primary Box',
+          endpoint: 'https://box.test/graphql',
+        ),
+      ],
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Start tagging'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.text('Configuration'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
+
+    expect(
+      find.byKey(const ValueKey('selected_scraped_image_scene-a')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('selected_scraped_image_scene-a')),
+        matching: find.byType(StashImage),
+      ),
+      findsNothing,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('selected_scraped_image_scene-a')),
+        matching: find.byType(Image),
+      ),
+      findsOneWidget,
+    );
   });
 }
 

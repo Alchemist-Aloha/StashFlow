@@ -34,6 +34,12 @@ bool isScrapedImageRemoteUrl(String? image) {
   return parsed.scheme == 'http' || parsed.scheme == 'https';
 }
 
+bool isScrapedImageEmbeddedData(String? image) {
+  final trimmed = image?.trim() ?? '';
+  if (trimmed.isEmpty) return false;
+  return isScrapedImageDataUrl(trimmed) || !isScrapedImageRemoteUrl(trimmed);
+}
+
 String? normalizedSceneCoverImage(String? image) {
   final trimmed = image?.trim();
   if (trimmed == null || trimmed.isEmpty) return null;

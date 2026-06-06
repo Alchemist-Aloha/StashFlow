@@ -669,21 +669,22 @@ class GraphQLSceneRepository implements SceneRepository {
 
   /// Strip only embedded image payloads from scraped entities to avoid
   /// caching large binary payloads in the Hive GraphQL cache.
-  /// Remote image URLs are preserved so the UI can still show scraped covers.
+  /// The scene cover is preserved because scrape queries use noCache and the
+  /// tagger needs that image for the current review result.
   ScrapedScene _stripScrapedImages(ScrapedScene scene) {
     return scene.copyWith(
-      image: isScrapedImageDataUrl(scene.image) ? null : scene.image,
+      image: scene.image,
       studio: scene.studio?.copyWith(
-        image: isScrapedImageDataUrl(scene.studio?.image)
+        image: isScrapedImageEmbeddedData(scene.studio?.image)
             ? null
             : scene.studio?.image,
       ),
       performers: scene.performers
           .map(
             (p) => p.copyWith(
-              image: isScrapedImageDataUrl(p.image) ? null : p.image,
+              image: isScrapedImageEmbeddedData(p.image) ? null : p.image,
               images: p.images
-                  .where((image) => !isScrapedImageDataUrl(image))
+                  .where((image) => !isScrapedImageEmbeddedData(image))
                   .toList(growable: false),
             ),
           )

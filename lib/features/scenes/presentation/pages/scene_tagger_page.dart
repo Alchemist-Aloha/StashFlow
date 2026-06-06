@@ -1549,15 +1549,16 @@ class _ScrapedImagePreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final trimmed = image.trim();
+    final imageBytes = _scrapedImageBytes(trimmed);
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: SizedBox(
         height: height,
         width: double.infinity,
-        child: isScrapedImageDataUrl(trimmed)
+        child: imageBytes != null
             ? Image.memory(
                 excludeFromSemantics: true,
-                base64Decode(trimmed.split(',').last),
+                imageBytes,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) =>
                     const _ScrapedImageFallback(),
@@ -1565,6 +1566,16 @@ class _ScrapedImagePreview extends StatelessWidget {
             : StashImage(imageUrl: trimmed, fit: BoxFit.cover),
       ),
     );
+  }
+}
+
+Uint8List? _scrapedImageBytes(String image) {
+  final coverImage = normalizedSceneCoverImage(image);
+  if (coverImage == null) return null;
+  try {
+    return base64Decode(coverImage.split(',').last);
+  } on FormatException {
+    return null;
   }
 }
 
