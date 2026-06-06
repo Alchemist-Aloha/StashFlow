@@ -12,3 +12,7 @@
 ## 2024-05-24 - Accessibility on MiniPlayer
 **Learning:** We can swap a pure `GestureDetector` that provides no visual feedback with a semantic Material `InkWell` to provide keyboard navigation, touch feedback, and accessibility labels on floating elements.
 **Action:** When creating purely interactive elements that trigger navigation, wrap them in a `Material` widget (if needed) and use `InkWell` combined with `Semantics(button: true, label: ...)` rather than just wrapping the subtree in `GestureDetector`.
+
+## 2026-06-03 - Localized Tooltips
+**Learning:** Found several floating action buttons and icon buttons using hardcoded English strings ('Saved filters') for their tooltips. Hardcoded strings harm accessibility for non-English screen reader users.
+**Action:** When working on tooltips, always grep for hardcoded strings and map them to `context.l10n` keys to ensure translations apply properly.
