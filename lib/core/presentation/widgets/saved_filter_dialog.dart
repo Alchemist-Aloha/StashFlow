@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/saved_filter_config.dart';
 import '../../utils/l10n_extensions.dart';
 import '../theme/app_theme.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 
 class SavedFilterDialog<T extends SavedFilterConfig<dynamic>>
     extends StatefulWidget {
@@ -70,7 +71,11 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save filter: $error')),
+          SnackBar(
+            content: Text(
+              context.l10n.saved_filter_failed_save(error.toString()),
+            ),
+          ),
         );
       }
     } finally {
@@ -120,14 +125,20 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
         _savedFiltersFuture = widget.loadPresets();
       });
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Preset deleted')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(context.l10n.saved_filter_preset_deleted),
+          ),
+        );
       }
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to delete preset: $error')),
+          SnackBar(
+            content: Text(
+              context.l10n.saved_filter_failed_delete(error.toString()),
+            ),
+          ),
         );
       }
     } finally {
@@ -239,8 +250,8 @@ class _DeletePresetConfirmDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Delete Preset'),
-      content: Text('Delete "$name"? This action cannot be undone.'),
+      title: Text(context.l10n.saved_filter_delete_preset),
+      content: Text(context.l10n.saved_filter_delete_confirm(name)),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
@@ -248,7 +259,7 @@ class _DeletePresetConfirmDialog extends StatelessWidget {
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(true),
-          child: const Text('Delete'),
+          child: Text(context.l10n.common_delete),
         ),
       ],
     );
@@ -280,7 +291,7 @@ class _SavePresetNameDialogState extends State<_SavePresetNameDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Save Preset'),
+      title: Text(context.l10n.saved_filter_save_preset),
       content: TextField(
         controller: _controller,
         autofocus: true,
@@ -343,16 +354,18 @@ class _ActiveSettingsSummary extends StatelessWidget {
               children: [
                 Chip(
                   visualDensity: VisualDensity.compact,
-                  label: Text('Sort: $sortLabel'),
+                  label: Text(context.l10n.saved_filter_sort(sortLabel)),
                 ),
                 Chip(
                   visualDensity: VisualDensity.compact,
-                  label: Text('Filters: $activeFilterCount'),
+                  label: Text(
+                    context.l10n.saved_filter_filters(activeFilterCount),
+                  ),
                 ),
                 if (searchQuery.isNotEmpty)
                   Chip(
                     visualDensity: VisualDensity.compact,
-                    label: Text('Search: $searchQuery'),
+                    label: Text(context.l10n.saved_filter_search(searchQuery)),
                   ),
               ],
             ),
@@ -394,7 +407,9 @@ class _SavedFilterList<T extends SavedFilterConfig<dynamic>>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Failed to load presets: ${snapshot.error}'),
+            Text(
+              context.l10n.saved_filter_failed_load(snapshot.error.toString()),
+            ),
             SizedBox(height: context.dimensions.spacingSmall),
             OutlinedButton(
               onPressed: onRetry,
@@ -407,7 +422,7 @@ class _SavedFilterList<T extends SavedFilterConfig<dynamic>>
 
     final filters = snapshot.data ?? const [];
     if (filters.isEmpty) {
-      return const Center(child: Text('No saved presets'));
+      return const Center(child: Text(context.l10n.saved_filter_no_presets));
     }
 
     final sorted = [...filters]

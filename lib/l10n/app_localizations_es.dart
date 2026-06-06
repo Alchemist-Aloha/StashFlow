@@ -801,13 +801,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get filter_less_than => 'Menor que';
 
   @override
-  String get filter_includes => 'Includes';
+  String get filter_includes => 'Incluye';
 
   @override
-  String get filter_excludes => 'Excludes';
+  String get filter_excludes => 'Excluye';
 
   @override
-  String get filter_includes_all => 'Includes All';
+  String get filter_includes_all => 'Incluye todo';
 
   @override
   String get filter_is_null => 'Es nulo';
@@ -816,19 +816,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get filter_not_null => 'No es nulo';
 
   @override
-  String get filter_matches_regex => 'Matches Regex';
+  String get filter_matches_regex => 'Coincide con expresiones regulares';
 
   @override
-  String get filter_not_matches_regex => 'Does Not Match Regex';
+  String get filter_not_matches_regex => 'No coincide con la expresión regular';
 
   @override
-  String get filter_between => 'Between';
+  String get filter_between => 'Entre';
 
   @override
-  String get filter_not_between => 'Not Between';
+  String get filter_not_between => 'No entre';
 
   @override
-  String get filter_value_secondary => 'Second Value';
+  String get filter_value_secondary => 'Segundo valor';
 
   @override
   String get images_resolution_title => 'Resolución';
@@ -2617,4 +2617,229 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get common_saved_filters => 'Filtros guardados';
+
+  @override
+  String saved_filter_failed_save(String error) {
+    return 'No se pudo guardar el filtro: $error';
+  }
+
+  @override
+  String get saved_filter_preset_deleted => 'Preestablecido eliminado';
+
+  @override
+  String saved_filter_failed_delete(String error) {
+    return 'No se pudo eliminar el ajuste preestablecido: $error';
+  }
+
+  @override
+  String get saved_filter_delete_preset => 'Eliminar preajuste';
+
+  @override
+  String saved_filter_delete_confirm(String name) {
+    return '¿Eliminar \"$name\"? Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get common_delete => 'Borrar';
+
+  @override
+  String get saved_filter_save_preset => 'Guardar preestablecido';
+
+  @override
+  String saved_filter_sort(String sortLabel) {
+    return 'Ordenar: $sortLabel';
+  }
+
+  @override
+  String saved_filter_filters(int activeFilterCount) {
+    return 'Filtros: $activeFilterCount';
+  }
+
+  @override
+  String saved_filter_search(String searchQuery) {
+    return 'Buscar: $searchQuery';
+  }
+
+  @override
+  String saved_filter_failed_load(String error) {
+    return 'No se pudieron cargar los ajustes preestablecidos: $error';
+  }
+
+  @override
+  String get saved_filter_no_presets =>
+      'No hay ajustes preestablecidos guardados';
+
+  @override
+  String scene_tagger_saved(String title) {
+    return 'Guardado $title';
+  }
+
+  @override
+  String scene_tagger_save_failed(String error) {
+    return 'Error al guardar: $error';
+  }
+
+  @override
+  String get scene_tagger_title => 'Etiquetas de escena';
+
+  @override
+  String get scene_tagger_page_size => 'Tamaño de página';
+
+  @override
+  String get scene_tagger_mode => 'Modo';
+
+  @override
+  String get scene_tagger_sort => 'Clasificar';
+
+  @override
+  String get scene_tagger_desc => 'Descripción';
+
+  @override
+  String get scene_tagger_asc => 'asc';
+
+  @override
+  String get scene_tagger_filter => 'Filtrar';
+
+  @override
+  String get scene_tagger_preset => 'Programar';
+
+  @override
+  String get scene_tagger_scraper => 'Raspador de caja de almacenamiento';
+
+  @override
+  String get scene_tagger_start => 'Empezar a etiquetar';
+
+  @override
+  String get scene_tagger_stop => 'Detener';
+
+  @override
+  String scene_tagger_unable_to_load_stash_boxes(String error) {
+    return 'No se pueden cargar cajas de almacenamiento: $error';
+  }
+
+  @override
+  String get common_skip => 'Saltar';
+
+  @override
+  String get common_selected => 'Seleccionado';
+
+  @override
+  String get common_select_only => 'Seleccionar';
+
+  @override
+  String get common_preview => 'Avance';
+
+  @override
+  String get scene_details_delete_scene => 'eliminar escena';
+
+  @override
+  String get scene_details_metadata_only => 'Solo metadatos';
+
+  @override
+  String get scene_details_files => 'Archivos';
+
+  @override
+  String get scene_details_scene_deleted => 'Escena eliminada';
+
+  @override
+  String scene_deduplication_delete_confirm(int count) {
+    return '¿Eliminar $count escenas?';
+  }
+
+  @override
+  String get scene_deduplication_delete_metadata => 'Eliminar metadatos';
+
+  @override
+  String get scene_deduplication_delete_files => 'Eliminar archivos';
+
+  @override
+  String scene_deduplication_deleted_scenes(int count) {
+    return 'Escenas $count eliminadas';
+  }
+
+  @override
+  String scene_deduplication_delete_failed(String error) {
+    return 'Error al eliminar: $error';
+  }
+
+  @override
+  String get scene_deduplication_title => 'Deduplicación de escenas';
+
+  @override
+  String get scene_deduplication_no_duplicates =>
+      'No se encontraron duplicados.';
+
+  @override
+  String get scene_deduplication_search_accuracy => 'Precisión de búsqueda';
+
+  @override
+  String get scene_deduplication_duration_difference =>
+      'Diferencia de duración';
+
+  @override
+  String get scene_deduplication_page_size => 'Tamaño de página';
+
+  @override
+  String get scene_deduplication_matching_codecs =>
+      'Seleccione solo códecs coincidentes';
+
+  @override
+  String get scene_deduplication_all_but_largest_resolution =>
+      'Todas menos la resolución más grande';
+
+  @override
+  String get scene_deduplication_all_but_largest_file =>
+      'Todos los archivos excepto el más grande';
+
+  @override
+  String get scene_deduplication_all_but_oldest =>
+      'Todos menos los más antiguos';
+
+  @override
+  String get scene_deduplication_all_but_youngest =>
+      'Todos menos los más jóvenes';
+
+  @override
+  String get scene_deduplication_select_none => 'No seleccionar ninguno';
+
+  @override
+  String scene_deduplication_delete_selected(int count) {
+    return 'Eliminar seleccionado ($count)';
+  }
+
+  @override
+  String get common_merge => 'Unir';
+
+  @override
+  String scene_deduplication_tags(int count) {
+    return 'Etiquetas $count';
+  }
+
+  @override
+  String scene_deduplication_performers(int count) {
+    return '$count artistas';
+  }
+
+  @override
+  String scene_deduplication_groups(int count) {
+    return '$count grupos';
+  }
+
+  @override
+  String scene_deduplication_markers(int count) {
+    return 'Marcadores $count';
+  }
+
+  @override
+  String scene_deduplication_galleries(int count) {
+    return '$count galerías';
+  }
+
+  @override
+  String scene_deduplication_page(int page, int totalPages) {
+    return 'Página $page de $totalPages';
+  }
+
+  @override
+  String get tools_title => 'Herramientas';
 }

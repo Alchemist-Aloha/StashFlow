@@ -1058,5 +1058,207 @@
   "settings_security_title": "Security",
   "settings_security_app_lock": "App lock",
   "settings_security_app_lock_subtitle": "Protect access with a passcode after backgrounding.",
-  "common_saved_filters": "Saved filters"
+  "common_saved_filters": "Saved filters",
+  "saved_filter_failed_save": "Failed to save filter: {error}",
+  "@saved_filter_failed_save": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "saved_filter_preset_deleted": "Preset deleted",
+  "saved_filter_failed_delete": "Failed to delete preset: {error}",
+  "@saved_filter_failed_delete": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "saved_filter_delete_preset": "Delete Preset",
+  "saved_filter_delete_confirm": "Delete \"{name}\"? This action cannot be undone.",
+  "@saved_filter_delete_confirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "common_delete": "Delete",
+  "saved_filter_save_preset": "Save Preset",
+  "saved_filter_sort": "Sort: {sortLabel}",
+  "@saved_filter_sort": {
+    "placeholders": {
+      "sortLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "saved_filter_filters": "Filters: {activeFilterCount}",
+  "@saved_filter_filters": {
+    "placeholders": {
+      "activeFilterCount": {
+        "type": "int"
+      }
+    }
+  },
+  "saved_filter_search": "Search: {searchQuery}",
+  "@saved_filter_search": {
+    "placeholders": {
+      "searchQuery": {
+        "type": "String"
+      }
+    }
+  },
+  "saved_filter_failed_load": "Failed to load presets: {error}",
+  "@saved_filter_failed_load": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "saved_filter_no_presets": "No saved presets",
+  "scene_tagger_saved": "Saved {title}",
+  "@scene_tagger_saved": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "scene_tagger_save_failed": "Save failed: {error}",
+  "@scene_tagger_save_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "scene_tagger_title": "Scene Tagger",
+  "scene_tagger_page_size": "Page size",
+  "scene_tagger_mode": "Mode",
+  "scene_tagger_sort": "Sort",
+  "scene_tagger_desc": "Desc",
+  "scene_tagger_asc": "Asc",
+  "scene_tagger_filter": "Filter",
+  "scene_tagger_preset": "Preset",
+  "scene_tagger_scraper": "Stash-box scraper",
+  "scene_tagger_start": "Start tagging",
+  "scene_tagger_stop": "Stop",
+  "scene_tagger_unable_to_load_stash_boxes": "Unable to load stash-boxes: {error}",
+  "@scene_tagger_unable_to_load_stash_boxes": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "common_skip": "Skip",
+  "common_selected": "Selected",
+  "common_select_only": "Select",
+  "common_preview": "Preview",
+  "scene_details_delete_scene": "Delete scene",
+  "scene_details_metadata_only": "Metadata only",
+  "scene_details_files": "Files",
+  "scene_details_scene_deleted": "Scene deleted",
+  "scene_deduplication_delete_confirm": "Delete {count} scenes?",
+  "@scene_deduplication_delete_confirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scene_deduplication_delete_metadata": "Delete metadata",
+  "scene_deduplication_delete_files": "Delete files",
+  "scene_deduplication_deleted_scenes": "Deleted {count} scenes",
+  "@scene_deduplication_deleted_scenes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scene_deduplication_delete_failed": "Delete failed: {error}",
+  "@scene_deduplication_delete_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "scene_deduplication_title": "Scene Deduplication",
+  "scene_deduplication_no_duplicates": "No duplicates found.",
+  "scene_deduplication_search_accuracy": "Search Accuracy",
+  "scene_deduplication_duration_difference": "Duration Difference",
+  "scene_deduplication_page_size": "Page Size",
+  "scene_deduplication_matching_codecs": "Only select matching codecs",
+  "scene_deduplication_all_but_largest_resolution": "All but largest resolution",
+  "scene_deduplication_all_but_largest_file": "All but largest file",
+  "scene_deduplication_all_but_oldest": "All but oldest",
+  "scene_deduplication_all_but_youngest": "All but youngest",
+  "scene_deduplication_select_none": "Select none",
+  "scene_deduplication_delete_selected": "Delete selected ({count})",
+  "@scene_deduplication_delete_selected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "common_merge": "Merge",
+  "scene_deduplication_tags": "{count} tags",
+  "@scene_deduplication_tags": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scene_deduplication_performers": "{count} performers",
+  "@scene_deduplication_performers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scene_deduplication_groups": "{count} groups",
+  "@scene_deduplication_groups": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scene_deduplication_markers": "{count} markers",
+  "@scene_deduplication_markers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scene_deduplication_galleries": "{count} galleries",
+  "@scene_deduplication_galleries": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scene_deduplication_page": "Page {page} of {totalPages}",
+  "@scene_deduplication_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "totalPages": {
+        "type": "int"
+      }
+    }
+  },
+  "tools_title": "Tools"
 }

@@ -789,13 +789,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get filter_less_than => 'より小さい';
 
   @override
-  String get filter_includes => 'Includes';
+  String get filter_includes => '含まれるもの';
 
   @override
-  String get filter_excludes => 'Excludes';
+  String get filter_excludes => '除く';
 
   @override
-  String get filter_includes_all => 'Includes All';
+  String get filter_includes_all => 'すべてを含む';
 
   @override
   String get filter_is_null => 'ヌルです';
@@ -804,19 +804,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get filter_not_null => 'ヌルではありません';
 
   @override
-  String get filter_matches_regex => 'Matches Regex';
+  String get filter_matches_regex => '正規表現と一致します';
 
   @override
-  String get filter_not_matches_regex => 'Does Not Match Regex';
+  String get filter_not_matches_regex => '正規表現と一致しません';
 
   @override
-  String get filter_between => 'Between';
+  String get filter_between => '間';
 
   @override
-  String get filter_not_between => 'Not Between';
+  String get filter_not_between => '間にはありません';
 
   @override
-  String get filter_value_secondary => 'Second Value';
+  String get filter_value_secondary => '2 番目の値';
 
   @override
   String get images_resolution_title => '解像度';
@@ -2500,4 +2500,221 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get common_saved_filters => '保存されたフィルター';
+
+  @override
+  String saved_filter_failed_save(String error) {
+    return 'フィルタを保存できませんでした: $error';
+  }
+
+  @override
+  String get saved_filter_preset_deleted => 'プリセットが削除されました';
+
+  @override
+  String saved_filter_failed_delete(String error) {
+    return 'プリセットの削除に失敗しました: $error';
+  }
+
+  @override
+  String get saved_filter_delete_preset => 'プリセットの削除';
+
+  @override
+  String saved_filter_delete_confirm(String name) {
+    return '「$name」を削除しますか?この操作は元に戻すことができません。';
+  }
+
+  @override
+  String get common_delete => '消去';
+
+  @override
+  String get saved_filter_save_preset => 'プリセットの保存';
+
+  @override
+  String saved_filter_sort(String sortLabel) {
+    return '並べ替え: $sortLabel';
+  }
+
+  @override
+  String saved_filter_filters(int activeFilterCount) {
+    return 'フィルター: $activeFilterCount';
+  }
+
+  @override
+  String saved_filter_search(String searchQuery) {
+    return '検索: $searchQuery';
+  }
+
+  @override
+  String saved_filter_failed_load(String error) {
+    return 'プリセットのロードに失敗しました: $error';
+  }
+
+  @override
+  String get saved_filter_no_presets => '保存されたプリセットはありません';
+
+  @override
+  String scene_tagger_saved(String title) {
+    return '$title を保存しました';
+  }
+
+  @override
+  String scene_tagger_save_failed(String error) {
+    return '保存に失敗しました: $error';
+  }
+
+  @override
+  String get scene_tagger_title => 'シーンタグ';
+
+  @override
+  String get scene_tagger_page_size => 'ページサイズ';
+
+  @override
+  String get scene_tagger_mode => 'モード';
+
+  @override
+  String get scene_tagger_sort => '選別';
+
+  @override
+  String get scene_tagger_desc => '説明';
+
+  @override
+  String get scene_tagger_asc => '昇順';
+
+  @override
+  String get scene_tagger_filter => 'フィルター';
+
+  @override
+  String get scene_tagger_preset => 'プリセット';
+
+  @override
+  String get scene_tagger_scraper => 'スタッシュボックススクレーパー';
+
+  @override
+  String get scene_tagger_start => 'タグ付けを開始する';
+
+  @override
+  String get scene_tagger_stop => '停止';
+
+  @override
+  String scene_tagger_unable_to_load_stash_boxes(String error) {
+    return '隠しボックスをロードできません: $error';
+  }
+
+  @override
+  String get common_skip => 'スキップ';
+
+  @override
+  String get common_selected => '選択済み';
+
+  @override
+  String get common_select_only => '選択';
+
+  @override
+  String get common_preview => 'プレビュー';
+
+  @override
+  String get scene_details_delete_scene => 'シーンの削除';
+
+  @override
+  String get scene_details_metadata_only => 'メタデータのみ';
+
+  @override
+  String get scene_details_files => 'ファイル';
+
+  @override
+  String get scene_details_scene_deleted => 'シーンが削除されました';
+
+  @override
+  String scene_deduplication_delete_confirm(int count) {
+    return '$count シーンを削除しますか?';
+  }
+
+  @override
+  String get scene_deduplication_delete_metadata => 'メタデータの削除';
+
+  @override
+  String get scene_deduplication_delete_files => 'ファイルの削除';
+
+  @override
+  String scene_deduplication_deleted_scenes(int count) {
+    return '$count シーンを削除しました';
+  }
+
+  @override
+  String scene_deduplication_delete_failed(String error) {
+    return '削除に失敗しました: $error';
+  }
+
+  @override
+  String get scene_deduplication_title => 'シーンの重複排除';
+
+  @override
+  String get scene_deduplication_no_duplicates => '重複は見つかりませんでした。';
+
+  @override
+  String get scene_deduplication_search_accuracy => '検索精度';
+
+  @override
+  String get scene_deduplication_duration_difference => '期間の違い';
+
+  @override
+  String get scene_deduplication_page_size => 'ページサイズ';
+
+  @override
+  String get scene_deduplication_matching_codecs => '一致するコーデックのみを選択する';
+
+  @override
+  String get scene_deduplication_all_but_largest_resolution => '最大解像度以外のすべて';
+
+  @override
+  String get scene_deduplication_all_but_largest_file => '最大のファイルを除くすべてのファイル';
+
+  @override
+  String get scene_deduplication_all_but_oldest => '最古以外はすべて';
+
+  @override
+  String get scene_deduplication_all_but_youngest => '最年少以外全員';
+
+  @override
+  String get scene_deduplication_select_none => '何も選択しない';
+
+  @override
+  String scene_deduplication_delete_selected(int count) {
+    return '選択したものを削除 ($count)';
+  }
+
+  @override
+  String get common_merge => 'マージ';
+
+  @override
+  String scene_deduplication_tags(int count) {
+    return '$count タグ';
+  }
+
+  @override
+  String scene_deduplication_performers(int count) {
+    return '$count出演者';
+  }
+
+  @override
+  String scene_deduplication_groups(int count) {
+    return '$count グループ';
+  }
+
+  @override
+  String scene_deduplication_markers(int count) {
+    return '$count マーカー';
+  }
+
+  @override
+  String scene_deduplication_galleries(int count) {
+    return '$count ギャラリー';
+  }
+
+  @override
+  String scene_deduplication_page(int page, int totalPages) {
+    return 'ページ $page / $totalPages';
+  }
+
+  @override
+  String get tools_title => 'ツール';
 }

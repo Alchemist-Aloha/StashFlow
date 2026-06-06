@@ -23,6 +23,7 @@ import '../../domain/entities/scene_saved_filter_config.dart';
 import '../../data/utils/scrape_normalizer.dart';
 import '../providers/scene_list_provider.dart';
 import '../widgets/scene_filter_panel.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 
 class SceneTaggerPage extends ConsumerStatefulWidget {
   const SceneTaggerPage({super.key});
@@ -334,14 +335,20 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
           );
       if (!mounted) return;
       _removeSceneFromResults(scene.id);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Saved ${scene.title}')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.scene_tagger_saved(scene.title ?? '')),
+        ),
+      );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Save failed: $error')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            context.l10n.scene_tagger_save_failed(error.toString()),
+          ),
+        ),
+      );
     }
   }
 
@@ -385,7 +392,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
   Widget build(BuildContext context) {
     final stashBoxesAsync = ref.watch(stashBoxEndpointsProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Scene Tagger')),
+      appBar: AppBar(title: Text(context.l10n.scene_tagger_title)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -541,7 +548,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                 DropdownMenu<int>(
                   width: compact ? 150 : 170,
                   initialSelection: _pageSize,
-                  label: const Text('Page size'),
+                  label: Text(context.l10n.scene_tagger_page_size),
                   dropdownMenuEntries: _pageSizeOptions
                       .map(
                         (size) =>
@@ -559,7 +566,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                 DropdownMenu<String>(
                   width: compact ? 190 : 210,
                   initialSelection: _mode.value,
-                  label: const Text('Mode'),
+                  label: Text(context.l10n.scene_tagger_mode),
                   dropdownMenuEntries: _TaggerMode.values
                       .map(
                         (mode) => DropdownMenuEntry(
@@ -589,7 +596,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                 DropdownMenu<String>(
                   width: compact ? 150 : 170,
                   initialSelection: _sort,
-                  label: const Text('Sort'),
+                  label: Text(context.l10n.scene_tagger_sort),
                   dropdownMenuEntries: _sortOptions.entries
                       .map(
                         (entry) => DropdownMenuEntry(
@@ -607,8 +614,14 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                 ),
                 SegmentedButton<bool>(
                   segments: const [
-                    ButtonSegment(value: true, label: Text('Desc')),
-                    ButtonSegment(value: false, label: Text('Asc')),
+                    ButtonSegment(
+                      value: true,
+                      label: Text(context.l10n.scene_tagger_desc),
+                    ),
+                    ButtonSegment(
+                      value: false,
+                      label: Text(context.l10n.scene_tagger_asc),
+                    ),
                   ],
                   selected: {_descending},
                   onSelectionChanged: (selection) {
@@ -621,7 +634,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                 OutlinedButton.icon(
                   onPressed: _openFilterPanel,
                   icon: const Icon(Icons.filter_list),
-                  label: const Text('Filter'),
+                  label: Text(context.l10n.scene_tagger_filter),
                 ),
                 FutureBuilder<List<SceneSavedFilterConfig>>(
                   future: _presetsFuture,
@@ -642,7 +655,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                         child: OutlinedButton.icon(
                           onPressed: presets.isEmpty ? null : () {},
                           icon: const Icon(Icons.bookmark_border),
-                          label: const Text('Preset'),
+                          label: Text(context.l10n.scene_tagger_preset),
                         ),
                       ),
                     );
@@ -664,7 +677,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                     DropdownMenu<String>(
                       width: compact ? double.infinity : 280,
                       initialSelection: endpoint,
-                      label: const Text('Stash-box scraper'),
+                      label: Text(context.l10n.scene_tagger_scraper),
                       dropdownMenuEntries: stashBoxes
                           .map(
                             (box) => DropdownMenuEntry(
@@ -689,7 +702,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                           ? null
                           : () => _startTagging(endpoint),
                       icon: const Icon(Icons.sell),
-                      label: const Text('Start tagging'),
+                      label: Text(context.l10n.scene_tagger_start),
                     ),
                     if (_scraping)
                       OutlinedButton.icon(
@@ -699,7 +712,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                           });
                         },
                         icon: const Icon(Icons.stop),
-                        label: const Text('Stop'),
+                        label: Text(context.l10n.scene_tagger_stop),
                       ),
                     Text(
                       _mode == _TaggerMode.randomUnorganized
@@ -710,7 +723,11 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                 );
               },
               loading: () => const LinearProgressIndicator(),
-              error: (error, _) => Text('Unable to load stash-boxes: $error'),
+              error: (error, _) => Text(
+                context.l10n.scene_tagger_unable_to_load_stash_boxes(
+                  error.toString(),
+                ),
+              ),
             ),
           ],
         ),
@@ -854,10 +871,13 @@ class _TaggerSceneCard extends StatelessWidget {
               alignment: WrapAlignment.end,
               spacing: 8,
               children: [
-                TextButton(onPressed: onSkip, child: const Text('Skip')),
+                TextButton(
+                  onPressed: onSkip,
+                  child: Text(context.l10n.common_skip),
+                ),
                 FilledButton(
                   onPressed: scraped == null ? null : onApply,
-                  child: const Text('Apply'),
+                  child: Text(context.l10n.common_apply),
                 ),
               ],
             ),
@@ -975,11 +995,11 @@ class _ExpandedScrapedMatchCard extends StatelessWidget {
     return _MetadataPanel(
       title: 'Result ${index + 1} of $total',
       headerTrailing: selected
-          ? const Chip(label: Text('Selected'))
+          ? const Chip(label: Text(context.l10n.common_selected))
           : OutlinedButton(
               key: ValueKey('select_scraped_${sceneId}_$index'),
               onPressed: onSelect,
-              child: const Text('Select'),
+              child: Text(context.l10n.common_select_only),
             ),
       media: scraped.image == null || scraped.image!.trim().isEmpty
           ? null
@@ -1077,7 +1097,7 @@ class _ErrorBanner extends StatelessWidget {
             FilledButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text(context.l10n.common_retry),
             ),
           ],
         ),
@@ -1328,7 +1348,7 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
                             ? null
                             : widget.onActivate,
                         icon: const Icon(Icons.play_arrow),
-                        label: const Text('Preview'),
+                        label: Text(context.l10n.common_preview),
                       ),
                     ),
                     if (_error != null && _error!.isNotEmpty)

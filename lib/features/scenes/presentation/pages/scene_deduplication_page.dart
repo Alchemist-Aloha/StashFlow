@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../domain/entities/scene_deduplication.dart';
 import '../providers/scene_list_provider.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 
 class SceneDeduplicationPage extends ConsumerStatefulWidget {
   const SceneDeduplicationPage({super.key});
@@ -117,7 +118,9 @@ class _SceneDeduplicationPageState
     final deleteFile = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete ${ids.length} scenes?'),
+        title: Text(
+          context.l10n.scene_deduplication_delete_confirm(ids.length),
+        ),
         content: const Text(
           'Choose whether to remove only Stash metadata or delete the '
           'scene files and generated supporting files too.',
@@ -125,15 +128,15 @@ class _SceneDeduplicationPageState
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(null),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.common_cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Delete metadata'),
+            child: Text(context.l10n.scene_deduplication_delete_metadata),
           ),
           FilledButton.tonal(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Delete files'),
+            child: Text(context.l10n.scene_deduplication_delete_files),
           ),
         ],
       ),
@@ -159,14 +162,22 @@ class _SceneDeduplicationPageState
         _selectedSceneIds.clear();
         _future = _load();
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Deleted ${ids.length} scenes')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            context.l10n.scene_deduplication_deleted_scenes(ids.length),
+          ),
+        ),
+      );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Delete failed: $error')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            context.l10n.scene_deduplication_delete_failed(error.toString()),
+          ),
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -179,7 +190,7 @@ class _SceneDeduplicationPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Scene Deduplication')),
+      appBar: AppBar(title: Text(context.l10n.scene_deduplication_title)),
       body: FutureBuilder<_SceneDeduplicationData>(
         future: _future,
         builder: (context, snapshot) {
@@ -206,9 +217,8 @@ class _SceneDeduplicationPageState
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 InkWell(
-                  onTap: () => setState(
-                    () => _configExpanded = !_configExpanded,
-                  ),
+                  onTap: () =>
+                      setState(() => _configExpanded = !_configExpanded),
                   borderRadius: BorderRadius.circular(12),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -320,7 +330,11 @@ class _SceneDeduplicationPageState
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 24),
-          const Expanded(child: Center(child: Text('No duplicates found.'))),
+          const Expanded(
+            child: Center(
+              child: Text(context.l10n.scene_deduplication_no_duplicates),
+            ),
+          ),
         ],
       );
     }
@@ -450,7 +464,9 @@ class _Controls extends StatelessWidget {
               textStyle: isCompact ? theme.textTheme.bodySmall : null,
               inputDecorationTheme: dropdownInputDecoration,
               initialSelection: distance,
-              label: const Text('Search Accuracy'),
+              label: const Text(
+                context.l10n.scene_deduplication_search_accuracy,
+              ),
               dropdownMenuEntries: _SceneDeduplicationPageState
                   ._accuracyOptions
                   .entries
@@ -471,7 +487,9 @@ class _Controls extends StatelessWidget {
               textStyle: isCompact ? theme.textTheme.bodySmall : null,
               inputDecorationTheme: dropdownInputDecoration,
               initialSelection: durationDiff,
-              label: const Text('Duration Difference'),
+              label: const Text(
+                context.l10n.scene_deduplication_duration_difference,
+              ),
               dropdownMenuEntries: _SceneDeduplicationPageState._durationOptions
                   .map(
                     (value) => DropdownMenuEntry<double>(
@@ -492,7 +510,7 @@ class _Controls extends StatelessWidget {
               textStyle: isCompact ? theme.textTheme.bodySmall : null,
               inputDecorationTheme: dropdownInputDecoration,
               initialSelection: pageSize,
-              label: const Text('Page Size'),
+              label: Text(context.l10n.scene_deduplication_page_size),
               dropdownMenuEntries: _SceneDeduplicationPageState._pageSizeOptions
                   .map(
                     (value) => DropdownMenuEntry<int>(
@@ -512,7 +530,9 @@ class _Controls extends StatelessWidget {
                   ? MaterialTapTargetSize.shrinkWrap
                   : null,
               selected: safeSelect,
-              label: const Text('Only select matching codecs'),
+              label: const Text(
+                context.l10n.scene_deduplication_matching_codecs,
+              ),
               onSelected: onSafeSelectChanged,
             ),
             PopupMenuButton<DuplicateSelectionMode>(
@@ -525,36 +545,44 @@ class _Controls extends StatelessWidget {
                 PopupMenuItem(
                   value: DuplicateSelectionMode.allButLargestResolution,
                   height: isCompact ? 36 : kMinInteractiveDimension,
-                  child: const Text('All but largest resolution'),
+                  child: const Text(
+                    context.l10n.scene_deduplication_all_but_largest_resolution,
+                  ),
                 ),
                 PopupMenuItem(
                   value: DuplicateSelectionMode.allButLargestFile,
                   height: isCompact ? 36 : kMinInteractiveDimension,
-                  child: const Text('All but largest file'),
+                  child: const Text(
+                    context.l10n.scene_deduplication_all_but_largest_file,
+                  ),
                 ),
                 PopupMenuItem(
                   value: DuplicateSelectionMode.allButOldest,
                   height: isCompact ? 36 : kMinInteractiveDimension,
-                  child: const Text('All but oldest'),
+                  child: const Text(
+                    context.l10n.scene_deduplication_all_but_oldest,
+                  ),
                 ),
                 PopupMenuItem(
                   value: DuplicateSelectionMode.allButYoungest,
                   height: isCompact ? 36 : kMinInteractiveDimension,
-                  child: const Text('All but youngest'),
+                  child: const Text(
+                    context.l10n.scene_deduplication_all_but_youngest,
+                  ),
                 ),
               ],
               child: FilledButton.tonalIcon(
                 onPressed: null,
                 style: buttonStyle,
                 icon: const Icon(Icons.select_all),
-                label: const Text('Select'),
+                label: Text(context.l10n.common_select_only),
               ),
             ),
             OutlinedButton.icon(
               onPressed: onSelectNone,
               style: buttonStyle,
               icon: const Icon(Icons.clear),
-              label: const Text('Select none'),
+              label: Text(context.l10n.scene_deduplication_select_none),
             ),
             FilledButton.icon(
               onPressed: selectedCount == 0 || deleting
@@ -568,7 +596,9 @@ class _Controls extends StatelessWidget {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.delete),
-              label: Text('Delete selected ($selectedCount)'),
+              label: Text(
+                context.l10n.scene_deduplication_delete_selected(selectedCount),
+              ),
             ),
             Tooltip(
               message: 'Merge editing is not wired in StashFlow yet.',
@@ -576,7 +606,7 @@ class _Controls extends StatelessWidget {
                 onPressed: null,
                 style: buttonStyle,
                 icon: const Icon(Icons.merge),
-                label: const Text('Merge'),
+                label: Text(context.l10n.common_merge),
               ),
             ),
           ],
@@ -679,12 +709,20 @@ class _DuplicateSceneTile extends StatelessWidget {
           if (file?.videoCodec != null && file!.videoCodec!.isNotEmpty)
             Text(file.videoCodec!),
           if (scene.oCounter > 0) Text('O ${scene.oCounter}'),
-          if (scene.tagCount > 0) Text('${scene.tagCount} tags'),
+          if (scene.tagCount > 0)
+            Text(context.l10n.scene_deduplication_tags(scene.tagCount)),
           if (scene.performerCount > 0)
-            Text('${scene.performerCount} performers'),
-          if (scene.groupCount > 0) Text('${scene.groupCount} groups'),
-          if (scene.markerCount > 0) Text('${scene.markerCount} markers'),
-          if (scene.galleryCount > 0) Text('${scene.galleryCount} galleries'),
+            Text(
+              context.l10n.scene_deduplication_performers(scene.performerCount),
+            ),
+          if (scene.groupCount > 0)
+            Text(context.l10n.scene_deduplication_groups(scene.groupCount)),
+          if (scene.markerCount > 0)
+            Text(context.l10n.scene_deduplication_markers(scene.markerCount)),
+          if (scene.galleryCount > 0)
+            Text(
+              context.l10n.scene_deduplication_galleries(scene.galleryCount),
+            ),
         ],
       ),
       secondary: SizedBox(
@@ -796,7 +834,7 @@ class _PaginationBar extends StatelessWidget {
             onPressed: onPrevious,
             icon: const Icon(Icons.chevron_left),
           ),
-          Text('Page $page of $totalPages'),
+          Text(context.l10n.scene_deduplication_page(page, totalPages)),
           IconButton(
             tooltip: 'Next page',
             onPressed: onNext,
@@ -829,7 +867,7 @@ class _ErrorState extends StatelessWidget {
             FilledButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text(context.l10n.common_retry),
             ),
           ],
         ),

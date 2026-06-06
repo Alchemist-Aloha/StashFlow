@@ -4751,6 +4751,360 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saved filters'**
   String get common_saved_filters;
+
+  /// No description provided for @saved_filter_failed_save.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save filter: {error}'**
+  String saved_filter_failed_save(String error);
+
+  /// No description provided for @saved_filter_preset_deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset deleted'**
+  String get saved_filter_preset_deleted;
+
+  /// No description provided for @saved_filter_failed_delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete preset: {error}'**
+  String saved_filter_failed_delete(String error);
+
+  /// No description provided for @saved_filter_delete_preset.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Preset'**
+  String get saved_filter_delete_preset;
+
+  /// No description provided for @saved_filter_delete_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"? This action cannot be undone.'**
+  String saved_filter_delete_confirm(String name);
+
+  /// No description provided for @common_delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get common_delete;
+
+  /// No description provided for @saved_filter_save_preset.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Preset'**
+  String get saved_filter_save_preset;
+
+  /// No description provided for @saved_filter_sort.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: {sortLabel}'**
+  String saved_filter_sort(String sortLabel);
+
+  /// No description provided for @saved_filter_filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters: {activeFilterCount}'**
+  String saved_filter_filters(int activeFilterCount);
+
+  /// No description provided for @saved_filter_search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search: {searchQuery}'**
+  String saved_filter_search(String searchQuery);
+
+  /// No description provided for @saved_filter_failed_load.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load presets: {error}'**
+  String saved_filter_failed_load(String error);
+
+  /// No description provided for @saved_filter_no_presets.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved presets'**
+  String get saved_filter_no_presets;
+
+  /// No description provided for @scene_tagger_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {title}'**
+  String scene_tagger_saved(String title);
+
+  /// No description provided for @scene_tagger_save_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Save failed: {error}'**
+  String scene_tagger_save_failed(String error);
+
+  /// No description provided for @scene_tagger_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Tagger'**
+  String get scene_tagger_title;
+
+  /// No description provided for @scene_tagger_page_size.
+  ///
+  /// In en, this message translates to:
+  /// **'Page size'**
+  String get scene_tagger_page_size;
+
+  /// No description provided for @scene_tagger_mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode'**
+  String get scene_tagger_mode;
+
+  /// No description provided for @scene_tagger_sort.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort'**
+  String get scene_tagger_sort;
+
+  /// No description provided for @scene_tagger_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Desc'**
+  String get scene_tagger_desc;
+
+  /// No description provided for @scene_tagger_asc.
+  ///
+  /// In en, this message translates to:
+  /// **'Asc'**
+  String get scene_tagger_asc;
+
+  /// No description provided for @scene_tagger_filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get scene_tagger_filter;
+
+  /// No description provided for @scene_tagger_preset.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset'**
+  String get scene_tagger_preset;
+
+  /// No description provided for @scene_tagger_scraper.
+  ///
+  /// In en, this message translates to:
+  /// **'Stash-box scraper'**
+  String get scene_tagger_scraper;
+
+  /// No description provided for @scene_tagger_start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start tagging'**
+  String get scene_tagger_start;
+
+  /// No description provided for @scene_tagger_stop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get scene_tagger_stop;
+
+  /// No description provided for @scene_tagger_unable_to_load_stash_boxes.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load stash-boxes: {error}'**
+  String scene_tagger_unable_to_load_stash_boxes(String error);
+
+  /// No description provided for @common_skip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get common_skip;
+
+  /// No description provided for @common_selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
+  String get common_selected;
+
+  /// No description provided for @common_select_only.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get common_select_only;
+
+  /// No description provided for @common_preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get common_preview;
+
+  /// No description provided for @scene_details_delete_scene.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete scene'**
+  String get scene_details_delete_scene;
+
+  /// No description provided for @scene_details_metadata_only.
+  ///
+  /// In en, this message translates to:
+  /// **'Metadata only'**
+  String get scene_details_metadata_only;
+
+  /// No description provided for @scene_details_files.
+  ///
+  /// In en, this message translates to:
+  /// **'Files'**
+  String get scene_details_files;
+
+  /// No description provided for @scene_details_scene_deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene deleted'**
+  String get scene_details_scene_deleted;
+
+  /// No description provided for @scene_deduplication_delete_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {count} scenes?'**
+  String scene_deduplication_delete_confirm(int count);
+
+  /// No description provided for @scene_deduplication_delete_metadata.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete metadata'**
+  String get scene_deduplication_delete_metadata;
+
+  /// No description provided for @scene_deduplication_delete_files.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete files'**
+  String get scene_deduplication_delete_files;
+
+  /// No description provided for @scene_deduplication_deleted_scenes.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted {count} scenes'**
+  String scene_deduplication_deleted_scenes(int count);
+
+  /// No description provided for @scene_deduplication_delete_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete failed: {error}'**
+  String scene_deduplication_delete_failed(String error);
+
+  /// No description provided for @scene_deduplication_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Deduplication'**
+  String get scene_deduplication_title;
+
+  /// No description provided for @scene_deduplication_no_duplicates.
+  ///
+  /// In en, this message translates to:
+  /// **'No duplicates found.'**
+  String get scene_deduplication_no_duplicates;
+
+  /// No description provided for @scene_deduplication_search_accuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Accuracy'**
+  String get scene_deduplication_search_accuracy;
+
+  /// No description provided for @scene_deduplication_duration_difference.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration Difference'**
+  String get scene_deduplication_duration_difference;
+
+  /// No description provided for @scene_deduplication_page_size.
+  ///
+  /// In en, this message translates to:
+  /// **'Page Size'**
+  String get scene_deduplication_page_size;
+
+  /// No description provided for @scene_deduplication_matching_codecs.
+  ///
+  /// In en, this message translates to:
+  /// **'Only select matching codecs'**
+  String get scene_deduplication_matching_codecs;
+
+  /// No description provided for @scene_deduplication_all_but_largest_resolution.
+  ///
+  /// In en, this message translates to:
+  /// **'All but largest resolution'**
+  String get scene_deduplication_all_but_largest_resolution;
+
+  /// No description provided for @scene_deduplication_all_but_largest_file.
+  ///
+  /// In en, this message translates to:
+  /// **'All but largest file'**
+  String get scene_deduplication_all_but_largest_file;
+
+  /// No description provided for @scene_deduplication_all_but_oldest.
+  ///
+  /// In en, this message translates to:
+  /// **'All but oldest'**
+  String get scene_deduplication_all_but_oldest;
+
+  /// No description provided for @scene_deduplication_all_but_youngest.
+  ///
+  /// In en, this message translates to:
+  /// **'All but youngest'**
+  String get scene_deduplication_all_but_youngest;
+
+  /// No description provided for @scene_deduplication_select_none.
+  ///
+  /// In en, this message translates to:
+  /// **'Select none'**
+  String get scene_deduplication_select_none;
+
+  /// No description provided for @scene_deduplication_delete_selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete selected ({count})'**
+  String scene_deduplication_delete_selected(int count);
+
+  /// No description provided for @common_merge.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge'**
+  String get common_merge;
+
+  /// No description provided for @scene_deduplication_tags.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} tags'**
+  String scene_deduplication_tags(int count);
+
+  /// No description provided for @scene_deduplication_performers.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} performers'**
+  String scene_deduplication_performers(int count);
+
+  /// No description provided for @scene_deduplication_groups.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} groups'**
+  String scene_deduplication_groups(int count);
+
+  /// No description provided for @scene_deduplication_markers.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} markers'**
+  String scene_deduplication_markers(int count);
+
+  /// No description provided for @scene_deduplication_galleries.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} galleries'**
+  String scene_deduplication_galleries(int count);
+
+  /// No description provided for @scene_deduplication_page.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {page} of {totalPages}'**
+  String scene_deduplication_page(int page, int totalPages);
+
+  /// No description provided for @tools_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Tools'**
+  String get tools_title;
 }
 
 class _AppLocalizationsDelegate

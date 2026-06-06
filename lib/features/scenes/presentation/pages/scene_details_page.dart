@@ -32,6 +32,7 @@ import '../../../setup/presentation/providers/scrape_customization_provider.dart
 import '../../domain/entities/scene.dart';
 import '../widgets/scene_video_player.dart';
 import '../widgets/scene_strip.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 
 /// A detailed view for a single scene,
 ///
@@ -145,7 +146,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 Icons.delete_outline,
                 color: dialogContext.colors.error,
               ),
-              title: const Text('Delete scene'),
+              title: Text(context.l10n.scene_details_delete_scene),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,7 +162,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                     children: [
                       ChoiceChip(
                         avatar: const Icon(Icons.storage_outlined, size: 18),
-                        label: const Text('Metadata only'),
+                        label: const Text(
+                          context.l10n.scene_details_metadata_only,
+                        ),
                         selected: mode == _SceneDeleteMode.metadataOnly,
                         onSelected: isDeleting
                             ? null
@@ -178,7 +181,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                           Icons.folder_delete_outlined,
                           size: 18,
                         ),
-                        label: const Text('Files'),
+                        label: Text(context.l10n.scene_details_files),
                         selected: mode == _SceneDeleteMode.files,
                         onSelected: isDeleting
                             ? null
@@ -250,7 +253,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(Icons.delete_outline),
-                  label: const Text('Delete'),
+                  label: Text(context.l10n.common_delete),
                 ),
               ],
             );
@@ -264,9 +267,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     ref.read(playbackQueueProvider.notifier).removeScene(scene.id);
     ref.invalidate(sceneDetailsProvider(scene.id));
     _invalidateSceneListUnlessRandom();
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Scene deleted')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text(context.l10n.scene_details_scene_deleted)),
+    );
 
     final router = GoRouter.of(context);
     if (router.canPop()) {

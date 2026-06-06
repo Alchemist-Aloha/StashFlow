@@ -787,13 +787,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get filter_less_than => '小于';
 
   @override
-  String get filter_includes => 'Includes';
+  String get filter_includes => '包括';
 
   @override
-  String get filter_excludes => 'Excludes';
+  String get filter_excludes => '不包括';
 
   @override
-  String get filter_includes_all => 'Includes All';
+  String get filter_includes_all => '包括全部';
 
   @override
   String get filter_is_null => '为空';
@@ -802,19 +802,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get filter_not_null => '不为空';
 
   @override
-  String get filter_matches_regex => 'Matches Regex';
+  String get filter_matches_regex => '匹配正则表达式';
 
   @override
-  String get filter_not_matches_regex => 'Does Not Match Regex';
+  String get filter_not_matches_regex => '与正则表达式不匹配';
 
   @override
-  String get filter_between => 'Between';
+  String get filter_between => '之间';
 
   @override
-  String get filter_not_between => 'Not Between';
+  String get filter_not_between => '不在之间';
 
   @override
-  String get filter_value_secondary => 'Second Value';
+  String get filter_value_secondary => '第二个值';
 
   @override
   String get images_resolution_title => '分辨率';
@@ -2473,6 +2473,223 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get common_saved_filters => '保存的筛选';
+
+  @override
+  String saved_filter_failed_save(String error) {
+    return '无法保存过滤器：$error';
+  }
+
+  @override
+  String get saved_filter_preset_deleted => '预设已删除';
+
+  @override
+  String saved_filter_failed_delete(String error) {
+    return '无法删除预设：$error';
+  }
+
+  @override
+  String get saved_filter_delete_preset => '删除预设';
+
+  @override
+  String saved_filter_delete_confirm(String name) {
+    return '删除“$name”？此操作无法撤消。';
+  }
+
+  @override
+  String get common_delete => '删除';
+
+  @override
+  String get saved_filter_save_preset => '保存预设';
+
+  @override
+  String saved_filter_sort(String sortLabel) {
+    return '排序：$sortLabel';
+  }
+
+  @override
+  String saved_filter_filters(int activeFilterCount) {
+    return '过滤器：$activeFilterCount';
+  }
+
+  @override
+  String saved_filter_search(String searchQuery) {
+    return '搜索：$searchQuery';
+  }
+
+  @override
+  String saved_filter_failed_load(String error) {
+    return '无法加载预设：$error';
+  }
+
+  @override
+  String get saved_filter_no_presets => '没有保存的预设';
+
+  @override
+  String scene_tagger_saved(String title) {
+    return '已保存 $title';
+  }
+
+  @override
+  String scene_tagger_save_failed(String error) {
+    return '保存失败：$error';
+  }
+
+  @override
+  String get scene_tagger_title => '场景标签';
+
+  @override
+  String get scene_tagger_page_size => '页面尺寸';
+
+  @override
+  String get scene_tagger_mode => '模式';
+
+  @override
+  String get scene_tagger_sort => '种类';
+
+  @override
+  String get scene_tagger_desc => '描述';
+
+  @override
+  String get scene_tagger_asc => '上升';
+
+  @override
+  String get scene_tagger_filter => '筛选';
+
+  @override
+  String get scene_tagger_preset => '预设';
+
+  @override
+  String get scene_tagger_scraper => '储物盒刮刀';
+
+  @override
+  String get scene_tagger_start => '开始标记';
+
+  @override
+  String get scene_tagger_stop => '停止';
+
+  @override
+  String scene_tagger_unable_to_load_stash_boxes(String error) {
+    return '无法加载储物盒：$error';
+  }
+
+  @override
+  String get common_skip => '跳过';
+
+  @override
+  String get common_selected => '已选择';
+
+  @override
+  String get common_select_only => '选择';
+
+  @override
+  String get common_preview => '预览';
+
+  @override
+  String get scene_details_delete_scene => '删除场景';
+
+  @override
+  String get scene_details_metadata_only => '仅元数据';
+
+  @override
+  String get scene_details_files => '文件';
+
+  @override
+  String get scene_details_scene_deleted => '场景已删除';
+
+  @override
+  String scene_deduplication_delete_confirm(int count) {
+    return '删除 $count 场景？';
+  }
+
+  @override
+  String get scene_deduplication_delete_metadata => '删除元数据';
+
+  @override
+  String get scene_deduplication_delete_files => '删除文件';
+
+  @override
+  String scene_deduplication_deleted_scenes(int count) {
+    return '已删除 $count 场景';
+  }
+
+  @override
+  String scene_deduplication_delete_failed(String error) {
+    return '删除失败：$error';
+  }
+
+  @override
+  String get scene_deduplication_title => '场景去重';
+
+  @override
+  String get scene_deduplication_no_duplicates => '没有发现重复项。';
+
+  @override
+  String get scene_deduplication_search_accuracy => '搜索准确度';
+
+  @override
+  String get scene_deduplication_duration_difference => '持续时间差异';
+
+  @override
+  String get scene_deduplication_page_size => '页面尺寸';
+
+  @override
+  String get scene_deduplication_matching_codecs => '仅选择匹配的编解码器';
+
+  @override
+  String get scene_deduplication_all_but_largest_resolution => '除最大分辨率外的所有分辨率';
+
+  @override
+  String get scene_deduplication_all_but_largest_file => '除最大文件外的所有文件';
+
+  @override
+  String get scene_deduplication_all_but_oldest => '除了最古老的以外的所有';
+
+  @override
+  String get scene_deduplication_all_but_youngest => '除了最年轻的以外，其他所有人';
+
+  @override
+  String get scene_deduplication_select_none => '不选择';
+
+  @override
+  String scene_deduplication_delete_selected(int count) {
+    return '删除选定的 ($count)';
+  }
+
+  @override
+  String get common_merge => '合并';
+
+  @override
+  String scene_deduplication_tags(int count) {
+    return '$count 标签';
+  }
+
+  @override
+  String scene_deduplication_performers(int count) {
+    return '$count 表演者';
+  }
+
+  @override
+  String scene_deduplication_groups(int count) {
+    return '$count 组';
+  }
+
+  @override
+  String scene_deduplication_markers(int count) {
+    return '$count 标记';
+  }
+
+  @override
+  String scene_deduplication_galleries(int count) {
+    return '$count 画廊';
+  }
+
+  @override
+  String scene_deduplication_page(int page, int totalPages) {
+    return '第 $page 页（共 $totalPages）';
+  }
+
+  @override
+  String get tools_title => '工具';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -3258,10 +3475,34 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get filter_less_than => '小于';
 
   @override
+  String get filter_includes => '包括';
+
+  @override
+  String get filter_excludes => '不包括';
+
+  @override
+  String get filter_includes_all => '包括全部';
+
+  @override
   String get filter_is_null => '为空';
 
   @override
   String get filter_not_null => '不为空';
+
+  @override
+  String get filter_matches_regex => '匹配正则表达式';
+
+  @override
+  String get filter_not_matches_regex => '与正则表达式不匹配';
+
+  @override
+  String get filter_between => '之间';
+
+  @override
+  String get filter_not_between => '不在之间';
+
+  @override
+  String get filter_value_secondary => '第二个值';
 
   @override
   String get images_resolution_title => '分辨率';
@@ -4917,6 +5158,226 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_security_app_lock_subtitle => '后台运行后使用密码保护访问。';
+
+  @override
+  String get common_saved_filters => '已保存的过滤器';
+
+  @override
+  String saved_filter_failed_save(String error) {
+    return '无法保存过滤器：$error';
+  }
+
+  @override
+  String get saved_filter_preset_deleted => '预设已删除';
+
+  @override
+  String saved_filter_failed_delete(String error) {
+    return '无法删除预设：$error';
+  }
+
+  @override
+  String get saved_filter_delete_preset => '删除预设';
+
+  @override
+  String saved_filter_delete_confirm(String name) {
+    return '删除“$name”？此操作无法撤消。';
+  }
+
+  @override
+  String get common_delete => '删除';
+
+  @override
+  String get saved_filter_save_preset => '保存预设';
+
+  @override
+  String saved_filter_sort(String sortLabel) {
+    return '排序：$sortLabel';
+  }
+
+  @override
+  String saved_filter_filters(int activeFilterCount) {
+    return '过滤器：$activeFilterCount';
+  }
+
+  @override
+  String saved_filter_search(String searchQuery) {
+    return '搜索：$searchQuery';
+  }
+
+  @override
+  String saved_filter_failed_load(String error) {
+    return '无法加载预设：$error';
+  }
+
+  @override
+  String get saved_filter_no_presets => '没有保存的预设';
+
+  @override
+  String scene_tagger_saved(String title) {
+    return '已保存 $title';
+  }
+
+  @override
+  String scene_tagger_save_failed(String error) {
+    return '保存失败：$error';
+  }
+
+  @override
+  String get scene_tagger_title => '场景标签';
+
+  @override
+  String get scene_tagger_page_size => '页面尺寸';
+
+  @override
+  String get scene_tagger_mode => '模式';
+
+  @override
+  String get scene_tagger_sort => '种类';
+
+  @override
+  String get scene_tagger_desc => '描述';
+
+  @override
+  String get scene_tagger_asc => '上升';
+
+  @override
+  String get scene_tagger_filter => '筛选';
+
+  @override
+  String get scene_tagger_preset => '预设';
+
+  @override
+  String get scene_tagger_scraper => '储物盒刮刀';
+
+  @override
+  String get scene_tagger_start => '开始标记';
+
+  @override
+  String get scene_tagger_stop => '停止';
+
+  @override
+  String scene_tagger_unable_to_load_stash_boxes(String error) {
+    return '无法加载储物盒：$error';
+  }
+
+  @override
+  String get common_skip => '跳过';
+
+  @override
+  String get common_selected => '已选择';
+
+  @override
+  String get common_select_only => '选择';
+
+  @override
+  String get common_preview => '预览';
+
+  @override
+  String get scene_details_delete_scene => '删除场景';
+
+  @override
+  String get scene_details_metadata_only => '仅元数据';
+
+  @override
+  String get scene_details_files => '文件';
+
+  @override
+  String get scene_details_scene_deleted => '场景已删除';
+
+  @override
+  String scene_deduplication_delete_confirm(int count) {
+    return '删除 $count 场景？';
+  }
+
+  @override
+  String get scene_deduplication_delete_metadata => '删除元数据';
+
+  @override
+  String get scene_deduplication_delete_files => '删除文件';
+
+  @override
+  String scene_deduplication_deleted_scenes(int count) {
+    return '已删除 $count 场景';
+  }
+
+  @override
+  String scene_deduplication_delete_failed(String error) {
+    return '删除失败：$error';
+  }
+
+  @override
+  String get scene_deduplication_title => '场景去重';
+
+  @override
+  String get scene_deduplication_no_duplicates => '没有发现重复项。';
+
+  @override
+  String get scene_deduplication_search_accuracy => '搜索准确度';
+
+  @override
+  String get scene_deduplication_duration_difference => '持续时间差异';
+
+  @override
+  String get scene_deduplication_page_size => '页面尺寸';
+
+  @override
+  String get scene_deduplication_matching_codecs => '仅选择匹配的编解码器';
+
+  @override
+  String get scene_deduplication_all_but_largest_resolution => '除最大分辨率外的所有分辨率';
+
+  @override
+  String get scene_deduplication_all_but_largest_file => '除最大文件外的所有文件';
+
+  @override
+  String get scene_deduplication_all_but_oldest => '除了最古老的以外';
+
+  @override
+  String get scene_deduplication_all_but_youngest => '除了最年轻的以外，其他所有人';
+
+  @override
+  String get scene_deduplication_select_none => '不选择';
+
+  @override
+  String scene_deduplication_delete_selected(int count) {
+    return '删除选定的 ($count)';
+  }
+
+  @override
+  String get common_merge => '合并';
+
+  @override
+  String scene_deduplication_tags(int count) {
+    return '$count 标签';
+  }
+
+  @override
+  String scene_deduplication_performers(int count) {
+    return '$count 表演者';
+  }
+
+  @override
+  String scene_deduplication_groups(int count) {
+    return '$count 组';
+  }
+
+  @override
+  String scene_deduplication_markers(int count) {
+    return '$count 标记';
+  }
+
+  @override
+  String scene_deduplication_galleries(int count) {
+    return '$count 画廊';
+  }
+
+  @override
+  String scene_deduplication_page(int page, int totalPages) {
+    return '第 $page 页（共 $totalPages）';
+  }
+
+  @override
+  String get tools_title => '工具';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -5704,10 +6165,34 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get filter_less_than => '小于';
 
   @override
+  String get filter_includes => '包括';
+
+  @override
+  String get filter_excludes => '不包括';
+
+  @override
+  String get filter_includes_all => '包括全部';
+
+  @override
   String get filter_is_null => '为空';
 
   @override
   String get filter_not_null => '不为空';
+
+  @override
+  String get filter_matches_regex => '匹配正規表示式';
+
+  @override
+  String get filter_not_matches_regex => '與正規表示式不符';
+
+  @override
+  String get filter_between => '之間';
+
+  @override
+  String get filter_not_between => '不在之間';
+
+  @override
+  String get filter_value_secondary => '第二個值';
 
   @override
   String get images_resolution_title => '解析度';
@@ -7365,4 +7850,224 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_security_app_lock_subtitle => '後台運行後使用密碼保護存取。';
+
+  @override
+  String get common_saved_filters => '已儲存的過濾器';
+
+  @override
+  String saved_filter_failed_save(String error) {
+    return '無法儲存過濾器：$error';
+  }
+
+  @override
+  String get saved_filter_preset_deleted => '預設已刪除';
+
+  @override
+  String saved_filter_failed_delete(String error) {
+    return '無法刪除預設：$error';
+  }
+
+  @override
+  String get saved_filter_delete_preset => '刪除預設';
+
+  @override
+  String saved_filter_delete_confirm(String name) {
+    return '刪除“$name”？此操作無法撤銷。';
+  }
+
+  @override
+  String get common_delete => '刪除';
+
+  @override
+  String get saved_filter_save_preset => '儲存預設';
+
+  @override
+  String saved_filter_sort(String sortLabel) {
+    return '排序：$sortLabel';
+  }
+
+  @override
+  String saved_filter_filters(int activeFilterCount) {
+    return '濾鏡：$activeFilterCount';
+  }
+
+  @override
+  String saved_filter_search(String searchQuery) {
+    return '搜尋：$searchQuery';
+  }
+
+  @override
+  String saved_filter_failed_load(String error) {
+    return '無法載入預設：$error';
+  }
+
+  @override
+  String get saved_filter_no_presets => '沒有儲存的預設';
+
+  @override
+  String scene_tagger_saved(String title) {
+    return '已儲存 $title';
+  }
+
+  @override
+  String scene_tagger_save_failed(String error) {
+    return '儲存失敗：$error';
+  }
+
+  @override
+  String get scene_tagger_title => '場景標籤';
+
+  @override
+  String get scene_tagger_page_size => '頁面尺寸';
+
+  @override
+  String get scene_tagger_mode => '模式';
+
+  @override
+  String get scene_tagger_sort => '種類';
+
+  @override
+  String get scene_tagger_desc => '描述';
+
+  @override
+  String get scene_tagger_asc => '上升';
+
+  @override
+  String get scene_tagger_filter => '篩選';
+
+  @override
+  String get scene_tagger_preset => '預設';
+
+  @override
+  String get scene_tagger_scraper => '收納箱刮刀';
+
+  @override
+  String get scene_tagger_start => '開始標記';
+
+  @override
+  String get scene_tagger_stop => '停止';
+
+  @override
+  String scene_tagger_unable_to_load_stash_boxes(String error) {
+    return '無法載入儲物盒：$error';
+  }
+
+  @override
+  String get common_skip => '跳過';
+
+  @override
+  String get common_selected => '已選擇';
+
+  @override
+  String get common_select_only => '選擇';
+
+  @override
+  String get common_preview => '預覽';
+
+  @override
+  String get scene_details_delete_scene => '刪除場景';
+
+  @override
+  String get scene_details_metadata_only => '僅元數據';
+
+  @override
+  String get scene_details_files => '文件';
+
+  @override
+  String get scene_details_scene_deleted => '場景已刪除';
+
+  @override
+  String scene_deduplication_delete_confirm(int count) {
+    return '刪除 $count 場景？';
+  }
+
+  @override
+  String get scene_deduplication_delete_metadata => '刪除元數據';
+
+  @override
+  String get scene_deduplication_delete_files => '刪除文件';
+
+  @override
+  String scene_deduplication_deleted_scenes(int count) {
+    return '已刪除 $count 場景';
+  }
+
+  @override
+  String scene_deduplication_delete_failed(String error) {
+    return '刪除失敗：$error';
+  }
+
+  @override
+  String get scene_deduplication_title => '場景去重';
+
+  @override
+  String get scene_deduplication_no_duplicates => '沒有發現重複項。';
+
+  @override
+  String get scene_deduplication_search_accuracy => '搜尋準確度';
+
+  @override
+  String get scene_deduplication_duration_difference => '持續時間差異';
+
+  @override
+  String get scene_deduplication_page_size => '頁面尺寸';
+
+  @override
+  String get scene_deduplication_matching_codecs => '僅選擇相符的編解碼器';
+
+  @override
+  String get scene_deduplication_all_but_largest_resolution => '除最大分辨率外的所有分辨率';
+
+  @override
+  String get scene_deduplication_all_but_largest_file => '除最大文件外的所有文件';
+
+  @override
+  String get scene_deduplication_all_but_oldest => '除了最古老的以外';
+
+  @override
+  String get scene_deduplication_all_but_youngest => '除了最年輕的以外，其他人';
+
+  @override
+  String get scene_deduplication_select_none => '不選擇';
+
+  @override
+  String scene_deduplication_delete_selected(int count) {
+    return '刪除選定的 ($count)';
+  }
+
+  @override
+  String get common_merge => '合併';
+
+  @override
+  String scene_deduplication_tags(int count) {
+    return '$count 標籤';
+  }
+
+  @override
+  String scene_deduplication_performers(int count) {
+    return '$count 表演者';
+  }
+
+  @override
+  String scene_deduplication_groups(int count) {
+    return '$count 組';
+  }
+
+  @override
+  String scene_deduplication_markers(int count) {
+    return '$count 標記';
+  }
+
+  @override
+  String scene_deduplication_galleries(int count) {
+    return '$count 畫廊';
+  }
+
+  @override
+  String scene_deduplication_page(int page, int totalPages) {
+    return '頁 $page（共 $totalPages）';
+  }
+
+  @override
+  String get tools_title => '工具';
 }

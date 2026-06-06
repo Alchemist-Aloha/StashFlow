@@ -787,13 +787,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get filter_less_than => '보다 작음';
 
   @override
-  String get filter_includes => 'Includes';
+  String get filter_includes => '포함';
 
   @override
-  String get filter_excludes => 'Excludes';
+  String get filter_excludes => '제외';
 
   @override
-  String get filter_includes_all => 'Includes All';
+  String get filter_includes_all => '모두 포함';
 
   @override
   String get filter_is_null => '널임';
@@ -802,19 +802,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get filter_not_null => '널 아님';
 
   @override
-  String get filter_matches_regex => 'Matches Regex';
+  String get filter_matches_regex => '정규식과 일치';
 
   @override
-  String get filter_not_matches_regex => 'Does Not Match Regex';
+  String get filter_not_matches_regex => '정규식과 일치하지 않습니다.';
 
   @override
-  String get filter_between => 'Between';
+  String get filter_between => '사이';
 
   @override
-  String get filter_not_between => 'Not Between';
+  String get filter_not_between => '사이가 아닌';
 
   @override
-  String get filter_value_secondary => 'Second Value';
+  String get filter_value_secondary => '두 번째 값';
 
   @override
   String get images_resolution_title => '해상도';
@@ -2499,4 +2499,222 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get common_saved_filters => '저장된 필터';
+
+  @override
+  String saved_filter_failed_save(String error) {
+    return '필터 저장 실패: $error';
+  }
+
+  @override
+  String get saved_filter_preset_deleted => '사전 설정이 삭제되었습니다.';
+
+  @override
+  String saved_filter_failed_delete(String error) {
+    return '사전 설정 삭제 실패: $error';
+  }
+
+  @override
+  String get saved_filter_delete_preset => '프리셋 삭제';
+
+  @override
+  String saved_filter_delete_confirm(String name) {
+    return '\'$name\'을 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.';
+  }
+
+  @override
+  String get common_delete => '삭제';
+
+  @override
+  String get saved_filter_save_preset => '사전 설정 저장';
+
+  @override
+  String saved_filter_sort(String sortLabel) {
+    return '정렬: $sortLabel';
+  }
+
+  @override
+  String saved_filter_filters(int activeFilterCount) {
+    return '필터: $activeFilterCount';
+  }
+
+  @override
+  String saved_filter_search(String searchQuery) {
+    return '검색: $searchQuery';
+  }
+
+  @override
+  String saved_filter_failed_load(String error) {
+    return '사전 설정을 로드하지 못했습니다: $error';
+  }
+
+  @override
+  String get saved_filter_no_presets => '저장된 사전 설정이 없습니다.';
+
+  @override
+  String scene_tagger_saved(String title) {
+    return '$title에 저장되었습니다.';
+  }
+
+  @override
+  String scene_tagger_save_failed(String error) {
+    return '저장 실패: $error';
+  }
+
+  @override
+  String get scene_tagger_title => '장면 태그';
+
+  @override
+  String get scene_tagger_page_size => '페이지 크기';
+
+  @override
+  String get scene_tagger_mode => '방법';
+
+  @override
+  String get scene_tagger_sort => '종류';
+
+  @override
+  String get scene_tagger_desc => '설명';
+
+  @override
+  String get scene_tagger_asc => '오름차순';
+
+  @override
+  String get scene_tagger_filter => '필터';
+
+  @override
+  String get scene_tagger_preset => '프리셋';
+
+  @override
+  String get scene_tagger_scraper => '보관함 스크레이퍼';
+
+  @override
+  String get scene_tagger_start => '태그 시작';
+
+  @override
+  String get scene_tagger_stop => '멈추다';
+
+  @override
+  String scene_tagger_unable_to_load_stash_boxes(String error) {
+    return '숨김 상자를 로드할 수 없습니다: $error';
+  }
+
+  @override
+  String get common_skip => '건너뛰다';
+
+  @override
+  String get common_selected => '선택된';
+
+  @override
+  String get common_select_only => '선택하다';
+
+  @override
+  String get common_preview => '시사';
+
+  @override
+  String get scene_details_delete_scene => '장면 삭제';
+
+  @override
+  String get scene_details_metadata_only => '메타데이터만';
+
+  @override
+  String get scene_details_files => '파일';
+
+  @override
+  String get scene_details_scene_deleted => '장면이 삭제되었습니다.';
+
+  @override
+  String scene_deduplication_delete_confirm(int count) {
+    return '$count 장면을 삭제하시겠습니까?';
+  }
+
+  @override
+  String get scene_deduplication_delete_metadata => '메타데이터 삭제';
+
+  @override
+  String get scene_deduplication_delete_files => '파일 삭제';
+
+  @override
+  String scene_deduplication_deleted_scenes(int count) {
+    return '$count 장면을 삭제했습니다.';
+  }
+
+  @override
+  String scene_deduplication_delete_failed(String error) {
+    return '삭제 실패: $error';
+  }
+
+  @override
+  String get scene_deduplication_title => '장면 중복 제거';
+
+  @override
+  String get scene_deduplication_no_duplicates => '중복된 항목이 없습니다.';
+
+  @override
+  String get scene_deduplication_search_accuracy => '검색 정확도';
+
+  @override
+  String get scene_deduplication_duration_difference => '기간 차이';
+
+  @override
+  String get scene_deduplication_page_size => '페이지 크기';
+
+  @override
+  String get scene_deduplication_matching_codecs => '일치하는 코덱만 선택';
+
+  @override
+  String get scene_deduplication_all_but_largest_resolution =>
+      '가장 큰 해상도를 제외한 모든 것';
+
+  @override
+  String get scene_deduplication_all_but_largest_file => '가장 큰 파일을 제외한 모든 파일';
+
+  @override
+  String get scene_deduplication_all_but_oldest => '가장 나이 많은 사람 빼고 다';
+
+  @override
+  String get scene_deduplication_all_but_youngest => '막내빼고 다';
+
+  @override
+  String get scene_deduplication_select_none => '없음을 선택하세요';
+
+  @override
+  String scene_deduplication_delete_selected(int count) {
+    return '선택 항목 삭제($count)';
+  }
+
+  @override
+  String get common_merge => '병합';
+
+  @override
+  String scene_deduplication_tags(int count) {
+    return '$count 태그';
+  }
+
+  @override
+  String scene_deduplication_performers(int count) {
+    return '$count 출연자';
+  }
+
+  @override
+  String scene_deduplication_groups(int count) {
+    return '$count 그룹';
+  }
+
+  @override
+  String scene_deduplication_markers(int count) {
+    return '$count 마커';
+  }
+
+  @override
+  String scene_deduplication_galleries(int count) {
+    return '$count 갤러리';
+  }
+
+  @override
+  String scene_deduplication_page(int page, int totalPages) {
+    return '$totalPages 중 $page 페이지';
+  }
+
+  @override
+  String get tools_title => '도구';
 }

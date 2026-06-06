@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../setup/presentation/widgets/settings_page_shell.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 
 class ToolsPage extends StatelessWidget {
   const ToolsPage({super.key});
@@ -28,7 +29,7 @@ class ToolsPage extends StatelessWidget {
                   icon: const BackButtonIcon(),
                   onPressed: fallbackBack,
                 ),
-          title: const Text('Tools'),
+          title: Text(context.l10n.tools_title),
         ),
         body: SafeArea(
           child: Align(

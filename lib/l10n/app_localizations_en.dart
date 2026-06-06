@@ -2550,4 +2550,223 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get common_saved_filters => 'Saved filters';
+
+  @override
+  String saved_filter_failed_save(String error) {
+    return 'Failed to save filter: $error';
+  }
+
+  @override
+  String get saved_filter_preset_deleted => 'Preset deleted';
+
+  @override
+  String saved_filter_failed_delete(String error) {
+    return 'Failed to delete preset: $error';
+  }
+
+  @override
+  String get saved_filter_delete_preset => 'Delete Preset';
+
+  @override
+  String saved_filter_delete_confirm(String name) {
+    return 'Delete \"$name\"? This action cannot be undone.';
+  }
+
+  @override
+  String get common_delete => 'Delete';
+
+  @override
+  String get saved_filter_save_preset => 'Save Preset';
+
+  @override
+  String saved_filter_sort(String sortLabel) {
+    return 'Sort: $sortLabel';
+  }
+
+  @override
+  String saved_filter_filters(int activeFilterCount) {
+    return 'Filters: $activeFilterCount';
+  }
+
+  @override
+  String saved_filter_search(String searchQuery) {
+    return 'Search: $searchQuery';
+  }
+
+  @override
+  String saved_filter_failed_load(String error) {
+    return 'Failed to load presets: $error';
+  }
+
+  @override
+  String get saved_filter_no_presets => 'No saved presets';
+
+  @override
+  String scene_tagger_saved(String title) {
+    return 'Saved $title';
+  }
+
+  @override
+  String scene_tagger_save_failed(String error) {
+    return 'Save failed: $error';
+  }
+
+  @override
+  String get scene_tagger_title => 'Scene Tagger';
+
+  @override
+  String get scene_tagger_page_size => 'Page size';
+
+  @override
+  String get scene_tagger_mode => 'Mode';
+
+  @override
+  String get scene_tagger_sort => 'Sort';
+
+  @override
+  String get scene_tagger_desc => 'Desc';
+
+  @override
+  String get scene_tagger_asc => 'Asc';
+
+  @override
+  String get scene_tagger_filter => 'Filter';
+
+  @override
+  String get scene_tagger_preset => 'Preset';
+
+  @override
+  String get scene_tagger_scraper => 'Stash-box scraper';
+
+  @override
+  String get scene_tagger_start => 'Start tagging';
+
+  @override
+  String get scene_tagger_stop => 'Stop';
+
+  @override
+  String scene_tagger_unable_to_load_stash_boxes(String error) {
+    return 'Unable to load stash-boxes: $error';
+  }
+
+  @override
+  String get common_skip => 'Skip';
+
+  @override
+  String get common_selected => 'Selected';
+
+  @override
+  String get common_select_only => 'Select';
+
+  @override
+  String get common_preview => 'Preview';
+
+  @override
+  String get scene_details_delete_scene => 'Delete scene';
+
+  @override
+  String get scene_details_metadata_only => 'Metadata only';
+
+  @override
+  String get scene_details_files => 'Files';
+
+  @override
+  String get scene_details_scene_deleted => 'Scene deleted';
+
+  @override
+  String scene_deduplication_delete_confirm(int count) {
+    return 'Delete $count scenes?';
+  }
+
+  @override
+  String get scene_deduplication_delete_metadata => 'Delete metadata';
+
+  @override
+  String get scene_deduplication_delete_files => 'Delete files';
+
+  @override
+  String scene_deduplication_deleted_scenes(int count) {
+    return 'Deleted $count scenes';
+  }
+
+  @override
+  String scene_deduplication_delete_failed(String error) {
+    return 'Delete failed: $error';
+  }
+
+  @override
+  String get scene_deduplication_title => 'Scene Deduplication';
+
+  @override
+  String get scene_deduplication_no_duplicates => 'No duplicates found.';
+
+  @override
+  String get scene_deduplication_search_accuracy => 'Search Accuracy';
+
+  @override
+  String get scene_deduplication_duration_difference => 'Duration Difference';
+
+  @override
+  String get scene_deduplication_page_size => 'Page Size';
+
+  @override
+  String get scene_deduplication_matching_codecs =>
+      'Only select matching codecs';
+
+  @override
+  String get scene_deduplication_all_but_largest_resolution =>
+      'All but largest resolution';
+
+  @override
+  String get scene_deduplication_all_but_largest_file => 'All but largest file';
+
+  @override
+  String get scene_deduplication_all_but_oldest => 'All but oldest';
+
+  @override
+  String get scene_deduplication_all_but_youngest => 'All but youngest';
+
+  @override
+  String get scene_deduplication_select_none => 'Select none';
+
+  @override
+  String scene_deduplication_delete_selected(int count) {
+    return 'Delete selected ($count)';
+  }
+
+  @override
+  String get common_merge => 'Merge';
+
+  @override
+  String scene_deduplication_tags(int count) {
+    return '$count tags';
+  }
+
+  @override
+  String scene_deduplication_performers(int count) {
+    return '$count performers';
+  }
+
+  @override
+  String scene_deduplication_groups(int count) {
+    return '$count groups';
+  }
+
+  @override
+  String scene_deduplication_markers(int count) {
+    return '$count markers';
+  }
+
+  @override
+  String scene_deduplication_galleries(int count) {
+    return '$count galleries';
+  }
+
+  @override
+  String scene_deduplication_page(int page, int totalPages) {
+    return 'Page $page of $totalPages';
+  }
+
+  @override
+  String get tools_title => 'Tools';
 }

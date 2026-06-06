@@ -799,13 +799,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get filter_less_than => 'Kleiner als';
 
   @override
-  String get filter_includes => 'Includes';
+  String get filter_includes => 'Inklusive';
 
   @override
-  String get filter_excludes => 'Excludes';
+  String get filter_excludes => 'Ausgeschlossen';
 
   @override
-  String get filter_includes_all => 'Includes All';
+  String get filter_includes_all => 'Beinhaltet alles';
 
   @override
   String get filter_is_null => 'Ist null';
@@ -814,19 +814,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get filter_not_null => 'Ist nicht null';
 
   @override
-  String get filter_matches_regex => 'Matches Regex';
+  String get filter_matches_regex => 'Entspricht Regex';
 
   @override
-  String get filter_not_matches_regex => 'Does Not Match Regex';
+  String get filter_not_matches_regex => 'Entspricht nicht Regex';
 
   @override
-  String get filter_between => 'Between';
+  String get filter_between => 'Zwischen';
 
   @override
   String get filter_not_between => 'Not Between';
 
   @override
-  String get filter_value_secondary => 'Second Value';
+  String get filter_value_secondary => 'Zweiter Wert';
 
   @override
   String get images_resolution_title => 'Auflösung';
@@ -2592,4 +2592,225 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get common_saved_filters => 'Gespeicherte Filter';
+
+  @override
+  String saved_filter_failed_save(String error) {
+    return 'Filter konnte nicht gespeichert werden: $error';
+  }
+
+  @override
+  String get saved_filter_preset_deleted => 'Voreinstellung gelöscht';
+
+  @override
+  String saved_filter_failed_delete(String error) {
+    return 'Voreinstellung konnte nicht gelöscht werden: $error';
+  }
+
+  @override
+  String get saved_filter_delete_preset => 'Voreinstellung löschen';
+
+  @override
+  String saved_filter_delete_confirm(String name) {
+    return '„$name“ löschen? Diese Aktion kann nicht rückgängig gemacht werden.';
+  }
+
+  @override
+  String get common_delete => 'Löschen';
+
+  @override
+  String get saved_filter_save_preset => 'Voreinstellung speichern';
+
+  @override
+  String saved_filter_sort(String sortLabel) {
+    return 'Sortieren: $sortLabel';
+  }
+
+  @override
+  String saved_filter_filters(int activeFilterCount) {
+    return 'Filter: $activeFilterCount';
+  }
+
+  @override
+  String saved_filter_search(String searchQuery) {
+    return 'Suche: $searchQuery';
+  }
+
+  @override
+  String saved_filter_failed_load(String error) {
+    return 'Voreinstellungen konnten nicht geladen werden: $error';
+  }
+
+  @override
+  String get saved_filter_no_presets => 'Keine gespeicherten Voreinstellungen';
+
+  @override
+  String scene_tagger_saved(String title) {
+    return 'Gespeichert $title';
+  }
+
+  @override
+  String scene_tagger_save_failed(String error) {
+    return 'Speichern fehlgeschlagen: $error';
+  }
+
+  @override
+  String get scene_tagger_title => 'Szenen-Tags';
+
+  @override
+  String get scene_tagger_page_size => 'Seitengröße';
+
+  @override
+  String get scene_tagger_mode => 'Modus';
+
+  @override
+  String get scene_tagger_sort => 'Sortieren';
+
+  @override
+  String get scene_tagger_desc => 'Beschr';
+
+  @override
+  String get scene_tagger_asc => 'Aufstieg';
+
+  @override
+  String get scene_tagger_filter => 'Filter';
+
+  @override
+  String get scene_tagger_preset => 'Voreingestellt';
+
+  @override
+  String get scene_tagger_scraper => 'Schaber für Vorratsboxen';
+
+  @override
+  String get scene_tagger_start => 'Beginnen Sie mit dem Markieren';
+
+  @override
+  String get scene_tagger_stop => 'Stoppen';
+
+  @override
+  String scene_tagger_unable_to_load_stash_boxes(String error) {
+    return 'Stash-Boxen können nicht geladen werden: $error';
+  }
+
+  @override
+  String get common_skip => 'Überspringen';
+
+  @override
+  String get common_selected => 'Ausgewählt';
+
+  @override
+  String get common_select_only => 'Wählen';
+
+  @override
+  String get common_preview => 'Vorschau';
+
+  @override
+  String get scene_details_delete_scene => 'Szene löschen';
+
+  @override
+  String get scene_details_metadata_only => 'Nur Metadaten';
+
+  @override
+  String get scene_details_files => 'Dateien';
+
+  @override
+  String get scene_details_scene_deleted => 'Szene gelöscht';
+
+  @override
+  String scene_deduplication_delete_confirm(int count) {
+    return '$count-Szenen löschen?';
+  }
+
+  @override
+  String get scene_deduplication_delete_metadata => 'Metadaten löschen';
+
+  @override
+  String get scene_deduplication_delete_files => 'Dateien löschen';
+
+  @override
+  String scene_deduplication_deleted_scenes(int count) {
+    return 'Gelöschte $count-Szenen';
+  }
+
+  @override
+  String scene_deduplication_delete_failed(String error) {
+    return 'Löschen fehlgeschlagen: $error';
+  }
+
+  @override
+  String get scene_deduplication_title => 'Szenendeduplizierung';
+
+  @override
+  String get scene_deduplication_no_duplicates => 'Keine Duplikate gefunden.';
+
+  @override
+  String get scene_deduplication_search_accuracy => 'Suchgenauigkeit';
+
+  @override
+  String get scene_deduplication_duration_difference => 'Dauerunterschied';
+
+  @override
+  String get scene_deduplication_page_size => 'Seitengröße';
+
+  @override
+  String get scene_deduplication_matching_codecs =>
+      'Wählen Sie nur passende Codecs aus';
+
+  @override
+  String get scene_deduplication_all_but_largest_resolution =>
+      'Alle außer größter Auflösung';
+
+  @override
+  String get scene_deduplication_all_but_largest_file =>
+      'Alle außer der größten Datei';
+
+  @override
+  String get scene_deduplication_all_but_oldest => 'Alle außer den Ältesten';
+
+  @override
+  String get scene_deduplication_all_but_youngest =>
+      'Alle bis auf die Jüngsten';
+
+  @override
+  String get scene_deduplication_select_none => 'Wählen Sie „Keine“ aus';
+
+  @override
+  String scene_deduplication_delete_selected(int count) {
+    return 'Ausgewählte löschen ($count)';
+  }
+
+  @override
+  String get common_merge => 'Verschmelzen';
+
+  @override
+  String scene_deduplication_tags(int count) {
+    return '$count-Tags';
+  }
+
+  @override
+  String scene_deduplication_performers(int count) {
+    return '$count Darsteller';
+  }
+
+  @override
+  String scene_deduplication_groups(int count) {
+    return '$count Gruppen';
+  }
+
+  @override
+  String scene_deduplication_markers(int count) {
+    return '$count-Markierungen';
+  }
+
+  @override
+  String scene_deduplication_galleries(int count) {
+    return '$count Galerien';
+  }
+
+  @override
+  String scene_deduplication_page(int page, int totalPages) {
+    return 'Seite $page von $totalPages';
+  }
+
+  @override
+  String get tools_title => 'Werkzeuge';
 }

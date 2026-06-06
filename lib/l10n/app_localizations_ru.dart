@@ -796,13 +796,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get filter_less_than => 'Меньше чем';
 
   @override
-  String get filter_includes => 'Includes';
+  String get filter_includes => 'Включает';
 
   @override
-  String get filter_excludes => 'Excludes';
+  String get filter_excludes => 'Исключает';
 
   @override
-  String get filter_includes_all => 'Includes All';
+  String get filter_includes_all => 'Включает все';
 
   @override
   String get filter_is_null => 'Null';
@@ -811,19 +811,20 @@ class AppLocalizationsRu extends AppLocalizations {
   String get filter_not_null => 'Не null';
 
   @override
-  String get filter_matches_regex => 'Matches Regex';
+  String get filter_matches_regex => 'Соответствует регулярному выражению';
 
   @override
-  String get filter_not_matches_regex => 'Does Not Match Regex';
+  String get filter_not_matches_regex =>
+      'Не соответствует регулярному выражению';
 
   @override
-  String get filter_between => 'Between';
+  String get filter_between => 'Между';
 
   @override
-  String get filter_not_between => 'Not Between';
+  String get filter_not_between => 'Не между';
 
   @override
-  String get filter_value_secondary => 'Second Value';
+  String get filter_value_secondary => 'Второе значение';
 
   @override
   String get images_resolution_title => 'Разрешение';
@@ -2585,4 +2586,225 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get common_saved_filters => 'Сохраненные фильтры';
+
+  @override
+  String saved_filter_failed_save(String error) {
+    return 'Не удалось сохранить фильтр: $error.';
+  }
+
+  @override
+  String get saved_filter_preset_deleted => 'Предустановка удалена.';
+
+  @override
+  String saved_filter_failed_delete(String error) {
+    return 'Не удалось удалить предустановку: $error.';
+  }
+
+  @override
+  String get saved_filter_delete_preset => 'Удалить предустановку';
+
+  @override
+  String saved_filter_delete_confirm(String name) {
+    return 'Удалить \"$name\"? Это действие невозможно отменить.';
+  }
+
+  @override
+  String get common_delete => 'Удалить';
+
+  @override
+  String get saved_filter_save_preset => 'Сохранить предустановку';
+
+  @override
+  String saved_filter_sort(String sortLabel) {
+    return 'Сортировать: $sortLabel';
+  }
+
+  @override
+  String saved_filter_filters(int activeFilterCount) {
+    return 'Фильтры: $activeFilterCount';
+  }
+
+  @override
+  String saved_filter_search(String searchQuery) {
+    return 'Поиск: $searchQuery';
+  }
+
+  @override
+  String saved_filter_failed_load(String error) {
+    return 'Не удалось загрузить пресеты: $error.';
+  }
+
+  @override
+  String get saved_filter_no_presets => 'Нет сохраненных пресетов';
+
+  @override
+  String scene_tagger_saved(String title) {
+    return 'Сохранено $title';
+  }
+
+  @override
+  String scene_tagger_save_failed(String error) {
+    return 'Не удалось сохранить: $error';
+  }
+
+  @override
+  String get scene_tagger_title => 'Теги сцен';
+
+  @override
+  String get scene_tagger_page_size => 'Размер страницы';
+
+  @override
+  String get scene_tagger_mode => 'Режим';
+
+  @override
+  String get scene_tagger_sort => 'Сортировать';
+
+  @override
+  String get scene_tagger_desc => 'Описание';
+
+  @override
+  String get scene_tagger_asc => 'По возрастанию';
+
+  @override
+  String get scene_tagger_filter => 'Фильтр';
+
+  @override
+  String get scene_tagger_preset => 'Предустановка';
+
+  @override
+  String get scene_tagger_scraper => 'Скребок для тайника';
+
+  @override
+  String get scene_tagger_start => 'Начать отмечать';
+
+  @override
+  String get scene_tagger_stop => 'Останавливаться';
+
+  @override
+  String scene_tagger_unable_to_load_stash_boxes(String error) {
+    return 'Невозможно загрузить тайники: $error';
+  }
+
+  @override
+  String get common_skip => 'Пропускать';
+
+  @override
+  String get common_selected => 'Выбрано';
+
+  @override
+  String get common_select_only => 'Выбирать';
+
+  @override
+  String get common_preview => 'Предварительный просмотр';
+
+  @override
+  String get scene_details_delete_scene => 'Удалить сцену';
+
+  @override
+  String get scene_details_metadata_only => 'Только метаданные';
+
+  @override
+  String get scene_details_files => 'Файлы';
+
+  @override
+  String get scene_details_scene_deleted => 'Сцена удалена';
+
+  @override
+  String scene_deduplication_delete_confirm(int count) {
+    return 'Удалить сцены $count?';
+  }
+
+  @override
+  String get scene_deduplication_delete_metadata => 'Удалить метаданные';
+
+  @override
+  String get scene_deduplication_delete_files => 'Удалить файлы';
+
+  @override
+  String scene_deduplication_deleted_scenes(int count) {
+    return 'Удалены сцены $count.';
+  }
+
+  @override
+  String scene_deduplication_delete_failed(String error) {
+    return 'Не удалось удалить: $error';
+  }
+
+  @override
+  String get scene_deduplication_title => 'Дедупликация сцены';
+
+  @override
+  String get scene_deduplication_no_duplicates => 'Дубликатов не обнаружено.';
+
+  @override
+  String get scene_deduplication_search_accuracy => 'Точность поиска';
+
+  @override
+  String get scene_deduplication_duration_difference =>
+      'Разница в продолжительности';
+
+  @override
+  String get scene_deduplication_page_size => 'Размер страницы';
+
+  @override
+  String get scene_deduplication_matching_codecs =>
+      'Выбирайте только соответствующие кодеки';
+
+  @override
+  String get scene_deduplication_all_but_largest_resolution =>
+      'Все, кроме самого большого разрешения';
+
+  @override
+  String get scene_deduplication_all_but_largest_file =>
+      'Все, кроме самого большого файла';
+
+  @override
+  String get scene_deduplication_all_but_oldest => 'Все, кроме старшего';
+
+  @override
+  String get scene_deduplication_all_but_youngest => 'Все, кроме младшего';
+
+  @override
+  String get scene_deduplication_select_none => 'Выбрать нет';
+
+  @override
+  String scene_deduplication_delete_selected(int count) {
+    return 'Удалить выбранное ($count)';
+  }
+
+  @override
+  String get common_merge => 'Объединить';
+
+  @override
+  String scene_deduplication_tags(int count) {
+    return '$count теги';
+  }
+
+  @override
+  String scene_deduplication_performers(int count) {
+    return '$count исполнители';
+  }
+
+  @override
+  String scene_deduplication_groups(int count) {
+    return '$count группы';
+  }
+
+  @override
+  String scene_deduplication_markers(int count) {
+    return '$count маркеры';
+  }
+
+  @override
+  String scene_deduplication_galleries(int count) {
+    return '$count галереи';
+  }
+
+  @override
+  String scene_deduplication_page(int page, int totalPages) {
+    return 'Страница $page из $totalPages';
+  }
+
+  @override
+  String get tools_title => 'Инструменты';
 }
