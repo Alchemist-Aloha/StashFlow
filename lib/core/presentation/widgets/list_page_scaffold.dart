@@ -332,13 +332,43 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
     List<T> items,
     SliverGridDelegate? responsiveDelegate,
     double screenWidth,
+    Map<String, String>? headers,
   ) {
     if (widget.imageUrlBuilder == null || items.isEmpty || !mounted) return;
     if (scrollInfo.metrics.axis != Axis.vertical) return;
 
     final offset = scrollInfo.metrics.pixels;
     final isGrid = widget.gridDelegate != null;
-    final headers = ref.read(mediaHeadersProvider);
+
+    int visibleIndex;
+    if (isGrid) {
+      final delegate =
+          responsiveDelegate as SliverGridDelegateWithFixedCrossAxisCount;
+      final crossAxisCount = delegate.crossAxisCount;
+      final padding = widget.padding is EdgeInsets
+          ? (widget.padding as EdgeInsets).horizontal
+          : 0.0;
+      final availableWidth = screenWidth - padding;
+      final itemWidth =
+          (availableWidth -
+              (delegate.crossAxisSpacing * (crossAxisCount - 1))) /
+          crossAxisCount;
+
+      final itemHeight =
+          delegate.mainAxisExtent ?? (itemWidth / delegate.childAspectRatio);
+      final stride = itemHeight + delegate.mainAxisSpacing;
+
+      final visibleRow = (offset / stride).floor().clamp(0, items.length - 1);
+      visibleIndex = (visibleRow * crossAxisCount).clamp(0, items.length - 1);
+    } else {
+      final stride = widget.itemExtent ?? _measuredItemExtent ?? 300.0;
+      visibleIndex = (offset / stride).floor().clamp(0, items.length - 1);
+    }
+
+    // ⚡ Bolt: Early return before expensive operations like provider reads
+    // or cache width calculations if the visible index hasn't actually changed.
+    if (visibleIndex == _lastVisibleIndexPrefetched) return;
+    _lastVisibleIndexPrefetched = visibleIndex;
 
     final prefetchDistance = _memoizedPrefetchDistance ??=
         _getEffectivePrefetchDistance(context, responsiveDelegate);
@@ -359,89 +389,29 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
       _memoizedMemCacheWidth = memCacheWidth;
     }
 
-    if (isGrid) {
-      final delegate =
-          responsiveDelegate as SliverGridDelegateWithFixedCrossAxisCount;
-      final crossAxisCount = delegate.crossAxisCount;
-      final padding = widget.padding is EdgeInsets
-          ? (widget.padding as EdgeInsets).horizontal
-          : 0.0;
-      final availableWidth = screenWidth - padding;
-      final itemWidth =
-          (availableWidth -
-              (delegate.crossAxisSpacing * (crossAxisCount - 1))) /
-          crossAxisCount;
-
-      final itemHeight =
-          delegate.mainAxisExtent ?? (itemWidth / delegate.childAspectRatio);
-      final stride = itemHeight + delegate.mainAxisSpacing;
-
-      final visibleRow = (offset / stride).floor().clamp(0, items.length - 1);
-      final visibleIndex = (visibleRow * crossAxisCount).clamp(
-        0,
-        items.length - 1,
-      );
-
-      if (visibleIndex == _lastVisibleIndexPrefetched) return;
-      _lastVisibleIndexPrefetched = visibleIndex;
-
-      for (var i = 1; i <= prefetchDistance; i++) {
-        final ahead = visibleIndex + i;
-        if (ahead < items.length) {
-          final url = widget.imageUrlBuilder!(items[ahead]);
-          if (url != null) {
-            StashImage.prefetch(
-              context,
-              imageUrl: url,
-              headers: headers,
-              memCacheWidth: memCacheWidth,
-            );
-          }
-        }
-        final behind = visibleIndex - i;
-        if (behind >= 0) {
-          final url = widget.imageUrlBuilder!(items[behind]);
-          if (url != null) {
-            StashImage.prefetch(
-              context,
-              imageUrl: url,
-              headers: headers,
-              memCacheWidth: memCacheWidth,
-            );
-          }
+    for (var i = 1; i <= prefetchDistance; i++) {
+      final ahead = visibleIndex + i;
+      if (ahead < items.length) {
+        final url = widget.imageUrlBuilder!(items[ahead]);
+        if (url != null) {
+          StashImage.prefetch(
+            context,
+            imageUrl: url,
+            headers: headers,
+            memCacheWidth: memCacheWidth,
+          );
         }
       }
-    } else {
-      final stride = widget.itemExtent ?? _measuredItemExtent ?? 300.0;
-      final visibleIndex = (offset / stride).floor().clamp(0, items.length - 1);
-
-      if (visibleIndex == _lastVisibleIndexPrefetched) return;
-      _lastVisibleIndexPrefetched = visibleIndex;
-
-      for (var i = 1; i <= prefetchDistance; i++) {
-        final ahead = visibleIndex + i;
-        if (ahead < items.length) {
-          final url = widget.imageUrlBuilder!(items[ahead]);
-          if (url != null) {
-            StashImage.prefetch(
-              context,
-              imageUrl: url,
-              headers: headers,
-              memCacheWidth: memCacheWidth,
-            );
-          }
-        }
-        final behind = visibleIndex - i;
-        if (behind >= 0) {
-          final url = widget.imageUrlBuilder!(items[behind]);
-          if (url != null) {
-            StashImage.prefetch(
-              context,
-              imageUrl: url,
-              headers: headers,
-              memCacheWidth: memCacheWidth,
-            );
-          }
+      final behind = visibleIndex - i;
+      if (behind >= 0) {
+        final url = widget.imageUrlBuilder!(items[behind]);
+        if (url != null) {
+          StashImage.prefetch(
+            context,
+            imageUrl: url,
+            headers: headers,
+            memCacheWidth: memCacheWidth,
+          );
         }
       }
     }
@@ -464,6 +434,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
         responsiveDelegate is SliverGridDelegateWithFixedCrossAxisCount
         ? responsiveDelegate
         : null;
+    final headers = ref.watch(mediaHeadersProvider);
 
     return Scaffold(
       appBar: widget.hideAppBar
@@ -913,6 +884,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                             items,
                             responsiveDelegate,
                             screenWidth,
+                            headers,
                           );
                           return false;
                         },
