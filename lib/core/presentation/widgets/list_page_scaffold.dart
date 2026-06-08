@@ -338,6 +338,39 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
 
     final offset = scrollInfo.metrics.pixels;
     final isGrid = widget.gridDelegate != null;
+
+    // Calculate visible index first to early exit if it hasn't changed.
+    int visibleIndex = 0;
+
+    if (isGrid) {
+      final delegate =
+          responsiveDelegate as SliverGridDelegateWithFixedCrossAxisCount;
+      final crossAxisCount = delegate.crossAxisCount;
+      final padding = widget.padding is EdgeInsets
+          ? (widget.padding as EdgeInsets).horizontal
+          : 0.0;
+      final availableWidth = screenWidth - padding;
+      final itemWidth =
+          (availableWidth -
+              (delegate.crossAxisSpacing * (crossAxisCount - 1))) /
+          crossAxisCount;
+
+      final itemHeight =
+          delegate.mainAxisExtent ?? (itemWidth / delegate.childAspectRatio);
+      final stride = itemHeight + delegate.mainAxisSpacing;
+
+      final visibleRow = (offset / stride).floor().clamp(0, items.length - 1);
+      visibleIndex = (visibleRow * crossAxisCount).clamp(0, items.length - 1);
+    } else {
+      final stride = widget.itemExtent ?? _measuredItemExtent ?? 300.0;
+      visibleIndex = (offset / stride).floor().clamp(0, items.length - 1);
+    }
+
+    // ⚡ Bolt: Early exit before reading providers or allocating memory for prefetch logic
+    // if the visible index hasn't changed, preventing redundant O(1) operations per frame.
+    if (visibleIndex == _lastVisibleIndexPrefetched) return;
+    _lastVisibleIndexPrefetched = visibleIndex;
+
     final headers = ref.read(mediaHeadersProvider);
 
     final prefetchDistance = _memoizedPrefetchDistance ??=
@@ -359,89 +392,29 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
       _memoizedMemCacheWidth = memCacheWidth;
     }
 
-    if (isGrid) {
-      final delegate =
-          responsiveDelegate as SliverGridDelegateWithFixedCrossAxisCount;
-      final crossAxisCount = delegate.crossAxisCount;
-      final padding = widget.padding is EdgeInsets
-          ? (widget.padding as EdgeInsets).horizontal
-          : 0.0;
-      final availableWidth = screenWidth - padding;
-      final itemWidth =
-          (availableWidth -
-              (delegate.crossAxisSpacing * (crossAxisCount - 1))) /
-          crossAxisCount;
-
-      final itemHeight =
-          delegate.mainAxisExtent ?? (itemWidth / delegate.childAspectRatio);
-      final stride = itemHeight + delegate.mainAxisSpacing;
-
-      final visibleRow = (offset / stride).floor().clamp(0, items.length - 1);
-      final visibleIndex = (visibleRow * crossAxisCount).clamp(
-        0,
-        items.length - 1,
-      );
-
-      if (visibleIndex == _lastVisibleIndexPrefetched) return;
-      _lastVisibleIndexPrefetched = visibleIndex;
-
-      for (var i = 1; i <= prefetchDistance; i++) {
-        final ahead = visibleIndex + i;
-        if (ahead < items.length) {
-          final url = widget.imageUrlBuilder!(items[ahead]);
-          if (url != null) {
-            StashImage.prefetch(
-              context,
-              imageUrl: url,
-              headers: headers,
-              memCacheWidth: memCacheWidth,
-            );
-          }
-        }
-        final behind = visibleIndex - i;
-        if (behind >= 0) {
-          final url = widget.imageUrlBuilder!(items[behind]);
-          if (url != null) {
-            StashImage.prefetch(
-              context,
-              imageUrl: url,
-              headers: headers,
-              memCacheWidth: memCacheWidth,
-            );
-          }
+    for (var i = 1; i <= prefetchDistance; i++) {
+      final ahead = visibleIndex + i;
+      if (ahead < items.length) {
+        final url = widget.imageUrlBuilder!(items[ahead]);
+        if (url != null) {
+          StashImage.prefetch(
+            context,
+            imageUrl: url,
+            headers: headers,
+            memCacheWidth: memCacheWidth,
+          );
         }
       }
-    } else {
-      final stride = widget.itemExtent ?? _measuredItemExtent ?? 300.0;
-      final visibleIndex = (offset / stride).floor().clamp(0, items.length - 1);
-
-      if (visibleIndex == _lastVisibleIndexPrefetched) return;
-      _lastVisibleIndexPrefetched = visibleIndex;
-
-      for (var i = 1; i <= prefetchDistance; i++) {
-        final ahead = visibleIndex + i;
-        if (ahead < items.length) {
-          final url = widget.imageUrlBuilder!(items[ahead]);
-          if (url != null) {
-            StashImage.prefetch(
-              context,
-              imageUrl: url,
-              headers: headers,
-              memCacheWidth: memCacheWidth,
-            );
-          }
-        }
-        final behind = visibleIndex - i;
-        if (behind >= 0) {
-          final url = widget.imageUrlBuilder!(items[behind]);
-          if (url != null) {
-            StashImage.prefetch(
-              context,
-              imageUrl: url,
-              headers: headers,
-              memCacheWidth: memCacheWidth,
-            );
-          }
+      final behind = visibleIndex - i;
+      if (behind >= 0) {
+        final url = widget.imageUrlBuilder!(items[behind]);
+        if (url != null) {
+          StashImage.prefetch(
+            context,
+            imageUrl: url,
+            headers: headers,
+            memCacheWidth: memCacheWidth,
+          );
         }
       }
     }
