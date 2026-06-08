@@ -240,10 +240,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
       debugPrint('Saving image from URL: $imageUrl');
       final response = await Dio().get<List<int>>(
         imageUrl,
-        options: Options(
-          headers: headers,
-          responseType: ResponseType.bytes,
-        ),
+        options: Options(headers: headers, responseType: ResponseType.bytes),
       );
 
       final bytes = response.data;
@@ -251,7 +248,9 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
         throw Exception('Failed to download image bytes: empty response');
       }
       final contentType = response.headers.value('content-type');
-      debugPrint('Downloaded ${bytes.length} bytes, Content-Type: $contentType');
+      debugPrint(
+        'Downloaded ${bytes.length} bytes, Content-Type: $contentType',
+      );
 
       // Determine extension from Content-Type
       String extension = 'jpg';
@@ -262,7 +261,8 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
           extension = 'png';
         } else if (contentType.contains('gif')) {
           extension = 'gif';
-        } else if (contentType.contains('jpeg') || contentType.contains('jpg')) {
+        } else if (contentType.contains('jpeg') ||
+            contentType.contains('jpg')) {
           extension = 'jpg';
         }
       }
@@ -310,15 +310,14 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(context.l10n.saved_to_album),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.saved_to_album)));
       }
     } on GalException catch (e) {
       final message = switch (e.type) {
-        GalExceptionType.accessDenied => 'Permission to access the gallery is denied.',
+        GalExceptionType.accessDenied =>
+          'Permission to access the gallery is denied.',
         GalExceptionType.notEnoughSpace => 'Not enough space for storage.',
         GalExceptionType.notSupportedFormat => 'Unsupported file format.',
         GalExceptionType.unexpected => 'An unexpected error has occurred.',
@@ -742,7 +741,9 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                SizedBox(height: context.dimensions.spacingSmall / 4),
+                                SizedBox(
+                                  height: context.dimensions.spacingSmall / 4,
+                                ),
                                 Text(
                                   '${_currentIndex + 1} / $totalItemCount',
                                   style: Theme.of(context).textTheme.bodySmall,
@@ -775,7 +776,9 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                     size: 14,
                                     color: colorScheme.tertiary,
                                   ),
-                                  SizedBox(width: context.dimensions.spacingSmall / 2),
+                                  SizedBox(
+                                    width: context.dimensions.spacingSmall / 2,
+                                  ),
                                   Text(
                                     ratingLabel,
                                     style: Theme.of(context)
@@ -786,7 +789,8 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                 ],
                               ),
                             ),
-                          if (hasRating) SizedBox(width: context.dimensions.spacingSmall),
+                          if (hasRating)
+                            SizedBox(width: context.dimensions.spacingSmall),
                           IconButton.filledTonal(
                             icon: const Icon(Icons.star_rate_rounded),
                             onPressed: currentImage == null
@@ -1083,25 +1087,58 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                     case LoadState.completed:
                                       return state.completedWidget;
                                     case LoadState.failed:
-                                      return GestureDetector(
-                                        onTap: () => state.reLoadImage(),
-                                        child: Center(
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(
-                                                Icons.broken_image,
-                                                color: Colors.white54,
-                                                size: 64 * context.dimensions.fontSizeFactor,
-                                              ),
-                                              SizedBox(height: context.dimensions.spacingMedium),
-                                              Text(
-                                                context.l10n.failed_to_load_tap_to_retry,
-                                                style: const TextStyle(
-                                                  color: Colors.white70,
+                                      return Center(
+                                        child: Semantics(
+                                          button: true,
+                                          label: context
+                                              .l10n
+                                              .failed_to_load_tap_to_retry,
+                                          child: Material(
+                                            color: Colors.transparent,
+                                            child: InkWell(
+                                              onTap: () => state.reLoadImage(),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    context
+                                                        .dimensions
+                                                        .spacingMedium,
+                                                  ),
+                                              child: Padding(
+                                                padding: EdgeInsets.all(
+                                                  context
+                                                      .dimensions
+                                                      .spacingLarge,
+                                                ),
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.broken_image,
+                                                      color: Colors.white54,
+                                                      size:
+                                                          64 *
+                                                          context
+                                                              .dimensions
+                                                              .fontSizeFactor,
+                                                    ),
+                                                    SizedBox(
+                                                      height: context
+                                                          .dimensions
+                                                          .spacingMedium,
+                                                    ),
+                                                    Text(
+                                                      context
+                                                          .l10n
+                                                          .failed_to_load_tap_to_retry,
+                                                      style: const TextStyle(
+                                                        color: Colors.white70,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
-                                            ],
+                                            ),
                                           ),
                                         ),
                                       );
