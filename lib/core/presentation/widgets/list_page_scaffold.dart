@@ -330,6 +330,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   void _handleScrollPrefetch(
     ScrollNotification scrollInfo,
     List<T> items,
+    double scrollStride,
+    int crossAxisCount,
     SliverGridDelegate? responsiveDelegate,
     double screenWidth,
   ) {
@@ -338,6 +340,18 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
 
     final offset = scrollInfo.metrics.pixels;
     final isGrid = widget.gridDelegate != null;
+
+    int visibleIndex;
+    if (isGrid) {
+      final visibleRow = (offset / scrollStride).floor().clamp(0, items.length - 1);
+      visibleIndex = (visibleRow * crossAxisCount).clamp(0, items.length - 1);
+    } else {
+      visibleIndex = (offset / scrollStride).floor().clamp(0, items.length - 1);
+    }
+
+    if (visibleIndex == _lastVisibleIndexPrefetched) return;
+    _lastVisibleIndexPrefetched = visibleIndex;
+
     final headers = ref.read(mediaHeadersProvider);
 
     final prefetchDistance = _memoizedPrefetchDistance ??=
@@ -349,9 +363,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
         memCacheWidth = widget.memCacheWidthBuilder!(context, isGrid);
       } else {
         if (isGrid) {
-          final delegate =
-              responsiveDelegate as SliverGridDelegateWithFixedCrossAxisCount;
-          memCacheWidth = (screenWidth * 1.5 / delegate.crossAxisCount).toInt();
+          memCacheWidth = (screenWidth * 1.5 / crossAxisCount).toInt();
         } else {
           memCacheWidth = screenWidth > 600 ? 600 : screenWidth.toInt();
         }
@@ -359,89 +371,29 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
       _memoizedMemCacheWidth = memCacheWidth;
     }
 
-    if (isGrid) {
-      final delegate =
-          responsiveDelegate as SliverGridDelegateWithFixedCrossAxisCount;
-      final crossAxisCount = delegate.crossAxisCount;
-      final padding = widget.padding is EdgeInsets
-          ? (widget.padding as EdgeInsets).horizontal
-          : 0.0;
-      final availableWidth = screenWidth - padding;
-      final itemWidth =
-          (availableWidth -
-              (delegate.crossAxisSpacing * (crossAxisCount - 1))) /
-          crossAxisCount;
-
-      final itemHeight =
-          delegate.mainAxisExtent ?? (itemWidth / delegate.childAspectRatio);
-      final stride = itemHeight + delegate.mainAxisSpacing;
-
-      final visibleRow = (offset / stride).floor().clamp(0, items.length - 1);
-      final visibleIndex = (visibleRow * crossAxisCount).clamp(
-        0,
-        items.length - 1,
-      );
-
-      if (visibleIndex == _lastVisibleIndexPrefetched) return;
-      _lastVisibleIndexPrefetched = visibleIndex;
-
-      for (var i = 1; i <= prefetchDistance; i++) {
-        final ahead = visibleIndex + i;
-        if (ahead < items.length) {
-          final url = widget.imageUrlBuilder!(items[ahead]);
-          if (url != null) {
-            StashImage.prefetch(
-              context,
-              imageUrl: url,
-              headers: headers,
-              memCacheWidth: memCacheWidth,
-            );
-          }
-        }
-        final behind = visibleIndex - i;
-        if (behind >= 0) {
-          final url = widget.imageUrlBuilder!(items[behind]);
-          if (url != null) {
-            StashImage.prefetch(
-              context,
-              imageUrl: url,
-              headers: headers,
-              memCacheWidth: memCacheWidth,
-            );
-          }
+    for (var i = 1; i <= prefetchDistance; i++) {
+      final ahead = visibleIndex + i;
+      if (ahead < items.length) {
+        final url = widget.imageUrlBuilder!(items[ahead]);
+        if (url != null) {
+          StashImage.prefetch(
+            context,
+            imageUrl: url,
+            headers: headers,
+            memCacheWidth: memCacheWidth,
+          );
         }
       }
-    } else {
-      final stride = widget.itemExtent ?? _measuredItemExtent ?? 300.0;
-      final visibleIndex = (offset / stride).floor().clamp(0, items.length - 1);
-
-      if (visibleIndex == _lastVisibleIndexPrefetched) return;
-      _lastVisibleIndexPrefetched = visibleIndex;
-
-      for (var i = 1; i <= prefetchDistance; i++) {
-        final ahead = visibleIndex + i;
-        if (ahead < items.length) {
-          final url = widget.imageUrlBuilder!(items[ahead]);
-          if (url != null) {
-            StashImage.prefetch(
-              context,
-              imageUrl: url,
-              headers: headers,
-              memCacheWidth: memCacheWidth,
-            );
-          }
-        }
-        final behind = visibleIndex - i;
-        if (behind >= 0) {
-          final url = widget.imageUrlBuilder!(items[behind]);
-          if (url != null) {
-            StashImage.prefetch(
-              context,
-              imageUrl: url,
-              headers: headers,
-              memCacheWidth: memCacheWidth,
-            );
-          }
+      final behind = visibleIndex - i;
+      if (behind >= 0) {
+        final url = widget.imageUrlBuilder!(items[behind]);
+        if (url != null) {
+          StashImage.prefetch(
+            context,
+            imageUrl: url,
+            headers: headers,
+            memCacheWidth: memCacheWidth,
+          );
         }
       }
     }
@@ -464,6 +416,26 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
         responsiveDelegate is SliverGridDelegateWithFixedCrossAxisCount
         ? responsiveDelegate
         : null;
+
+    final crossAxisCount = fixedDelegate?.crossAxisCount ?? 1;
+    final padding = widget.padding is EdgeInsets
+        ? (widget.padding as EdgeInsets).horizontal
+        : 0.0;
+
+    double scrollStride = widget.itemExtent ?? _measuredItemExtent ?? 300.0;
+    if (isGrid && fixedDelegate != null) {
+      final availableWidth = screenWidth - padding;
+      final itemWidth =
+          (availableWidth -
+              (fixedDelegate.crossAxisSpacing * (crossAxisCount - 1))) /
+          crossAxisCount;
+      final itemHeight =
+          fixedDelegate.mainAxisExtent ??
+          (itemWidth / fixedDelegate.childAspectRatio);
+      scrollStride = itemHeight + fixedDelegate.mainAxisSpacing;
+    }
+
+    if (scrollStride == 0) scrollStride = 300.0;
 
     return Scaffold(
       appBar: widget.hideAppBar
@@ -911,6 +883,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                           _handleScrollPrefetch(
                             scrollInfo,
                             items,
+                            scrollStride,
+                            crossAxisCount,
                             responsiveDelegate,
                             screenWidth,
                           );
