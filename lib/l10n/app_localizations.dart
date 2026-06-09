@@ -4751,6 +4751,306 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saved filters'**
   String get common_saved_filters;
+
+  /// No description provided for @tools.
+  ///
+  /// In en, this message translates to:
+  /// **'Tools'**
+  String get tools;
+
+  /// No description provided for @preset_deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset deleted'**
+  String get preset_deleted;
+
+  /// No description provided for @delete_preset.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Preset'**
+  String get delete_preset;
+
+  /// No description provided for @common_delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get common_delete;
+
+  /// No description provided for @save_preset.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Preset'**
+  String get save_preset;
+
+  /// No description provided for @no_saved_presets.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved presets'**
+  String get no_saved_presets;
+
+  /// No description provided for @scene_tagger.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Tagger'**
+  String get scene_tagger;
+
+  /// No description provided for @page_size.
+  ///
+  /// In en, this message translates to:
+  /// **'Page size'**
+  String get page_size;
+
+  /// No description provided for @mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode'**
+  String get mode;
+
+  /// No description provided for @sort.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort'**
+  String get sort;
+
+  /// No description provided for @desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Desc'**
+  String get desc;
+
+  /// No description provided for @asc.
+  ///
+  /// In en, this message translates to:
+  /// **'Asc'**
+  String get asc;
+
+  /// No description provided for @filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get filter;
+
+  /// No description provided for @load_preset.
+  ///
+  /// In en, this message translates to:
+  /// **'Load preset'**
+  String get load_preset;
+
+  /// No description provided for @preset.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset'**
+  String get preset;
+
+  /// No description provided for @stash_box_scraper.
+  ///
+  /// In en, this message translates to:
+  /// **'Stash-box scraper'**
+  String get stash_box_scraper;
+
+  /// No description provided for @start_tagging.
+  ///
+  /// In en, this message translates to:
+  /// **'Start tagging'**
+  String get start_tagging;
+
+  /// No description provided for @stop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get stop;
+
+  /// No description provided for @open_scene.
+  ///
+  /// In en, this message translates to:
+  /// **'Open scene'**
+  String get open_scene;
+
+  /// No description provided for @skip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skip;
+
+  /// No description provided for @apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply;
+
+  /// No description provided for @selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
+  String get selected;
+
+  /// No description provided for @select.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get select;
+
+  /// No description provided for @preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get preview;
+
+  /// No description provided for @delete_scene.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete scene'**
+  String get delete_scene;
+
+  /// No description provided for @metadata_only.
+  ///
+  /// In en, this message translates to:
+  /// **'Metadata only'**
+  String get metadata_only;
+
+  /// No description provided for @files.
+  ///
+  /// In en, this message translates to:
+  /// **'Files'**
+  String get files;
+
+  /// No description provided for @scene_deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene deleted'**
+  String get scene_deleted;
+
+  /// No description provided for @delete_metadata.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete metadata'**
+  String get delete_metadata;
+
+  /// No description provided for @delete_files.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete files'**
+  String get delete_files;
+
+  /// No description provided for @scene_deduplication.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Deduplication'**
+  String get scene_deduplication;
+
+  /// No description provided for @no_duplicates_found.
+  ///
+  /// In en, this message translates to:
+  /// **'No duplicates found.'**
+  String get no_duplicates_found;
+
+  /// No description provided for @search_accuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Accuracy'**
+  String get search_accuracy;
+
+  /// No description provided for @duration_difference.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration Difference'**
+  String get duration_difference;
+
+  /// No description provided for @only_select_matching_codecs.
+  ///
+  /// In en, this message translates to:
+  /// **'Only select matching codecs'**
+  String get only_select_matching_codecs;
+
+  /// No description provided for @select_scenes.
+  ///
+  /// In en, this message translates to:
+  /// **'Select scenes'**
+  String get select_scenes;
+
+  /// No description provided for @all_but_largest_resolution.
+  ///
+  /// In en, this message translates to:
+  /// **'All but largest resolution'**
+  String get all_but_largest_resolution;
+
+  /// No description provided for @all_but_largest_file.
+  ///
+  /// In en, this message translates to:
+  /// **'All but largest file'**
+  String get all_but_largest_file;
+
+  /// No description provided for @all_but_oldest.
+  ///
+  /// In en, this message translates to:
+  /// **'All but oldest'**
+  String get all_but_oldest;
+
+  /// No description provided for @all_but_youngest.
+  ///
+  /// In en, this message translates to:
+  /// **'All but youngest'**
+  String get all_but_youngest;
+
+  /// No description provided for @select_none.
+  ///
+  /// In en, this message translates to:
+  /// **'Select none'**
+  String get select_none;
+
+  /// No description provided for @merge.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge'**
+  String get merge;
+
+  /// No description provided for @previous_page.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous page'**
+  String get previous_page;
+
+  /// No description provided for @next_page.
+  ///
+  /// In en, this message translates to:
+  /// **'Next page'**
+  String get next_page;
+
+  /// No description provided for @scene_deduplication_page_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {page} of {totalPages}'**
+  String scene_deduplication_page_count(int page, int totalPages);
+
+  /// No description provided for @scene_tagger_result_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Result {index} of {total}'**
+  String scene_tagger_result_count(int index, int total);
+
+  /// No description provided for @delete_preset_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"? This action cannot be undone.'**
+  String delete_preset_confirm(String name);
+
+  /// No description provided for @enter_preset_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter preset name'**
+  String get enter_preset_name;
+
+  /// No description provided for @delete_scene_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this scene?'**
+  String get delete_scene_confirm;
+
+  /// No description provided for @delete_selected_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete selected ({selectedCount})'**
+  String delete_selected_count(int selectedCount);
 }
 
 class _AppLocalizationsDelegate

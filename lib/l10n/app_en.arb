@@ -1058,5 +1058,89 @@
   "settings_security_title": "Security",
   "settings_security_app_lock": "App lock",
   "settings_security_app_lock_subtitle": "Protect access with a passcode after backgrounding.",
-  "common_saved_filters": "Saved filters"
+  "common_saved_filters": "Saved filters",
+  "tools": "Tools",
+  "preset_deleted": "Preset deleted",
+  "delete_preset": "Delete Preset",
+  "common_delete": "Delete",
+  "save_preset": "Save Preset",
+  "no_saved_presets": "No saved presets",
+  "scene_tagger": "Scene Tagger",
+  "page_size": "Page size",
+  "mode": "Mode",
+  "sort": "Sort",
+  "desc": "Desc",
+  "asc": "Asc",
+  "filter": "Filter",
+  "load_preset": "Load preset",
+  "preset": "Preset",
+  "stash_box_scraper": "Stash-box scraper",
+  "start_tagging": "Start tagging",
+  "stop": "Stop",
+  "open_scene": "Open scene",
+  "skip": "Skip",
+  "apply": "Apply",
+  "selected": "Selected",
+  "select": "Select",
+  "preview": "Preview",
+  "delete_scene": "Delete scene",
+  "metadata_only": "Metadata only",
+  "files": "Files",
+  "scene_deleted": "Scene deleted",
+  "delete_metadata": "Delete metadata",
+  "delete_files": "Delete files",
+  "scene_deduplication": "Scene Deduplication",
+  "no_duplicates_found": "No duplicates found.",
+  "search_accuracy": "Search Accuracy",
+  "duration_difference": "Duration Difference",
+  "only_select_matching_codecs": "Only select matching codecs",
+  "select_scenes": "Select scenes",
+  "all_but_largest_resolution": "All but largest resolution",
+  "all_but_largest_file": "All but largest file",
+  "all_but_oldest": "All but oldest",
+  "all_but_youngest": "All but youngest",
+  "select_none": "Select none",
+  "merge": "Merge",
+  "previous_page": "Previous page",
+  "next_page": "Next page",
+  "scene_deduplication_page_count": "Page {page} of {totalPages}",
+  "@scene_deduplication_page_count": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "totalPages": {
+        "type": "int"
+      }
+    }
+  },
+  "scene_tagger_result_count": "Result {index} of {total}",
+  "@scene_tagger_result_count": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "delete_preset_confirm": "Delete \"{name}\"? This action cannot be undone.",
+  "@delete_preset_confirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "enter_preset_name": "Enter preset name",
+  "delete_scene_confirm": "Are you sure you want to delete this scene?",
+  "delete_selected_count": "Delete selected ({selectedCount})",
+  "@delete_selected_count": {
+    "placeholders": {
+      "selectedCount": {
+        "type": "int"
+      }
+    }
+  }
 }

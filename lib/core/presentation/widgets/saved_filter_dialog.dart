@@ -1,3 +1,4 @@
+import 'package:stash_app_flutter/core/presentation/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 
 import '../../domain/entities/saved_filter_config.dart';
@@ -120,9 +121,9 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
         _savedFiltersFuture = widget.loadPresets();
       });
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Preset deleted')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text(context.l10n.preset_deleted)),
+        );
       }
     } catch (error) {
       if (mounted) {
@@ -239,8 +240,8 @@ class _DeletePresetConfirmDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Delete Preset'),
-      content: Text('Delete "$name"? This action cannot be undone.'),
+      title: Text(context.l10n.delete_preset),
+      content: Text(context.l10n.delete_preset_confirm(name)),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
@@ -248,7 +249,7 @@ class _DeletePresetConfirmDialog extends StatelessWidget {
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(true),
-          child: const Text('Delete'),
+          child: Text(context.l10n.common_delete),
         ),
       ],
     );
@@ -280,7 +281,7 @@ class _SavePresetNameDialogState extends State<_SavePresetNameDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Save Preset'),
+      title: Text(context.l10n.save_preset),
       content: TextField(
         controller: _controller,
         autofocus: true,
@@ -407,7 +408,7 @@ class _SavedFilterList<T extends SavedFilterConfig<dynamic>>
 
     final filters = snapshot.data ?? const [];
     if (filters.isEmpty) {
-      return const Center(child: Text('No saved presets'));
+      return const Center(child: Text(context.l10n.no_saved_presets));
     }
 
     final sorted = [...filters]
@@ -439,7 +440,7 @@ class _SavedFilterList<T extends SavedFilterConfig<dynamic>>
               ? null
               : IconButton(
                   onPressed: busy ? null : () => onDelete(filter),
-                  tooltip: 'Delete preset',
+                  tooltip: context.l10n.delete_preset,
                   icon: deletingId == filter.id
                       ? const SizedBox(
                           width: 18,

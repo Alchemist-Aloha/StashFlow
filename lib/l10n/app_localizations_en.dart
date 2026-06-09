@@ -2550,4 +2550,163 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get common_saved_filters => 'Saved filters';
+
+  @override
+  String get tools => 'Tools';
+
+  @override
+  String get preset_deleted => 'Preset deleted';
+
+  @override
+  String get delete_preset => 'Delete Preset';
+
+  @override
+  String get common_delete => 'Delete';
+
+  @override
+  String get save_preset => 'Save Preset';
+
+  @override
+  String get no_saved_presets => 'No saved presets';
+
+  @override
+  String get scene_tagger => 'Scene Tagger';
+
+  @override
+  String get page_size => 'Page size';
+
+  @override
+  String get mode => 'Mode';
+
+  @override
+  String get sort => 'Sort';
+
+  @override
+  String get desc => 'Desc';
+
+  @override
+  String get asc => 'Asc';
+
+  @override
+  String get filter => 'Filter';
+
+  @override
+  String get load_preset => 'Load preset';
+
+  @override
+  String get preset => 'Preset';
+
+  @override
+  String get stash_box_scraper => 'Stash-box scraper';
+
+  @override
+  String get start_tagging => 'Start tagging';
+
+  @override
+  String get stop => 'Stop';
+
+  @override
+  String get open_scene => 'Open scene';
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
+  String get selected => 'Selected';
+
+  @override
+  String get select => 'Select';
+
+  @override
+  String get preview => 'Preview';
+
+  @override
+  String get delete_scene => 'Delete scene';
+
+  @override
+  String get metadata_only => 'Metadata only';
+
+  @override
+  String get files => 'Files';
+
+  @override
+  String get scene_deleted => 'Scene deleted';
+
+  @override
+  String get delete_metadata => 'Delete metadata';
+
+  @override
+  String get delete_files => 'Delete files';
+
+  @override
+  String get scene_deduplication => 'Scene Deduplication';
+
+  @override
+  String get no_duplicates_found => 'No duplicates found.';
+
+  @override
+  String get search_accuracy => 'Search Accuracy';
+
+  @override
+  String get duration_difference => 'Duration Difference';
+
+  @override
+  String get only_select_matching_codecs => 'Only select matching codecs';
+
+  @override
+  String get select_scenes => 'Select scenes';
+
+  @override
+  String get all_but_largest_resolution => 'All but largest resolution';
+
+  @override
+  String get all_but_largest_file => 'All but largest file';
+
+  @override
+  String get all_but_oldest => 'All but oldest';
+
+  @override
+  String get all_but_youngest => 'All but youngest';
+
+  @override
+  String get select_none => 'Select none';
+
+  @override
+  String get merge => 'Merge';
+
+  @override
+  String get previous_page => 'Previous page';
+
+  @override
+  String get next_page => 'Next page';
+
+  @override
+  String scene_deduplication_page_count(int page, int totalPages) {
+    return 'Page $page of $totalPages';
+  }
+
+  @override
+  String scene_tagger_result_count(int index, int total) {
+    return 'Result $index of $total';
+  }
+
+  @override
+  String delete_preset_confirm(String name) {
+    return 'Delete \"$name\"? This action cannot be undone.';
+  }
+
+  @override
+  String get enter_preset_name => 'Enter preset name';
+
+  @override
+  String get delete_scene_confirm =>
+      'Are you sure you want to delete this scene?';
+
+  @override
+  String delete_selected_count(int selectedCount) {
+    return 'Delete selected ($selectedCount)';
+  }
 }
