@@ -1,0 +1,3 @@
+## 2024-06-25 - Custom Video Playback Speed Button Accessibility
+**Learning:** Custom interactive video playback controls implemented using raw `GestureDetector` widgets lack essential accessibility features like screen reader labels, keyboard focus states, and visual hover feedback.
+**Action:** When designing custom controls that act like buttons, wrap the inner content in a `Tooltip` (or `Semantics`) and use an `InkWell` combined with a `Material` widget (with transparent background and appropriate `clipBehavior`) rather than a simple `GestureDetector`. This ensures the UI is accessible via screen readers, operable by keyboard, and provides proper visual feedback upon interaction.
