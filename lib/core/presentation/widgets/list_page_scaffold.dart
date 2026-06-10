@@ -338,7 +338,6 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
 
     final offset = scrollInfo.metrics.pixels;
     final isGrid = widget.gridDelegate != null;
-    final headers = ref.read(mediaHeadersProvider);
 
     final prefetchDistance = _memoizedPrefetchDistance ??=
         _getEffectivePrefetchDistance(context, responsiveDelegate);
@@ -385,6 +384,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
       if (visibleIndex == _lastVisibleIndexPrefetched) return;
       _lastVisibleIndexPrefetched = visibleIndex;
 
+      final headers = ref.read(mediaHeadersProvider);
+
       for (var i = 1; i <= prefetchDistance; i++) {
         final ahead = visibleIndex + i;
         if (ahead < items.length) {
@@ -417,6 +418,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
 
       if (visibleIndex == _lastVisibleIndexPrefetched) return;
       _lastVisibleIndexPrefetched = visibleIndex;
+
+      final headers = ref.read(mediaHeadersProvider);
 
       for (var i = 1; i <= prefetchDistance; i++) {
         final ahead = visibleIndex + i;
