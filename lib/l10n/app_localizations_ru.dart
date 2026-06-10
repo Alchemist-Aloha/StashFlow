@@ -796,13 +796,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get filter_less_than => 'Меньше чем';
 
   @override
-  String get filter_includes => 'Includes';
+  String get filter_includes => 'Включает';
 
   @override
-  String get filter_excludes => 'Excludes';
+  String get filter_excludes => 'Исключает';
 
   @override
-  String get filter_includes_all => 'Includes All';
+  String get filter_includes_all => 'Включает все';
 
   @override
   String get filter_is_null => 'Null';
@@ -811,19 +811,20 @@ class AppLocalizationsRu extends AppLocalizations {
   String get filter_not_null => 'Не null';
 
   @override
-  String get filter_matches_regex => 'Matches Regex';
+  String get filter_matches_regex => 'Соответствует регулярному выражению';
 
   @override
-  String get filter_not_matches_regex => 'Does Not Match Regex';
+  String get filter_not_matches_regex =>
+      'Не соответствует регулярному выражению';
 
   @override
-  String get filter_between => 'Between';
+  String get filter_between => 'Между';
 
   @override
-  String get filter_not_between => 'Not Between';
+  String get filter_not_between => 'Не между';
 
   @override
-  String get filter_value_secondary => 'Second Value';
+  String get filter_value_secondary => 'Второе значение';
 
   @override
   String get images_resolution_title => 'Разрешение';
@@ -2585,4 +2586,165 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get common_saved_filters => 'Сохраненные фильтры';
+
+  @override
+  String get tools => 'Инструменты';
+
+  @override
+  String get preset_deleted => 'Предустановка удалена.';
+
+  @override
+  String get delete_preset => 'Удалить предустановку';
+
+  @override
+  String get common_delete => 'Удалить';
+
+  @override
+  String get save_preset => 'Сохранить предустановку';
+
+  @override
+  String get no_saved_presets => 'Нет сохраненных пресетов';
+
+  @override
+  String get scene_tagger => 'Теги сцен';
+
+  @override
+  String get page_size => 'Размер страницы';
+
+  @override
+  String get mode => 'Режим';
+
+  @override
+  String get sort => 'Сортировать';
+
+  @override
+  String get desc => 'Описание';
+
+  @override
+  String get asc => 'По возрастанию';
+
+  @override
+  String get filter => 'Фильтр';
+
+  @override
+  String get load_preset => 'Загрузить пресет';
+
+  @override
+  String get preset => 'Предустановка';
+
+  @override
+  String get stash_box_scraper => 'Скребок для тайника';
+
+  @override
+  String get start_tagging => 'Начать отмечать';
+
+  @override
+  String get stop => 'Останавливаться';
+
+  @override
+  String get open_scene => 'Открытая сцена';
+
+  @override
+  String get skip => 'Пропускать';
+
+  @override
+  String get apply => 'Применять';
+
+  @override
+  String get selected => 'Выбрано';
+
+  @override
+  String get select => 'Выбирать';
+
+  @override
+  String get preview => 'Предварительный просмотр';
+
+  @override
+  String get delete_scene => 'Удалить сцену';
+
+  @override
+  String get metadata_only => 'Только метаданные';
+
+  @override
+  String get files => 'Файлы';
+
+  @override
+  String get scene_deleted => 'Сцена удалена';
+
+  @override
+  String get delete_metadata => 'Удалить метаданные';
+
+  @override
+  String get delete_files => 'Удалить файлы';
+
+  @override
+  String get scene_deduplication => 'Дедупликация сцены';
+
+  @override
+  String get no_duplicates_found => 'Дубликатов не обнаружено.';
+
+  @override
+  String get search_accuracy => 'Точность поиска';
+
+  @override
+  String get duration_difference => 'Разница в продолжительности';
+
+  @override
+  String get only_select_matching_codecs =>
+      'Выбирайте только соответствующие кодеки';
+
+  @override
+  String get select_scenes => 'Выберите сцены';
+
+  @override
+  String get all_but_largest_resolution =>
+      'Все, кроме самого большого разрешения';
+
+  @override
+  String get all_but_largest_file => 'Все, кроме самого большого файла';
+
+  @override
+  String get all_but_oldest => 'Все, кроме старшего';
+
+  @override
+  String get all_but_youngest => 'Все, кроме младшего';
+
+  @override
+  String get select_none => 'Выбрать нет';
+
+  @override
+  String get merge => 'Объединить';
+
+  @override
+  String get previous_page => 'Предыдущая страница';
+
+  @override
+  String get next_page => 'Следующая страница';
+
+  @override
+  String scene_deduplication_page_count(int page, int totalPages) {
+    return 'Страница $page из $totalPages';
+  }
+
+  @override
+  String scene_tagger_result_count(int index, int total) {
+    return 'Результат $index из $total';
+  }
+
+  @override
+  String delete_preset_confirm(String name) {
+    return 'Удалить \"$name\"? Это действие невозможно отменить.';
+  }
+
+  @override
+  String get enter_preset_name => 'Введите имя пресета';
+
+  @override
+  String get delete_scene_confirm =>
+      'Вы уверены, что хотите удалить эту сцену?';
+
+  @override
+  String delete_selected_count(int selectedCount) {
+    return 'Удалить выбранное ($selectedCount)';
+  }
 }

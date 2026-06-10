@@ -1,3 +1,4 @@
+import 'package:stash_app_flutter/core/presentation/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -125,15 +126,15 @@ class _SceneDeduplicationPageState
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(null),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.common_cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Delete metadata'),
+            child: Text(context.l10n.delete_metadata),
           ),
           FilledButton.tonal(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Delete files'),
+            child: Text(context.l10n.delete_files),
           ),
         ],
       ),
@@ -179,7 +180,7 @@ class _SceneDeduplicationPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Scene Deduplication')),
+      appBar: AppBar(title: Text(context.l10n.scene_deduplication)),
       body: FutureBuilder<_SceneDeduplicationData>(
         future: _future,
         builder: (context, snapshot) {
@@ -206,9 +207,8 @@ class _SceneDeduplicationPageState
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 InkWell(
-                  onTap: () => setState(
-                    () => _configExpanded = !_configExpanded,
-                  ),
+                  onTap: () =>
+                      setState(() => _configExpanded = !_configExpanded),
                   borderRadius: BorderRadius.circular(12),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -320,7 +320,9 @@ class _SceneDeduplicationPageState
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 24),
-          const Expanded(child: Center(child: Text('No duplicates found.'))),
+          const Expanded(
+            child: Center(child: Text(context.l10n.no_duplicates_found)),
+          ),
         ],
       );
     }
@@ -450,7 +452,7 @@ class _Controls extends StatelessWidget {
               textStyle: isCompact ? theme.textTheme.bodySmall : null,
               inputDecorationTheme: dropdownInputDecoration,
               initialSelection: distance,
-              label: const Text('Search Accuracy'),
+              label: Text(context.l10n.search_accuracy),
               dropdownMenuEntries: _SceneDeduplicationPageState
                   ._accuracyOptions
                   .entries
@@ -471,7 +473,7 @@ class _Controls extends StatelessWidget {
               textStyle: isCompact ? theme.textTheme.bodySmall : null,
               inputDecorationTheme: dropdownInputDecoration,
               initialSelection: durationDiff,
-              label: const Text('Duration Difference'),
+              label: Text(context.l10n.duration_difference),
               dropdownMenuEntries: _SceneDeduplicationPageState._durationOptions
                   .map(
                     (value) => DropdownMenuEntry<double>(
@@ -492,7 +494,7 @@ class _Controls extends StatelessWidget {
               textStyle: isCompact ? theme.textTheme.bodySmall : null,
               inputDecorationTheme: dropdownInputDecoration,
               initialSelection: pageSize,
-              label: const Text('Page Size'),
+              label: Text(context.l10n.page_size),
               dropdownMenuEntries: _SceneDeduplicationPageState._pageSizeOptions
                   .map(
                     (value) => DropdownMenuEntry<int>(
@@ -512,11 +514,11 @@ class _Controls extends StatelessWidget {
                   ? MaterialTapTargetSize.shrinkWrap
                   : null,
               selected: safeSelect,
-              label: const Text('Only select matching codecs'),
+              label: Text(context.l10n.only_select_matching_codecs),
               onSelected: onSafeSelectChanged,
             ),
             PopupMenuButton<DuplicateSelectionMode>(
-              tooltip: 'Select scenes',
+              tooltip: context.l10n.select_scenes,
               onSelected: onSelectMode,
               constraints: isCompact
                   ? const BoxConstraints(minWidth: 196, maxWidth: 240)
@@ -525,36 +527,36 @@ class _Controls extends StatelessWidget {
                 PopupMenuItem(
                   value: DuplicateSelectionMode.allButLargestResolution,
                   height: isCompact ? 36 : kMinInteractiveDimension,
-                  child: const Text('All but largest resolution'),
+                  child: Text(context.l10n.all_but_largest_resolution),
                 ),
                 PopupMenuItem(
                   value: DuplicateSelectionMode.allButLargestFile,
                   height: isCompact ? 36 : kMinInteractiveDimension,
-                  child: const Text('All but largest file'),
+                  child: Text(context.l10n.all_but_largest_file),
                 ),
                 PopupMenuItem(
                   value: DuplicateSelectionMode.allButOldest,
                   height: isCompact ? 36 : kMinInteractiveDimension,
-                  child: const Text('All but oldest'),
+                  child: Text(context.l10n.all_but_oldest),
                 ),
                 PopupMenuItem(
                   value: DuplicateSelectionMode.allButYoungest,
                   height: isCompact ? 36 : kMinInteractiveDimension,
-                  child: const Text('All but youngest'),
+                  child: Text(context.l10n.all_but_youngest),
                 ),
               ],
               child: FilledButton.tonalIcon(
                 onPressed: null,
                 style: buttonStyle,
                 icon: const Icon(Icons.select_all),
-                label: const Text('Select'),
+                label: Text(context.l10n.select),
               ),
             ),
             OutlinedButton.icon(
               onPressed: onSelectNone,
               style: buttonStyle,
               icon: const Icon(Icons.clear),
-              label: const Text('Select none'),
+              label: Text(context.l10n.select_none),
             ),
             FilledButton.icon(
               onPressed: selectedCount == 0 || deleting
@@ -568,7 +570,7 @@ class _Controls extends StatelessWidget {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.delete),
-              label: Text('Delete selected ($selectedCount)'),
+              label: Text(context.l10n.delete_selected_count(selectedCount)),
             ),
             Tooltip(
               message: 'Merge editing is not wired in StashFlow yet.',
@@ -576,7 +578,7 @@ class _Controls extends StatelessWidget {
                 onPressed: null,
                 style: buttonStyle,
                 icon: const Icon(Icons.merge),
-                label: const Text('Merge'),
+                label: Text(context.l10n.merge),
               ),
             ),
           ],
@@ -693,7 +695,7 @@ class _DuplicateSceneTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              tooltip: 'Open scene',
+              tooltip: context.l10n.open_scene,
               iconSize: 18,
               style: IconButton.styleFrom(
                 fixedSize: const Size(28, 28),
@@ -707,7 +709,7 @@ class _DuplicateSceneTile extends StatelessWidget {
               onPressed: () => context.push('/scenes/scene/${scene.id}'),
             ),
             IconButton(
-              tooltip: 'Delete',
+              tooltip: context.l10n.common_delete,
               iconSize: 18,
               style: IconButton.styleFrom(
                 fixedSize: const Size(28, 28),
@@ -792,13 +794,13 @@ class _PaginationBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           IconButton(
-            tooltip: 'Previous page',
+            tooltip: context.l10n.previous_page,
             onPressed: onPrevious,
             icon: const Icon(Icons.chevron_left),
           ),
-          Text('Page $page of $totalPages'),
+          Text(context.l10n.scene_deduplication_page_count(page, totalPages)),
           IconButton(
-            tooltip: 'Next page',
+            tooltip: context.l10n.next_page,
             onPressed: onNext,
             icon: const Icon(Icons.chevron_right),
           ),
@@ -829,7 +831,7 @@ class _ErrorState extends StatelessWidget {
             FilledButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text(context.l10n.common_retry),
             ),
           ],
         ),

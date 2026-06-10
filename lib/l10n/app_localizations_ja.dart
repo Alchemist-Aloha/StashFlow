@@ -789,13 +789,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get filter_less_than => 'より小さい';
 
   @override
-  String get filter_includes => 'Includes';
+  String get filter_includes => '含まれるもの';
 
   @override
-  String get filter_excludes => 'Excludes';
+  String get filter_excludes => '除く';
 
   @override
-  String get filter_includes_all => 'Includes All';
+  String get filter_includes_all => 'すべてを含む';
 
   @override
   String get filter_is_null => 'ヌルです';
@@ -804,19 +804,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get filter_not_null => 'ヌルではありません';
 
   @override
-  String get filter_matches_regex => 'Matches Regex';
+  String get filter_matches_regex => '正規表現と一致します';
 
   @override
-  String get filter_not_matches_regex => 'Does Not Match Regex';
+  String get filter_not_matches_regex => '正規表現と一致しません';
 
   @override
-  String get filter_between => 'Between';
+  String get filter_between => '間';
 
   @override
-  String get filter_not_between => 'Not Between';
+  String get filter_not_between => '間にはありません';
 
   @override
-  String get filter_value_secondary => 'Second Value';
+  String get filter_value_secondary => '2 番目の値';
 
   @override
   String get images_resolution_title => '解像度';
@@ -2500,4 +2500,162 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get common_saved_filters => '保存されたフィルター';
+
+  @override
+  String get tools => 'ツール';
+
+  @override
+  String get preset_deleted => 'プリセットが削除されました';
+
+  @override
+  String get delete_preset => 'プリセットの削除';
+
+  @override
+  String get common_delete => '消去';
+
+  @override
+  String get save_preset => 'プリセットの保存';
+
+  @override
+  String get no_saved_presets => '保存されたプリセットはありません';
+
+  @override
+  String get scene_tagger => 'シーンタグ';
+
+  @override
+  String get page_size => 'ページサイズ';
+
+  @override
+  String get mode => 'モード';
+
+  @override
+  String get sort => '選別';
+
+  @override
+  String get desc => '説明';
+
+  @override
+  String get asc => '昇順';
+
+  @override
+  String get filter => 'フィルター';
+
+  @override
+  String get load_preset => 'プリセットをロードする';
+
+  @override
+  String get preset => 'プリセット';
+
+  @override
+  String get stash_box_scraper => 'スタッシュボックススクレーパー';
+
+  @override
+  String get start_tagging => 'タグ付けを開始する';
+
+  @override
+  String get stop => '停止';
+
+  @override
+  String get open_scene => 'オープンシーン';
+
+  @override
+  String get skip => 'スキップ';
+
+  @override
+  String get apply => '適用する';
+
+  @override
+  String get selected => '選択済み';
+
+  @override
+  String get select => '選択';
+
+  @override
+  String get preview => 'プレビュー';
+
+  @override
+  String get delete_scene => 'シーンの削除';
+
+  @override
+  String get metadata_only => 'メタデータのみ';
+
+  @override
+  String get files => 'ファイル';
+
+  @override
+  String get scene_deleted => 'シーンが削除されました';
+
+  @override
+  String get delete_metadata => 'メタデータの削除';
+
+  @override
+  String get delete_files => 'ファイルの削除';
+
+  @override
+  String get scene_deduplication => 'シーンの重複排除';
+
+  @override
+  String get no_duplicates_found => '重複は見つかりませんでした。';
+
+  @override
+  String get search_accuracy => '検索精度';
+
+  @override
+  String get duration_difference => '期間の違い';
+
+  @override
+  String get only_select_matching_codecs => '一致するコーデックのみを選択する';
+
+  @override
+  String get select_scenes => 'シーンを選択する';
+
+  @override
+  String get all_but_largest_resolution => '最大解像度以外のすべて';
+
+  @override
+  String get all_but_largest_file => '最大のファイルを除くすべてのファイル';
+
+  @override
+  String get all_but_oldest => '最古以外はすべて';
+
+  @override
+  String get all_but_youngest => '最年少以外全員';
+
+  @override
+  String get select_none => '何も選択しない';
+
+  @override
+  String get merge => 'マージ';
+
+  @override
+  String get previous_page => '前のページへ';
+
+  @override
+  String get next_page => '次のページ';
+
+  @override
+  String scene_deduplication_page_count(int page, int totalPages) {
+    return 'ページ $page / $totalPages';
+  }
+
+  @override
+  String scene_tagger_result_count(int index, int total) {
+    return '結果 $index / $total';
+  }
+
+  @override
+  String delete_preset_confirm(String name) {
+    return '「$name」を削除しますか?この操作は元に戻すことができません。';
+  }
+
+  @override
+  String get enter_preset_name => 'プリセット名を入力してください';
+
+  @override
+  String get delete_scene_confirm => 'このシーンを削除してもよろしいですか?';
+
+  @override
+  String delete_selected_count(int selectedCount) {
+    return '選択したものを削除 ($selectedCount)';
+  }
 }

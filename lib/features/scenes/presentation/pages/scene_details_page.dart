@@ -1,3 +1,4 @@
+import 'package:stash_app_flutter/core/presentation/extensions/context_extensions.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
@@ -145,7 +146,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 Icons.delete_outline,
                 color: dialogContext.colors.error,
               ),
-              title: const Text('Delete scene'),
+              title: Text(context.l10n.delete_scene),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,7 +162,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                     children: [
                       ChoiceChip(
                         avatar: const Icon(Icons.storage_outlined, size: 18),
-                        label: const Text('Metadata only'),
+                        label: Text(context.l10n.metadata_only),
                         selected: mode == _SceneDeleteMode.metadataOnly,
                         onSelected: isDeleting
                             ? null
@@ -178,7 +179,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                           Icons.folder_delete_outlined,
                           size: 18,
                         ),
-                        label: const Text('Files'),
+                        label: Text(context.l10n.files),
                         selected: mode == _SceneDeleteMode.files,
                         onSelected: isDeleting
                             ? null
@@ -250,7 +251,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(Icons.delete_outline),
-                  label: const Text('Delete'),
+                  label: Text(context.l10n.common_delete),
                 ),
               ],
             );
@@ -266,7 +267,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     _invalidateSceneListUnlessRandom();
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Scene deleted')));
+    ).showSnackBar(const SnackBar(content: Text(context.l10n.scene_deleted)));
 
     final router = GoRouter.of(context);
     if (router.canPop()) {
@@ -460,7 +461,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
             ),
           sceneAsync.maybeWhen(
             data: (scene) => IconButton(
-              tooltip: 'Delete scene',
+              tooltip: context.l10n.delete_scene,
               icon: const Icon(Icons.delete_outline),
               onPressed: () => _showDeleteSceneDialog(scene),
             ),

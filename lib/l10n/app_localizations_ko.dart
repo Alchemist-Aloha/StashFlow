@@ -787,13 +787,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get filter_less_than => '보다 작음';
 
   @override
-  String get filter_includes => 'Includes';
+  String get filter_includes => '포함';
 
   @override
-  String get filter_excludes => 'Excludes';
+  String get filter_excludes => '제외';
 
   @override
-  String get filter_includes_all => 'Includes All';
+  String get filter_includes_all => '모두 포함';
 
   @override
   String get filter_is_null => '널임';
@@ -802,19 +802,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get filter_not_null => '널 아님';
 
   @override
-  String get filter_matches_regex => 'Matches Regex';
+  String get filter_matches_regex => '정규식과 일치';
 
   @override
-  String get filter_not_matches_regex => 'Does Not Match Regex';
+  String get filter_not_matches_regex => '정규식과 일치하지 않습니다.';
 
   @override
-  String get filter_between => 'Between';
+  String get filter_between => '사이';
 
   @override
-  String get filter_not_between => 'Not Between';
+  String get filter_not_between => '사이가 아닌';
 
   @override
-  String get filter_value_secondary => 'Second Value';
+  String get filter_value_secondary => '두 번째 값';
 
   @override
   String get images_resolution_title => '해상도';
@@ -2499,4 +2499,162 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get common_saved_filters => '저장된 필터';
+
+  @override
+  String get tools => '도구';
+
+  @override
+  String get preset_deleted => '사전 설정이 삭제되었습니다.';
+
+  @override
+  String get delete_preset => '프리셋 삭제';
+
+  @override
+  String get common_delete => '삭제';
+
+  @override
+  String get save_preset => '사전 설정 저장';
+
+  @override
+  String get no_saved_presets => '저장된 사전 설정이 없습니다.';
+
+  @override
+  String get scene_tagger => '장면 태그';
+
+  @override
+  String get page_size => '페이지 크기';
+
+  @override
+  String get mode => '방법';
+
+  @override
+  String get sort => '종류';
+
+  @override
+  String get desc => '설명';
+
+  @override
+  String get asc => '오름차순';
+
+  @override
+  String get filter => '필터';
+
+  @override
+  String get load_preset => '사전 설정 로드';
+
+  @override
+  String get preset => '프리셋';
+
+  @override
+  String get stash_box_scraper => '보관함 스크레이퍼';
+
+  @override
+  String get start_tagging => '태그 시작';
+
+  @override
+  String get stop => '멈추다';
+
+  @override
+  String get open_scene => '오픈 씬';
+
+  @override
+  String get skip => '건너뛰다';
+
+  @override
+  String get apply => '적용하다';
+
+  @override
+  String get selected => '선택된';
+
+  @override
+  String get select => '선택하다';
+
+  @override
+  String get preview => '시사';
+
+  @override
+  String get delete_scene => '장면 삭제';
+
+  @override
+  String get metadata_only => '메타데이터만';
+
+  @override
+  String get files => '파일';
+
+  @override
+  String get scene_deleted => '장면이 삭제되었습니다.';
+
+  @override
+  String get delete_metadata => '메타데이터 삭제';
+
+  @override
+  String get delete_files => '파일 삭제';
+
+  @override
+  String get scene_deduplication => '장면 중복 제거';
+
+  @override
+  String get no_duplicates_found => '중복된 항목이 없습니다.';
+
+  @override
+  String get search_accuracy => '검색 정확도';
+
+  @override
+  String get duration_difference => '기간 차이';
+
+  @override
+  String get only_select_matching_codecs => '일치하는 코덱만 선택';
+
+  @override
+  String get select_scenes => '장면 선택';
+
+  @override
+  String get all_but_largest_resolution => '가장 큰 해상도를 제외한 모든 것';
+
+  @override
+  String get all_but_largest_file => '가장 큰 파일을 제외한 모든 파일';
+
+  @override
+  String get all_but_oldest => '가장 나이 많은 사람 빼고 다';
+
+  @override
+  String get all_but_youngest => '막내빼고 다';
+
+  @override
+  String get select_none => '없음을 선택하세요';
+
+  @override
+  String get merge => '병합';
+
+  @override
+  String get previous_page => '이전 페이지';
+
+  @override
+  String get next_page => '다음 페이지';
+
+  @override
+  String scene_deduplication_page_count(int page, int totalPages) {
+    return '페이지 $page/$totalPages';
+  }
+
+  @override
+  String scene_tagger_result_count(int index, int total) {
+    return '$index 중 결과 $total';
+  }
+
+  @override
+  String delete_preset_confirm(String name) {
+    return '\"$name\"을(를) 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.';
+  }
+
+  @override
+  String get enter_preset_name => '프리셋 이름을 입력하세요';
+
+  @override
+  String get delete_scene_confirm => '이 장면을 삭제하시겠습니까?';
+
+  @override
+  String delete_selected_count(int selectedCount) {
+    return '선택 항목 삭제($selectedCount)';
+  }
 }

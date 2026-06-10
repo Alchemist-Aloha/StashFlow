@@ -1,3 +1,4 @@
+import 'package:stash_app_flutter/core/presentation/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/utils/l10n_extensions.dart';
@@ -579,7 +580,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                 IconButton(
                   icon: const Icon(Icons.construction),
                   onPressed: () => context.push('/tools'),
-                  tooltip: 'Tools',
+                  tooltip: context.l10n.tools,
                 ),
                 IconButton(
                   icon: const Icon(Icons.settings),

@@ -801,13 +801,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get filter_less_than => 'Menor que';
 
   @override
-  String get filter_includes => 'Includes';
+  String get filter_includes => 'Incluye';
 
   @override
-  String get filter_excludes => 'Excludes';
+  String get filter_excludes => 'Excluye';
 
   @override
-  String get filter_includes_all => 'Includes All';
+  String get filter_includes_all => 'Incluye todo';
 
   @override
   String get filter_is_null => 'Es nulo';
@@ -816,19 +816,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get filter_not_null => 'No es nulo';
 
   @override
-  String get filter_matches_regex => 'Matches Regex';
+  String get filter_matches_regex => 'Coincide con expresiones regulares';
 
   @override
-  String get filter_not_matches_regex => 'Does Not Match Regex';
+  String get filter_not_matches_regex => 'No coincide con la expresión regular';
 
   @override
-  String get filter_between => 'Between';
+  String get filter_between => 'Entre';
 
   @override
-  String get filter_not_between => 'Not Between';
+  String get filter_not_between => 'No entre';
 
   @override
-  String get filter_value_secondary => 'Second Value';
+  String get filter_value_secondary => 'Segundo valor';
 
   @override
   String get images_resolution_title => 'Resolución';
@@ -2617,4 +2617,165 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get common_saved_filters => 'Filtros guardados';
+
+  @override
+  String get tools => 'Herramientas';
+
+  @override
+  String get preset_deleted => 'Preestablecido eliminado';
+
+  @override
+  String get delete_preset => 'Eliminar preajuste';
+
+  @override
+  String get common_delete => 'Borrar';
+
+  @override
+  String get save_preset => 'Guardar preestablecido';
+
+  @override
+  String get no_saved_presets => 'No hay ajustes preestablecidos guardados';
+
+  @override
+  String get scene_tagger => 'Etiquetas de escena';
+
+  @override
+  String get page_size => 'Tamaño de página';
+
+  @override
+  String get mode => 'Modo';
+
+  @override
+  String get sort => 'Clasificar';
+
+  @override
+  String get desc => 'Descripción';
+
+  @override
+  String get asc => 'asc';
+
+  @override
+  String get filter => 'Filtrar';
+
+  @override
+  String get load_preset => 'Cargar preajuste';
+
+  @override
+  String get preset => 'Programar';
+
+  @override
+  String get stash_box_scraper => 'Raspador de caja de almacenamiento';
+
+  @override
+  String get start_tagging => 'Empezar a etiquetar';
+
+  @override
+  String get stop => 'Detener';
+
+  @override
+  String get open_scene => 'escena abierta';
+
+  @override
+  String get skip => 'Saltar';
+
+  @override
+  String get apply => 'Aplicar';
+
+  @override
+  String get selected => 'Seleccionado';
+
+  @override
+  String get select => 'Seleccionar';
+
+  @override
+  String get preview => 'Avance';
+
+  @override
+  String get delete_scene => 'eliminar escena';
+
+  @override
+  String get metadata_only => 'Solo metadatos';
+
+  @override
+  String get files => 'Archivos';
+
+  @override
+  String get scene_deleted => 'Escena eliminada';
+
+  @override
+  String get delete_metadata => 'Eliminar metadatos';
+
+  @override
+  String get delete_files => 'Eliminar archivos';
+
+  @override
+  String get scene_deduplication => 'Deduplicación de escenas';
+
+  @override
+  String get no_duplicates_found => 'No se encontraron duplicados.';
+
+  @override
+  String get search_accuracy => 'Precisión de búsqueda';
+
+  @override
+  String get duration_difference => 'Diferencia de duración';
+
+  @override
+  String get only_select_matching_codecs =>
+      'Seleccione solo códecs coincidentes';
+
+  @override
+  String get select_scenes => 'Seleccionar escenas';
+
+  @override
+  String get all_but_largest_resolution =>
+      'Todas menos la resolución más grande';
+
+  @override
+  String get all_but_largest_file => 'Todos los archivos excepto el más grande';
+
+  @override
+  String get all_but_oldest => 'Todos menos los más antiguos';
+
+  @override
+  String get all_but_youngest => 'Todos menos los más jóvenes';
+
+  @override
+  String get select_none => 'No seleccionar ninguno';
+
+  @override
+  String get merge => 'Unir';
+
+  @override
+  String get previous_page => 'Pagina anterior';
+
+  @override
+  String get next_page => 'Página siguiente';
+
+  @override
+  String scene_deduplication_page_count(int page, int totalPages) {
+    return 'Página $page de $totalPages';
+  }
+
+  @override
+  String scene_tagger_result_count(int index, int total) {
+    return 'Resultado $index de $total';
+  }
+
+  @override
+  String delete_preset_confirm(String name) {
+    return '¿Eliminar \"$name\"? Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get enter_preset_name => 'Introduzca el nombre preestablecido';
+
+  @override
+  String get delete_scene_confirm =>
+      '¿Estás seguro de que quieres eliminar esta escena?';
+
+  @override
+  String delete_selected_count(int selectedCount) {
+    return 'Eliminar seleccionados ($selectedCount)';
+  }
 }

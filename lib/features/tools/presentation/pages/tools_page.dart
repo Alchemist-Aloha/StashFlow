@@ -1,3 +1,4 @@
+import 'package:stash_app_flutter/core/presentation/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -28,7 +29,7 @@ class ToolsPage extends StatelessWidget {
                   icon: const BackButtonIcon(),
                   onPressed: fallbackBack,
                 ),
-          title: const Text('Tools'),
+          title: Text(context.l10n.tools),
         ),
         body: SafeArea(
           child: Align(
