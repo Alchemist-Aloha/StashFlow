@@ -39,3 +39,6 @@
 ## 2024-05-18 - Throttle ScrollNotification by Index
 **Learning:** `NotificationListener<ScrollNotification>` fires rapidly on every single frame during scrolling. Without throttling, complex processing like loop iterations and hash lookups inside the callback create significant GC pressure and stutter. Using the `visibleIndex` calculation to throttle the callback ensures logic only executes when new content is actually coming into view.
 **Action:** Always capture a `var lastVisibleIndex = -1;` within the `build` method closure (which resets securely on rebuilds) and short-circuit the scroll callback (`if (visibleIndex == lastVisibleIndex) return false;`) before executing heavy operations.
+## 2026-06-06 - [Hoist Scroll Calculations]
+**Learning:** In Dart/Flutter, `pubspec.lock` files can be unintentionally downgraded or modified by running `flutter test` or `flutter pub get` when the local environment SDK doesn't strictly match the locked versions. Agent operations must always verify `git status` post-testing to catch and revert these side-effects (`git restore pubspec.lock`) before proposing a PR.
+**Action:** Always run `git status` and revert any unintended changes to `pubspec.lock` after running Flutter tests or analyzer in the agent sandbox.
