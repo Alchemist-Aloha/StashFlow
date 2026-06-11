@@ -1,6 +1,6 @@
-import 'package:stash_app_flutter/core/presentation/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 
 import '../../../setup/presentation/widgets/settings_page_shell.dart';
 import '../../../../core/presentation/theme/app_theme.dart';

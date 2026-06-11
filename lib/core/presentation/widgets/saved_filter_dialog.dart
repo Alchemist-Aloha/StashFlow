@@ -1,4 +1,3 @@
-import 'package:stash_app_flutter/core/presentation/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 
 import '../../domain/entities/saved_filter_config.dart';
@@ -121,9 +120,9 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
         _savedFiltersFuture = widget.loadPresets();
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(context.l10n.preset_deleted)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.preset_deleted)));
       }
     } catch (error) {
       if (mounted) {
@@ -408,7 +407,7 @@ class _SavedFilterList<T extends SavedFilterConfig<dynamic>>
 
     final filters = snapshot.data ?? const [];
     if (filters.isEmpty) {
-      return const Center(child: Text(context.l10n.no_saved_presets));
+      return Center(child: Text(context.l10n.no_saved_presets));
     }
 
     final sorted = [...filters]

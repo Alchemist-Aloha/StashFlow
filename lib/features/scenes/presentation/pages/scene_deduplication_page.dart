@@ -1,7 +1,7 @@
-import 'package:stash_app_flutter/core/presentation/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 
 import '../../domain/entities/scene_deduplication.dart';
 import '../providers/scene_list_provider.dart';
@@ -320,7 +320,7 @@ class _SceneDeduplicationPageState
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 24),
-          const Expanded(
+          Expanded(
             child: Center(child: Text(context.l10n.no_duplicates_found)),
           ),
         ],

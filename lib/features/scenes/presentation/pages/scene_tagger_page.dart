@@ -1,4 +1,3 @@
-import 'package:stash_app_flutter/core/presentation/extensions/context_extensions.dart';
 import 'dart:async';
 import 'dart:convert';
 
@@ -8,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 
 import '../../../../core/data/auth/auth_provider.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
@@ -607,7 +607,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                   },
                 ),
                 SegmentedButton<bool>(
-                  segments: const [
+                  segments: [
                     ButtonSegment(value: true, label: Text(context.l10n.desc)),
                     ButtonSegment(value: false, label: Text(context.l10n.asc)),
                   ],
@@ -976,7 +976,7 @@ class _ExpandedScrapedMatchCard extends StatelessWidget {
     return _MetadataPanel(
       title: context.l10n.scene_tagger_result_count(index + 1, total),
       headerTrailing: selected
-          ? const Chip(label: Text(context.l10n.selected))
+          ? Chip(label: Text(context.l10n.selected))
           : OutlinedButton(
               key: ValueKey('select_scraped_${sceneId}_$index'),
               onPressed: onSelect,

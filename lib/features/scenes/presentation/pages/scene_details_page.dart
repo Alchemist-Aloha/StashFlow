@@ -1,4 +1,3 @@
-import 'package:stash_app_flutter/core/presentation/extensions/context_extensions.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
@@ -267,7 +266,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     _invalidateSceneListUnlessRandom();
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text(context.l10n.scene_deleted)));
+    ).showSnackBar(SnackBar(content: Text(context.l10n.scene_deleted)));
 
     final router = GoRouter.of(context);
     if (router.canPop()) {
