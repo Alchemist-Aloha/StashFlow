@@ -77,11 +77,11 @@ default-mode tests PASS.
 
 - [ ] **Step 1: Write failing tests for preview initialization and mode changes**
 
-Inject a preview-player factory that records `open(play: false)` and disposal.
-For both-assets mode, tap the Preview segment and assert the preview surface is
-shown and opened paused. Tap Cover and assert the cover returns and the preview
-player is disposed. For preview-only mode, assert initialization occurs
-immediately with `play: false`.
+Inject a preview-player factory that records the requested autoplay state and
+disposal. For both-assets mode, tap the Preview segment and assert the preview
+surface is shown with autoplay enabled. Tap Cover and assert the cover returns
+and the preview player is disposed. For preview-only mode, assert
+initialization occurs immediately with autoplay enabled.
 
 - [ ] **Step 2: Run the focused test and verify RED**
 

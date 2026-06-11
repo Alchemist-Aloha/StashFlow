@@ -36,7 +36,10 @@ void main() {
     tagNames: const [],
   );
 
-  Widget buildSubject(Scene scene) {
+  Widget buildSubject(
+    Scene scene, {
+    void Function(bool autoplay)? onPreviewBuilt,
+  }) {
     return ProviderScope(
       child: MaterialApp(
         theme: AppTheme.darkTheme,
@@ -47,8 +50,10 @@ void main() {
             scene: scene,
             coverBuilder: (context, scene) =>
                 const ColoredBox(color: Colors.blue),
-            previewBuilder: (context, scene) =>
-                const ColoredBox(color: Colors.red),
+            previewBuilder: (context, scene, autoplay) {
+              onPreviewBuilt?.call(autoplay);
+              return const ColoredBox(color: Colors.red);
+            },
           ),
         ),
       ),
@@ -56,7 +61,13 @@ void main() {
   }
 
   testWidgets('both assets show toggle and default to cover', (tester) async {
-    await tester.pumpWidget(buildSubject(baseScene));
+    bool? previewAutoplay;
+    await tester.pumpWidget(
+      buildSubject(
+        baseScene,
+        onPreviewBuilt: (autoplay) => previewAutoplay = autoplay,
+      ),
+    );
 
     expect(find.byKey(const Key('scene_info_media_section')), findsOneWidget);
     expect(find.byKey(const Key('scene_info_media_toggle')), findsOneWidget);
@@ -71,6 +82,7 @@ void main() {
 
     expect(find.byKey(const Key('scene_info_media_cover')), findsNothing);
     expect(find.byKey(const Key('scene_info_media_preview')), findsOneWidget);
+    expect(previewAutoplay, isTrue);
 
     await tester.tap(find.descendant(of: toggle, matching: find.text('Cover')));
     await tester.pump();
@@ -92,19 +104,26 @@ void main() {
     expect(find.byKey(const Key('scene_info_media_preview')), findsNothing);
   });
 
-  testWidgets('preview-only scene shows paused preview without toggle', (
+  testWidgets('preview-only scene autoplays preview without toggle', (
     tester,
   ) async {
+    bool? previewAutoplay;
     final scene = baseScene.copyWith(
       paths: baseScene.paths.copyWith(screenshot: null),
     );
 
-    await tester.pumpWidget(buildSubject(scene));
+    await tester.pumpWidget(
+      buildSubject(
+        scene,
+        onPreviewBuilt: (autoplay) => previewAutoplay = autoplay,
+      ),
+    );
 
     expect(find.byKey(const Key('scene_info_media_section')), findsOneWidget);
     expect(find.byKey(const Key('scene_info_media_toggle')), findsNothing);
     expect(find.byKey(const Key('scene_info_media_cover')), findsNothing);
     expect(find.byKey(const Key('scene_info_media_preview')), findsOneWidget);
+    expect(previewAutoplay, isTrue);
   });
 
   testWidgets('scene without cover or preview hides media section', (

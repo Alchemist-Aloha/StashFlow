@@ -16,6 +16,8 @@ import '../../domain/entities/scene.dart';
 
 typedef SceneInfoMediaBuilder =
     Widget Function(BuildContext context, Scene scene);
+typedef SceneInfoPreviewBuilder =
+    Widget Function(BuildContext context, Scene scene, bool autoplay);
 
 enum _SceneInfoMediaMode { cover, preview }
 
@@ -29,7 +31,7 @@ class SceneInfoMediaSection extends StatefulWidget {
 
   final Scene scene;
   final SceneInfoMediaBuilder? coverBuilder;
-  final SceneInfoMediaBuilder? previewBuilder;
+  final SceneInfoPreviewBuilder? previewBuilder;
 
   static bool isVisibleFor(Scene scene) {
     return _normalized(scene.paths.screenshot) != null ||
@@ -47,6 +49,7 @@ class SceneInfoMediaSection extends StatefulWidget {
 
 class _SceneInfoMediaSectionState extends State<SceneInfoMediaSection> {
   late _SceneInfoMediaMode _mode = _initialMode(widget.scene);
+  late bool _previewAutoplay = _mode == _SceneInfoMediaMode.preview;
 
   String? get _coverUrl =>
       SceneInfoMediaSection._normalized(widget.scene.paths.screenshot);
@@ -66,6 +69,7 @@ class _SceneInfoMediaSectionState extends State<SceneInfoMediaSection> {
         oldWidget.scene.paths.screenshot != widget.scene.paths.screenshot ||
         oldWidget.scene.paths.preview != widget.scene.paths.preview) {
       _mode = _initialMode(widget.scene);
+      _previewAutoplay = _mode == _SceneInfoMediaMode.preview;
     }
   }
 
@@ -121,7 +125,10 @@ class _SceneInfoMediaSectionState extends State<SceneInfoMediaSection> {
                   ],
                   selected: {_mode},
                   onSelectionChanged: (selection) {
-                    setState(() => _mode = selection.single);
+                    setState(() {
+                      _mode = selection.single;
+                      _previewAutoplay = _mode == _SceneInfoMediaMode.preview;
+                    });
                   },
                 ),
             ],
@@ -151,12 +158,14 @@ class _SceneInfoMediaSectionState extends State<SceneInfoMediaSection> {
                             widget.previewBuilder?.call(
                               context,
                               widget.scene,
+                              _previewAutoplay,
                             ) ??
                             _SceneInfoPreviewPlayer(
                               key: ValueKey(
                                 'scene_info_preview_${widget.scene.id}_$previewUrl',
                               ),
                               previewUrl: previewUrl!,
+                              autoplay: _previewAutoplay,
                             ),
                       ),
               ),
@@ -169,9 +178,14 @@ class _SceneInfoMediaSectionState extends State<SceneInfoMediaSection> {
 }
 
 class _SceneInfoPreviewPlayer extends ConsumerStatefulWidget {
-  const _SceneInfoPreviewPlayer({required this.previewUrl, super.key});
+  const _SceneInfoPreviewPlayer({
+    required this.previewUrl,
+    required this.autoplay,
+    super.key,
+  });
 
   final String previewUrl;
+  final bool autoplay;
 
   @override
   ConsumerState<_SceneInfoPreviewPlayer> createState() =>
@@ -234,7 +248,7 @@ class _SceneInfoPreviewPlayerState
 
       await player.open(
         Media(effectiveUrl, httpHeaders: effectiveHeaders),
-        play: false,
+        play: widget.autoplay,
       );
     } catch (error) {
       if (mounted) {

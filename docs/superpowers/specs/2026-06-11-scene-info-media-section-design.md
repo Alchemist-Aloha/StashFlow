@@ -40,9 +40,10 @@ resolves relative preview URLs against the configured GraphQL endpoint and
 uses the existing media playback authentication behavior, including the web
 URL fallback.
 
-The player opens the preview with `play: false`, so preview-only scenes and
-newly selected Preview mode start paused. The `Video` widget uses media_kit's
-Material controls, providing play/pause, progress seeking, and fullscreen.
+Preview-only scenes open with `play: true` and start automatically. When the
+user switches from Cover to Preview, the player also opens with `play: true`.
+The `Video` widget uses media_kit's Material controls, providing play/pause,
+progress seeking, and fullscreen.
 
 The preview player is initialized lazily when Preview mode first becomes
 visible. Switching back to Cover removes and disposes the preview player. The
