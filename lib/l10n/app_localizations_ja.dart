@@ -2658,4 +2658,159 @@ class AppLocalizationsJa extends AppLocalizations {
   String delete_selected_count(int selectedCount) {
     return '選択したものを削除 ($selectedCount)';
   }
+
+  @override
+  String failed_to_save_filter(String error) {
+    return 'フィルタの保存に失敗しました: $error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return 'プリセットの削除に失敗しました: $error';
+  }
+
+  @override
+  String get current_settings => '現在の設定';
+
+  @override
+  String get available_presets => '利用可能なプリセット';
+
+  @override
+  String sort_label(String sortLabel) {
+    return '並べ替え: $sortLabel';
+  }
+
+  @override
+  String filters_count(int count) {
+    return 'フィルター: $count';
+  }
+
+  @override
+  String search_query(String query) {
+    return '検索: $query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return 'プリセットのロードに失敗しました: $error';
+  }
+
+  @override
+  String saved_title(String title) {
+    return '保存しました $title';
+  }
+
+  @override
+  String save_failed(String error) {
+    return '保存に失敗しました: $error';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return '隠しボックスをロードできません: $error';
+  }
+
+  @override
+  String delete_scenes_confirm(int count) {
+    return '$count シーンを削除しますか?';
+  }
+
+  @override
+  String deleted_scenes_count(int count) {
+    return '削除されたシーンは $count 件あります';
+  }
+
+  @override
+  String delete_failed(String error) {
+    return '削除に失敗しました: $error';
+  }
+
+  @override
+  String resolution_format(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_s_format(String duration) {
+    return '${duration}s';
+  }
+
+  @override
+  String bitrate_bps_format(int bitrate) {
+    return '$bitrate bps';
+  }
+
+  @override
+  String o_counter_format(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String tag_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count タグ',
+      one: '1 タグ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String performer_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 出演者',
+      one: '1 出演者',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String group_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count グループ',
+      one: '1 グループ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String marker_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count マーカー',
+      one: '1 マーカー',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String gallery_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ギャラリー',
+      one: '1 ギャラリー',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String o_counter(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String plain_number(int count) {
+    return '$count';
+  }
+
+  @override
+  String get delete_metadata_or_files_desc =>
+      'Stash メタデータのみを削除するか、シーン ファイルと生成されたサポート ファイルも削除するかを選択します。';
 }

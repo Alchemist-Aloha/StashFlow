@@ -118,11 +118,8 @@ class _SceneDeduplicationPageState
     final deleteFile = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete ${ids.length} scenes?'),
-        content: const Text(
-          'Choose whether to remove only Stash metadata or delete the '
-          'scene files and generated supporting files too.',
-        ),
+        title: Text(context.l10n.delete_scenes_confirm(ids.length)),
+        content: Text(context.l10n.delete_metadata_or_files_desc),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(null),
@@ -160,14 +157,14 @@ class _SceneDeduplicationPageState
         _selectedSceneIds.clear();
         _future = _load();
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Deleted ${ids.length} scenes')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.deleted_scenes_count(ids.length))),
+      );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Delete failed: $error')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.delete_failed(error.toString()))),
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -675,18 +672,28 @@ class _DuplicateSceneTile extends StatelessWidget {
         children: [
           if (scene.path != null) Text(scene.path!),
           if (file != null) Text(_formatBytes(file.size)),
-          if (file != null) Text('${file.width}x${file.height}'),
-          if (file != null) Text('${file.duration.toStringAsFixed(1)}s'),
-          if (file != null && file.bitRate > 0) Text('${file.bitRate} bps'),
+          if (file != null)
+            Text(context.l10n.resolution_format(file.width, file.height)),
+          if (file != null)
+            Text(
+              context.l10n.duration_s_format(file.duration.toStringAsFixed(1)),
+            ),
+          if (file != null && file.bitRate > 0)
+            Text(context.l10n.bitrate_bps_format(file.bitRate)),
           if (file?.videoCodec != null && file!.videoCodec!.isNotEmpty)
             Text(file.videoCodec!),
-          if (scene.oCounter > 0) Text('O ${scene.oCounter}'),
-          if (scene.tagCount > 0) Text('${scene.tagCount} tags'),
+          if (scene.oCounter > 0)
+            Text(context.l10n.o_counter_format(scene.oCounter)),
+          if (scene.tagCount > 0)
+            Text(context.l10n.tag_count_format(scene.tagCount)),
           if (scene.performerCount > 0)
-            Text('${scene.performerCount} performers'),
-          if (scene.groupCount > 0) Text('${scene.groupCount} groups'),
-          if (scene.markerCount > 0) Text('${scene.markerCount} markers'),
-          if (scene.galleryCount > 0) Text('${scene.galleryCount} galleries'),
+            Text(context.l10n.performer_count_format(scene.performerCount)),
+          if (scene.groupCount > 0)
+            Text(context.l10n.group_count_format(scene.groupCount)),
+          if (scene.markerCount > 0)
+            Text(context.l10n.marker_count_format(scene.markerCount)),
+          if (scene.galleryCount > 0)
+            Text(context.l10n.gallery_count_format(scene.galleryCount)),
         ],
       ),
       secondary: SizedBox(

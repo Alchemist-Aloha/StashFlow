@@ -840,7 +840,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           ),
           icon: const Icon(Icons.water_drop_outlined),
-          label: Text('${scene.oCounter}'),
+          label: Text(context.l10n.plain_number(scene.oCounter)),
         ),
       ],
     );

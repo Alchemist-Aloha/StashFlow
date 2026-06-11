@@ -2632,6 +2632,160 @@ class AppLocalizationsZh extends AppLocalizations {
   String delete_selected_count(int selectedCount) {
     return 'Delete selected ($selectedCount)';
   }
+
+  @override
+  String failed_to_save_filter(String error) {
+    return '未能保存过滤器：$error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return '无法删除预设：$error';
+  }
+
+  @override
+  String get current_settings => '当前设置';
+
+  @override
+  String get available_presets => '可用预设';
+
+  @override
+  String sort_label(String sortLabel) {
+    return '排序：$sortLabel';
+  }
+
+  @override
+  String filters_count(int count) {
+    return '筛选器：$count';
+  }
+
+  @override
+  String search_query(String query) {
+    return '搜索：$query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return '无法加载预设：$error';
+  }
+
+  @override
+  String saved_title(String title) {
+    return '已保存 $title';
+  }
+
+  @override
+  String save_failed(String error) {
+    return '保存失败：$error';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return '无法加载储物箱：$error';
+  }
+
+  @override
+  String delete_scenes_confirm(int count) {
+    return '删除 $count 个场景？';
+  }
+
+  @override
+  String deleted_scenes_count(int count) {
+    return '已删除 $count 个场景';
+  }
+
+  @override
+  String delete_failed(String error) {
+    return '删除失败：$error';
+  }
+
+  @override
+  String resolution_format(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_s_format(String duration) {
+    return '${duration}s';
+  }
+
+  @override
+  String bitrate_bps_format(int bitrate) {
+    return '$bitrate bps';
+  }
+
+  @override
+  String o_counter_format(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String tag_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 标签',
+      one: '1 标签',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String performer_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 表演者',
+      one: '1 演员',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String group_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 团体',
+      one: '1 团体',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String marker_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 标记',
+      one: '1 标记',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String gallery_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 画廊',
+      one: '1 画廊',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String o_counter(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String plain_number(int count) {
+    return '$count';
+  }
+
+  @override
+  String get delete_metadata_or_files_desc => '选择是仅删除存储元数据还是也删除场景文件和生成的支持文件。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5261,6 +5415,160 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String delete_selected_count(int selectedCount) {
     return '删除所选内容 ($selectedCount)';
   }
+
+  @override
+  String failed_to_save_filter(String error) {
+    return '未能保存过滤器：$error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return '无法删除预设：$error';
+  }
+
+  @override
+  String get current_settings => '当前设置';
+
+  @override
+  String get available_presets => '可用预设';
+
+  @override
+  String sort_label(String sortLabel) {
+    return '排序：$sortLabel';
+  }
+
+  @override
+  String filters_count(int count) {
+    return '筛选器：$count';
+  }
+
+  @override
+  String search_query(String query) {
+    return '搜索：$query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return '无法加载预设：$error';
+  }
+
+  @override
+  String saved_title(String title) {
+    return '已保存 $title';
+  }
+
+  @override
+  String save_failed(String error) {
+    return '保存失败：$error';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return '无法加载储物箱：$error';
+  }
+
+  @override
+  String delete_scenes_confirm(int count) {
+    return '删除 $count 个场景？';
+  }
+
+  @override
+  String deleted_scenes_count(int count) {
+    return '已删除 $count 个场景';
+  }
+
+  @override
+  String delete_failed(String error) {
+    return '删除失败：$error';
+  }
+
+  @override
+  String resolution_format(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_s_format(String duration) {
+    return '${duration}s';
+  }
+
+  @override
+  String bitrate_bps_format(int bitrate) {
+    return '$bitrate bps';
+  }
+
+  @override
+  String o_counter_format(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String tag_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 标签',
+      one: '1 标签',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String performer_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 表演者',
+      one: '1 演员',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String group_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 团体',
+      one: '1 团体',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String marker_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 标记',
+      one: '1 标记',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String gallery_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 画廊',
+      one: '1 画廊',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String o_counter(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String plain_number(int count) {
+    return '$count';
+  }
+
+  @override
+  String get delete_metadata_or_files_desc => '选择是仅删除存储元数据还是也删除场景文件和生成的支持文件。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7894,4 +8202,158 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String delete_selected_count(int selectedCount) {
     return '刪除所選內容 ($selectedCount)';
   }
+
+  @override
+  String failed_to_save_filter(String error) {
+    return '未能儲存過濾器：$error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return '無法刪除預設：$error';
+  }
+
+  @override
+  String get current_settings => '目前設定';
+
+  @override
+  String get available_presets => '可用預設';
+
+  @override
+  String sort_label(String sortLabel) {
+    return '排序：$sortLabel';
+  }
+
+  @override
+  String filters_count(int count) {
+    return '篩選器：$count';
+  }
+
+  @override
+  String search_query(String query) {
+    return '搜尋：$query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return '無法載入預設：$error';
+  }
+
+  @override
+  String saved_title(String title) {
+    return '已保存 $title';
+  }
+
+  @override
+  String save_failed(String error) {
+    return '儲存失敗：$error';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return '無法載入儲物箱：$error';
+  }
+
+  @override
+  String delete_scenes_confirm(int count) {
+    return '刪除 $count 個場景？';
+  }
+
+  @override
+  String deleted_scenes_count(int count) {
+    return '已刪除 $count 個場景';
+  }
+
+  @override
+  String delete_failed(String error) {
+    return '刪除失敗：$error';
+  }
+
+  @override
+  String resolution_format(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_s_format(String duration) {
+    return '${duration}s';
+  }
+
+  @override
+  String bitrate_bps_format(int bitrate) {
+    return '$bitrate bps';
+  }
+
+  @override
+  String o_counter_format(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String tag_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 標籤',
+      one: '1 標籤',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String performer_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 表演者',
+      one: '1 演員',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String group_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 團體',
+      one: '1 團體',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String marker_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 標記',
+      one: '1 標記',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String gallery_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 畫廊',
+      one: '1 畫廊',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String o_counter(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String plain_number(int count) {
+    return '$count';
+  }
+
+  @override
+  String get delete_metadata_or_files_desc => '選擇是僅刪除儲存元資料還是也刪除場景檔案和產生的支援檔案。';
 }

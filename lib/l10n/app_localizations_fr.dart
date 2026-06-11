@@ -2769,4 +2769,159 @@ class AppLocalizationsFr extends AppLocalizations {
   String delete_selected_count(int selectedCount) {
     return 'Supprimer la sélection ($selectedCount)';
   }
+
+  @override
+  String failed_to_save_filter(String error) {
+    return 'Échec de l\'enregistrement du filtre : $error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return 'Échec de la suppression du préréglage : $error';
+  }
+
+  @override
+  String get current_settings => 'Paramètres actuels';
+
+  @override
+  String get available_presets => 'Préréglages disponibles';
+
+  @override
+  String sort_label(String sortLabel) {
+    return 'Trier : $sortLabel';
+  }
+
+  @override
+  String filters_count(int count) {
+    return 'Filtres : $count';
+  }
+
+  @override
+  String search_query(String query) {
+    return 'Rechercher : $query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return 'Échec du chargement des préréglages : $error';
+  }
+
+  @override
+  String saved_title(String title) {
+    return 'Enregistré $title';
+  }
+
+  @override
+  String save_failed(String error) {
+    return 'Échec de l\'enregistrement : $error';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return 'Impossible de charger les boîtes de cache : $error';
+  }
+
+  @override
+  String delete_scenes_confirm(int count) {
+    return 'Supprimer $count scènes ?';
+  }
+
+  @override
+  String deleted_scenes_count(int count) {
+    return 'Scènes $count supprimées';
+  }
+
+  @override
+  String delete_failed(String error) {
+    return 'Échec de la suppression : $error';
+  }
+
+  @override
+  String resolution_format(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_s_format(String duration) {
+    return '${duration}s';
+  }
+
+  @override
+  String bitrate_bps_format(int bitrate) {
+    return '$bitrate bps';
+  }
+
+  @override
+  String o_counter_format(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String tag_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count balises',
+      one: '1 étiqueter',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String performer_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count artistes interprètes ou exécutants',
+      one: '1 interprète',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String group_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count groupes',
+      one: '1 groupe',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String marker_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count marqueurs',
+      one: '1 marqueur',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String gallery_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count galeries',
+      one: '1 galerie',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String o_counter(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String plain_number(int count) {
+    return '$count';
+  }
+
+  @override
+  String get delete_metadata_or_files_desc =>
+      'Choisissez si vous souhaitez supprimer uniquement les métadonnées Stash ou supprimer également les fichiers de scène et les fichiers de support générés.';
 }

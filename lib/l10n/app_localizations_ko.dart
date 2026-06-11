@@ -2657,4 +2657,159 @@ class AppLocalizationsKo extends AppLocalizations {
   String delete_selected_count(int selectedCount) {
     return '선택 항목 삭제($selectedCount)';
   }
+
+  @override
+  String failed_to_save_filter(String error) {
+    return '필터를 저장하지 못했습니다: $error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return '사전 설정을 삭제하지 못했습니다: $error';
+  }
+
+  @override
+  String get current_settings => '현재 설정';
+
+  @override
+  String get available_presets => '사용 가능한 사전 설정';
+
+  @override
+  String sort_label(String sortLabel) {
+    return '정렬: $sortLabel';
+  }
+
+  @override
+  String filters_count(int count) {
+    return '필터: $count';
+  }
+
+  @override
+  String search_query(String query) {
+    return '검색: $query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return '사전 설정을 로드하지 못했습니다: $error';
+  }
+
+  @override
+  String saved_title(String title) {
+    return '저장됨 $title';
+  }
+
+  @override
+  String save_failed(String error) {
+    return '저장 실패: $error';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return '숨김 상자를 로드할 수 없습니다: $error';
+  }
+
+  @override
+  String delete_scenes_confirm(int count) {
+    return '$count 장면을 삭제하시겠습니까?';
+  }
+
+  @override
+  String deleted_scenes_count(int count) {
+    return '삭제된 $count 장면';
+  }
+
+  @override
+  String delete_failed(String error) {
+    return '삭제 실패: $error';
+  }
+
+  @override
+  String resolution_format(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_s_format(String duration) {
+    return '${duration}s';
+  }
+
+  @override
+  String bitrate_bps_format(int bitrate) {
+    return '$bitrate bps';
+  }
+
+  @override
+  String o_counter_format(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String tag_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 태그',
+      one: '1 꼬리표',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String performer_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 공연자',
+      one: '1 수행자',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String group_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 여러 떼',
+      one: '1 그룹',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String marker_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 마커',
+      one: '1 채점자',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String gallery_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 갤러리',
+      one: '1 갱도',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String o_counter(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String plain_number(int count) {
+    return '$count';
+  }
+
+  @override
+  String get delete_metadata_or_files_desc =>
+      'Stash 메타데이터만 제거할지 아니면 장면 파일과 생성된 지원 파일도 삭제할지 선택합니다.';
 }

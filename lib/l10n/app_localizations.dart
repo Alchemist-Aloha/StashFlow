@@ -5051,6 +5051,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete selected ({selectedCount})'**
   String delete_selected_count(int selectedCount);
+
+  /// No description provided for @failed_to_save_filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save filter: {error}'**
+  String failed_to_save_filter(String error);
+
+  /// No description provided for @failed_to_delete_preset.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete preset: {error}'**
+  String failed_to_delete_preset(String error);
+
+  /// No description provided for @current_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Settings'**
+  String get current_settings;
+
+  /// No description provided for @available_presets.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Presets'**
+  String get available_presets;
+
+  /// No description provided for @sort_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: {sortLabel}'**
+  String sort_label(String sortLabel);
+
+  /// No description provided for @filters_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters: {count}'**
+  String filters_count(int count);
+
+  /// No description provided for @search_query.
+  ///
+  /// In en, this message translates to:
+  /// **'Search: {query}'**
+  String search_query(String query);
+
+  /// No description provided for @failed_to_load_presets.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load presets: {error}'**
+  String failed_to_load_presets(String error);
+
+  /// No description provided for @saved_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {title}'**
+  String saved_title(String title);
+
+  /// No description provided for @save_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Save failed: {error}'**
+  String save_failed(String error);
+
+  /// No description provided for @unable_to_load_stash_boxes.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load stash-boxes: {error}'**
+  String unable_to_load_stash_boxes(String error);
+
+  /// No description provided for @delete_scenes_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {count} scenes?'**
+  String delete_scenes_confirm(int count);
+
+  /// No description provided for @deleted_scenes_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted {count} scenes'**
+  String deleted_scenes_count(int count);
+
+  /// No description provided for @delete_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete failed: {error}'**
+  String delete_failed(String error);
+
+  /// No description provided for @resolution_format.
+  ///
+  /// In en, this message translates to:
+  /// **'{width}x{height}'**
+  String resolution_format(int width, int height);
+
+  /// No description provided for @duration_s_format.
+  ///
+  /// In en, this message translates to:
+  /// **'{duration}s'**
+  String duration_s_format(String duration);
+
+  /// No description provided for @bitrate_bps_format.
+  ///
+  /// In en, this message translates to:
+  /// **'{bitrate} bps'**
+  String bitrate_bps_format(int bitrate);
+
+  /// No description provided for @o_counter_format.
+  ///
+  /// In en, this message translates to:
+  /// **'O {count}'**
+  String o_counter_format(int count);
+
+  /// No description provided for @tag_count_format.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 tag} other{{count} tags}}'**
+  String tag_count_format(int count);
+
+  /// No description provided for @performer_count_format.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 performer} other{{count} performers}}'**
+  String performer_count_format(int count);
+
+  /// No description provided for @group_count_format.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 group} other{{count} groups}}'**
+  String group_count_format(int count);
+
+  /// No description provided for @marker_count_format.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 marker} other{{count} markers}}'**
+  String marker_count_format(int count);
+
+  /// No description provided for @gallery_count_format.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 gallery} other{{count} galleries}}'**
+  String gallery_count_format(int count);
+
+  /// No description provided for @o_counter.
+  ///
+  /// In en, this message translates to:
+  /// **'O {count}'**
+  String o_counter(int count);
+
+  /// No description provided for @plain_number.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}'**
+  String plain_number(int count);
+
+  /// No description provided for @delete_metadata_or_files_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose whether to remove only Stash metadata or delete the scene files and generated supporting files too.'**
+  String get delete_metadata_or_files_desc;
 }
 
 class _AppLocalizationsDelegate

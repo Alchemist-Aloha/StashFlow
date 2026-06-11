@@ -1142,5 +1142,195 @@
         "type": "int"
       }
     }
-  }
+  },
+  "failed_to_save_filter": "Failed to save filter: {error}",
+  "@failed_to_save_filter": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failed_to_delete_preset": "Failed to delete preset: {error}",
+  "@failed_to_delete_preset": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "current_settings": "Current Settings",
+  "available_presets": "Available Presets",
+  "sort_label": "Sort: {sortLabel}",
+  "@sort_label": {
+    "placeholders": {
+      "sortLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "filters_count": "Filters: {count}",
+  "@filters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "search_query": "Search: {query}",
+  "@search_query": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "failed_to_load_presets": "Failed to load presets: {error}",
+  "@failed_to_load_presets": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "saved_title": "Saved {title}",
+  "@saved_title": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "save_failed": "Save failed: {error}",
+  "@save_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unable_to_load_stash_boxes": "Unable to load stash-boxes: {error}",
+  "@unable_to_load_stash_boxes": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "delete_scenes_confirm": "Delete {count} scenes?",
+  "@delete_scenes_confirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleted_scenes_count": "Deleted {count} scenes",
+  "@deleted_scenes_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "delete_failed": "Delete failed: {error}",
+  "@delete_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "resolution_format": "{width}x{height}",
+  "@resolution_format": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "duration_s_format": "{duration}s",
+  "@duration_s_format": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "bitrate_bps_format": "{bitrate} bps",
+  "@bitrate_bps_format": {
+    "placeholders": {
+      "bitrate": {
+        "type": "int"
+      }
+    }
+  },
+  "o_counter_format": "O {count}",
+  "@o_counter_format": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tag_count_format": "{count, plural, =1{1 tag} other{{count} tags}}",
+  "@tag_count_format": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "performer_count_format": "{count, plural, =1{1 performer} other{{count} performers}}",
+  "@performer_count_format": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "group_count_format": "{count, plural, =1{1 group} other{{count} groups}}",
+  "@group_count_format": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "marker_count_format": "{count, plural, =1{1 marker} other{{count} markers}}",
+  "@marker_count_format": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "gallery_count_format": "{count, plural, =1{1 gallery} other{{count} galleries}}",
+  "@gallery_count_format": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "o_counter": "O {count}",
+  "@o_counter": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plain_number": "{count}",
+  "@plain_number": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "delete_metadata_or_files_desc": "Choose whether to remove only Stash metadata or delete the scene files and generated supporting files too."
 }

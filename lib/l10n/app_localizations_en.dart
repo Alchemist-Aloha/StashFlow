@@ -2709,4 +2709,159 @@ class AppLocalizationsEn extends AppLocalizations {
   String delete_selected_count(int selectedCount) {
     return 'Delete selected ($selectedCount)';
   }
+
+  @override
+  String failed_to_save_filter(String error) {
+    return 'Failed to save filter: $error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return 'Failed to delete preset: $error';
+  }
+
+  @override
+  String get current_settings => 'Current Settings';
+
+  @override
+  String get available_presets => 'Available Presets';
+
+  @override
+  String sort_label(String sortLabel) {
+    return 'Sort: $sortLabel';
+  }
+
+  @override
+  String filters_count(int count) {
+    return 'Filters: $count';
+  }
+
+  @override
+  String search_query(String query) {
+    return 'Search: $query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return 'Failed to load presets: $error';
+  }
+
+  @override
+  String saved_title(String title) {
+    return 'Saved $title';
+  }
+
+  @override
+  String save_failed(String error) {
+    return 'Save failed: $error';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return 'Unable to load stash-boxes: $error';
+  }
+
+  @override
+  String delete_scenes_confirm(int count) {
+    return 'Delete $count scenes?';
+  }
+
+  @override
+  String deleted_scenes_count(int count) {
+    return 'Deleted $count scenes';
+  }
+
+  @override
+  String delete_failed(String error) {
+    return 'Delete failed: $error';
+  }
+
+  @override
+  String resolution_format(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_s_format(String duration) {
+    return '${duration}s';
+  }
+
+  @override
+  String bitrate_bps_format(int bitrate) {
+    return '$bitrate bps';
+  }
+
+  @override
+  String o_counter_format(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String tag_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tags',
+      one: '1 tag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String performer_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count performers',
+      one: '1 performer',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String group_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count groups',
+      one: '1 group',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String marker_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count markers',
+      one: '1 marker',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String gallery_count_format(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count galleries',
+      one: '1 gallery',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String o_counter(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String plain_number(int count) {
+    return '$count';
+  }
+
+  @override
+  String get delete_metadata_or_files_desc =>
+      'Choose whether to remove only Stash metadata or delete the scene files and generated supporting files too.';
 }
