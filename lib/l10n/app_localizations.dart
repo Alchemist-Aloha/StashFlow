@@ -4512,6 +4512,12 @@ abstract class AppLocalizations {
   /// **'Screenshot'**
   String get scene_info_screenshot;
 
+  /// No description provided for @scene_info_cover.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover'**
+  String get scene_info_cover;
+
   /// No description provided for @scene_info_caption.
   ///
   /// In en, this message translates to:

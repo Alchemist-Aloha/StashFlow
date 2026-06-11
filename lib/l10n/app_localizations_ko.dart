@@ -2359,6 +2359,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get scene_info_screenshot => '스크린샷';
 
   @override
+  String get scene_info_cover => 'Cover';
+
+  @override
   String get scene_info_caption => '표제';
 
   @override

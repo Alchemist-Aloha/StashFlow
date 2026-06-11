@@ -977,6 +977,7 @@
   "scene_info_stream": "Stream",
   "scene_info_preview": "Preview",
   "scene_info_screenshot": "Screenshot",
+  "scene_info_cover": "Cover",
   "scene_info_caption": "Caption",
   "scene_info_vtt": "VTT",
   "scene_info_sprite": "Sprite",

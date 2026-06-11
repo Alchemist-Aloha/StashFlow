@@ -2441,6 +2441,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get scene_info_screenshot => 'Скриншот';
 
   @override
+  String get scene_info_cover => 'Cover';
+
+  @override
   String get scene_info_caption => 'Подпись';
 
   @override

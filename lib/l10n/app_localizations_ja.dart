@@ -2359,6 +2359,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get scene_info_screenshot => 'スクリーンショット';
 
   @override
+  String get scene_info_cover => 'Cover';
+
+  @override
   String get scene_info_caption => 'キャプション';
 
   @override

@@ -2408,6 +2408,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scene_info_screenshot => 'Screenshot';
 
   @override
+  String get scene_info_cover => 'Cover';
+
+  @override
   String get scene_info_caption => 'Caption';
 
   @override

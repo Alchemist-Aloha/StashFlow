@@ -2336,6 +2336,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scene_info_screenshot => '截屏';
 
   @override
+  String get scene_info_cover => 'Cover';
+
+  @override
   String get scene_info_caption => '标题';
 
   @override

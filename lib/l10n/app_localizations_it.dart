@@ -2464,6 +2464,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get scene_info_screenshot => 'Schermata';
 
   @override
+  String get scene_info_cover => 'Cover';
+
+  @override
   String get scene_info_caption => 'Didascalia';
 
   @override

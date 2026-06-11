@@ -2461,6 +2461,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get scene_info_screenshot => 'Capture d\'écran';
 
   @override
+  String get scene_info_cover => 'Cover';
+
+  @override
   String get scene_info_caption => 'Légende';
 
   @override

@@ -529,25 +529,45 @@ void main() {
     expect(player.maxHeight, equals(1936.0));
   });
 
-  testWidgets('SceneCard three-dot opens scene info page', (tester) async {
+  testWidgets('SceneCard long press opens scene info media section', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(1200, 1600);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
+    final sceneWithMedia = sceneWithoutStudio('s1', 'Test Scene').copyWith(
+      paths: testScene.paths.copyWith(
+        screenshot: 'http://test.com/cover.jpg',
+        preview: 'http://test.com/preview.mp4',
+      ),
+    );
 
     await pumpTestWidget(
       tester,
       prefs: prefs,
-      child: Scaffold(body: SceneCard(scene: testScene, isGrid: false)),
+      child: Scaffold(body: SceneCard(scene: sceneWithMedia, isGrid: false)),
     );
 
     await tester.pump(const Duration(milliseconds: 500));
 
-    expect(find.byIcon(Icons.more_vert), findsOneWidget);
-    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.longPress(
+      find.descendant(
+        of: find.byType(SceneCard),
+        matching: find.byWidgetPredicate(
+          (widget) => widget is InkWell && widget.onLongPress != null,
+        ),
+      ),
+    );
     await tester.pump(const Duration(milliseconds: 500));
 
     final l10n = AppLocalizations.of(tester.element(find.byType(SceneCard)))!;
     expect(find.text(l10n.details_scene), findsOneWidget);
+    final mediaSection = find.byKey(const Key('scene_info_media_section'));
+    expect(mediaSection, findsOneWidget);
+    expect(
+      tester.getTopLeft(mediaSection).dy,
+      lessThan(tester.getTopLeft(find.byIcon(Icons.calendar_today_rounded)).dy),
+    );
   });
 
   test(
