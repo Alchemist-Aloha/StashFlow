@@ -83,8 +83,8 @@ The program is mainly tested with Android and Windows builds, and the web versio
 ### 🌐 Web
 
 1. **Access:** Visit the [Live Web App Demo](https://alchemist-aloha.github.io/StashFlow/) or host your own build.
-2. **Note on Limitations:** The web version serves primarily as a **demo**. 
-   - **Authentication:** Only **API Key** login is supported due to browser CORS restrictions. 
+2. **Note on Limitations:** The web version serves primarily as a **demo**.
+   - **Authentication:** Only **API Key** login is supported due to browser CORS restrictions.
    - **Playback:** Video playback is limited by browser codec support.
    - **Recommendation:** Use the **Android** or **Desktop** versions for the complete feature set and optimal performance.
 
@@ -147,4 +147,4 @@ For more info, see:
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/chart?repos=Alchemist-Aloha/StashFlow&type=timeline&legend=top-left)](https://www.star-history.com/?repos=Alchemist-Aloha%2FStashFlow&type=timeline&legend=top-left)
+[![Star History Chart](https://api.star-history.com/chart?repos=Alchemist-Aloha/StashFlow&type=date&legend=top-left)](https://www.star-history.com/?repos=Alchemist-Aloha%2FStashFlow&type=date&legend=top-left)
