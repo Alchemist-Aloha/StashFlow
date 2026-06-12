@@ -144,3 +144,7 @@ flutter build linux --release
 For more info, see:
 
 - [Project wiki page](https://github.com/Alchemist-Aloha/StashFlow/wiki)
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/chart?repos=Alchemist-Aloha/StashFlow&type=timeline&legend=top-left)](https://www.star-history.com/?repos=Alchemist-Aloha%2FStashFlow&type=timeline&legend=top-left)
