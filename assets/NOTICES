@@ -6628,7 +6628,6 @@ SOFTWARE.
 
 --------------------------------------------------------------------------------
 flutter_lints
-multicast_dns
 path_provider
 path_provider_linux
 path_provider_platform_interface
@@ -12037,6 +12036,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --------------------------------------------------------------------------------
 go_router
+multicast_dns
 path_provider_android
 path_provider_foundation
 shared_preferences
