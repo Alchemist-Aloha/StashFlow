@@ -21,6 +21,37 @@ String? _cleanUrl(String? url) {
   return trimmed;
 }
 
+bool isScrapedImageDataUrl(String? image) {
+  final trimmed = image?.trim() ?? '';
+  return trimmed.startsWith('data:');
+}
+
+bool isScrapedImageRemoteUrl(String? image) {
+  final trimmed = image?.trim() ?? '';
+  if (trimmed.isEmpty) return false;
+  final parsed = Uri.tryParse(trimmed);
+  if (parsed == null) return false;
+  return parsed.scheme == 'http' || parsed.scheme == 'https';
+}
+
+bool isScrapedImageEmbeddedData(String? image) {
+  final trimmed = image?.trim() ?? '';
+  if (trimmed.isEmpty) return false;
+  return isScrapedImageDataUrl(trimmed) || !isScrapedImageRemoteUrl(trimmed);
+}
+
+String? normalizedSceneCoverImage(String? image) {
+  final trimmed = image?.trim();
+  if (trimmed == null || trimmed.isEmpty) return null;
+  if (isScrapedImageDataUrl(trimmed)) {
+    return trimmed;
+  }
+  if (isScrapedImageRemoteUrl(trimmed)) {
+    return null;
+  }
+  return 'data:image/jpeg;base64,$trimmed';
+}
+
 Map<String, dynamic> buildSceneUpdateInputFromScraped(ScrapedScene s) {
   final input = <String, dynamic>{};
 
@@ -37,14 +68,9 @@ Map<String, dynamic> buildSceneUpdateInputFromScraped(ScrapedScene s) {
   final date = _normalizeDate(s.date);
   if (date != null) input['date'] = date;
 
-  if (s.image != null) {
-    // Stash expects the image data, usually as a data URL or just base64 depending on version
-    // Standard schema says "base64 encoded data URL"
-    if (!s.image!.startsWith('data:')) {
-      input['cover_image'] = 'data:image/jpeg;base64,${s.image}';
-    } else {
-      input['cover_image'] = s.image;
-    }
+  final coverImage = normalizedSceneCoverImage(s.image);
+  if (coverImage != null) {
+    input['cover_image'] = coverImage;
   }
 
   if (s.studioId != null) {

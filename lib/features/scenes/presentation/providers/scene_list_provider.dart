@@ -213,7 +213,7 @@ class SceneList extends _$SceneList {
     final sortConfig = ref.watch(sceneSortProvider);
     final filter = ref.watch(sceneFilterStateProvider);
     final organizedFilter = ref.watch(sceneOrganizedOnlyProvider);
-    final repository = ref.read(sceneRepositoryProvider);
+    final repository = ref.watch(sceneRepositoryProvider);
 
     var effectiveSort = sortConfig.sort;
     if (effectiveSort == 'random') {

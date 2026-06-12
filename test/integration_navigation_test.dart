@@ -10,6 +10,7 @@ import 'package:stash_app_flutter/features/performers/domain/entities/performer.
 import 'package:stash_app_flutter/features/navigation/presentation/router.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
+import 'package:stash_app_flutter/features/scenes/domain/entities/scene_deduplication.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
 import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
 import 'package:stash_app_flutter/features/scenes/domain/models/scraper.dart';
@@ -33,7 +34,7 @@ Scene createTestScene({
     interactive: false,
     resumeTime: null,
     playCount: 0,
-        playDuration: 0,
+    playDuration: 0,
     files: [],
     paths: const ScenePaths(screenshot: null, preview: null, stream: null),
     urls: [],
@@ -147,6 +148,22 @@ class LocalMockSceneRepository implements SceneRepository {
   Future<Map<String, List<Map<String, dynamic>>>> findTagCandidates(
     List<String> tags,
   ) async => {};
+
+  @override
+  Future<void> deleteScene(
+    String id, {
+    required bool deleteFile,
+    bool deleteGenerated = true,
+  }) async {}
+
+  @override
+  Future<List<SceneDuplicateGroup>> findDuplicateScenes({
+    int distance = 0,
+    double durationDiff = 1,
+  }) async => [];
+
+  @override
+  Future<int> countScenesMissingPhash() async => 0;
 }
 
 // Simple test notifiers to override the layout state
@@ -164,6 +181,7 @@ class MockSceneGridLayoutTrue extends SceneGridLayout {
   @override
   bool build() => true;
 }
+
 void main() {
   late SharedPreferences prefs;
 
@@ -575,18 +593,17 @@ void main() {
     // Tap Performers Tab
     await tester.tap(find.text('Performers').last);
     await tester.pumpAndSettle();
-    
+
     // Tap Studios Tab
     await tester.tap(find.text('Studios').last);
     await tester.pumpAndSettle();
-    
+
     // Tap Tags Tab
     await tester.tap(find.text('Tags').last);
     await tester.pumpAndSettle();
-    
+
     // Tap Galleries Tab
     await tester.tap(find.text('Galleries').last);
     await tester.pumpAndSettle();
   });
 }
-

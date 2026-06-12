@@ -6,11 +6,13 @@ import '../../../../core/data/graphql/url_resolver.dart';
 import 'package:stash_app_flutter/core/domain/entities/criterion.dart'
     as domain;
 import '../../domain/entities/scene.dart';
+import '../../domain/entities/scene_deduplication.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../../domain/repositories/scene_repository.dart';
 import '../../domain/models/scraper.dart';
 import '../graphql/scenes.graphql.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
+import '../utils/scrape_normalizer.dart';
 
 class GraphQLSceneRepository implements SceneRepository {
   final GraphQLClient client;
@@ -418,6 +420,7 @@ class GraphQLSceneRepository implements SceneRepository {
   }) async {
     final result = await client.query$ScrapeSingleScene(
       Options$Query$ScrapeSingleScene(
+        fetchPolicy: FetchPolicy.noCache,
         variables: Variables$Query$ScrapeSingleScene(
           source: Input$ScraperSourceInput(
             scraper_id: scraperId,
@@ -433,13 +436,17 @@ class GraphQLSceneRepository implements SceneRepository {
     final List<Query$ScrapeSingleScene$scrapeSingleScene> raw =
         result.parsedData?.scrapeSingleScene ?? [];
 
-    return raw.map((e) => ScrapedScene.fromJson(e.toJson())).toList();
+    return raw
+        .map((e) => ScrapedScene.fromJson(e.toJson()))
+        .map(_stripScrapedImages)
+        .toList();
   }
 
   @override
   Future<ScrapedScene?> scrapeSceneURL(String url) async {
     final result = await client.query$ScrapeSceneURL(
       Options$Query$ScrapeSceneURL(
+        fetchPolicy: FetchPolicy.noCache,
         variables: Variables$Query$ScrapeSceneURL(url: url),
       ),
     );
@@ -447,7 +454,8 @@ class GraphQLSceneRepository implements SceneRepository {
     BaseRepository.validateResult(result);
 
     final raw = result.parsedData?.scrapeSceneURL;
-    return raw != null ? ScrapedScene.fromJson(raw.toJson()) : null;
+    if (raw == null) return null;
+    return _stripScrapedImages(ScrapedScene.fromJson(raw.toJson()));
   }
 
   @override
@@ -475,12 +483,15 @@ class GraphQLSceneRepository implements SceneRepository {
     List<String>? tagIds,
     String? studioId,
   }) async {
+    final coverImage = normalizedSceneCoverImage(scraped.image);
     final input = Input$SceneUpdateInput(
       id: sceneId,
       title: scraped.title,
       details: scraped.details,
       date: scraped.date?.toIso8601String().split('T').first,
+      organized: true,
       urls: scraped.urls,
+      cover_image: coverImage,
       studio_id: studioId ?? scraped.studioId ?? scraped.studio?.storedId,
       performer_ids: performerIds,
       tag_ids: tagIds,
@@ -557,5 +568,133 @@ class GraphQLSceneRepository implements SceneRepository {
       ),
     );
     BaseRepository.validateResult(result);
+  }
+
+  @override
+  Future<void> deleteScene(
+    String id, {
+    required bool deleteFile,
+    bool deleteGenerated = true,
+  }) async {
+    final result = await client.mutate$SceneDestroy(
+      Options$Mutation$SceneDestroy(
+        variables: Variables$Mutation$SceneDestroy(
+          id: id,
+          delete_file: deleteFile,
+          delete_generated: deleteGenerated,
+        ),
+      ),
+    );
+    BaseRepository.validateResult(result);
+  }
+
+  @override
+  Future<List<SceneDuplicateGroup>> findDuplicateScenes({
+    int distance = 0,
+    double durationDiff = 1,
+  }) async {
+    final result = await client.query$FindDuplicateScenes(
+      Options$Query$FindDuplicateScenes(
+        fetchPolicy: FetchPolicy.noCache,
+        variables: Variables$Query$FindDuplicateScenes(
+          distance: distance,
+          duration_diff: durationDiff,
+        ),
+      ),
+    );
+    BaseRepository.validateResult(result);
+
+    final groups = result.parsedData?.findDuplicateScenes ?? [];
+    return sortDuplicateGroupsBySize(
+      groups
+          .map(
+            (group) => SceneDuplicateGroup(
+              scenes: group.map(_mapDuplicateScene).toList(growable: false),
+            ),
+          )
+          .toList(growable: false),
+    );
+  }
+
+  @override
+  Future<int> countScenesMissingPhash() async {
+    final result = await client.query$CountScenesMissingPhash(
+      Options$Query$CountScenesMissingPhash(fetchPolicy: FetchPolicy.noCache),
+    );
+    BaseRepository.validateResult(result);
+    return result.parsedData?.findScenes.count ?? 0;
+  }
+
+  SceneDuplicateScene _mapDuplicateScene(
+    Query$FindDuplicateScenes$findDuplicateScenes scene,
+  ) {
+    final files = scene.files.map(_mapDuplicateFile).toList(growable: false);
+    return SceneDuplicateScene(
+      id: scene.id,
+      title: (scene.title ?? '').trim().isNotEmpty
+          ? scene.title!.trim()
+          : _fileNameFromPath(files.firstOrNull?.path ?? ''),
+      path: files.firstOrNull?.path,
+      spritePath: resolveGraphqlMediaUrl(
+        rawUrl: scene.paths.sprite,
+        graphqlEndpoint: _graphqlEndpoint,
+      ),
+      organized: scene.organized,
+      oCounter: scene.o_counter ?? 0,
+      tagCount: scene.tags.length,
+      performerCount: scene.performers.length,
+      groupCount: scene.groups.length,
+      markerCount: scene.scene_markers.length,
+      galleryCount: scene.galleries.length,
+      fileCount: files.length,
+      files: files,
+    );
+  }
+
+  SceneDuplicateFile _mapDuplicateFile(
+    Query$FindDuplicateScenes$findDuplicateScenes$files file,
+  ) {
+    return SceneDuplicateFile(
+      id: file.id,
+      path: file.path,
+      size: int.tryParse(file.size) ?? 0,
+      width: file.width,
+      height: file.height,
+      bitRate: file.bit_rate,
+      duration: file.duration,
+      videoCodec: file.video_codec,
+      modTime: DateTime.tryParse(file.mod_time),
+    );
+  }
+
+  /// Strip only embedded image payloads from scraped entities to avoid
+  /// caching large binary payloads in the Hive GraphQL cache.
+  /// The scene cover is preserved because scrape queries use noCache and the
+  /// tagger needs that image for the current review result.
+  ScrapedScene _stripScrapedImages(ScrapedScene scene) {
+    return scene.copyWith(
+      image: scene.image,
+      studio: scene.studio?.copyWith(
+        image: isScrapedImageEmbeddedData(scene.studio?.image)
+            ? null
+            : scene.studio?.image,
+      ),
+      performers: scene.performers
+          .map(
+            (p) => p.copyWith(
+              image: isScrapedImageEmbeddedData(p.image) ? null : p.image,
+              images: p.images
+                  .where((image) => !isScrapedImageEmbeddedData(image))
+                  .toList(growable: false),
+            ),
+          )
+          .toList(),
+    );
+  }
+
+  String _fileNameFromPath(String path) {
+    if (path.isEmpty) return '';
+    final normalized = path.replaceAll('\\', '/');
+    return normalized.split('/').last;
   }
 }

@@ -7,6 +7,7 @@ import 'package:stash_app_flutter/core/presentation/widgets/stash_image.dart';
 import '../../domain/entities/scene.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../providers/scene_details_provider.dart';
+import '../widgets/scene_info_media_section.dart';
 
 class SceneInfoPage extends ConsumerStatefulWidget {
   const SceneInfoPage({required this.scene, super.key});
@@ -101,6 +102,10 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
               ],
             ),
             const SizedBox(height: 12),
+            if (SceneInfoMediaSection.isVisibleFor(scene)) ...[
+              SceneInfoMediaSection(scene: scene),
+              const SizedBox(height: 12),
+            ],
             Wrap(
               spacing: 8,
               runSpacing: 8,

@@ -110,14 +110,17 @@ class AppCacheService {
   }
 
   Future<int> getDatabaseCacheSizeMb() async {
-    final appDir = await _applicationDocumentsDirectoryProvider();
-    final hiveDir = Directory(p.join(appDir.path, 'stash_hive'));
+    final hiveDir = Directory(p.join(
+      (await _temporaryDirectoryProvider()).path,
+      'stash_graphql_cache',
+    ));
 
     int bytes = await _calculateDirSize(hiveDir);
 
-    // Also check for root hive files
+    // Also check for root hive files in the temp directory
     try {
-      await for (final entity in appDir.list(recursive: false)) {
+      final tempDir = await _temporaryDirectoryProvider();
+      await for (final entity in tempDir.list(recursive: false)) {
         if (entity is File &&
             (entity.path.endsWith('.hive') || entity.path.endsWith('.lock'))) {
           bytes += await entity.length();
@@ -126,7 +129,7 @@ class AppCacheService {
     } catch (_) {}
 
     debugPrint(
-      'AppCacheService: Database cache size: $bytes bytes in ${appDir.path}',
+      'AppCacheService: Database cache size: $bytes bytes in ${hiveDir.path}',
     );
     return bytes ~/ (1024 * 1024);
   }
@@ -135,6 +138,17 @@ class AppCacheService {
     debugPrint('AppCacheService: Clearing image cache...');
     final errors = <Object>[];
     try {
+      final dirsToClear = await _imageCacheDirs();
+      debugPrint(
+        'AppCacheService: Image cache clear dirs=${_formatDirs(dirsToClear)}',
+      );
+      final beforeBytes = await _calculateCacheSizeInBackground(
+        dirsToClear.map((dir) => dir.path).toList(),
+      );
+      debugPrint(
+        'AppCacheService: Image cache before clear=${_formatBytes(beforeBytes)}',
+      );
+
       // 1. Library methods
       final results = await Future.wait<Object?>([
         StashImage.cacheManager.emptyCache(),
@@ -146,13 +160,20 @@ class AppCacheService {
       extended_image.clearMemoryImageCache();
 
       // 2. Manual brute force for the directories we scan
-      final dirsToClear = await _imageCacheDirs();
       final manualErrors = await _clearDirectoriesInBackground(
         dirsToClear.map((dir) => dir.path).toList(),
       );
       errors.addAll(manualErrors);
 
-      debugPrint('AppCacheService: Image cache clearing completed');
+      final afterBytes = await _calculateCacheSizeInBackground(
+        dirsToClear.map((dir) => dir.path).toList(),
+      );
+      debugPrint(
+        'AppCacheService: Image cache clearing completed '
+        'after=${_formatBytes(afterBytes)} '
+        'deleted=${_formatBytes(beforeBytes - afterBytes)} '
+        'manualErrors=${manualErrors.length}',
+      );
     } catch (e) {
       debugPrint('AppCacheService: Error clearing image cache: $e');
       errors.add(e);
@@ -167,11 +188,31 @@ class AppCacheService {
   Future<void> clearVideoCache() async {
     debugPrint('AppCacheService: Clearing video cache...');
     final dirs = await _videoCacheDirs();
+    debugPrint(
+      'AppCacheService: Video cache clear dirs=${_formatDirs(dirs)} '
+      'extensions=${_videoExtensions.join(',')}',
+    );
+    final beforeBytes = await _calculateCacheSizeInBackground(
+      dirs.map((dir) => dir.path).toList(),
+      extensions: _videoExtensions,
+    );
+    debugPrint(
+      'AppCacheService: Video cache before clear=${_formatBytes(beforeBytes)}',
+    );
     final errors = await _deleteFilesInBackground(
       dirs.map((dir) => dir.path).toList(),
       extensions: _videoExtensions,
     );
-    debugPrint('AppCacheService: Video cache cleared');
+    final afterBytes = await _calculateCacheSizeInBackground(
+      dirs.map((dir) => dir.path).toList(),
+      extensions: _videoExtensions,
+    );
+    debugPrint(
+      'AppCacheService: Video cache cleared '
+      'after=${_formatBytes(afterBytes)} '
+      'deleted=${_formatBytes(beforeBytes - afterBytes)} '
+      'errors=${errors.length}',
+    );
     if (errors.isNotEmpty) {
       throw StateError(
         'Failed to fully clear video cache (${errors.length} errors)',
@@ -181,36 +222,47 @@ class AppCacheService {
 
   Future<void> clearDatabaseCache() async {
     debugPrint('AppCacheService: Clearing database cache...');
-    final appDir = await _applicationDocumentsDirectoryProvider();
-    final hiveDir = Directory(p.join(appDir.path, 'stash_hive'));
+    final hiveDir = Directory(p.join(
+      (await _temporaryDirectoryProvider()).path,
+      'stash_graphql_cache',
+    ));
 
     final errors = <Object>[];
     if (await hiveDir.exists()) {
       try {
         await hiveDir.delete(recursive: true);
-        debugPrint('AppCacheService: stash_hive deleted');
+        debugPrint('AppCacheService: stash_graphql_cache deleted');
       } catch (e) {
-        debugPrint('AppCacheService: Error deleting stash_hive: $e');
+        debugPrint(
+          'AppCacheService: Error deleting stash_graphql_cache: $e',
+        );
         errors.add(e);
       }
     }
 
-    // Also delete root hive files (excluding essential ones if any, but hive files are usually safe to clear for cache)
+    // Also clean up any legacy hive files in the old app documents location
     try {
+      final appDir = await _applicationDocumentsDirectoryProvider();
       await for (final entity in appDir.list(recursive: false)) {
         final path = entity.path;
         if (entity is File &&
             (path.endsWith('.hive') || path.endsWith('.lock'))) {
-          // Don't delete shared_preferences if it's there (though usually it's in a different spot)
           if (!path.contains('shared_preferences') &&
               !path.contains('flutter_secure_storage')) {
             await entity.delete();
           }
         }
       }
-      debugPrint('AppCacheService: Root hive files deleted');
+      // Also try the old stash_hive directory if it still exists
+      final oldHiveDir = Directory(p.join(appDir.path, 'stash_hive'));
+      if (await oldHiveDir.exists()) {
+        await oldHiveDir.delete(recursive: true);
+        debugPrint('AppCacheService: legacy stash_hive deleted');
+      }
     } catch (e) {
-      debugPrint('AppCacheService: Error deleting root hive files: $e');
+      debugPrint(
+        'AppCacheService: Error cleaning legacy hive files: $e',
+      );
       errors.add(e);
     }
     if (errors.isNotEmpty) {
@@ -245,10 +297,20 @@ class AppCacheService {
     required String label,
   }) async {
     // 999999 is "unlimited" in settings.
-    if (maxMb <= 0 || maxMb >= 999999) return;
+    debugPrint(
+      'AppCacheService: enforce $label cache limit requested '
+      'limit=${maxMb}MB dirs=${_formatDirs(dirs)} '
+      'extensions=${extensions?.join(',') ?? 'all'}',
+    );
+    if (maxMb <= 0 || maxMb >= 999999) {
+      debugPrint(
+        'AppCacheService: enforce $label cache skipped for limit=${maxMb}MB',
+      );
+      return;
+    }
 
     final maxBytes = maxMb * 1024 * 1024;
-    final deletedBytes = await _enforceCacheLimitInBackground(
+    final result = await _enforceCacheLimitInBackground(
       dirs.map((dir) => dir.path).toList(),
       maxBytes: maxBytes,
       extensions: extensions,
@@ -256,9 +318,25 @@ class AppCacheService {
 
     debugPrint(
       'AppCacheService: enforce $label cache limit=${maxMb}MB '
-      'deleted=${deletedBytes ~/ (1024 * 1024)}MB',
+      'existing=${_formatBytes(result.totalBytes)} '
+      'matchedFiles=${result.matchedFiles} '
+      'deleted=${_formatBytes(result.deletedBytes)} '
+      'deletedFiles=${result.deletedFiles} '
+      'remaining=${_formatBytes(result.remainingBytes)} '
+      'scanErrors=${result.scanErrors} '
+      'deleteErrors=${result.deleteErrors}',
     );
   }
+}
+
+String _formatDirs(List<Directory> dirs) {
+  return dirs.map((dir) => dir.path).join(', ');
+}
+
+String _formatBytes(int bytes) {
+  final clamped = bytes < 0 ? 0 : bytes;
+  final mb = clamped / (1024 * 1024);
+  return '${clamped}B/${mb.toStringAsFixed(2)}MB';
 }
 
 Future<int> _calculateCacheSizeInBackground(
@@ -281,7 +359,7 @@ Future<List<Object>> _deleteFilesInBackground(
   return Isolate.run(() => _deleteFilesSync(dirPaths, extensions: extensions));
 }
 
-Future<int> _enforceCacheLimitInBackground(
+Future<_CacheLimitEnforcementResult> _enforceCacheLimitInBackground(
   List<String> dirPaths, {
   required int maxBytes,
   required Set<String>? extensions,
@@ -350,13 +428,14 @@ List<Object> _deleteFilesSync(
   return errors;
 }
 
-int _enforceCacheLimitSync(
+_CacheLimitEnforcementResult _enforceCacheLimitSync(
   List<String> dirPaths, {
   required int maxBytes,
   required Set<String>? extensions,
 }) {
   final files = <_CacheFile>[];
   var totalBytes = 0;
+  var scanErrors = 0;
 
   for (final dirPath in dirPaths) {
     try {
@@ -378,24 +457,45 @@ int _enforceCacheLimitSync(
       }
     } catch (_) {
       // Best-effort trimming: continue with remaining directories.
+      scanErrors++;
     }
   }
 
-  if (totalBytes <= maxBytes || files.isEmpty) return 0;
+  if (totalBytes <= maxBytes || files.isEmpty) {
+    return _CacheLimitEnforcementResult(
+      totalBytes: totalBytes,
+      matchedFiles: files.length,
+      deletedBytes: 0,
+      deletedFiles: 0,
+      scanErrors: scanErrors,
+      deleteErrors: 0,
+    );
+  }
 
   files.sort((a, b) => a.modifiedMs.compareTo(b.modifiedMs));
 
   var deletedBytes = 0;
+  var deletedFiles = 0;
+  var deleteErrors = 0;
   for (final file in files) {
     if (totalBytes - deletedBytes <= maxBytes) break;
     try {
       File(file.path).deleteSync();
       deletedBytes += file.size;
+      deletedFiles++;
     } catch (_) {
       // Ignore individual deletion failures and continue.
+      deleteErrors++;
     }
   }
-  return deletedBytes;
+  return _CacheLimitEnforcementResult(
+    totalBytes: totalBytes,
+    matchedFiles: files.length,
+    deletedBytes: deletedBytes,
+    deletedFiles: deletedFiles,
+    scanErrors: scanErrors,
+    deleteErrors: deleteErrors,
+  );
 }
 
 bool _matchesExtension(String path, Set<String>? extensions) {
@@ -413,4 +513,24 @@ class _CacheFile {
   final String path;
   final int size;
   final int modifiedMs;
+}
+
+class _CacheLimitEnforcementResult {
+  const _CacheLimitEnforcementResult({
+    required this.totalBytes,
+    required this.matchedFiles,
+    required this.deletedBytes,
+    required this.deletedFiles,
+    required this.scanErrors,
+    required this.deleteErrors,
+  });
+
+  final int totalBytes;
+  final int matchedFiles;
+  final int deletedBytes;
+  final int deletedFiles;
+  final int scanErrors;
+  final int deleteErrors;
+
+  int get remainingBytes => totalBytes - deletedBytes;
 }

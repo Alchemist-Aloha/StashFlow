@@ -9,6 +9,19 @@ Short, action-oriented guidance for agents working in this repository.
 - **Verify:** Run `flutter build apk --split-per-abi` or project tests after UI/logic changes.
 - **Design:** Follow Material 3 expressive patterns (consistent spacing, soft shapes, readable type).
 
+## Release Notes
+
+- When drafting `docs/update/updateNNNN.md`, start from the real tag diff between the target release tag and `HEAD`.
+- Use `git diff --stat <tag>..HEAD` first, then inspect targeted file diffs for the biggest user-facing areas.
+- Group entries by user-visible behavior, not by commit list or raw file churn.
+- Match the existing update-note style in `docs/update/`:
+  - short release title
+  - sectioned markdown
+  - concise bullets
+  - plain language
+- Prefer concrete outcomes and feature names the user can recognize in the app.
+- Avoid dumping full diff output, commit hashes, or implementation trivia unless it directly explains a user-facing change.
+
 ## Localization (l10n) — Essentials
 
 - Files: [lib/l10n/](lib/l10n/)

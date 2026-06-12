@@ -1,113 +1,41 @@
 {
   "de": [
-    "filter_includes",
-    "filter_excludes",
-    "filter_includes_all",
-    "filter_matches_regex",
-    "filter_not_matches_regex",
-    "filter_between",
-    "filter_not_between",
-    "filter_value_secondary"
+    "scene_info_cover"
   ],
 
   "es": [
-    "filter_includes",
-    "filter_excludes",
-    "filter_includes_all",
-    "filter_matches_regex",
-    "filter_not_matches_regex",
-    "filter_between",
-    "filter_not_between",
-    "filter_value_secondary"
+    "scene_info_cover"
   ],
 
   "fr": [
-    "filter_includes",
-    "filter_excludes",
-    "filter_includes_all",
-    "filter_matches_regex",
-    "filter_not_matches_regex",
-    "filter_between",
-    "filter_not_between",
-    "filter_value_secondary"
+    "scene_info_cover"
   ],
 
   "it": [
-    "filter_includes",
-    "filter_excludes",
-    "filter_includes_all",
-    "filter_matches_regex",
-    "filter_not_matches_regex",
-    "filter_between",
-    "filter_not_between",
-    "filter_value_secondary"
+    "scene_info_cover"
   ],
 
   "ja": [
-    "filter_includes",
-    "filter_excludes",
-    "filter_includes_all",
-    "filter_matches_regex",
-    "filter_not_matches_regex",
-    "filter_between",
-    "filter_not_between",
-    "filter_value_secondary"
+    "scene_info_cover"
   ],
 
   "ko": [
-    "filter_includes",
-    "filter_excludes",
-    "filter_includes_all",
-    "filter_matches_regex",
-    "filter_not_matches_regex",
-    "filter_between",
-    "filter_not_between",
-    "filter_value_secondary"
+    "scene_info_cover"
   ],
 
   "ru": [
-    "filter_includes",
-    "filter_excludes",
-    "filter_includes_all",
-    "filter_matches_regex",
-    "filter_not_matches_regex",
-    "filter_between",
-    "filter_not_between",
-    "filter_value_secondary"
+    "scene_info_cover"
   ],
 
   "zh": [
-    "filter_includes",
-    "filter_excludes",
-    "filter_includes_all",
-    "filter_matches_regex",
-    "filter_not_matches_regex",
-    "filter_between",
-    "filter_not_between",
-    "filter_value_secondary"
+    "scene_info_cover"
   ],
 
   "zh_Hans": [
-    "filter_includes",
-    "filter_excludes",
-    "filter_includes_all",
-    "filter_matches_regex",
-    "filter_not_matches_regex",
-    "filter_between",
-    "filter_not_between",
-    "filter_value_secondary",
-    "common_saved_filters"
+    "scene_info_cover"
   ],
 
   "zh_Hant": [
-    "filter_includes",
-    "filter_excludes",
-    "filter_includes_all",
-    "filter_matches_regex",
-    "filter_not_matches_regex",
-    "filter_between",
-    "filter_not_between",
-    "filter_value_secondary",
-    "common_saved_filters"
+    "scene_info_cover"
   ]
 }

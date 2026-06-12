@@ -11,6 +11,61 @@ import 'package:stash_app_flutter/l10n/app_localizations.dart';
 
 void main() {
   testWidgets(
+    'shows localized empty state when there are no saved presets',
+    (tester) async {
+      final client = _FakeGraphQLClient(
+        queryData: {
+          '__typename': 'Query',
+          'findSavedFilters': <Map<String, dynamic>>[],
+        },
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sceneSavedFilterRepositoryProvider.overrideWithValue(
+              GraphQLSceneSavedFilterRepository(client),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.lightTheme,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: Builder(
+                builder: (context) => Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      showModalBottomSheet<void>(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (_) => SceneSavedFilterDialog(
+                          searchQuery: '',
+                          sort: null,
+                          descending: true,
+                          filter: SceneFilter.empty(),
+                          onLoad: (_) {},
+                        ),
+                      );
+                    },
+                    child: const Text('Open'),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('No saved presets'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
     'opens a naming dialog from the header before saving the current preset',
     (tester) async {
       final client = _FakeGraphQLClient(

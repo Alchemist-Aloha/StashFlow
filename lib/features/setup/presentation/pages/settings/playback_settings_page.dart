@@ -31,7 +31,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
 
   bool _preferSceneStreams = true;
   VideoEndBehavior _playEndBehavior = VideoEndBehavior.stop;
-  bool _useDoubleTapSeek = true;
+  bool _useDoubleTapSeek = false;
   bool _enableBackgroundPlayback = false;
   bool _enableNativePip = false;
   bool _videoGravityOrientation = true;
@@ -68,7 +68,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
           autoplayNext ? VideoEndBehavior.next : VideoEndBehavior.stop;
     }
 
-    _useDoubleTapSeek = prefs.getBool(_useDoubleTapSeekKey) ?? true;
+    _useDoubleTapSeek = prefs.getBool(_useDoubleTapSeekKey) ?? false;
     _enableBackgroundPlayback =
         prefs.getBool(_enableBackgroundPlaybackKey) ?? false;
     _enableNativePip = prefs.getBool(_enableNativePipKey) ?? false;

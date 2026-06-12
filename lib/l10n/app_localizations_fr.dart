@@ -799,13 +799,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get filter_less_than => 'Moins que';
 
   @override
-  String get filter_includes => 'Includes';
+  String get filter_includes => 'Comprend';
 
   @override
-  String get filter_excludes => 'Excludes';
+  String get filter_excludes => 'Exclut';
 
   @override
-  String get filter_includes_all => 'Includes All';
+  String get filter_includes_all => 'Comprend tout';
 
   @override
   String get filter_is_null => 'Est nul';
@@ -814,19 +814,20 @@ class AppLocalizationsFr extends AppLocalizations {
   String get filter_not_null => 'N\'est pas nul';
 
   @override
-  String get filter_matches_regex => 'Matches Regex';
+  String get filter_matches_regex => 'Correspond à l\'expression régulière';
 
   @override
-  String get filter_not_matches_regex => 'Does Not Match Regex';
+  String get filter_not_matches_regex =>
+      'Ne correspond pas à l\'expression régulière';
 
   @override
-  String get filter_between => 'Between';
+  String get filter_between => 'Entre';
 
   @override
-  String get filter_not_between => 'Not Between';
+  String get filter_not_between => 'Pas entre';
 
   @override
-  String get filter_value_secondary => 'Second Value';
+  String get filter_value_secondary => 'Deuxième valeur';
 
   @override
   String get images_resolution_title => 'Résolution';
@@ -2460,6 +2461,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get scene_info_screenshot => 'Capture d\'écran';
 
   @override
+  String get scene_info_cover => 'Cover';
+
+  @override
   String get scene_info_caption => 'Légende';
 
   @override
@@ -2607,4 +2611,165 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get common_saved_filters => 'Filtres enregistrés';
+
+  @override
+  String get tools => 'Outils';
+
+  @override
+  String get preset_deleted => 'Préréglage supprimé';
+
+  @override
+  String get delete_preset => 'Supprimer le préréglage';
+
+  @override
+  String get common_delete => 'Supprimer';
+
+  @override
+  String get save_preset => 'Enregistrer le préréglage';
+
+  @override
+  String get no_saved_presets => 'Aucun préréglage enregistré';
+
+  @override
+  String get scene_tagger => 'Balises de scène';
+
+  @override
+  String get page_size => 'Taille des pages';
+
+  @override
+  String get mode => 'Mode';
+
+  @override
+  String get sort => 'Trier';
+
+  @override
+  String get desc => 'Description';
+
+  @override
+  String get asc => 'Asc.';
+
+  @override
+  String get filter => 'Filtre';
+
+  @override
+  String get load_preset => 'Charger le préréglage';
+
+  @override
+  String get preset => 'Préréglage';
+
+  @override
+  String get stash_box_scraper => 'Grattoir pour cachette';
+
+  @override
+  String get start_tagging => 'Commencer à marquer';
+
+  @override
+  String get stop => 'Arrêt';
+
+  @override
+  String get open_scene => 'Scène ouverte';
+
+  @override
+  String get skip => 'Sauter';
+
+  @override
+  String get apply => 'Appliquer';
+
+  @override
+  String get selected => 'Choisi';
+
+  @override
+  String get select => 'Sélectionner';
+
+  @override
+  String get preview => 'Aperçu';
+
+  @override
+  String get delete_scene => 'Supprimer la scène';
+
+  @override
+  String get metadata_only => 'Métadonnées uniquement';
+
+  @override
+  String get files => 'Fichiers';
+
+  @override
+  String get scene_deleted => 'Scène supprimée';
+
+  @override
+  String get delete_metadata => 'Supprimer les métadonnées';
+
+  @override
+  String get delete_files => 'Supprimer des fichiers';
+
+  @override
+  String get scene_deduplication => 'Déduplication de scène';
+
+  @override
+  String get no_duplicates_found => 'Aucun doublon trouvé.';
+
+  @override
+  String get search_accuracy => 'Précision de la recherche';
+
+  @override
+  String get duration_difference => 'Différence de durée';
+
+  @override
+  String get only_select_matching_codecs =>
+      'Sélectionnez uniquement les codecs correspondants';
+
+  @override
+  String get select_scenes => 'Sélectionnez des scènes';
+
+  @override
+  String get all_but_largest_resolution =>
+      'Toutes les résolutions, sauf la plus grande';
+
+  @override
+  String get all_but_largest_file => 'Tous les fichiers sauf le plus gros';
+
+  @override
+  String get all_but_oldest => 'Tous sauf le plus ancien';
+
+  @override
+  String get all_but_youngest => 'Tous sauf le plus jeune';
+
+  @override
+  String get select_none => 'N\'en sélectionner aucun';
+
+  @override
+  String get merge => 'Fusionner';
+
+  @override
+  String get previous_page => 'Page précédente';
+
+  @override
+  String get next_page => 'Page suivante';
+
+  @override
+  String scene_deduplication_page_count(int page, int totalPages) {
+    return 'Page $page sur $totalPages';
+  }
+
+  @override
+  String scene_tagger_result_count(int index, int total) {
+    return 'Résultat $index de $total';
+  }
+
+  @override
+  String delete_preset_confirm(String name) {
+    return 'Supprimer \"$name\" ? Cette action ne peut pas être annulée.';
+  }
+
+  @override
+  String get enter_preset_name => 'Entrez le nom du préréglage';
+
+  @override
+  String get delete_scene_confirm =>
+      'Êtes-vous sûr de vouloir supprimer cette scène ?';
+
+  @override
+  String delete_selected_count(int selectedCount) {
+    return 'Supprimer la sélection ($selectedCount)';
+  }
 }

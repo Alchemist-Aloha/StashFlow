@@ -57,6 +57,8 @@ bool shouldRouteToNextScene(
       previousId == currentPageSceneId;
 }
 
+enum _SceneDeleteMode { metadataOnly, files }
+
 class SceneDetailsPage extends ConsumerStatefulWidget {
   final String sceneId;
   final bool autoPlayOnMount;
@@ -126,6 +128,156 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       ),
       builder: (context) => SceneInfoPage(scene: scene),
     );
+  }
+
+  Future<void> _showDeleteSceneDialog(Scene scene) async {
+    var mode = _SceneDeleteMode.metadataOnly;
+    var isDeleting = false;
+
+    final deleted = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            return AlertDialog(
+              icon: Icon(
+                Icons.delete_outline,
+                color: dialogContext.colors.error,
+              ),
+              title: Text(context.l10n.delete_scene),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Choose how this scene should be deleted. This action cannot be undone.',
+                    style: dialogContext.textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: AppTheme.spacingSmall),
+                  Wrap(
+                    spacing: AppTheme.spacingSmall,
+                    runSpacing: AppTheme.spacingSmall,
+                    children: [
+                      ChoiceChip(
+                        avatar: const Icon(Icons.storage_outlined, size: 18),
+                        label: Text(context.l10n.metadata_only),
+                        selected: mode == _SceneDeleteMode.metadataOnly,
+                        onSelected: isDeleting
+                            ? null
+                            : (selected) {
+                                if (selected) {
+                                  setDialogState(
+                                    () => mode = _SceneDeleteMode.metadataOnly,
+                                  );
+                                }
+                              },
+                      ),
+                      ChoiceChip(
+                        avatar: const Icon(
+                          Icons.folder_delete_outlined,
+                          size: 18,
+                        ),
+                        label: Text(context.l10n.files),
+                        selected: mode == _SceneDeleteMode.files,
+                        onSelected: isDeleting
+                            ? null
+                            : (selected) {
+                                if (selected) {
+                                  setDialogState(
+                                    () => mode = _SceneDeleteMode.files,
+                                  );
+                                }
+                              },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppTheme.spacingSmall),
+                  Text(
+                    mode == _SceneDeleteMode.metadataOnly
+                        ? 'Delete metadata only: remove the scene from the database and keep the media file.'
+                        : 'Delete files: remove the scene and delete its media file from storage.',
+                    style: dialogContext.textTheme.bodySmall?.copyWith(
+                      color: dialogContext.colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isDeleting
+                      ? null
+                      : () => Navigator.of(dialogContext).pop(false),
+                  child: Text(context.l10n.common_cancel),
+                ),
+                FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: dialogContext.colors.error,
+                    foregroundColor: dialogContext.colors.onError,
+                  ),
+                  onPressed: isDeleting
+                      ? null
+                      : () async {
+                          setDialogState(() => isDeleting = true);
+                          try {
+                            await ref
+                                .read(sceneRepositoryProvider)
+                                .deleteScene(
+                                  scene.id,
+                                  deleteFile: mode == _SceneDeleteMode.files,
+                                  deleteGenerated: true,
+                                );
+                            if (dialogContext.mounted) {
+                              Navigator.of(dialogContext).pop(true);
+                            }
+                          } catch (e) {
+                            setDialogState(() => isDeleting = false);
+                            if (dialogContext.mounted) {
+                              ScaffoldMessenger.of(dialogContext).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Failed to delete scene: ${e.toString()}',
+                                  ),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                  icon: isDeleting
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.delete_outline),
+                  label: Text(context.l10n.common_delete),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (deleted != true || !mounted) return;
+
+    ref.read(playbackQueueProvider.notifier).removeScene(scene.id);
+    ref.invalidate(sceneDetailsProvider(scene.id));
+    _invalidateSceneListUnlessRandom();
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(context.l10n.scene_deleted)));
+
+    final router = GoRouter.of(context);
+    if (router.canPop()) {
+      router.pop();
+      return;
+    }
+
+    final currentPath = GoRouterState.of(context).uri.path;
+    if (currentPath != '/') {
+      context.go('/scenes');
+    }
   }
 
   Future<void> _saveVideoToGallery(Scene scene) async {
@@ -306,6 +458,14 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               ),
               orElse: () => const SizedBox.shrink(),
             ),
+          sceneAsync.maybeWhen(
+            data: (scene) => IconButton(
+              tooltip: context.l10n.delete_scene,
+              icon: const Icon(Icons.delete_outline),
+              onPressed: () => _showDeleteSceneDialog(scene),
+            ),
+            orElse: () => const SizedBox.shrink(),
+          ),
         ],
       ),
       floatingActionButton: randomNavigationEnabled
@@ -508,7 +668,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                     : null,
                 borderRadius: BorderRadius.circular(4),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 2,
+                    vertical: 1,
+                  ),
                   child: Text(
                     scene.studioName!,
                     style: context.textTheme.titleMedium?.copyWith(

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
@@ -5,6 +7,9 @@ import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
+import 'core/data/cache/app_cache_service.dart';
 import 'features/navigation/presentation/router.dart';
 import 'core/data/preferences/secure_storage_provider.dart';
 import 'core/data/preferences/shared_preferences_provider.dart';
@@ -64,7 +69,17 @@ Future<void> main() async {
     } catch (_) {
       // Ignore if PaintingBinding isn't available in some test environments.
     }
-    await initHiveForFlutter();
+    // Initialize Hive for the GraphQL cache in a OS-managed cache directory
+    // instead of the persistent app documents directory. This prevents the
+    // GraphQL cache (which can contain large base64-encoded images from
+    // scraping operations) from consuming GB-level persistent storage.
+    // Android clears this directory automatically when storage is low.
+    if (!kIsWeb) {
+      final cacheDir = await getTemporaryDirectory();
+      final hivePath = p.join(cacheDir.path, 'stash_graphql_cache');
+      HiveStore.init(onPath: hivePath);
+    }
+    await HiveStore.open();
     PipMode.initialize();
 
     if (!isTestMode) {
@@ -126,6 +141,8 @@ Future<void> main() async {
       return false;
     };
 
+    unawaited(_enforceStartupCacheLimits(sharedPreferences));
+
     runApp(
       ProviderScope(
         overrides: [
@@ -145,6 +162,29 @@ Future<void> main() async {
   } catch (error, stackTrace) {
     AppLogStore.instance.add('$error\n$stackTrace', source: 'startup_error');
     runApp(StartupErrorApp(error: error, stackTrace: stackTrace));
+  }
+}
+
+Future<void> _enforceStartupCacheLimits(SharedPreferences prefs) async {
+  final imageLimitMb = prefs.getInt('max_image_cache_size_mb') ?? 500;
+  final videoLimitMb = prefs.getInt('max_video_cache_size_mb') ?? 1024;
+
+  debugPrint(
+    'Startup: enforcing cache limits image=${imageLimitMb}MB '
+    'video=${videoLimitMb}MB',
+  );
+
+  try {
+    final service = AppCacheService();
+    await service.enforceImageCacheLimit(imageLimitMb);
+    await service.enforceVideoCacheLimit(videoLimitMb);
+    debugPrint('Startup: cache limit enforcement completed');
+  } catch (error, stackTrace) {
+    debugPrint('Startup: cache limit enforcement failed: $error');
+    AppLogStore.instance.add(
+      '$error\n$stackTrace',
+      source: 'cache_limit_enforcement',
+    );
   }
 }
 

@@ -1,3 +1,3 @@
-## 2026-06-03 - Localized Tooltips
-**Learning:** Found several floating action buttons and icon buttons using hardcoded English strings ('Saved filters') for their tooltips. Hardcoded strings harm accessibility for non-English screen reader users.
-**Action:** When working on tooltips, always grep for hardcoded strings and map them to `context.l10n` keys to ensure translations apply properly.
+## 2024-05-18 - [Accessible Failed Image Reload]
+**Learning:** Replaced a raw `GestureDetector` with `Semantics` and `InkWell` to provide both screen-reader accessibility and visual touch feedback (ripple) for interactive error states, conforming to the <50 line UX polish goal while avoiding lockfile regressions.
+**Action:** Always wrap purely interactive elements in `Material` and `InkWell` with `Semantics` instead of using raw `GestureDetector`s, and ensure scratchpad scripts are cleaned up before committing.

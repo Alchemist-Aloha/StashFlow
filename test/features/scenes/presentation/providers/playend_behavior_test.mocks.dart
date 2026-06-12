@@ -4,28 +4,30 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i6;
-import 'dart:typed_data' as _i18;
-import 'dart:ui' as _i21;
+import 'dart:typed_data' as _i19;
+import 'dart:ui' as _i22;
 
 import 'package:flutter/widgets.dart' as _i7;
 import 'package:media_kit/media_kit.dart' as _i5;
-import 'package:media_kit/src/models/audio_device.dart' as _i16;
-import 'package:media_kit/src/models/media/media.dart' as _i14;
-import 'package:media_kit/src/models/playable.dart' as _i13;
+import 'package:media_kit/src/models/audio_device.dart' as _i17;
+import 'package:media_kit/src/models/media/media.dart' as _i15;
+import 'package:media_kit/src/models/playable.dart' as _i14;
 import 'package:media_kit/src/models/player_state.dart' as _i3;
 import 'package:media_kit/src/models/player_stream.dart' as _i4;
-import 'package:media_kit/src/models/playlist_mode.dart' as _i15;
-import 'package:media_kit/src/models/track.dart' as _i17;
-import 'package:media_kit/src/player/platform_player.dart' as _i12;
+import 'package:media_kit/src/models/playlist_mode.dart' as _i16;
+import 'package:media_kit/src/models/track.dart' as _i18;
+import 'package:media_kit/src/player/platform_player.dart' as _i13;
 import 'package:media_kit_video/src/video_controller/platform_video_controller.dart'
-    as _i20;
+    as _i21;
 import 'package:media_kit_video/src/video_controller/video_controller.dart'
-    as _i19;
+    as _i20;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart'
     as _i11;
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart'
     as _i2;
+import 'package:stash_app_flutter/features/scenes/domain/entities/scene_deduplication.dart'
+    as _i12;
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart'
     as _i9;
 import 'package:stash_app_flutter/features/scenes/domain/models/scraper.dart'
@@ -269,6 +271,47 @@ class MockSceneRepository extends _i1.Mock implements _i8.SceneRepository {
             returnValueForMissingStub: _i6.Future<void>.value(),
           )
           as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> deleteScene(
+    String? id, {
+    required bool? deleteFile,
+    bool? deleteGenerated = true,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #deleteScene,
+              [id],
+              {#deleteFile: deleteFile, #deleteGenerated: deleteGenerated},
+            ),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<List<_i12.SceneDuplicateGroup>> findDuplicateScenes({
+    int? distance = 0,
+    double? durationDiff = 1.0,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#findDuplicateScenes, [], {
+              #distance: distance,
+              #durationDiff: durationDiff,
+            }),
+            returnValue: _i6.Future<List<_i12.SceneDuplicateGroup>>.value(
+              <_i12.SceneDuplicateGroup>[],
+            ),
+          )
+          as _i6.Future<List<_i12.SceneDuplicateGroup>>);
+
+  @override
+  _i6.Future<int> countScenesMissingPhash() =>
+      (super.noSuchMethod(
+            Invocation.method(#countScenesMissingPhash, []),
+            returnValue: _i6.Future<int>.value(0),
+          )
+          as _i6.Future<int>);
 }
 
 /// A class which mocks [Player].
@@ -312,7 +355,7 @@ class MockPlayer extends _i1.Mock implements _i5.Player {
           as _i6.Future<int>);
 
   @override
-  set platform(_i12.PlatformPlayer? value) => super.noSuchMethod(
+  set platform(_i13.PlatformPlayer? value) => super.noSuchMethod(
     Invocation.setter(#platform, value),
     returnValueForMissingStub: null,
   );
@@ -327,7 +370,7 @@ class MockPlayer extends _i1.Mock implements _i5.Player {
           as _i6.Future<void>);
 
   @override
-  _i6.Future<void> open(_i13.Playable? playable, {bool? play = true}) =>
+  _i6.Future<void> open(_i14.Playable? playable, {bool? play = true}) =>
       (super.noSuchMethod(
             Invocation.method(#open, [playable], {#play: play}),
             returnValue: _i6.Future<void>.value(),
@@ -372,7 +415,7 @@ class MockPlayer extends _i1.Mock implements _i5.Player {
           as _i6.Future<void>);
 
   @override
-  _i6.Future<void> add(_i14.Media? media) =>
+  _i6.Future<void> add(_i15.Media? media) =>
       (super.noSuchMethod(
             Invocation.method(#add, [media]),
             returnValue: _i6.Future<void>.value(),
@@ -435,7 +478,7 @@ class MockPlayer extends _i1.Mock implements _i5.Player {
           as _i6.Future<void>);
 
   @override
-  _i6.Future<void> setPlaylistMode(_i15.PlaylistMode? playlistMode) =>
+  _i6.Future<void> setPlaylistMode(_i16.PlaylistMode? playlistMode) =>
       (super.noSuchMethod(
             Invocation.method(#setPlaylistMode, [playlistMode]),
             returnValue: _i6.Future<void>.value(),
@@ -480,7 +523,7 @@ class MockPlayer extends _i1.Mock implements _i5.Player {
           as _i6.Future<void>);
 
   @override
-  _i6.Future<void> setAudioDevice(_i16.AudioDevice? audioDevice) =>
+  _i6.Future<void> setAudioDevice(_i17.AudioDevice? audioDevice) =>
       (super.noSuchMethod(
             Invocation.method(#setAudioDevice, [audioDevice]),
             returnValue: _i6.Future<void>.value(),
@@ -489,7 +532,7 @@ class MockPlayer extends _i1.Mock implements _i5.Player {
           as _i6.Future<void>);
 
   @override
-  _i6.Future<void> setVideoTrack(_i17.VideoTrack? track) =>
+  _i6.Future<void> setVideoTrack(_i18.VideoTrack? track) =>
       (super.noSuchMethod(
             Invocation.method(#setVideoTrack, [track]),
             returnValue: _i6.Future<void>.value(),
@@ -498,7 +541,7 @@ class MockPlayer extends _i1.Mock implements _i5.Player {
           as _i6.Future<void>);
 
   @override
-  _i6.Future<void> setAudioTrack(_i17.AudioTrack? track) =>
+  _i6.Future<void> setAudioTrack(_i18.AudioTrack? track) =>
       (super.noSuchMethod(
             Invocation.method(#setAudioTrack, [track]),
             returnValue: _i6.Future<void>.value(),
@@ -507,7 +550,7 @@ class MockPlayer extends _i1.Mock implements _i5.Player {
           as _i6.Future<void>);
 
   @override
-  _i6.Future<void> setSubtitleTrack(_i17.SubtitleTrack? track) =>
+  _i6.Future<void> setSubtitleTrack(_i18.SubtitleTrack? track) =>
       (super.noSuchMethod(
             Invocation.method(#setSubtitleTrack, [track]),
             returnValue: _i6.Future<void>.value(),
@@ -516,7 +559,7 @@ class MockPlayer extends _i1.Mock implements _i5.Player {
           as _i6.Future<void>);
 
   @override
-  _i6.Future<_i18.Uint8List?> screenshot({
+  _i6.Future<_i19.Uint8List?> screenshot({
     String? format = 'image/jpeg',
     bool? includeLibassSubtitles = false,
   }) =>
@@ -525,15 +568,15 @@ class MockPlayer extends _i1.Mock implements _i5.Player {
               #format: format,
               #includeLibassSubtitles: includeLibassSubtitles,
             }),
-            returnValue: _i6.Future<_i18.Uint8List?>.value(),
+            returnValue: _i6.Future<_i19.Uint8List?>.value(),
           )
-          as _i6.Future<_i18.Uint8List?>);
+          as _i6.Future<_i19.Uint8List?>);
 }
 
 /// A class which mocks [VideoController].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockVideoController extends _i1.Mock implements _i19.VideoController {
+class MockVideoController extends _i1.Mock implements _i20.VideoController {
   MockVideoController() {
     _i1.throwOnMissingStub(this);
   }
@@ -547,26 +590,26 @@ class MockVideoController extends _i1.Mock implements _i19.VideoController {
           as _i5.Player);
 
   @override
-  _i6.Completer<_i20.PlatformVideoController> get platform =>
+  _i6.Completer<_i21.PlatformVideoController> get platform =>
       (super.noSuchMethod(
             Invocation.getter(#platform),
-            returnValue: _FakeCompleter_4<_i20.PlatformVideoController>(
+            returnValue: _FakeCompleter_4<_i21.PlatformVideoController>(
               this,
               Invocation.getter(#platform),
             ),
           )
-          as _i6.Completer<_i20.PlatformVideoController>);
+          as _i6.Completer<_i21.PlatformVideoController>);
 
   @override
-  _i7.ValueNotifier<_i20.PlatformVideoController?> get notifier =>
+  _i7.ValueNotifier<_i21.PlatformVideoController?> get notifier =>
       (super.noSuchMethod(
             Invocation.getter(#notifier),
-            returnValue: _FakeValueNotifier_5<_i20.PlatformVideoController?>(
+            returnValue: _FakeValueNotifier_5<_i21.PlatformVideoController?>(
               this,
               Invocation.getter(#notifier),
             ),
           )
-          as _i7.ValueNotifier<_i20.PlatformVideoController?>);
+          as _i7.ValueNotifier<_i21.PlatformVideoController?>);
 
   @override
   _i7.ValueNotifier<int?> get id =>
@@ -580,15 +623,15 @@ class MockVideoController extends _i1.Mock implements _i19.VideoController {
           as _i7.ValueNotifier<int?>);
 
   @override
-  _i7.ValueNotifier<_i21.Rect?> get rect =>
+  _i7.ValueNotifier<_i22.Rect?> get rect =>
       (super.noSuchMethod(
             Invocation.getter(#rect),
-            returnValue: _FakeValueNotifier_5<_i21.Rect?>(
+            returnValue: _FakeValueNotifier_5<_i22.Rect?>(
               this,
               Invocation.getter(#rect),
             ),
           )
-          as _i7.ValueNotifier<_i21.Rect?>);
+          as _i7.ValueNotifier<_i22.Rect?>);
 
   @override
   _i6.Future<void> get waitUntilFirstFrameRendered =>

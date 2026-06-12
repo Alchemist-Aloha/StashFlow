@@ -2336,6 +2336,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scene_info_screenshot => '截屏';
 
   @override
+  String get scene_info_cover => 'Cover';
+
+  @override
   String get scene_info_caption => '标题';
 
   @override
@@ -2473,6 +2476,165 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get common_saved_filters => '保存的筛选';
+
+  @override
+  String get tools => 'Tools';
+
+  @override
+  String get preset_deleted => 'Preset deleted';
+
+  @override
+  String get delete_preset => 'Delete Preset';
+
+  @override
+  String get common_delete => 'Delete';
+
+  @override
+  String get save_preset => 'Save Preset';
+
+  @override
+  String get no_saved_presets => 'No saved presets';
+
+  @override
+  String get scene_tagger => 'Scene Tagger';
+
+  @override
+  String get page_size => 'Page size';
+
+  @override
+  String get mode => 'Mode';
+
+  @override
+  String get sort => 'Sort';
+
+  @override
+  String get desc => 'Desc';
+
+  @override
+  String get asc => 'Asc';
+
+  @override
+  String get filter => 'Filter';
+
+  @override
+  String get load_preset => 'Load preset';
+
+  @override
+  String get preset => 'Preset';
+
+  @override
+  String get stash_box_scraper => 'Stash-box scraper';
+
+  @override
+  String get start_tagging => 'Start tagging';
+
+  @override
+  String get stop => 'Stop';
+
+  @override
+  String get open_scene => 'Open scene';
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
+  String get selected => 'Selected';
+
+  @override
+  String get select => 'Select';
+
+  @override
+  String get preview => 'Preview';
+
+  @override
+  String get delete_scene => 'Delete scene';
+
+  @override
+  String get metadata_only => 'Metadata only';
+
+  @override
+  String get files => 'Files';
+
+  @override
+  String get scene_deleted => 'Scene deleted';
+
+  @override
+  String get delete_metadata => 'Delete metadata';
+
+  @override
+  String get delete_files => 'Delete files';
+
+  @override
+  String get scene_deduplication => 'Scene Deduplication';
+
+  @override
+  String get no_duplicates_found => 'No duplicates found.';
+
+  @override
+  String get search_accuracy => 'Search Accuracy';
+
+  @override
+  String get duration_difference => 'Duration Difference';
+
+  @override
+  String get only_select_matching_codecs => 'Only select matching codecs';
+
+  @override
+  String get select_scenes => 'Select scenes';
+
+  @override
+  String get all_but_largest_resolution => 'All but largest resolution';
+
+  @override
+  String get all_but_largest_file => 'All but largest file';
+
+  @override
+  String get all_but_oldest => 'All but oldest';
+
+  @override
+  String get all_but_youngest => 'All but youngest';
+
+  @override
+  String get select_none => 'Select none';
+
+  @override
+  String get merge => 'Merge';
+
+  @override
+  String get previous_page => 'Previous page';
+
+  @override
+  String get next_page => 'Next page';
+
+  @override
+  String scene_deduplication_page_count(int page, int totalPages) {
+    return 'Page $page of $totalPages';
+  }
+
+  @override
+  String scene_tagger_result_count(int index, int total) {
+    return 'Result $index of $total';
+  }
+
+  @override
+  String delete_preset_confirm(String name) {
+    return 'Delete \"$name\"? This action cannot be undone.';
+  }
+
+  @override
+  String get enter_preset_name => 'Enter preset name';
+
+  @override
+  String get delete_scene_confirm =>
+      'Are you sure you want to delete this scene?';
+
+  @override
+  String delete_selected_count(int selectedCount) {
+    return 'Delete selected ($selectedCount)';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -3258,10 +3420,34 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get filter_less_than => '小于';
 
   @override
+  String get filter_includes => '包括';
+
+  @override
+  String get filter_excludes => '不包括';
+
+  @override
+  String get filter_includes_all => '包括全部';
+
+  @override
   String get filter_is_null => '为空';
 
   @override
   String get filter_not_null => '不为空';
+
+  @override
+  String get filter_matches_regex => '匹配正则表达式';
+
+  @override
+  String get filter_not_matches_regex => '与正则表达式不匹配';
+
+  @override
+  String get filter_between => '之间';
+
+  @override
+  String get filter_not_between => '不在之间';
+
+  @override
+  String get filter_value_secondary => '第二个值';
 
   @override
   String get images_resolution_title => '分辨率';
@@ -4917,6 +5103,167 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_security_app_lock_subtitle => '后台运行后使用密码保护访问。';
+
+  @override
+  String get common_saved_filters => '已保存的过滤器';
+
+  @override
+  String get tools => '工具';
+
+  @override
+  String get preset_deleted => '预设已删除';
+
+  @override
+  String get delete_preset => '删除预设';
+
+  @override
+  String get common_delete => '删除';
+
+  @override
+  String get save_preset => '保存预设';
+
+  @override
+  String get no_saved_presets => '没有保存的预设';
+
+  @override
+  String get scene_tagger => '场景标签';
+
+  @override
+  String get page_size => '页面尺寸';
+
+  @override
+  String get mode => '模式';
+
+  @override
+  String get sort => '种类';
+
+  @override
+  String get desc => '描述';
+
+  @override
+  String get asc => '上升';
+
+  @override
+  String get filter => '筛选';
+
+  @override
+  String get load_preset => '加载预设';
+
+  @override
+  String get preset => '预设';
+
+  @override
+  String get stash_box_scraper => '储物盒刮刀';
+
+  @override
+  String get start_tagging => '开始标记';
+
+  @override
+  String get stop => '停止';
+
+  @override
+  String get open_scene => '开放场景';
+
+  @override
+  String get skip => '跳过';
+
+  @override
+  String get apply => '申请';
+
+  @override
+  String get selected => '已选择';
+
+  @override
+  String get select => '选择';
+
+  @override
+  String get preview => '预览';
+
+  @override
+  String get delete_scene => '删除场景';
+
+  @override
+  String get metadata_only => '仅元数据';
+
+  @override
+  String get files => '文件';
+
+  @override
+  String get scene_deleted => '场景已删除';
+
+  @override
+  String get delete_metadata => '删除元数据';
+
+  @override
+  String get delete_files => '删除文件';
+
+  @override
+  String get scene_deduplication => '场景去重';
+
+  @override
+  String get no_duplicates_found => '没有发现重复项。';
+
+  @override
+  String get search_accuracy => '搜索准确率';
+
+  @override
+  String get duration_difference => '持续时间差异';
+
+  @override
+  String get only_select_matching_codecs => '仅选择匹配的编解码器';
+
+  @override
+  String get select_scenes => '选择场景';
+
+  @override
+  String get all_but_largest_resolution => '除最大分辨率外的所有分辨率';
+
+  @override
+  String get all_but_largest_file => '除最大文件外的所有文件';
+
+  @override
+  String get all_but_oldest => '除了最古老的以外';
+
+  @override
+  String get all_but_youngest => '除了最年轻的以外，其他所有人';
+
+  @override
+  String get select_none => '不选择';
+
+  @override
+  String get merge => '合并';
+
+  @override
+  String get previous_page => '上一页';
+
+  @override
+  String get next_page => '下一页';
+
+  @override
+  String scene_deduplication_page_count(int page, int totalPages) {
+    return '第 $page 页，共 $totalPages 页';
+  }
+
+  @override
+  String scene_tagger_result_count(int index, int total) {
+    return '结果 $index（共 $total）';
+  }
+
+  @override
+  String delete_preset_confirm(String name) {
+    return '删除“$name”？此操作无法撤消。';
+  }
+
+  @override
+  String get enter_preset_name => '输入预设名称';
+
+  @override
+  String get delete_scene_confirm => '您确定要删除该场景吗？';
+
+  @override
+  String delete_selected_count(int selectedCount) {
+    return '删除所选内容 ($selectedCount)';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -5704,10 +6051,34 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get filter_less_than => '小于';
 
   @override
+  String get filter_includes => '包括';
+
+  @override
+  String get filter_excludes => '不包括';
+
+  @override
+  String get filter_includes_all => '包括全部';
+
+  @override
   String get filter_is_null => '为空';
 
   @override
   String get filter_not_null => '不为空';
+
+  @override
+  String get filter_matches_regex => '匹配正規表示式';
+
+  @override
+  String get filter_not_matches_regex => '與正規表示式不符';
+
+  @override
+  String get filter_between => '之間';
+
+  @override
+  String get filter_not_between => '不在之間';
+
+  @override
+  String get filter_value_secondary => '第二個值';
 
   @override
   String get images_resolution_title => '解析度';
@@ -7365,4 +7736,165 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_security_app_lock_subtitle => '後台運行後使用密碼保護存取。';
+
+  @override
+  String get common_saved_filters => '已儲存的過濾器';
+
+  @override
+  String get tools => '工具';
+
+  @override
+  String get preset_deleted => '預設已刪除';
+
+  @override
+  String get delete_preset => '刪除預設';
+
+  @override
+  String get common_delete => '刪除';
+
+  @override
+  String get save_preset => '儲存預設';
+
+  @override
+  String get no_saved_presets => '沒有儲存的預設';
+
+  @override
+  String get scene_tagger => '場景標籤';
+
+  @override
+  String get page_size => '頁面尺寸';
+
+  @override
+  String get mode => '模式';
+
+  @override
+  String get sort => '種類';
+
+  @override
+  String get desc => '描述';
+
+  @override
+  String get asc => '上升';
+
+  @override
+  String get filter => '篩選';
+
+  @override
+  String get load_preset => '載入預設';
+
+  @override
+  String get preset => '預設';
+
+  @override
+  String get stash_box_scraper => '收納箱刮刀';
+
+  @override
+  String get start_tagging => '開始標記';
+
+  @override
+  String get stop => '停止';
+
+  @override
+  String get open_scene => '開放場景';
+
+  @override
+  String get skip => '跳過';
+
+  @override
+  String get apply => '申請';
+
+  @override
+  String get selected => '已選擇';
+
+  @override
+  String get select => '選擇';
+
+  @override
+  String get preview => '預覽';
+
+  @override
+  String get delete_scene => '刪除場景';
+
+  @override
+  String get metadata_only => '僅元數據';
+
+  @override
+  String get files => '文件';
+
+  @override
+  String get scene_deleted => '場景已刪除';
+
+  @override
+  String get delete_metadata => '刪除元數據';
+
+  @override
+  String get delete_files => '刪除文件';
+
+  @override
+  String get scene_deduplication => '場景去重';
+
+  @override
+  String get no_duplicates_found => '沒有發現重複項。';
+
+  @override
+  String get search_accuracy => '搜尋準確率';
+
+  @override
+  String get duration_difference => '持續時間差異';
+
+  @override
+  String get only_select_matching_codecs => '僅選擇相符的編解碼器';
+
+  @override
+  String get select_scenes => '選擇場景';
+
+  @override
+  String get all_but_largest_resolution => '除最大分辨率外的所有分辨率';
+
+  @override
+  String get all_but_largest_file => '除最大文件外的所有文件';
+
+  @override
+  String get all_but_oldest => '除了最古老的以外';
+
+  @override
+  String get all_but_youngest => '除了最年輕的以外，其他人';
+
+  @override
+  String get select_none => '不選擇';
+
+  @override
+  String get merge => '合併';
+
+  @override
+  String get previous_page => '上一頁';
+
+  @override
+  String get next_page => '下一頁';
+
+  @override
+  String scene_deduplication_page_count(int page, int totalPages) {
+    return '第 $page 頁，共 $totalPages 頁';
+  }
+
+  @override
+  String scene_tagger_result_count(int index, int total) {
+    return '結果 $index（共 $total）';
+  }
+
+  @override
+  String delete_preset_confirm(String name) {
+    return '刪除“$name”？此操作無法撤銷。';
+  }
+
+  @override
+  String get enter_preset_name => '輸入預設名稱';
+
+  @override
+  String get delete_scene_confirm => '您確定要刪除該場景嗎？';
+
+  @override
+  String delete_selected_count(int selectedCount) {
+    return '刪除所選內容 ($selectedCount)';
+  }
 }

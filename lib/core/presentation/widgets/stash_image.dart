@@ -180,8 +180,8 @@ class StashImage extends ConsumerWidget {
   static final CacheManager cacheManager = CacheManager(
     Config(
       'stashImageCache',
-      stalePeriod: const Duration(days: 30),
-      maxNrOfCacheObjects: 300,
+      stalePeriod: const Duration(days: 7),
+      maxNrOfCacheObjects: 100,
       fileService: DioFileService(),
     ),
   );

@@ -5563,6 +5563,3147 @@ class _CopyWithStubImpl$Query$FindScenes$findScenes<TRes>
   scenes(_fn) => _res;
 }
 
+class Variables$Query$FindDuplicateScenes {
+  factory Variables$Query$FindDuplicateScenes({
+    int? distance,
+    double? duration_diff,
+  }) => Variables$Query$FindDuplicateScenes._({
+    if (distance != null) r'distance': distance,
+    if (duration_diff != null) r'duration_diff': duration_diff,
+  });
+
+  Variables$Query$FindDuplicateScenes._(this._$data);
+
+  factory Variables$Query$FindDuplicateScenes.fromJson(
+    Map<String, dynamic> data,
+  ) {
+    final result$data = <String, dynamic>{};
+    if (data.containsKey('distance')) {
+      final l$distance = data['distance'];
+      result$data['distance'] = (l$distance as int?);
+    }
+    if (data.containsKey('duration_diff')) {
+      final l$duration_diff = data['duration_diff'];
+      result$data['duration_diff'] = (l$duration_diff as num?)?.toDouble();
+    }
+    return Variables$Query$FindDuplicateScenes._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  int? get distance => (_$data['distance'] as int?);
+
+  double? get duration_diff => (_$data['duration_diff'] as double?);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    if (_$data.containsKey('distance')) {
+      final l$distance = distance;
+      result$data['distance'] = l$distance;
+    }
+    if (_$data.containsKey('duration_diff')) {
+      final l$duration_diff = duration_diff;
+      result$data['duration_diff'] = l$duration_diff;
+    }
+    return result$data;
+  }
+
+  CopyWith$Variables$Query$FindDuplicateScenes<
+    Variables$Query$FindDuplicateScenes
+  >
+  get copyWith => CopyWith$Variables$Query$FindDuplicateScenes(this, (i) => i);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Query$FindDuplicateScenes ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$distance = distance;
+    final lOther$distance = other.distance;
+    if (_$data.containsKey('distance') !=
+        other._$data.containsKey('distance')) {
+      return false;
+    }
+    if (l$distance != lOther$distance) {
+      return false;
+    }
+    final l$duration_diff = duration_diff;
+    final lOther$duration_diff = other.duration_diff;
+    if (_$data.containsKey('duration_diff') !=
+        other._$data.containsKey('duration_diff')) {
+      return false;
+    }
+    if (l$duration_diff != lOther$duration_diff) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$distance = distance;
+    final l$duration_diff = duration_diff;
+    return Object.hashAll([
+      _$data.containsKey('distance') ? l$distance : const {},
+      _$data.containsKey('duration_diff') ? l$duration_diff : const {},
+    ]);
+  }
+}
+
+abstract class CopyWith$Variables$Query$FindDuplicateScenes<TRes> {
+  factory CopyWith$Variables$Query$FindDuplicateScenes(
+    Variables$Query$FindDuplicateScenes instance,
+    TRes Function(Variables$Query$FindDuplicateScenes) then,
+  ) = _CopyWithImpl$Variables$Query$FindDuplicateScenes;
+
+  factory CopyWith$Variables$Query$FindDuplicateScenes.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Query$FindDuplicateScenes;
+
+  TRes call({int? distance, double? duration_diff});
+}
+
+class _CopyWithImpl$Variables$Query$FindDuplicateScenes<TRes>
+    implements CopyWith$Variables$Query$FindDuplicateScenes<TRes> {
+  _CopyWithImpl$Variables$Query$FindDuplicateScenes(this._instance, this._then);
+
+  final Variables$Query$FindDuplicateScenes _instance;
+
+  final TRes Function(Variables$Query$FindDuplicateScenes) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? distance = _undefined,
+    Object? duration_diff = _undefined,
+  }) => _then(
+    Variables$Query$FindDuplicateScenes._({
+      ..._instance._$data,
+      if (distance != _undefined) 'distance': (distance as int?),
+      if (duration_diff != _undefined)
+        'duration_diff': (duration_diff as double?),
+    }),
+  );
+}
+
+class _CopyWithStubImpl$Variables$Query$FindDuplicateScenes<TRes>
+    implements CopyWith$Variables$Query$FindDuplicateScenes<TRes> {
+  _CopyWithStubImpl$Variables$Query$FindDuplicateScenes(this._res);
+
+  TRes _res;
+
+  call({int? distance, double? duration_diff}) => _res;
+}
+
+class Query$FindDuplicateScenes {
+  Query$FindDuplicateScenes({
+    required this.findDuplicateScenes,
+    this.$__typename = 'Query',
+  });
+
+  factory Query$FindDuplicateScenes.fromJson(Map<String, dynamic> json) {
+    final l$findDuplicateScenes = json['findDuplicateScenes'];
+    final l$$__typename = json['__typename'];
+    return Query$FindDuplicateScenes(
+      findDuplicateScenes: (l$findDuplicateScenes as List<dynamic>)
+          .map(
+            (e) => (e as List<dynamic>)
+                .map(
+                  (e) => Query$FindDuplicateScenes$findDuplicateScenes.fromJson(
+                    (e as Map<String, dynamic>),
+                  ),
+                )
+                .toList(),
+          )
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final List<List<Query$FindDuplicateScenes$findDuplicateScenes>>
+  findDuplicateScenes;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$findDuplicateScenes = findDuplicateScenes;
+    _resultData['findDuplicateScenes'] = l$findDuplicateScenes
+        .map((e) => e.map((e) => e.toJson()).toList())
+        .toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$findDuplicateScenes = findDuplicateScenes;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      Object.hashAll(
+        l$findDuplicateScenes.map((v) => Object.hashAll(v.map((v) => v))),
+      ),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$FindDuplicateScenes ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$findDuplicateScenes = findDuplicateScenes;
+    final lOther$findDuplicateScenes = other.findDuplicateScenes;
+    if (l$findDuplicateScenes.length != lOther$findDuplicateScenes.length) {
+      return false;
+    }
+    for (int i = 0; i < l$findDuplicateScenes.length; i++) {
+      final l$findDuplicateScenes$entry = l$findDuplicateScenes[i];
+      final lOther$findDuplicateScenes$entry = lOther$findDuplicateScenes[i];
+      if (l$findDuplicateScenes$entry.length !=
+          lOther$findDuplicateScenes$entry.length) {
+        return false;
+      }
+      for (int i = 0; i < l$findDuplicateScenes$entry.length; i++) {
+        final l$findDuplicateScenes$entry$entry =
+            l$findDuplicateScenes$entry[i];
+        final lOther$findDuplicateScenes$entry$entry =
+            lOther$findDuplicateScenes$entry[i];
+        if (l$findDuplicateScenes$entry$entry !=
+            lOther$findDuplicateScenes$entry$entry) {
+          return false;
+        }
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$FindDuplicateScenes
+    on Query$FindDuplicateScenes {
+  CopyWith$Query$FindDuplicateScenes<Query$FindDuplicateScenes> get copyWith =>
+      CopyWith$Query$FindDuplicateScenes(this, (i) => i);
+}
+
+abstract class CopyWith$Query$FindDuplicateScenes<TRes> {
+  factory CopyWith$Query$FindDuplicateScenes(
+    Query$FindDuplicateScenes instance,
+    TRes Function(Query$FindDuplicateScenes) then,
+  ) = _CopyWithImpl$Query$FindDuplicateScenes;
+
+  factory CopyWith$Query$FindDuplicateScenes.stub(TRes res) =
+      _CopyWithStubImpl$Query$FindDuplicateScenes;
+
+  TRes call({
+    List<List<Query$FindDuplicateScenes$findDuplicateScenes>>?
+    findDuplicateScenes,
+    String? $__typename,
+  });
+  TRes findDuplicateScenes(
+    Iterable<Iterable<Query$FindDuplicateScenes$findDuplicateScenes>> Function(
+      Iterable<
+        Iterable<
+          CopyWith$Query$FindDuplicateScenes$findDuplicateScenes<
+            Query$FindDuplicateScenes$findDuplicateScenes
+          >
+        >
+      >,
+    )
+    _fn,
+  );
+}
+
+class _CopyWithImpl$Query$FindDuplicateScenes<TRes>
+    implements CopyWith$Query$FindDuplicateScenes<TRes> {
+  _CopyWithImpl$Query$FindDuplicateScenes(this._instance, this._then);
+
+  final Query$FindDuplicateScenes _instance;
+
+  final TRes Function(Query$FindDuplicateScenes) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? findDuplicateScenes = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$FindDuplicateScenes(
+      findDuplicateScenes:
+          findDuplicateScenes == _undefined || findDuplicateScenes == null
+          ? _instance.findDuplicateScenes
+          : (findDuplicateScenes
+                as List<List<Query$FindDuplicateScenes$findDuplicateScenes>>),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+
+  TRes findDuplicateScenes(
+    Iterable<Iterable<Query$FindDuplicateScenes$findDuplicateScenes>> Function(
+      Iterable<
+        Iterable<
+          CopyWith$Query$FindDuplicateScenes$findDuplicateScenes<
+            Query$FindDuplicateScenes$findDuplicateScenes
+          >
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    findDuplicateScenes: _fn(
+      _instance.findDuplicateScenes.map(
+        (e) => e.map(
+          (e) => CopyWith$Query$FindDuplicateScenes$findDuplicateScenes(
+            e,
+            (i) => i,
+          ),
+        ),
+      ),
+    ).map((e) => e.toList()).toList(),
+  );
+}
+
+class _CopyWithStubImpl$Query$FindDuplicateScenes<TRes>
+    implements CopyWith$Query$FindDuplicateScenes<TRes> {
+  _CopyWithStubImpl$Query$FindDuplicateScenes(this._res);
+
+  TRes _res;
+
+  call({
+    List<List<Query$FindDuplicateScenes$findDuplicateScenes>>?
+    findDuplicateScenes,
+    String? $__typename,
+  }) => _res;
+
+  findDuplicateScenes(_fn) => _res;
+}
+
+const documentNodeQueryFindDuplicateScenes = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.query,
+      name: NameNode(value: 'FindDuplicateScenes'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'distance')),
+          type: NamedTypeNode(name: NameNode(value: 'Int'), isNonNull: false),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'duration_diff')),
+          type: NamedTypeNode(name: NameNode(value: 'Float'), isNonNull: false),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'findDuplicateScenes'),
+            alias: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'distance'),
+                value: VariableNode(name: NameNode(value: 'distance')),
+              ),
+              ArgumentNode(
+                name: NameNode(value: 'duration_diff'),
+                value: VariableNode(name: NameNode(value: 'duration_diff')),
+              ),
+            ],
+            directives: [],
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: 'id'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'title'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'organized'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'o_counter'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'files'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
+                      FieldNode(
+                        name: NameNode(value: 'id'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'path'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'size'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'mod_time'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'duration'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'width'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'height'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'bit_rate'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'video_codec'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ],
+                  ),
+                ),
+                FieldNode(
+                  name: NameNode(value: 'paths'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
+                      FieldNode(
+                        name: NameNode(value: 'sprite'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ],
+                  ),
+                ),
+                FieldNode(
+                  name: NameNode(value: 'tags'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
+                      FieldNode(
+                        name: NameNode(value: 'id'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ],
+                  ),
+                ),
+                FieldNode(
+                  name: NameNode(value: 'performers'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
+                      FieldNode(
+                        name: NameNode(value: 'id'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ],
+                  ),
+                ),
+                FieldNode(
+                  name: NameNode(value: 'groups'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
+                      FieldNode(
+                        name: NameNode(value: 'group'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: SelectionSetNode(
+                          selections: [
+                            FieldNode(
+                              name: NameNode(value: 'id'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                            FieldNode(
+                              name: NameNode(value: '__typename'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                          ],
+                        ),
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ],
+                  ),
+                ),
+                FieldNode(
+                  name: NameNode(value: 'scene_markers'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
+                      FieldNode(
+                        name: NameNode(value: 'id'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ],
+                  ),
+                ),
+                FieldNode(
+                  name: NameNode(value: 'galleries'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
+                      FieldNode(
+                        name: NameNode(value: 'id'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ],
+                  ),
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ],
+      ),
+    ),
+  ],
+);
+Query$FindDuplicateScenes _parserFn$Query$FindDuplicateScenes(
+  Map<String, dynamic> data,
+) => Query$FindDuplicateScenes.fromJson(data);
+typedef OnQueryComplete$Query$FindDuplicateScenes =
+    FutureOr<void> Function(Map<String, dynamic>?, Query$FindDuplicateScenes?);
+
+class Options$Query$FindDuplicateScenes
+    extends graphql.QueryOptions<Query$FindDuplicateScenes> {
+  Options$Query$FindDuplicateScenes({
+    String? operationName,
+    Variables$Query$FindDuplicateScenes? variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$FindDuplicateScenes? typedOptimisticResult,
+    Duration? pollInterval,
+    graphql.Context? context,
+    OnQueryComplete$Query$FindDuplicateScenes? onComplete,
+    graphql.OnQueryError? onError,
+  }) : onCompleteWithParsed = onComplete,
+       super(
+         variables: variables?.toJson() ?? {},
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         pollInterval: pollInterval,
+         context: context,
+         onComplete: onComplete == null
+             ? null
+             : (data) => onComplete(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Query$FindDuplicateScenes(data),
+               ),
+         onError: onError,
+         document: documentNodeQueryFindDuplicateScenes,
+         parserFn: _parserFn$Query$FindDuplicateScenes,
+       );
+
+  final OnQueryComplete$Query$FindDuplicateScenes? onCompleteWithParsed;
+
+  @override
+  List<Object?> get properties => [
+    ...super.onComplete == null
+        ? super.properties
+        : super.properties.where((property) => property != onComplete),
+    onCompleteWithParsed,
+  ];
+}
+
+class WatchOptions$Query$FindDuplicateScenes
+    extends graphql.WatchQueryOptions<Query$FindDuplicateScenes> {
+  WatchOptions$Query$FindDuplicateScenes({
+    String? operationName,
+    Variables$Query$FindDuplicateScenes? variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$FindDuplicateScenes? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+         variables: variables?.toJson() ?? {},
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeQueryFindDuplicateScenes,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Query$FindDuplicateScenes,
+       );
+}
+
+class FetchMoreOptions$Query$FindDuplicateScenes
+    extends graphql.FetchMoreOptions {
+  FetchMoreOptions$Query$FindDuplicateScenes({
+    required graphql.UpdateQuery updateQuery,
+    Variables$Query$FindDuplicateScenes? variables,
+  }) : super(
+         updateQuery: updateQuery,
+         variables: variables?.toJson() ?? {},
+         document: documentNodeQueryFindDuplicateScenes,
+       );
+}
+
+extension ClientExtension$Query$FindDuplicateScenes on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Query$FindDuplicateScenes>>
+  query$FindDuplicateScenes([
+    Options$Query$FindDuplicateScenes? options,
+  ]) async => await this.query(options ?? Options$Query$FindDuplicateScenes());
+
+  graphql.ObservableQuery<Query$FindDuplicateScenes>
+  watchQuery$FindDuplicateScenes([
+    WatchOptions$Query$FindDuplicateScenes? options,
+  ]) => this.watchQuery(options ?? WatchOptions$Query$FindDuplicateScenes());
+
+  void writeQuery$FindDuplicateScenes({
+    required Query$FindDuplicateScenes data,
+    Variables$Query$FindDuplicateScenes? variables,
+    bool broadcast = true,
+  }) => this.writeQuery(
+    graphql.Request(
+      operation: graphql.Operation(
+        document: documentNodeQueryFindDuplicateScenes,
+      ),
+      variables: variables?.toJson() ?? const {},
+    ),
+    data: data.toJson(),
+    broadcast: broadcast,
+  );
+
+  Query$FindDuplicateScenes? readQuery$FindDuplicateScenes({
+    Variables$Query$FindDuplicateScenes? variables,
+    bool optimistic = true,
+  }) {
+    final result = this.readQuery(
+      graphql.Request(
+        operation: graphql.Operation(
+          document: documentNodeQueryFindDuplicateScenes,
+        ),
+        variables: variables?.toJson() ?? const {},
+      ),
+      optimistic: optimistic,
+    );
+    return result == null ? null : Query$FindDuplicateScenes.fromJson(result);
+  }
+}
+
+class Query$FindDuplicateScenes$findDuplicateScenes {
+  Query$FindDuplicateScenes$findDuplicateScenes({
+    required this.id,
+    this.title,
+    required this.organized,
+    this.o_counter,
+    required this.files,
+    required this.paths,
+    required this.tags,
+    required this.performers,
+    required this.groups,
+    required this.scene_markers,
+    required this.galleries,
+    this.$__typename = 'Scene',
+  });
+
+  factory Query$FindDuplicateScenes$findDuplicateScenes.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$id = json['id'];
+    final l$title = json['title'];
+    final l$organized = json['organized'];
+    final l$o_counter = json['o_counter'];
+    final l$files = json['files'];
+    final l$paths = json['paths'];
+    final l$tags = json['tags'];
+    final l$performers = json['performers'];
+    final l$groups = json['groups'];
+    final l$scene_markers = json['scene_markers'];
+    final l$galleries = json['galleries'];
+    final l$$__typename = json['__typename'];
+    return Query$FindDuplicateScenes$findDuplicateScenes(
+      id: '${l$id}',
+      title: (l$title as String?),
+      organized: (l$organized as bool),
+      o_counter: (l$o_counter as int?),
+      files: (l$files as List<dynamic>)
+          .map(
+            (e) => Query$FindDuplicateScenes$findDuplicateScenes$files.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
+      paths: Query$FindDuplicateScenes$findDuplicateScenes$paths.fromJson(
+        (l$paths as Map<String, dynamic>),
+      ),
+      tags: (l$tags as List<dynamic>)
+          .map(
+            (e) => Query$FindDuplicateScenes$findDuplicateScenes$tags.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
+      performers: (l$performers as List<dynamic>)
+          .map(
+            (e) =>
+                Query$FindDuplicateScenes$findDuplicateScenes$performers.fromJson(
+                  (e as Map<String, dynamic>),
+                ),
+          )
+          .toList(),
+      groups: (l$groups as List<dynamic>)
+          .map(
+            (e) =>
+                Query$FindDuplicateScenes$findDuplicateScenes$groups.fromJson(
+                  (e as Map<String, dynamic>),
+                ),
+          )
+          .toList(),
+      scene_markers: (l$scene_markers as List<dynamic>)
+          .map(
+            (e) =>
+                Query$FindDuplicateScenes$findDuplicateScenes$scene_markers.fromJson(
+                  (e as Map<String, dynamic>),
+                ),
+          )
+          .toList(),
+      galleries: (l$galleries as List<dynamic>)
+          .map(
+            (e) =>
+                Query$FindDuplicateScenes$findDuplicateScenes$galleries.fromJson(
+                  (e as Map<String, dynamic>),
+                ),
+          )
+          .toList(),
+      $__typename: '${l$$__typename}',
+    );
+  }
+
+  final String id;
+
+  final String? title;
+
+  final bool organized;
+
+  final int? o_counter;
+
+  final List<Query$FindDuplicateScenes$findDuplicateScenes$files> files;
+
+  final Query$FindDuplicateScenes$findDuplicateScenes$paths paths;
+
+  final List<Query$FindDuplicateScenes$findDuplicateScenes$tags> tags;
+
+  final List<Query$FindDuplicateScenes$findDuplicateScenes$performers>
+  performers;
+
+  final List<Query$FindDuplicateScenes$findDuplicateScenes$groups> groups;
+
+  final List<Query$FindDuplicateScenes$findDuplicateScenes$scene_markers>
+  scene_markers;
+
+  final List<Query$FindDuplicateScenes$findDuplicateScenes$galleries> galleries;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$title = title;
+    _resultData['title'] = l$title;
+    final l$organized = organized;
+    _resultData['organized'] = l$organized;
+    final l$o_counter = o_counter;
+    _resultData['o_counter'] = l$o_counter;
+    final l$files = files;
+    _resultData['files'] = l$files.map((e) => e.toJson()).toList();
+    final l$paths = paths;
+    _resultData['paths'] = l$paths.toJson();
+    final l$tags = tags;
+    _resultData['tags'] = l$tags.map((e) => e.toJson()).toList();
+    final l$performers = performers;
+    _resultData['performers'] = l$performers.map((e) => e.toJson()).toList();
+    final l$groups = groups;
+    _resultData['groups'] = l$groups.map((e) => e.toJson()).toList();
+    final l$scene_markers = scene_markers;
+    _resultData['scene_markers'] = l$scene_markers
+        .map((e) => e.toJson())
+        .toList();
+    final l$galleries = galleries;
+    _resultData['galleries'] = l$galleries.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$title = title;
+    final l$organized = organized;
+    final l$o_counter = o_counter;
+    final l$files = files;
+    final l$paths = paths;
+    final l$tags = tags;
+    final l$performers = performers;
+    final l$groups = groups;
+    final l$scene_markers = scene_markers;
+    final l$galleries = galleries;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$title,
+      l$organized,
+      l$o_counter,
+      Object.hashAll(l$files.map((v) => v)),
+      l$paths,
+      Object.hashAll(l$tags.map((v) => v)),
+      Object.hashAll(l$performers.map((v) => v)),
+      Object.hashAll(l$groups.map((v) => v)),
+      Object.hashAll(l$scene_markers.map((v) => v)),
+      Object.hashAll(l$galleries.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$FindDuplicateScenes$findDuplicateScenes ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$title = title;
+    final lOther$title = other.title;
+    if (l$title != lOther$title) {
+      return false;
+    }
+    final l$organized = organized;
+    final lOther$organized = other.organized;
+    if (l$organized != lOther$organized) {
+      return false;
+    }
+    final l$o_counter = o_counter;
+    final lOther$o_counter = other.o_counter;
+    if (l$o_counter != lOther$o_counter) {
+      return false;
+    }
+    final l$files = files;
+    final lOther$files = other.files;
+    if (l$files.length != lOther$files.length) {
+      return false;
+    }
+    for (int i = 0; i < l$files.length; i++) {
+      final l$files$entry = l$files[i];
+      final lOther$files$entry = lOther$files[i];
+      if (l$files$entry != lOther$files$entry) {
+        return false;
+      }
+    }
+    final l$paths = paths;
+    final lOther$paths = other.paths;
+    if (l$paths != lOther$paths) {
+      return false;
+    }
+    final l$tags = tags;
+    final lOther$tags = other.tags;
+    if (l$tags.length != lOther$tags.length) {
+      return false;
+    }
+    for (int i = 0; i < l$tags.length; i++) {
+      final l$tags$entry = l$tags[i];
+      final lOther$tags$entry = lOther$tags[i];
+      if (l$tags$entry != lOther$tags$entry) {
+        return false;
+      }
+    }
+    final l$performers = performers;
+    final lOther$performers = other.performers;
+    if (l$performers.length != lOther$performers.length) {
+      return false;
+    }
+    for (int i = 0; i < l$performers.length; i++) {
+      final l$performers$entry = l$performers[i];
+      final lOther$performers$entry = lOther$performers[i];
+      if (l$performers$entry != lOther$performers$entry) {
+        return false;
+      }
+    }
+    final l$groups = groups;
+    final lOther$groups = other.groups;
+    if (l$groups.length != lOther$groups.length) {
+      return false;
+    }
+    for (int i = 0; i < l$groups.length; i++) {
+      final l$groups$entry = l$groups[i];
+      final lOther$groups$entry = lOther$groups[i];
+      if (l$groups$entry != lOther$groups$entry) {
+        return false;
+      }
+    }
+    final l$scene_markers = scene_markers;
+    final lOther$scene_markers = other.scene_markers;
+    if (l$scene_markers.length != lOther$scene_markers.length) {
+      return false;
+    }
+    for (int i = 0; i < l$scene_markers.length; i++) {
+      final l$scene_markers$entry = l$scene_markers[i];
+      final lOther$scene_markers$entry = lOther$scene_markers[i];
+      if (l$scene_markers$entry != lOther$scene_markers$entry) {
+        return false;
+      }
+    }
+    final l$galleries = galleries;
+    final lOther$galleries = other.galleries;
+    if (l$galleries.length != lOther$galleries.length) {
+      return false;
+    }
+    for (int i = 0; i < l$galleries.length; i++) {
+      final l$galleries$entry = l$galleries[i];
+      final lOther$galleries$entry = lOther$galleries[i];
+      if (l$galleries$entry != lOther$galleries$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$FindDuplicateScenes$findDuplicateScenes
+    on Query$FindDuplicateScenes$findDuplicateScenes {
+  CopyWith$Query$FindDuplicateScenes$findDuplicateScenes<
+    Query$FindDuplicateScenes$findDuplicateScenes
+  >
+  get copyWith =>
+      CopyWith$Query$FindDuplicateScenes$findDuplicateScenes(this, (i) => i);
+}
+
+abstract class CopyWith$Query$FindDuplicateScenes$findDuplicateScenes<TRes> {
+  factory CopyWith$Query$FindDuplicateScenes$findDuplicateScenes(
+    Query$FindDuplicateScenes$findDuplicateScenes instance,
+    TRes Function(Query$FindDuplicateScenes$findDuplicateScenes) then,
+  ) = _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes;
+
+  factory CopyWith$Query$FindDuplicateScenes$findDuplicateScenes.stub(
+    TRes res,
+  ) = _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes;
+
+  TRes call({
+    String? id,
+    String? title,
+    bool? organized,
+    int? o_counter,
+    List<Query$FindDuplicateScenes$findDuplicateScenes$files>? files,
+    Query$FindDuplicateScenes$findDuplicateScenes$paths? paths,
+    List<Query$FindDuplicateScenes$findDuplicateScenes$tags>? tags,
+    List<Query$FindDuplicateScenes$findDuplicateScenes$performers>? performers,
+    List<Query$FindDuplicateScenes$findDuplicateScenes$groups>? groups,
+    List<Query$FindDuplicateScenes$findDuplicateScenes$scene_markers>?
+    scene_markers,
+    List<Query$FindDuplicateScenes$findDuplicateScenes$galleries>? galleries,
+    String? $__typename,
+  });
+  TRes files(
+    Iterable<Query$FindDuplicateScenes$findDuplicateScenes$files> Function(
+      Iterable<
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$files<
+          Query$FindDuplicateScenes$findDuplicateScenes$files
+        >
+      >,
+    )
+    _fn,
+  );
+  CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$paths<TRes> get paths;
+  TRes tags(
+    Iterable<Query$FindDuplicateScenes$findDuplicateScenes$tags> Function(
+      Iterable<
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$tags<
+          Query$FindDuplicateScenes$findDuplicateScenes$tags
+        >
+      >,
+    )
+    _fn,
+  );
+  TRes performers(
+    Iterable<Query$FindDuplicateScenes$findDuplicateScenes$performers> Function(
+      Iterable<
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$performers<
+          Query$FindDuplicateScenes$findDuplicateScenes$performers
+        >
+      >,
+    )
+    _fn,
+  );
+  TRes groups(
+    Iterable<Query$FindDuplicateScenes$findDuplicateScenes$groups> Function(
+      Iterable<
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups<
+          Query$FindDuplicateScenes$findDuplicateScenes$groups
+        >
+      >,
+    )
+    _fn,
+  );
+  TRes scene_markers(
+    Iterable<Query$FindDuplicateScenes$findDuplicateScenes$scene_markers>
+    Function(
+      Iterable<
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$scene_markers<
+          Query$FindDuplicateScenes$findDuplicateScenes$scene_markers
+        >
+      >,
+    )
+    _fn,
+  );
+  TRes galleries(
+    Iterable<Query$FindDuplicateScenes$findDuplicateScenes$galleries> Function(
+      Iterable<
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$galleries<
+          Query$FindDuplicateScenes$findDuplicateScenes$galleries
+        >
+      >,
+    )
+    _fn,
+  );
+}
+
+class _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes<TRes>
+    implements CopyWith$Query$FindDuplicateScenes$findDuplicateScenes<TRes> {
+  _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes(
+    this._instance,
+    this._then,
+  );
+
+  final Query$FindDuplicateScenes$findDuplicateScenes _instance;
+
+  final TRes Function(Query$FindDuplicateScenes$findDuplicateScenes) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? title = _undefined,
+    Object? organized = _undefined,
+    Object? o_counter = _undefined,
+    Object? files = _undefined,
+    Object? paths = _undefined,
+    Object? tags = _undefined,
+    Object? performers = _undefined,
+    Object? groups = _undefined,
+    Object? scene_markers = _undefined,
+    Object? galleries = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$FindDuplicateScenes$findDuplicateScenes(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      title: title == _undefined ? _instance.title : (title as String?),
+      organized: organized == _undefined || organized == null
+          ? _instance.organized
+          : (organized as bool),
+      o_counter: o_counter == _undefined
+          ? _instance.o_counter
+          : (o_counter as int?),
+      files: files == _undefined || files == null
+          ? _instance.files
+          : (files
+                as List<Query$FindDuplicateScenes$findDuplicateScenes$files>),
+      paths: paths == _undefined || paths == null
+          ? _instance.paths
+          : (paths as Query$FindDuplicateScenes$findDuplicateScenes$paths),
+      tags: tags == _undefined || tags == null
+          ? _instance.tags
+          : (tags as List<Query$FindDuplicateScenes$findDuplicateScenes$tags>),
+      performers: performers == _undefined || performers == null
+          ? _instance.performers
+          : (performers
+                as List<
+                  Query$FindDuplicateScenes$findDuplicateScenes$performers
+                >),
+      groups: groups == _undefined || groups == null
+          ? _instance.groups
+          : (groups
+                as List<Query$FindDuplicateScenes$findDuplicateScenes$groups>),
+      scene_markers: scene_markers == _undefined || scene_markers == null
+          ? _instance.scene_markers
+          : (scene_markers
+                as List<
+                  Query$FindDuplicateScenes$findDuplicateScenes$scene_markers
+                >),
+      galleries: galleries == _undefined || galleries == null
+          ? _instance.galleries
+          : (galleries
+                as List<
+                  Query$FindDuplicateScenes$findDuplicateScenes$galleries
+                >),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+
+  TRes files(
+    Iterable<Query$FindDuplicateScenes$findDuplicateScenes$files> Function(
+      Iterable<
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$files<
+          Query$FindDuplicateScenes$findDuplicateScenes$files
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    files: _fn(
+      _instance.files.map(
+        (e) => CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$files(
+          e,
+          (i) => i,
+        ),
+      ),
+    ).toList(),
+  );
+
+  CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$paths<TRes> get paths {
+    final local$paths = _instance.paths;
+    return CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$paths(
+      local$paths,
+      (e) => call(paths: e),
+    );
+  }
+
+  TRes tags(
+    Iterable<Query$FindDuplicateScenes$findDuplicateScenes$tags> Function(
+      Iterable<
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$tags<
+          Query$FindDuplicateScenes$findDuplicateScenes$tags
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    tags: _fn(
+      _instance.tags.map(
+        (e) => CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$tags(
+          e,
+          (i) => i,
+        ),
+      ),
+    ).toList(),
+  );
+
+  TRes performers(
+    Iterable<Query$FindDuplicateScenes$findDuplicateScenes$performers> Function(
+      Iterable<
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$performers<
+          Query$FindDuplicateScenes$findDuplicateScenes$performers
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    performers: _fn(
+      _instance.performers.map(
+        (e) =>
+            CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$performers(
+              e,
+              (i) => i,
+            ),
+      ),
+    ).toList(),
+  );
+
+  TRes groups(
+    Iterable<Query$FindDuplicateScenes$findDuplicateScenes$groups> Function(
+      Iterable<
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups<
+          Query$FindDuplicateScenes$findDuplicateScenes$groups
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    groups: _fn(
+      _instance.groups.map(
+        (e) => CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups(
+          e,
+          (i) => i,
+        ),
+      ),
+    ).toList(),
+  );
+
+  TRes scene_markers(
+    Iterable<Query$FindDuplicateScenes$findDuplicateScenes$scene_markers>
+    Function(
+      Iterable<
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$scene_markers<
+          Query$FindDuplicateScenes$findDuplicateScenes$scene_markers
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    scene_markers: _fn(
+      _instance.scene_markers.map(
+        (e) =>
+            CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$scene_markers(
+              e,
+              (i) => i,
+            ),
+      ),
+    ).toList(),
+  );
+
+  TRes galleries(
+    Iterable<Query$FindDuplicateScenes$findDuplicateScenes$galleries> Function(
+      Iterable<
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$galleries<
+          Query$FindDuplicateScenes$findDuplicateScenes$galleries
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    galleries: _fn(
+      _instance.galleries.map(
+        (e) => CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$galleries(
+          e,
+          (i) => i,
+        ),
+      ),
+    ).toList(),
+  );
+}
+
+class _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes<TRes>
+    implements CopyWith$Query$FindDuplicateScenes$findDuplicateScenes<TRes> {
+  _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes(this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? title,
+    bool? organized,
+    int? o_counter,
+    List<Query$FindDuplicateScenes$findDuplicateScenes$files>? files,
+    Query$FindDuplicateScenes$findDuplicateScenes$paths? paths,
+    List<Query$FindDuplicateScenes$findDuplicateScenes$tags>? tags,
+    List<Query$FindDuplicateScenes$findDuplicateScenes$performers>? performers,
+    List<Query$FindDuplicateScenes$findDuplicateScenes$groups>? groups,
+    List<Query$FindDuplicateScenes$findDuplicateScenes$scene_markers>?
+    scene_markers,
+    List<Query$FindDuplicateScenes$findDuplicateScenes$galleries>? galleries,
+    String? $__typename,
+  }) => _res;
+
+  files(_fn) => _res;
+
+  CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$paths<TRes>
+  get paths =>
+      CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$paths.stub(_res);
+
+  tags(_fn) => _res;
+
+  performers(_fn) => _res;
+
+  groups(_fn) => _res;
+
+  scene_markers(_fn) => _res;
+
+  galleries(_fn) => _res;
+}
+
+class Query$FindDuplicateScenes$findDuplicateScenes$files {
+  Query$FindDuplicateScenes$findDuplicateScenes$files({
+    required this.id,
+    required this.path,
+    required this.size,
+    required this.mod_time,
+    required this.duration,
+    required this.width,
+    required this.height,
+    required this.bit_rate,
+    required this.video_codec,
+    this.$__typename = 'VideoFile',
+  });
+
+  factory Query$FindDuplicateScenes$findDuplicateScenes$files.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$id = json['id'];
+    final l$path = json['path'];
+    final l$size = json['size'];
+    final l$mod_time = json['mod_time'];
+    final l$duration = json['duration'];
+    final l$width = json['width'];
+    final l$height = json['height'];
+    final l$bit_rate = json['bit_rate'];
+    final l$video_codec = json['video_codec'];
+    final l$$__typename = json['__typename'];
+    return Query$FindDuplicateScenes$findDuplicateScenes$files(
+      id: '${l$id}',
+      path: '${l$path}',
+      size: '${l$size}',
+      mod_time: '${l$mod_time}',
+      duration: (l$duration as num).toDouble(),
+      width: (l$width as int),
+      height: (l$height as int),
+      bit_rate: (l$bit_rate as int),
+      video_codec: '${l$video_codec}',
+      $__typename: '${l$$__typename}',
+    );
+  }
+
+  final String id;
+
+  final String path;
+
+  final String size;
+
+  final String mod_time;
+
+  final double duration;
+
+  final int width;
+
+  final int height;
+
+  final int bit_rate;
+
+  final String video_codec;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$path = path;
+    _resultData['path'] = l$path;
+    final l$size = size;
+    _resultData['size'] = l$size;
+    final l$mod_time = mod_time;
+    _resultData['mod_time'] = l$mod_time;
+    final l$duration = duration;
+    _resultData['duration'] = l$duration;
+    final l$width = width;
+    _resultData['width'] = l$width;
+    final l$height = height;
+    _resultData['height'] = l$height;
+    final l$bit_rate = bit_rate;
+    _resultData['bit_rate'] = l$bit_rate;
+    final l$video_codec = video_codec;
+    _resultData['video_codec'] = l$video_codec;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$path = path;
+    final l$size = size;
+    final l$mod_time = mod_time;
+    final l$duration = duration;
+    final l$width = width;
+    final l$height = height;
+    final l$bit_rate = bit_rate;
+    final l$video_codec = video_codec;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$path,
+      l$size,
+      l$mod_time,
+      l$duration,
+      l$width,
+      l$height,
+      l$bit_rate,
+      l$video_codec,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$FindDuplicateScenes$findDuplicateScenes$files ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$path = path;
+    final lOther$path = other.path;
+    if (l$path != lOther$path) {
+      return false;
+    }
+    final l$size = size;
+    final lOther$size = other.size;
+    if (l$size != lOther$size) {
+      return false;
+    }
+    final l$mod_time = mod_time;
+    final lOther$mod_time = other.mod_time;
+    if (l$mod_time != lOther$mod_time) {
+      return false;
+    }
+    final l$duration = duration;
+    final lOther$duration = other.duration;
+    if (l$duration != lOther$duration) {
+      return false;
+    }
+    final l$width = width;
+    final lOther$width = other.width;
+    if (l$width != lOther$width) {
+      return false;
+    }
+    final l$height = height;
+    final lOther$height = other.height;
+    if (l$height != lOther$height) {
+      return false;
+    }
+    final l$bit_rate = bit_rate;
+    final lOther$bit_rate = other.bit_rate;
+    if (l$bit_rate != lOther$bit_rate) {
+      return false;
+    }
+    final l$video_codec = video_codec;
+    final lOther$video_codec = other.video_codec;
+    if (l$video_codec != lOther$video_codec) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$FindDuplicateScenes$findDuplicateScenes$files
+    on Query$FindDuplicateScenes$findDuplicateScenes$files {
+  CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$files<
+    Query$FindDuplicateScenes$findDuplicateScenes$files
+  >
+  get copyWith => CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$files(
+    this,
+    (i) => i,
+  );
+}
+
+abstract class CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$files<
+  TRes
+> {
+  factory CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$files(
+    Query$FindDuplicateScenes$findDuplicateScenes$files instance,
+    TRes Function(Query$FindDuplicateScenes$findDuplicateScenes$files) then,
+  ) = _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$files;
+
+  factory CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$files.stub(
+    TRes res,
+  ) = _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$files;
+
+  TRes call({
+    String? id,
+    String? path,
+    String? size,
+    String? mod_time,
+    double? duration,
+    int? width,
+    int? height,
+    int? bit_rate,
+    String? video_codec,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$files<TRes>
+    implements
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$files<TRes> {
+  _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$files(
+    this._instance,
+    this._then,
+  );
+
+  final Query$FindDuplicateScenes$findDuplicateScenes$files _instance;
+
+  final TRes Function(Query$FindDuplicateScenes$findDuplicateScenes$files)
+  _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? path = _undefined,
+    Object? size = _undefined,
+    Object? mod_time = _undefined,
+    Object? duration = _undefined,
+    Object? width = _undefined,
+    Object? height = _undefined,
+    Object? bit_rate = _undefined,
+    Object? video_codec = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$FindDuplicateScenes$findDuplicateScenes$files(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      path: path == _undefined || path == null
+          ? _instance.path
+          : (path as String),
+      size: size == _undefined || size == null
+          ? _instance.size
+          : (size as String),
+      mod_time: mod_time == _undefined || mod_time == null
+          ? _instance.mod_time
+          : (mod_time as String),
+      duration: duration == _undefined || duration == null
+          ? _instance.duration
+          : (duration as double),
+      width: width == _undefined || width == null
+          ? _instance.width
+          : (width as int),
+      height: height == _undefined || height == null
+          ? _instance.height
+          : (height as int),
+      bit_rate: bit_rate == _undefined || bit_rate == null
+          ? _instance.bit_rate
+          : (bit_rate as int),
+      video_codec: video_codec == _undefined || video_codec == null
+          ? _instance.video_codec
+          : (video_codec as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$files<
+  TRes
+>
+    implements
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$files<TRes> {
+  _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$files(
+    this._res,
+  );
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? path,
+    String? size,
+    String? mod_time,
+    double? duration,
+    int? width,
+    int? height,
+    int? bit_rate,
+    String? video_codec,
+    String? $__typename,
+  }) => _res;
+}
+
+class Query$FindDuplicateScenes$findDuplicateScenes$paths {
+  Query$FindDuplicateScenes$findDuplicateScenes$paths({
+    this.sprite,
+    this.$__typename = 'ScenePathsType',
+  });
+
+  factory Query$FindDuplicateScenes$findDuplicateScenes$paths.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$sprite = json['sprite'];
+    final l$$__typename = json['__typename'];
+    return Query$FindDuplicateScenes$findDuplicateScenes$paths(
+      sprite: (l$sprite as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String? sprite;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$sprite = sprite;
+    _resultData['sprite'] = l$sprite;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$sprite = sprite;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$sprite, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$FindDuplicateScenes$findDuplicateScenes$paths ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$sprite = sprite;
+    final lOther$sprite = other.sprite;
+    if (l$sprite != lOther$sprite) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$FindDuplicateScenes$findDuplicateScenes$paths
+    on Query$FindDuplicateScenes$findDuplicateScenes$paths {
+  CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$paths<
+    Query$FindDuplicateScenes$findDuplicateScenes$paths
+  >
+  get copyWith => CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$paths(
+    this,
+    (i) => i,
+  );
+}
+
+abstract class CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$paths<
+  TRes
+> {
+  factory CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$paths(
+    Query$FindDuplicateScenes$findDuplicateScenes$paths instance,
+    TRes Function(Query$FindDuplicateScenes$findDuplicateScenes$paths) then,
+  ) = _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$paths;
+
+  factory CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$paths.stub(
+    TRes res,
+  ) = _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$paths;
+
+  TRes call({String? sprite, String? $__typename});
+}
+
+class _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$paths<TRes>
+    implements
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$paths<TRes> {
+  _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$paths(
+    this._instance,
+    this._then,
+  );
+
+  final Query$FindDuplicateScenes$findDuplicateScenes$paths _instance;
+
+  final TRes Function(Query$FindDuplicateScenes$findDuplicateScenes$paths)
+  _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? sprite = _undefined, Object? $__typename = _undefined}) =>
+      _then(
+        Query$FindDuplicateScenes$findDuplicateScenes$paths(
+          sprite: sprite == _undefined ? _instance.sprite : (sprite as String?),
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String),
+        ),
+      );
+}
+
+class _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$paths<
+  TRes
+>
+    implements
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$paths<TRes> {
+  _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$paths(
+    this._res,
+  );
+
+  TRes _res;
+
+  call({String? sprite, String? $__typename}) => _res;
+}
+
+class Query$FindDuplicateScenes$findDuplicateScenes$tags {
+  Query$FindDuplicateScenes$findDuplicateScenes$tags({
+    required this.id,
+    this.$__typename = 'Tag',
+  });
+
+  factory Query$FindDuplicateScenes$findDuplicateScenes$tags.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$id = json['id'];
+    final l$$__typename = json['__typename'];
+    return Query$FindDuplicateScenes$findDuplicateScenes$tags(
+      id: (l$id as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$id, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$FindDuplicateScenes$findDuplicateScenes$tags ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$FindDuplicateScenes$findDuplicateScenes$tags
+    on Query$FindDuplicateScenes$findDuplicateScenes$tags {
+  CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$tags<
+    Query$FindDuplicateScenes$findDuplicateScenes$tags
+  >
+  get copyWith => CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$tags(
+    this,
+    (i) => i,
+  );
+}
+
+abstract class CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$tags<
+  TRes
+> {
+  factory CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$tags(
+    Query$FindDuplicateScenes$findDuplicateScenes$tags instance,
+    TRes Function(Query$FindDuplicateScenes$findDuplicateScenes$tags) then,
+  ) = _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$tags;
+
+  factory CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$tags.stub(
+    TRes res,
+  ) = _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$tags;
+
+  TRes call({String? id, String? $__typename});
+}
+
+class _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$tags<TRes>
+    implements
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$tags<TRes> {
+  _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$tags(
+    this._instance,
+    this._then,
+  );
+
+  final Query$FindDuplicateScenes$findDuplicateScenes$tags _instance;
+
+  final TRes Function(Query$FindDuplicateScenes$findDuplicateScenes$tags) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? id = _undefined, Object? $__typename = _undefined}) =>
+      _then(
+        Query$FindDuplicateScenes$findDuplicateScenes$tags(
+          id: id == _undefined || id == null ? _instance.id : (id as String),
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String),
+        ),
+      );
+}
+
+class _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$tags<TRes>
+    implements
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$tags<TRes> {
+  _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$tags(
+    this._res,
+  );
+
+  TRes _res;
+
+  call({String? id, String? $__typename}) => _res;
+}
+
+class Query$FindDuplicateScenes$findDuplicateScenes$performers {
+  Query$FindDuplicateScenes$findDuplicateScenes$performers({
+    required this.id,
+    this.$__typename = 'Performer',
+  });
+
+  factory Query$FindDuplicateScenes$findDuplicateScenes$performers.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$id = json['id'];
+    final l$$__typename = json['__typename'];
+    return Query$FindDuplicateScenes$findDuplicateScenes$performers(
+      id: (l$id as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$id, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$FindDuplicateScenes$findDuplicateScenes$performers ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$FindDuplicateScenes$findDuplicateScenes$performers
+    on Query$FindDuplicateScenes$findDuplicateScenes$performers {
+  CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$performers<
+    Query$FindDuplicateScenes$findDuplicateScenes$performers
+  >
+  get copyWith =>
+      CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$performers(
+        this,
+        (i) => i,
+      );
+}
+
+abstract class CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$performers<
+  TRes
+> {
+  factory CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$performers(
+    Query$FindDuplicateScenes$findDuplicateScenes$performers instance,
+    TRes Function(Query$FindDuplicateScenes$findDuplicateScenes$performers)
+    then,
+  ) = _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$performers;
+
+  factory CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$performers.stub(
+    TRes res,
+  ) = _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$performers;
+
+  TRes call({String? id, String? $__typename});
+}
+
+class _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$performers<
+  TRes
+>
+    implements
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$performers<
+          TRes
+        > {
+  _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$performers(
+    this._instance,
+    this._then,
+  );
+
+  final Query$FindDuplicateScenes$findDuplicateScenes$performers _instance;
+
+  final TRes Function(Query$FindDuplicateScenes$findDuplicateScenes$performers)
+  _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? id = _undefined, Object? $__typename = _undefined}) =>
+      _then(
+        Query$FindDuplicateScenes$findDuplicateScenes$performers(
+          id: id == _undefined || id == null ? _instance.id : (id as String),
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String),
+        ),
+      );
+}
+
+class _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$performers<
+  TRes
+>
+    implements
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$performers<
+          TRes
+        > {
+  _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$performers(
+    this._res,
+  );
+
+  TRes _res;
+
+  call({String? id, String? $__typename}) => _res;
+}
+
+class Query$FindDuplicateScenes$findDuplicateScenes$groups {
+  Query$FindDuplicateScenes$findDuplicateScenes$groups({
+    required this.group,
+    this.$__typename = 'SceneGroup',
+  });
+
+  factory Query$FindDuplicateScenes$findDuplicateScenes$groups.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$group = json['group'];
+    final l$$__typename = json['__typename'];
+    return Query$FindDuplicateScenes$findDuplicateScenes$groups(
+      group:
+          Query$FindDuplicateScenes$findDuplicateScenes$groups$group.fromJson(
+            (l$group as Map<String, dynamic>),
+          ),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Query$FindDuplicateScenes$findDuplicateScenes$groups$group group;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$group = group;
+    _resultData['group'] = l$group.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$group = group;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$group, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$FindDuplicateScenes$findDuplicateScenes$groups ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$group = group;
+    final lOther$group = other.group;
+    if (l$group != lOther$group) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$FindDuplicateScenes$findDuplicateScenes$groups
+    on Query$FindDuplicateScenes$findDuplicateScenes$groups {
+  CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups<
+    Query$FindDuplicateScenes$findDuplicateScenes$groups
+  >
+  get copyWith => CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups(
+    this,
+    (i) => i,
+  );
+}
+
+abstract class CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups<
+  TRes
+> {
+  factory CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups(
+    Query$FindDuplicateScenes$findDuplicateScenes$groups instance,
+    TRes Function(Query$FindDuplicateScenes$findDuplicateScenes$groups) then,
+  ) = _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$groups;
+
+  factory CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups.stub(
+    TRes res,
+  ) = _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$groups;
+
+  TRes call({
+    Query$FindDuplicateScenes$findDuplicateScenes$groups$group? group,
+    String? $__typename,
+  });
+  CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups$group<TRes>
+  get group;
+}
+
+class _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$groups<TRes>
+    implements
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups<TRes> {
+  _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$groups(
+    this._instance,
+    this._then,
+  );
+
+  final Query$FindDuplicateScenes$findDuplicateScenes$groups _instance;
+
+  final TRes Function(Query$FindDuplicateScenes$findDuplicateScenes$groups)
+  _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? group = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$FindDuplicateScenes$findDuplicateScenes$groups(
+      group: group == _undefined || group == null
+          ? _instance.group
+          : (group
+                as Query$FindDuplicateScenes$findDuplicateScenes$groups$group),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+
+  CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups$group<TRes>
+  get group {
+    final local$group = _instance.group;
+    return CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups$group(
+      local$group,
+      (e) => call(group: e),
+    );
+  }
+}
+
+class _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$groups<
+  TRes
+>
+    implements
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups<TRes> {
+  _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$groups(
+    this._res,
+  );
+
+  TRes _res;
+
+  call({
+    Query$FindDuplicateScenes$findDuplicateScenes$groups$group? group,
+    String? $__typename,
+  }) => _res;
+
+  CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups$group<TRes>
+  get group =>
+      CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups$group.stub(
+        _res,
+      );
+}
+
+class Query$FindDuplicateScenes$findDuplicateScenes$groups$group {
+  Query$FindDuplicateScenes$findDuplicateScenes$groups$group({
+    required this.id,
+    this.$__typename = 'Group',
+  });
+
+  factory Query$FindDuplicateScenes$findDuplicateScenes$groups$group.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$id = json['id'];
+    final l$$__typename = json['__typename'];
+    return Query$FindDuplicateScenes$findDuplicateScenes$groups$group(
+      id: (l$id as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$id, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$FindDuplicateScenes$findDuplicateScenes$groups$group ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$FindDuplicateScenes$findDuplicateScenes$groups$group
+    on Query$FindDuplicateScenes$findDuplicateScenes$groups$group {
+  CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups$group<
+    Query$FindDuplicateScenes$findDuplicateScenes$groups$group
+  >
+  get copyWith =>
+      CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups$group(
+        this,
+        (i) => i,
+      );
+}
+
+abstract class CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups$group<
+  TRes
+> {
+  factory CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups$group(
+    Query$FindDuplicateScenes$findDuplicateScenes$groups$group instance,
+    TRes Function(Query$FindDuplicateScenes$findDuplicateScenes$groups$group)
+    then,
+  ) = _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$groups$group;
+
+  factory CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups$group.stub(
+    TRes res,
+  ) = _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$groups$group;
+
+  TRes call({String? id, String? $__typename});
+}
+
+class _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$groups$group<
+  TRes
+>
+    implements
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups$group<
+          TRes
+        > {
+  _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$groups$group(
+    this._instance,
+    this._then,
+  );
+
+  final Query$FindDuplicateScenes$findDuplicateScenes$groups$group _instance;
+
+  final TRes Function(
+    Query$FindDuplicateScenes$findDuplicateScenes$groups$group,
+  )
+  _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? id = _undefined, Object? $__typename = _undefined}) =>
+      _then(
+        Query$FindDuplicateScenes$findDuplicateScenes$groups$group(
+          id: id == _undefined || id == null ? _instance.id : (id as String),
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String),
+        ),
+      );
+}
+
+class _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$groups$group<
+  TRes
+>
+    implements
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$groups$group<
+          TRes
+        > {
+  _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$groups$group(
+    this._res,
+  );
+
+  TRes _res;
+
+  call({String? id, String? $__typename}) => _res;
+}
+
+class Query$FindDuplicateScenes$findDuplicateScenes$scene_markers {
+  Query$FindDuplicateScenes$findDuplicateScenes$scene_markers({
+    required this.id,
+    this.$__typename = 'SceneMarker',
+  });
+
+  factory Query$FindDuplicateScenes$findDuplicateScenes$scene_markers.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$id = json['id'];
+    final l$$__typename = json['__typename'];
+    return Query$FindDuplicateScenes$findDuplicateScenes$scene_markers(
+      id: (l$id as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$id, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$FindDuplicateScenes$findDuplicateScenes$scene_markers ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$FindDuplicateScenes$findDuplicateScenes$scene_markers
+    on Query$FindDuplicateScenes$findDuplicateScenes$scene_markers {
+  CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$scene_markers<
+    Query$FindDuplicateScenes$findDuplicateScenes$scene_markers
+  >
+  get copyWith =>
+      CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$scene_markers(
+        this,
+        (i) => i,
+      );
+}
+
+abstract class CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$scene_markers<
+  TRes
+> {
+  factory CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$scene_markers(
+    Query$FindDuplicateScenes$findDuplicateScenes$scene_markers instance,
+    TRes Function(Query$FindDuplicateScenes$findDuplicateScenes$scene_markers)
+    then,
+  ) = _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$scene_markers;
+
+  factory CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$scene_markers.stub(
+    TRes res,
+  ) = _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$scene_markers;
+
+  TRes call({String? id, String? $__typename});
+}
+
+class _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$scene_markers<
+  TRes
+>
+    implements
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$scene_markers<
+          TRes
+        > {
+  _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$scene_markers(
+    this._instance,
+    this._then,
+  );
+
+  final Query$FindDuplicateScenes$findDuplicateScenes$scene_markers _instance;
+
+  final TRes Function(
+    Query$FindDuplicateScenes$findDuplicateScenes$scene_markers,
+  )
+  _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? id = _undefined, Object? $__typename = _undefined}) =>
+      _then(
+        Query$FindDuplicateScenes$findDuplicateScenes$scene_markers(
+          id: id == _undefined || id == null ? _instance.id : (id as String),
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String),
+        ),
+      );
+}
+
+class _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$scene_markers<
+  TRes
+>
+    implements
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$scene_markers<
+          TRes
+        > {
+  _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$scene_markers(
+    this._res,
+  );
+
+  TRes _res;
+
+  call({String? id, String? $__typename}) => _res;
+}
+
+class Query$FindDuplicateScenes$findDuplicateScenes$galleries {
+  Query$FindDuplicateScenes$findDuplicateScenes$galleries({
+    required this.id,
+    this.$__typename = 'Gallery',
+  });
+
+  factory Query$FindDuplicateScenes$findDuplicateScenes$galleries.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$id = json['id'];
+    final l$$__typename = json['__typename'];
+    return Query$FindDuplicateScenes$findDuplicateScenes$galleries(
+      id: (l$id as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$id, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$FindDuplicateScenes$findDuplicateScenes$galleries ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$FindDuplicateScenes$findDuplicateScenes$galleries
+    on Query$FindDuplicateScenes$findDuplicateScenes$galleries {
+  CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$galleries<
+    Query$FindDuplicateScenes$findDuplicateScenes$galleries
+  >
+  get copyWith =>
+      CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$galleries(
+        this,
+        (i) => i,
+      );
+}
+
+abstract class CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$galleries<
+  TRes
+> {
+  factory CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$galleries(
+    Query$FindDuplicateScenes$findDuplicateScenes$galleries instance,
+    TRes Function(Query$FindDuplicateScenes$findDuplicateScenes$galleries) then,
+  ) = _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$galleries;
+
+  factory CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$galleries.stub(
+    TRes res,
+  ) = _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$galleries;
+
+  TRes call({String? id, String? $__typename});
+}
+
+class _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$galleries<
+  TRes
+>
+    implements
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$galleries<TRes> {
+  _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$galleries(
+    this._instance,
+    this._then,
+  );
+
+  final Query$FindDuplicateScenes$findDuplicateScenes$galleries _instance;
+
+  final TRes Function(Query$FindDuplicateScenes$findDuplicateScenes$galleries)
+  _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? id = _undefined, Object? $__typename = _undefined}) =>
+      _then(
+        Query$FindDuplicateScenes$findDuplicateScenes$galleries(
+          id: id == _undefined || id == null ? _instance.id : (id as String),
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String),
+        ),
+      );
+}
+
+class _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$galleries<
+  TRes
+>
+    implements
+        CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$galleries<TRes> {
+  _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$galleries(
+    this._res,
+  );
+
+  TRes _res;
+
+  call({String? id, String? $__typename}) => _res;
+}
+
+class Query$CountScenesMissingPhash {
+  Query$CountScenesMissingPhash({
+    required this.findScenes,
+    this.$__typename = 'Query',
+  });
+
+  factory Query$CountScenesMissingPhash.fromJson(Map<String, dynamic> json) {
+    final l$findScenes = json['findScenes'];
+    final l$$__typename = json['__typename'];
+    return Query$CountScenesMissingPhash(
+      findScenes: Query$CountScenesMissingPhash$findScenes.fromJson(
+        (l$findScenes as Map<String, dynamic>),
+      ),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Query$CountScenesMissingPhash$findScenes findScenes;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$findScenes = findScenes;
+    _resultData['findScenes'] = l$findScenes.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$findScenes = findScenes;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$findScenes, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$CountScenesMissingPhash ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$findScenes = findScenes;
+    final lOther$findScenes = other.findScenes;
+    if (l$findScenes != lOther$findScenes) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$CountScenesMissingPhash
+    on Query$CountScenesMissingPhash {
+  CopyWith$Query$CountScenesMissingPhash<Query$CountScenesMissingPhash>
+  get copyWith => CopyWith$Query$CountScenesMissingPhash(this, (i) => i);
+}
+
+abstract class CopyWith$Query$CountScenesMissingPhash<TRes> {
+  factory CopyWith$Query$CountScenesMissingPhash(
+    Query$CountScenesMissingPhash instance,
+    TRes Function(Query$CountScenesMissingPhash) then,
+  ) = _CopyWithImpl$Query$CountScenesMissingPhash;
+
+  factory CopyWith$Query$CountScenesMissingPhash.stub(TRes res) =
+      _CopyWithStubImpl$Query$CountScenesMissingPhash;
+
+  TRes call({
+    Query$CountScenesMissingPhash$findScenes? findScenes,
+    String? $__typename,
+  });
+  CopyWith$Query$CountScenesMissingPhash$findScenes<TRes> get findScenes;
+}
+
+class _CopyWithImpl$Query$CountScenesMissingPhash<TRes>
+    implements CopyWith$Query$CountScenesMissingPhash<TRes> {
+  _CopyWithImpl$Query$CountScenesMissingPhash(this._instance, this._then);
+
+  final Query$CountScenesMissingPhash _instance;
+
+  final TRes Function(Query$CountScenesMissingPhash) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? findScenes = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$CountScenesMissingPhash(
+      findScenes: findScenes == _undefined || findScenes == null
+          ? _instance.findScenes
+          : (findScenes as Query$CountScenesMissingPhash$findScenes),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+
+  CopyWith$Query$CountScenesMissingPhash$findScenes<TRes> get findScenes {
+    final local$findScenes = _instance.findScenes;
+    return CopyWith$Query$CountScenesMissingPhash$findScenes(
+      local$findScenes,
+      (e) => call(findScenes: e),
+    );
+  }
+}
+
+class _CopyWithStubImpl$Query$CountScenesMissingPhash<TRes>
+    implements CopyWith$Query$CountScenesMissingPhash<TRes> {
+  _CopyWithStubImpl$Query$CountScenesMissingPhash(this._res);
+
+  TRes _res;
+
+  call({
+    Query$CountScenesMissingPhash$findScenes? findScenes,
+    String? $__typename,
+  }) => _res;
+
+  CopyWith$Query$CountScenesMissingPhash$findScenes<TRes> get findScenes =>
+      CopyWith$Query$CountScenesMissingPhash$findScenes.stub(_res);
+}
+
+const documentNodeQueryCountScenesMissingPhash = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.query,
+      name: NameNode(value: 'CountScenesMissingPhash'),
+      variableDefinitions: [],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'findScenes'),
+            alias: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'filter'),
+                value: ObjectValueNode(
+                  fields: [
+                    ObjectFieldNode(
+                      name: NameNode(value: 'per_page'),
+                      value: IntValueNode(value: '0'),
+                    ),
+                  ],
+                ),
+              ),
+              ArgumentNode(
+                name: NameNode(value: 'scene_filter'),
+                value: ObjectValueNode(
+                  fields: [
+                    ObjectFieldNode(
+                      name: NameNode(value: 'is_missing'),
+                      value: StringValueNode(value: 'phash', isBlock: false),
+                    ),
+                    ObjectFieldNode(
+                      name: NameNode(value: 'file_count'),
+                      value: ObjectValueNode(
+                        fields: [
+                          ObjectFieldNode(
+                            name: NameNode(value: 'modifier'),
+                            value: EnumValueNode(
+                              name: NameNode(value: 'GREATER_THAN'),
+                            ),
+                          ),
+                          ObjectFieldNode(
+                            name: NameNode(value: 'value'),
+                            value: IntValueNode(value: '0'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            directives: [],
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: 'count'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ],
+      ),
+    ),
+  ],
+);
+Query$CountScenesMissingPhash _parserFn$Query$CountScenesMissingPhash(
+  Map<String, dynamic> data,
+) => Query$CountScenesMissingPhash.fromJson(data);
+typedef OnQueryComplete$Query$CountScenesMissingPhash =
+    FutureOr<void> Function(
+      Map<String, dynamic>?,
+      Query$CountScenesMissingPhash?,
+    );
+
+class Options$Query$CountScenesMissingPhash
+    extends graphql.QueryOptions<Query$CountScenesMissingPhash> {
+  Options$Query$CountScenesMissingPhash({
+    String? operationName,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$CountScenesMissingPhash? typedOptimisticResult,
+    Duration? pollInterval,
+    graphql.Context? context,
+    OnQueryComplete$Query$CountScenesMissingPhash? onComplete,
+    graphql.OnQueryError? onError,
+  }) : onCompleteWithParsed = onComplete,
+       super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         pollInterval: pollInterval,
+         context: context,
+         onComplete: onComplete == null
+             ? null
+             : (data) => onComplete(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Query$CountScenesMissingPhash(data),
+               ),
+         onError: onError,
+         document: documentNodeQueryCountScenesMissingPhash,
+         parserFn: _parserFn$Query$CountScenesMissingPhash,
+       );
+
+  final OnQueryComplete$Query$CountScenesMissingPhash? onCompleteWithParsed;
+
+  @override
+  List<Object?> get properties => [
+    ...super.onComplete == null
+        ? super.properties
+        : super.properties.where((property) => property != onComplete),
+    onCompleteWithParsed,
+  ];
+}
+
+class WatchOptions$Query$CountScenesMissingPhash
+    extends graphql.WatchQueryOptions<Query$CountScenesMissingPhash> {
+  WatchOptions$Query$CountScenesMissingPhash({
+    String? operationName,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$CountScenesMissingPhash? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeQueryCountScenesMissingPhash,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Query$CountScenesMissingPhash,
+       );
+}
+
+class FetchMoreOptions$Query$CountScenesMissingPhash
+    extends graphql.FetchMoreOptions {
+  FetchMoreOptions$Query$CountScenesMissingPhash({
+    required graphql.UpdateQuery updateQuery,
+  }) : super(
+         updateQuery: updateQuery,
+         document: documentNodeQueryCountScenesMissingPhash,
+       );
+}
+
+extension ClientExtension$Query$CountScenesMissingPhash
+    on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Query$CountScenesMissingPhash>>
+  query$CountScenesMissingPhash([
+    Options$Query$CountScenesMissingPhash? options,
+  ]) async =>
+      await this.query(options ?? Options$Query$CountScenesMissingPhash());
+
+  graphql.ObservableQuery<Query$CountScenesMissingPhash>
+  watchQuery$CountScenesMissingPhash([
+    WatchOptions$Query$CountScenesMissingPhash? options,
+  ]) =>
+      this.watchQuery(options ?? WatchOptions$Query$CountScenesMissingPhash());
+
+  void writeQuery$CountScenesMissingPhash({
+    required Query$CountScenesMissingPhash data,
+    bool broadcast = true,
+  }) => this.writeQuery(
+    graphql.Request(
+      operation: graphql.Operation(
+        document: documentNodeQueryCountScenesMissingPhash,
+      ),
+    ),
+    data: data.toJson(),
+    broadcast: broadcast,
+  );
+
+  Query$CountScenesMissingPhash? readQuery$CountScenesMissingPhash({
+    bool optimistic = true,
+  }) {
+    final result = this.readQuery(
+      graphql.Request(
+        operation: graphql.Operation(
+          document: documentNodeQueryCountScenesMissingPhash,
+        ),
+      ),
+      optimistic: optimistic,
+    );
+    return result == null
+        ? null
+        : Query$CountScenesMissingPhash.fromJson(result);
+  }
+}
+
+class Query$CountScenesMissingPhash$findScenes {
+  Query$CountScenesMissingPhash$findScenes({
+    required this.count,
+    this.$__typename = 'FindScenesResultType',
+  });
+
+  factory Query$CountScenesMissingPhash$findScenes.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$count = json['count'];
+    final l$$__typename = json['__typename'];
+    return Query$CountScenesMissingPhash$findScenes(
+      count: (l$count as int),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final int count;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$count = count;
+    _resultData['count'] = l$count;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$count = count;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$count, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$CountScenesMissingPhash$findScenes ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$count = count;
+    final lOther$count = other.count;
+    if (l$count != lOther$count) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$CountScenesMissingPhash$findScenes
+    on Query$CountScenesMissingPhash$findScenes {
+  CopyWith$Query$CountScenesMissingPhash$findScenes<
+    Query$CountScenesMissingPhash$findScenes
+  >
+  get copyWith =>
+      CopyWith$Query$CountScenesMissingPhash$findScenes(this, (i) => i);
+}
+
+abstract class CopyWith$Query$CountScenesMissingPhash$findScenes<TRes> {
+  factory CopyWith$Query$CountScenesMissingPhash$findScenes(
+    Query$CountScenesMissingPhash$findScenes instance,
+    TRes Function(Query$CountScenesMissingPhash$findScenes) then,
+  ) = _CopyWithImpl$Query$CountScenesMissingPhash$findScenes;
+
+  factory CopyWith$Query$CountScenesMissingPhash$findScenes.stub(TRes res) =
+      _CopyWithStubImpl$Query$CountScenesMissingPhash$findScenes;
+
+  TRes call({int? count, String? $__typename});
+}
+
+class _CopyWithImpl$Query$CountScenesMissingPhash$findScenes<TRes>
+    implements CopyWith$Query$CountScenesMissingPhash$findScenes<TRes> {
+  _CopyWithImpl$Query$CountScenesMissingPhash$findScenes(
+    this._instance,
+    this._then,
+  );
+
+  final Query$CountScenesMissingPhash$findScenes _instance;
+
+  final TRes Function(Query$CountScenesMissingPhash$findScenes) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? count = _undefined, Object? $__typename = _undefined}) =>
+      _then(
+        Query$CountScenesMissingPhash$findScenes(
+          count: count == _undefined || count == null
+              ? _instance.count
+              : (count as int),
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String),
+        ),
+      );
+}
+
+class _CopyWithStubImpl$Query$CountScenesMissingPhash$findScenes<TRes>
+    implements CopyWith$Query$CountScenesMissingPhash$findScenes<TRes> {
+  _CopyWithStubImpl$Query$CountScenesMissingPhash$findScenes(this._res);
+
+  TRes _res;
+
+  call({int? count, String? $__typename}) => _res;
+}
+
 class Query$FindSceneSavedFilters {
   Query$FindSceneSavedFilters({
     required this.findSavedFilters,
@@ -9716,6 +12857,431 @@ extension ClientExtension$Mutation$SceneSaveActivity on graphql.GraphQLClient {
   graphql.ObservableQuery<Mutation$SceneSaveActivity>
   watchMutation$SceneSaveActivity(
     WatchOptions$Mutation$SceneSaveActivity options,
+  ) => this.watchMutation(options);
+}
+
+class Variables$Mutation$SceneDestroy {
+  factory Variables$Mutation$SceneDestroy({
+    required String id,
+    bool? delete_file,
+    bool? delete_generated,
+  }) => Variables$Mutation$SceneDestroy._({
+    r'id': id,
+    if (delete_file != null) r'delete_file': delete_file,
+    if (delete_generated != null) r'delete_generated': delete_generated,
+  });
+
+  Variables$Mutation$SceneDestroy._(this._$data);
+
+  factory Variables$Mutation$SceneDestroy.fromJson(Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    final l$id = data['id'];
+    result$data['id'] = (l$id as String);
+    if (data.containsKey('delete_file')) {
+      final l$delete_file = data['delete_file'];
+      result$data['delete_file'] = (l$delete_file as bool?);
+    }
+    if (data.containsKey('delete_generated')) {
+      final l$delete_generated = data['delete_generated'];
+      result$data['delete_generated'] = (l$delete_generated as bool?);
+    }
+    return Variables$Mutation$SceneDestroy._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get id => (_$data['id'] as String);
+
+  bool? get delete_file => (_$data['delete_file'] as bool?);
+
+  bool? get delete_generated => (_$data['delete_generated'] as bool?);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$id = id;
+    result$data['id'] = l$id;
+    if (_$data.containsKey('delete_file')) {
+      final l$delete_file = delete_file;
+      result$data['delete_file'] = l$delete_file;
+    }
+    if (_$data.containsKey('delete_generated')) {
+      final l$delete_generated = delete_generated;
+      result$data['delete_generated'] = l$delete_generated;
+    }
+    return result$data;
+  }
+
+  CopyWith$Variables$Mutation$SceneDestroy<Variables$Mutation$SceneDestroy>
+  get copyWith => CopyWith$Variables$Mutation$SceneDestroy(this, (i) => i);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Mutation$SceneDestroy ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$delete_file = delete_file;
+    final lOther$delete_file = other.delete_file;
+    if (_$data.containsKey('delete_file') !=
+        other._$data.containsKey('delete_file')) {
+      return false;
+    }
+    if (l$delete_file != lOther$delete_file) {
+      return false;
+    }
+    final l$delete_generated = delete_generated;
+    final lOther$delete_generated = other.delete_generated;
+    if (_$data.containsKey('delete_generated') !=
+        other._$data.containsKey('delete_generated')) {
+      return false;
+    }
+    if (l$delete_generated != lOther$delete_generated) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$delete_file = delete_file;
+    final l$delete_generated = delete_generated;
+    return Object.hashAll([
+      l$id,
+      _$data.containsKey('delete_file') ? l$delete_file : const {},
+      _$data.containsKey('delete_generated') ? l$delete_generated : const {},
+    ]);
+  }
+}
+
+abstract class CopyWith$Variables$Mutation$SceneDestroy<TRes> {
+  factory CopyWith$Variables$Mutation$SceneDestroy(
+    Variables$Mutation$SceneDestroy instance,
+    TRes Function(Variables$Mutation$SceneDestroy) then,
+  ) = _CopyWithImpl$Variables$Mutation$SceneDestroy;
+
+  factory CopyWith$Variables$Mutation$SceneDestroy.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Mutation$SceneDestroy;
+
+  TRes call({String? id, bool? delete_file, bool? delete_generated});
+}
+
+class _CopyWithImpl$Variables$Mutation$SceneDestroy<TRes>
+    implements CopyWith$Variables$Mutation$SceneDestroy<TRes> {
+  _CopyWithImpl$Variables$Mutation$SceneDestroy(this._instance, this._then);
+
+  final Variables$Mutation$SceneDestroy _instance;
+
+  final TRes Function(Variables$Mutation$SceneDestroy) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? delete_file = _undefined,
+    Object? delete_generated = _undefined,
+  }) => _then(
+    Variables$Mutation$SceneDestroy._({
+      ..._instance._$data,
+      if (id != _undefined && id != null) 'id': (id as String),
+      if (delete_file != _undefined) 'delete_file': (delete_file as bool?),
+      if (delete_generated != _undefined)
+        'delete_generated': (delete_generated as bool?),
+    }),
+  );
+}
+
+class _CopyWithStubImpl$Variables$Mutation$SceneDestroy<TRes>
+    implements CopyWith$Variables$Mutation$SceneDestroy<TRes> {
+  _CopyWithStubImpl$Variables$Mutation$SceneDestroy(this._res);
+
+  TRes _res;
+
+  call({String? id, bool? delete_file, bool? delete_generated}) => _res;
+}
+
+class Mutation$SceneDestroy {
+  Mutation$SceneDestroy({
+    required this.sceneDestroy,
+    this.$__typename = 'Mutation',
+  });
+
+  factory Mutation$SceneDestroy.fromJson(Map<String, dynamic> json) {
+    final l$sceneDestroy = json['sceneDestroy'];
+    final l$$__typename = json['__typename'];
+    return Mutation$SceneDestroy(
+      sceneDestroy: (l$sceneDestroy as bool),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool sceneDestroy;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$sceneDestroy = sceneDestroy;
+    _resultData['sceneDestroy'] = l$sceneDestroy;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$sceneDestroy = sceneDestroy;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$sceneDestroy, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$SceneDestroy || runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$sceneDestroy = sceneDestroy;
+    final lOther$sceneDestroy = other.sceneDestroy;
+    if (l$sceneDestroy != lOther$sceneDestroy) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$SceneDestroy on Mutation$SceneDestroy {
+  CopyWith$Mutation$SceneDestroy<Mutation$SceneDestroy> get copyWith =>
+      CopyWith$Mutation$SceneDestroy(this, (i) => i);
+}
+
+abstract class CopyWith$Mutation$SceneDestroy<TRes> {
+  factory CopyWith$Mutation$SceneDestroy(
+    Mutation$SceneDestroy instance,
+    TRes Function(Mutation$SceneDestroy) then,
+  ) = _CopyWithImpl$Mutation$SceneDestroy;
+
+  factory CopyWith$Mutation$SceneDestroy.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$SceneDestroy;
+
+  TRes call({bool? sceneDestroy, String? $__typename});
+}
+
+class _CopyWithImpl$Mutation$SceneDestroy<TRes>
+    implements CopyWith$Mutation$SceneDestroy<TRes> {
+  _CopyWithImpl$Mutation$SceneDestroy(this._instance, this._then);
+
+  final Mutation$SceneDestroy _instance;
+
+  final TRes Function(Mutation$SceneDestroy) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? sceneDestroy = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Mutation$SceneDestroy(
+      sceneDestroy: sceneDestroy == _undefined || sceneDestroy == null
+          ? _instance.sceneDestroy
+          : (sceneDestroy as bool),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Mutation$SceneDestroy<TRes>
+    implements CopyWith$Mutation$SceneDestroy<TRes> {
+  _CopyWithStubImpl$Mutation$SceneDestroy(this._res);
+
+  TRes _res;
+
+  call({bool? sceneDestroy, String? $__typename}) => _res;
+}
+
+const documentNodeMutationSceneDestroy = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.mutation,
+      name: NameNode(value: 'SceneDestroy'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'id')),
+          type: NamedTypeNode(name: NameNode(value: 'ID'), isNonNull: true),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'delete_file')),
+          type: NamedTypeNode(
+            name: NameNode(value: 'Boolean'),
+            isNonNull: false,
+          ),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'delete_generated')),
+          type: NamedTypeNode(
+            name: NameNode(value: 'Boolean'),
+            isNonNull: false,
+          ),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
+        ),
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'sceneDestroy'),
+            alias: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'input'),
+                value: ObjectValueNode(
+                  fields: [
+                    ObjectFieldNode(
+                      name: NameNode(value: 'id'),
+                      value: VariableNode(name: NameNode(value: 'id')),
+                    ),
+                    ObjectFieldNode(
+                      name: NameNode(value: 'delete_file'),
+                      value: VariableNode(name: NameNode(value: 'delete_file')),
+                    ),
+                    ObjectFieldNode(
+                      name: NameNode(value: 'delete_generated'),
+                      value: VariableNode(
+                        name: NameNode(value: 'delete_generated'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ],
+      ),
+    ),
+  ],
+);
+Mutation$SceneDestroy _parserFn$Mutation$SceneDestroy(
+  Map<String, dynamic> data,
+) => Mutation$SceneDestroy.fromJson(data);
+typedef OnMutationCompleted$Mutation$SceneDestroy =
+    FutureOr<void> Function(Map<String, dynamic>?, Mutation$SceneDestroy?);
+
+class Options$Mutation$SceneDestroy
+    extends graphql.MutationOptions<Mutation$SceneDestroy> {
+  Options$Mutation$SceneDestroy({
+    String? operationName,
+    required Variables$Mutation$SceneDestroy variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$SceneDestroy? typedOptimisticResult,
+    graphql.Context? context,
+    OnMutationCompleted$Mutation$SceneDestroy? onCompleted,
+    graphql.OnMutationUpdate<Mutation$SceneDestroy>? update,
+    graphql.OnError? onError,
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null ? null : _parserFn$Mutation$SceneDestroy(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationSceneDestroy,
+         parserFn: _parserFn$Mutation$SceneDestroy,
+       );
+
+  final OnMutationCompleted$Mutation$SceneDestroy? onCompletedWithParsed;
+
+  @override
+  List<Object?> get properties => [
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
+}
+
+class WatchOptions$Mutation$SceneDestroy
+    extends graphql.WatchQueryOptions<Mutation$SceneDestroy> {
+  WatchOptions$Mutation$SceneDestroy({
+    String? operationName,
+    required Variables$Mutation$SceneDestroy variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$SceneDestroy? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeMutationSceneDestroy,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Mutation$SceneDestroy,
+       );
+}
+
+extension ClientExtension$Mutation$SceneDestroy on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Mutation$SceneDestroy>> mutate$SceneDestroy(
+    Options$Mutation$SceneDestroy options,
+  ) async => await this.mutate(options);
+
+  graphql.ObservableQuery<Mutation$SceneDestroy> watchMutation$SceneDestroy(
+    WatchOptions$Mutation$SceneDestroy options,
   ) => this.watchMutation(options);
 }
 

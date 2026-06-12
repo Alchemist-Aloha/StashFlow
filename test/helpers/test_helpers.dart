@@ -13,6 +13,7 @@ import 'package:stash_app_flutter/features/studios/domain/repositories/studio_re
 import 'package:stash_app_flutter/features/tags/domain/repositories/tag_repository.dart';
 import 'package:stash_app_flutter/features/images/domain/repositories/image_repository.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
+import 'package:stash_app_flutter/features/scenes/domain/entities/scene_deduplication.dart';
 import 'package:stash_app_flutter/features/performers/domain/entities/performer.dart';
 import 'package:stash_app_flutter/features/studios/domain/entities/studio.dart';
 import 'package:stash_app_flutter/features/tags/domain/entities/tag.dart';
@@ -49,6 +50,49 @@ abstract class MockRepositoryState<T> {
 
 class MockSceneRepository extends MockRepositoryState<Scene>
     implements SceneRepository {
+  String? deletedSceneId;
+  bool? deletedSceneDeleteFile;
+  bool? deletedSceneDeleteGenerated;
+  List<SceneDuplicateGroup> duplicateGroups = [];
+  int missingPhashCount = 0;
+  int? lastDuplicateDistance;
+  double? lastDuplicateDurationDiff;
+  int duplicateFetchCount = 0;
+  int? lastFindScenesPage;
+  int? lastFindScenesPerPage;
+  String? lastFindScenesFilter;
+  String? lastFindScenesSort;
+  bool? lastFindScenesDescending;
+  SceneFilter? lastFindScenesSceneFilter;
+  final List<
+    ({
+      int? page,
+      int? perPage,
+      String? filter,
+      String? sort,
+      bool descending,
+      bool? organized,
+      SceneFilter? sceneFilter,
+    })
+  >
+  findSceneCalls = [];
+  final List<List<Scene>> findScenesResponses = [];
+  final List<({String? sceneId, String? stashBoxEndpoint, String? scraperId})>
+  scrapeSceneCalls = [];
+  final Map<String, List<ScrapedScene>> scrapedScenesBySceneId = {};
+  final List<
+    ({
+      String sceneId,
+      ScrapedScene scraped,
+      bool mergeValues,
+      bool organized,
+      List<String>? performerIds,
+      List<String>? tagIds,
+      String? studioId,
+    })
+  >
+  savedScrapedScenes = [];
+
   @override
   Future<List<Scene>> findScenes({
     int? page,
@@ -64,6 +108,24 @@ class MockSceneRepository extends MockRepositoryState<Scene>
     SceneFilter? sceneFilter,
   }) async {
     if (shouldThrow) throw Exception(errorMessage);
+    lastFindScenesPage = page;
+    lastFindScenesPerPage = perPage;
+    lastFindScenesFilter = filter;
+    lastFindScenesSort = sort;
+    lastFindScenesDescending = descending;
+    lastFindScenesSceneFilter = sceneFilter;
+    findSceneCalls.add((
+      page: page,
+      perPage: perPage,
+      filter: filter,
+      sort: sort,
+      descending: descending,
+      organized: organized,
+      sceneFilter: sceneFilter,
+    ));
+    if (findScenesResponses.isNotEmpty) {
+      return findScenesResponses.removeAt(0);
+    }
     return data;
   }
 
@@ -87,7 +149,12 @@ class MockSceneRepository extends MockRepositoryState<Scene>
     String? query,
   }) async {
     if (shouldThrow) throw Exception(errorMessage);
-    return [];
+    scrapeSceneCalls.add((
+      sceneId: sceneId,
+      stashBoxEndpoint: stashBoxEndpoint,
+      scraperId: scraperId,
+    ));
+    return scrapedScenesBySceneId[sceneId] ?? [];
   }
 
   @override
@@ -111,6 +178,19 @@ class MockSceneRepository extends MockRepositoryState<Scene>
     String? studioId,
   }) async {
     if (shouldThrow) throw Exception(errorMessage);
+    savedScrapedScenes.add((
+      sceneId: sceneId,
+      scraped: scraped,
+      mergeValues: mergeValues,
+      organized: true,
+      performerIds: performerIds,
+      tagIds: tagIds,
+      studioId: studioId,
+    ));
+    data = [
+      for (final scene in data)
+        if (scene.id == sceneId) scene.copyWith(organized: true) else scene,
+    ];
   }
 
   @override
@@ -151,6 +231,37 @@ class MockSceneRepository extends MockRepositoryState<Scene>
     double? playDuration,
   }) async {
     if (shouldThrow) throw Exception(errorMessage);
+  }
+
+  @override
+  Future<void> deleteScene(
+    String id, {
+    required bool deleteFile,
+    bool deleteGenerated = true,
+  }) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    deletedSceneId = id;
+    deletedSceneDeleteFile = deleteFile;
+    deletedSceneDeleteGenerated = deleteGenerated;
+    data.removeWhere((scene) => scene.id == id);
+  }
+
+  @override
+  Future<List<SceneDuplicateGroup>> findDuplicateScenes({
+    int distance = 0,
+    double durationDiff = 1,
+  }) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    duplicateFetchCount += 1;
+    lastDuplicateDistance = distance;
+    lastDuplicateDurationDiff = durationDiff;
+    return duplicateGroups;
+  }
+
+  @override
+  Future<int> countScenesMissingPhash() async {
+    if (shouldThrow) throw Exception(errorMessage);
+    return missingPhashCount;
   }
 }
 
@@ -346,9 +457,7 @@ Future<void> pumpTestWidget(
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         routerConfig: GoRouter(
-          routes: [
-            GoRoute(path: '/', builder: (context, state) => child),
-          ],
+          routes: [GoRoute(path: '/', builder: (context, state) => child)],
         ),
       ),
     ),
@@ -367,7 +476,7 @@ extension CommonFindersExtension on CommonFinders {
   }
 
   Finder retryButton() => find.descendant(
-        of: find.byType(ErrorStateView),
-        matching: find.byType(FilledButton),
-      );
+    of: find.byType(ErrorStateView),
+    matching: find.byType(FilledButton),
+  );
 }
