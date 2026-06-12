@@ -91,6 +91,51 @@ void main() {
     expect(find.byKey(const Key('scene_info_media_preview')), findsNothing);
   });
 
+  testWidgets('tapping cover opens and closes fullscreen viewer', (
+    tester,
+  ) async {
+    await tester.pumpWidget(buildSubject(baseScene));
+
+    await tester.tap(
+      find.byKey(const Key('scene_info_media_cover_tap_target')),
+    );
+    await tester.pump(const Duration(milliseconds: 250));
+
+    expect(
+      find.byKey(const Key('scene_cover_fullscreen_viewer')),
+      findsOneWidget,
+    );
+    await tester.tap(
+      find.byKey(const Key('scene_cover_fullscreen_exit_button')),
+    );
+    await tester.pump(const Duration(milliseconds: 250));
+
+    expect(
+      find.byKey(const Key('scene_cover_fullscreen_viewer')),
+      findsNothing,
+    );
+    expect(find.byKey(const Key('scene_info_media_section')), findsOneWidget);
+  });
+
+  testWidgets('tapping preview does not open cover fullscreen viewer', (
+    tester,
+  ) async {
+    await tester.pumpWidget(buildSubject(baseScene));
+
+    final toggle = find.byKey(const Key('scene_info_media_toggle'));
+    await tester.tap(
+      find.descendant(of: toggle, matching: find.text('Preview')),
+    );
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('scene_info_media_preview')));
+    await tester.pump(const Duration(milliseconds: 250));
+
+    expect(
+      find.byKey(const Key('scene_cover_fullscreen_viewer')),
+      findsNothing,
+    );
+  });
+
   testWidgets('cover-only scene shows cover without toggle', (tester) async {
     final scene = baseScene.copyWith(
       paths: baseScene.paths.copyWith(preview: null),

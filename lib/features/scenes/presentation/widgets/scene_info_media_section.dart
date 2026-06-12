@@ -13,6 +13,7 @@ import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../domain/entities/scene.dart';
+import 'scene_cover_fullscreen_viewer.dart';
 
 typedef SceneInfoMediaBuilder =
     Widget Function(BuildContext context, Scene scene);
@@ -60,6 +61,28 @@ class _SceneInfoMediaSectionState extends State<SceneInfoMediaSection> {
     return SceneInfoMediaSection._normalized(scene.paths.screenshot) != null
         ? _SceneInfoMediaMode.cover
         : _SceneInfoMediaMode.preview;
+  }
+
+  Future<void> _showFullscreenCover(String coverUrl) {
+    return showGeneralDialog<void>(
+      context: context,
+      useRootNavigator: true,
+      barrierDismissible: false,
+      barrierColor: Colors.black,
+      transitionDuration: const Duration(milliseconds: 180),
+      pageBuilder: (dialogContext, animation, secondaryAnimation) {
+        return SceneCoverFullscreenViewer(
+          imageUrl: coverUrl,
+          imageBuilder: widget.coverBuilder == null
+              ? null
+              : (viewerContext, imageUrl) =>
+                    widget.coverBuilder!(viewerContext, widget.scene),
+        );
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        return FadeTransition(opacity: animation, child: child);
+      },
+    );
   }
 
   @override
@@ -141,16 +164,30 @@ class _SceneInfoMediaSectionState extends State<SceneInfoMediaSection> {
               child: AspectRatio(
                 aspectRatio: 16 / 9,
                 child: showCover
-                    ? KeyedSubtree(
-                        key: const Key('scene_info_media_cover'),
-                        child:
-                            widget.coverBuilder?.call(context, widget.scene) ??
-                            StashImage(
-                              imageUrl: coverUrl,
-                              width: double.infinity,
-                              height: double.infinity,
-                              fit: BoxFit.contain,
+                    ? Semantics(
+                        button: true,
+                        label: context.l10n.scene_info_cover,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            key: const Key('scene_info_media_cover_tap_target'),
+                            onTap: () => _showFullscreenCover(coverUrl),
+                            child: KeyedSubtree(
+                              key: const Key('scene_info_media_cover'),
+                              child:
+                                  widget.coverBuilder?.call(
+                                    context,
+                                    widget.scene,
+                                  ) ??
+                                  StashImage(
+                                    imageUrl: coverUrl,
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                    fit: BoxFit.contain,
+                                  ),
                             ),
+                          ),
+                        ),
                       )
                     : KeyedSubtree(
                         key: const Key('scene_info_media_preview'),
