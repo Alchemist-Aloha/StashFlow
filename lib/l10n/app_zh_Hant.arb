@@ -887,7 +887,7 @@
   "settings_security_error_numeric": "僅使用數字，長度為 4-8。",
   "settings_security_error_mismatch": "密碼不符。",
   "common_change": "改變",
-  "common_set": "放",
+  "common_set": "設定",
   "common_immediately": "立即地",
   "common_sec": "{value} 秒",
   "@common_sec": {

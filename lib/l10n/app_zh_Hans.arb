@@ -887,7 +887,7 @@
   "settings_security_error_numeric": "仅使用数字，长度为 4-8。",
   "settings_security_error_mismatch": "密码不匹配。",
   "common_change": "改变",
-  "common_set": "放",
+  "common_set": "设置",
   "common_immediately": "立即地",
   "common_sec": "{value} 秒",
   "@common_sec": {
