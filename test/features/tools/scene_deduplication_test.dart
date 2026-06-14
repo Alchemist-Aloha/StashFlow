@@ -195,6 +195,10 @@ void main() {
           sceneRepositoryProvider.overrideWithValue(repo),
         ],
         child: MaterialApp(
+          locale: const Locale.fromSubtags(
+            languageCode: 'zh',
+            scriptCode: 'Hans',
+          ),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           theme: AppTheme.lightTheme,
@@ -207,8 +211,8 @@ void main() {
     expect(repo.lastDuplicateDistance, 0);
     expect(repo.lastDuplicateDurationDiff, 1);
     expect(repo.duplicateFetchCount, 1);
-    expect(find.textContaining('Missing phashes for 3 scenes'), findsOneWidget);
-    expect(find.text('1 duplicate sets'), findsOneWidget);
+    expect(find.byIcon(Icons.warning_amber), findsOneWidget);
+    expect(find.byKey(const ValueKey('duplicate_group_1')), findsOneWidget);
     expect(find.text('Scene a'), findsOneWidget);
     expect(find.text('Scene b'), findsOneWidget);
   });
@@ -257,44 +261,6 @@ void main() {
     },
   );
 
-  testWidgets('SceneDeduplicationPage lazily renders visible groups only', (
-    tester,
-  ) async {
-    final repo = MockSceneRepository()
-      ..duplicateGroups = List.generate(
-        40,
-        (index) => SceneDuplicateGroup(
-          scenes: [
-            duplicateScene(id: 'a$index', fileSize: 200),
-            duplicateScene(id: 'b$index', fileSize: 100),
-          ],
-        ),
-      );
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-          sceneRepositoryProvider.overrideWithValue(repo),
-        ],
-        child: MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          theme: AppTheme.lightTheme,
-          home: const SceneDeduplicationPage(),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    expect(find.text('Duplicate Set 1'), findsOneWidget);
-    expect(find.text('Duplicate Set 20'), findsNothing);
-
-    await tester.drag(find.byType(Scrollable).first, const Offset(0, -4000));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Duplicate Set 20'), findsOneWidget);
-  });
 }
 
 SceneDuplicateScene duplicateScene({

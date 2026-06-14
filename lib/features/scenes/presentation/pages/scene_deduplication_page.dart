@@ -118,10 +118,9 @@ class _SceneDeduplicationPageState
     final deleteFile = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete ${ids.length} scenes?'),
-        content: const Text(
-          'Choose whether to remove only Stash metadata or delete the '
-          'scene files and generated supporting files too.',
+        title: Text(context.l10n.delete_n_scenes_question(ids.length)),
+        content: Text(
+          context.l10n.delete_scenes_help,
         ),
         actions: [
           TextButton(
@@ -162,12 +161,18 @@ class _SceneDeduplicationPageState
       });
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Deleted ${ids.length} scenes')));
+      ).showSnackBar(
+        SnackBar(content: Text(context.l10n.deleted_n_scenes(ids.length))),
+      );
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Delete failed: $error')));
+      ).showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.delete_failed_error(error.toString())),
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -225,7 +230,7 @@ class _SceneDeduplicationPageState
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Configuration',
+                          context.l10n.configuration,
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
                       ],
@@ -281,13 +286,13 @@ class _SceneDeduplicationPageState
                   duration: const Duration(milliseconds: 200),
                 ),
                 if (data.missingPhashCount > 0) ...[
-                  const SizedBox(height: 12),
-                  _WarningBanner(
-                    message:
-                        'Missing phashes for ${data.missingPhashCount} scenes. '
-                        'Please run the phash generation task.',
-                  ),
-                ],
+                const SizedBox(height: 12),
+                _WarningBanner(
+                    message: context.l10n.missing_phashes_for_scenes(
+                      data.missingPhashCount,
+                    ),
+                ),
+              ],
                 const SizedBox(height: 16),
                 Expanded(
                   child: _buildGroupList(
@@ -316,7 +321,7 @@ class _SceneDeduplicationPageState
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            '${groups.length} duplicate sets',
+            context.l10n.duplicate_sets_count(groups.length),
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 24),
@@ -335,7 +340,7 @@ class _SceneDeduplicationPageState
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Text(
-              '${groups.length} duplicate sets',
+              context.l10n.duplicate_sets_count(groups.length),
               style: Theme.of(context).textTheme.titleMedium,
             ),
           );
@@ -419,7 +424,7 @@ class _Controls extends StatelessWidget {
   Widget build(BuildContext context) {
     final isCompact = MediaQuery.sizeOf(context).width < 600;
     final theme = Theme.of(context);
-    final buttonStyle = _compactButtonStyle(theme, isCompact);
+    final buttonStyle = _controlButtonStyle(theme, isCompact);
     final dropdownWidth = isCompact ? 154.0 : null;
     final dropdownInputDecoration = isCompact
         ? const InputDecorationTheme(
@@ -442,11 +447,12 @@ class _Controls extends StatelessWidget {
     return Card(
       child: Padding(
         padding: EdgeInsets.all(isCompact ? 12 : 16),
-        child: Wrap(
-          spacing: isCompact ? 8 : 12,
-          runSpacing: isCompact ? 8 : 12,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
+        child: SizedBox(
+          height: isCompact ? 44 : 52,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            shrinkWrap: true,
+            children: [
             DropdownMenu<int>(
               width: dropdownWidth,
               textStyle: isCompact ? theme.textTheme.bodySmall : null,
@@ -545,11 +551,13 @@ class _Controls extends StatelessWidget {
                   child: Text(context.l10n.all_but_youngest),
                 ),
               ],
-              child: FilledButton.tonalIcon(
-                onPressed: null,
-                style: buttonStyle,
-                icon: const Icon(Icons.select_all),
-                label: Text(context.l10n.select),
+              child: IntrinsicWidth(
+                child: FilledButton.tonalIcon(
+                  onPressed: null,
+                  style: buttonStyle,
+                  icon: const Icon(Icons.select_all),
+                  label: Text(context.l10n.select),
+                ),
               ),
             ),
             OutlinedButton.icon(
@@ -573,7 +581,7 @@ class _Controls extends StatelessWidget {
               label: Text(context.l10n.delete_selected_count(selectedCount)),
             ),
             Tooltip(
-              message: 'Merge editing is not wired in StashFlow yet.',
+              message: context.l10n.merge_editing_not_wired,
               child: FilledButton.tonalIcon(
                 onPressed: null,
                 style: buttonStyle,
@@ -581,21 +589,31 @@ class _Controls extends StatelessWidget {
                 label: Text(context.l10n.merge),
               ),
             ),
-          ],
+            ].expand((widget) sync* {
+              yield Padding(
+                padding: EdgeInsets.only(right: isCompact ? 8 : 12),
+                child: widget,
+              );
+            }).toList(),
+          ),
         ),
       ),
     );
   }
 
-  ButtonStyle? _compactButtonStyle(ThemeData theme, bool isCompact) {
-    if (!isCompact) return null;
+  ButtonStyle _controlButtonStyle(ThemeData theme, bool isCompact) {
     return FilledButton.styleFrom(
-      visualDensity: VisualDensity.compact,
-      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      minimumSize: const Size(0, 36),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      iconSize: 18,
-      textStyle: theme.textTheme.labelMedium,
+      visualDensity: isCompact ? VisualDensity.compact : null,
+      tapTargetSize: isCompact
+          ? MaterialTapTargetSize.shrinkWrap
+          : MaterialTapTargetSize.padded,
+      minimumSize: Size(0, isCompact ? 36 : 40),
+      padding: EdgeInsets.symmetric(
+        horizontal: isCompact ? 12 : 14,
+        vertical: isCompact ? 8 : 10,
+      ),
+      iconSize: isCompact ? 18 : 20,
+      textStyle: isCompact ? theme.textTheme.labelMedium : null,
     );
   }
 }
@@ -626,7 +644,7 @@ class _DuplicateGroupCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Duplicate Set $groupNumber',
+              context.l10n.duplicate_set_number(groupNumber),
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
@@ -675,18 +693,28 @@ class _DuplicateSceneTile extends StatelessWidget {
         children: [
           if (scene.path != null) Text(scene.path!),
           if (file != null) Text(_formatBytes(file.size)),
-          if (file != null) Text('${file.width}x${file.height}'),
-          if (file != null) Text('${file.duration.toStringAsFixed(1)}s'),
-          if (file != null && file.bitRate > 0) Text('${file.bitRate} bps'),
+          if (file != null)
+            Text(context.l10n.resolution_dimensions(file.width, file.height)),
+          if (file != null)
+            Text(
+              context.l10n.duration_seconds_format(
+                file.duration.toStringAsFixed(1),
+              ),
+            ),
+          if (file != null && file.bitRate > 0)
+            Text(context.l10n.bitrate_bps(file.bitRate)),
           if (file?.videoCodec != null && file!.videoCodec!.isNotEmpty)
             Text(file.videoCodec!),
-          if (scene.oCounter > 0) Text('O ${scene.oCounter}'),
-          if (scene.tagCount > 0) Text('${scene.tagCount} tags'),
+          if (scene.oCounter > 0) Text(context.l10n.o_count(scene.oCounter)),
+          if (scene.tagCount > 0) Text(context.l10n.nTags(scene.tagCount)),
           if (scene.performerCount > 0)
-            Text('${scene.performerCount} performers'),
-          if (scene.groupCount > 0) Text('${scene.groupCount} groups'),
-          if (scene.markerCount > 0) Text('${scene.markerCount} markers'),
-          if (scene.galleryCount > 0) Text('${scene.galleryCount} galleries'),
+            Text(context.l10n.nPerformers(scene.performerCount)),
+          if (scene.groupCount > 0)
+            Text(context.l10n.nGroups(scene.groupCount)),
+          if (scene.markerCount > 0)
+            Text(context.l10n.nMarkers(scene.markerCount)),
+          if (scene.galleryCount > 0)
+            Text(context.l10n.nGalleries(scene.galleryCount)),
         ],
       ),
       secondary: SizedBox(

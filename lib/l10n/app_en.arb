@@ -1143,5 +1143,237 @@
         "type": "int"
       }
     }
-  }
+  },
+  "saved_presets": "Saved Presets",
+  "current_settings": "Current Settings",
+  "available_presets": "Available Presets",
+  "existing_names_are_overwritten": "Existing names are overwritten",
+  "active_settings_saved_server": "Current active settings will be saved to the server.",
+  "failed_to_save_filter": "Failed to save filter: {error}",
+  "@failed_to_save_filter": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failed_to_delete_preset": "Failed to delete preset: {error}",
+  "@failed_to_delete_preset": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "sort_label": "Sort: {sortLabel}",
+  "@sort_label": {
+    "placeholders": {
+      "sortLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "filters_count": "Filters: {count}",
+  "@filters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "search_label": "Search: {query}",
+  "@search_label": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "failed_to_load_presets": "Failed to load presets: {error}",
+  "@failed_to_load_presets": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "saved_item": "Saved {item}",
+  "@saved_item": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "unable_to_load_stash_boxes": "Unable to load stash-boxes: {error}",
+  "@unable_to_load_stash_boxes": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "delete_n_scenes_question": "Delete {count} scenes?",
+  "@delete_n_scenes_question": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "delete_scenes_help": "Choose whether to remove only Stash metadata or delete the scene files and generated supporting files too.",
+  "deleted_n_scenes": "Deleted {count} scenes",
+  "@deleted_n_scenes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "delete_failed_error": "Delete failed: {error}",
+  "@delete_failed_error": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "configuration": "Configuration",
+  "missing_phashes_for_scenes": "Missing phashes for {count} scenes. Please run the phash generation task.",
+  "@missing_phashes_for_scenes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "merge_editing_not_wired": "Merge editing is not wired in StashFlow yet.",
+  "duplicate_sets_count": "{count} duplicate sets",
+  "@duplicate_sets_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "duplicate_set_number": "Duplicate Set {number}",
+  "@duplicate_set_number": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "resolution_dimensions": "{width}x{height}",
+  "@resolution_dimensions": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "duration_seconds_format": "{seconds}s",
+  "@duration_seconds_format": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "bitrate_bps": "{bitrate} bps",
+  "@bitrate_bps": {
+    "placeholders": {
+      "bitrate": {
+        "type": "int"
+      }
+    }
+  },
+  "o_count": "O {count}",
+  "@o_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nTags": "{count, plural, =0{no tags} =1{1 tag} other{{count} tags}}",
+  "@nTags": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "nGroups": "{count, plural, =0{no groups} =1{1 group} other{{count} groups}}",
+  "@nGroups": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "nMarkers": "{count, plural, =0{no markers} =1{1 marker} other{{count} markers}}",
+  "@nMarkers": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "nGalleries": "{count, plural, =0{no galleries} =1{1 gallery} other{{count} galleries}}",
+  "@nGalleries": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "scene_tagger_checked_matches_summary": "{checked} checked • {matches} matches",
+  "@scene_tagger_checked_matches_summary": {
+    "placeholders": {
+      "checked": {
+        "type": "int"
+      },
+      "matches": {
+        "type": "int"
+      }
+    }
+  },
+  "scene_tagger_page_summary": "{count} scenes on this page",
+  "@scene_tagger_page_summary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "no_matched_scenes_yet": "No matched scenes yet.",
+  "no_scenes_match_configuration": "No scenes match this configuration.",
+  "scene_tagger_checked_count": "{count} checked",
+  "@scene_tagger_checked_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scene_tagger_progress": "{checked} / {total}",
+  "@scene_tagger_progress": {
+    "placeholders": {
+      "checked": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "stats_library_stats_tooltip": "Long press for library stats"
 }

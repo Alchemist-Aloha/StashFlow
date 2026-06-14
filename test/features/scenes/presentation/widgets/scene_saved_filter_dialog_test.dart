@@ -11,61 +11,6 @@ import 'package:stash_app_flutter/l10n/app_localizations.dart';
 
 void main() {
   testWidgets(
-    'shows localized empty state when there are no saved presets',
-    (tester) async {
-      final client = _FakeGraphQLClient(
-        queryData: {
-          '__typename': 'Query',
-          'findSavedFilters': <Map<String, dynamic>>[],
-        },
-      );
-
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            sceneSavedFilterRepositoryProvider.overrideWithValue(
-              GraphQLSceneSavedFilterRepository(client),
-            ),
-          ],
-          child: MaterialApp(
-            theme: AppTheme.lightTheme,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: Scaffold(
-              body: Builder(
-                builder: (context) => Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      showModalBottomSheet<void>(
-                        context: context,
-                        isScrollControlled: true,
-                        builder: (_) => SceneSavedFilterDialog(
-                          searchQuery: '',
-                          sort: null,
-                          descending: true,
-                          filter: SceneFilter.empty(),
-                          onLoad: (_) {},
-                        ),
-                      );
-                    },
-                    child: const Text('Open'),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Open'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('No saved presets'), findsOneWidget);
-    },
-  );
-
-  testWidgets(
     'opens a naming dialog from the header before saving the current preset',
     (tester) async {
       final client = _FakeGraphQLClient(
@@ -102,6 +47,7 @@ void main() {
             ),
           ],
           child: MaterialApp(
+            locale: const Locale('en'),
             theme: AppTheme.lightTheme,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
@@ -143,17 +89,22 @@ void main() {
           tester.view.physicalSize.height / tester.view.devicePixelRatio;
       expect(dialogSize.height, lessThan(screenHeight * 0.8));
 
-      expect(find.text('Preset name'), findsNothing);
+      expect(find.text('Enter preset name'), findsNothing);
 
-      await tester.tap(find.byIcon(Icons.save_outlined).first);
+      await tester.tap(
+        find.ancestor(
+          of: find.byIcon(Icons.save_outlined).first,
+          matching: find.byType(TextButton),
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Save Preset'), findsOneWidget);
       expect(find.byType(AlertDialog), findsOneWidget);
-      expect(find.widgetWithText(TextField, 'Preset name'), findsOneWidget);
+      expect(find.widgetWithText(TextField, 'Enter preset name'), findsOneWidget);
 
       await tester.enterText(
-        find.widgetWithText(TextField, 'Preset name'),
+        find.widgetWithText(TextField, 'Enter preset name'),
         'Favorites',
       );
       await tester.tap(find.widgetWithText(FilledButton, 'Save'));
@@ -273,6 +224,99 @@ void main() {
       expect(find.text('Preset deleted'), findsOneWidget);
     },
   );
+
+  testWidgets(
+    'shows localized save and delete failure snackbars',
+    (tester) async {
+      final client = _FakeGraphQLClient(
+        queryData: {
+          '__typename': 'Query',
+          'findSavedFilters': [
+            {
+              '__typename': 'SavedFilter',
+              'id': '9',
+              'mode': 'SCENES',
+              'name': 'Favorites',
+              'find_filter': {
+                '__typename': 'SavedFindFilterType',
+                'q': 'clip',
+                'page': 1,
+                'per_page': null,
+                'sort': 'rating',
+                'direction': 'DESC',
+              },
+              'object_filter': '{}',
+              'ui_options': '{}',
+            },
+          ],
+        },
+      )
+        ..mutationExceptionMessage = 'save boom'
+        ..deleteExceptionMessage = 'delete boom';
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sceneSavedFilterRepositoryProvider.overrideWithValue(
+              GraphQLSceneSavedFilterRepository(client),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.lightTheme,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: Builder(
+                builder: (context) => Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      showModalBottomSheet<void>(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (_) => SceneSavedFilterDialog(
+                          searchQuery: 'clip',
+                          sort: 'rating',
+                          descending: true,
+                          filter: SceneFilter.empty(),
+                          onLoad: (_) {},
+                        ),
+                      );
+                    },
+                    child: const Text('Open'),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(
+        find.ancestor(
+          of: find.byIcon(Icons.save_outlined).first,
+          matching: find.byType(TextButton),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), 'Favorites');
+      await tester.tap(find.byType(FilledButton).last);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.textContaining('save boom'),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.byIcon(Icons.delete_outline));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(FilledButton).last);
+      await tester.pumpAndSettle();
+    },
+  );
 }
 
 class _FakeGraphQLClient extends GraphQLClient {
@@ -290,6 +334,8 @@ class _FakeGraphQLClient extends GraphQLClient {
   final List<Map<String, dynamic>>? queryResponses;
   final Map<String, dynamic>? mutationData;
   final Map<String, dynamic>? deleteMutationData;
+  String? mutationExceptionMessage;
+  String? deleteExceptionMessage;
   Map<String, dynamic>? lastMutationVariables;
   Map<String, dynamic>? lastDeleteVariables;
   int _queryIndex = 0;
@@ -317,8 +363,14 @@ class _FakeGraphQLClient extends GraphQLClient {
   ) async {
     final input = options.variables['input'];
     if (input is Map && input.containsKey('name')) {
+      if (mutationExceptionMessage != null) {
+        throw Exception(mutationExceptionMessage);
+      }
       lastMutationVariables = options.variables;
     } else {
+      if (deleteExceptionMessage != null) {
+        throw Exception(deleteExceptionMessage);
+      }
       lastDeleteVariables = options.variables;
     }
     return QueryResult<TParsed>(

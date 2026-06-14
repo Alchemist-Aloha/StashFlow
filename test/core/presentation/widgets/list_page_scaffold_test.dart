@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/list_page_scaffold.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/error_state_view.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
+import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import '../../../helpers/test_helpers.dart';
 
 void main() {
@@ -216,6 +217,42 @@ void main() {
 
       expect(find.byType(FloatingActionButton), findsOneWidget);
       expect(find.byIcon(Icons.add), findsOneWidget);
+    });
+
+    testWidgets('shows long-press tooltip affordance on the title', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            locale: const Locale.fromSubtags(
+              languageCode: 'zh',
+              scriptCode: 'Hans',
+            ),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: ListPageScaffold<String>(
+              title: 'Test Title',
+              searchHint: 'Search...',
+              onSearchChanged: (_) {},
+              provider: const AsyncValue.data(['Item 1']),
+              itemBuilder: (context, item, mw, mh) => Text(item),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final title = find.text('Test Title');
+      expect(title, findsOneWidget);
+
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is Tooltip && widget.message == '长按查看资料库统计',
+        ),
+        findsOneWidget,
+      );
     });
   });
 }

@@ -988,5 +988,7 @@
   "delete_preset_confirm": "Удалить \"{name}\"? Это действие невозможно отменить.",
   "enter_preset_name": "Введите имя пресета",
   "delete_scene_confirm": "Вы уверены, что хотите удалить эту сцену?",
-  "delete_selected_count": "Удалить выбранное ({selectedCount})"
+  "delete_selected_count": "Удалить выбранное ({selectedCount})",
+  "scene_info_cover": "Обложка",
+  "stats_library_stats_tooltip": "Удерживайте для статистики библиотеки"
 }

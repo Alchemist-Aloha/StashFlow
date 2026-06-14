@@ -337,12 +337,18 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
       _removeSceneFromResults(scene.id);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Saved ${scene.title}')));
+      ).showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.saved_item(scene.title ?? scene.id)),
+        ),
+      );
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Save failed: $error')));
+      ).showSnackBar(
+        SnackBar(content: Text(context.l10n.failed_to_save(error.toString()))),
+      );
     }
   }
 
@@ -405,7 +411,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Configuration',
+                      context.l10n.configuration,
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                   ],
@@ -438,8 +444,11 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
     }
 
     final summary = _mode == _TaggerMode.randomUnorganized
-        ? '$_scrapedCount checked • ${_scenes.length} matches'
-        : '${_scenes.length} scenes on this page';
+        ? context.l10n.scene_tagger_checked_matches_summary(
+            _scrapedCount,
+            _scenes.length,
+          )
+        : context.l10n.scene_tagger_page_summary(_scenes.length);
     if (_scenes.isEmpty) {
       return ListView(
         padding: EdgeInsets.zero,
@@ -451,8 +460,8 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
             child: Center(
               child: Text(
                 _mode == _TaggerMode.randomUnorganized
-                    ? 'No matched scenes yet.'
-                    : 'No scenes match this configuration.',
+                    ? context.l10n.no_matched_scenes_yet
+                    : context.l10n.no_scenes_match_configuration,
               ),
             ),
           ),
@@ -531,10 +540,10 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                   child: TextField(
                     controller: _searchController,
                     decoration: const InputDecoration(
-                      labelText: 'Search',
+                      labelText: '',
                       border: OutlineInputBorder(),
                       isDense: true,
-                    ),
+                    ).copyWith(labelText: context.l10n.common_search),
                     textInputAction: TextInputAction.search,
                     onSubmitted: (_) => _loadScenes(),
                   ),
@@ -704,14 +713,21 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                       ),
                     Text(
                       _mode == _TaggerMode.randomUnorganized
-                          ? '$_scrapedCount checked'
-                          : '$_scrapedCount / ${_scenes.length}',
+                          ? context.l10n.scene_tagger_checked_count(
+                              _scrapedCount,
+                            )
+                          : context.l10n.scene_tagger_progress(
+                              _scrapedCount,
+                              _scenes.length,
+                            ),
                     ),
                   ],
                 );
               },
               loading: () => const LinearProgressIndicator(),
-              error: (error, _) => Text('Unable to load stash-boxes: $error'),
+              error: (error, _) => Text(
+                context.l10n.unable_to_load_stash_boxes(error.toString()),
+              ),
             ),
           ],
         ),

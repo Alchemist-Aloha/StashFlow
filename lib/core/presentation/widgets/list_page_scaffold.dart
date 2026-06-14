@@ -440,16 +440,30 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
           ? null
           : AppBar(
               scrolledUnderElevation: 4.0,
-              title: GestureDetector(
-                onLongPress: () {
-                  HapticFeedback.lightImpact();
-                  StatsFloatingPanel.show(context);
-                },
-                child: Text(
-                  widget.title,
-                  style: context.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: -0.5,
+              title: Tooltip(
+                message: context.l10n.stats_library_stats_tooltip,
+                child: Material(
+                  color: Colors.transparent,
+                  clipBehavior: Clip.antiAlias,
+                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                  child: InkWell(
+                    onLongPress: () {
+                      HapticFeedback.lightImpact();
+                      StatsFloatingPanel.show(context);
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: context.dimensions.spacingSmall,
+                        vertical: context.dimensions.spacingSmall / 2,
+                      ),
+                      child: Text(
+                        widget.title,
+                        style: context.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
