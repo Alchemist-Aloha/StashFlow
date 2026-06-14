@@ -339,7 +339,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
         context,
       ).showSnackBar(
         SnackBar(
-          content: Text(context.l10n.saved_item(scene.title ?? scene.id)),
+          content: Text(context.l10n.saved_item(scene.title)),
         ),
       );
     } catch (error) {

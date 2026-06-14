@@ -5261,7 +5261,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get common_change => '改变';
 
   @override
-  String get common_set => '放';
+  String get common_set => '设置';
 
   @override
   String get common_immediately => '立即地';
@@ -8080,7 +8080,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get common_change => '改變';
 
   @override
-  String get common_set => '放';
+  String get common_set => '設定';
 
   @override
   String get common_immediately => '立即地';
