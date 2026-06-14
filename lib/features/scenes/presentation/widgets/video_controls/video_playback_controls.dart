@@ -339,37 +339,50 @@ class VideoPlaybackControls extends ConsumerWidget {
                               )
                               .toList();
                         },
-                        child: GestureDetector(
-                          onTap: onSpeedTap,
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              minWidth: buttonMinSize,
-                              minHeight: buttonMinSize,
-                            ),
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                color: Colors.transparent,
-                                borderRadius: BorderRadius.circular(999),
-                                border: isSpeedSliderVisible
-                                    ? Border.all(
-                                        color: colorScheme.primary,
-                                        width: 1.5,
-                                      )
-                                    : null,
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(4),
-                                child: Center(
-                                  child: Text(
-                                    _formatSpeed(playbackSpeed),
-                                    style: context.textTheme.bodyMedium
-                                        ?.copyWith(
-                                          color: isSpeedSliderVisible
-                                              ? colorScheme.primary
-                                              : Colors.white,
-                                          fontSize: context.fontSizes.small,
-                                          fontWeight: FontWeight.w700,
+                        child: Semantics(
+                          button: true,
+                          label: context.l10n.common_playback_speed,
+                          child: Tooltip(
+                            message: context.l10n.common_playback_speed,
+                            child: Material(
+                              color: Colors.transparent,
+                              shape: const CircleBorder(),
+                              clipBehavior: Clip.hardEdge,
+                              child: InkWell(
+                                onTap: onSpeedTap,
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    minWidth: buttonMinSize,
+                                    minHeight: buttonMinSize,
+                                  ),
+                                  child: DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                      borderRadius: BorderRadius.circular(999),
+                                      border: isSpeedSliderVisible
+                                          ? Border.all(
+                                              color: colorScheme.primary,
+                                              width: 1.5,
+                                            )
+                                          : null,
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4),
+                                      child: Center(
+                                        child: Text(
+                                          _formatSpeed(playbackSpeed),
+                                          style: context.textTheme.bodyMedium
+                                              ?.copyWith(
+                                                color: isSpeedSliderVisible
+                                                    ? colorScheme.primary
+                                                    : Colors.white,
+                                                fontSize:
+                                                    context.fontSizes.small,
+                                                fontWeight: FontWeight.w700,
+                                              ),
                                         ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
