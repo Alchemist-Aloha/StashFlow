@@ -5429,7 +5429,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get tools_section_subtitle => '场景的维护和元数据工作流。';
 
   @override
-  String get tools_scene_deduplication_subtitle => '查找并管理重复 of 场景。';
+  String get tools_scene_deduplication_subtitle => '查找并管理重复场景。';
 
   @override
   String get tools_scene_tagger_subtitle => '使用 Stash-box 刮削当前场景页面。';
