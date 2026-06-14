@@ -988,5 +988,6 @@
   "delete_preset_confirm": "「{name}」を削除しますか?この操作は元に戻すことができません。",
   "enter_preset_name": "プリセット名を入力してください",
   "delete_scene_confirm": "このシーンを削除してもよろしいですか?",
-  "delete_selected_count": "選択したものを削除 ({selectedCount})"
+  "delete_selected_count": "選択したものを削除 ({selectedCount})",
+  "stats_library_stats_tooltip": "Long press for library stats"
 }

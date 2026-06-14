@@ -1143,5 +1143,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "stats_library_stats_tooltip": "Long press for library stats"
 }

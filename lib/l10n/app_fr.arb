@@ -988,5 +988,6 @@
   "delete_preset_confirm": "Supprimer \"{name}\" ? Cette action ne peut pas être annulée.",
   "enter_preset_name": "Entrez le nom du préréglage",
   "delete_scene_confirm": "Êtes-vous sûr de vouloir supprimer cette scène ?",
-  "delete_selected_count": "Supprimer la sélection ({selectedCount})"
+  "delete_selected_count": "Supprimer la sélection ({selectedCount})",
+  "stats_library_stats_tooltip": "Long press for library stats"
 }

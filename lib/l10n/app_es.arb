@@ -988,5 +988,6 @@
   "delete_preset_confirm": "¿Eliminar \"{name}\"? Esta acción no se puede deshacer.",
   "enter_preset_name": "Introduzca el nombre preestablecido",
   "delete_scene_confirm": "¿Estás seguro de que quieres eliminar esta escena?",
-  "delete_selected_count": "Eliminar seleccionados ({selectedCount})"
+  "delete_selected_count": "Eliminar seleccionados ({selectedCount})",
+  "stats_library_stats_tooltip": "Long press for library stats"
 }

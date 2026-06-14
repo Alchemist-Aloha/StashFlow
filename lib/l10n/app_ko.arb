@@ -988,5 +988,6 @@
   "delete_preset_confirm": "\"{name}\"을(를) 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
   "enter_preset_name": "프리셋 이름을 입력하세요",
   "delete_scene_confirm": "이 장면을 삭제하시겠습니까?",
-  "delete_selected_count": "선택 항목 삭제({selectedCount})"
+  "delete_selected_count": "선택 항목 삭제({selectedCount})",
+  "stats_library_stats_tooltip": "Long press for library stats"
 }

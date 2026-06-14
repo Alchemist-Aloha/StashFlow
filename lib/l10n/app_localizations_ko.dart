@@ -2660,4 +2660,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String delete_selected_count(int selectedCount) {
     return '선택 항목 삭제($selectedCount)';
   }
+
+  @override
+  String get stats_library_stats_tooltip => 'Long press for library stats';
 }

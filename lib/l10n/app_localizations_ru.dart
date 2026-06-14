@@ -2750,4 +2750,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String delete_selected_count(int selectedCount) {
     return 'Удалить выбранное ($selectedCount)';
   }
+
+  @override
+  String get stats_library_stats_tooltip => 'Long press for library stats';
 }

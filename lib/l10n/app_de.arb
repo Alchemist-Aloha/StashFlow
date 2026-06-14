@@ -1009,5 +1009,6 @@
   "delete_preset_confirm": "„{name}“ löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
   "enter_preset_name": "Geben Sie den voreingestellten Namen ein",
   "delete_scene_confirm": "Möchten Sie diese Szene wirklich löschen?",
-  "delete_selected_count": "Ausgewählte löschen ({selectedCount})"
+  "delete_selected_count": "Ausgewählte löschen ({selectedCount})",
+  "stats_library_stats_tooltip": "Long press for library stats"
 }

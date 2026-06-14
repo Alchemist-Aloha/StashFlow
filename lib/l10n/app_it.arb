@@ -993,5 +993,6 @@
   "delete_preset_confirm": "Eliminare \"{name}\"? Questa azione non può essere annullata.",
   "enter_preset_name": "Immettere il nome preimpostato",
   "delete_scene_confirm": "Sei sicuro di voler eliminare questa scena?",
-  "delete_selected_count": "Elimina selezionati ({selectedCount})"
+  "delete_selected_count": "Elimina selezionati ({selectedCount})",
+  "stats_library_stats_tooltip": "Long press for library stats"
 }

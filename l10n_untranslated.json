@@ -32,10 +32,12 @@
   ],
 
   "zh_Hans": [
-    "scene_info_cover"
+    "scene_info_cover",
+    "stats_library_stats_tooltip"
   ],
 
   "zh_Hant": [
-    "scene_info_cover"
+    "scene_info_cover",
+    "stats_library_stats_tooltip"
   ]
 }

@@ -988,5 +988,6 @@
   "delete_preset_confirm": "Delete \"{name}\"? This action cannot be undone.",
   "enter_preset_name": "Enter preset name",
   "delete_scene_confirm": "Are you sure you want to delete this scene?",
-  "delete_selected_count": "Delete selected ({selectedCount})"
+  "delete_selected_count": "Delete selected ({selectedCount})",
+  "stats_library_stats_tooltip": "Long press for library stats"
 }

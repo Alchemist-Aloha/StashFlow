@@ -2772,4 +2772,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String delete_selected_count(int selectedCount) {
     return 'Supprimer la sélection ($selectedCount)';
   }
+
+  @override
+  String get stats_library_stats_tooltip => 'Long press for library stats';
 }

@@ -2781,4 +2781,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String delete_selected_count(int selectedCount) {
     return 'Eliminar seleccionados ($selectedCount)';
   }
+
+  @override
+  String get stats_library_stats_tooltip => 'Long press for library stats';
 }

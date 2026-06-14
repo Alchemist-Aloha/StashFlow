@@ -5057,6 +5057,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete selected ({selectedCount})'**
   String delete_selected_count(int selectedCount);
+
+  /// No description provided for @stats_library_stats_tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Long press for library stats'**
+  String get stats_library_stats_tooltip;
 }
 
 class _AppLocalizationsDelegate
