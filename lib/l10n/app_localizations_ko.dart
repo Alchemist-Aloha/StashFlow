@@ -2567,6 +2567,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get tools => '도구';
 
   @override
+  String get tools_section_subtitle => '씬에 대한 유지 관리 및 메타데이터 워크플로.';
+
+  @override
+  String get tools_scene_deduplication_subtitle => '중복된 씬을 찾아 관리합니다.';
+
+  @override
+  String get tools_scene_tagger_subtitle => 'Stash-box로 현재 씬 페이지를 스크랩합니다.';
+
+  @override
   String get preset_deleted => '사전 설정이 삭제되었습니다.';
 
   @override

@@ -2568,6 +2568,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tools => 'ツール';
 
   @override
+  String get tools_section_subtitle => 'シーンのメンテナンスとメタデータのワークフロー。';
+
+  @override
+  String get tools_scene_deduplication_subtitle => '重複するシーンを見つけて管理します。';
+
+  @override
+  String get tools_scene_tagger_subtitle =>
+      'Stash-boxを使用して現在のシーンページをスクレイピングします。';
+
+  @override
   String get preset_deleted => 'プリセットが削除されました';
 
   @override

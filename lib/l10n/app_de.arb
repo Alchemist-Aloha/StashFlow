@@ -1067,5 +1067,8 @@
   "scenes_sort_last_o_at": "Letztes O am",
   "scenes_sort_group_scene_number": "Szenennummer in Gruppe/Film",
   "scenes_sort_code": "Code",
-  "settings_security_subtitle": "App-Sperre und Passcode-Einstellungen"
+  "settings_security_subtitle": "App-Sperre und Passcode-Einstellungen",
+  "tools_section_subtitle": "Wartungs- und Metadaten-Workflows für Szenen.",
+  "tools_scene_deduplication_subtitle": "Duplikate finden und verwalten.",
+  "tools_scene_tagger_subtitle": "Aktuelle Szenenseiten mit Stash-box scrapen."
 }

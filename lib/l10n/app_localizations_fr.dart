@@ -2678,6 +2678,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get tools => 'Outils';
 
   @override
+  String get tools_section_subtitle =>
+      'Flux de travail de maintenance et de métadonnées pour les scènes.';
+
+  @override
+  String get tools_scene_deduplication_subtitle =>
+      'Rechercher et gérer les scènes en double.';
+
+  @override
+  String get tools_scene_tagger_subtitle =>
+      'Scraper les pages de scènes actuelles avec Stash-box.';
+
+  @override
   String get preset_deleted => 'Préréglage supprimé';
 
   @override

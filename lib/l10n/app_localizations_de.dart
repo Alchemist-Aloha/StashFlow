@@ -2661,6 +2661,18 @@ class AppLocalizationsDe extends AppLocalizations {
   String get tools => 'Werkzeuge';
 
   @override
+  String get tools_section_subtitle =>
+      'Wartungs- und Metadaten-Workflows für Szenen.';
+
+  @override
+  String get tools_scene_deduplication_subtitle =>
+      'Duplikate finden und verwalten.';
+
+  @override
+  String get tools_scene_tagger_subtitle =>
+      'Aktuelle Szenenseiten mit Stash-box scrapen.';
+
+  @override
   String get preset_deleted => 'Voreinstellung gelöscht';
 
   @override

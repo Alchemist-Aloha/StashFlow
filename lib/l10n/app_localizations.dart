@@ -4884,6 +4884,24 @@ abstract class AppLocalizations {
   /// **'Tools'**
   String get tools;
 
+  /// No description provided for @tools_section_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintenance and metadata workflows for scenes.'**
+  String get tools_section_subtitle;
+
+  /// No description provided for @tools_scene_deduplication_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Find and manage duplicate scenes.'**
+  String get tools_scene_deduplication_subtitle;
+
+  /// No description provided for @tools_scene_tagger_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scrape current scene pages with Stash-box.'**
+  String get tools_scene_tagger_subtitle;
+
   /// No description provided for @preset_deleted.
   ///
   /// In en, this message translates to:

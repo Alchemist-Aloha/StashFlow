@@ -1046,5 +1046,8 @@
   "scenes_sort_last_o_at": "Dernier O le",
   "scenes_sort_group_scene_number": "Numéro de scène dans le groupe/film",
   "scenes_sort_code": "Code",
-  "settings_security_subtitle": "Paramètres de verrouillage de l'application et du code"
+  "settings_security_subtitle": "Paramètres de verrouillage de l'application et du code",
+  "tools_section_subtitle": "Flux de travail de maintenance et de métadonnées pour les scènes.",
+  "tools_scene_deduplication_subtitle": "Rechercher et gérer les scènes en double.",
+  "tools_scene_tagger_subtitle": "Scraper les pages de scènes actuelles avec Stash-box."
 }

@@ -2541,6 +2541,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tools => 'Tools';
 
   @override
+  String get tools_section_subtitle => '场景的维护和元数据工作流。';
+
+  @override
+  String get tools_scene_deduplication_subtitle => '查找并管理重复的场景。';
+
+  @override
+  String get tools_scene_tagger_subtitle => '使用 Stash-box 刮削当前场景页面。';
+
+  @override
   String get preset_deleted => 'Preset deleted';
 
   @override
@@ -5415,6 +5424,15 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get tools => '工具';
+
+  @override
+  String get tools_section_subtitle => '场景的维护和元数据工作流。';
+
+  @override
+  String get tools_scene_deduplication_subtitle => '查找并管理重复 of 场景。';
+
+  @override
+  String get tools_scene_tagger_subtitle => '使用 Stash-box 刮削当前场景页面。';
 
   @override
   String get preset_deleted => '预设已删除';
@@ -8294,6 +8312,15 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get tools => '工具';
+
+  @override
+  String get tools_section_subtitle => '場景的維護和元數據工作流。';
+
+  @override
+  String get tools_scene_deduplication_subtitle => '查找並管理重複的場景。';
+
+  @override
+  String get tools_scene_tagger_subtitle => '使用 Stash-box 刮削當前場景頁面。';
 
   @override
   String get preset_deleted => '預設已刪除';

@@ -2655,6 +2655,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tools => 'Инструменты';
 
   @override
+  String get tools_section_subtitle =>
+      'Рабочие процессы обслуживания и метаданных для сцен.';
+
+  @override
+  String get tools_scene_deduplication_subtitle =>
+      'Поиск и управление дубликатами сцен.';
+
+  @override
+  String get tools_scene_tagger_subtitle =>
+      'Скрапинг страниц текущих сцен с помощью Stash-box.';
+
+  @override
   String get preset_deleted => 'Предустановка удалена.';
 
   @override

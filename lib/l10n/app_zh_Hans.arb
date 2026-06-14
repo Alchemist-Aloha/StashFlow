@@ -1032,5 +1032,8 @@
   "scenes_sort_last_o_at": "上次O时间",
   "scenes_sort_group_scene_number": "合集/电影场景编号",
   "scenes_sort_code": "代码",
-  "settings_security_subtitle": "应用锁和密码设置"
+  "settings_security_subtitle": "应用锁和密码设置",
+  "tools_section_subtitle": "场景的维护和元数据工作流。",
+  "tools_scene_deduplication_subtitle": "查找并管理重复 of 场景。",
+  "tools_scene_tagger_subtitle": "使用 Stash-box 刮削当前场景页面。"
 }

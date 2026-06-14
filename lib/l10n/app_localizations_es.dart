@@ -2687,6 +2687,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get tools => 'Herramientas';
 
   @override
+  String get tools_section_subtitle =>
+      'Flujos de trabajo de mantenimiento y metadatos para escenas.';
+
+  @override
+  String get tools_scene_deduplication_subtitle =>
+      'Buscar y gestionar escenas duplicadas.';
+
+  @override
+  String get tools_scene_tagger_subtitle =>
+      'Extraer páginas de escenas actuales con Stash-box.';
+
+  @override
   String get preset_deleted => 'Preestablecido eliminado';
 
   @override

@@ -1046,5 +1046,8 @@
   "scenes_sort_last_o_at": "Último O el",
   "scenes_sort_group_scene_number": "Número de escena en grupo/película",
   "scenes_sort_code": "Código",
-  "settings_security_subtitle": "Configuración de bloqueo de aplicación y contraseña"
+  "settings_security_subtitle": "Configuración de bloqueo de aplicación y contraseña",
+  "tools_section_subtitle": "Flujos de trabajo de mantenimiento y metadatos para escenas.",
+  "tools_scene_deduplication_subtitle": "Buscar y gestionar escenas duplicadas.",
+  "tools_scene_tagger_subtitle": "Extraer páginas de escenas actuales con Stash-box."
 }
