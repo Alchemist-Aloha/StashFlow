@@ -610,6 +610,63 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scenes_sort_framerate => '帧率';
 
   @override
+  String get scenes_sort_file_count => '文件数量';
+
+  @override
+  String get scenes_sort_filesize => '文件大小';
+
+  @override
+  String get scenes_sort_resolution => '分辨率';
+
+  @override
+  String get scenes_sort_last_played_at => '最后播放时间';
+
+  @override
+  String get scenes_sort_resume_time => '恢复时间';
+
+  @override
+  String get scenes_sort_play_duration => '播放时长';
+
+  @override
+  String get scenes_sort_interactive => '交互式';
+
+  @override
+  String get scenes_sort_interactive_speed => '交互速度';
+
+  @override
+  String get scenes_sort_perceptual_similarity => '感知相似度';
+
+  @override
+  String get scenes_sort_performer_age => '演员年龄';
+
+  @override
+  String get scenes_sort_studio => '制片商';
+
+  @override
+  String get scenes_sort_path => '路径';
+
+  @override
+  String get scenes_sort_file_mod_time => '文件修改时间';
+
+  @override
+  String get scenes_sort_tag_count => '标签数量';
+
+  @override
+  String get scenes_sort_performer_count => '演员数量';
+
+  @override
+  String get scenes_sort_o_counter => 'O计数器';
+
+  @override
+  String get scenes_sort_last_o_at => '上次O时间';
+
+  @override
+  String get scenes_sort_group_scene_number => '合集/电影场景编号';
+
+  @override
+  String get scenes_sort_code => '代码';
+
+  @override
   String get scenes_sort_saved_default => '排序偏好已保存为默认';
 
   @override
@@ -2469,6 +2526,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_security_title => '安全';
 
   @override
+  String get settings_security_subtitle => '应用锁和密码设置';
+
+  @override
   String get settings_security_app_lock => '应用锁';
 
   @override
@@ -3424,6 +3484,63 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get scenes_sort_framerate => '帧率';
+
+  @override
+  String get scenes_sort_file_count => '文件数量';
+
+  @override
+  String get scenes_sort_filesize => '文件大小';
+
+  @override
+  String get scenes_sort_resolution => '分辨率';
+
+  @override
+  String get scenes_sort_last_played_at => '最后播放时间';
+
+  @override
+  String get scenes_sort_resume_time => '恢复时间';
+
+  @override
+  String get scenes_sort_play_duration => '播放时长';
+
+  @override
+  String get scenes_sort_interactive => '交互式';
+
+  @override
+  String get scenes_sort_interactive_speed => '交互速度';
+
+  @override
+  String get scenes_sort_perceptual_similarity => '感知相似度';
+
+  @override
+  String get scenes_sort_performer_age => '演员年龄';
+
+  @override
+  String get scenes_sort_studio => '制片商';
+
+  @override
+  String get scenes_sort_path => '路径';
+
+  @override
+  String get scenes_sort_file_mod_time => '文件修改时间';
+
+  @override
+  String get scenes_sort_tag_count => '标签数量';
+
+  @override
+  String get scenes_sort_performer_count => '演员数量';
+
+  @override
+  String get scenes_sort_o_counter => 'O计数器';
+
+  @override
+  String get scenes_sort_last_o_at => '上次O时间';
+
+  @override
+  String get scenes_sort_group_scene_number => '合集/电影场景编号';
+
+  @override
+  String get scenes_sort_code => '代码';
 
   @override
   String get scenes_sort_saved_default => '排序偏好已保存为默认';
@@ -5285,6 +5402,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_security_title => '安全';
 
   @override
+  String get settings_security_subtitle => '应用锁和密码设置';
+
+  @override
   String get settings_security_app_lock => '应用锁';
 
   @override
@@ -6241,6 +6361,63 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get scenes_sort_framerate => '幀率';
+
+  @override
+  String get scenes_sort_file_count => '檔案數量';
+
+  @override
+  String get scenes_sort_filesize => '檔案大小';
+
+  @override
+  String get scenes_sort_resolution => '解析度';
+
+  @override
+  String get scenes_sort_last_played_at => '最後播放時間';
+
+  @override
+  String get scenes_sort_resume_time => '恢復時間';
+
+  @override
+  String get scenes_sort_play_duration => '播放時長';
+
+  @override
+  String get scenes_sort_interactive => '互動式';
+
+  @override
+  String get scenes_sort_interactive_speed => '交互速度';
+
+  @override
+  String get scenes_sort_perceptual_similarity => '感知相似度';
+
+  @override
+  String get scenes_sort_performer_age => '演出者年齡';
+
+  @override
+  String get scenes_sort_studio => '工作室';
+
+  @override
+  String get scenes_sort_path => '路徑';
+
+  @override
+  String get scenes_sort_file_mod_time => '檔案修改時間';
+
+  @override
+  String get scenes_sort_tag_count => '標籤數量';
+
+  @override
+  String get scenes_sort_performer_count => '演出者數量';
+
+  @override
+  String get scenes_sort_o_counter => 'O計數器';
+
+  @override
+  String get scenes_sort_last_o_at => '上次O時間';
+
+  @override
+  String get scenes_sort_group_scene_number => '合集/電影場景編號';
+
+  @override
+  String get scenes_sort_code => '代碼';
 
   @override
   String get scenes_sort_saved_default => '排序偏好已保存為預設';
@@ -8102,6 +8279,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_security_title => '安全';
+
+  @override
+  String get settings_security_subtitle => '應用鎖和密碼設定';
 
   @override
   String get settings_security_app_lock => '應用鎖';

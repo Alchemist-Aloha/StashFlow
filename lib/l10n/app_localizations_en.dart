@@ -614,6 +614,63 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scenes_sort_framerate => 'Framerate';
 
   @override
+  String get scenes_sort_file_count => 'File Count';
+
+  @override
+  String get scenes_sort_filesize => 'Filesize';
+
+  @override
+  String get scenes_sort_resolution => 'Resolution';
+
+  @override
+  String get scenes_sort_last_played_at => 'Last Played At';
+
+  @override
+  String get scenes_sort_resume_time => 'Resume Time';
+
+  @override
+  String get scenes_sort_play_duration => 'Play Duration';
+
+  @override
+  String get scenes_sort_interactive => 'Interactive';
+
+  @override
+  String get scenes_sort_interactive_speed => 'Interactive Speed';
+
+  @override
+  String get scenes_sort_perceptual_similarity => 'Perceptual Similarity';
+
+  @override
+  String get scenes_sort_performer_age => 'Performer Age';
+
+  @override
+  String get scenes_sort_studio => 'Studio';
+
+  @override
+  String get scenes_sort_path => 'Path';
+
+  @override
+  String get scenes_sort_file_mod_time => 'File Mod Time';
+
+  @override
+  String get scenes_sort_tag_count => 'Tag Count';
+
+  @override
+  String get scenes_sort_performer_count => 'Performer Count';
+
+  @override
+  String get scenes_sort_o_counter => 'O-Counter';
+
+  @override
+  String get scenes_sort_last_o_at => 'Last O At';
+
+  @override
+  String get scenes_sort_group_scene_number => 'Group/Movie Scene Number';
+
+  @override
+  String get scenes_sort_code => 'Code';
+
+  @override
   String get scenes_sort_saved_default => 'Sort preferences saved as default';
 
   @override
@@ -2543,6 +2600,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_security_title => 'Security';
+
+  @override
+  String get settings_security_subtitle => 'App lock and passcode settings';
 
   @override
   String get settings_security_app_lock => 'App lock';

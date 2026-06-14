@@ -618,6 +618,63 @@ class AppLocalizationsRu extends AppLocalizations {
   String get scenes_sort_framerate => 'Частота кадров';
 
   @override
+  String get scenes_sort_file_count => 'Количество файлов';
+
+  @override
+  String get scenes_sort_filesize => 'Размер файла';
+
+  @override
+  String get scenes_sort_resolution => 'Разрешение';
+
+  @override
+  String get scenes_sort_last_played_at => 'Последний просмотр';
+
+  @override
+  String get scenes_sort_resume_time => 'Время возобновления';
+
+  @override
+  String get scenes_sort_play_duration => 'Время воспроизведения';
+
+  @override
+  String get scenes_sort_interactive => 'Интерактивный';
+
+  @override
+  String get scenes_sort_interactive_speed => 'Интерактивная скорость';
+
+  @override
+  String get scenes_sort_perceptual_similarity => 'Перцептивное сходство';
+
+  @override
+  String get scenes_sort_performer_age => 'Возраст исполнителя';
+
+  @override
+  String get scenes_sort_studio => 'Студия';
+
+  @override
+  String get scenes_sort_path => 'Путь';
+
+  @override
+  String get scenes_sort_file_mod_time => 'Время изменения файла';
+
+  @override
+  String get scenes_sort_tag_count => 'Количество тегов';
+
+  @override
+  String get scenes_sort_performer_count => 'Количество исполнителей';
+
+  @override
+  String get scenes_sort_o_counter => 'Счетчик O';
+
+  @override
+  String get scenes_sort_last_o_at => 'Последний O';
+
+  @override
+  String get scenes_sort_group_scene_number => 'Номер сцены в группе/фильме';
+
+  @override
+  String get scenes_sort_code => 'Код';
+
+  @override
   String get scenes_sort_saved_default =>
       'Настройки сортировки сохранены по умолчанию';
 
@@ -2579,6 +2636,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settings_security_title => 'Безопасность';
+
+  @override
+  String get settings_security_subtitle =>
+      'Настройки блокировки приложения и пароля';
 
   @override
   String get settings_security_app_lock => 'Блокировка приложения';

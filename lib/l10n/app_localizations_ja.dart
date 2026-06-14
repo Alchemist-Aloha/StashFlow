@@ -612,6 +612,63 @@ class AppLocalizationsJa extends AppLocalizations {
   String get scenes_sort_framerate => 'フレームレート';
 
   @override
+  String get scenes_sort_file_count => 'ファイル数';
+
+  @override
+  String get scenes_sort_filesize => 'ファイルサイズ';
+
+  @override
+  String get scenes_sort_resolution => '解像度';
+
+  @override
+  String get scenes_sort_last_played_at => '最終再生日時';
+
+  @override
+  String get scenes_sort_resume_time => 'レジューム時間';
+
+  @override
+  String get scenes_sort_play_duration => '再生時間';
+
+  @override
+  String get scenes_sort_interactive => 'インタラクティブ';
+
+  @override
+  String get scenes_sort_interactive_speed => 'インタラクティブスピード';
+
+  @override
+  String get scenes_sort_perceptual_similarity => '知覚的類似性';
+
+  @override
+  String get scenes_sort_performer_age => '出演者年齢';
+
+  @override
+  String get scenes_sort_studio => 'スタジオ';
+
+  @override
+  String get scenes_sort_path => 'パス';
+
+  @override
+  String get scenes_sort_file_mod_time => 'ファイル更新日時';
+
+  @override
+  String get scenes_sort_tag_count => 'タグ数';
+
+  @override
+  String get scenes_sort_performer_count => '出演者数';
+
+  @override
+  String get scenes_sort_o_counter => 'Oカウンター';
+
+  @override
+  String get scenes_sort_last_o_at => '最終O日時';
+
+  @override
+  String get scenes_sort_group_scene_number => 'グループ/映画シーン番号';
+
+  @override
+  String get scenes_sort_code => 'コード';
+
+  @override
   String get scenes_sort_saved_default => '並べ替えの設定がデフォルトとして保存されました';
 
   @override
@@ -2493,6 +2550,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settings_security_title => '安全';
+
+  @override
+  String get settings_security_subtitle => 'アプリロックとパスコードの設定';
 
   @override
   String get settings_security_app_lock => 'アプリロック';

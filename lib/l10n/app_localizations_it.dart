@@ -623,6 +623,63 @@ class AppLocalizationsIt extends AppLocalizations {
   String get scenes_sort_framerate => 'Frequenza fotogrammi';
 
   @override
+  String get scenes_sort_file_count => 'Numero di file';
+
+  @override
+  String get scenes_sort_filesize => 'Dimensione del file';
+
+  @override
+  String get scenes_sort_resolution => 'Risoluzione';
+
+  @override
+  String get scenes_sort_last_played_at => 'Ultima riproduzione';
+
+  @override
+  String get scenes_sort_resume_time => 'Tempo di ripresa';
+
+  @override
+  String get scenes_sort_play_duration => 'Durata riproduzione';
+
+  @override
+  String get scenes_sort_interactive => 'Interattivo';
+
+  @override
+  String get scenes_sort_interactive_speed => 'Velocità interattiva';
+
+  @override
+  String get scenes_sort_perceptual_similarity => 'Somiglianza percettiva';
+
+  @override
+  String get scenes_sort_performer_age => 'Età dell\'artista';
+
+  @override
+  String get scenes_sort_studio => 'Studio';
+
+  @override
+  String get scenes_sort_path => 'Percorso';
+
+  @override
+  String get scenes_sort_file_mod_time => 'Data di modifica del file';
+
+  @override
+  String get scenes_sort_tag_count => 'Numero di tag';
+
+  @override
+  String get scenes_sort_performer_count => 'Numero di artisti';
+
+  @override
+  String get scenes_sort_o_counter => 'Contatore O';
+
+  @override
+  String get scenes_sort_last_o_at => 'Ultimo O il';
+
+  @override
+  String get scenes_sort_group_scene_number => 'Numero scena nel gruppo/film';
+
+  @override
+  String get scenes_sort_code => 'Codice';
+
+  @override
   String get scenes_sort_saved_default =>
       'Preferenze di ordinamento salvate come predefinito';
 
@@ -2602,6 +2659,10 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get settings_security_title => 'Sicurezza';
+
+  @override
+  String get settings_security_subtitle =>
+      'Impostazioni del blocco dell\'applicazione e del passcode';
 
   @override
   String get settings_security_app_lock => 'Blocco dell\'app';

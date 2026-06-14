@@ -623,6 +623,64 @@ class AppLocalizationsEs extends AppLocalizations {
   String get scenes_sort_framerate => 'Frecuencia de fotogramas';
 
   @override
+  String get scenes_sort_file_count => 'Cantidad de archivos';
+
+  @override
+  String get scenes_sort_filesize => 'Tamaño de archivo';
+
+  @override
+  String get scenes_sort_resolution => 'Resolución';
+
+  @override
+  String get scenes_sort_last_played_at => 'Última reproducción';
+
+  @override
+  String get scenes_sort_resume_time => 'Tiempo de reanudación';
+
+  @override
+  String get scenes_sort_play_duration => 'Duración de reproducción';
+
+  @override
+  String get scenes_sort_interactive => 'Interactivo';
+
+  @override
+  String get scenes_sort_interactive_speed => 'Velocidad interactiva';
+
+  @override
+  String get scenes_sort_perceptual_similarity => 'Similitud perceptiva';
+
+  @override
+  String get scenes_sort_performer_age => 'Edad del artista';
+
+  @override
+  String get scenes_sort_studio => 'Estudio';
+
+  @override
+  String get scenes_sort_path => 'Ruta';
+
+  @override
+  String get scenes_sort_file_mod_time => 'Fecha de modificación del archivo';
+
+  @override
+  String get scenes_sort_tag_count => 'Cantidad de etiquetas';
+
+  @override
+  String get scenes_sort_performer_count => 'Cantidad de artistas';
+
+  @override
+  String get scenes_sort_o_counter => 'Contador O';
+
+  @override
+  String get scenes_sort_last_o_at => 'Último O el';
+
+  @override
+  String get scenes_sort_group_scene_number =>
+      'Número de escena en grupo/película';
+
+  @override
+  String get scenes_sort_code => 'Código';
+
+  @override
   String get scenes_sort_saved_default =>
       'Preferencias de orden guardadas como predeterminado';
 
@@ -2610,6 +2668,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settings_security_title => 'Seguridad';
+
+  @override
+  String get settings_security_subtitle =>
+      'Configuración de bloqueo de aplicación y contraseña';
 
   @override
   String get settings_security_app_lock => 'Bloqueo de aplicaciones';

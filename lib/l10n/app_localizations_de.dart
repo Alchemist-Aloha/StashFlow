@@ -621,6 +621,63 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scenes_sort_framerate => 'Bildrate';
 
   @override
+  String get scenes_sort_file_count => 'Dateianzahl';
+
+  @override
+  String get scenes_sort_filesize => 'Dateigröße';
+
+  @override
+  String get scenes_sort_resolution => 'Auflösung';
+
+  @override
+  String get scenes_sort_last_played_at => 'Zuletzt gespielt am';
+
+  @override
+  String get scenes_sort_resume_time => 'Fortsetzungszeit';
+
+  @override
+  String get scenes_sort_play_duration => 'Wiedergabedauer';
+
+  @override
+  String get scenes_sort_interactive => 'Interaktiv';
+
+  @override
+  String get scenes_sort_interactive_speed => 'Interaktive Geschwindigkeit';
+
+  @override
+  String get scenes_sort_perceptual_similarity => 'Wahrnehmungsähnlichkeit';
+
+  @override
+  String get scenes_sort_performer_age => 'Alter der Darsteller';
+
+  @override
+  String get scenes_sort_studio => 'Studio';
+
+  @override
+  String get scenes_sort_path => 'Pfad';
+
+  @override
+  String get scenes_sort_file_mod_time => 'Datei-Änderungsdatum';
+
+  @override
+  String get scenes_sort_tag_count => 'Tag-Anzahl';
+
+  @override
+  String get scenes_sort_performer_count => 'Darstelleranzahl';
+
+  @override
+  String get scenes_sort_o_counter => 'O-Zähler';
+
+  @override
+  String get scenes_sort_last_o_at => 'Letztes O am';
+
+  @override
+  String get scenes_sort_group_scene_number => 'Szenennummer in Gruppe/Film';
+
+  @override
+  String get scenes_sort_code => 'Code';
+
+  @override
   String get scenes_sort_saved_default =>
       'Sortiereinstellungen als Standard gespeichert';
 
@@ -2585,6 +2642,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settings_security_title => 'Sicherheit';
+
+  @override
+  String get settings_security_subtitle =>
+      'App-Sperre und Passcode-Einstellungen';
 
   @override
   String get settings_security_app_lock => 'App-Sperre';

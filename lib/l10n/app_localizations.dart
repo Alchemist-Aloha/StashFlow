@@ -1212,6 +1212,120 @@ abstract class AppLocalizations {
   /// **'Framerate'**
   String get scenes_sort_framerate;
 
+  /// No description provided for @scenes_sort_file_count.
+  ///
+  /// In en, this message translates to:
+  /// **'File Count'**
+  String get scenes_sort_file_count;
+
+  /// No description provided for @scenes_sort_filesize.
+  ///
+  /// In en, this message translates to:
+  /// **'Filesize'**
+  String get scenes_sort_filesize;
+
+  /// No description provided for @scenes_sort_resolution.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution'**
+  String get scenes_sort_resolution;
+
+  /// No description provided for @scenes_sort_last_played_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Played At'**
+  String get scenes_sort_last_played_at;
+
+  /// No description provided for @scenes_sort_resume_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume Time'**
+  String get scenes_sort_resume_time;
+
+  /// No description provided for @scenes_sort_play_duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Play Duration'**
+  String get scenes_sort_play_duration;
+
+  /// No description provided for @scenes_sort_interactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Interactive'**
+  String get scenes_sort_interactive;
+
+  /// No description provided for @scenes_sort_interactive_speed.
+  ///
+  /// In en, this message translates to:
+  /// **'Interactive Speed'**
+  String get scenes_sort_interactive_speed;
+
+  /// No description provided for @scenes_sort_perceptual_similarity.
+  ///
+  /// In en, this message translates to:
+  /// **'Perceptual Similarity'**
+  String get scenes_sort_perceptual_similarity;
+
+  /// No description provided for @scenes_sort_performer_age.
+  ///
+  /// In en, this message translates to:
+  /// **'Performer Age'**
+  String get scenes_sort_performer_age;
+
+  /// No description provided for @scenes_sort_studio.
+  ///
+  /// In en, this message translates to:
+  /// **'Studio'**
+  String get scenes_sort_studio;
+
+  /// No description provided for @scenes_sort_path.
+  ///
+  /// In en, this message translates to:
+  /// **'Path'**
+  String get scenes_sort_path;
+
+  /// No description provided for @scenes_sort_file_mod_time.
+  ///
+  /// In en, this message translates to:
+  /// **'File Mod Time'**
+  String get scenes_sort_file_mod_time;
+
+  /// No description provided for @scenes_sort_tag_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag Count'**
+  String get scenes_sort_tag_count;
+
+  /// No description provided for @scenes_sort_performer_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Performer Count'**
+  String get scenes_sort_performer_count;
+
+  /// No description provided for @scenes_sort_o_counter.
+  ///
+  /// In en, this message translates to:
+  /// **'O-Counter'**
+  String get scenes_sort_o_counter;
+
+  /// No description provided for @scenes_sort_last_o_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Last O At'**
+  String get scenes_sort_last_o_at;
+
+  /// No description provided for @scenes_sort_group_scene_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Group/Movie Scene Number'**
+  String get scenes_sort_group_scene_number;
+
+  /// No description provided for @scenes_sort_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get scenes_sort_code;
+
   /// No description provided for @scenes_sort_saved_default.
   ///
   /// In en, this message translates to:
@@ -4739,6 +4853,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Security'**
   String get settings_security_title;
+
+  /// No description provided for @settings_security_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App lock and passcode settings'**
+  String get settings_security_subtitle;
 
   /// No description provided for @settings_security_app_lock.
   ///

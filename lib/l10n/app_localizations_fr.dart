@@ -621,6 +621,64 @@ class AppLocalizationsFr extends AppLocalizations {
   String get scenes_sort_framerate => 'Fréquence d\'images';
 
   @override
+  String get scenes_sort_file_count => 'Nombre de fichiers';
+
+  @override
+  String get scenes_sort_filesize => 'Taille du fichier';
+
+  @override
+  String get scenes_sort_resolution => 'Résolution';
+
+  @override
+  String get scenes_sort_last_played_at => 'Dernière lecture';
+
+  @override
+  String get scenes_sort_resume_time => 'Temps de reprise';
+
+  @override
+  String get scenes_sort_play_duration => 'Durée de lecture';
+
+  @override
+  String get scenes_sort_interactive => 'Interactif';
+
+  @override
+  String get scenes_sort_interactive_speed => 'Vitesse interactive';
+
+  @override
+  String get scenes_sort_perceptual_similarity => 'Similitude perceptuelle';
+
+  @override
+  String get scenes_sort_performer_age => 'Âge de l\'artiste';
+
+  @override
+  String get scenes_sort_studio => 'Studio';
+
+  @override
+  String get scenes_sort_path => 'Chemin';
+
+  @override
+  String get scenes_sort_file_mod_time => 'Date de modification du fichier';
+
+  @override
+  String get scenes_sort_tag_count => 'Nombre d\'étiquettes';
+
+  @override
+  String get scenes_sort_performer_count => 'Nombre d\'artistes';
+
+  @override
+  String get scenes_sort_o_counter => 'Compteur O';
+
+  @override
+  String get scenes_sort_last_o_at => 'Dernier O le';
+
+  @override
+  String get scenes_sort_group_scene_number =>
+      'Numéro de scène dans le groupe/film';
+
+  @override
+  String get scenes_sort_code => 'Code';
+
+  @override
   String get scenes_sort_saved_default =>
       'Préférences de tri enregistrées par défaut';
 
@@ -2601,6 +2659,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settings_security_title => 'Sécurité';
+
+  @override
+  String get settings_security_subtitle =>
+      'Paramètres de verrouillage de l\'application et du code';
 
   @override
   String get settings_security_app_lock => 'Verrouillage d\'application';

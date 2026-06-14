@@ -610,6 +610,63 @@ class AppLocalizationsKo extends AppLocalizations {
   String get scenes_sort_framerate => '프레임 속도';
 
   @override
+  String get scenes_sort_file_count => '파일 수';
+
+  @override
+  String get scenes_sort_filesize => '파일 크기';
+
+  @override
+  String get scenes_sort_resolution => '해상도';
+
+  @override
+  String get scenes_sort_last_played_at => '최근 재생 일시';
+
+  @override
+  String get scenes_sort_resume_time => '이어보기 시간';
+
+  @override
+  String get scenes_sort_play_duration => '재생 시간';
+
+  @override
+  String get scenes_sort_interactive => '인터랙티브';
+
+  @override
+  String get scenes_sort_interactive_speed => '인터랙티브 속도';
+
+  @override
+  String get scenes_sort_perceptual_similarity => '지각적 유사성';
+
+  @override
+  String get scenes_sort_performer_age => '출연자 나이';
+
+  @override
+  String get scenes_sort_studio => '스튜디오';
+
+  @override
+  String get scenes_sort_path => '경로';
+
+  @override
+  String get scenes_sort_file_mod_time => '파일 수정 시간';
+
+  @override
+  String get scenes_sort_tag_count => '태그 수';
+
+  @override
+  String get scenes_sort_performer_count => '출연자 수';
+
+  @override
+  String get scenes_sort_o_counter => 'O 카운터';
+
+  @override
+  String get scenes_sort_last_o_at => '최근 O 시간';
+
+  @override
+  String get scenes_sort_group_scene_number => '그룹/영화 장면 번호';
+
+  @override
+  String get scenes_sort_code => '코드';
+
+  @override
   String get scenes_sort_saved_default => '정렬 설정이 기본값으로 저장됨';
 
   @override
@@ -2493,6 +2550,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settings_security_title => '보안';
+
+  @override
+  String get settings_security_subtitle => '앱 잠금 및 비밀번호 설정';
 
   @override
   String get settings_security_app_lock => '앱 잠금';
