@@ -2461,7 +2461,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get scene_info_screenshot => 'Capture d\'écran';
 
   @override
-  String get scene_info_cover => 'Cover';
+  String get scene_info_cover => 'Couverture';
 
   @override
   String get scene_info_caption => 'Légende';
@@ -2774,78 +2774,79 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get saved_presets => 'Saved Presets';
+  String get saved_presets => 'Préréglages enregistrés';
 
   @override
-  String get current_settings => 'Current Settings';
+  String get current_settings => 'Paramètres actuels';
 
   @override
-  String get available_presets => 'Available Presets';
+  String get available_presets => 'Préréglages disponibles';
 
   @override
-  String get existing_names_are_overwritten => 'Existing names are overwritten';
+  String get existing_names_are_overwritten =>
+      'Les noms existants seront écrasés';
 
   @override
   String get active_settings_saved_server =>
-      'Current active settings will be saved to the server.';
+      'Les paramètres actuellement actifs seront enregistrés sur le serveur.';
 
   @override
   String failed_to_save_filter(String error) {
-    return 'Failed to save filter: $error';
+    return 'Échec de l\'enregistrement du filtre : $error';
   }
 
   @override
   String failed_to_delete_preset(String error) {
-    return 'Failed to delete preset: $error';
+    return 'Échec de la suppression du préréglage : $error';
   }
 
   @override
   String sort_label(String sortLabel) {
-    return 'Sort: $sortLabel';
+    return 'Tri : $sortLabel';
   }
 
   @override
   String filters_count(int count) {
-    return 'Filters: $count';
+    return 'Filtres : $count';
   }
 
   @override
   String search_label(String query) {
-    return 'Search: $query';
+    return 'Recherche : $query';
   }
 
   @override
   String failed_to_load_presets(String error) {
-    return 'Failed to load presets: $error';
+    return 'Échec du chargement des préréglages : $error';
   }
 
   @override
   String saved_item(String item) {
-    return 'Saved $item';
+    return '$item enregistré';
   }
 
   @override
   String unable_to_load_stash_boxes(String error) {
-    return 'Unable to load stash-boxes: $error';
+    return 'Impossible de charger les Stash Boxes : $error';
   }
 
   @override
   String delete_n_scenes_question(int count) {
-    return 'Delete $count scenes?';
+    return 'Supprimer $count scènes ?';
   }
 
   @override
   String get delete_scenes_help =>
-      'Choose whether to remove only Stash metadata or delete the scene files and generated supporting files too.';
+      'Choisissez si vous voulez supprimer uniquement les métadonnées Stash ou aussi les fichiers de scène et les fichiers auxiliaires générés.';
 
   @override
   String deleted_n_scenes(int count) {
-    return 'Deleted $count scenes';
+    return '$count scènes supprimées';
   }
 
   @override
   String delete_failed_error(String error) {
-    return 'Delete failed: $error';
+    return 'Échec de la suppression : $error';
   }
 
   @override
@@ -2853,21 +2854,21 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String missing_phashes_for_scenes(int count) {
-    return 'Missing phashes for $count scenes. Please run the phash generation task.';
+    return 'Il manque des phashes pour $count scènes. Veuillez lancer la tâche de génération des phashs.';
   }
 
   @override
   String get merge_editing_not_wired =>
-      'Merge editing is not wired in StashFlow yet.';
+      'L\'édition des fusions n\'est pas encore câblée dans StashFlow.';
 
   @override
   String duplicate_sets_count(int count) {
-    return '$count duplicate sets';
+    return '$count ensembles en double';
   }
 
   @override
   String duplicate_set_number(int number) {
-    return 'Duplicate Set $number';
+    return 'Ensemble en double $number';
   }
 
   @override
@@ -2900,9 +2901,9 @@ class AppLocalizationsFr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString tags',
-      one: '1 tag',
-      zero: 'no tags',
+      other: '$countString étiquettes',
+      one: '1 étiquette',
+      zero: 'aucune étiquette',
     );
     return '$_temp0';
   }
@@ -2917,9 +2918,9 @@ class AppLocalizationsFr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString groups',
-      one: '1 group',
-      zero: 'no groups',
+      other: '$countString groupes',
+      one: '1 groupe',
+      zero: 'aucun groupe',
     );
     return '$_temp0';
   }
@@ -2934,9 +2935,9 @@ class AppLocalizationsFr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString markers',
-      one: '1 marker',
-      zero: 'no markers',
+      other: '$countString marqueurs',
+      one: '1 marqueur',
+      zero: 'aucun marqueur',
     );
     return '$_temp0';
   }
@@ -2951,33 +2952,34 @@ class AppLocalizationsFr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString galleries',
-      one: '1 gallery',
-      zero: 'no galleries',
+      other: '$countString galeries',
+      one: '1 galerie',
+      zero: 'aucune galerie',
     );
     return '$_temp0';
   }
 
   @override
   String scene_tagger_checked_matches_summary(int checked, int matches) {
-    return '$checked checked • $matches matches';
+    return '$checked vérifiées • $matches correspondances';
   }
 
   @override
   String scene_tagger_page_summary(int count) {
-    return '$count scenes on this page';
+    return '$count scènes sur cette page';
   }
 
   @override
-  String get no_matched_scenes_yet => 'No matched scenes yet.';
+  String get no_matched_scenes_yet =>
+      'Aucune scène correspondante pour le moment.';
 
   @override
   String get no_scenes_match_configuration =>
-      'No scenes match this configuration.';
+      'Aucune scène ne correspond à cette configuration.';
 
   @override
   String scene_tagger_checked_count(int count) {
-    return '$count checked';
+    return '$count vérifiées';
   }
 
   @override
@@ -2986,5 +2988,6 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get stats_library_stats_tooltip => 'Long press for library stats';
+  String get stats_library_stats_tooltip =>
+      'Appui long pour les statistiques de la bibliothèque';
 }

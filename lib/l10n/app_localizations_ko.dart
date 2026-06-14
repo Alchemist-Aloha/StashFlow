@@ -2359,7 +2359,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get scene_info_screenshot => '스크린샷';
 
   @override
-  String get scene_info_cover => 'Cover';
+  String get scene_info_cover => '커버';
 
   @override
   String get scene_info_caption => '표제';
@@ -2662,100 +2662,98 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get saved_presets => 'Saved Presets';
+  String get saved_presets => '저장된 프리셋';
 
   @override
-  String get current_settings => 'Current Settings';
+  String get current_settings => '현재 설정';
 
   @override
-  String get available_presets => 'Available Presets';
+  String get available_presets => '사용 가능한 프리셋';
 
   @override
-  String get existing_names_are_overwritten => 'Existing names are overwritten';
+  String get existing_names_are_overwritten => '기존 이름은 덮어써집니다';
 
   @override
-  String get active_settings_saved_server =>
-      'Current active settings will be saved to the server.';
+  String get active_settings_saved_server => '현재 활성 설정이 서버에 저장됩니다.';
 
   @override
   String failed_to_save_filter(String error) {
-    return 'Failed to save filter: $error';
+    return '필터를 저장하지 못했습니다: $error';
   }
 
   @override
   String failed_to_delete_preset(String error) {
-    return 'Failed to delete preset: $error';
+    return '프리셋을 삭제하지 못했습니다: $error';
   }
 
   @override
   String sort_label(String sortLabel) {
-    return 'Sort: $sortLabel';
+    return '정렬: $sortLabel';
   }
 
   @override
   String filters_count(int count) {
-    return 'Filters: $count';
+    return '필터: $count';
   }
 
   @override
   String search_label(String query) {
-    return 'Search: $query';
+    return '검색: $query';
   }
 
   @override
   String failed_to_load_presets(String error) {
-    return 'Failed to load presets: $error';
+    return '프리셋을 불러오지 못했습니다: $error';
   }
 
   @override
   String saved_item(String item) {
-    return 'Saved $item';
+    return '$item 저장됨';
   }
 
   @override
   String unable_to_load_stash_boxes(String error) {
-    return 'Unable to load stash-boxes: $error';
+    return 'Stash Box를 불러올 수 없습니다: $error';
   }
 
   @override
   String delete_n_scenes_question(int count) {
-    return 'Delete $count scenes?';
+    return '장면 $count개를 삭제할까요?';
   }
 
   @override
   String get delete_scenes_help =>
-      'Choose whether to remove only Stash metadata or delete the scene files and generated supporting files too.';
+      'Stash 메타데이터만 제거할지, 장면 파일과 생성된 보조 파일까지 함께 삭제할지 선택하세요.';
 
   @override
   String deleted_n_scenes(int count) {
-    return 'Deleted $count scenes';
+    return '장면 $count개를 삭제했습니다';
   }
 
   @override
   String delete_failed_error(String error) {
-    return 'Delete failed: $error';
+    return '삭제 실패: $error';
   }
 
   @override
-  String get configuration => 'Configuration';
+  String get configuration => '구성';
 
   @override
   String missing_phashes_for_scenes(int count) {
-    return 'Missing phashes for $count scenes. Please run the phash generation task.';
+    return '장면 $count개에 phash가 없습니다. phash 생성 작업을 실행하세요.';
   }
 
   @override
-  String get merge_editing_not_wired =>
-      'Merge editing is not wired in StashFlow yet.';
+  String get merge_editing_not_wired => '병합 편집은 아직 StashFlow에 연결되어 있지 않습니다.';
 
   @override
   String duplicate_sets_count(int count) {
-    return '$count duplicate sets';
+    return '중복 세트 $count개';
   }
 
   @override
   String duplicate_set_number(int number) {
-    return 'Duplicate Set $number';
+    return '중복 세트 $number';
   }
 
   @override
@@ -2788,9 +2786,9 @@ class AppLocalizationsKo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString tags',
-      one: '1 tag',
-      zero: 'no tags',
+      other: '태그 $countString개',
+      one: '태그 1개',
+      zero: '태그 없음',
     );
     return '$_temp0';
   }
@@ -2805,9 +2803,9 @@ class AppLocalizationsKo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString groups',
-      one: '1 group',
-      zero: 'no groups',
+      other: '그룹 $countString개',
+      one: '그룹 1개',
+      zero: '그룹 없음',
     );
     return '$_temp0';
   }
@@ -2822,9 +2820,9 @@ class AppLocalizationsKo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString markers',
-      one: '1 marker',
-      zero: 'no markers',
+      other: '마커 $countString개',
+      one: '마커 1개',
+      zero: '마커 없음',
     );
     return '$_temp0';
   }
@@ -2839,33 +2837,32 @@ class AppLocalizationsKo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString galleries',
-      one: '1 gallery',
-      zero: 'no galleries',
+      other: '갤러리 $countString개',
+      one: '갤러리 1개',
+      zero: '갤러리 없음',
     );
     return '$_temp0';
   }
 
   @override
   String scene_tagger_checked_matches_summary(int checked, int matches) {
-    return '$checked checked • $matches matches';
+    return '$checked개 확인 • $matches개 일치';
   }
 
   @override
   String scene_tagger_page_summary(int count) {
-    return '$count scenes on this page';
+    return '이 페이지의 장면 $count개';
   }
 
   @override
-  String get no_matched_scenes_yet => 'No matched scenes yet.';
+  String get no_matched_scenes_yet => '아직 일치하는 장면이 없습니다.';
 
   @override
-  String get no_scenes_match_configuration =>
-      'No scenes match this configuration.';
+  String get no_scenes_match_configuration => '이 구성과 일치하는 장면이 없습니다.';
 
   @override
   String scene_tagger_checked_count(int count) {
-    return '$count checked';
+    return '$count개 확인됨';
   }
 
   @override
@@ -2874,5 +2871,5 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get stats_library_stats_tooltip => 'Long press for library stats';
+  String get stats_library_stats_tooltip => '길게 눌러 라이브러리 통계 보기';
 }

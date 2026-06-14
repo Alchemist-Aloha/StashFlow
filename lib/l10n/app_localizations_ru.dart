@@ -2752,100 +2752,101 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get saved_presets => 'Saved Presets';
+  String get saved_presets => 'Сохранённые пресеты';
 
   @override
-  String get current_settings => 'Current Settings';
+  String get current_settings => 'Текущие настройки';
 
   @override
-  String get available_presets => 'Available Presets';
+  String get available_presets => 'Доступные пресеты';
 
   @override
-  String get existing_names_are_overwritten => 'Existing names are overwritten';
+  String get existing_names_are_overwritten =>
+      'Существующие имена будут перезаписаны';
 
   @override
   String get active_settings_saved_server =>
-      'Current active settings will be saved to the server.';
+      'Текущие активные настройки будут сохранены на сервере.';
 
   @override
   String failed_to_save_filter(String error) {
-    return 'Failed to save filter: $error';
+    return 'Не удалось сохранить фильтр: $error';
   }
 
   @override
   String failed_to_delete_preset(String error) {
-    return 'Failed to delete preset: $error';
+    return 'Не удалось удалить пресет: $error';
   }
 
   @override
   String sort_label(String sortLabel) {
-    return 'Sort: $sortLabel';
+    return 'Сортировка: $sortLabel';
   }
 
   @override
   String filters_count(int count) {
-    return 'Filters: $count';
+    return 'Фильтры: $count';
   }
 
   @override
   String search_label(String query) {
-    return 'Search: $query';
+    return 'Поиск: $query';
   }
 
   @override
   String failed_to_load_presets(String error) {
-    return 'Failed to load presets: $error';
+    return 'Не удалось загрузить пресеты: $error';
   }
 
   @override
   String saved_item(String item) {
-    return 'Saved $item';
+    return 'Сохранено: $item';
   }
 
   @override
   String unable_to_load_stash_boxes(String error) {
-    return 'Unable to load stash-boxes: $error';
+    return 'Не удалось загрузить Stash Boxes: $error';
   }
 
   @override
   String delete_n_scenes_question(int count) {
-    return 'Delete $count scenes?';
+    return 'Удалить $count сцен?';
   }
 
   @override
   String get delete_scenes_help =>
-      'Choose whether to remove only Stash metadata or delete the scene files and generated supporting files too.';
+      'Выберите, удалить только метаданные Stash или также удалить файлы сцен и созданные вспомогательные файлы.';
 
   @override
   String deleted_n_scenes(int count) {
-    return 'Deleted $count scenes';
+    return 'Удалено сцен: $count';
   }
 
   @override
   String delete_failed_error(String error) {
-    return 'Delete failed: $error';
+    return 'Ошибка удаления: $error';
   }
 
   @override
-  String get configuration => 'Configuration';
+  String get configuration => 'Конфигурация';
 
   @override
   String missing_phashes_for_scenes(int count) {
-    return 'Missing phashes for $count scenes. Please run the phash generation task.';
+    return 'Отсутствуют phash для $count сцен. Пожалуйста, запустите задачу генерации phash.';
   }
 
   @override
   String get merge_editing_not_wired =>
-      'Merge editing is not wired in StashFlow yet.';
+      'Редактирование слияния в StashFlow пока не подключено.';
 
   @override
   String duplicate_sets_count(int count) {
-    return '$count duplicate sets';
+    return '$count наборов дубликатов';
   }
 
   @override
   String duplicate_set_number(int number) {
-    return 'Duplicate Set $number';
+    return 'Набор дубликатов $number';
   }
 
   @override
@@ -2855,12 +2856,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String duration_seconds_format(String seconds) {
-    return '${seconds}s';
+    return '$secondsс';
   }
 
   @override
   String bitrate_bps(int bitrate) {
-    return '$bitrate bps';
+    return '$bitrate бит/с';
   }
 
   @override
@@ -2878,9 +2879,9 @@ class AppLocalizationsRu extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString tags',
-      one: '1 tag',
-      zero: 'no tags',
+      other: '$countString тегов',
+      one: '1 тег',
+      zero: 'нет тегов',
     );
     return '$_temp0';
   }
@@ -2895,9 +2896,9 @@ class AppLocalizationsRu extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString groups',
-      one: '1 group',
-      zero: 'no groups',
+      other: '$countString групп',
+      one: '1 группа',
+      zero: 'нет групп',
     );
     return '$_temp0';
   }
@@ -2912,9 +2913,9 @@ class AppLocalizationsRu extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString markers',
-      one: '1 marker',
-      zero: 'no markers',
+      other: '$countString маркеров',
+      one: '1 маркер',
+      zero: 'нет маркеров',
     );
     return '$_temp0';
   }
@@ -2929,33 +2930,33 @@ class AppLocalizationsRu extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString galleries',
-      one: '1 gallery',
-      zero: 'no galleries',
+      other: '$countString галерей',
+      one: '1 галерея',
+      zero: 'нет галерей',
     );
     return '$_temp0';
   }
 
   @override
   String scene_tagger_checked_matches_summary(int checked, int matches) {
-    return '$checked checked • $matches matches';
+    return 'Проверено: $checked • совпадений: $matches';
   }
 
   @override
   String scene_tagger_page_summary(int count) {
-    return '$count scenes on this page';
+    return 'Сцен на этой странице: $count';
   }
 
   @override
-  String get no_matched_scenes_yet => 'No matched scenes yet.';
+  String get no_matched_scenes_yet => 'Пока нет совпавших сцен.';
 
   @override
   String get no_scenes_match_configuration =>
-      'No scenes match this configuration.';
+      'Нет сцен, соответствующих этой конфигурации.';
 
   @override
   String scene_tagger_checked_count(int count) {
-    return '$count checked';
+    return 'Проверено: $count';
   }
 
   @override

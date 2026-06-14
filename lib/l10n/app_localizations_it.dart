@@ -2464,7 +2464,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get scene_info_screenshot => 'Schermata';
 
   @override
-  String get scene_info_cover => 'Cover';
+  String get scene_info_cover => 'Copertina';
 
   @override
   String get scene_info_caption => 'Didascalia';
@@ -2775,100 +2775,101 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get saved_presets => 'Saved Presets';
+  String get saved_presets => 'Preset salvati';
 
   @override
-  String get current_settings => 'Current Settings';
+  String get current_settings => 'Impostazioni correnti';
 
   @override
-  String get available_presets => 'Available Presets';
+  String get available_presets => 'Preset disponibili';
 
   @override
-  String get existing_names_are_overwritten => 'Existing names are overwritten';
+  String get existing_names_are_overwritten =>
+      'I nomi esistenti verranno sovrascritti';
 
   @override
   String get active_settings_saved_server =>
-      'Current active settings will be saved to the server.';
+      'Le impostazioni attive correnti verranno salvate sul server.';
 
   @override
   String failed_to_save_filter(String error) {
-    return 'Failed to save filter: $error';
+    return 'Impossibile salvare il filtro: $error';
   }
 
   @override
   String failed_to_delete_preset(String error) {
-    return 'Failed to delete preset: $error';
+    return 'Impossibile eliminare il preset: $error';
   }
 
   @override
   String sort_label(String sortLabel) {
-    return 'Sort: $sortLabel';
+    return 'Ordina: $sortLabel';
   }
 
   @override
   String filters_count(int count) {
-    return 'Filters: $count';
+    return 'Filtri: $count';
   }
 
   @override
   String search_label(String query) {
-    return 'Search: $query';
+    return 'Cerca: $query';
   }
 
   @override
   String failed_to_load_presets(String error) {
-    return 'Failed to load presets: $error';
+    return 'Impossibile caricare i preset: $error';
   }
 
   @override
   String saved_item(String item) {
-    return 'Saved $item';
+    return '$item salvato';
   }
 
   @override
   String unable_to_load_stash_boxes(String error) {
-    return 'Unable to load stash-boxes: $error';
+    return 'Impossibile caricare le Stash Box: $error';
   }
 
   @override
   String delete_n_scenes_question(int count) {
-    return 'Delete $count scenes?';
+    return 'Eliminare $count scene?';
   }
 
   @override
   String get delete_scenes_help =>
-      'Choose whether to remove only Stash metadata or delete the scene files and generated supporting files too.';
+      'Scegli se rimuovere solo i metadati di Stash oppure eliminare anche i file della scena e i file di supporto generati.';
 
   @override
   String deleted_n_scenes(int count) {
-    return 'Deleted $count scenes';
+    return '$count scene eliminate';
   }
 
   @override
   String delete_failed_error(String error) {
-    return 'Delete failed: $error';
+    return 'Eliminazione non riuscita: $error';
   }
 
   @override
-  String get configuration => 'Configuration';
+  String get configuration => 'Configurazione';
 
   @override
   String missing_phashes_for_scenes(int count) {
-    return 'Missing phashes for $count scenes. Please run the phash generation task.';
+    return 'Mancano i phash per $count scene. Esegui l\'attività di generazione dei phash.';
   }
 
   @override
   String get merge_editing_not_wired =>
-      'Merge editing is not wired in StashFlow yet.';
+      'La modifica delle unioni non è ancora collegata in StashFlow.';
 
   @override
   String duplicate_sets_count(int count) {
-    return '$count duplicate sets';
+    return '$count insiemi duplicati';
   }
 
   @override
   String duplicate_set_number(int number) {
-    return 'Duplicate Set $number';
+    return 'Insieme duplicato $number';
   }
 
   @override
@@ -2901,9 +2902,9 @@ class AppLocalizationsIt extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString tags',
+      other: '$countString tag',
       one: '1 tag',
-      zero: 'no tags',
+      zero: 'nessun tag',
     );
     return '$_temp0';
   }
@@ -2918,9 +2919,9 @@ class AppLocalizationsIt extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString groups',
-      one: '1 group',
-      zero: 'no groups',
+      other: '$countString gruppi',
+      one: '1 gruppo',
+      zero: 'nessun gruppo',
     );
     return '$_temp0';
   }
@@ -2935,9 +2936,9 @@ class AppLocalizationsIt extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString markers',
+      other: '$countString marker',
       one: '1 marker',
-      zero: 'no markers',
+      zero: 'nessun marker',
     );
     return '$_temp0';
   }
@@ -2952,33 +2953,33 @@ class AppLocalizationsIt extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString galleries',
-      one: '1 gallery',
-      zero: 'no galleries',
+      other: '$countString gallerie',
+      one: '1 galleria',
+      zero: 'nessuna galleria',
     );
     return '$_temp0';
   }
 
   @override
   String scene_tagger_checked_matches_summary(int checked, int matches) {
-    return '$checked checked • $matches matches';
+    return '$checked controllate • $matches corrispondenze';
   }
 
   @override
   String scene_tagger_page_summary(int count) {
-    return '$count scenes on this page';
+    return '$count scene in questa pagina';
   }
 
   @override
-  String get no_matched_scenes_yet => 'No matched scenes yet.';
+  String get no_matched_scenes_yet => 'Nessuna scena corrispondente finora.';
 
   @override
   String get no_scenes_match_configuration =>
-      'No scenes match this configuration.';
+      'Nessuna scena corrisponde a questa configurazione.';
 
   @override
   String scene_tagger_checked_count(int count) {
-    return '$count checked';
+    return '$count controllate';
   }
 
   @override
@@ -2987,5 +2988,6 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get stats_library_stats_tooltip => 'Long press for library stats';
+  String get stats_library_stats_tooltip =>
+      'Tieni premuto per le statistiche della libreria';
 }

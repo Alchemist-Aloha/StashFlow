@@ -2757,100 +2757,101 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get saved_presets => 'Saved Presets';
+  String get saved_presets => 'Gespeicherte Voreinstellungen';
 
   @override
-  String get current_settings => 'Current Settings';
+  String get current_settings => 'Aktuelle Einstellungen';
 
   @override
-  String get available_presets => 'Available Presets';
+  String get available_presets => 'Verfügbare Voreinstellungen';
 
   @override
-  String get existing_names_are_overwritten => 'Existing names are overwritten';
+  String get existing_names_are_overwritten =>
+      'Vorhandene Namen werden überschrieben';
 
   @override
   String get active_settings_saved_server =>
-      'Current active settings will be saved to the server.';
+      'Die aktuell aktiven Einstellungen werden auf dem Server gespeichert.';
 
   @override
   String failed_to_save_filter(String error) {
-    return 'Failed to save filter: $error';
+    return 'Filter konnte nicht gespeichert werden: $error';
   }
 
   @override
   String failed_to_delete_preset(String error) {
-    return 'Failed to delete preset: $error';
+    return 'Voreinstellung konnte nicht gelöscht werden: $error';
   }
 
   @override
   String sort_label(String sortLabel) {
-    return 'Sort: $sortLabel';
+    return 'Sortierung: $sortLabel';
   }
 
   @override
   String filters_count(int count) {
-    return 'Filters: $count';
+    return 'Filter: $count';
   }
 
   @override
   String search_label(String query) {
-    return 'Search: $query';
+    return 'Suche: $query';
   }
 
   @override
   String failed_to_load_presets(String error) {
-    return 'Failed to load presets: $error';
+    return 'Voreinstellungen konnten nicht geladen werden: $error';
   }
 
   @override
   String saved_item(String item) {
-    return 'Saved $item';
+    return '$item gespeichert';
   }
 
   @override
   String unable_to_load_stash_boxes(String error) {
-    return 'Unable to load stash-boxes: $error';
+    return 'Stash-Boxen konnten nicht geladen werden: $error';
   }
 
   @override
   String delete_n_scenes_question(int count) {
-    return 'Delete $count scenes?';
+    return '$count Szenen löschen?';
   }
 
   @override
   String get delete_scenes_help =>
-      'Choose whether to remove only Stash metadata or delete the scene files and generated supporting files too.';
+      'Wähle aus, ob nur Stash-Metadaten entfernt werden sollen oder auch die Szenendateien und die zusätzlich generierten Dateien.';
 
   @override
   String deleted_n_scenes(int count) {
-    return 'Deleted $count scenes';
+    return '$count Szenen gelöscht';
   }
 
   @override
   String delete_failed_error(String error) {
-    return 'Delete failed: $error';
+    return 'Löschen fehlgeschlagen: $error';
   }
 
   @override
-  String get configuration => 'Configuration';
+  String get configuration => 'Konfiguration';
 
   @override
   String missing_phashes_for_scenes(int count) {
-    return 'Missing phashes for $count scenes. Please run the phash generation task.';
+    return 'Für $count Szenen fehlen Phashes. Bitte führe die Phash-Generierung aus.';
   }
 
   @override
   String get merge_editing_not_wired =>
-      'Merge editing is not wired in StashFlow yet.';
+      'Das Bearbeiten von Zusammenführungen ist in StashFlow noch nicht angebunden.';
 
   @override
   String duplicate_sets_count(int count) {
-    return '$count duplicate sets';
+    return '$count Duplikatgruppen';
   }
 
   @override
   String duplicate_set_number(int number) {
-    return 'Duplicate Set $number';
+    return 'Duplikatgruppe $number';
   }
 
   @override
@@ -2883,9 +2884,9 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString tags',
-      one: '1 tag',
-      zero: 'no tags',
+      other: '$countString Tags',
+      one: '1 Tag',
+      zero: 'keine Tags',
     );
     return '$_temp0';
   }
@@ -2900,9 +2901,9 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString groups',
-      one: '1 group',
-      zero: 'no groups',
+      other: '$countString Gruppen',
+      one: '1 Gruppe',
+      zero: 'keine Gruppen',
     );
     return '$_temp0';
   }
@@ -2917,9 +2918,9 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString markers',
-      one: '1 marker',
-      zero: 'no markers',
+      other: '$countString Marker',
+      one: '1 Marker',
+      zero: 'keine Marker',
     );
     return '$_temp0';
   }
@@ -2934,33 +2935,33 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString galleries',
-      one: '1 gallery',
-      zero: 'no galleries',
+      other: '$countString Galerien',
+      one: '1 Galerie',
+      zero: 'keine Galerien',
     );
     return '$_temp0';
   }
 
   @override
   String scene_tagger_checked_matches_summary(int checked, int matches) {
-    return '$checked checked • $matches matches';
+    return '$checked geprüft • $matches Treffer';
   }
 
   @override
   String scene_tagger_page_summary(int count) {
-    return '$count scenes on this page';
+    return '$count Szenen auf dieser Seite';
   }
 
   @override
-  String get no_matched_scenes_yet => 'No matched scenes yet.';
+  String get no_matched_scenes_yet => 'Noch keine passenden Szenen.';
 
   @override
   String get no_scenes_match_configuration =>
-      'No scenes match this configuration.';
+      'Keine Szenen entsprechen dieser Konfiguration.';
 
   @override
   String scene_tagger_checked_count(int count) {
-    return '$count checked';
+    return '$count geprüft';
   }
 
   @override
@@ -2969,5 +2970,6 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get stats_library_stats_tooltip => 'Long press for library stats';
+  String get stats_library_stats_tooltip =>
+      'Lange drücken für Bibliotheksstatistiken';
 }
