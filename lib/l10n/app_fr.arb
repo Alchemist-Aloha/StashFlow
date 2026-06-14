@@ -15,7 +15,7 @@
       }
     }
   },
-  "nPerformers": "{count, plural, =0{aucun acteur} =1{1 acteur} other{{count} acteurs}}",
+  "nPerformers": "{count, plural, =0{0 interprètes} =1{1 interprètes} other{{count} interprètes}}",
   "@nPerformers": {
     "placeholders": {
       "count": {
@@ -988,5 +988,27 @@
   "delete_preset_confirm": "Supprimer \"{name}\" ? Cette action ne peut pas être annulée.",
   "enter_preset_name": "Entrez le nom du préréglage",
   "delete_scene_confirm": "Êtes-vous sûr de vouloir supprimer cette scène ?",
-  "delete_selected_count": "Supprimer la sélection ({selectedCount})"
+  "delete_selected_count": "Supprimer la sélection ({selectedCount})",
+  "scene_info_cover": "Couverture",
+  "failed_to_save_filter": "Échec de l'enregistrement du filtre : {error}",
+  "failed_to_delete_preset": "Échec de la suppression du préréglage : {error}",
+  "current_settings": "Paramètres actuels",
+  "available_presets": "Préréglages disponibles",
+  "sort_label": "Trier : {sortLabel}",
+  "filters_count": "Filtres : {count}",
+  "search_label": "Rechercher : {query}",
+  "failed_to_load_presets": "Échec du chargement des préréglages : {error}",
+  "saved_item": "{item} enregistré",
+  "unable_to_load_stash_boxes": "Impossible de charger les boîtes de cache : {error}",
+  "delete_n_scenes_question": "Supprimer les scènes {count} ?",
+  "deleted_n_scenes": "Scènes {count} supprimées",
+  "delete_failed_error": "Échec de la suppression : {error}",
+  "resolution_dimensions": "{width}x{height}",
+  "duration_seconds_format": "{seconds}s",
+  "bitrate_bps": "{bitrate} points de base",
+  "o_count": "O {count}",
+  "nTags": "{count, plural, =0{0 balises} =1{1 balises} other{{count} balises}}",
+  "nGroups": "{count, plural, =0{0 groupes} =1{1 groupes} other{{count} groupes}}",
+  "nMarkers": "{count, plural, =0{0 marqueurs} =1{1 marqueurs} other{{count} marqueurs}}",
+  "nGalleries": "{count, plural, =0{0 galeries} =1{1 galeries} other{{count} galeries}}"
 }

@@ -69,10 +69,9 @@ class AppLocalizationsRu extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString исполнителей',
-      few: '$countString исполнителя',
-      one: '$countString исполнитель',
-      zero: 'нет исполнителей',
+      other: '$countString исполнители',
+      one: '1 исполнители',
+      zero: '0 исполнители',
     );
     return '$_temp0';
   }
@@ -2441,7 +2440,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get scene_info_screenshot => 'Скриншот';
 
   @override
-  String get scene_info_cover => 'Cover';
+  String get scene_info_cover => 'Крышка';
 
   @override
   String get scene_info_caption => 'Подпись';
@@ -2749,5 +2748,154 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String delete_selected_count(int selectedCount) {
     return 'Удалить выбранное ($selectedCount)';
+  }
+
+  @override
+  String failed_to_save_filter(String error) {
+    return 'Не удалось сохранить фильтр: $error.';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return 'Не удалось удалить предустановку: $error.';
+  }
+
+  @override
+  String get current_settings => 'Текущие настройки';
+
+  @override
+  String get available_presets => 'Доступные пресеты';
+
+  @override
+  String sort_label(String sortLabel) {
+    return 'Сортировать: $sortLabel';
+  }
+
+  @override
+  String filters_count(String count) {
+    return 'Фильтры: $count';
+  }
+
+  @override
+  String search_label(String query) {
+    return 'Поиск: $query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return 'Не удалось загрузить пресеты: $error.';
+  }
+
+  @override
+  String saved_item(String item) {
+    return 'Сохранено $item';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return 'Невозможно загрузить тайники: $error';
+  }
+
+  @override
+  String delete_n_scenes_question(int count) {
+    return 'Удалить сцены $count?';
+  }
+
+  @override
+  String deleted_n_scenes(int count) {
+    return 'Удалены сцены $count.';
+  }
+
+  @override
+  String delete_failed_error(String error) {
+    return 'Не удалось удалить: $error';
+  }
+
+  @override
+  String resolution_dimensions(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_seconds_format(String seconds) {
+    return '${seconds}s';
+  }
+
+  @override
+  String bitrate_bps(int bitrate) {
+    return '$bitrate бит/с';
+  }
+
+  @override
+  String o_count(int count) {
+    return 'О $count';
+  }
+
+  @override
+  String nTags(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString теги',
+      one: '1 теги',
+      zero: '0 теги',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGroups(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString группы',
+      one: '1 группы',
+      zero: '0 группы',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nMarkers(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString маркеры',
+      one: '1 маркеры',
+      zero: '0 маркеры',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGalleries(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString галереи',
+      one: '1 галереи',
+      zero: '0 галереи',
+    );
+    return '$_temp0';
   }
 }

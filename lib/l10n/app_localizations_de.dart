@@ -70,7 +70,7 @@ class AppLocalizationsDe extends AppLocalizations {
       locale: localeName,
       other: '$countString Darsteller',
       one: '1 Darsteller',
-      zero: 'keine Darsteller',
+      zero: '0 Darsteller',
     );
     return '$_temp0';
   }
@@ -2447,7 +2447,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scene_info_screenshot => 'Screenshot';
 
   @override
-  String get scene_info_cover => 'Cover';
+  String get scene_info_cover => 'Abdeckung';
 
   @override
   String get scene_info_caption => 'Untertitel';
@@ -2754,5 +2754,154 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String delete_selected_count(int selectedCount) {
     return 'Ausgewählte löschen ($selectedCount)';
+  }
+
+  @override
+  String failed_to_save_filter(String error) {
+    return 'Filter konnte nicht gespeichert werden: $error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return 'Voreinstellung konnte nicht gelöscht werden: $error';
+  }
+
+  @override
+  String get current_settings => 'Aktuelle Einstellungen';
+
+  @override
+  String get available_presets => 'Verfügbare Voreinstellungen';
+
+  @override
+  String sort_label(String sortLabel) {
+    return 'Sortieren: $sortLabel';
+  }
+
+  @override
+  String filters_count(String count) {
+    return 'Filter: $count';
+  }
+
+  @override
+  String search_label(String query) {
+    return 'Suche: $query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return 'Voreinstellungen konnten nicht geladen werden: $error';
+  }
+
+  @override
+  String saved_item(String item) {
+    return 'Gespeichert $item';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return 'Stash-Boxen können nicht geladen werden: $error';
+  }
+
+  @override
+  String delete_n_scenes_question(int count) {
+    return '$count-Szenen löschen?';
+  }
+
+  @override
+  String deleted_n_scenes(int count) {
+    return 'Gelöschte $count-Szenen';
+  }
+
+  @override
+  String delete_failed_error(String error) {
+    return 'Löschen fehlgeschlagen: $error';
+  }
+
+  @override
+  String resolution_dimensions(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_seconds_format(String seconds) {
+    return '${seconds}s';
+  }
+
+  @override
+  String bitrate_bps(int bitrate) {
+    return '$bitrate bps';
+  }
+
+  @override
+  String o_count(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String nTags(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString Tags',
+      one: '1 Tags',
+      zero: '0 Tags',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGroups(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString Gruppen',
+      one: '1 Gruppen',
+      zero: '0 Gruppen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nMarkers(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString Markierungen',
+      one: '1 Markierungen',
+      zero: '0 Markierungen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGalleries(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString Galerien',
+      one: '1 Galerien',
+      zero: '0 Galerien',
+    );
+    return '$_temp0';
   }
 }

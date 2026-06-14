@@ -70,7 +70,7 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save filter: $error')),
+          SnackBar(content: Text(context.l10n.failed_to_save_filter(error.toString()))),
         );
       }
     } finally {
@@ -127,7 +127,7 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to delete preset: $error')),
+          SnackBar(content: Text(context.l10n.failed_to_delete_preset(error.toString()))),
         );
       }
     } finally {
@@ -192,7 +192,7 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
                   ],
                 ),
                 SizedBox(height: context.dimensions.spacingMedium),
-                Text('Current Settings', style: context.textTheme.labelLarge),
+                Text(context.l10n.current_settings, style: context.textTheme.labelLarge),
                 SizedBox(height: context.dimensions.spacingSmall),
                 _ActiveSettingsSummary(
                   searchQuery: widget.searchQuery,
@@ -202,7 +202,7 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
                   defaultSortLabel: widget.defaultSortLabel,
                 ),
                 SizedBox(height: context.dimensions.spacingSmall),
-                Text('Available Presets', style: context.textTheme.labelLarge),
+                Text(context.l10n.available_presets, style: context.textTheme.labelLarge),
                 SizedBox(height: context.dimensions.spacingSmall),
                 ConstrainedBox(
                   constraints: BoxConstraints(
@@ -343,16 +343,16 @@ class _ActiveSettingsSummary extends StatelessWidget {
               children: [
                 Chip(
                   visualDensity: VisualDensity.compact,
-                  label: Text('Sort: $sortLabel'),
+                  label: Text(context.l10n.sort_label(sortLabel)),
                 ),
                 Chip(
                   visualDensity: VisualDensity.compact,
-                  label: Text('Filters: $activeFilterCount'),
+                  label: Text(context.l10n.filters_count(activeFilterCount.toString())),
                 ),
                 if (searchQuery.isNotEmpty)
                   Chip(
                     visualDensity: VisualDensity.compact,
-                    label: Text('Search: $searchQuery'),
+                    label: Text(context.l10n.search_label(searchQuery)),
                   ),
               ],
             ),
@@ -394,7 +394,7 @@ class _SavedFilterList<T extends SavedFilterConfig<dynamic>>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Failed to load presets: ${snapshot.error}'),
+            Text(context.l10n.failed_to_load_presets(snapshot.error.toString())),
             SizedBox(height: context.dimensions.spacingSmall),
             OutlinedButton(
               onPressed: onRetry,

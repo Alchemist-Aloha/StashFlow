@@ -15,7 +15,7 @@
       }
     }
   },
-  "nPerformers": "{count, plural, =0{keine Darsteller} =1{1 Darsteller} other{{count} Darsteller}}",
+  "nPerformers": "{count, plural, =0{0 Darsteller} =1{1 Darsteller} other{{count} Darsteller}}",
   "@nPerformers": {
     "placeholders": {
       "count": {
@@ -1009,5 +1009,27 @@
   "delete_preset_confirm": "„{name}“ löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
   "enter_preset_name": "Geben Sie den voreingestellten Namen ein",
   "delete_scene_confirm": "Möchten Sie diese Szene wirklich löschen?",
-  "delete_selected_count": "Ausgewählte löschen ({selectedCount})"
+  "delete_selected_count": "Ausgewählte löschen ({selectedCount})",
+  "scene_info_cover": "Abdeckung",
+  "failed_to_save_filter": "Filter konnte nicht gespeichert werden: {error}",
+  "failed_to_delete_preset": "Voreinstellung konnte nicht gelöscht werden: {error}",
+  "current_settings": "Aktuelle Einstellungen",
+  "available_presets": "Verfügbare Voreinstellungen",
+  "sort_label": "Sortieren: {sortLabel}",
+  "filters_count": "Filter: {count}",
+  "search_label": "Suche: {query}",
+  "failed_to_load_presets": "Voreinstellungen konnten nicht geladen werden: {error}",
+  "saved_item": "Gespeichert {item}",
+  "unable_to_load_stash_boxes": "Stash-Boxen können nicht geladen werden: {error}",
+  "delete_n_scenes_question": "{count}-Szenen löschen?",
+  "deleted_n_scenes": "Gelöschte {count}-Szenen",
+  "delete_failed_error": "Löschen fehlgeschlagen: {error}",
+  "resolution_dimensions": "{width}x{height}",
+  "duration_seconds_format": "{seconds}s",
+  "bitrate_bps": "{bitrate} bps",
+  "o_count": "O {count}",
+  "nTags": "{count, plural, =0{0 Tags} =1{1 Tags} other{{count} Tags}}",
+  "nGroups": "{count, plural, =0{0 Gruppen} =1{1 Gruppen} other{{count} Gruppen}}",
+  "nMarkers": "{count, plural, =0{0 Markierungen} =1{1 Markierungen} other{{count} Markierungen}}",
+  "nGalleries": "{count, plural, =0{0 Galerien} =1{1 Galerien} other{{count} Galerien}}"
 }

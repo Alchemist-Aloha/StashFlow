@@ -15,7 +15,7 @@
       }
     }
   },
-  "nPerformers": "{count, plural, =0{nessun attore} =1{1 attore} other{{count} attori}}",
+  "nPerformers": "{count, plural, =0{0 interpreti} =1{1 interpreti} other{{count} interpreti}}",
   "@nPerformers": {
     "placeholders": {
       "count": {
@@ -803,7 +803,7 @@
   "saving_video": "Salvataggio in galleria...",
   "saved_to_album": "Salvato nell'album StashFlow",
   "gallery_error": "Errore galleria: {message}",
-  "failed_to_save": "Impossibile salvare: {error}",
+  "failed_to_save": "Salvataggio non riuscito: {error}",
   "saving_image": "Salvataggio immagine...",
   "@gallery_error": {
     "placeholders": {
@@ -993,5 +993,27 @@
   "delete_preset_confirm": "Eliminare \"{name}\"? Questa azione non può essere annullata.",
   "enter_preset_name": "Immettere il nome preimpostato",
   "delete_scene_confirm": "Sei sicuro di voler eliminare questa scena?",
-  "delete_selected_count": "Elimina selezionati ({selectedCount})"
+  "delete_selected_count": "Elimina selezionati ({selectedCount})",
+  "scene_info_cover": "Copertina",
+  "failed_to_save_filter": "Impossibile salvare il filtro: {error}",
+  "failed_to_delete_preset": "Impossibile eliminare la preimpostazione: {error}",
+  "current_settings": "Impostazioni correnti",
+  "available_presets": "Preset disponibili",
+  "sort_label": "Ordina: {sortLabel}",
+  "filters_count": "Filtri: {count}",
+  "search_label": "Cerca: {query}",
+  "failed_to_load_presets": "Impossibile caricare le preimpostazioni: {error}",
+  "saved_item": "Salvato {item}",
+  "unable_to_load_stash_boxes": "Impossibile caricare le cassette postali: {error}",
+  "delete_n_scenes_question": "Eliminare le scene {count}?",
+  "deleted_n_scenes": "Scene {count} eliminate",
+  "delete_failed_error": "Eliminazione non riuscita: {error}",
+  "resolution_dimensions": "{width}x{height}",
+  "duration_seconds_format": "{seconds}s",
+  "bitrate_bps": "{bitrate} bps",
+  "o_count": "O {count}",
+  "nTags": "{count, plural, =0{0 tag} =1{1 tag} other{{count} tag}}",
+  "nGroups": "{count, plural, =0{0 gruppi} =1{1 gruppi} other{{count} gruppi}}",
+  "nMarkers": "{count, plural, =0{0 marcatori} =1{1 marcatori} other{{count} marcatori}}",
+  "nGalleries": "{count, plural, =0{0 gallerie} =1{1 gallerie} other{{count} gallerie}}"
 }

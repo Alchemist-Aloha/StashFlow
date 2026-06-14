@@ -337,12 +337,12 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
       _removeSceneFromResults(scene.id);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Saved ${scene.title}')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.saved_item(scene.title ?? ''))));
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Save failed: $error')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.failed_to_save(error.toString()))));
     }
   }
 
@@ -711,7 +711,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                 );
               },
               loading: () => const LinearProgressIndicator(),
-              error: (error, _) => Text('Unable to load stash-boxes: $error'),
+              error: (error, _) => Text(context.l10n.unable_to_load_stash_boxes(error.toString())),
             ),
           ],
         ),

@@ -15,7 +15,7 @@
       }
     }
   },
-  "nPerformers": "{count, plural, =0{パフォーマーなし} =1{1 パフォーマー} other{{count} パフォーマー}}",
+  "nPerformers": "{count} 出演者",
   "@nPerformers": {
     "placeholders": {
       "count": {
@@ -988,5 +988,27 @@
   "delete_preset_confirm": "「{name}」を削除しますか?この操作は元に戻すことができません。",
   "enter_preset_name": "プリセット名を入力してください",
   "delete_scene_confirm": "このシーンを削除してもよろしいですか?",
-  "delete_selected_count": "選択したものを削除 ({selectedCount})"
+  "delete_selected_count": "選択したものを削除 ({selectedCount})",
+  "scene_info_cover": "カバー",
+  "failed_to_save_filter": "フィルタを保存できませんでした: {error}",
+  "failed_to_delete_preset": "プリセットの削除に失敗しました: {error}",
+  "current_settings": "現在の設定",
+  "available_presets": "利用可能なプリセット",
+  "sort_label": "並べ替え: {sortLabel}",
+  "filters_count": "フィルター: {count}",
+  "search_label": "検索: {query}",
+  "failed_to_load_presets": "プリセットのロードに失敗しました: {error}",
+  "saved_item": "{item} を保存しました",
+  "unable_to_load_stash_boxes": "隠しボックスをロードできません: {error}",
+  "delete_n_scenes_question": "{count} シーンを削除しますか?",
+  "deleted_n_scenes": "{count} シーンを削除しました",
+  "delete_failed_error": "削除に失敗しました: {error}",
+  "resolution_dimensions": "{width}x{height}",
+  "duration_seconds_format": "{seconds}s",
+  "bitrate_bps": "{bitrate} bps",
+  "o_count": "O {count}",
+  "nTags": "{count} タグ",
+  "nGroups": "{count} グループ",
+  "nMarkers": "{count} マーカー",
+  "nGalleries": "{count} ギャラリー"
 }

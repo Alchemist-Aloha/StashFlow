@@ -68,9 +68,9 @@ class AppLocalizationsIt extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString attori',
-      one: '1 attore',
-      zero: 'nessun attore',
+      other: '$countString interpreti',
+      one: '1 interpreti',
+      zero: '0 interpreti',
     );
     return '$_temp0';
   }
@@ -2360,7 +2360,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String failed_to_save(String error) {
-    return 'Impossibile salvare: $error';
+    return 'Salvataggio non riuscito: $error';
   }
 
   @override
@@ -2464,7 +2464,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get scene_info_screenshot => 'Schermata';
 
   @override
-  String get scene_info_cover => 'Cover';
+  String get scene_info_cover => 'Copertina';
 
   @override
   String get scene_info_caption => 'Didascalia';
@@ -2772,5 +2772,154 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String delete_selected_count(int selectedCount) {
     return 'Elimina selezionati ($selectedCount)';
+  }
+
+  @override
+  String failed_to_save_filter(String error) {
+    return 'Impossibile salvare il filtro: $error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return 'Impossibile eliminare la preimpostazione: $error';
+  }
+
+  @override
+  String get current_settings => 'Impostazioni correnti';
+
+  @override
+  String get available_presets => 'Preset disponibili';
+
+  @override
+  String sort_label(String sortLabel) {
+    return 'Ordina: $sortLabel';
+  }
+
+  @override
+  String filters_count(String count) {
+    return 'Filtri: $count';
+  }
+
+  @override
+  String search_label(String query) {
+    return 'Cerca: $query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return 'Impossibile caricare le preimpostazioni: $error';
+  }
+
+  @override
+  String saved_item(String item) {
+    return 'Salvato $item';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return 'Impossibile caricare le cassette postali: $error';
+  }
+
+  @override
+  String delete_n_scenes_question(int count) {
+    return 'Eliminare le scene $count?';
+  }
+
+  @override
+  String deleted_n_scenes(int count) {
+    return 'Scene $count eliminate';
+  }
+
+  @override
+  String delete_failed_error(String error) {
+    return 'Eliminazione non riuscita: $error';
+  }
+
+  @override
+  String resolution_dimensions(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_seconds_format(String seconds) {
+    return '${seconds}s';
+  }
+
+  @override
+  String bitrate_bps(int bitrate) {
+    return '$bitrate bps';
+  }
+
+  @override
+  String o_count(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String nTags(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString tag',
+      one: '1 tag',
+      zero: '0 tag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGroups(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString gruppi',
+      one: '1 gruppi',
+      zero: '0 gruppi',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nMarkers(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString marcatori',
+      one: '1 marcatori',
+      zero: '0 marcatori',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGalleries(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString gallerie',
+      one: '1 gallerie',
+      zero: '0 gallerie',
+    );
+    return '$_temp0';
   }
 }

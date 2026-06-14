@@ -15,7 +15,7 @@
       }
     }
   },
-  "nPerformers": "{count, plural, =0{no hay actores} =1{1 actor} other{{count} actores}}",
+  "nPerformers": "{count, plural, =0{0 intérpretes} =1{1 intérpretes} other{{count} intérpretes}}",
   "@nPerformers": {
     "placeholders": {
       "count": {
@@ -988,5 +988,27 @@
   "delete_preset_confirm": "¿Eliminar \"{name}\"? Esta acción no se puede deshacer.",
   "enter_preset_name": "Introduzca el nombre preestablecido",
   "delete_scene_confirm": "¿Estás seguro de que quieres eliminar esta escena?",
-  "delete_selected_count": "Eliminar seleccionados ({selectedCount})"
+  "delete_selected_count": "Eliminar seleccionados ({selectedCount})",
+  "scene_info_cover": "Cubrir",
+  "failed_to_save_filter": "No se pudo guardar el filtro: {error}",
+  "failed_to_delete_preset": "No se pudo eliminar el ajuste preestablecido: {error}",
+  "current_settings": "Configuración actual",
+  "available_presets": "Presets disponibles",
+  "sort_label": "Ordenar: {sortLabel}",
+  "filters_count": "Filtros: {count}",
+  "search_label": "Buscar: {query}",
+  "failed_to_load_presets": "No se pudieron cargar los ajustes preestablecidos: {error}",
+  "saved_item": "Guardado {item}",
+  "unable_to_load_stash_boxes": "No se pueden cargar cajas de almacenamiento: {error}",
+  "delete_n_scenes_question": "¿Eliminar {count} escenas?",
+  "deleted_n_scenes": "Escenas {count} eliminadas",
+  "delete_failed_error": "Error al eliminar: {error}",
+  "resolution_dimensions": "{width}x{height}",
+  "duration_seconds_format": "{seconds}s",
+  "bitrate_bps": "{bitrate} bps",
+  "o_count": "O {count}",
+  "nTags": "{count, plural, =0{0 etiquetas} =1{1 etiquetas} other{{count} etiquetas}}",
+  "nGroups": "{count, plural, =0{0 grupos} =1{1 grupos} other{{count} grupos}}",
+  "nMarkers": "{count, plural, =0{0 marcadores} =1{1 marcadores} other{{count} marcadores}}",
+  "nGalleries": "{count, plural, =0{0 galerías} =1{1 galerías} other{{count} galerías}}"
 }

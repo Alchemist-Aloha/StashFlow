@@ -5057,6 +5057,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete selected ({selectedCount})'**
   String delete_selected_count(int selectedCount);
+
+  /// No description provided for @failed_to_save_filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save filter: {error}'**
+  String failed_to_save_filter(String error);
+
+  /// No description provided for @failed_to_delete_preset.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete preset: {error}'**
+  String failed_to_delete_preset(String error);
+
+  /// No description provided for @current_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Settings'**
+  String get current_settings;
+
+  /// No description provided for @available_presets.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Presets'**
+  String get available_presets;
+
+  /// No description provided for @sort_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: {sortLabel}'**
+  String sort_label(String sortLabel);
+
+  /// No description provided for @filters_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters: {count}'**
+  String filters_count(String count);
+
+  /// No description provided for @search_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Search: {query}'**
+  String search_label(String query);
+
+  /// No description provided for @failed_to_load_presets.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load presets: {error}'**
+  String failed_to_load_presets(String error);
+
+  /// No description provided for @saved_item.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {item}'**
+  String saved_item(String item);
+
+  /// No description provided for @unable_to_load_stash_boxes.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load stash-boxes: {error}'**
+  String unable_to_load_stash_boxes(String error);
+
+  /// No description provided for @delete_n_scenes_question.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {count} scenes?'**
+  String delete_n_scenes_question(int count);
+
+  /// No description provided for @deleted_n_scenes.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted {count} scenes'**
+  String deleted_n_scenes(int count);
+
+  /// No description provided for @delete_failed_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete failed: {error}'**
+  String delete_failed_error(String error);
+
+  /// No description provided for @resolution_dimensions.
+  ///
+  /// In en, this message translates to:
+  /// **'{width}x{height}'**
+  String resolution_dimensions(int width, int height);
+
+  /// No description provided for @duration_seconds_format.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds}s'**
+  String duration_seconds_format(String seconds);
+
+  /// No description provided for @bitrate_bps.
+  ///
+  /// In en, this message translates to:
+  /// **'{bitrate} bps'**
+  String bitrate_bps(int bitrate);
+
+  /// No description provided for @o_count.
+  ///
+  /// In en, this message translates to:
+  /// **'O {count}'**
+  String o_count(int count);
+
+  /// No description provided for @nTags.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{no tags} =1{1 tag} other{{count} tags}}'**
+  String nTags(num count);
+
+  /// No description provided for @nGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{no groups} =1{1 group} other{{count} groups}}'**
+  String nGroups(num count);
+
+  /// No description provided for @nMarkers.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{no markers} =1{1 marker} other{{count} markers}}'**
+  String nMarkers(num count);
+
+  /// No description provided for @nGalleries.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{no galleries} =1{1 gallery} other{{count} galleries}}'**
+  String nGalleries(num count);
 }
 
 class _AppLocalizationsDelegate

@@ -2635,6 +2635,155 @@ class AppLocalizationsZh extends AppLocalizations {
   String delete_selected_count(int selectedCount) {
     return 'Delete selected ($selectedCount)';
   }
+
+  @override
+  String failed_to_save_filter(String error) {
+    return 'Failed to save filter: $error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return 'Failed to delete preset: $error';
+  }
+
+  @override
+  String get current_settings => 'Current Settings';
+
+  @override
+  String get available_presets => 'Available Presets';
+
+  @override
+  String sort_label(String sortLabel) {
+    return 'Sort: $sortLabel';
+  }
+
+  @override
+  String filters_count(String count) {
+    return 'Filters: $count';
+  }
+
+  @override
+  String search_label(String query) {
+    return 'Search: $query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return 'Failed to load presets: $error';
+  }
+
+  @override
+  String saved_item(String item) {
+    return 'Saved $item';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return 'Unable to load stash-boxes: $error';
+  }
+
+  @override
+  String delete_n_scenes_question(int count) {
+    return 'Delete $count scenes?';
+  }
+
+  @override
+  String deleted_n_scenes(int count) {
+    return 'Deleted $count scenes';
+  }
+
+  @override
+  String delete_failed_error(String error) {
+    return 'Delete failed: $error';
+  }
+
+  @override
+  String resolution_dimensions(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_seconds_format(String seconds) {
+    return '${seconds}s';
+  }
+
+  @override
+  String bitrate_bps(int bitrate) {
+    return '$bitrate bps';
+  }
+
+  @override
+  String o_count(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String nTags(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString tags',
+      one: '1 tag',
+      zero: 'no tags',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGroups(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString groups',
+      one: '1 group',
+      zero: 'no groups',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nMarkers(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString markers',
+      one: '1 marker',
+      zero: 'no markers',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGalleries(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString galleries',
+      one: '1 gallery',
+      zero: 'no galleries',
+    );
+    return '$_temp0';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -2697,13 +2846,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
     );
     final String countString = countNumberFormat.format(count);
 
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$countString 位演职人员',
-      zero: '无演职人员',
-    );
-    return '$_temp0';
+    return '$countString 表演者';
   }
 
   @override
@@ -4969,6 +5112,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scene_info_screenshot => '截屏';
 
   @override
+  String get scene_info_cover => '覆盖';
+
+  @override
   String get scene_info_caption => '标题';
 
   @override
@@ -5264,6 +5410,127 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String delete_selected_count(int selectedCount) {
     return '删除所选内容 ($selectedCount)';
   }
+
+  @override
+  String failed_to_save_filter(String error) {
+    return '无法保存过滤器：$error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return '无法删除预设：$error';
+  }
+
+  @override
+  String get current_settings => '当前设置';
+
+  @override
+  String get available_presets => '可用预设';
+
+  @override
+  String sort_label(String sortLabel) {
+    return '排序：$sortLabel';
+  }
+
+  @override
+  String filters_count(String count) {
+    return '过滤器：$count';
+  }
+
+  @override
+  String search_label(String query) {
+    return '搜索：$query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return '无法加载预设：$error';
+  }
+
+  @override
+  String saved_item(String item) {
+    return '已保存 $item';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return '无法加载储藏盒：$error';
+  }
+
+  @override
+  String delete_n_scenes_question(int count) {
+    return '删除 $count 场景？';
+  }
+
+  @override
+  String deleted_n_scenes(int count) {
+    return '已删除 $count 场景';
+  }
+
+  @override
+  String delete_failed_error(String error) {
+    return '删除失败：$error';
+  }
+
+  @override
+  String resolution_dimensions(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_seconds_format(String seconds) {
+    return '${seconds}s';
+  }
+
+  @override
+  String bitrate_bps(int bitrate) {
+    return '$bitrate bps';
+  }
+
+  @override
+  String o_count(int count) {
+    return 'Ø $count';
+  }
+
+  @override
+  String nTags(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 标签';
+  }
+
+  @override
+  String nGroups(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 分组';
+  }
+
+  @override
+  String nMarkers(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 标记';
+  }
+
+  @override
+  String nGalleries(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 画廊';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -5327,14 +5594,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
     );
     final String countString = countNumberFormat.format(count);
 
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$countString 位演出者',
-      one: '1 位演出者',
-      zero: '沒有演出者',
-    );
-    return '$_temp0';
+    return '$countString 表演者';
   }
 
   @override
@@ -7602,6 +7862,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scene_info_screenshot => '螢幕截圖';
 
   @override
+  String get scene_info_cover => '覆蓋';
+
+  @override
   String get scene_info_caption => '標題';
 
   @override
@@ -7896,5 +8159,126 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String delete_selected_count(int selectedCount) {
     return '刪除所選內容 ($selectedCount)';
+  }
+
+  @override
+  String failed_to_save_filter(String error) {
+    return '無法儲存過濾器：$error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return '無法刪除預設：$error';
+  }
+
+  @override
+  String get current_settings => '目前設定';
+
+  @override
+  String get available_presets => '可用預設';
+
+  @override
+  String sort_label(String sortLabel) {
+    return '排序：$sortLabel';
+  }
+
+  @override
+  String filters_count(String count) {
+    return '濾鏡：$count';
+  }
+
+  @override
+  String search_label(String query) {
+    return '搜尋：$query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return '無法載入預設：$error';
+  }
+
+  @override
+  String saved_item(String item) {
+    return '已儲存 $item';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return '無法載入儲藏盒：$error';
+  }
+
+  @override
+  String delete_n_scenes_question(int count) {
+    return '刪除 $count 場景？';
+  }
+
+  @override
+  String deleted_n_scenes(int count) {
+    return '已刪除 $count 場景';
+  }
+
+  @override
+  String delete_failed_error(String error) {
+    return '刪除失敗：$error';
+  }
+
+  @override
+  String resolution_dimensions(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_seconds_format(String seconds) {
+    return '${seconds}s';
+  }
+
+  @override
+  String bitrate_bps(int bitrate) {
+    return '$bitrate bps';
+  }
+
+  @override
+  String o_count(int count) {
+    return 'Ø $count';
+  }
+
+  @override
+  String nTags(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 標籤';
+  }
+
+  @override
+  String nGroups(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 分組';
+  }
+
+  @override
+  String nMarkers(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 標記';
+  }
+
+  @override
+  String nGalleries(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 畫廊';
   }
 }

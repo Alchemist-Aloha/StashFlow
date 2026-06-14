@@ -65,14 +65,7 @@ class AppLocalizationsJa extends AppLocalizations {
     );
     final String countString = countNumberFormat.format(count);
 
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$countString パフォーマー',
-      one: '1 パフォーマー',
-      zero: 'パフォーマーなし',
-    );
-    return '$_temp0';
+    return '$countString 出演者';
   }
 
   @override
@@ -2359,7 +2352,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get scene_info_screenshot => 'スクリーンショット';
 
   @override
-  String get scene_info_cover => 'Cover';
+  String get scene_info_cover => 'カバー';
 
   @override
   String get scene_info_caption => 'キャプション';
@@ -2660,5 +2653,126 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String delete_selected_count(int selectedCount) {
     return '選択したものを削除 ($selectedCount)';
+  }
+
+  @override
+  String failed_to_save_filter(String error) {
+    return 'フィルタを保存できませんでした: $error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return 'プリセットの削除に失敗しました: $error';
+  }
+
+  @override
+  String get current_settings => '現在の設定';
+
+  @override
+  String get available_presets => '利用可能なプリセット';
+
+  @override
+  String sort_label(String sortLabel) {
+    return '並べ替え: $sortLabel';
+  }
+
+  @override
+  String filters_count(String count) {
+    return 'フィルター: $count';
+  }
+
+  @override
+  String search_label(String query) {
+    return '検索: $query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return 'プリセットのロードに失敗しました: $error';
+  }
+
+  @override
+  String saved_item(String item) {
+    return '$item を保存しました';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return '隠しボックスをロードできません: $error';
+  }
+
+  @override
+  String delete_n_scenes_question(int count) {
+    return '$count シーンを削除しますか?';
+  }
+
+  @override
+  String deleted_n_scenes(int count) {
+    return '$count シーンを削除しました';
+  }
+
+  @override
+  String delete_failed_error(String error) {
+    return '削除に失敗しました: $error';
+  }
+
+  @override
+  String resolution_dimensions(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_seconds_format(String seconds) {
+    return '${seconds}s';
+  }
+
+  @override
+  String bitrate_bps(int bitrate) {
+    return '$bitrate bps';
+  }
+
+  @override
+  String o_count(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String nTags(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString タグ';
+  }
+
+  @override
+  String nGroups(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString グループ';
+  }
+
+  @override
+  String nMarkers(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString マーカー';
+  }
+
+  @override
+  String nGalleries(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString ギャラリー';
   }
 }

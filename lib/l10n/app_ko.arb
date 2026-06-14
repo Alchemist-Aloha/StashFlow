@@ -15,7 +15,7 @@
       }
     }
   },
-  "nPerformers": "{count, plural, =0{출연자 없음} other{{count}명의 출연자}}",
+  "nPerformers": "{count} 출연자",
   "@nPerformers": {
     "placeholders": {
       "count": {
@@ -988,5 +988,27 @@
   "delete_preset_confirm": "\"{name}\"을(를) 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
   "enter_preset_name": "프리셋 이름을 입력하세요",
   "delete_scene_confirm": "이 장면을 삭제하시겠습니까?",
-  "delete_selected_count": "선택 항목 삭제({selectedCount})"
+  "delete_selected_count": "선택 항목 삭제({selectedCount})",
+  "scene_info_cover": "씌우다",
+  "failed_to_save_filter": "필터 저장 실패: {error}",
+  "failed_to_delete_preset": "사전 설정 삭제 실패: {error}",
+  "current_settings": "현재 설정",
+  "available_presets": "사용 가능한 사전 설정",
+  "sort_label": "정렬: {sortLabel}",
+  "filters_count": "필터: {count}",
+  "search_label": "검색: {query}",
+  "failed_to_load_presets": "사전 설정을 로드하지 못했습니다: {error}",
+  "saved_item": "{item}에 저장되었습니다.",
+  "unable_to_load_stash_boxes": "숨김 상자를 로드할 수 없습니다: {error}",
+  "delete_n_scenes_question": "{count} 장면을 삭제하시겠습니까?",
+  "deleted_n_scenes": "{count} 장면을 삭제했습니다.",
+  "delete_failed_error": "삭제 실패: {error}",
+  "resolution_dimensions": "{width}x{height}",
+  "duration_seconds_format": "{seconds}s",
+  "bitrate_bps": "{bitrate}bps",
+  "o_count": "아 {count}",
+  "nTags": "{count} 태그",
+  "nGroups": "{count} 그룹",
+  "nMarkers": "{count} 마커",
+  "nGalleries": "{count} 갤러리"
 }

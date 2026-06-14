@@ -68,9 +68,9 @@ class AppLocalizationsFr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString acteurs',
-      one: '1 acteur',
-      zero: 'aucun acteur',
+      other: '$countString interprètes',
+      one: '1 interprètes',
+      zero: '0 interprètes',
     );
     return '$_temp0';
   }
@@ -2461,7 +2461,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get scene_info_screenshot => 'Capture d\'écran';
 
   @override
-  String get scene_info_cover => 'Cover';
+  String get scene_info_cover => 'Couverture';
 
   @override
   String get scene_info_caption => 'Légende';
@@ -2771,5 +2771,154 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String delete_selected_count(int selectedCount) {
     return 'Supprimer la sélection ($selectedCount)';
+  }
+
+  @override
+  String failed_to_save_filter(String error) {
+    return 'Échec de l\'enregistrement du filtre : $error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return 'Échec de la suppression du préréglage : $error';
+  }
+
+  @override
+  String get current_settings => 'Paramètres actuels';
+
+  @override
+  String get available_presets => 'Préréglages disponibles';
+
+  @override
+  String sort_label(String sortLabel) {
+    return 'Trier : $sortLabel';
+  }
+
+  @override
+  String filters_count(String count) {
+    return 'Filtres : $count';
+  }
+
+  @override
+  String search_label(String query) {
+    return 'Rechercher : $query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return 'Échec du chargement des préréglages : $error';
+  }
+
+  @override
+  String saved_item(String item) {
+    return '$item enregistré';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return 'Impossible de charger les boîtes de cache : $error';
+  }
+
+  @override
+  String delete_n_scenes_question(int count) {
+    return 'Supprimer les scènes $count ?';
+  }
+
+  @override
+  String deleted_n_scenes(int count) {
+    return 'Scènes $count supprimées';
+  }
+
+  @override
+  String delete_failed_error(String error) {
+    return 'Échec de la suppression : $error';
+  }
+
+  @override
+  String resolution_dimensions(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_seconds_format(String seconds) {
+    return '${seconds}s';
+  }
+
+  @override
+  String bitrate_bps(int bitrate) {
+    return '$bitrate points de base';
+  }
+
+  @override
+  String o_count(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String nTags(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString balises',
+      one: '1 balises',
+      zero: '0 balises',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGroups(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString groupes',
+      one: '1 groupes',
+      zero: '0 groupes',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nMarkers(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString marqueurs',
+      one: '1 marqueurs',
+      zero: '0 marqueurs',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGalleries(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString galeries',
+      one: '1 galeries',
+      zero: '0 galeries',
+    );
+    return '$_temp0';
   }
 }

@@ -1143,5 +1143,166 @@
         "type": "int"
       }
     }
+  },
+  "failed_to_save_filter": "Failed to save filter: {error}",
+  "@failed_to_save_filter": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failed_to_delete_preset": "Failed to delete preset: {error}",
+  "@failed_to_delete_preset": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "current_settings": "Current Settings",
+  "available_presets": "Available Presets",
+  "sort_label": "Sort: {sortLabel}",
+  "@sort_label": {
+    "placeholders": {
+      "sortLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "filters_count": "Filters: {count}",
+  "@filters_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "search_label": "Search: {query}",
+  "@search_label": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "failed_to_load_presets": "Failed to load presets: {error}",
+  "@failed_to_load_presets": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "saved_item": "Saved {item}",
+  "@saved_item": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "unable_to_load_stash_boxes": "Unable to load stash-boxes: {error}",
+  "@unable_to_load_stash_boxes": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "delete_n_scenes_question": "Delete {count} scenes?",
+  "@delete_n_scenes_question": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleted_n_scenes": "Deleted {count} scenes",
+  "@deleted_n_scenes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "delete_failed_error": "Delete failed: {error}",
+  "@delete_failed_error": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "resolution_dimensions": "{width}x{height}",
+  "@resolution_dimensions": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "duration_seconds_format": "{seconds}s",
+  "@duration_seconds_format": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "bitrate_bps": "{bitrate} bps",
+  "@bitrate_bps": {
+    "placeholders": {
+      "bitrate": {
+        "type": "int"
+      }
+    }
+  },
+  "o_count": "O {count}",
+  "@o_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nTags": "{count, plural, =0{no tags} =1{1 tag} other{{count} tags}}",
+  "@nTags": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "nGroups": "{count, plural, =0{no groups} =1{1 group} other{{count} groups}}",
+  "@nGroups": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "nMarkers": "{count, plural, =0{no markers} =1{1 marker} other{{count} markers}}",
+  "@nMarkers": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "nGalleries": "{count, plural, =0{no galleries} =1{1 gallery} other{{count} galleries}}",
+  "@nGalleries": {
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
   }
 }
