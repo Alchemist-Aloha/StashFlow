@@ -448,6 +448,49 @@ void main() {
     },
   );
 
+  testWidgets('SceneTaggerPage shows localized save success text', (
+    tester,
+  ) async {
+    final repo = MockSceneRepository()
+      ..setData([toolTaggerScene(id: 'scene-a', title: 'Local A')])
+      ..scrapedScenesBySceneId['scene-a'] = [
+        const ScrapedScene(
+          title: 'Scraped A',
+          details: 'Remote details A',
+          studio: ScrapedStudio(name: 'Remote Studio', storedId: 'studio-1'),
+          performers: [ScrapedPerformer(name: 'Remote Performer')],
+          tags: [ScrapedTag(name: 'Remote Tag', storedId: 'tag-1')],
+        ),
+      ];
+
+    await _pumpSceneTagger(
+      tester,
+      prefs: prefs,
+      repo: repo,
+      stashBoxes: [
+        StashBoxEndpoint(
+          name: 'Primary Box',
+          endpoint: 'https://box.test/graphql',
+        ),
+      ],
+      locale: const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('开始标记'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.text('配置'));
+    await tester.pumpAndSettle();
+
+    final applyButton = find.widgetWithText(FilledButton, '申请').first;
+    await tester.ensureVisible(applyButton);
+    await tester.tap(applyButton);
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Local A'), findsOneWidget);
+  });
+
   testWidgets('SceneTaggerPage skip removes the item from the list', (
     tester,
   ) async {
@@ -635,6 +678,7 @@ Future<void> _pumpSceneTagger(
   required SharedPreferences prefs,
   required MockSceneRepository repo,
   required List<StashBoxEndpoint> stashBoxes,
+  Locale? locale,
 }) async {
   tester.view.physicalSize = const Size(1400, 2200);
   tester.view.devicePixelRatio = 1.0;
@@ -651,6 +695,7 @@ Future<void> _pumpSceneTagger(
         stashBoxEndpointsProvider.overrideWith((ref) async => stashBoxes),
       ],
       child: MaterialApp(
+        locale: locale,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         theme: AppTheme.lightTheme,

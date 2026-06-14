@@ -18,6 +18,8 @@
       "details_links",
       "studios_title",
       "scenes_sort_bitrate",
+      "scenes_sort_studio",
+      "scenes_sort_code",
       "performers_field_piercings",
       "filter_group_system",
       "resolution_144p",
@@ -78,7 +80,25 @@
       "common_hint_hex",
       "common_px",
       "common_pt",
-      "common_percent"
+      "common_percent",
+      "wip",
+      "scene_info_urls",
+      "scene_info_bitrate",
+      "scene_info_format",
+      "scene_info_screenshot",
+      "scene_info_cover",
+      "scene_info_vtt",
+      "scene_info_sprite",
+      "scene_studio_id",
+      "settings_security_passcode",
+      "common_min",
+      "common_s",
+      "filter",
+      "resolution_dimensions",
+      "duration_seconds_format",
+      "bitrate_bps",
+      "o_count",
+      "scene_tagger_progress"
     ]
   },
   "app_es.arb": {
@@ -125,7 +145,16 @@
       "common_hint_hex",
       "common_px",
       "common_pt",
-      "common_percent"
+      "common_percent",
+      "wip",
+      "scene_info_vtt",
+      "common_min",
+      "common_s",
+      "resolution_dimensions",
+      "duration_seconds_format",
+      "bitrate_bps",
+      "o_count",
+      "scene_tagger_progress"
     ]
   },
   "app_fr.arb": {
@@ -138,6 +167,8 @@
       "common_date",
       "details_synopsis",
       "studios_title",
+      "scenes_sort_studio",
+      "scenes_sort_code",
       "performers_field_piercings",
       "resolution_144p",
       "resolution_240p",
@@ -188,7 +219,19 @@
       "common_hint_hex",
       "common_px",
       "common_pt",
-      "common_percent"
+      "common_percent",
+      "wip",
+      "scene_info_format",
+      "scene_info_vtt",
+      "common_min",
+      "common_s",
+      "mode",
+      "configuration",
+      "resolution_dimensions",
+      "duration_seconds_format",
+      "bitrate_bps",
+      "o_count",
+      "scene_tagger_progress"
     ]
   },
   "app_it.arb": {
@@ -199,6 +242,7 @@
       "common_id",
       "details_media",
       "scenes_sort_bitrate",
+      "scenes_sort_studio",
       "resolution_144p",
       "resolution_240p",
       "resolution_360p",
@@ -238,7 +282,19 @@
       "common_hint_hex",
       "common_px",
       "common_pt",
-      "common_percent"
+      "common_percent",
+      "wip",
+      "scene_info_vtt",
+      "scene_studio_id",
+      "common_sec",
+      "common_min",
+      "common_s",
+      "asc",
+      "resolution_dimensions",
+      "duration_seconds_format",
+      "bitrate_bps",
+      "o_count",
+      "scene_tagger_progress"
     ]
   },
   "app_ja.arb": {
@@ -280,7 +336,16 @@
       "common_hint_hex",
       "common_px",
       "common_pt",
-      "common_percent"
+      "common_percent",
+      "wip",
+      "scene_info_vtt",
+      "scene_studio_id",
+      "common_s",
+      "resolution_dimensions",
+      "duration_seconds_format",
+      "bitrate_bps",
+      "o_count",
+      "scene_tagger_progress"
     ]
   },
   "app_ko.arb": {
@@ -323,7 +388,16 @@
       "common_hint_hex",
       "common_px",
       "common_pt",
-      "common_percent"
+      "common_percent",
+      "wip",
+      "scene_info_vtt",
+      "scene_studio_id",
+      "common_s",
+      "resolution_dimensions",
+      "duration_seconds_format",
+      "bitrate_bps",
+      "o_count",
+      "scene_tagger_progress"
     ]
   },
   "app_ru.arb": {
@@ -362,7 +436,12 @@
       "scenes_field_phash",
       "common_hint_url",
       "common_hint_hex",
-      "common_percent"
+      "common_percent",
+      "wip",
+      "common_s",
+      "resolution_dimensions",
+      "o_count",
+      "scene_tagger_progress"
     ]
   },
   "app_zh.arb": {
@@ -370,6 +449,14 @@
     "same_as_en": [
       "appTitle",
       "nPlays",
+      "filter_includes",
+      "filter_excludes",
+      "filter_includes_all",
+      "filter_matches_regex",
+      "filter_not_matches_regex",
+      "filter_between",
+      "filter_not_between",
+      "filter_value_secondary",
       "resolution_144p",
       "resolution_240p",
       "resolution_360p",
@@ -402,7 +489,64 @@
       "common_hint_date",
       "common_hint_url",
       "common_hint_hex",
-      "common_percent"
+      "common_percent",
+      "wip",
+      "common_s",
+      "tools",
+      "preset_deleted",
+      "delete_preset",
+      "common_delete",
+      "save_preset",
+      "no_saved_presets",
+      "scene_tagger",
+      "page_size",
+      "mode",
+      "sort",
+      "desc",
+      "asc",
+      "filter",
+      "load_preset",
+      "preset",
+      "stash_box_scraper",
+      "start_tagging",
+      "stop",
+      "open_scene",
+      "skip",
+      "apply",
+      "selected",
+      "select",
+      "preview",
+      "delete_scene",
+      "metadata_only",
+      "files",
+      "scene_deleted",
+      "delete_metadata",
+      "delete_files",
+      "scene_deduplication",
+      "no_duplicates_found",
+      "search_accuracy",
+      "duration_difference",
+      "only_select_matching_codecs",
+      "select_scenes",
+      "all_but_largest_resolution",
+      "all_but_largest_file",
+      "all_but_oldest",
+      "all_but_youngest",
+      "select_none",
+      "merge",
+      "previous_page",
+      "next_page",
+      "scene_deduplication_page_count",
+      "scene_tagger_result_count",
+      "delete_preset_confirm",
+      "enter_preset_name",
+      "delete_scene_confirm",
+      "delete_selected_count",
+      "resolution_dimensions",
+      "duration_seconds_format",
+      "bitrate_bps",
+      "o_count",
+      "scene_tagger_progress"
     ]
   },
   "app_zh_Hans.arb": {
@@ -442,7 +586,14 @@
       "common_hint_date",
       "common_hint_url",
       "common_hint_hex",
-      "common_percent"
+      "common_percent",
+      "wip",
+      "common_s",
+      "resolution_dimensions",
+      "duration_seconds_format",
+      "bitrate_bps",
+      "o_count",
+      "scene_tagger_progress"
     ]
   },
   "app_zh_Hant.arb": {
@@ -482,7 +633,14 @@
       "common_hint_date",
       "common_hint_url",
       "common_hint_hex",
-      "common_percent"
+      "common_percent",
+      "wip",
+      "common_s",
+      "resolution_dimensions",
+      "duration_seconds_format",
+      "bitrate_bps",
+      "o_count",
+      "scene_tagger_progress"
     ]
   }
 }

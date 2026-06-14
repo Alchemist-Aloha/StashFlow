@@ -70,7 +70,11 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save filter: $error')),
+          SnackBar(
+            content: Text(
+              context.l10n.failed_to_save_filter(error.toString()),
+            ),
+          ),
         );
       }
     } finally {
@@ -127,7 +131,11 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to delete preset: $error')),
+          SnackBar(
+            content: Text(
+              context.l10n.failed_to_delete_preset(error.toString()),
+            ),
+          ),
         );
       }
     } finally {
@@ -165,7 +173,7 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
                   children: [
                     Expanded(
                       child: Text(
-                        'Saved Presets',
+                        context.l10n.saved_presets,
                         style: context.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -192,7 +200,10 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
                   ],
                 ),
                 SizedBox(height: context.dimensions.spacingMedium),
-                Text('Current Settings', style: context.textTheme.labelLarge),
+                Text(
+                  context.l10n.current_settings,
+                  style: context.textTheme.labelLarge,
+                ),
                 SizedBox(height: context.dimensions.spacingSmall),
                 _ActiveSettingsSummary(
                   searchQuery: widget.searchQuery,
@@ -202,7 +213,10 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
                   defaultSortLabel: widget.defaultSortLabel,
                 ),
                 SizedBox(height: context.dimensions.spacingSmall),
-                Text('Available Presets', style: context.textTheme.labelLarge),
+                Text(
+                  context.l10n.available_presets,
+                  style: context.textTheme.labelLarge,
+                ),
                 SizedBox(height: context.dimensions.spacingSmall),
                 ConstrainedBox(
                   constraints: BoxConstraints(
@@ -284,9 +298,9 @@ class _SavePresetNameDialogState extends State<_SavePresetNameDialog> {
       content: TextField(
         controller: _controller,
         autofocus: true,
-        decoration: const InputDecoration(
-          labelText: 'Preset name',
-          helperText: 'Existing names are overwritten',
+        decoration: InputDecoration(
+          labelText: context.l10n.enter_preset_name,
+          helperText: context.l10n.existing_names_are_overwritten,
           border: OutlineInputBorder(),
         ),
         onSubmitted: (_) => _submit(),
@@ -331,7 +345,7 @@ class _ActiveSettingsSummary extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Current active settings will be saved to the server.',
+              context.l10n.active_settings_saved_server,
               style: context.textTheme.bodySmall?.copyWith(
                 color: context.colors.onSurfaceVariant,
               ),
@@ -343,16 +357,18 @@ class _ActiveSettingsSummary extends StatelessWidget {
               children: [
                 Chip(
                   visualDensity: VisualDensity.compact,
-                  label: Text('Sort: $sortLabel'),
+                  label: Text(context.l10n.sort_label(sortLabel)),
                 ),
                 Chip(
                   visualDensity: VisualDensity.compact,
-                  label: Text('Filters: $activeFilterCount'),
+                  label: Text(
+                    context.l10n.filters_count(activeFilterCount),
+                  ),
                 ),
                 if (searchQuery.isNotEmpty)
                   Chip(
                     visualDensity: VisualDensity.compact,
-                    label: Text('Search: $searchQuery'),
+                    label: Text(context.l10n.search_label(searchQuery)),
                   ),
               ],
             ),
@@ -391,10 +407,14 @@ class _SavedFilterList<T extends SavedFilterConfig<dynamic>>
 
     if (snapshot.hasError) {
       return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('Failed to load presets: ${snapshot.error}'),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+            Text(
+              context.l10n.failed_to_load_presets(
+                snapshot.error.toString(),
+              ),
+            ),
             SizedBox(height: context.dimensions.spacingSmall),
             OutlinedButton(
               onPressed: onRetry,
@@ -431,8 +451,8 @@ class _SavedFilterList<T extends SavedFilterConfig<dynamic>>
           subtitle: Text(
             [
               if (filter.searchQuery.isNotEmpty)
-                'Search: ${filter.searchQuery}',
-              'Sort: $sortLabel',
+                context.l10n.search_label(filter.searchQuery),
+              context.l10n.sort_label(sortLabel),
             ].join(' • '),
           ),
           trailing: filter.id == null

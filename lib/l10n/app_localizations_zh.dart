@@ -610,6 +610,63 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scenes_sort_framerate => '帧率';
 
   @override
+  String get scenes_sort_file_count => '文件数量';
+
+  @override
+  String get scenes_sort_filesize => '文件大小';
+
+  @override
+  String get scenes_sort_resolution => '分辨率';
+
+  @override
+  String get scenes_sort_last_played_at => '最后播放时间';
+
+  @override
+  String get scenes_sort_resume_time => '恢复时间';
+
+  @override
+  String get scenes_sort_play_duration => '播放时长';
+
+  @override
+  String get scenes_sort_interactive => '交互式';
+
+  @override
+  String get scenes_sort_interactive_speed => '交互速度';
+
+  @override
+  String get scenes_sort_perceptual_similarity => '感知相似度';
+
+  @override
+  String get scenes_sort_performer_age => '演员年龄';
+
+  @override
+  String get scenes_sort_studio => '制片商';
+
+  @override
+  String get scenes_sort_path => '路径';
+
+  @override
+  String get scenes_sort_file_mod_time => '文件修改时间';
+
+  @override
+  String get scenes_sort_tag_count => '标签数量';
+
+  @override
+  String get scenes_sort_performer_count => '演员数量';
+
+  @override
+  String get scenes_sort_o_counter => 'O计数器';
+
+  @override
+  String get scenes_sort_last_o_at => '上次O时间';
+
+  @override
+  String get scenes_sort_group_scene_number => '合集/电影场景编号';
+
+  @override
+  String get scenes_sort_code => '代码';
+
+  @override
   String get scenes_sort_saved_default => '排序偏好已保存为默认';
 
   @override
@@ -2336,7 +2393,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scene_info_screenshot => '截屏';
 
   @override
-  String get scene_info_cover => 'Cover';
+  String get scene_info_cover => '封面';
 
   @override
   String get scene_info_caption => '标题';
@@ -2469,6 +2526,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_security_title => '安全';
 
   @override
+  String get settings_security_subtitle => '应用锁和密码设置';
+
+  @override
   String get settings_security_app_lock => '应用锁';
 
   @override
@@ -2479,6 +2539,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get tools => 'Tools';
+
+  @override
+  String get tools_section_subtitle => '场景的维护和元数据工作流。';
+
+  @override
+  String get tools_scene_deduplication_subtitle => '查找并管理重复的场景。';
+
+  @override
+  String get tools_scene_tagger_subtitle => '使用 Stash-box 刮削当前场景页面。';
 
   @override
   String get preset_deleted => 'Preset deleted';
@@ -2635,6 +2704,189 @@ class AppLocalizationsZh extends AppLocalizations {
   String delete_selected_count(int selectedCount) {
     return 'Delete selected ($selectedCount)';
   }
+
+  @override
+  String get saved_presets => '已保存的预设';
+
+  @override
+  String get current_settings => '当前设置';
+
+  @override
+  String get available_presets => '可用预设';
+
+  @override
+  String get existing_names_are_overwritten => '已有名称将被覆盖';
+
+  @override
+  String get active_settings_saved_server => '当前生效的设置将保存到服务器。';
+
+  @override
+  String failed_to_save_filter(String error) {
+    return '无法保存筛选器：$error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return '无法删除预设：$error';
+  }
+
+  @override
+  String sort_label(String sortLabel) {
+    return '排序：$sortLabel';
+  }
+
+  @override
+  String filters_count(int count) {
+    return '筛选器：$count';
+  }
+
+  @override
+  String search_label(String query) {
+    return '搜索：$query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return '无法加载预设：$error';
+  }
+
+  @override
+  String saved_item(String item) {
+    return '已保存 $item';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return '无法加载 Stash Box：$error';
+  }
+
+  @override
+  String delete_n_scenes_question(int count) {
+    return '删除 $count 个场景？';
+  }
+
+  @override
+  String get delete_scenes_help => '选择仅删除 Stash 元数据，还是同时删除场景文件及其生成的辅助文件。';
+
+  @override
+  String deleted_n_scenes(int count) {
+    return '已删除 $count 个场景';
+  }
+
+  @override
+  String delete_failed_error(String error) {
+    return '删除失败：$error';
+  }
+
+  @override
+  String get configuration => '配置';
+
+  @override
+  String missing_phashes_for_scenes(int count) {
+    return '$count 个场景缺少感知哈希。请运行感知哈希生成任务。';
+  }
+
+  @override
+  String get merge_editing_not_wired => 'StashFlow 尚未支持合并编辑。';
+
+  @override
+  String duplicate_sets_count(int count) {
+    return '$count 组重复项';
+  }
+
+  @override
+  String duplicate_set_number(int number) {
+    return '重复组 $number';
+  }
+
+  @override
+  String resolution_dimensions(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_seconds_format(String seconds) {
+    return '${seconds}s';
+  }
+
+  @override
+  String bitrate_bps(int bitrate) {
+    return '$bitrate bps';
+  }
+
+  @override
+  String o_count(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String nTags(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 个标签';
+  }
+
+  @override
+  String nGroups(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 个分组';
+  }
+
+  @override
+  String nMarkers(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 个标记';
+  }
+
+  @override
+  String nGalleries(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 个画廊';
+  }
+
+  @override
+  String scene_tagger_checked_matches_summary(int checked, int matches) {
+    return '已检查 $checked 项 • $matches 个匹配';
+  }
+
+  @override
+  String scene_tagger_page_summary(int count) {
+    return '本页 $count 个场景';
+  }
+
+  @override
+  String get no_matched_scenes_yet => '还没有匹配到的场景。';
+
+  @override
+  String get no_scenes_match_configuration => '没有场景符合此配置。';
+
+  @override
+  String scene_tagger_checked_count(int count) {
+    return '已检查 $count 项';
+  }
+
+  @override
+  String scene_tagger_progress(int checked, int total) {
+    return '$checked / $total';
+  }
+
+  @override
+  String get stats_library_stats_tooltip => '长按查看资料库统计';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -3241,6 +3493,63 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get scenes_sort_framerate => '帧率';
+
+  @override
+  String get scenes_sort_file_count => '文件数量';
+
+  @override
+  String get scenes_sort_filesize => '文件大小';
+
+  @override
+  String get scenes_sort_resolution => '分辨率';
+
+  @override
+  String get scenes_sort_last_played_at => '最后播放时间';
+
+  @override
+  String get scenes_sort_resume_time => '恢复时间';
+
+  @override
+  String get scenes_sort_play_duration => '播放时长';
+
+  @override
+  String get scenes_sort_interactive => '交互式';
+
+  @override
+  String get scenes_sort_interactive_speed => '交互速度';
+
+  @override
+  String get scenes_sort_perceptual_similarity => '感知相似度';
+
+  @override
+  String get scenes_sort_performer_age => '演员年龄';
+
+  @override
+  String get scenes_sort_studio => '制片商';
+
+  @override
+  String get scenes_sort_path => '路径';
+
+  @override
+  String get scenes_sort_file_mod_time => '文件修改时间';
+
+  @override
+  String get scenes_sort_tag_count => '标签数量';
+
+  @override
+  String get scenes_sort_performer_count => '演员数量';
+
+  @override
+  String get scenes_sort_o_counter => 'O计数器';
+
+  @override
+  String get scenes_sort_last_o_at => '上次O时间';
+
+  @override
+  String get scenes_sort_group_scene_number => '合集/电影场景编号';
+
+  @override
+  String get scenes_sort_code => '代码';
 
   @override
   String get scenes_sort_saved_default => '排序偏好已保存为默认';
@@ -4969,6 +5278,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get scene_info_screenshot => '截屏';
 
   @override
+  String get scene_info_cover => '封面';
+
+  @override
   String get scene_info_caption => '标题';
 
   @override
@@ -5075,7 +5387,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get common_change => '改变';
 
   @override
-  String get common_set => '放';
+  String get common_set => '设置';
 
   @override
   String get common_immediately => '立即地';
@@ -5099,6 +5411,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_security_title => '安全';
 
   @override
+  String get settings_security_subtitle => '应用锁和密码设置';
+
+  @override
   String get settings_security_app_lock => '应用锁';
 
   @override
@@ -5109,6 +5424,15 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get tools => '工具';
+
+  @override
+  String get tools_section_subtitle => '场景的维护和元数据工作流。';
+
+  @override
+  String get tools_scene_deduplication_subtitle => '查找并管理重复场景。';
+
+  @override
+  String get tools_scene_tagger_subtitle => '使用 Stash-box 刮削当前场景页面。';
 
   @override
   String get preset_deleted => '预设已删除';
@@ -5264,6 +5588,189 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String delete_selected_count(int selectedCount) {
     return '删除所选内容 ($selectedCount)';
   }
+
+  @override
+  String get saved_presets => '已保存的预设';
+
+  @override
+  String get current_settings => '当前设置';
+
+  @override
+  String get available_presets => '可用预设';
+
+  @override
+  String get existing_names_are_overwritten => '已有名称将被覆盖';
+
+  @override
+  String get active_settings_saved_server => '当前生效的设置将保存到服务器。';
+
+  @override
+  String failed_to_save_filter(String error) {
+    return '无法保存筛选器：$error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return '无法删除预设：$error';
+  }
+
+  @override
+  String sort_label(String sortLabel) {
+    return '排序：$sortLabel';
+  }
+
+  @override
+  String filters_count(int count) {
+    return '筛选器：$count';
+  }
+
+  @override
+  String search_label(String query) {
+    return '搜索：$query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return '无法加载预设：$error';
+  }
+
+  @override
+  String saved_item(String item) {
+    return '已保存 $item';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return '无法加载 Stash Box：$error';
+  }
+
+  @override
+  String delete_n_scenes_question(int count) {
+    return '删除 $count 个场景？';
+  }
+
+  @override
+  String get delete_scenes_help => '选择仅删除 Stash 元数据，还是同时删除场景文件及其生成的辅助文件。';
+
+  @override
+  String deleted_n_scenes(int count) {
+    return '已删除 $count 个场景';
+  }
+
+  @override
+  String delete_failed_error(String error) {
+    return '删除失败：$error';
+  }
+
+  @override
+  String get configuration => '配置';
+
+  @override
+  String missing_phashes_for_scenes(int count) {
+    return '$count 个场景缺少感知哈希。请运行感知哈希生成任务。';
+  }
+
+  @override
+  String get merge_editing_not_wired => 'StashFlow 尚未支持合并编辑。';
+
+  @override
+  String duplicate_sets_count(int count) {
+    return '$count 组重复项';
+  }
+
+  @override
+  String duplicate_set_number(int number) {
+    return '重复组 $number';
+  }
+
+  @override
+  String resolution_dimensions(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_seconds_format(String seconds) {
+    return '${seconds}s';
+  }
+
+  @override
+  String bitrate_bps(int bitrate) {
+    return '$bitrate bps';
+  }
+
+  @override
+  String o_count(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String nTags(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 个标签';
+  }
+
+  @override
+  String nGroups(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 个分组';
+  }
+
+  @override
+  String nMarkers(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 个标记';
+  }
+
+  @override
+  String nGalleries(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 个画廊';
+  }
+
+  @override
+  String scene_tagger_checked_matches_summary(int checked, int matches) {
+    return '已检查 $checked 项 • $matches 个匹配';
+  }
+
+  @override
+  String scene_tagger_page_summary(int count) {
+    return '本页 $count 个场景';
+  }
+
+  @override
+  String get no_matched_scenes_yet => '还没有匹配到的场景。';
+
+  @override
+  String get no_scenes_match_configuration => '没有场景符合此配置。';
+
+  @override
+  String scene_tagger_checked_count(int count) {
+    return '已检查 $count 项';
+  }
+
+  @override
+  String scene_tagger_progress(int checked, int total) {
+    return '$checked / $total';
+  }
+
+  @override
+  String get stats_library_stats_tooltip => '长按查看资料库统计';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -5872,6 +6379,63 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get scenes_sort_framerate => '幀率';
+
+  @override
+  String get scenes_sort_file_count => '檔案數量';
+
+  @override
+  String get scenes_sort_filesize => '檔案大小';
+
+  @override
+  String get scenes_sort_resolution => '解析度';
+
+  @override
+  String get scenes_sort_last_played_at => '最後播放時間';
+
+  @override
+  String get scenes_sort_resume_time => '恢復時間';
+
+  @override
+  String get scenes_sort_play_duration => '播放時長';
+
+  @override
+  String get scenes_sort_interactive => '互動式';
+
+  @override
+  String get scenes_sort_interactive_speed => '交互速度';
+
+  @override
+  String get scenes_sort_perceptual_similarity => '感知相似度';
+
+  @override
+  String get scenes_sort_performer_age => '演出者年齡';
+
+  @override
+  String get scenes_sort_studio => '工作室';
+
+  @override
+  String get scenes_sort_path => '路徑';
+
+  @override
+  String get scenes_sort_file_mod_time => '檔案修改時間';
+
+  @override
+  String get scenes_sort_tag_count => '標籤數量';
+
+  @override
+  String get scenes_sort_performer_count => '演出者數量';
+
+  @override
+  String get scenes_sort_o_counter => 'O計數器';
+
+  @override
+  String get scenes_sort_last_o_at => '上次O時間';
+
+  @override
+  String get scenes_sort_group_scene_number => '合集/電影場景編號';
+
+  @override
+  String get scenes_sort_code => '代碼';
 
   @override
   String get scenes_sort_saved_default => '排序偏好已保存為預設';
@@ -7602,6 +8166,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get scene_info_screenshot => '螢幕截圖';
 
   @override
+  String get scene_info_cover => '封面';
+
+  @override
   String get scene_info_caption => '標題';
 
   @override
@@ -7708,7 +8275,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get common_change => '改變';
 
   @override
-  String get common_set => '放';
+  String get common_set => '設定';
 
   @override
   String get common_immediately => '立即地';
@@ -7732,6 +8299,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_security_title => '安全';
 
   @override
+  String get settings_security_subtitle => '應用鎖和密碼設定';
+
+  @override
   String get settings_security_app_lock => '應用鎖';
 
   @override
@@ -7742,6 +8312,15 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get tools => '工具';
+
+  @override
+  String get tools_section_subtitle => '場景的維護和元數據工作流。';
+
+  @override
+  String get tools_scene_deduplication_subtitle => '查找並管理重複的場景。';
+
+  @override
+  String get tools_scene_tagger_subtitle => '使用 Stash-box 刮削當前場景頁面。';
 
   @override
   String get preset_deleted => '預設已刪除';
@@ -7897,4 +8476,187 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String delete_selected_count(int selectedCount) {
     return '刪除所選內容 ($selectedCount)';
   }
+
+  @override
+  String get saved_presets => '已儲存的預設';
+
+  @override
+  String get current_settings => '目前設定';
+
+  @override
+  String get available_presets => '可用預設';
+
+  @override
+  String get existing_names_are_overwritten => '現有名稱將會被覆寫';
+
+  @override
+  String get active_settings_saved_server => '目前生效的設定將儲存到伺服器。';
+
+  @override
+  String failed_to_save_filter(String error) {
+    return '無法儲存篩選器：$error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return '無法刪除預設：$error';
+  }
+
+  @override
+  String sort_label(String sortLabel) {
+    return '排序：$sortLabel';
+  }
+
+  @override
+  String filters_count(int count) {
+    return '篩選器：$count';
+  }
+
+  @override
+  String search_label(String query) {
+    return '搜尋：$query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return '無法載入預設：$error';
+  }
+
+  @override
+  String saved_item(String item) {
+    return '已儲存 $item';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return '無法載入 Stash Box：$error';
+  }
+
+  @override
+  String delete_n_scenes_question(int count) {
+    return '刪除 $count 個場景？';
+  }
+
+  @override
+  String get delete_scenes_help => '選擇僅刪除 Stash 中繼資料，還是同時刪除場景檔案及其產生的輔助檔案。';
+
+  @override
+  String deleted_n_scenes(int count) {
+    return '已刪除 $count 個場景';
+  }
+
+  @override
+  String delete_failed_error(String error) {
+    return '刪除失敗：$error';
+  }
+
+  @override
+  String get configuration => '設定';
+
+  @override
+  String missing_phashes_for_scenes(int count) {
+    return '$count 個場景缺少感知雜湊。請執行感知雜湊產生任務。';
+  }
+
+  @override
+  String get merge_editing_not_wired => 'StashFlow 尚未支援合併編輯。';
+
+  @override
+  String duplicate_sets_count(int count) {
+    return '$count 組重複項';
+  }
+
+  @override
+  String duplicate_set_number(int number) {
+    return '重複組 $number';
+  }
+
+  @override
+  String resolution_dimensions(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_seconds_format(String seconds) {
+    return '${seconds}s';
+  }
+
+  @override
+  String bitrate_bps(int bitrate) {
+    return '$bitrate bps';
+  }
+
+  @override
+  String o_count(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String nTags(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 個標籤';
+  }
+
+  @override
+  String nGroups(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 個分組';
+  }
+
+  @override
+  String nMarkers(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 個標記';
+  }
+
+  @override
+  String nGalleries(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString 個畫廊';
+  }
+
+  @override
+  String scene_tagger_checked_matches_summary(int checked, int matches) {
+    return '已檢查 $checked 項 • $matches 個符合項目';
+  }
+
+  @override
+  String scene_tagger_page_summary(int count) {
+    return '本頁 $count 個場景';
+  }
+
+  @override
+  String get no_matched_scenes_yet => '還沒有符合的場景。';
+
+  @override
+  String get no_scenes_match_configuration => '沒有場景符合此設定。';
+
+  @override
+  String scene_tagger_checked_count(int count) {
+    return '已檢查 $count 項';
+  }
+
+  @override
+  String scene_tagger_progress(int checked, int total) {
+    return '$checked / $total';
+  }
+
+  @override
+  String get stats_library_stats_tooltip => '長按查看資料庫統計';
 }

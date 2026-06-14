@@ -621,6 +621,63 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scenes_sort_framerate => 'Bildrate';
 
   @override
+  String get scenes_sort_file_count => 'Dateianzahl';
+
+  @override
+  String get scenes_sort_filesize => 'Dateigröße';
+
+  @override
+  String get scenes_sort_resolution => 'Auflösung';
+
+  @override
+  String get scenes_sort_last_played_at => 'Zuletzt gespielt am';
+
+  @override
+  String get scenes_sort_resume_time => 'Fortsetzungszeit';
+
+  @override
+  String get scenes_sort_play_duration => 'Wiedergabedauer';
+
+  @override
+  String get scenes_sort_interactive => 'Interaktiv';
+
+  @override
+  String get scenes_sort_interactive_speed => 'Interaktive Geschwindigkeit';
+
+  @override
+  String get scenes_sort_perceptual_similarity => 'Wahrnehmungsähnlichkeit';
+
+  @override
+  String get scenes_sort_performer_age => 'Alter der Darsteller';
+
+  @override
+  String get scenes_sort_studio => 'Studio';
+
+  @override
+  String get scenes_sort_path => 'Pfad';
+
+  @override
+  String get scenes_sort_file_mod_time => 'Datei-Änderungsdatum';
+
+  @override
+  String get scenes_sort_tag_count => 'Tag-Anzahl';
+
+  @override
+  String get scenes_sort_performer_count => 'Darstelleranzahl';
+
+  @override
+  String get scenes_sort_o_counter => 'O-Zähler';
+
+  @override
+  String get scenes_sort_last_o_at => 'Letztes O am';
+
+  @override
+  String get scenes_sort_group_scene_number => 'Szenennummer in Gruppe/Film';
+
+  @override
+  String get scenes_sort_code => 'Code';
+
+  @override
   String get scenes_sort_saved_default =>
       'Sortiereinstellungen als Standard gespeichert';
 
@@ -2587,6 +2644,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings_security_title => 'Sicherheit';
 
   @override
+  String get settings_security_subtitle =>
+      'App-Sperre und Passcode-Einstellungen';
+
+  @override
   String get settings_security_app_lock => 'App-Sperre';
 
   @override
@@ -2598,6 +2659,18 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get tools => 'Werkzeuge';
+
+  @override
+  String get tools_section_subtitle =>
+      'Wartungs- und Metadaten-Workflows für Szenen.';
+
+  @override
+  String get tools_scene_deduplication_subtitle =>
+      'Duplikate finden und verwalten.';
+
+  @override
+  String get tools_scene_tagger_subtitle =>
+      'Aktuelle Szenenseiten mit Stash-box scrapen.';
 
   @override
   String get preset_deleted => 'Voreinstellung gelöscht';
@@ -2755,4 +2828,221 @@ class AppLocalizationsDe extends AppLocalizations {
   String delete_selected_count(int selectedCount) {
     return 'Ausgewählte löschen ($selectedCount)';
   }
+
+  @override
+  String get saved_presets => 'Gespeicherte Voreinstellungen';
+
+  @override
+  String get current_settings => 'Aktuelle Einstellungen';
+
+  @override
+  String get available_presets => 'Verfügbare Voreinstellungen';
+
+  @override
+  String get existing_names_are_overwritten =>
+      'Vorhandene Namen werden überschrieben';
+
+  @override
+  String get active_settings_saved_server =>
+      'Die aktuell aktiven Einstellungen werden auf dem Server gespeichert.';
+
+  @override
+  String failed_to_save_filter(String error) {
+    return 'Filter konnte nicht gespeichert werden: $error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return 'Voreinstellung konnte nicht gelöscht werden: $error';
+  }
+
+  @override
+  String sort_label(String sortLabel) {
+    return 'Sortierung: $sortLabel';
+  }
+
+  @override
+  String filters_count(int count) {
+    return 'Filter: $count';
+  }
+
+  @override
+  String search_label(String query) {
+    return 'Suche: $query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return 'Voreinstellungen konnten nicht geladen werden: $error';
+  }
+
+  @override
+  String saved_item(String item) {
+    return '$item gespeichert';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return 'Stash-Boxen konnten nicht geladen werden: $error';
+  }
+
+  @override
+  String delete_n_scenes_question(int count) {
+    return '$count Szenen löschen?';
+  }
+
+  @override
+  String get delete_scenes_help =>
+      'Wähle aus, ob nur Stash-Metadaten entfernt werden sollen oder auch die Szenendateien und die zusätzlich generierten Dateien.';
+
+  @override
+  String deleted_n_scenes(int count) {
+    return '$count Szenen gelöscht';
+  }
+
+  @override
+  String delete_failed_error(String error) {
+    return 'Löschen fehlgeschlagen: $error';
+  }
+
+  @override
+  String get configuration => 'Konfiguration';
+
+  @override
+  String missing_phashes_for_scenes(int count) {
+    return 'Für $count Szenen fehlen Phashes. Bitte führe die Phash-Generierung aus.';
+  }
+
+  @override
+  String get merge_editing_not_wired =>
+      'Das Bearbeiten von Zusammenführungen ist in StashFlow noch nicht angebunden.';
+
+  @override
+  String duplicate_sets_count(int count) {
+    return '$count Duplikatgruppen';
+  }
+
+  @override
+  String duplicate_set_number(int number) {
+    return 'Duplikatgruppe $number';
+  }
+
+  @override
+  String resolution_dimensions(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_seconds_format(String seconds) {
+    return '${seconds}s';
+  }
+
+  @override
+  String bitrate_bps(int bitrate) {
+    return '$bitrate bps';
+  }
+
+  @override
+  String o_count(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String nTags(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString Tags',
+      one: '1 Tag',
+      zero: 'keine Tags',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGroups(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString Gruppen',
+      one: '1 Gruppe',
+      zero: 'keine Gruppen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nMarkers(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString Marker',
+      one: '1 Marker',
+      zero: 'keine Marker',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGalleries(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString Galerien',
+      one: '1 Galerie',
+      zero: 'keine Galerien',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String scene_tagger_checked_matches_summary(int checked, int matches) {
+    return '$checked geprüft • $matches Treffer';
+  }
+
+  @override
+  String scene_tagger_page_summary(int count) {
+    return '$count Szenen auf dieser Seite';
+  }
+
+  @override
+  String get no_matched_scenes_yet => 'Noch keine passenden Szenen.';
+
+  @override
+  String get no_scenes_match_configuration =>
+      'Keine Szenen entsprechen dieser Konfiguration.';
+
+  @override
+  String scene_tagger_checked_count(int count) {
+    return '$count geprüft';
+  }
+
+  @override
+  String scene_tagger_progress(int checked, int total) {
+    return '$checked / $total';
+  }
+
+  @override
+  String get stats_library_stats_tooltip =>
+      'Lange drücken für Bibliotheksstatistiken';
 }

@@ -39,10 +39,10 @@ class ToolsPage extends StatelessWidget {
               child: ListView(
                 padding: EdgeInsets.all(context.dimensions.spacingLarge),
                 children: [
-                  const SettingsSectionCard(
-                    title: 'Tools',
-                    subtitle: 'Maintenance and metadata workflows for scenes.',
-                    child: _ToolsActions(),
+                  SettingsSectionCard(
+                    title: context.l10n.tools,
+                    subtitle: context.l10n.tools_section_subtitle,
+                    child: const _ToolsActions(),
                   ),
                 ],
               ),
@@ -63,15 +63,15 @@ class _ToolsActions extends StatelessWidget {
       children: [
         SettingsActionCard(
           icon: Icons.difference_rounded,
-          title: 'Scene Deduplication',
-          subtitle: 'Find and manage duplicate scenes.',
+          title: context.l10n.scene_deduplication,
+          subtitle: context.l10n.tools_scene_deduplication_subtitle,
           onTap: () => context.push('/tools/scene-deduplication'),
         ),
         SizedBox(height: context.dimensions.spacingMedium),
         SettingsActionCard(
           icon: Icons.sell_rounded,
-          title: 'Scene Tagger',
-          subtitle: 'Scrape current scene pages with Stash-box.',
+          title: context.l10n.scene_tagger,
+          subtitle: context.l10n.tools_scene_tagger_subtitle,
           onTap: () => context.push('/tools/scene-tagger'),
         ),
       ],

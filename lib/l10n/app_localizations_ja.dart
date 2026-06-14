@@ -612,6 +612,63 @@ class AppLocalizationsJa extends AppLocalizations {
   String get scenes_sort_framerate => 'フレームレート';
 
   @override
+  String get scenes_sort_file_count => 'ファイル数';
+
+  @override
+  String get scenes_sort_filesize => 'ファイルサイズ';
+
+  @override
+  String get scenes_sort_resolution => '解像度';
+
+  @override
+  String get scenes_sort_last_played_at => '最終再生日時';
+
+  @override
+  String get scenes_sort_resume_time => 'レジューム時間';
+
+  @override
+  String get scenes_sort_play_duration => '再生時間';
+
+  @override
+  String get scenes_sort_interactive => 'インタラクティブ';
+
+  @override
+  String get scenes_sort_interactive_speed => 'インタラクティブスピード';
+
+  @override
+  String get scenes_sort_perceptual_similarity => '知覚的類似性';
+
+  @override
+  String get scenes_sort_performer_age => '出演者年齢';
+
+  @override
+  String get scenes_sort_studio => 'スタジオ';
+
+  @override
+  String get scenes_sort_path => 'パス';
+
+  @override
+  String get scenes_sort_file_mod_time => 'ファイル更新日時';
+
+  @override
+  String get scenes_sort_tag_count => 'タグ数';
+
+  @override
+  String get scenes_sort_performer_count => '出演者数';
+
+  @override
+  String get scenes_sort_o_counter => 'Oカウンター';
+
+  @override
+  String get scenes_sort_last_o_at => '最終O日時';
+
+  @override
+  String get scenes_sort_group_scene_number => 'グループ/映画シーン番号';
+
+  @override
+  String get scenes_sort_code => 'コード';
+
+  @override
   String get scenes_sort_saved_default => '並べ替えの設定がデフォルトとして保存されました';
 
   @override
@@ -2359,7 +2416,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get scene_info_screenshot => 'スクリーンショット';
 
   @override
-  String get scene_info_cover => 'Cover';
+  String get scene_info_cover => 'カバー';
 
   @override
   String get scene_info_caption => 'キャプション';
@@ -2495,6 +2552,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings_security_title => '安全';
 
   @override
+  String get settings_security_subtitle => 'アプリロックとパスコードの設定';
+
+  @override
   String get settings_security_app_lock => 'アプリロック';
 
   @override
@@ -2506,6 +2566,16 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get tools => 'ツール';
+
+  @override
+  String get tools_section_subtitle => 'シーンのメンテナンスとメタデータのワークフロー。';
+
+  @override
+  String get tools_scene_deduplication_subtitle => '重複するシーンを見つけて管理します。';
+
+  @override
+  String get tools_scene_tagger_subtitle =>
+      'Stash-boxを使用して現在のシーンページをスクレイピングします。';
 
   @override
   String get preset_deleted => 'プリセットが削除されました';
@@ -2661,4 +2731,216 @@ class AppLocalizationsJa extends AppLocalizations {
   String delete_selected_count(int selectedCount) {
     return '選択したものを削除 ($selectedCount)';
   }
+
+  @override
+  String get saved_presets => '保存済みプリセット';
+
+  @override
+  String get current_settings => '現在の設定';
+
+  @override
+  String get available_presets => '利用可能なプリセット';
+
+  @override
+  String get existing_names_are_overwritten => '既存の名前は上書きされます';
+
+  @override
+  String get active_settings_saved_server => '現在有効な設定がサーバーに保存されます。';
+
+  @override
+  String failed_to_save_filter(String error) {
+    return 'フィルターの保存に失敗しました: $error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return 'プリセットの削除に失敗しました: $error';
+  }
+
+  @override
+  String sort_label(String sortLabel) {
+    return '並び順: $sortLabel';
+  }
+
+  @override
+  String filters_count(int count) {
+    return 'フィルター: $count';
+  }
+
+  @override
+  String search_label(String query) {
+    return '検索: $query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return 'プリセットの読み込みに失敗しました: $error';
+  }
+
+  @override
+  String saved_item(String item) {
+    return '$item を保存しました';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return 'Stash Box を読み込めません: $error';
+  }
+
+  @override
+  String delete_n_scenes_question(int count) {
+    return '$count 件のシーンを削除しますか？';
+  }
+
+  @override
+  String get delete_scenes_help =>
+      'Stash のメタデータのみを削除するか、シーンファイルと生成された補助ファイルも削除するかを選択してください。';
+
+  @override
+  String deleted_n_scenes(int count) {
+    return '$count 件のシーンを削除しました';
+  }
+
+  @override
+  String delete_failed_error(String error) {
+    return '削除に失敗しました: $error';
+  }
+
+  @override
+  String get configuration => '設定';
+
+  @override
+  String missing_phashes_for_scenes(int count) {
+    return '$count 件のシーンで phash が不足しています。phash 生成タスクを実行してください。';
+  }
+
+  @override
+  String get merge_editing_not_wired => 'マージ編集はまだ StashFlow に実装されていません。';
+
+  @override
+  String duplicate_sets_count(int count) {
+    return '$count 件の重複セット';
+  }
+
+  @override
+  String duplicate_set_number(int number) {
+    return '重複セット $number';
+  }
+
+  @override
+  String resolution_dimensions(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_seconds_format(String seconds) {
+    return '${seconds}s';
+  }
+
+  @override
+  String bitrate_bps(int bitrate) {
+    return '$bitrate bps';
+  }
+
+  @override
+  String o_count(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String nTags(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString 件のタグ',
+      one: '1 件のタグ',
+      zero: 'タグなし',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGroups(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString 件のグループ',
+      one: '1 件のグループ',
+      zero: 'グループなし',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nMarkers(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString 件のマーカー',
+      one: '1 件のマーカー',
+      zero: 'マーカーなし',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGalleries(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString 件のギャラリー',
+      one: '1 件のギャラリー',
+      zero: 'ギャラリーなし',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String scene_tagger_checked_matches_summary(int checked, int matches) {
+    return '$checked 件確認 • $matches 件一致';
+  }
+
+  @override
+  String scene_tagger_page_summary(int count) {
+    return 'このページのシーン数: $count';
+  }
+
+  @override
+  String get no_matched_scenes_yet => '一致したシーンはまだありません。';
+
+  @override
+  String get no_scenes_match_configuration => 'この設定に一致するシーンはありません。';
+
+  @override
+  String scene_tagger_checked_count(int count) {
+    return '$count 件確認済み';
+  }
+
+  @override
+  String scene_tagger_progress(int checked, int total) {
+    return '$checked / $total';
+  }
+
+  @override
+  String get stats_library_stats_tooltip => '長押しでライブラリ統計を表示';
 }

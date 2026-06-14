@@ -618,6 +618,63 @@ class AppLocalizationsRu extends AppLocalizations {
   String get scenes_sort_framerate => 'Частота кадров';
 
   @override
+  String get scenes_sort_file_count => 'Количество файлов';
+
+  @override
+  String get scenes_sort_filesize => 'Размер файла';
+
+  @override
+  String get scenes_sort_resolution => 'Разрешение';
+
+  @override
+  String get scenes_sort_last_played_at => 'Последний просмотр';
+
+  @override
+  String get scenes_sort_resume_time => 'Время возобновления';
+
+  @override
+  String get scenes_sort_play_duration => 'Время воспроизведения';
+
+  @override
+  String get scenes_sort_interactive => 'Интерактивный';
+
+  @override
+  String get scenes_sort_interactive_speed => 'Интерактивная скорость';
+
+  @override
+  String get scenes_sort_perceptual_similarity => 'Перцептивное сходство';
+
+  @override
+  String get scenes_sort_performer_age => 'Возраст исполнителя';
+
+  @override
+  String get scenes_sort_studio => 'Студия';
+
+  @override
+  String get scenes_sort_path => 'Путь';
+
+  @override
+  String get scenes_sort_file_mod_time => 'Время изменения файла';
+
+  @override
+  String get scenes_sort_tag_count => 'Количество тегов';
+
+  @override
+  String get scenes_sort_performer_count => 'Количество исполнителей';
+
+  @override
+  String get scenes_sort_o_counter => 'Счетчик O';
+
+  @override
+  String get scenes_sort_last_o_at => 'Последний O';
+
+  @override
+  String get scenes_sort_group_scene_number => 'Номер сцены в группе/фильме';
+
+  @override
+  String get scenes_sort_code => 'Код';
+
+  @override
   String get scenes_sort_saved_default =>
       'Настройки сортировки сохранены по умолчанию';
 
@@ -2441,7 +2498,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get scene_info_screenshot => 'Скриншот';
 
   @override
-  String get scene_info_cover => 'Cover';
+  String get scene_info_cover => 'Обложка';
 
   @override
   String get scene_info_caption => 'Подпись';
@@ -2581,6 +2638,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_security_title => 'Безопасность';
 
   @override
+  String get settings_security_subtitle =>
+      'Настройки блокировки приложения и пароля';
+
+  @override
   String get settings_security_app_lock => 'Блокировка приложения';
 
   @override
@@ -2592,6 +2653,18 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get tools => 'Инструменты';
+
+  @override
+  String get tools_section_subtitle =>
+      'Рабочие процессы обслуживания и метаданных для сцен.';
+
+  @override
+  String get tools_scene_deduplication_subtitle =>
+      'Поиск и управление дубликатами сцен.';
+
+  @override
+  String get tools_scene_tagger_subtitle =>
+      'Скрапинг страниц текущих сцен с помощью Stash-box.';
 
   @override
   String get preset_deleted => 'Предустановка удалена.';
@@ -2750,4 +2823,221 @@ class AppLocalizationsRu extends AppLocalizations {
   String delete_selected_count(int selectedCount) {
     return 'Удалить выбранное ($selectedCount)';
   }
+
+  @override
+  String get saved_presets => 'Сохранённые пресеты';
+
+  @override
+  String get current_settings => 'Текущие настройки';
+
+  @override
+  String get available_presets => 'Доступные пресеты';
+
+  @override
+  String get existing_names_are_overwritten =>
+      'Существующие имена будут перезаписаны';
+
+  @override
+  String get active_settings_saved_server =>
+      'Текущие активные настройки будут сохранены на сервере.';
+
+  @override
+  String failed_to_save_filter(String error) {
+    return 'Не удалось сохранить фильтр: $error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return 'Не удалось удалить пресет: $error';
+  }
+
+  @override
+  String sort_label(String sortLabel) {
+    return 'Сортировка: $sortLabel';
+  }
+
+  @override
+  String filters_count(int count) {
+    return 'Фильтры: $count';
+  }
+
+  @override
+  String search_label(String query) {
+    return 'Поиск: $query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return 'Не удалось загрузить пресеты: $error';
+  }
+
+  @override
+  String saved_item(String item) {
+    return 'Сохранено: $item';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return 'Не удалось загрузить Stash Boxes: $error';
+  }
+
+  @override
+  String delete_n_scenes_question(int count) {
+    return 'Удалить $count сцен?';
+  }
+
+  @override
+  String get delete_scenes_help =>
+      'Выберите, удалить только метаданные Stash или также удалить файлы сцен и созданные вспомогательные файлы.';
+
+  @override
+  String deleted_n_scenes(int count) {
+    return 'Удалено сцен: $count';
+  }
+
+  @override
+  String delete_failed_error(String error) {
+    return 'Ошибка удаления: $error';
+  }
+
+  @override
+  String get configuration => 'Конфигурация';
+
+  @override
+  String missing_phashes_for_scenes(int count) {
+    return 'Отсутствуют phash для $count сцен. Пожалуйста, запустите задачу генерации phash.';
+  }
+
+  @override
+  String get merge_editing_not_wired =>
+      'Редактирование слияния в StashFlow пока не подключено.';
+
+  @override
+  String duplicate_sets_count(int count) {
+    return '$count наборов дубликатов';
+  }
+
+  @override
+  String duplicate_set_number(int number) {
+    return 'Набор дубликатов $number';
+  }
+
+  @override
+  String resolution_dimensions(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_seconds_format(String seconds) {
+    return '$secondsс';
+  }
+
+  @override
+  String bitrate_bps(int bitrate) {
+    return '$bitrate бит/с';
+  }
+
+  @override
+  String o_count(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String nTags(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString тегов',
+      one: '1 тег',
+      zero: 'нет тегов',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGroups(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString групп',
+      one: '1 группа',
+      zero: 'нет групп',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nMarkers(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString маркеров',
+      one: '1 маркер',
+      zero: 'нет маркеров',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGalleries(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString галерей',
+      one: '1 галерея',
+      zero: 'нет галерей',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String scene_tagger_checked_matches_summary(int checked, int matches) {
+    return 'Проверено: $checked • совпадений: $matches';
+  }
+
+  @override
+  String scene_tagger_page_summary(int count) {
+    return 'Сцен на этой странице: $count';
+  }
+
+  @override
+  String get no_matched_scenes_yet => 'Пока нет совпавших сцен.';
+
+  @override
+  String get no_scenes_match_configuration =>
+      'Нет сцен, соответствующих этой конфигурации.';
+
+  @override
+  String scene_tagger_checked_count(int count) {
+    return 'Проверено: $count';
+  }
+
+  @override
+  String scene_tagger_progress(int checked, int total) {
+    return '$checked / $total';
+  }
+
+  @override
+  String get stats_library_stats_tooltip =>
+      'Удерживайте для статистики библиотеки';
 }

@@ -7,7 +7,7 @@ A modern, multi-platform client for your **Stash** server. Designed for seamless
 The program is mainly tested with Android and Windows builds, and the web version is a demo with limited features due to browser restrictions. For the best experience, use the native Android or Desktop versions. Testing and feedback on all platforms are welcome!
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.21.0-green.svg)](pubspec.yaml)
+[![Version](https://img.shields.io/badge/version-1.21.1-green.svg)](pubspec.yaml)
 
 ## 📸 Screenshots
 
@@ -83,8 +83,8 @@ The program is mainly tested with Android and Windows builds, and the web versio
 ### 🌐 Web
 
 1. **Access:** Visit the [Live Web App Demo](https://alchemist-aloha.github.io/StashFlow/) or host your own build.
-2. **Note on Limitations:** The web version serves primarily as a **demo**. 
-   - **Authentication:** Only **API Key** login is supported due to browser CORS restrictions. 
+2. **Note on Limitations:** The web version serves primarily as a **demo**.
+   - **Authentication:** Only **API Key** login is supported due to browser CORS restrictions.
    - **Playback:** Video playback is limited by browser codec support.
    - **Recommendation:** Use the **Android** or **Desktop** versions for the complete feature set and optimal performance.
 
@@ -144,3 +144,7 @@ flutter build linux --release
 For more info, see:
 
 - [Project wiki page](https://github.com/Alchemist-Aloha/StashFlow/wiki)
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/chart?repos=Alchemist-Aloha/StashFlow&type=date&legend=top-left)](https://www.star-history.com/?repos=Alchemist-Aloha%2FStashFlow&type=date&legend=top-left)

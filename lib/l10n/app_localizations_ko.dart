@@ -610,6 +610,63 @@ class AppLocalizationsKo extends AppLocalizations {
   String get scenes_sort_framerate => '프레임 속도';
 
   @override
+  String get scenes_sort_file_count => '파일 수';
+
+  @override
+  String get scenes_sort_filesize => '파일 크기';
+
+  @override
+  String get scenes_sort_resolution => '해상도';
+
+  @override
+  String get scenes_sort_last_played_at => '최근 재생 일시';
+
+  @override
+  String get scenes_sort_resume_time => '이어보기 시간';
+
+  @override
+  String get scenes_sort_play_duration => '재생 시간';
+
+  @override
+  String get scenes_sort_interactive => '인터랙티브';
+
+  @override
+  String get scenes_sort_interactive_speed => '인터랙티브 속도';
+
+  @override
+  String get scenes_sort_perceptual_similarity => '지각적 유사성';
+
+  @override
+  String get scenes_sort_performer_age => '출연자 나이';
+
+  @override
+  String get scenes_sort_studio => '스튜디오';
+
+  @override
+  String get scenes_sort_path => '경로';
+
+  @override
+  String get scenes_sort_file_mod_time => '파일 수정 시간';
+
+  @override
+  String get scenes_sort_tag_count => '태그 수';
+
+  @override
+  String get scenes_sort_performer_count => '출연자 수';
+
+  @override
+  String get scenes_sort_o_counter => 'O 카운터';
+
+  @override
+  String get scenes_sort_last_o_at => '최근 O 시간';
+
+  @override
+  String get scenes_sort_group_scene_number => '그룹/영화 장면 번호';
+
+  @override
+  String get scenes_sort_code => '코드';
+
+  @override
   String get scenes_sort_saved_default => '정렬 설정이 기본값으로 저장됨';
 
   @override
@@ -2359,7 +2416,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get scene_info_screenshot => '스크린샷';
 
   @override
-  String get scene_info_cover => 'Cover';
+  String get scene_info_cover => '커버';
 
   @override
   String get scene_info_caption => '표제';
@@ -2495,6 +2552,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_security_title => '보안';
 
   @override
+  String get settings_security_subtitle => '앱 잠금 및 비밀번호 설정';
+
+  @override
   String get settings_security_app_lock => '앱 잠금';
 
   @override
@@ -2505,6 +2565,15 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get tools => '도구';
+
+  @override
+  String get tools_section_subtitle => '씬에 대한 유지 관리 및 메타데이터 워크플로.';
+
+  @override
+  String get tools_scene_deduplication_subtitle => '중복된 씬을 찾아 관리합니다.';
+
+  @override
+  String get tools_scene_tagger_subtitle => 'Stash-box로 현재 씬 페이지를 스크랩합니다.';
 
   @override
   String get preset_deleted => '사전 설정이 삭제되었습니다.';
@@ -2660,4 +2729,216 @@ class AppLocalizationsKo extends AppLocalizations {
   String delete_selected_count(int selectedCount) {
     return '선택 항목 삭제($selectedCount)';
   }
+
+  @override
+  String get saved_presets => '저장된 프리셋';
+
+  @override
+  String get current_settings => '현재 설정';
+
+  @override
+  String get available_presets => '사용 가능한 프리셋';
+
+  @override
+  String get existing_names_are_overwritten => '기존 이름은 덮어써집니다';
+
+  @override
+  String get active_settings_saved_server => '현재 활성 설정이 서버에 저장됩니다.';
+
+  @override
+  String failed_to_save_filter(String error) {
+    return '필터를 저장하지 못했습니다: $error';
+  }
+
+  @override
+  String failed_to_delete_preset(String error) {
+    return '프리셋을 삭제하지 못했습니다: $error';
+  }
+
+  @override
+  String sort_label(String sortLabel) {
+    return '정렬: $sortLabel';
+  }
+
+  @override
+  String filters_count(int count) {
+    return '필터: $count';
+  }
+
+  @override
+  String search_label(String query) {
+    return '검색: $query';
+  }
+
+  @override
+  String failed_to_load_presets(String error) {
+    return '프리셋을 불러오지 못했습니다: $error';
+  }
+
+  @override
+  String saved_item(String item) {
+    return '$item 저장됨';
+  }
+
+  @override
+  String unable_to_load_stash_boxes(String error) {
+    return 'Stash Box를 불러올 수 없습니다: $error';
+  }
+
+  @override
+  String delete_n_scenes_question(int count) {
+    return '장면 $count개를 삭제할까요?';
+  }
+
+  @override
+  String get delete_scenes_help =>
+      'Stash 메타데이터만 제거할지, 장면 파일과 생성된 보조 파일까지 함께 삭제할지 선택하세요.';
+
+  @override
+  String deleted_n_scenes(int count) {
+    return '장면 $count개를 삭제했습니다';
+  }
+
+  @override
+  String delete_failed_error(String error) {
+    return '삭제 실패: $error';
+  }
+
+  @override
+  String get configuration => '구성';
+
+  @override
+  String missing_phashes_for_scenes(int count) {
+    return '장면 $count개에 phash가 없습니다. phash 생성 작업을 실행하세요.';
+  }
+
+  @override
+  String get merge_editing_not_wired => '병합 편집은 아직 StashFlow에 연결되어 있지 않습니다.';
+
+  @override
+  String duplicate_sets_count(int count) {
+    return '중복 세트 $count개';
+  }
+
+  @override
+  String duplicate_set_number(int number) {
+    return '중복 세트 $number';
+  }
+
+  @override
+  String resolution_dimensions(int width, int height) {
+    return '${width}x$height';
+  }
+
+  @override
+  String duration_seconds_format(String seconds) {
+    return '${seconds}s';
+  }
+
+  @override
+  String bitrate_bps(int bitrate) {
+    return '$bitrate bps';
+  }
+
+  @override
+  String o_count(int count) {
+    return 'O $count';
+  }
+
+  @override
+  String nTags(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '태그 $countString개',
+      one: '태그 1개',
+      zero: '태그 없음',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGroups(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '그룹 $countString개',
+      one: '그룹 1개',
+      zero: '그룹 없음',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nMarkers(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '마커 $countString개',
+      one: '마커 1개',
+      zero: '마커 없음',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nGalleries(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '갤러리 $countString개',
+      one: '갤러리 1개',
+      zero: '갤러리 없음',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String scene_tagger_checked_matches_summary(int checked, int matches) {
+    return '$checked개 확인 • $matches개 일치';
+  }
+
+  @override
+  String scene_tagger_page_summary(int count) {
+    return '이 페이지의 장면 $count개';
+  }
+
+  @override
+  String get no_matched_scenes_yet => '아직 일치하는 장면이 없습니다.';
+
+  @override
+  String get no_scenes_match_configuration => '이 구성과 일치하는 장면이 없습니다.';
+
+  @override
+  String scene_tagger_checked_count(int count) {
+    return '$count개 확인됨';
+  }
+
+  @override
+  String scene_tagger_progress(int checked, int total) {
+    return '$checked / $total';
+  }
+
+  @override
+  String get stats_library_stats_tooltip => '길게 눌러 라이브러리 통계 보기';
 }

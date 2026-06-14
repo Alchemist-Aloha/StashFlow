@@ -337,12 +337,18 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
       _removeSceneFromResults(scene.id);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Saved ${scene.title}')));
+      ).showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.saved_item(scene.title)),
+        ),
+      );
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Save failed: $error')));
+      ).showSnackBar(
+        SnackBar(content: Text(context.l10n.failed_to_save(error.toString()))),
+      );
     }
   }
 
@@ -405,7 +411,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Configuration',
+                      context.l10n.configuration,
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                   ],
@@ -438,8 +444,11 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
     }
 
     final summary = _mode == _TaggerMode.randomUnorganized
-        ? '$_scrapedCount checked • ${_scenes.length} matches'
-        : '${_scenes.length} scenes on this page';
+        ? context.l10n.scene_tagger_checked_matches_summary(
+            _scrapedCount,
+            _scenes.length,
+          )
+        : context.l10n.scene_tagger_page_summary(_scenes.length);
     if (_scenes.isEmpty) {
       return ListView(
         padding: EdgeInsets.zero,
@@ -451,8 +460,8 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
             child: Center(
               child: Text(
                 _mode == _TaggerMode.randomUnorganized
-                    ? 'No matched scenes yet.'
-                    : 'No scenes match this configuration.',
+                    ? context.l10n.no_matched_scenes_yet
+                    : context.l10n.no_scenes_match_configuration,
               ),
             ),
           ),
@@ -531,10 +540,10 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                   child: TextField(
                     controller: _searchController,
                     decoration: const InputDecoration(
-                      labelText: 'Search',
+                      labelText: '',
                       border: OutlineInputBorder(),
                       isDense: true,
-                    ),
+                    ).copyWith(labelText: context.l10n.common_search),
                     textInputAction: TextInputAction.search,
                     onSubmitted: (_) => _loadScenes(),
                   ),
@@ -704,14 +713,21 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                       ),
                     Text(
                       _mode == _TaggerMode.randomUnorganized
-                          ? '$_scrapedCount checked'
-                          : '$_scrapedCount / ${_scenes.length}',
+                          ? context.l10n.scene_tagger_checked_count(
+                              _scrapedCount,
+                            )
+                          : context.l10n.scene_tagger_progress(
+                              _scrapedCount,
+                              _scenes.length,
+                            ),
                     ),
                   ],
                 );
               },
               loading: () => const LinearProgressIndicator(),
-              error: (error, _) => Text('Unable to load stash-boxes: $error'),
+              error: (error, _) => Text(
+                context.l10n.unable_to_load_stash_boxes(error.toString()),
+              ),
             ),
           ],
         ),
@@ -885,6 +901,7 @@ class _LocalSceneSummary extends StatelessWidget {
     return _MetadataPanel(
       title: 'Local scene',
       media: _ScenePreviewPlayer(
+        key: ValueKey('scene_preview_player_${scene.id}'),
         scene: scene,
         isActive: isPreviewActive,
         onActivate: onPreviewActivate,
@@ -1108,6 +1125,7 @@ class _ScenePreviewPlayer extends ConsumerStatefulWidget {
     required this.scene,
     required this.isActive,
     required this.onActivate,
+    super.key,
   });
 
   final Scene scene;
@@ -1296,55 +1314,66 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
                       ),
                   ],
                 )
-              : Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    if (thumbnailUrl != null)
-                      StashImage(
-                        key: ValueKey(
-                          'scene_preview_thumbnail_${widget.scene.id}',
+              : GestureDetector(
+                  onTap: _streamUrl == null ? null : widget.onActivate,
+                  behavior: HitTestBehavior.opaque,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      if (thumbnailUrl != null)
+                        StashImage(
+                          key: ValueKey(
+                            'scene_preview_thumbnail_${widget.scene.id}',
+                          ),
+                          imageUrl: thumbnailUrl,
+                          fit: BoxFit.cover,
+                        )
+                      else
+                        const Center(
+                          child: Icon(
+                            Icons.movie_outlined,
+                            color: Colors.white54,
+                            size: 40,
+                          ),
                         ),
-                        imageUrl: thumbnailUrl,
-                        fit: BoxFit.cover,
-                      )
-                    else
-                      const Center(
-                        child: Icon(
-                          Icons.movie_outlined,
-                          color: Colors.white54,
-                          size: 40,
-                        ),
-                      ),
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.28),
-                      ),
-                    ),
-                    Center(
-                      child: FilledButton.icon(
-                        key: ValueKey(
-                          'scene_preview_activate_${widget.scene.id}',
-                        ),
-                        onPressed: _streamUrl == null
-                            ? null
-                            : widget.onActivate,
-                        icon: const Icon(Icons.play_arrow),
-                        label: Text(context.l10n.preview),
-                      ),
-                    ),
-                    if (_error != null && _error!.isNotEmpty)
-                      Positioned(
-                        left: 8,
-                        right: 8,
-                        bottom: 8,
-                        child: Text(
-                          _error!,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(color: Colors.white70),
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.28),
                         ),
                       ),
-                  ],
+                      Center(
+                        child: Container(
+                          key: ValueKey(
+                            'scene_preview_activate_${widget.scene.id}',
+                          ),
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.5),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white24, width: 1.5),
+                          ),
+                          child: const Icon(
+                            Icons.play_arrow_rounded,
+                            color: Colors.white,
+                            size: 36,
+                          ),
+                        ),
+                      ),
+                      if (_error != null && _error!.isNotEmpty)
+                        Positioned(
+                          left: 8,
+                          right: 8,
+                          bottom: 8,
+                          child: Text(
+                            _error!,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.labelSmall
+                                ?.copyWith(color: Colors.white70),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
         ),
       ),
@@ -1360,12 +1389,12 @@ class _PreviewNativeControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const mobileControls = MaterialVideoControlsThemeData(
-      bottomButtonBarMargin: EdgeInsets.only(left: 16, right: 8, bottom: 56),
-      seekBarMargin: EdgeInsets.only(left: 16, right: 16, bottom: 56),
+      bottomButtonBarMargin: EdgeInsets.fromLTRB(12, 0, 4, 8),
+      seekBarMargin: EdgeInsets.fromLTRB(12, 0, 12, 8),
     );
     const desktopControls = MaterialDesktopVideoControlsThemeData(
-      bottomButtonBarMargin: EdgeInsets.fromLTRB(16, 0, 16, 12),
-      seekBarMargin: EdgeInsets.fromLTRB(16, 0, 16, 12),
+      bottomButtonBarMargin: EdgeInsets.fromLTRB(12, 0, 12, 8),
+      seekBarMargin: EdgeInsets.fromLTRB(12, 0, 12, 8),
     );
 
     return MaterialVideoControlsTheme(
