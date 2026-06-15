@@ -12,6 +12,11 @@ import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/utils/vtt_service.dart';
 
 class MockVttService implements VttService {
+  MockVttService({this.hasSprites = true});
+
+  final bool hasSprites;
+  int fetchCount = 0;
+
   @override
   String? get apiKey => null;
 
@@ -20,7 +25,8 @@ class MockVttService implements VttService {
     String vttUrl,
     Map<String, String>? headers,
   ) async {
-    if (vttUrl.contains('sprites.vtt')) {
+    fetchCount++;
+    if (hasSprites && vttUrl.contains('sprites.vtt')) {
       return [
         const SpriteInfo(
           url: 'http://test.com/sprites.jpg',
@@ -89,12 +95,12 @@ void main() {
     tagNames: const [],
   );
 
-  Widget buildTestWidget(Widget child) {
+  Widget buildTestWidget(Widget child, {VttService? vttService}) {
     return ProviderScope(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
         mediaHeadersProvider.overrideWithValue(const {}),
-        vttServiceProvider.overrideWithValue(MockVttService()),
+        vttServiceProvider.overrideWithValue(vttService ?? MockVttService()),
       ],
       child: MaterialApp(
         theme: AppTheme.darkTheme,
@@ -133,14 +139,14 @@ void main() {
   testWidgets('SceneCard pan gesture is enabled when VTT is present', (
     tester,
   ) async {
+    final vttService = MockVttService();
     await tester.pumpWidget(
-      buildTestWidget(SceneCard(scene: defaultTestScene, isGrid: true)),
+      buildTestWidget(
+        SceneCard(scene: defaultTestScene, isGrid: true),
+        vttService: vttService,
+      ),
     );
 
-    // Initial pump
-    await tester.pump();
-    // Wait for _refreshSpriteAvailability to complete
-    await tester.pump(Duration.zero);
     await tester.pumpAndSettle();
 
     final detectorFinder = find.descendant(
@@ -153,6 +159,71 @@ void main() {
     expect(detector.onHorizontalDragUpdate, isNotNull);
     expect(detector.onHorizontalDragEnd, isNotNull);
     expect(detector.onHorizontalDragCancel, isNotNull);
+    expect(vttService.fetchCount, 0);
+
+    final gesture = await tester.startGesture(tester.getCenter(detectorFinder));
+    await gesture.moveBy(const Offset(30, 0));
+    await tester.pump();
+
+    expect(vttService.fetchCount, 1);
+    await gesture.up();
+    await tester.pump();
+  });
+
+  testWidgets('SceneCard uses VTT cues without requiring paths.sprite', (
+    tester,
+  ) async {
+    final vttService = MockVttService();
+    final sceneWithoutSpritePath = defaultTestScene.copyWith(
+      paths: defaultTestScene.paths.copyWith(sprite: null),
+    );
+
+    await tester.pumpWidget(
+      buildTestWidget(
+        SceneCard(scene: sceneWithoutSpritePath, isGrid: true),
+        vttService: vttService,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final detectorFinder = find.descendant(
+      of: find.byType(Hero),
+      matching: find.byType(GestureDetector),
+    );
+    final detector = tester.widget<GestureDetector>(detectorFinder);
+
+    expect(detector.onHorizontalDragStart, isNotNull);
+    expect(vttService.fetchCount, 0);
+  });
+
+  testWidgets('SceneCard stops probing after VTT is unavailable', (
+    tester,
+  ) async {
+    final vttService = MockVttService(hasSprites: false);
+    await tester.pumpWidget(
+      buildTestWidget(
+        SceneCard(scene: defaultTestScene, isGrid: true),
+        vttService: vttService,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final detectorFinder = find.descendant(
+      of: find.byType(Hero),
+      matching: find.byType(GestureDetector),
+    );
+    final firstGesture = await tester.startGesture(
+      tester.getCenter(detectorFinder),
+    );
+    await firstGesture.moveBy(const Offset(30, 0));
+    await tester.pump();
+    await tester.pump();
+    await firstGesture.up();
+    await tester.pump();
+
+    expect(vttService.fetchCount, 1);
+    final detector = tester.widget<GestureDetector>(detectorFinder);
+    expect(detector.onHorizontalDragStart, isNull);
   });
 
   testWidgets('SceneCard pan gesture is disabled when VTT is absent', (
