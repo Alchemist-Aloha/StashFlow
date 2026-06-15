@@ -102,6 +102,10 @@ dev_dependencies:
 
   plugin_platform_interface: ^2.1.8
 
+dependency_overrides:
+  # 2.1.6 misdetects AGP 8 as AGP 9 and omits its Kotlin plugin class.
+  screen_brightness_android: 2.1.5
+
 
 flutter_launcher_icons:
   android: true
