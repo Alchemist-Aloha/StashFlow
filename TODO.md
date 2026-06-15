@@ -1,19 +1,13 @@
 # Plan
 
-- Move Sort, Filter, and saved filters buttons to a pill widget locate dynamically above bottom panel or mini player
 - Add avif support
 - Add previous, next video navigation for cast player
-- Debug switching sorting between random and other options fails
-- Batch metadata editing for filtered scenes
-- Batch scraping for filtered scenes and mmulti selection to select which scrape result to apply to each scene
-- Add delete scene action to scene details page
-- Add delete duplicate tool
+- the scene card still show current time after dragging before the check of the VTT finished. After the check the drag will not work. change this behavior to make sure the current time only change after the VTT is verified.
 
 Startup is blocked by too much initialization. [main.dart (line 39)](/home/likun/StashFlow/lib/main.dart:39) waits for window setup, temporary storage, Hive, AudioService, preferences, and credential migration before runApp(). Lazy-load audio and defer nonessential desktop/cache work until after the first frame.
 
 Credentials can trigger duplicate startup requests. [auth_provider.dart (line 79)](/home/likun/StashFlow/lib/core/data/auth/auth_provider.dart:79) initially exposes empty credentials while secure storage hydrates asynchronously. [graphql_client.dart (line 65)](/home/likun/StashFlow/lib/core/data/graphql/graphql_client.dart:65) can therefore construct a client and load scenes before valid credentials arrive. Gate the GraphQL client behind one asynchronous credentials bootstrap provider.
 
-Every scene card eagerly downloads and parses VTT data. [scene_card.dart (line 134)](/home/likun/StashFlow/lib/features/scenes/presentation/widgets/scene_card.dart:134) checks sprite availability during initialization. This creates network, parsing, and setState work while scrolling. Load VTT only when scrubbing begins and add in-flight request deduplication plus a bounded cache.
 
 Image prefetching is excessive and duplicated. [list_page_scaffold.dart (line 255)](/home/likun/StashFlow/lib/core/presentation/widgets/list_page_scaffold.dart:255) prefetches at least 40 items in both directions, while [stash_image.dart (line 333)](/home/likun/StashFlow/lib/core/presentation/widgets/stash_image.dart:333) also schedules per-image prefetching. Use one directional prefetch coordinator, approximately one viewport ahead, with a bounded priority queue.
 

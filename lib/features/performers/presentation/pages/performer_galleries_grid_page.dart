@@ -34,7 +34,6 @@ class PerformerGalleriesGridPage extends ConsumerWidget {
       searchHint: context.l10n.common_search_placeholder,
       onSearchChanged: (_) {},
       provider: galleriesAsync,
-      imageUrlBuilder: (item) => item.coverPath,
       onRefresh: () =>
           ref.refresh(performerGalleriesGridProvider(performerId).future),
       onFetchNextPage: () => ref

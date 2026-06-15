@@ -413,7 +413,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
         filterActive || organizedFilter != OrganizedFilter.all;
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
-    // ⚡ Bolt: Hoist server endpoint calculation out of the itemBuilder/imageUrlBuilder loop.
+    // Hoist server endpoint calculation out of the itemBuilder loop.
     // Why: Previously, _getThumbnailUrl was parsing the server URL and URI for every single item,
     // which is expensive O(N) work during scroll events.
     // Impact: Drastically reduces URI parsing overhead during list scrolling.
@@ -425,10 +425,6 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
     return ListPageScaffold<Gallery>(
       title: context.l10n.galleries_title,
       scrollController: ref.watch(galleryScrollControllerProvider),
-      imageUrlBuilder: (gallery) => resolveGraphqlMediaUrl(
-        rawUrl: gallery.coverPath ?? '/gallery/${gallery.id}/thumbnail',
-        graphqlEndpoint: endpoint,
-      ),
       actions: [
         Stack(
           children: [

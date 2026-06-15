@@ -407,7 +407,6 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
       onSearchChanged: _onSearchChanged,
       provider: studiosAsync,
       scrollController: scrollController,
-      imageUrlBuilder: (studio) => studio.imagePath,
       onRefresh: () => ref.read(studioListProvider.notifier).refresh(),
       onFetchNextPage: () =>
           ref.read(studioListProvider.notifier).fetchNextPage(),

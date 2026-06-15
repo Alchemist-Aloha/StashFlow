@@ -430,7 +430,6 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
       ),
       useResponsiveGrid: false,
       useMasonry: true,
-      imageUrlBuilder: (img) => img.paths.thumbnail,
       actions: [
         Stack(
           children: [
