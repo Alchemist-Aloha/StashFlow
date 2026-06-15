@@ -1358,11 +1358,8 @@ for arb_fname, result in report.items():
     data = json.loads(path.read_text())
     updated = False
     
-    # Get translations for this locale
-    # If it's "zh_Hans" or "zh_Hant", use specifically, else fallback to "zh"
+    # Get translations for this exact locale.
     tr = translations.get(locale)
-    if not tr and locale.startswith('zh'):
-        tr = translations.get('zh')
         
     if not tr:
         print(f'No translations provided for {locale}, skipping')

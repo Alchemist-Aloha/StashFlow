@@ -124,6 +124,39 @@ void main() {
     expect(materialApp.locale, testLocale);
   });
 
+  testWidgets('MyApp supports only script-specific Chinese locales', (
+    WidgetTester tester,
+  ) async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+        ],
+        child: const MyApp(),
+      ),
+    );
+
+    await tester.pump();
+
+    final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
+
+    expect(
+      materialApp.supportedLocales,
+      contains(
+        const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
+      ),
+    );
+    expect(
+      materialApp.supportedLocales,
+      contains(
+        const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
+      ),
+    );
+    expect(materialApp.supportedLocales, isNot(contains(const Locale('zh'))));
+  });
+
   testWidgets('StartupErrorApp shows a visible startup failure', (
     WidgetTester tester,
   ) async {
