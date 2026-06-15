@@ -7026,7 +7026,7 @@ class Query$FindDuplicateScenes$findDuplicateScenes$files {
     return Query$FindDuplicateScenes$findDuplicateScenes$files(
       id: (l$id as String),
       path: (l$path as String),
-      size: (l$size as String),
+      size: (l$size as int),
       mod_time: (l$mod_time as String),
       duration: (l$duration as num).toDouble(),
       width: (l$width as int),
@@ -7041,7 +7041,7 @@ class Query$FindDuplicateScenes$findDuplicateScenes$files {
 
   final String path;
 
-  final String size;
+  final int size;
 
   final String mod_time;
 
@@ -7197,7 +7197,7 @@ abstract class CopyWith$Query$FindDuplicateScenes$findDuplicateScenes$files<
   TRes call({
     String? id,
     String? path,
-    String? size,
+    int? size,
     String? mod_time,
     double? duration,
     int? width,
@@ -7240,9 +7240,7 @@ class _CopyWithImpl$Query$FindDuplicateScenes$findDuplicateScenes$files<TRes>
       path: path == _undefined || path == null
           ? _instance.path
           : (path as String),
-      size: size == _undefined || size == null
-          ? _instance.size
-          : (size as String),
+      size: size == _undefined || size == null ? _instance.size : (size as int),
       mod_time: mod_time == _undefined || mod_time == null
           ? _instance.mod_time
           : (mod_time as String),
@@ -7282,7 +7280,7 @@ class _CopyWithStubImpl$Query$FindDuplicateScenes$findDuplicateScenes$files<
   call({
     String? id,
     String? path,
-    String? size,
+    int? size,
     String? mod_time,
     double? duration,
     int? width,

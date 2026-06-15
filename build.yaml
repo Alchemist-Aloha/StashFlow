@@ -32,4 +32,6 @@ targets:
               type: String
             Time:
               type: String
+            Int64:
+              type: int
 
