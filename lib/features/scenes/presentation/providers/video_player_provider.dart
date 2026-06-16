@@ -134,6 +134,9 @@ class GlobalPlayerState {
   /// User preference: whether to allow gravity-controlled orientation rotation in fullscreen.
   final bool videoGravityOrientation;
 
+  /// User preference: whether the miniplayer thumbnail should show the live video surface.
+  final bool useActualSceneVideoInMiniPlayer;
+
   /// User preference: whether to start feed playback from a random position.
   final bool feedStartRandom;
 
@@ -173,6 +176,7 @@ class GlobalPlayerState {
     this.enableBackgroundPlayback = false,
     this.enableNativePip = false,
     this.videoGravityOrientation = true,
+    this.useActualSceneVideoInMiniPlayer = false,
     this.feedStartRandom = false,
     this.resumePlayPosition = true,
     this.selectedSubtitleLanguage,
@@ -217,6 +221,7 @@ class GlobalPlayerState {
     bool? enableBackgroundPlayback,
     bool? enableNativePip,
     bool? videoGravityOrientation,
+    bool? useActualSceneVideoInMiniPlayer,
     bool? feedStartRandom,
     bool? resumePlayPosition,
     String? selectedSubtitleLanguage,
@@ -274,6 +279,9 @@ class GlobalPlayerState {
       enableNativePip: enableNativePip ?? this.enableNativePip,
       videoGravityOrientation:
           videoGravityOrientation ?? this.videoGravityOrientation,
+      useActualSceneVideoInMiniPlayer:
+          useActualSceneVideoInMiniPlayer ??
+          this.useActualSceneVideoInMiniPlayer,
       feedStartRandom: feedStartRandom ?? this.feedStartRandom,
       resumePlayPosition: resumePlayPosition ?? this.resumePlayPosition,
       selectedSubtitleLanguage: clearSubtitle
@@ -423,6 +431,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       enableBackgroundPlayback: loadedSettings.enableBackgroundPlayback,
       enableNativePip: loadedSettings.enableNativePip,
       videoGravityOrientation: loadedSettings.videoGravityOrientation,
+      useActualSceneVideoInMiniPlayer:
+          loadedSettings.useActualSceneVideoInMiniPlayer,
       isInPipMode: PipMode.isInPipMode.value,
       defaultSubtitleLanguage: loadedSettings.defaultSubtitleLanguage,
       subtitleFontSize: loadedSettings.subtitleFontSize,
@@ -498,6 +508,11 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   void setVideoGravityOrientation(bool value) {
     state = state.copyWith(videoGravityOrientation: value);
     unawaited(_settingsStore.saveVideoGravityOrientation(value));
+  }
+
+  void setUseActualSceneVideoInMiniPlayer(bool value) {
+    state = state.copyWith(useActualSceneVideoInMiniPlayer: value);
+    unawaited(_settingsStore.saveUseActualSceneVideoInMiniPlayer(value));
   }
 
   void setFeedStartRandom(bool value) {

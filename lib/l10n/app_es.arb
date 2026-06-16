@@ -265,6 +265,8 @@
   "settings_interface_main_pages_gravity_orientation_subtitle": "Permite que las páginas principales roten usando el sensor del dispositivo. La reproducción de video en pantalla completa usa su propia configuración de orientación.",
   "settings_interface_show_edit": "Mostrar botón de editar",
   "settings_interface_show_edit_subtitle": "Habilitar o deshabilitar el botón de editar en la página de detalles de la escena",
+  "settings_interface_use_actual_scene_video_miniplayer": "Usar video real de escena en el minirreproductor",
+  "settings_interface_use_actual_scene_video_miniplayer_subtitle": "Muestra la superficie de video en vivo en lugar de la captura de la escena cuando la reproducción está activa.",
   "settings_interface_customize_tabs": "Personalizar pestañas",
   "settings_interface_customize_tabs_subtitle": "Reordenar u ocultar elementos del menú de navegación",
   "settings_interface_scenes_layout": "Diseño de escenas",

@@ -1140,6 +1140,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_interface_show_edit_subtitle => '在场景详情页启用或禁用编辑按钮';
 
   @override
+  String get settings_interface_use_actual_scene_video_miniplayer =>
+      '在迷你播放器中使用实际场景视频';
+
+  @override
+  String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
+      '播放时显示实时场景视频画面，而不是场景截图。';
+
+  @override
   String get settings_interface_customize_tabs => '自定义标签页';
 
   @override
@@ -4023,6 +4031,14 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get settings_interface_show_edit_subtitle => '在场景详情页启用或禁用编辑按钮';
+
+  @override
+  String get settings_interface_use_actual_scene_video_miniplayer =>
+      '在迷你播放器中使用实际场景视频';
+
+  @override
+  String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
+      '播放时显示实时场景视频画面，而不是场景截图。';
 
   @override
   String get settings_interface_customize_tabs => '自定义标签页';
@@ -6909,6 +6925,14 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings_interface_show_edit_subtitle => '在場景詳情頁面上啟用或停用編輯按鈕';
+
+  @override
+  String get settings_interface_use_actual_scene_video_miniplayer =>
+      '在迷你播放器中使用實際場景影片';
+
+  @override
+  String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
+      '播放時顯示即時場景影片畫面，而不是場景截圖。';
 
   @override
   String get settings_interface_customize_tabs => '自訂分頁';

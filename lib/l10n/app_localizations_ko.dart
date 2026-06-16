@@ -1144,6 +1144,14 @@ class AppLocalizationsKo extends AppLocalizations {
       '장면 상세 페이지에서 편집 버튼 활성화 또는 비활성화';
 
   @override
+  String get settings_interface_use_actual_scene_video_miniplayer =>
+      '미니플레이어에서 실제 장면 비디오 사용';
+
+  @override
+  String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
+      '재생 중일 때 장면 스크린샷 대신 실시간 비디오 화면을 표시합니다.';
+
+  @override
   String get settings_interface_customize_tabs => '탭 사용자 정의';
 
   @override

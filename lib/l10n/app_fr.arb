@@ -265,6 +265,8 @@
   "settings_interface_main_pages_gravity_orientation_subtitle": "Autoriser les pages principales à pivoter à l'aide du capteur de l'appareil. La lecture vidéo en plein écran utilise ses propres paramètres d'orientation.",
   "settings_interface_show_edit": "Afficher le bouton d'édition",
   "settings_interface_show_edit_subtitle": "Activer ou désactiver le bouton d'édition sur la page de détails de la scène",
+  "settings_interface_use_actual_scene_video_miniplayer": "Utiliser la vraie vidéo de scène dans le mini-lecteur",
+  "settings_interface_use_actual_scene_video_miniplayer_subtitle": "Affiche la surface vidéo en direct au lieu de la capture de la scène quand la lecture est active.",
   "settings_interface_customize_tabs": "Personnaliser les onglets",
   "settings_interface_customize_tabs_subtitle": "Réorganiser ou masquer les éléments du menu de navigation",
   "settings_interface_scenes_layout": "Disposition des scènes",

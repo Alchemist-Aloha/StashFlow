@@ -1165,6 +1165,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Включить или отключить кнопку редактирования на странице деталей сцены';
 
   @override
+  String get settings_interface_use_actual_scene_video_miniplayer =>
+      'Использовать настоящее видео сцены в мини-плеере';
+
+  @override
+  String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
+      'Показывать живую видеоповерхность вместо скриншота сцены, когда воспроизведение активно.';
+
+  @override
   String get settings_interface_customize_tabs => 'Настройка вкладок';
 
   @override

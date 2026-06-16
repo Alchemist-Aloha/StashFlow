@@ -9,6 +9,8 @@ import 'package:stash_app_flutter/features/setup/presentation/providers/navigati
 import 'package:stash_app_flutter/features/setup/presentation/providers/main_page_orientation_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/scrape_customization_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/player_settings.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_list_provider.dart';
 import 'package:stash_app_flutter/core/presentation/providers/layout_settings_provider.dart';
 import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
@@ -32,6 +34,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   bool _sceneTiktokLayout = false;
   bool _galleryGridLayout = true;
   bool _mainPageGravityOrientation = true;
+  bool _useActualSceneVideoInMiniPlayer = false;
   bool _imageFullscreenVerticalSwipe = true;
 
   int? _sceneGridColumns;
@@ -72,6 +75,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     _sceneTiktokLayout = ref.read(sceneTiktokLayoutProvider);
     _galleryGridLayout = ref.read(galleryGridLayoutProvider);
     _mainPageGravityOrientation = ref.read(mainPageGravityOrientationProvider);
+    _useActualSceneVideoInMiniPlayer = PlayerSettingsStore(
+      prefs,
+    ).load().useActualSceneVideoInMiniPlayer;
     _imageFullscreenVerticalSwipe =
         prefs.getBool(_imageFullscreenVerticalSwipeKey) ?? true;
 
@@ -113,6 +119,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     ref
         .read(mainPageGravityOrientationProvider.notifier)
         .set(_mainPageGravityOrientation);
+    ref
+        .read(playerStateProvider.notifier)
+        .setUseActualSceneVideoInMiniPlayer(_useActualSceneVideoInMiniPlayer);
 
     ref.read(sceneGridColumnsProvider.notifier).set(_sceneGridColumns);
     ref.read(galleryGridColumnsProvider.notifier).set(_galleryGridColumns);
@@ -220,6 +229,27 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           value: _mainPageGravityOrientation,
                           onChanged: (value) async {
                             setState(() => _mainPageGravityOrientation = value);
+                            await _saveSettings();
+                          },
+                        ),
+                        Divider(height: context.dimensions.spacingLarge),
+                        SwitchListTile.adaptive(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(
+                            context
+                                .l10n
+                                .settings_interface_use_actual_scene_video_miniplayer,
+                          ),
+                          subtitle: Text(
+                            context
+                                .l10n
+                                .settings_interface_use_actual_scene_video_miniplayer_subtitle,
+                          ),
+                          value: _useActualSceneVideoInMiniPlayer,
+                          onChanged: (value) async {
+                            setState(
+                              () => _useActualSceneVideoInMiniPlayer = value,
+                            );
                             await _saveSettings();
                           },
                         ),
