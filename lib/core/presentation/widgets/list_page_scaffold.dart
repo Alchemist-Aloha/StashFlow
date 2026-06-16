@@ -574,8 +574,22 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                       Widget body =
                           widget.customBody ??
                           (isGrid
-                              ? (widget.useMasonry
-                                    ? MasonryGridView.builder(
+                              ? LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    final horizontalPadding =
+                                        widget.padding
+                                            ?.resolve(Directionality.of(context))
+                                            .horizontal ??
+                                        0.0;
+                                    if (!constraints.hasBoundedWidth ||
+                                        constraints.maxWidth -
+                                                horizontalPadding <=
+                                            0) {
+                                      return const SizedBox.shrink();
+                                    }
+
+                                    if (widget.useMasonry) {
+                                      return MasonryGridView.builder(
                                         controller: widget.scrollController,
                                         padding: widget.padding,
                                         cacheExtent: viewportCacheExtent,
@@ -632,56 +646,57 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                             ),
                                           );
                                         },
-                                      )
-                                    : GridView.builder(
-                                        controller: widget.scrollController,
-                                        padding: widget.padding,
-                                        scrollCacheExtent:
-                                            const ScrollCacheExtent.viewport(
-                                              1.0,
-                                            ),
-                                        gridDelegate: responsiveDelegate!,
-                                        itemCount: items.length,
-                                        itemBuilder: (context, index) {
-                                          if (index == 0 &&
-                                              widget.onPageSizeChanged !=
-                                                  null &&
-                                              _measuredItemExtent == null) {
-                                            WidgetsBinding.instance
-                                                .addPostFrameCallback((_) {
-                                                  if (_measuredItemExtent ==
-                                                          null &&
-                                                      _firstItemKey
-                                                              .currentContext !=
-                                                          null) {
-                                                    final size = _firstItemKey
-                                                        .currentContext!
-                                                        .size;
-                                                    if (size != null) {
-                                                      setState(() {
-                                                        _measuredItemExtent =
-                                                            size.height;
-                                                      });
-                                                    }
-                                                  }
-                                                });
-                                          }
+                                      );
+                                    }
 
-                                          return RepaintBoundary(
-                                            child: KeyedSubtree(
-                                              key: index == 0
-                                                  ? _firstItemKey
-                                                  : null,
-                                              child: widget.itemBuilder!(
-                                                context,
-                                                items[index],
-                                                memCacheWidth,
-                                                null,
-                                              ),
+                                    return GridView.builder(
+                                      controller: widget.scrollController,
+                                      padding: widget.padding,
+                                      scrollCacheExtent:
+                                          const ScrollCacheExtent.viewport(1.0),
+                                      gridDelegate: responsiveDelegate!,
+                                      itemCount: items.length,
+                                      itemBuilder: (context, index) {
+                                        if (index == 0 &&
+                                            widget.onPageSizeChanged != null &&
+                                            _measuredItemExtent == null) {
+                                          WidgetsBinding.instance
+                                              .addPostFrameCallback((_) {
+                                                if (_measuredItemExtent ==
+                                                        null &&
+                                                    _firstItemKey
+                                                            .currentContext !=
+                                                        null) {
+                                                  final size = _firstItemKey
+                                                      .currentContext!
+                                                      .size;
+                                                  if (size != null) {
+                                                    setState(() {
+                                                      _measuredItemExtent =
+                                                          size.height;
+                                                    });
+                                                  }
+                                                }
+                                              });
+                                        }
+
+                                        return RepaintBoundary(
+                                          child: KeyedSubtree(
+                                            key: index == 0
+                                                ? _firstItemKey
+                                                : null,
+                                            child: widget.itemBuilder!(
+                                              context,
+                                              items[index],
+                                              memCacheWidth,
+                                              null,
                                             ),
-                                          );
-                                        },
-                                      ))
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                )
                               : ListView.builder(
                                   controller: widget.scrollController,
                                   padding: widget.padding,

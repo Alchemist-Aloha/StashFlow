@@ -172,7 +172,7 @@ class GlobalPlayerState {
     this.prewarmLatencyMs,
     this.playEndBehavior = VideoEndBehavior.stop,
     this.showVideoDebugInfo = false,
-    this.useDoubleTapSeek = false,
+    this.useDoubleTapSeek = true,
     this.enableBackgroundPlayback = false,
     this.enableNativePip = false,
     this.videoGravityOrientation = true,
@@ -988,6 +988,10 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         fullscreenPhase: state.fullscreenPhase,
       );
 
+      if (isTestMode) {
+        return;
+      }
+
       await player.open(
         Media(
           effectiveStreamUrl,
@@ -1051,16 +1055,18 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         startupLatencyMs: initializeElapsedMs,
       );
 
-      mediaHandler?.updateMetadata(
-        id: scene.id,
-        title: scene.title,
-        studio: scene.studioName,
-        thumbnailUri: appendApiKey(
-          scene.paths.screenshot ?? '',
-          ref.read(serverApiKeyProvider),
-        ),
-        duration: player.state.duration,
-      );
+      if (!isTestMode) {
+        mediaHandler?.updateMetadata(
+          id: scene.id,
+          title: scene.title,
+          studio: scene.studioName,
+          thumbnailUri: appendApiKey(
+            scene.paths.screenshot ?? '',
+            ref.read(serverApiKeyProvider),
+          ),
+          duration: player.state.duration,
+        );
+      }
 
       AppLogStore.instance.add(
         'provider ready scene=${scene.id} startup=${initializeElapsedMs}ms',
@@ -1071,23 +1077,25 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         unawaited(WakelockPlus.enable());
       }
 
-      final desktopSettings = ref.read(desktopSettingsProvider);
-      await player.setVolume(
-        desktopSettings.isMuted ? 0 : desktopSettings.volume * 100.0,
-      );
+      if (!isTestMode) {
+        final desktopSettings = ref.read(desktopSettingsProvider);
+        await player.setVolume(
+          desktopSettings.isMuted ? 0 : desktopSettings.volume * 100.0,
+        );
 
-      await _sessionController.bindPlayerStreams(
-        player,
-        onTick: _videoListener,
-        onCompleted: _handleVideoFinished,
-        onError: (error) {
-          AppLogStore.instance.add(
-            'provider player error scene=${scene.id} error=$error',
-            source: 'player_provider',
-          );
-        },
-      );
-      unawaited(player.play());
+        await _sessionController.bindPlayerStreams(
+          player,
+          onTick: _videoListener,
+          onCompleted: _handleVideoFinished,
+          onError: (error) {
+            AppLogStore.instance.add(
+              'provider player error scene=${scene.id} error=$error',
+              source: 'player_provider',
+            );
+          },
+        );
+        unawaited(player.play());
+      }
 
       // Prepare for the next scene in the queue
       _prewarmQueue();

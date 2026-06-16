@@ -467,7 +467,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: Row(
                   children: [
                     Expanded(
@@ -510,12 +510,23 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                         ],
                       ),
                     ),
-                    IconButton(
-                      tooltip: context.l10n.common_more,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      onPressed: () => _showMenu(context, ref),
-                      icon: const Icon(Icons.more_vert, size: 16, color: null),
+                    SizedBox.square(
+                      dimension: 32,
+                      child: IconButton(
+                        tooltip: context.l10n.common_more,
+                        padding: EdgeInsets.zero,
+                        visualDensity: VisualDensity.compact,
+                        constraints: const BoxConstraints.tightFor(
+                          width: 32,
+                          height: 32,
+                        ),
+                        onPressed: () => _showMenu(context, ref),
+                        icon: const Icon(
+                          Icons.more_vert,
+                          size: 16,
+                          color: null,
+                        ),
+                      ),
                     ),
                   ],
                 ),
