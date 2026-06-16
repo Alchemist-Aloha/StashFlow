@@ -653,7 +653,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                       controller: widget.scrollController,
                                       padding: widget.padding,
                                       scrollCacheExtent:
-                                          const ScrollCacheExtent.viewport(1.0),
+                                          const ScrollCacheExtent.viewport(2.0),
                                       gridDelegate: responsiveDelegate!,
                                       itemCount: items.length,
                                       itemBuilder: (context, index) {
@@ -701,7 +701,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                   controller: widget.scrollController,
                                   padding: widget.padding,
                                   scrollCacheExtent:
-                                      const ScrollCacheExtent.viewport(1.0),
+                                      const ScrollCacheExtent.viewport(2.0),
                                   itemCount: items.length,
                                   itemExtent: widget.itemExtent,
                                   itemBuilder: (context, index) {
