@@ -458,7 +458,6 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
       onSearchChanged: _onSearchChanged,
       provider: performersAsync,
       scrollController: scrollController,
-      imageUrlBuilder: (performer) => performer.imagePath,
       onRefresh: () => ref.read(performerListProvider.notifier).refresh(),
       onFetchNextPage: () =>
           ref.read(performerListProvider.notifier).fetchNextPage(),

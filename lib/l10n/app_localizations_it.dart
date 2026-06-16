@@ -1177,6 +1177,14 @@ class AppLocalizationsIt extends AppLocalizations {
       'Abilita o disabilita il pulsante di modifica nella pagina dei dettagli della scena';
 
   @override
+  String get settings_interface_use_actual_scene_video_miniplayer =>
+      'Usa il video reale della scena nel mini player';
+
+  @override
+  String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
+      'Mostra la superficie video live invece dello screenshot della scena quando la riproduzione è attiva.';
+
+  @override
   String get settings_interface_customize_tabs => 'Personalizza Schede';
 
   @override

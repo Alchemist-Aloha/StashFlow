@@ -30,13 +30,14 @@ class _TagFilterPanelState extends ConsumerState<TagFilterPanel> {
       top: false,
       child: FractionallySizedBox(
         heightFactor: 0.9,
-        child: Container(
-          decoration: BoxDecoration(
-            color: context.colors.surface,
-            borderRadius: const BorderRadius.vertical(
+        child: Material(
+          color: context.colors.surface,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
               top: Radius.circular(AppTheme.radiusExtraLarge),
             ),
           ),
+          clipBehavior: Clip.antiAlias,
           child: Column(
             children: [
               Padding(
@@ -65,15 +66,12 @@ class _TagFilterPanelState extends ConsumerState<TagFilterPanel> {
               Expanded(
                 child: SingleChildScrollView(
                   padding: EdgeInsets.only(
-                    bottom: bottomInset +
+                    bottom:
+                        bottomInset +
                         safeBottom +
                         context.dimensions.spacingLarge,
                   ),
-                  child: Column(
-                    children: [
-                      _buildGeneralSection(),
-                    ],
-                  ),
+                  child: Column(children: [_buildGeneralSection()]),
                 ),
               ),
               const Divider(height: 1),
@@ -115,9 +113,7 @@ class _TagFilterPanelState extends ConsumerState<TagFilterPanel> {
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(
-                                  context.l10n.tags_filter_saved,
-                                ),
+                                content: Text(context.l10n.tags_filter_saved),
                               ),
                             );
                           }

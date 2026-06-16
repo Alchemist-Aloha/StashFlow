@@ -657,7 +657,7 @@ class GraphQLSceneRepository implements SceneRepository {
     return SceneDuplicateFile(
       id: file.id,
       path: file.path,
-      size: int.tryParse(file.size) ?? 0,
+      size: file.size,
       width: file.width,
       height: file.height,
       bitRate: file.bit_rate,

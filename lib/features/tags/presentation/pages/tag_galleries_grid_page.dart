@@ -28,7 +28,6 @@ class TagGalleriesGridPage extends ConsumerWidget {
       searchHint: context.l10n.common_search_placeholder,
       onSearchChanged: (_) {},
       provider: galleriesAsync,
-      imageUrlBuilder: (item) => item.coverPath,
       onRefresh: () => ref.refresh(tagGalleriesGridProvider(tagId).future),
       onFetchNextPage: () =>
           ref.read(tagGalleriesGridProvider(tagId).notifier).fetchNextPage(),

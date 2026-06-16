@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/list_page_scaffold.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/error_state_view.dart';
@@ -107,6 +109,107 @@ void main() {
       for (final item in items) {
         expect(find.text(item), findsOneWidget);
       }
+    });
+
+    testWidgets(
+      'uses one viewport of cache and grid density controls cached item count',
+      (WidgetTester tester) async {
+        await tester.binding.setSurfaceSize(const Size(800, 600));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        final items = List<String>.generate(100, (index) => 'Item $index');
+
+        Future<({ScrollCacheExtent? cacheExtent, int builtCount})> pumpGrid(
+          int columns,
+        ) async {
+          final builtItems = <String>{};
+          await pumpTestWidget(
+            tester,
+            child: ListPageScaffold<String>(
+              title: 'Test Title',
+              searchHint: 'Search...',
+              onSearchChanged: (_) {},
+              provider: AsyncValue.data(items),
+              hideAppBar: true,
+              useResponsiveGrid: false,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: columns,
+              ),
+              itemBuilder: (context, item, mw, mh) {
+                builtItems.add(item);
+                return GridTile(child: Text(item));
+              },
+            ),
+          );
+          await tester.pump();
+
+          final grid = tester.widget<GridView>(find.byType(GridView));
+          return (
+            cacheExtent: grid.scrollCacheExtent,
+            builtCount: builtItems.length,
+          );
+        }
+
+        final twoColumns = await pumpGrid(2);
+        final fiveColumns = await pumpGrid(5);
+
+        expect(twoColumns.cacheExtent, const ScrollCacheExtent.viewport(1.0));
+        expect(fiveColumns.cacheExtent, const ScrollCacheExtent.viewport(1.0));
+        expect(fiveColumns.builtCount, greaterThan(twoColumns.builtCount));
+      },
+    );
+
+    testWidgets('uses one viewport of cache for list and masonry layouts', (
+      WidgetTester tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(800, 600));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final items = List<String>.generate(30, (index) => 'Item $index');
+
+      await pumpTestWidget(
+        tester,
+        child: ListPageScaffold<String>(
+          title: 'List',
+          searchHint: 'Search...',
+          onSearchChanged: (_) {},
+          provider: AsyncValue.data(items),
+          hideAppBar: true,
+          itemBuilder: (context, item, mw, mh) => Text(item),
+        ),
+      );
+      await tester.pump();
+      expect(
+        tester.widget<ListView>(find.byType(ListView)).scrollCacheExtent,
+        const ScrollCacheExtent.viewport(1.0),
+      );
+
+      await pumpTestWidget(
+        tester,
+        child: ListPageScaffold<String>(
+          title: 'Masonry',
+          searchHint: 'Search...',
+          onSearchChanged: (_) {},
+          provider: AsyncValue.data(items),
+          hideAppBar: true,
+          useResponsiveGrid: false,
+          useMasonry: true,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+          ),
+          itemBuilder: (context, item, mw, mh) => Text(item),
+        ),
+      );
+      await tester.pump();
+      final masonryViewport = tester.widget<Viewport>(
+        find.descendant(
+          of: find.byType(MasonryGridView),
+          matching: find.byType(Viewport),
+        ),
+      );
+      expect(
+        masonryViewport.scrollCacheExtent,
+        const ScrollCacheExtent.pixels(600),
+      );
     });
 
     testWidgets('toggles search bar when search icon is tapped', (
@@ -248,8 +351,7 @@ void main() {
 
       expect(
         find.byWidgetPredicate(
-          (widget) =>
-              widget is Tooltip && widget.message == '长按查看资料库统计',
+          (widget) => widget is Tooltip && widget.message == '长按查看资料库统计',
         ),
         findsOneWidget,
       );

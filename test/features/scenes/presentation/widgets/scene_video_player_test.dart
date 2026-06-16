@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:dart_cast/dart_cast.dart' as dc;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +13,7 @@ import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resol
 import 'package:stash_app_flutter/features/scenes/data/repositories/stream_prewarmer.dart';
 import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
+import 'package:stash_app_flutter/core/data/services/cast_service.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 
 class MockPlayerState extends PlayerState {
@@ -97,7 +101,7 @@ void main() {
     interactive: false,
     resumeTime: null,
     playCount: 10,
-        playDuration: 0,
+    playDuration: 0,
     files: [],
     urls: [],
     paths: const ScenePaths(
@@ -135,8 +139,8 @@ void main() {
       ),
     );
 
-  await tester.pump();
-  await tester.pump(const Duration(milliseconds: 10));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 10));
 
     expect(find.byType(AspectRatio), findsWidgets);
     expect(find.byType(Container), findsWidgets);
@@ -194,18 +198,114 @@ void main() {
         child: MaterialApp(
           theme: AppTheme.darkTheme,
           home: Scaffold(
-            body: SceneVideoPlayer(
-              scene: autoplayScene,
-              autoPlayOnMount: true,
-            ),
+            body: SceneVideoPlayer(scene: autoplayScene, autoPlayOnMount: true),
           ),
         ),
       ),
     );
 
-  await tester.pump();
-  await tester.pump(const Duration(milliseconds: 10));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 10));
 
     expect(MockPlayerState.lastPlayedSceneId, autoplayScene.id);
   });
+
+  testWidgets('forced scene switch restarts active cast on the same session', (
+    tester,
+  ) async {
+    MockPlayerState.lastPlayedSceneId = null;
+    final container = ProviderContainer(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        playerStateProvider.overrideWith(MockPlayerState.new),
+        streamResolverProvider.overrideWith(MockStreamResolverChoice.new),
+        streamPrewarmerProvider.overrideWith(MockStreamPrewarmer.new),
+        mediaHeadersProvider.overrideWithValue(const {}),
+        castServiceProvider.overrideWith(_FakeAppCastService.new),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          theme: AppTheme.darkTheme,
+          home: Scaffold(
+            body: SceneVideoPlayer(scene: testScene, autoPlayOnMount: true),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    final castService =
+        container.read(castServiceProvider.notifier) as _FakeAppCastService;
+
+    expect(MockPlayerState.lastPlayedSceneId, testScene.id);
+    expect(castService.restartCalls, 1);
+    expect(castService.lastMedia?.url, 'http://test.com/stream.mp4');
+  });
+}
+
+class _FakeAppCastService extends AppCastService {
+  int restartCalls = 0;
+  dc.CastMedia? lastMedia;
+
+  @override
+  CastState build() {
+    return CastState(isCasting: true, activeSession: _FakeCastSession());
+  }
+
+  @override
+  Future<void> restartActiveSessionWithMedia(
+    dc.CastMedia media, {
+    Duration localResumePosition = Duration.zero,
+    bool localWasPlaying = false,
+  }) async {
+    restartCalls++;
+    lastMedia = media;
+  }
+}
+
+class _FakeCastSession extends dc.CastSession {
+  _FakeCastSession()
+    : super(
+        dc.CastDevice(
+          id: 'fake',
+          name: 'Fake Cast',
+          protocol: dc.CastProtocol.airplay,
+          address: InternetAddress.loopbackIPv4,
+          port: 8009,
+        ),
+      );
+
+  @override
+  Future<void> connect() async {}
+
+  @override
+  Future<void> disconnect() async {}
+
+  @override
+  Future<void> loadMedia(dc.CastMedia media) async {}
+
+  @override
+  Future<void> pause() async {}
+
+  @override
+  Future<void> play() async {}
+
+  @override
+  Future<void> seek(Duration position) async {}
+
+  @override
+  Future<void> setSubtitle(dc.CastSubtitle? subtitle) async {}
+
+  @override
+  Future<void> setVolume(double volume) async {}
+
+  @override
+  Future<void> stop() async {}
 }

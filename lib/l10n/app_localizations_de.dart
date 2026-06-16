@@ -1171,6 +1171,14 @@ class AppLocalizationsDe extends AppLocalizations {
       'Aktivieren oder deaktivieren Sie die Bearbeiten-Schaltfläche auf der Szenendetailseite';
 
   @override
+  String get settings_interface_use_actual_scene_video_miniplayer =>
+      'Echtes Szenenvideo im Miniplayer verwenden';
+
+  @override
+  String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
+      'Zeigt bei aktiver Wiedergabe die Live-Videofläche statt des Szenen-Screenshots an.';
+
+  @override
   String get settings_interface_customize_tabs => 'Tabs anpassen';
 
   @override

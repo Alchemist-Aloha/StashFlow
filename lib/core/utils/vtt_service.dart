@@ -11,7 +11,7 @@ final vttServiceProvider = Provider<VttService>((ref) {
 });
 
 class VttService {
-  VttService({this.apiKey});
+  VttService({this.apiKey, http.Client? client}) : _client = client;
 
   static final _spriteRegExp = RegExp(
     r'^([^#]*)#xywh=(\d+),(\d+),(\d+),(\d+)$',
@@ -19,7 +19,9 @@ class VttService {
   );
 
   final String? apiKey;
+  final http.Client? _client;
   final Map<String, List<SpriteInfo>> _cache = {};
+  final Map<String, Future<List<SpriteInfo>?>> _inFlight = {};
 
   Future<List<SpriteInfo>?> fetchSpriteInfo(
     String vttUrl,
@@ -34,26 +36,47 @@ class VttService {
       return _cache[effectiveUrl];
     }
 
+    final inFlight = _inFlight[effectiveUrl];
+    if (inFlight != null) {
+      return inFlight;
+    }
+
+    final request = _fetchSpriteInfo(effectiveUrl, headers);
+    _inFlight[effectiveUrl] = request;
+    try {
+      return await request;
+    } finally {
+      if (identical(_inFlight[effectiveUrl], request)) {
+        _inFlight.remove(effectiveUrl);
+      }
+    }
+  }
+
+  Future<List<SpriteInfo>?> _fetchSpriteInfo(
+    String effectiveUrl,
+    Map<String, String>? headers,
+  ) async {
     AppLogStore.instance.add(
       'Fetching VTT: $effectiveUrl',
       source: 'VttService',
     );
 
     try {
-      final response = await http.get(
-        Uri.parse(effectiveUrl),
-        headers: headers,
-      );
+      final uri = Uri.parse(effectiveUrl);
+      final response = _client != null
+          ? await _client.get(uri, headers: headers)
+          : await http.get(uri, headers: headers);
       if (response.statusCode != 200) {
-        if (response.statusCode != 404) {
-          AppLogStore.instance.add(
-            'Failed to fetch VTT: ${response.statusCode}',
-            source: 'VttService',
-          );
+        if (response.statusCode == 404) {
+          _cache[effectiveUrl] = [];
+          return [];
         }
-        // Cache the failure so we don't spam 404s
-        _cache[effectiveUrl] = [];
-        return [];
+
+        AppLogStore.instance.add(
+          'Failed to fetch VTT: ${response.statusCode}',
+          source: 'VttService',
+        );
+        return null;
       }
 
       final spriteInfoList = _parseVtt(response.body, effectiveUrl);

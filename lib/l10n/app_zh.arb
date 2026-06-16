@@ -301,6 +301,8 @@
   "settings_interface_main_pages_gravity_orientation_subtitle": "允许主页面使用设备传感器旋转。全屏视频播放将使用其自己的方向设置。",
   "settings_interface_show_edit": "显示编辑按钮",
   "settings_interface_show_edit_subtitle": "在场景详情页启用或禁用编辑按钮",
+  "settings_interface_use_actual_scene_video_miniplayer": "在迷你播放器中使用实际场景视频",
+  "settings_interface_use_actual_scene_video_miniplayer_subtitle": "播放时显示实时场景视频画面，而不是场景截图。",
   "settings_interface_customize_tabs": "自定义标签页",
   "settings_interface_customize_tabs_subtitle": "重新排序或隐藏导航菜单项",
   "settings_interface_scenes_layout": "场景布局",

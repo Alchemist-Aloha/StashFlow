@@ -294,6 +294,8 @@
   "settings_interface_main_pages_gravity_orientation_subtitle": "允許主頁面使用裝置感測器旋轉。全螢幕影片播放將使用其自己的方向設定。",
   "settings_interface_show_edit": "顯示編輯按鈕",
   "settings_interface_show_edit_subtitle": "在場景詳情頁面上啟用或停用編輯按鈕",
+  "settings_interface_use_actual_scene_video_miniplayer": "在迷你播放器中使用實際場景影片",
+  "settings_interface_use_actual_scene_video_miniplayer_subtitle": "播放時顯示即時場景影片畫面，而不是場景截圖。",
   "settings_interface_customize_tabs": "自訂分頁",
   "settings_interface_customize_tabs_subtitle": "重新排序或隱藏導航選單項目",
   "settings_interface_scenes_layout": "場景佈局",

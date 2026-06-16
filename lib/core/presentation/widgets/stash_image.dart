@@ -237,7 +237,6 @@ class StashImage extends ConsumerWidget {
   }
 
   static final Set<String> _prefetched = <String>{};
-  static final Set<String> _cacheCheckedUrls = <String>{};
   static const int defaultPrefetchDistance = 40;
   static const int _maxConcurrentPrefetch = 10;
   static int _ongoingPrefetches = 0;
@@ -328,50 +327,6 @@ class StashImage extends ConsumerWidget {
           return _buildPlaceholder(context);
         },
       );
-    }
-
-    // Ensure we only schedule the costly cache-check once per imageUrl during lifetime
-
-    if (!_cacheCheckedUrls.contains(imageUrl)) {
-      _cacheCheckedUrls.add(imageUrl!);
-
-      // Start prefetch early to improve perceived loading for subsequent child requests.
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!context.mounted) return;
-
-        final url = imageUrl;
-        if (url == null || url.isEmpty) return;
-
-        // Remove obviously-corrupt cached files (very small size) before
-        // attempting to prefetch or render. This prevents persistent
-        // "Invalid image data" errors when cache contains truncated files.
-        () async {
-          try {
-            final info = await cacheManager.getFileFromCache(url);
-            if (info != null) {
-              final file = info.file;
-              if (await file.exists()) {
-                final len = await file.length();
-                if (len < 64) {
-                  await cacheManager.removeFile(url);
-                }
-              } else {
-                await cacheManager.removeFile(url);
-              }
-            }
-          } catch (_) {}
-
-          if (context.mounted) {
-            StashImage.prefetch(
-              context,
-              imageUrl: url,
-              headers: headers,
-              memCacheWidth: memCacheWidth,
-              memCacheHeight: memCacheHeight,
-            );
-          }
-        }();
-      });
     }
 
     return _RetryingCachedImage(

@@ -43,7 +43,6 @@ class TagMediaGridPage extends ConsumerWidget {
       searchHint: context.l10n.common_search_placeholder,
       onSearchChanged: (_) {},
       provider: mediaAsync,
-      imageUrlBuilder: (item) => item.paths.screenshot,
       onRefresh: () => ref.refresh(tagMediaGridProvider(tagId).future),
       onFetchNextPage: () =>
           ref.read(tagMediaGridProvider(tagId).notifier).fetchNextPage(),

@@ -1158,6 +1158,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enable or disable the edit button on the scene details page';
 
   @override
+  String get settings_interface_use_actual_scene_video_miniplayer =>
+      'Use actual scene video in miniplayer';
+
+  @override
+  String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
+      'Show the live scene video surface instead of the scene screenshot when playback is active.';
+
+  @override
   String get settings_interface_customize_tabs => 'Customize Tabs';
 
   @override

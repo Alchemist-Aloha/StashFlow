@@ -7,6 +7,7 @@ class PlayerSettings {
   final bool enableBackgroundPlayback;
   final bool enableNativePip;
   final bool videoGravityOrientation;
+  final bool useActualSceneVideoInMiniPlayer;
   final String defaultSubtitleLanguage;
   final double subtitleFontSize;
   final double subtitlePositionBottomRatio;
@@ -21,6 +22,7 @@ class PlayerSettings {
     this.enableBackgroundPlayback = false,
     this.enableNativePip = false,
     this.videoGravityOrientation = true,
+    this.useActualSceneVideoInMiniPlayer = true,
     this.defaultSubtitleLanguage = 'none',
     this.subtitleFontSize = 18.0,
     this.subtitlePositionBottomRatio = 0.15,
@@ -36,6 +38,7 @@ class PlayerSettings {
     bool? enableBackgroundPlayback,
     bool? enableNativePip,
     bool? videoGravityOrientation,
+    bool? useActualSceneVideoInMiniPlayer,
     String? defaultSubtitleLanguage,
     double? subtitleFontSize,
     double? subtitlePositionBottomRatio,
@@ -52,6 +55,9 @@ class PlayerSettings {
       enableNativePip: enableNativePip ?? this.enableNativePip,
       videoGravityOrientation:
           videoGravityOrientation ?? this.videoGravityOrientation,
+      useActualSceneVideoInMiniPlayer:
+          useActualSceneVideoInMiniPlayer ??
+          this.useActualSceneVideoInMiniPlayer,
       defaultSubtitleLanguage:
           defaultSubtitleLanguage ?? this.defaultSubtitleLanguage,
       subtitleFontSize: subtitleFontSize ?? this.subtitleFontSize,
@@ -73,6 +79,8 @@ class PlayerSettingsStore {
   static const enableBackgroundPlaybackKey = 'video_background_playback';
   static const enableNativePipKey = 'video_native_pip';
   static const videoGravityOrientationKey = 'video_gravity_orientation';
+  static const useActualSceneVideoInMiniPlayerKey =
+      'use_actual_scene_video_in_miniplayer';
   static const defaultSubtitleLanguageKey = 'default_subtitle_language';
   static const subtitleFontSizeKey = 'subtitle_font_size';
   static const subtitlePositionBottomRatioKey =
@@ -104,6 +112,8 @@ class PlayerSettingsStore {
       enableNativePip: prefs.getBool(enableNativePipKey) ?? false,
       videoGravityOrientation:
           prefs.getBool(videoGravityOrientationKey) ?? true,
+      useActualSceneVideoInMiniPlayer:
+          prefs.getBool(useActualSceneVideoInMiniPlayerKey) ?? true,
       defaultSubtitleLanguage:
           prefs.getString(defaultSubtitleLanguageKey) ?? 'none',
       subtitleFontSize: prefs.getDouble(subtitleFontSizeKey) ?? 18.0,
@@ -135,6 +145,9 @@ class PlayerSettingsStore {
 
   Future<void> saveVideoGravityOrientation(bool value) =>
       prefs.setBool(videoGravityOrientationKey, value);
+
+  Future<void> saveUseActualSceneVideoInMiniPlayer(bool value) =>
+      prefs.setBool(useActualSceneVideoInMiniPlayerKey, value);
 
   Future<void> saveDefaultSubtitleLanguage(String value) =>
       prefs.setString(defaultSubtitleLanguageKey, value);

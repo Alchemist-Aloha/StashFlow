@@ -1182,6 +1182,14 @@ class AppLocalizationsEs extends AppLocalizations {
       'Habilitar o deshabilitar el botón de editar en la página de detalles de la escena';
 
   @override
+  String get settings_interface_use_actual_scene_video_miniplayer =>
+      'Usar video real de escena en el minirreproductor';
+
+  @override
+  String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
+      'Muestra la superficie de video en vivo en lugar de la captura de la escena cuando la reproducción está activa.';
+
+  @override
   String get settings_interface_customize_tabs => 'Personalizar pestañas';
 
   @override

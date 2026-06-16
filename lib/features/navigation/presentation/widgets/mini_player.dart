@@ -7,6 +7,7 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/marquee_text.dart';
 import '../../../scenes/domain/entities/scene_title_utils.dart';
 import '../../../scenes/presentation/providers/video_player_provider.dart';
+import '../../../scenes/presentation/widgets/player_surface.dart';
 
 class MiniPlayer extends ConsumerWidget {
   const MiniPlayer({super.key});
@@ -17,10 +18,17 @@ class MiniPlayer extends ConsumerWidget {
       playerStateProvider.select((s) => s.activeScene),
     );
     final isPlaying = ref.watch(playerStateProvider.select((s) => s.isPlaying));
+    final videoController = ref.watch(
+      playerStateProvider.select((s) => s.videoController),
+    );
+    final useActualSceneVideo = ref.watch(
+      playerStateProvider.select((s) => s.useActualSceneVideoInMiniPlayer),
+    );
 
     if (activeScene == null) return const SizedBox.shrink();
 
     final displayTitle = activeScene.displayTitle;
+    final showLiveVideo = useActualSceneVideo && videoController != null;
 
     return Semantics(
       button: true,
@@ -48,12 +56,25 @@ class MiniPlayer extends ConsumerWidget {
                     child: AspectRatio(
                       aspectRatio: 16 / 9,
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                        child: StashImage(
-                          imageUrl: activeScene.paths.screenshot ?? '',
-                          fit: BoxFit.cover,
-                          memCacheWidth: 320,
+                        borderRadius: BorderRadius.circular(
+                          AppTheme.radiusMedium,
                         ),
+                        child: showLiveVideo
+                            ? IgnorePointer(
+                                child: PlayerSurface(
+                                  scene: activeScene,
+                                  controller: videoController,
+                                  onFullScreenToggle: () {},
+                                  fit: BoxFit.cover,
+                                  squareFit: BoxFit.cover,
+                                  showControls: false,
+                                ),
+                              )
+                            : StashImage(
+                                imageUrl: activeScene.paths.screenshot ?? '',
+                                fit: BoxFit.cover,
+                                memCacheWidth: 320,
+                              ),
                       ),
                     ),
                   ),
@@ -83,9 +104,12 @@ class MiniPlayer extends ConsumerWidget {
                     ),
                   ),
                   IconButton(
-                    tooltip: isPlaying ? context.l10n.common_pause : context.l10n.common_play,
-                    onPressed: () =>
-                        ref.read(playerStateProvider.notifier).togglePlayPause(),
+                    tooltip: isPlaying
+                        ? context.l10n.common_pause
+                        : context.l10n.common_play,
+                    onPressed: () => ref
+                        .read(playerStateProvider.notifier)
+                        .togglePlayPause(),
                     icon: Icon(
                       isPlaying ? Icons.pause : Icons.play_arrow,
                       color: context.colors.onSurface,
@@ -93,7 +117,8 @@ class MiniPlayer extends ConsumerWidget {
                   ),
                   IconButton(
                     tooltip: context.l10n.common_close,
-                    onPressed: () => ref.read(playerStateProvider.notifier).stop(),
+                    onPressed: () =>
+                        ref.read(playerStateProvider.notifier).stop(),
                     icon: Icon(Icons.close, color: context.colors.onSurface),
                   ),
                 ],

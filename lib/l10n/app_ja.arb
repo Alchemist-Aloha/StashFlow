@@ -238,6 +238,8 @@
   "settings_interface_main_pages_gravity_orientation_subtitle": "デバイスセンサーを使ってメインページの向きを回転できるようにします。全画面動画再生は専用の画面向き設定に従います。",
   "settings_interface_show_edit": "編集ボタンを表示",
   "settings_interface_show_edit_subtitle": "シーン詳細ページの編集ボタンを有効または無効にします",
+  "settings_interface_use_actual_scene_video_miniplayer": "ミニプレーヤーで実際のシーン動画を使用",
+  "settings_interface_use_actual_scene_video_miniplayer_subtitle": "再生中はシーンのスクリーンショットの代わりにライブ動画サーフェスを表示します。",
   "settings_interface_customize_tabs": "タブをカスタマイズ",
   "settings_interface_customize_tabs_subtitle": "ナビゲーションメニュー項目の並べ替えや非表示を行います",
   "settings_interface_scenes_layout": "シーンのレイアウト",

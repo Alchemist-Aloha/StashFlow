@@ -37,13 +37,14 @@ class _PerformerFilterPanelState extends ConsumerState<PerformerFilterPanel> {
       top: false,
       child: FractionallySizedBox(
         heightFactor: 0.9,
-        child: Container(
-          decoration: BoxDecoration(
-            color: context.colors.surface,
-            borderRadius: const BorderRadius.vertical(
+        child: Material(
+          color: context.colors.surface,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
               top: Radius.circular(AppTheme.radiusExtraLarge),
             ),
           ),
+          clipBehavior: Clip.antiAlias,
           child: Column(
             children: [
               Padding(

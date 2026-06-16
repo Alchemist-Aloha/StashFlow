@@ -202,7 +202,7 @@ class StartupErrorApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+      supportedLocales: supportedAppLocales,
       home: Scaffold(
         body: SafeArea(
           child: SingleChildScrollView(
@@ -271,7 +271,7 @@ class MyApp extends ConsumerWidget {
       },
       onGenerateTitle: (context) => context.l10n.appTitle,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+      supportedLocales: supportedAppLocales,
       locale: appLocale,
       themeMode: themeMode,
       theme: AppTheme.buildTheme(

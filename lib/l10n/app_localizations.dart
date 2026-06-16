@@ -2256,6 +2256,18 @@ abstract class AppLocalizations {
   /// **'Enable or disable the edit button on the scene details page'**
   String get settings_interface_show_edit_subtitle;
 
+  /// No description provided for @settings_interface_use_actual_scene_video_miniplayer.
+  ///
+  /// In en, this message translates to:
+  /// **'Use actual scene video in miniplayer'**
+  String get settings_interface_use_actual_scene_video_miniplayer;
+
+  /// No description provided for @settings_interface_use_actual_scene_video_miniplayer_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the live scene video surface instead of the scene screenshot when playback is active.'**
+  String get settings_interface_use_actual_scene_video_miniplayer_subtitle;
+
   /// No description provided for @settings_interface_customize_tabs.
   ///
   /// In en, this message translates to:

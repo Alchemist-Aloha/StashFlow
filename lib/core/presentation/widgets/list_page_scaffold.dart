@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter/services.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter/gestures.dart';
@@ -10,8 +11,6 @@ import '../../utils/responsive.dart';
 import '../providers/desktop_capabilities_provider.dart';
 import 'error_state_view.dart';
 import '../../utils/pagination.dart';
-import 'stash_image.dart';
-import '../../data/graphql/media_headers_provider.dart';
 import '../../data/preferences/search_history_provider.dart';
 import '../../../features/scenes/presentation/widgets/scene_card.dart';
 import 'grid_utils.dart';
@@ -52,9 +51,7 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
     this.tabletCrossAxisCount,
     this.onSortPressed,
     this.onFilterPressed,
-    this.imageUrlBuilder,
     this.memCacheWidthBuilder,
-    this.prefetchDistance = StashImage.defaultPrefetchDistance,
     this.itemExtent,
     this.onPageSizeChanged,
     this.loadingItemBuilder,
@@ -136,14 +133,8 @@ class ListPageScaffold<T> extends ConsumerStatefulWidget {
   /// Optional override for the number of columns on tablet.
   final int? tabletCrossAxisCount;
 
-  /// Optional callback to get the image URL for an item. If provided, prefetching is enabled.
-  final String? Function(T item)? imageUrlBuilder;
-
   /// Optional callback to get the memCacheWidth for prefetching.
   final int? Function(BuildContext context, bool isGrid)? memCacheWidthBuilder;
-
-  /// Distance (in items) to prefetch ahead and behind the visible range.
-  final int prefetchDistance;
 
   /// Optional fixed extent (height for list, or main axis extent for grid if applicable) for items.
   /// For list view, this enables [ListView.itemExtent] optimization.
@@ -170,12 +161,9 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   String? _currentQuery;
   String? _lastSubmittedText;
 
-  // Prefetch state
-  bool _didPrefetchInitial = false;
+  bool _pageSizeReportScheduled = false;
+  int? _lastReportedPageSize;
   double? _measuredItemExtent;
-  int? _lastVisibleIndexPrefetched;
-  int? _memoizedPrefetchDistance;
-  int? _memoizedMemCacheWidth;
   final GlobalKey _firstItemKey = GlobalKey();
 
   DateTime? _lastHorizontalSwipeTime;
@@ -193,17 +181,6 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
-  }
-
-  @override
-  void didUpdateWidget(ListPageScaffold<T> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.provider != widget.provider) {
-      // Reset prefetch flag when the data set potentially changes.
-      _didPrefetchInitial = false;
-      _memoizedPrefetchDistance = null;
-      _memoizedMemCacheWidth = null;
-    }
   }
 
   SliverGridDelegate _getResponsiveGridDelegate(BuildContext context) {
@@ -246,13 +223,13 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
     );
   }
 
-  int _getEffectivePrefetchDistance(
+  int _getPageSize(
     BuildContext context,
     SliverGridDelegate? responsiveDelegate,
   ) {
     final effectivePadding =
         widget.padding ?? EdgeInsets.all(context.dimensions.spacingMedium);
-    final itemsInTwoScreens = GridUtils.calculateItemsPerPage(
+    return GridUtils.calculateItemsPerPage(
       context: context,
       gridDelegate: responsiveDelegate,
       padding: effectivePadding,
@@ -260,172 +237,36 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
       itemExtent: widget.itemExtent,
       measuredItemExtent: _measuredItemExtent,
     );
-
-    return itemsInTwoScreens > widget.prefetchDistance
-        ? itemsInTwoScreens
-        : widget.prefetchDistance;
   }
 
-  void _handleInitialPrefetch(
-    List<T> items,
-    SliverGridDelegate? responsiveDelegate,
-    double screenWidth,
-  ) {
-    if (_didPrefetchInitial ||
-        items.isEmpty ||
-        widget.imageUrlBuilder == null ||
+  void _reportPageSize(SliverGridDelegate? responsiveDelegate) {
+    if (_pageSizeReportScheduled ||
+        widget.onPageSizeChanged == null ||
         !mounted) {
       return;
     }
 
-    _didPrefetchInitial = true;
+    _pageSizeReportScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _pageSizeReportScheduled = false;
       if (!mounted) return;
-
-      final prefetchDistance = _getEffectivePrefetchDistance(
-        context,
-        responsiveDelegate,
-      );
-
-      if (widget.onPageSizeChanged != null) {
-        widget.onPageSizeChanged!(prefetchDistance);
-      }
-
-      final count = items.length < prefetchDistance
-          ? items.length
-          : prefetchDistance;
-      final headers = ref.read(mediaHeadersProvider);
-      final isGrid = widget.gridDelegate != null;
-
-      int? memCacheWidth;
-      if (widget.memCacheWidthBuilder != null) {
-        memCacheWidth = widget.memCacheWidthBuilder!(context, isGrid);
-      } else {
-        if (isGrid) {
-          final delegate =
-              responsiveDelegate as SliverGridDelegateWithFixedCrossAxisCount;
-          // Target roughly 1.5x the display width in pixels for the cache to balance
-          // quality and memory. We assume a typical device pixel ratio of 2.0-3.0.
-          memCacheWidth = (screenWidth / delegate.crossAxisCount * 1.5).toInt();
-        } else {
-          // For full-width list items, cap at a reasonable thumbnail width.
-          memCacheWidth = screenWidth > 600 ? 600 : screenWidth.toInt();
-        }
-      }
-
-      for (int i = 0; i < count; i++) {
-        final url = widget.imageUrlBuilder!(items[i]);
-        if (url != null) {
-          StashImage.prefetch(
-            context,
-            imageUrl: url,
-            headers: headers,
-            memCacheWidth: memCacheWidth,
-          );
-        }
-      }
+      final pageSize = _getPageSize(context, responsiveDelegate);
+      if (pageSize == _lastReportedPageSize) return;
+      _lastReportedPageSize = pageSize;
+      widget.onPageSizeChanged!(pageSize);
     });
-  }
-
-  void _handleScrollPrefetch(
-    ScrollNotification scrollInfo,
-    List<T> items,
-    SliverGridDelegate? responsiveDelegate,
-    double screenWidth,
-  ) {
-    if (widget.imageUrlBuilder == null || items.isEmpty || !mounted) return;
-    if (scrollInfo.metrics.axis != Axis.vertical) return;
-
-    final offset = scrollInfo.metrics.pixels;
-    final isGrid = widget.gridDelegate != null;
-
-    // ⚡ Bolt: Hoist visibleIndex calculation and early return before any expensive work.
-    // Avoids repeated hash lookups and layout math on every frame during fast scrolling.
-    int visibleIndex;
-    if (isGrid) {
-      final delegate =
-          responsiveDelegate as SliverGridDelegateWithFixedCrossAxisCount;
-      final crossAxisCount = delegate.crossAxisCount;
-      final padding = widget.padding is EdgeInsets
-          ? (widget.padding as EdgeInsets).horizontal
-          : 0.0;
-      final availableWidth = screenWidth - padding;
-      final itemWidth =
-          (availableWidth -
-              (delegate.crossAxisSpacing * (crossAxisCount - 1))) /
-          crossAxisCount;
-
-      final itemHeight =
-          delegate.mainAxisExtent ?? (itemWidth / delegate.childAspectRatio);
-      final stride = itemHeight + delegate.mainAxisSpacing;
-
-      final visibleRow = (offset / stride).floor().clamp(0, items.length - 1);
-      visibleIndex = (visibleRow * crossAxisCount).clamp(0, items.length - 1);
-    } else {
-      final stride = widget.itemExtent ?? _measuredItemExtent ?? 300.0;
-      visibleIndex = (offset / stride).floor().clamp(0, items.length - 1);
-    }
-
-    if (visibleIndex == _lastVisibleIndexPrefetched) return;
-    _lastVisibleIndexPrefetched = visibleIndex;
-
-    final headers = ref.read(mediaHeadersProvider);
-    final prefetchDistance = _memoizedPrefetchDistance ??=
-        _getEffectivePrefetchDistance(context, responsiveDelegate);
-
-    int? memCacheWidth = _memoizedMemCacheWidth;
-    if (memCacheWidth == null) {
-      if (widget.memCacheWidthBuilder != null) {
-        memCacheWidth = widget.memCacheWidthBuilder!(context, isGrid);
-      } else {
-        if (isGrid) {
-          final delegate =
-              responsiveDelegate as SliverGridDelegateWithFixedCrossAxisCount;
-          memCacheWidth = (screenWidth * 1.5 / delegate.crossAxisCount).toInt();
-        } else {
-          memCacheWidth = screenWidth > 600 ? 600 : screenWidth.toInt();
-        }
-      }
-      _memoizedMemCacheWidth = memCacheWidth;
-    }
-
-    for (var i = 1; i <= prefetchDistance; i++) {
-      final ahead = visibleIndex + i;
-      if (ahead < items.length) {
-        final url = widget.imageUrlBuilder!(items[ahead]);
-        if (url != null) {
-          StashImage.prefetch(
-            context,
-            imageUrl: url,
-            headers: headers,
-            memCacheWidth: memCacheWidth,
-          );
-        }
-      }
-      final behind = visibleIndex - i;
-      if (behind >= 0) {
-        final url = widget.imageUrlBuilder!(items[behind]);
-        if (url != null) {
-          StashImage.prefetch(
-            context,
-            imageUrl: url,
-            headers: headers,
-            memCacheWidth: memCacheWidth,
-          );
-        }
-      }
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final isDesktop = ref.watch(desktopCapabilitiesProvider);
 
-    // ⚡ Bolt: Hoist screenWidth and responsiveDelegate out of the build sub-trees and scroll callbacks.
+    // Hoist layout values out of the build sub-trees.
     // Why: Previously, MediaQuery.sizeOf and _getResponsiveGridDelegate were queried repeatedly
     // during layout and scroll operations.
     // Impact: Avoids multiple O(1) inherited widget lookups and redundant layout mathematics per frame.
     final screenWidth = MediaQuery.sizeOf(context).width;
+    final viewportCacheExtent = MediaQuery.sizeOf(context).height;
     final isGrid = widget.gridDelegate != null;
     final responsiveDelegate = isGrid
         ? _getResponsiveGridDelegate(context)
@@ -682,11 +523,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                 Expanded(
                   child: widget.provider.when(
                     data: (items) {
-                      _handleInitialPrefetch(
-                        items,
-                        responsiveDelegate,
-                        screenWidth,
-                      );
+                      _reportPageSize(responsiveDelegate);
 
                       if (items.isEmpty && widget.customBody == null) {
                         return RefreshIndicator(
@@ -737,10 +574,25 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                       Widget body =
                           widget.customBody ??
                           (isGrid
-                              ? (widget.useMasonry
-                                    ? MasonryGridView.builder(
+                              ? LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    final horizontalPadding =
+                                        widget.padding
+                                            ?.resolve(Directionality.of(context))
+                                            .horizontal ??
+                                        0.0;
+                                    if (!constraints.hasBoundedWidth ||
+                                        constraints.maxWidth -
+                                                horizontalPadding <=
+                                            0) {
+                                      return const SizedBox.shrink();
+                                    }
+
+                                    if (widget.useMasonry) {
+                                      return MasonryGridView.builder(
                                         controller: widget.scrollController,
                                         padding: widget.padding,
+                                        cacheExtent: viewportCacheExtent,
                                         gridDelegate:
                                             SliverSimpleGridDelegateWithFixedCrossAxisCount(
                                               crossAxisCount:
@@ -757,7 +609,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                         itemCount: items.length,
                                         itemBuilder: (context, index) {
                                           if (index == 0 &&
-                                              widget.imageUrlBuilder != null &&
+                                              widget.onPageSizeChanged !=
+                                                  null &&
                                               _measuredItemExtent == null) {
                                             WidgetsBinding.instance
                                                 .addPostFrameCallback((_) {
@@ -793,59 +646,67 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                             ),
                                           );
                                         },
-                                      )
-                                    : GridView.builder(
-                                        controller: widget.scrollController,
-                                        padding: widget.padding,
-                                        gridDelegate: responsiveDelegate!,
-                                        itemCount: items.length,
-                                        itemBuilder: (context, index) {
-                                          if (index == 0 &&
-                                              widget.imageUrlBuilder != null &&
-                                              _measuredItemExtent == null) {
-                                            WidgetsBinding.instance
-                                                .addPostFrameCallback((_) {
-                                                  if (_measuredItemExtent ==
-                                                          null &&
-                                                      _firstItemKey
-                                                              .currentContext !=
-                                                          null) {
-                                                    final size = _firstItemKey
-                                                        .currentContext!
-                                                        .size;
-                                                    if (size != null) {
-                                                      setState(() {
-                                                        _measuredItemExtent =
-                                                            size.height;
-                                                      });
-                                                    }
-                                                  }
-                                                });
-                                          }
+                                      );
+                                    }
 
-                                          return RepaintBoundary(
-                                            child: KeyedSubtree(
-                                              key: index == 0
-                                                  ? _firstItemKey
-                                                  : null,
-                                              child: widget.itemBuilder!(
-                                                context,
-                                                items[index],
-                                                memCacheWidth,
-                                                null,
-                                              ),
+                                    return GridView.builder(
+                                      controller: widget.scrollController,
+                                      padding: widget.padding,
+                                      scrollCacheExtent:
+                                          const ScrollCacheExtent.viewport(2.0),
+                                      gridDelegate: responsiveDelegate!,
+                                      itemCount: items.length,
+                                      itemBuilder: (context, index) {
+                                        if (index == 0 &&
+                                            widget.onPageSizeChanged != null &&
+                                            _measuredItemExtent == null) {
+                                          WidgetsBinding.instance
+                                              .addPostFrameCallback((_) {
+                                                if (_measuredItemExtent ==
+                                                        null &&
+                                                    _firstItemKey
+                                                            .currentContext !=
+                                                        null) {
+                                                  final size = _firstItemKey
+                                                      .currentContext!
+                                                      .size;
+                                                  if (size != null) {
+                                                    setState(() {
+                                                      _measuredItemExtent =
+                                                          size.height;
+                                                    });
+                                                  }
+                                                }
+                                              });
+                                        }
+
+                                        return RepaintBoundary(
+                                          child: KeyedSubtree(
+                                            key: index == 0
+                                                ? _firstItemKey
+                                                : null,
+                                            child: widget.itemBuilder!(
+                                              context,
+                                              items[index],
+                                              memCacheWidth,
+                                              null,
                                             ),
-                                          );
-                                        },
-                                      ))
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                )
                               : ListView.builder(
                                   controller: widget.scrollController,
                                   padding: widget.padding,
+                                  scrollCacheExtent:
+                                      const ScrollCacheExtent.viewport(2.0),
                                   itemCount: items.length,
                                   itemExtent: widget.itemExtent,
                                   itemBuilder: (context, index) {
                                     if (index == 0 &&
-                                        widget.imageUrlBuilder != null &&
+                                        widget.onPageSizeChanged != null &&
                                         widget.itemExtent == null &&
                                         _measuredItemExtent == null) {
                                       WidgetsBinding.instance
@@ -892,12 +753,6 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                           if (shouldLoadNextPage(scrollInfo.metrics)) {
                             widget.onFetchNextPage?.call();
                           }
-                          _handleScrollPrefetch(
-                            scrollInfo,
-                            items,
-                            responsiveDelegate,
-                            screenWidth,
-                          );
                           return false;
                         },
                         child: body,
@@ -909,6 +764,9 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                       if (isGrid) {
                         return GridView.builder(
                           padding: widget.padding,
+                          scrollCacheExtent: const ScrollCacheExtent.viewport(
+                            1.0,
+                          ),
                           gridDelegate: responsiveDelegate!,
                           itemCount: 8,
                           itemBuilder: (context, index) =>
@@ -919,6 +777,9 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                       }
                       return ListView.builder(
                         padding: widget.padding,
+                        scrollCacheExtent: const ScrollCacheExtent.viewport(
+                          1.0,
+                        ),
                         itemCount: 5,
                         itemBuilder: (context, index) =>
                             loadingItemBuilder != null

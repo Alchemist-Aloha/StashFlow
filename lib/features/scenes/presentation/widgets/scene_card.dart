@@ -11,10 +11,7 @@ import '../../domain/entities/scene_title_utils.dart';
 import '../pages/scene_info_page.dart';
 import 'scrubbing_preview.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
-import '../../../../core/data/graphql/url_resolver.dart';
-import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
-import '../../../../core/utils/vtt_service.dart';
 
 /// A card widget that displays a summary of a [Scene].
 ///
@@ -129,13 +126,6 @@ class _SceneCardState extends ConsumerState<SceneCard> {
   bool _isScrubbing = false;
   double _scrubTime = 0;
   bool _isVttValid = true;
-  _SpriteAvailability _spriteAvailability = _SpriteAvailability.unknown;
-
-  @override
-  void initState() {
-    super.initState();
-    _refreshSpriteAvailability();
-  }
 
   @override
   void didUpdateWidget(SceneCard oldWidget) {
@@ -143,73 +133,11 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     // Reset scrubbing state when the scene changes to prevent state leakage
     // during list item reuse (scrolling).
     if (oldWidget.scene.id != widget.scene.id ||
-        oldWidget.scene.paths.vtt != widget.scene.paths.vtt ||
-        oldWidget.scene.paths.sprite != widget.scene.paths.sprite) {
+        oldWidget.scene.paths.vtt != widget.scene.paths.vtt) {
       _isScrubbing = false;
       _scrubTime = 0;
       _isVttValid = true;
-      _spriteAvailability = _SpriteAvailability.unknown;
-      _refreshSpriteAvailability();
     }
-  }
-
-  bool _isPlaceholderSpritePath(String rawUrl) {
-    final trimmed = rawUrl.trim();
-    if (trimmed.isEmpty) return true;
-
-    final uri = Uri.tryParse(trimmed);
-    final path = uri?.path ?? trimmed;
-    final fileName = path.split('/').last;
-    return fileName.startsWith('_sprite.');
-  }
-
-  Future<void> _refreshSpriteAvailability() async {
-    final rawVttUrl = widget.scene.paths.vtt?.trim() ?? '';
-    final rawSpriteUrl = widget.scene.paths.sprite?.trim() ?? '';
-    final totalDuration = widget.scene.files.isNotEmpty
-        ? (widget.scene.files.first.duration ?? 0.0)
-        : 0.0;
-
-    if (rawVttUrl.isEmpty ||
-        rawSpriteUrl.isEmpty ||
-        totalDuration <= 0 ||
-        _isPlaceholderSpritePath(rawSpriteUrl)) {
-      if (mounted) {
-        setState(() {
-          _spriteAvailability = _SpriteAvailability.invalid;
-        });
-      }
-      return;
-    }
-
-    if (mounted) {
-      setState(() {
-        _spriteAvailability = _SpriteAvailability.unknown;
-      });
-    }
-
-    final sceneId = widget.scene.id;
-    final vttService = ref.read(vttServiceProvider);
-    final headers = ref.read(mediaHeadersProvider);
-    final sprites = await vttService.fetchSpriteInfo(rawVttUrl, headers);
-
-    if (!mounted || widget.scene.id != sceneId) return;
-
-    final hasUsableSprite =
-        sprites != null &&
-        sprites.isNotEmpty &&
-        sprites.any(
-          (sprite) =>
-              sprite.w > 0 &&
-              sprite.h > 0 &&
-              !_isPlaceholderSpritePath(sprite.url),
-        );
-
-    setState(() {
-      _spriteAvailability = hasUsableSprite
-          ? _SpriteAvailability.valid
-          : _SpriteAvailability.invalid;
-    });
   }
 
   /// Displays a custom scene info sheet for navigation actions.
@@ -246,7 +174,6 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     BuildContext context,
     double? duration,
     double aspectRatio,
-    String apiKey,
   ) {
     final isDesktop =
         kIsWeb ||
@@ -257,13 +184,11 @@ class _SceneCardState extends ConsumerState<SceneCard> {
         ? (widget.scene.files.first.duration ?? 0.0)
         : 0.0;
 
-    final rawVttUrl = widget.scene.paths.vtt ?? '';
-    final hasValidSprite =
-        _spriteAvailability == _SpriteAvailability.valid && _isVttValid;
-    final vttUrl = hasValidSprite ? appendApiKey(rawVttUrl, apiKey) : '';
+    final vttUrl = widget.scene.paths.vtt?.trim() ?? '';
+    final canScrub = vttUrl.isNotEmpty && totalDuration > 0 && _isVttValid;
 
     // Safety guard: if VTT is not available, ensure scrubbing is disabled.
-    if (!hasValidSprite && _isScrubbing) {
+    if (!canScrub && _isScrubbing) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && _isScrubbing) {
           setState(() => _isScrubbing = false);
@@ -283,7 +208,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
           height: double.infinity,
           fit: BoxFit.cover,
         ),
-        if (_isScrubbing && hasValidSprite)
+        if (_isScrubbing && canScrub)
           Positioned.fill(
             child: ScrubbingPreview(
               vttUrl: vttUrl,
@@ -295,7 +220,6 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                 if (mounted) {
                   setState(() {
                     _isVttValid = false;
-                    _spriteAvailability = _SpriteAvailability.invalid;
                     _isScrubbing = false;
                   });
                 }
@@ -319,7 +243,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
       ],
     );
 
-    if (isDesktop && hasValidSprite) {
+    if (isDesktop && canScrub) {
       content = MouseRegion(
         onEnter: (_) => setState(() => _isScrubbing = true),
         onExit: (_) => setState(() => _isScrubbing = false),
@@ -336,33 +260,33 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     }
 
     final thumbnail = GestureDetector(
-      onHorizontalDragStart: hasValidSprite
+      onHorizontalDragStart: canScrub
           ? (_) {
               setState(() {
                 _isScrubbing = true;
               });
             }
           : null,
-      onHorizontalDragUpdate: hasValidSprite
+      onHorizontalDragUpdate: canScrub
           ? (details) {
               if (_isScrubbing) {
                 final box = context.findRenderObject() as RenderBox;
-                final relativePos =
-                    (details.localPosition.dx / box.size.width).clamp(0.0, 1.0);
+                final relativePos = (details.localPosition.dx / box.size.width)
+                    .clamp(0.0, 1.0);
                 setState(() {
                   _scrubTime = relativePos * totalDuration;
                 });
               }
             }
           : null,
-      onHorizontalDragEnd: hasValidSprite
+      onHorizontalDragEnd: canScrub
           ? (_) {
               setState(() {
                 _isScrubbing = false;
               });
             }
           : null,
-      onHorizontalDragCancel: hasValidSprite
+      onHorizontalDragCancel: canScrub
           ? () {
               setState(() {
                 _isScrubbing = false;
@@ -380,7 +304,6 @@ class _SceneCardState extends ConsumerState<SceneCard> {
 
   @override
   Widget build(BuildContext context) {
-    final apiKey = ref.watch(serverApiKeyProvider);
     final duration = widget.scene.files.isNotEmpty
         ? widget.scene.files.first.duration
         : null;
@@ -411,18 +334,11 @@ class _SceneCardState extends ConsumerState<SceneCard> {
           ref,
           duration,
           fileAspectRatio ?? 16 / 9,
-          apiKey,
         ),
       );
     }
     return RepaintBoundary(
-      child: _buildListCard(
-        context,
-        ref,
-        duration,
-        fileAspectRatio ?? 16 / 9,
-        apiKey,
-      ),
+      child: _buildListCard(context, ref, duration, fileAspectRatio ?? 16 / 9),
     );
   }
 
@@ -434,7 +350,6 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     WidgetRef ref,
     double? duration,
     double aspectRatio,
-    String apiKey,
   ) {
     return Skeletonizer(
       enabled: widget.skeletonize,
@@ -455,7 +370,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                 // Clamp aspect ratio to prevent extremely tall or wide items from
                 // breaking the list layout flow.
                 aspectRatio: aspectRatio.clamp(0.5, 2.5),
-                child: _buildThumbnail(context, duration, aspectRatio, apiKey),
+                child: _buildThumbnail(context, duration, aspectRatio),
               ),
               Padding(
                 padding: const EdgeInsets.all(12.0),
@@ -525,7 +440,6 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     WidgetRef ref,
     double? duration,
     double aspectRatio,
-    String apiKey,
   ) {
     return Skeletonizer(
       enabled: widget.skeletonize,
@@ -550,11 +464,10 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                   context,
                   duration,
                   widget.useMasonry ? aspectRatio.clamp(0.5, 2.5) : 16 / 9,
-                  apiKey,
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: Row(
                   children: [
                     Expanded(
@@ -597,12 +510,23 @@ class _SceneCardState extends ConsumerState<SceneCard> {
                         ],
                       ),
                     ),
-                    IconButton(
-                      tooltip: context.l10n.common_more,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      onPressed: () => _showMenu(context, ref),
-                      icon: const Icon(Icons.more_vert, size: 16, color: null),
+                    SizedBox.square(
+                      dimension: 32,
+                      child: IconButton(
+                        tooltip: context.l10n.common_more,
+                        padding: EdgeInsets.zero,
+                        visualDensity: VisualDensity.compact,
+                        constraints: const BoxConstraints.tightFor(
+                          width: 32,
+                          height: 32,
+                        ),
+                        onPressed: () => _showMenu(context, ref),
+                        icon: const Icon(
+                          Icons.more_vert,
+                          size: 16,
+                          color: null,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -614,8 +538,6 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     );
   }
 }
-
-enum _SpriteAvailability { unknown, valid, invalid }
 
 class _ThumbnailMetadataOverlay extends StatelessWidget {
   const _ThumbnailMetadataOverlay({

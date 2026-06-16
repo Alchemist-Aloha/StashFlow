@@ -384,6 +384,8 @@
   "settings_interface_main_pages_gravity_orientation_subtitle": "Allow main pages to rotate using the device sensor. Fullscreen video playback follows its own orientation settings.",
   "settings_interface_show_edit": "Show Edit Button",
   "settings_interface_show_edit_subtitle": "Enable or disable the edit button on the scene details page",
+  "settings_interface_use_actual_scene_video_miniplayer": "Use actual scene video in miniplayer",
+  "settings_interface_use_actual_scene_video_miniplayer_subtitle": "Show the live scene video surface instead of the scene screenshot when playback is active.",
   "settings_interface_customize_tabs": "Customize Tabs",
   "settings_interface_customize_tabs_subtitle": "Reorder or hide navigation menu items",
   "settings_interface_scenes_layout": "Scenes Layout",

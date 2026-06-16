@@ -149,7 +149,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
       dismissConnectingDialog();
 
       // Load media
-      final mediaType = _detectMediaType(widget.videoUrl);
+      final mediaType = detectCastMediaType(widget.videoUrl);
       debugPrint(
         'CastSelectionSheet: loading media type ${mediaType.name} url=${widget.videoUrl}',
       );
@@ -206,7 +206,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
           // Retry connect with the newly stored credentials
           await session.connect();
 
-          final mediaType = _detectMediaType(widget.videoUrl);
+          final mediaType = detectCastMediaType(widget.videoUrl);
           debugPrint(
             'CastSelectionSheet: loading media type ${mediaType.name} url=${widget.videoUrl}',
           );
@@ -269,20 +269,6 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
         ),
       );
     }
-  }
-
-  dc.CastMediaType _detectMediaType(String url) {
-    final lower = url.toLowerCase();
-    if (lower.contains('.m3u8') || lower.contains('hls')) {
-      return dc.CastMediaType.hls;
-    }
-    if (lower.contains('.ts')) {
-      return dc.CastMediaType.mpegTs;
-    }
-    if (lower.contains('.mkv')) {
-      return dc.CastMediaType.mkv;
-    }
-    return dc.CastMediaType.mp4;
   }
 
   @override

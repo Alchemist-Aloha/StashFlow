@@ -394,7 +394,6 @@ class _TagsPageState extends ConsumerState<TagsPage> {
       onSearchChanged: _onSearchChanged,
       provider: tagsAsync,
       scrollController: scrollController,
-      imageUrlBuilder: (tag) => tag.imagePath,
       onRefresh: () => ref.read(tagListProvider.notifier).refresh(),
       onFetchNextPage: () => ref.read(tagListProvider.notifier).fetchNextPage(),
       onPageSizeChanged: (pageSize) =>

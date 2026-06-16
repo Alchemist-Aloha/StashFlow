@@ -1145,6 +1145,14 @@ class AppLocalizationsJa extends AppLocalizations {
       'シーン詳細ページの編集ボタンを有効または無効にします';
 
   @override
+  String get settings_interface_use_actual_scene_video_miniplayer =>
+      'ミニプレーヤーで実際のシーン動画を使用';
+
+  @override
+  String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
+      '再生中はシーンのスクリーンショットの代わりにライブ動画サーフェスを表示します。';
+
+  @override
   String get settings_interface_customize_tabs => 'タブをカスタマイズ';
 
   @override

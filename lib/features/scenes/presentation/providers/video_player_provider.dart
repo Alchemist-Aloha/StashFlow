@@ -24,6 +24,7 @@ import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/data/services/cast_service.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/presentation/providers/desktop_settings_provider.dart';
 import 'package:media_kit/media_kit.dart';
@@ -133,6 +134,9 @@ class GlobalPlayerState {
   /// User preference: whether to allow gravity-controlled orientation rotation in fullscreen.
   final bool videoGravityOrientation;
 
+  /// User preference: whether the miniplayer thumbnail should show the live video surface.
+  final bool useActualSceneVideoInMiniPlayer;
+
   /// User preference: whether to start feed playback from a random position.
   final bool feedStartRandom;
 
@@ -168,10 +172,11 @@ class GlobalPlayerState {
     this.prewarmLatencyMs,
     this.playEndBehavior = VideoEndBehavior.stop,
     this.showVideoDebugInfo = false,
-    this.useDoubleTapSeek = false,
+    this.useDoubleTapSeek = true,
     this.enableBackgroundPlayback = false,
     this.enableNativePip = false,
     this.videoGravityOrientation = true,
+    this.useActualSceneVideoInMiniPlayer = true,
     this.feedStartRandom = false,
     this.resumePlayPosition = true,
     this.selectedSubtitleLanguage,
@@ -216,6 +221,7 @@ class GlobalPlayerState {
     bool? enableBackgroundPlayback,
     bool? enableNativePip,
     bool? videoGravityOrientation,
+    bool? useActualSceneVideoInMiniPlayer,
     bool? feedStartRandom,
     bool? resumePlayPosition,
     String? selectedSubtitleLanguage,
@@ -273,6 +279,9 @@ class GlobalPlayerState {
       enableNativePip: enableNativePip ?? this.enableNativePip,
       videoGravityOrientation:
           videoGravityOrientation ?? this.videoGravityOrientation,
+      useActualSceneVideoInMiniPlayer:
+          useActualSceneVideoInMiniPlayer ??
+          this.useActualSceneVideoInMiniPlayer,
       feedStartRandom: feedStartRandom ?? this.feedStartRandom,
       resumePlayPosition: resumePlayPosition ?? this.resumePlayPosition,
       selectedSubtitleLanguage: clearSubtitle
@@ -331,6 +340,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
 
   late final PlaybackActivityTracker _activityTracker;
   late final PlaybackSessionController _sessionController;
+  final PlaybackStartupRecovery _startupRecovery =
+      const PlaybackStartupRecovery();
   final FullscreenController _fullscreenController =
       const FullscreenController();
   final QueuePlaybackCoordinator _queuePlaybackCoordinator =
@@ -345,6 +356,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   bool _backgroundRecoverySuppressed = false;
   bool _backgroundRecoveryInFlight = false;
   DateTime? _backgroundEnteredAt;
+  int _playSceneGeneration = 0;
   static const Duration _backgroundPauseGraceWindow = Duration(seconds: 2);
 
   @override
@@ -419,6 +431,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       enableBackgroundPlayback: loadedSettings.enableBackgroundPlayback,
       enableNativePip: loadedSettings.enableNativePip,
       videoGravityOrientation: loadedSettings.videoGravityOrientation,
+      useActualSceneVideoInMiniPlayer:
+          loadedSettings.useActualSceneVideoInMiniPlayer,
       isInPipMode: PipMode.isInPipMode.value,
       defaultSubtitleLanguage: loadedSettings.defaultSubtitleLanguage,
       subtitleFontSize: loadedSettings.subtitleFontSize,
@@ -494,6 +508,11 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   void setVideoGravityOrientation(bool value) {
     state = state.copyWith(videoGravityOrientation: value);
     unawaited(_settingsStore.saveVideoGravityOrientation(value));
+  }
+
+  void setUseActualSceneVideoInMiniPlayer(bool value) {
+    state = state.copyWith(useActualSceneVideoInMiniPlayer: value);
+    unawaited(_settingsStore.saveUseActualSceneVideoInMiniPlayer(value));
   }
 
   void setFeedStartRandom(bool value) {
@@ -903,56 +922,76 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       );
     }
 
-    if (state.player != null) {
-      await _disposeControllers();
-    }
-
-    final session = _sessionController.createOwnedSession();
-    final player = session.player;
-    final videoController = session.controller;
-    _activeSceneRef = scene;
-    _firstFrameLoggedSceneId = null;
-    _lastIsPlaying = null;
-
     final stopwatch = Stopwatch()..start();
+    final startupToken = ++_playSceneGeneration;
+    late Player player;
+    late VideoController videoController;
+    var startupSessionCreated = false;
 
-    AppLogStore.instance.add(
-      'PlayerState playScene: updating state.activeScene to ${scene.id}',
-      source: 'player_provider',
-    );
+    Future<void> openStartupAttempt(int attempt) async {
+      if (!ref.mounted || startupToken != _playSceneGeneration) {
+        throw StateError('stale playback startup');
+      }
 
-    state = GlobalPlayerState(
-      activeScene: scene,
-      player: player,
-      videoController: videoController,
-      isPlaying: false,
-      isFullScreen:
-          state.isFullScreen, // Preserve fullscreen state across scenes
-      isInPipMode: state.isInPipMode, // Preserve PiP state across scenes
-      viewMode: state.viewMode, // Preserve UI context
-      streamMimeType: mimeType,
-      streamLabel: streamLabel,
-      streamSource: streamSource,
-      startupLatencyMs: null,
-      prewarmAttempted: prewarmAttempted,
-      prewarmSucceeded: prewarmSucceeded,
-      prewarmLatencyMs: prewarmLatencyMs,
-      playEndBehavior: state.playEndBehavior,
-      showVideoDebugInfo: state.showVideoDebugInfo,
-      useDoubleTapSeek: state.useDoubleTapSeek,
-      enableBackgroundPlayback: state.enableBackgroundPlayback,
-      enableNativePip: state.enableNativePip,
-      videoGravityOrientation: state.videoGravityOrientation,
-      selectedSubtitleLanguage: effectiveSubtitleLanguage,
-      selectedSubtitleType: effectiveSubtitleType,
-      defaultSubtitleLanguage: state.defaultSubtitleLanguage,
-      subtitleFontSize: state.subtitleFontSize,
-      subtitlePositionBottomRatio: state.subtitlePositionBottomRatio,
-      subtitleTextAlignment: state.subtitleTextAlignment,
-      fullscreenPhase: state.fullscreenPhase,
-    );
+      if (attempt == 0 && state.player != null) {
+        await _disposeControllers();
+      } else if (attempt > 0) {
+        await _disposeControllers(
+          scene: scene,
+          player: player,
+          controller: videoController,
+        );
+      }
 
-    try {
+      final session = _sessionController.createOwnedSession();
+      player = session.player;
+      videoController = session.controller;
+      startupSessionCreated = true;
+      _activeSceneRef = scene;
+      _firstFrameLoggedSceneId = null;
+      _lastIsPlaying = null;
+
+      AppLogStore.instance.add(
+        'PlayerState playScene: updating state.activeScene to ${scene.id} attempt=${attempt + 1}',
+        source: 'player_provider',
+      );
+
+      state = GlobalPlayerState(
+        activeScene: scene,
+        player: player,
+        videoController: videoController,
+        isPlaying: false,
+        isFullScreen:
+            state.isFullScreen, // Preserve fullscreen state across scenes
+        isInPipMode: state.isInPipMode, // Preserve PiP state across scenes
+        viewMode: state.viewMode, // Preserve UI context
+        streamMimeType: mimeType,
+        streamLabel: streamLabel,
+        streamSource: streamSource,
+        startupLatencyMs: null,
+        prewarmAttempted: prewarmAttempted,
+        prewarmSucceeded: prewarmSucceeded,
+        prewarmLatencyMs: prewarmLatencyMs,
+        playEndBehavior: state.playEndBehavior,
+        showVideoDebugInfo: state.showVideoDebugInfo,
+        useDoubleTapSeek: state.useDoubleTapSeek,
+        enableBackgroundPlayback: state.enableBackgroundPlayback,
+        enableNativePip: state.enableNativePip,
+        videoGravityOrientation: state.videoGravityOrientation,
+        useActualSceneVideoInMiniPlayer: state.useActualSceneVideoInMiniPlayer,
+        selectedSubtitleLanguage: effectiveSubtitleLanguage,
+        selectedSubtitleType: effectiveSubtitleType,
+        defaultSubtitleLanguage: state.defaultSubtitleLanguage,
+        subtitleFontSize: state.subtitleFontSize,
+        subtitlePositionBottomRatio: state.subtitlePositionBottomRatio,
+        subtitleTextAlignment: state.subtitleTextAlignment,
+        fullscreenPhase: state.fullscreenPhase,
+      );
+
+      if (isTestMode) {
+        return;
+      }
+
       await player.open(
         Media(
           effectiveStreamUrl,
@@ -962,11 +1001,42 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         play: false,
       );
 
+      if (!ref.mounted ||
+          startupToken != _playSceneGeneration ||
+          state.player != player) {
+        throw StateError('stale playback startup');
+      }
+
       if (subtitleUrl != null && subtitleUrl.isNotEmpty) {
         await player.setSubtitleTrack(SubtitleTrack.uri(subtitleUrl));
       } else {
         await player.setSubtitleTrack(SubtitleTrack.no());
       }
+    }
+
+    try {
+      await _startupRecovery.run<void>(
+        start: openStartupAttempt,
+        onSlowStartup: (attempt) async {
+          AppLogStore.instance.add(
+            'provider slow startup scene=${scene.id} attempt=${attempt + 1}; prewarming current stream',
+            source: 'player_provider',
+          );
+          await ref
+              .read(streamPrewarmerProvider.notifier)
+              .prewarm(scene, effectiveStreamUrl, headers: httpHeaders);
+        },
+        onRetry: (attempt, error) async {
+          AppLogStore.instance.add(
+            'provider startup retry scene=${scene.id} attempt=${attempt + 1} error=$error',
+            source: 'player_provider',
+          );
+        },
+        isCurrent: () =>
+            ref.mounted &&
+            startupToken == _playSceneGeneration &&
+            state.activeScene?.id == scene.id,
+      );
 
       if (!ref.mounted) {
         await _disposeControllers();
@@ -985,16 +1055,18 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         startupLatencyMs: initializeElapsedMs,
       );
 
-      mediaHandler?.updateMetadata(
-        id: scene.id,
-        title: scene.title,
-        studio: scene.studioName,
-        thumbnailUri: appendApiKey(
-          scene.paths.screenshot ?? '',
-          ref.read(serverApiKeyProvider),
-        ),
-        duration: player.state.duration,
-      );
+      if (!isTestMode) {
+        mediaHandler?.updateMetadata(
+          id: scene.id,
+          title: scene.title,
+          studio: scene.studioName,
+          thumbnailUri: appendApiKey(
+            scene.paths.screenshot ?? '',
+            ref.read(serverApiKeyProvider),
+          ),
+          duration: player.state.duration,
+        );
+      }
 
       AppLogStore.instance.add(
         'provider ready scene=${scene.id} startup=${initializeElapsedMs}ms',
@@ -1005,23 +1077,25 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         unawaited(WakelockPlus.enable());
       }
 
-      final desktopSettings = ref.read(desktopSettingsProvider);
-      await player.setVolume(
-        desktopSettings.isMuted ? 0 : desktopSettings.volume * 100.0,
-      );
+      if (!isTestMode) {
+        final desktopSettings = ref.read(desktopSettingsProvider);
+        await player.setVolume(
+          desktopSettings.isMuted ? 0 : desktopSettings.volume * 100.0,
+        );
 
-      await _sessionController.bindPlayerStreams(
-        player,
-        onTick: _videoListener,
-        onCompleted: _handleVideoFinished,
-        onError: (error) {
-          AppLogStore.instance.add(
-            'provider player error scene=${scene.id} error=$error',
-            source: 'player_provider',
-          );
-        },
-      );
-      unawaited(player.play());
+        await _sessionController.bindPlayerStreams(
+          player,
+          onTick: _videoListener,
+          onCompleted: _handleVideoFinished,
+          onError: (error) {
+            AppLogStore.instance.add(
+              'provider player error scene=${scene.id} error=$error',
+              source: 'player_provider',
+            );
+          },
+        );
+        unawaited(player.play());
+      }
 
       // Prepare for the next scene in the queue
       _prewarmQueue();
@@ -1031,10 +1105,10 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         'provider initialize error scene=${scene.id} error=$e',
         source: 'player_provider',
       );
-      if (ref.mounted) {
+      if (ref.mounted && startupToken == _playSceneGeneration) {
         stop();
-      } else {
-        await _disposeControllers();
+      } else if (!isTestMode && startupSessionCreated) {
+        await player.dispose();
       }
     }
   }
@@ -1281,6 +1355,13 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   }
 
   void stop() {
+    if (ref.mounted) {
+      final castState = ref.read(castServiceProvider);
+      if (castState.isCasting) {
+        unawaited(ref.read(castServiceProvider.notifier).stopCasting());
+      }
+    }
+
     unawaited(_disposeControllers());
     if (!isTestMode) {
       unawaited(WakelockPlus.disable());
@@ -1296,6 +1377,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       enableBackgroundPlayback: state.enableBackgroundPlayback,
       enableNativePip: state.enableNativePip,
       videoGravityOrientation: state.videoGravityOrientation,
+      useActualSceneVideoInMiniPlayer: state.useActualSceneVideoInMiniPlayer,
       defaultSubtitleLanguage: state.defaultSubtitleLanguage,
       subtitleFontSize: state.subtitleFontSize,
       subtitlePositionBottomRatio: state.subtitlePositionBottomRatio,

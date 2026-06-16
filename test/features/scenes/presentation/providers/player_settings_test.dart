@@ -34,5 +34,34 @@ void main() {
         expect(settings.playEndBehaviorName, 'loop');
       },
     );
+
+    test('loads and saves actual scene video miniplayer preference', () async {
+      SharedPreferences.setMockInitialValues({
+        PlayerSettingsStore.useActualSceneVideoInMiniPlayerKey: true,
+      });
+      final prefs = await SharedPreferences.getInstance();
+      final store = PlayerSettingsStore(prefs);
+
+      expect(store.load().useActualSceneVideoInMiniPlayer, isTrue);
+
+      await store.saveUseActualSceneVideoInMiniPlayer(false);
+
+      expect(
+        prefs.getBool(PlayerSettingsStore.useActualSceneVideoInMiniPlayerKey),
+        isFalse,
+      );
+      expect(store.load().useActualSceneVideoInMiniPlayer, isFalse);
+    });
+
+    test(
+      'defaults actual scene video miniplayer preference to enabled',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
+        final store = PlayerSettingsStore(prefs);
+
+        expect(store.load().useActualSceneVideoInMiniPlayer, isTrue);
+      },
+    );
   });
 }

@@ -104,3 +104,44 @@ class PlaybackSessionController {
     _subscriptions.clear();
   }
 }
+
+class PlaybackStartupRecovery {
+  const PlaybackStartupRecovery();
+
+  Future<T> run<T>({
+    required Future<T> Function(int attempt) start,
+    required Future<void> Function(int attempt) onSlowStartup,
+    required Future<void> Function(int attempt, Object error) onRetry,
+    required bool Function() isCurrent,
+    Duration slowStartupDelay = const Duration(seconds: 5),
+    Duration retryTimeout = const Duration(seconds: 20),
+    int maxAttempts = 2,
+  }) async {
+    Object? lastError;
+
+    for (var attempt = 0; attempt < maxAttempts; attempt++) {
+      var slowStartupReported = false;
+      Timer? slowStartupTimer;
+
+      slowStartupTimer = Timer(slowStartupDelay, () {
+        if (!isCurrent() || slowStartupReported) return;
+        slowStartupReported = true;
+        unawaited(onSlowStartup(attempt));
+      });
+
+      try {
+        return await start(attempt).timeout(retryTimeout);
+      } catch (error) {
+        lastError = error;
+        if (attempt >= maxAttempts - 1 || !isCurrent()) {
+          rethrow;
+        }
+        await onRetry(attempt, error);
+      } finally {
+        slowStartupTimer.cancel();
+      }
+    }
+
+    Error.throwWithStackTrace(lastError!, StackTrace.current);
+  }
+}

@@ -1175,6 +1175,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Activer ou désactiver le bouton d\'édition sur la page de détails de la scène';
 
   @override
+  String get settings_interface_use_actual_scene_video_miniplayer =>
+      'Utiliser la vraie vidéo de scène dans le mini-lecteur';
+
+  @override
+  String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
+      'Affiche la surface vidéo en direct au lieu de la capture de la scène quand la lecture est active.';
+
+  @override
   String get settings_interface_customize_tabs => 'Personnaliser les onglets';
 
   @override

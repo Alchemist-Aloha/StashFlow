@@ -248,6 +248,8 @@
   "settings_interface_main_pages_gravity_orientation_subtitle": "Erlaube Hauptseiten, sich mithilfe des Gerätesensors zu drehen. Die Vollbild-Videowiedergabe verwendet eigene Ausrichtungseinstellungen.",
   "settings_interface_show_edit": "Bearbeiten-Schaltfläche anzeigen",
   "settings_interface_show_edit_subtitle": "Aktivieren oder deaktivieren Sie die Bearbeiten-Schaltfläche auf der Szenendetailseite",
+  "settings_interface_use_actual_scene_video_miniplayer": "Echtes Szenenvideo im Miniplayer verwenden",
+  "settings_interface_use_actual_scene_video_miniplayer_subtitle": "Zeigt bei aktiver Wiedergabe die Live-Videofläche statt des Szenen-Screenshots an.",
   "settings_interface_customize_tabs": "Tabs anpassen",
   "settings_interface_customize_tabs_subtitle": "Navigationselemente neu anordnen oder ausblenden",
   "settings_interface_scenes_layout": "Szenen-Layout",

@@ -8,6 +8,7 @@ import 'package:media_kit/media_kit.dart' as mk;
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/native_video_controls.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/video_controls/video_progress_bar.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 
 class FakePlayer extends Mock implements mk.Player {
@@ -94,6 +95,15 @@ void main() {
 
     expect(find.byType(NativeVideoControls), findsOneWidget);
     expect(find.byIcon(Icons.play_arrow_rounded), findsOneWidget);
+  });
+
+  testWidgets('can render without visible controls', (tester) async {
+    final scene = _buildScene();
+    await _pumpControls(tester, scene: scene, showControls: false);
+
+    expect(find.byType(NativeVideoControls), findsOneWidget);
+    expect(find.byIcon(Icons.play_arrow_rounded), findsNothing);
+    expect(find.byType(VideoProgressBar), findsNothing);
   });
 
   testWidgets(
@@ -229,6 +239,7 @@ Scene _buildScene({
 Future<void> _pumpControls(
   WidgetTester tester, {
   required Scene scene,
+  bool showControls = true,
 }) async {
   final mockController = FakeVideoController();
 
@@ -236,9 +247,7 @@ Future<void> _pumpControls(
 
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(mockPrefs),
-      ],
+      overrides: [sharedPreferencesProvider.overrideWithValue(mockPrefs)],
       child: MaterialApp(
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
@@ -247,6 +256,7 @@ Future<void> _pumpControls(
             controller: mockController,
             useDoubleTapSeek: true,
             enableNativePip: false,
+            showControls: showControls,
             scene: scene,
           ),
         ),

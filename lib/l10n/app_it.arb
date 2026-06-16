@@ -227,6 +227,8 @@
   "settings_interface_main_pages_gravity_orientation_subtitle": "Consenti alle pagine principali di ruotare usando il sensore del dispositivo. La riproduzione video a schermo intero usa le proprie impostazioni di orientamento.",
   "settings_interface_show_edit": "Mostra Pulsante Modifica",
   "settings_interface_show_edit_subtitle": "Abilita o disabilita il pulsante di modifica nella pagina dei dettagli della scena",
+  "settings_interface_use_actual_scene_video_miniplayer": "Usa il video reale della scena nel mini player",
+  "settings_interface_use_actual_scene_video_miniplayer_subtitle": "Mostra la superficie video live invece dello screenshot della scena quando la riproduzione è attiva.",
   "settings_interface_customize_tabs": "Personalizza Schede",
   "settings_interface_customize_tabs_subtitle": "Riordina o nascondi le voci del menu di navigazione",
   "settings_interface_scenes_layout": "Layout Scene",

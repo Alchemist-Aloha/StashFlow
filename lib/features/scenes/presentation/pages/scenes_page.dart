@@ -577,7 +577,6 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       onSearchChanged: _onSearchChanged,
       provider: scenesAsync,
       actionsInTopPanel: isTiktokLayout,
-      imageUrlBuilder: (scene) => scene.paths.screenshot,
       memCacheWidthBuilder: (context, isGrid) {
         if (!isGrid) return 640;
         final padding = AppTheme.spacingSmall * 2;

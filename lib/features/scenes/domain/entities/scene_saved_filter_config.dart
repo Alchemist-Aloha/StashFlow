@@ -102,11 +102,39 @@ class SceneSavedFilterConfig extends SavedFilterConfig<SceneFilter> {
       return savedFilterReadBooleanCriterionValue(value) ?? savedFilterSkipValue;
     }
 
+    if (_multiValueFields.contains(localKey)) {
+      return _normalizeMultiCriterionValue(value);
+    }
+
     // Stash's is_missing value is a field name. StashFlow currently models it
     // as bool, so loading it would crash or lose meaning.
     if (localKey == 'isMissing') return savedFilterSkipValue;
 
     return value;
+  }
+
+  static Object? _normalizeMultiCriterionValue(Object? value) {
+    Object? rawValue;
+    if (value is Map) {
+      rawValue = value['value'];
+    } else {
+      rawValue = value;
+    }
+
+    final normalizedValue = switch (rawValue) {
+      null => <String>[],
+      List() => rawValue.map((item) => item.toString()).toList(),
+      _ => <String>[rawValue.toString()],
+    };
+
+    if (value is Map) {
+      return {
+        for (final entry in value.entries) entry.key.toString(): entry.value,
+        'value': normalizedValue,
+      };
+    }
+
+    return {'value': normalizedValue};
   }
 
   static const _localToServerKeys = {
@@ -142,5 +170,17 @@ class SceneSavedFilterConfig extends SavedFilterConfig<SceneFilter> {
     'interactive',
     'hasMarkers',
     'isMissing',
+  };
+
+  static const _multiValueFields = {
+    'studios',
+    'performers',
+    'tags',
+    'resolutions',
+    'orientations',
+    'groups',
+    'galleries',
+    'performerTags',
+    'duplicated',
   };
 }
