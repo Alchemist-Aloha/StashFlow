@@ -33,6 +33,7 @@ class PlayerSurface extends ConsumerStatefulWidget {
     required this.onFullScreenToggle,
     this.fit = BoxFit.contain,
     this.squareFit = BoxFit.contain,
+    this.showControls = true,
     super.key,
   });
 
@@ -41,6 +42,7 @@ class PlayerSurface extends ConsumerStatefulWidget {
   final VoidCallback onFullScreenToggle;
   final BoxFit fit;
   final BoxFit squareFit;
+  final bool showControls;
 
   @override
   ConsumerState<PlayerSurface> createState() => _PlayerSurfaceState();
@@ -193,7 +195,7 @@ class _PlayerSurfaceState extends ConsumerState<PlayerSurface> {
                   child: const Center(child: CircularProgressIndicator()),
                 ),
               ),
-            if (castState.isCasting)
+            if (widget.showControls && castState.isCasting)
               Positioned.fill(
                 child: Container(
                   color: Colors.black.withValues(alpha: 0.4),
@@ -208,7 +210,10 @@ class _PlayerSurfaceState extends ConsumerState<PlayerSurface> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          context.l10n.cast_casting_to(castState.activeSession?.device.name ?? context.l10n.cast_device),
+                          context.l10n.cast_casting_to(
+                            castState.activeSession?.device.name ??
+                                context.l10n.cast_device,
+                          ),
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -219,21 +224,22 @@ class _PlayerSurfaceState extends ConsumerState<PlayerSurface> {
                   ),
                 ),
               ),
-            Positioned.fill(
-              child: Material(
-                color: Colors.transparent,
-                child: NativeVideoControls(
-                  controller: widget.controller,
-                  useDoubleTapSeek: playerState.useDoubleTapSeek,
-                  enableNativePip: playerState.enableNativePip,
-                  onFullScreenToggle: widget.onFullScreenToggle,
-                  scene: widget.scene,
-                  onScaleStart: _onScaleStart,
-                  onScaleUpdate: _onScaleUpdate,
-                  onTransformationDelta: _onTransformationDelta,
+            if (widget.showControls)
+              Positioned.fill(
+                child: Material(
+                  color: Colors.transparent,
+                  child: NativeVideoControls(
+                    controller: widget.controller,
+                    useDoubleTapSeek: playerState.useDoubleTapSeek,
+                    enableNativePip: playerState.enableNativePip,
+                    onFullScreenToggle: widget.onFullScreenToggle,
+                    scene: widget.scene,
+                    onScaleStart: _onScaleStart,
+                    onScaleUpdate: _onScaleUpdate,
+                    onTransformationDelta: _onTransformationDelta,
+                  ),
                 ),
               ),
-            ),
           ],
         );
       },

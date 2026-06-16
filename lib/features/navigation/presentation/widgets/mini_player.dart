@@ -67,6 +67,7 @@ class MiniPlayer extends ConsumerWidget {
                                   onFullScreenToggle: () {},
                                   fit: BoxFit.cover,
                                   squareFit: BoxFit.cover,
+                                  showControls: false,
                                 ),
                               )
                             : StashImage(

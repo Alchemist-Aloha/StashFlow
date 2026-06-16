@@ -39,6 +39,7 @@ class NativeVideoControls extends ConsumerStatefulWidget {
     this.onScaleUpdate,
     this.onScaleEnd,
     this.onTransformationDelta,
+    this.showControls = true,
     super.key,
   });
 
@@ -51,6 +52,7 @@ class NativeVideoControls extends ConsumerStatefulWidget {
   final GestureScaleUpdateCallback? onScaleUpdate;
   final GestureScaleEndCallback? onScaleEnd;
   final void Function(Matrix4 delta, Offset focalPoint)? onTransformationDelta;
+  final bool showControls;
 
   @override
   ConsumerState<NativeVideoControls> createState() =>
@@ -858,6 +860,10 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.showControls) {
+      return const SizedBox.shrink();
+    }
+
     final colorScheme = Theme.of(context).colorScheme;
     final playerState = ref.watch(playerStateProvider);
     final castState = ref.watch(castServiceProvider);
