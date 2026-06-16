@@ -99,6 +99,45 @@ void main() {
     final state = container.read(castServiceProvider);
     expect(state.remotePosition, const Duration(seconds: 47));
   });
+
+  test(
+    'restarts cast media on the current session for scene switches',
+    () async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final session = _FakeCastSession();
+      final notifier = container.read(castServiceProvider.notifier);
+
+      await notifier.setActiveSession(
+        session,
+        localResumePosition: const Duration(seconds: 12),
+        localWasPlaying: true,
+      );
+
+      await notifier.restartActiveSessionWithMedia(
+        const dc.CastMedia(
+          url: 'http://example.test/next.mp4',
+          type: dc.CastMediaType.mp4,
+          title: 'Next Scene',
+          startPosition: Duration(seconds: 3),
+        ),
+        localResumePosition: const Duration(seconds: 3),
+        localWasPlaying: true,
+      );
+
+      final state = container.read(castServiceProvider);
+      expect(session.disconnectCalls, 1);
+      expect(session.connectCalls, 1);
+      expect(session.loadMediaCalls, 1);
+      expect(session.lastLoadedMedia?.url, 'http://example.test/next.mp4');
+      expect(state.activeSession, same(session));
+      expect(state.isCasting, isTrue);
+      expect(state.localResumePosition, const Duration(seconds: 3));
+      expect(state.remotePosition, const Duration(seconds: 3));
+      expect(state.remoteIsPlaying, isTrue);
+    },
+  );
 }
 
 class _FakeCastSession extends dc.CastSession {
@@ -118,10 +157,12 @@ class _FakeCastSession extends dc.CastSession {
   final int playbackStartsOnLoadAttempt;
   final _positionController = StreamController<Duration>.broadcast();
   int loadMediaCalls = 0;
+  int connectCalls = 0;
   int disconnectCalls = 0;
   int pauseCalls = 0;
   int seekCalls = 0;
   Duration? lastSeekPosition;
+  dc.CastMedia? lastLoadedMedia;
 
   void emitPosition(Duration position) {
     updatePosition(position);
@@ -132,7 +173,9 @@ class _FakeCastSession extends dc.CastSession {
   Stream<Duration> get positionStream => _positionController.stream;
 
   @override
-  Future<void> connect() async {}
+  Future<void> connect() async {
+    connectCalls++;
+  }
 
   @override
   Future<void> disconnect() async {
@@ -142,6 +185,7 @@ class _FakeCastSession extends dc.CastSession {
   @override
   Future<void> loadMedia(dc.CastMedia media) async {
     loadMediaCalls++;
+    lastLoadedMedia = media;
     stateMachine.forceState(dc.SessionState.loading);
     if (loadMediaCalls >= playbackStartsOnLoadAttempt) {
       Future<void>.microtask(

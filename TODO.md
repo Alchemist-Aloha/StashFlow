@@ -3,6 +3,8 @@
 - Add avif support
 - Add previous, next video navigation for cast player
 - the scene card still show current time after dragging before the check of the VTT finished. After the check the drag will not work. change this behavior to make sure the current time only change after the VTT is verified.
+- End cast when close the miniplayer sometime doesn't work, need to investigate and fix it.
+
 
 Startup is blocked by too much initialization. [main.dart (line 39)](/home/likun/StashFlow/lib/main.dart:39) waits for window setup, temporary storage, Hive, AudioService, preferences, and credential migration before runApp(). Lazy-load audio and defer nonessential desktop/cache work until after the first frame.
 

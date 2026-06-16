@@ -209,6 +209,52 @@ class AppCastService extends Notifier<CastState> {
     });
   }
 
+  Future<void> restartActiveSessionWithMedia(
+    dc.CastMedia media, {
+    Duration localResumePosition = Duration.zero,
+    bool localWasPlaying = false,
+  }) async {
+    final session = state.activeSession;
+    if (session == null) return;
+
+    await _sessionSubscription?.cancel();
+    await _positionSubscription?.cancel();
+    await _stateSubscription?.cancel();
+
+    try {
+      debugPrint('CastService: restarting active session media');
+      try {
+        await session.disconnect();
+      } catch (e) {
+        debugPrint('CastService: error disconnecting previous media: $e');
+      }
+
+      await session.connect();
+      await loadMediaAndConfirm(session, media);
+
+      if (session.device.protocol == dc.CastProtocol.airplay &&
+          localResumePosition > Duration.zero) {
+        await session.seek(localResumePosition);
+      }
+
+      await setActiveSession(
+        session,
+        localResumePosition: localResumePosition,
+        localWasPlaying: localWasPlaying,
+      );
+    } catch (e) {
+      debugPrint('CastService: failed to restart active session media: $e');
+      state = state.copyWith(
+        isCasting: false,
+        remotePosition: Duration.zero,
+        remoteIsPlaying: false,
+        clearActiveSession: true,
+        clearLocalHandoff: true,
+      );
+      rethrow;
+    }
+  }
+
   Future<void> stopCasting() async {
     final session = state.activeSession;
     if (session != null) {
@@ -260,3 +306,17 @@ class AppCastService extends Notifier<CastState> {
 final castServiceProvider = NotifierProvider<AppCastService, CastState>(
   AppCastService.new,
 );
+
+dc.CastMediaType detectCastMediaType(String url) {
+  final lower = url.toLowerCase();
+  if (lower.contains('.m3u8') || lower.contains('hls')) {
+    return dc.CastMediaType.hls;
+  }
+  if (lower.contains('.ts')) {
+    return dc.CastMediaType.mpegTs;
+  }
+  if (lower.contains('.mkv')) {
+    return dc.CastMediaType.mkv;
+  }
+  return dc.CastMediaType.mp4;
+}

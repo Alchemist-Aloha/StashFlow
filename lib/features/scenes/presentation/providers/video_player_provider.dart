@@ -24,6 +24,7 @@ import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/data/services/cast_service.dart';
 import '../../../../core/utils/app_log_store.dart';
 import '../../../../core/presentation/providers/desktop_settings_provider.dart';
 import 'package:media_kit/media_kit.dart';
@@ -1330,6 +1331,13 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   }
 
   void stop() {
+    if (ref.mounted) {
+      final castState = ref.read(castServiceProvider);
+      if (castState.isCasting) {
+        unawaited(ref.read(castServiceProvider.notifier).stopCasting());
+      }
+    }
+
     unawaited(_disposeControllers());
     if (!isTestMode) {
       unawaited(WakelockPlus.disable());
