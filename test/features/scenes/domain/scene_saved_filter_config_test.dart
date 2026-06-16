@@ -91,5 +91,19 @@ void main() {
       expect(config.filter.hasMarkers, true);
       expect(config.filter.isMissing, isNull);
     });
+
+    test('normalizes single-value multi criteria from server payload', () {
+      final config = SceneSavedFilterConfig.fromServerPayload(
+        id: '14',
+        name: 'Single tag',
+        objectFilter: {
+          'tags': {'value': '7', 'modifier': 'INCLUDES'},
+          'performers': {'value': 9, 'modifier': 'INCLUDES'},
+        },
+      );
+
+      expect(config.filter.tags?.value, ['7']);
+      expect(config.filter.performers?.value, ['9']);
+    });
   });
 }
