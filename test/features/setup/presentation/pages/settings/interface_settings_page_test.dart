@@ -42,15 +42,15 @@ void main() {
         matching: find.byType(Switch),
       );
 
-      expect(tester.widget<Switch>(toggle).value, isFalse);
+      expect(tester.widget<Switch>(toggle).value, isTrue);
 
       await tester.tap(toggle);
       await tester.pumpAndSettle();
 
-      expect(tester.widget<Switch>(toggle).value, isTrue);
+      expect(tester.widget<Switch>(toggle).value, isFalse);
       expect(
         prefs.getBool(PlayerSettingsStore.useActualSceneVideoInMiniPlayerKey),
-        isTrue,
+        isFalse,
       );
     },
   );

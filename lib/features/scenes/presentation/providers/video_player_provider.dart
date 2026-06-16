@@ -176,7 +176,7 @@ class GlobalPlayerState {
     this.enableBackgroundPlayback = false,
     this.enableNativePip = false,
     this.videoGravityOrientation = true,
-    this.useActualSceneVideoInMiniPlayer = false,
+    this.useActualSceneVideoInMiniPlayer = true,
     this.feedStartRandom = false,
     this.resumePlayPosition = true,
     this.selectedSubtitleLanguage,

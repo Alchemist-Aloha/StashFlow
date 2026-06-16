@@ -22,7 +22,7 @@ class PlayerSettings {
     this.enableBackgroundPlayback = false,
     this.enableNativePip = false,
     this.videoGravityOrientation = true,
-    this.useActualSceneVideoInMiniPlayer = false,
+    this.useActualSceneVideoInMiniPlayer = true,
     this.defaultSubtitleLanguage = 'none',
     this.subtitleFontSize = 18.0,
     this.subtitlePositionBottomRatio = 0.15,
@@ -113,7 +113,7 @@ class PlayerSettingsStore {
       videoGravityOrientation:
           prefs.getBool(videoGravityOrientationKey) ?? true,
       useActualSceneVideoInMiniPlayer:
-          prefs.getBool(useActualSceneVideoInMiniPlayerKey) ?? false,
+          prefs.getBool(useActualSceneVideoInMiniPlayerKey) ?? true,
       defaultSubtitleLanguage:
           prefs.getString(defaultSubtitleLanguageKey) ?? 'none',
       subtitleFontSize: prefs.getDouble(subtitleFontSizeKey) ?? 18.0,

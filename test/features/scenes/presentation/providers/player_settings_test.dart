@@ -52,5 +52,16 @@ void main() {
       );
       expect(store.load().useActualSceneVideoInMiniPlayer, isFalse);
     });
+
+    test(
+      'defaults actual scene video miniplayer preference to enabled',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
+        final store = PlayerSettingsStore(prefs);
+
+        expect(store.load().useActualSceneVideoInMiniPlayer, isTrue);
+      },
+    );
   });
 }

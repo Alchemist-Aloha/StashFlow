@@ -34,7 +34,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   bool _sceneTiktokLayout = false;
   bool _galleryGridLayout = true;
   bool _mainPageGravityOrientation = true;
-  bool _useActualSceneVideoInMiniPlayer = false;
+  bool _useActualSceneVideoInMiniPlayer = true;
   bool _imageFullscreenVerticalSwipe = true;
 
   int? _sceneGridColumns;
