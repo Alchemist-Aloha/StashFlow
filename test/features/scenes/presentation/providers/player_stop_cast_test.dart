@@ -31,6 +31,26 @@ void main() {
     expect(session.disconnectCalls, 1);
     expect(container.read(castServiceProvider).isCasting, isFalse);
   });
+
+  test('stopping the player preserves miniplayer video preference', () async {
+    SharedPreferences.setMockInitialValues({});
+    final sharedPrefs = await SharedPreferences.getInstance();
+    final container = ProviderContainer(
+      overrides: [sharedPreferencesProvider.overrideWithValue(sharedPrefs)],
+    );
+    addTearDown(container.dispose);
+
+    final notifier = container.read(playerStateProvider.notifier);
+    notifier.setUseActualSceneVideoInMiniPlayer(true);
+
+    notifier.stop();
+    await Future<void>.delayed(Duration.zero);
+
+    expect(
+      container.read(playerStateProvider).useActualSceneVideoInMiniPlayer,
+      isTrue,
+    );
+  });
 }
 
 class _FakeCastSession extends dc.CastSession {
