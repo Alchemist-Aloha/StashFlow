@@ -331,6 +331,8 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
 
   late final PlaybackActivityTracker _activityTracker;
   late final PlaybackSessionController _sessionController;
+  final PlaybackStartupRecovery _startupRecovery =
+      const PlaybackStartupRecovery();
   final FullscreenController _fullscreenController =
       const FullscreenController();
   final QueuePlaybackCoordinator _queuePlaybackCoordinator =
@@ -345,6 +347,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   bool _backgroundRecoverySuppressed = false;
   bool _backgroundRecoveryInFlight = false;
   DateTime? _backgroundEnteredAt;
+  int _playSceneGeneration = 0;
   static const Duration _backgroundPauseGraceWindow = Duration(seconds: 2);
 
   @override
@@ -903,56 +906,71 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       );
     }
 
-    if (state.player != null) {
-      await _disposeControllers();
-    }
-
-    final session = _sessionController.createOwnedSession();
-    final player = session.player;
-    final videoController = session.controller;
-    _activeSceneRef = scene;
-    _firstFrameLoggedSceneId = null;
-    _lastIsPlaying = null;
-
     final stopwatch = Stopwatch()..start();
+    final startupToken = ++_playSceneGeneration;
+    late Player player;
+    late VideoController videoController;
+    var startupSessionCreated = false;
 
-    AppLogStore.instance.add(
-      'PlayerState playScene: updating state.activeScene to ${scene.id}',
-      source: 'player_provider',
-    );
+    Future<void> openStartupAttempt(int attempt) async {
+      if (!ref.mounted || startupToken != _playSceneGeneration) {
+        throw StateError('stale playback startup');
+      }
 
-    state = GlobalPlayerState(
-      activeScene: scene,
-      player: player,
-      videoController: videoController,
-      isPlaying: false,
-      isFullScreen:
-          state.isFullScreen, // Preserve fullscreen state across scenes
-      isInPipMode: state.isInPipMode, // Preserve PiP state across scenes
-      viewMode: state.viewMode, // Preserve UI context
-      streamMimeType: mimeType,
-      streamLabel: streamLabel,
-      streamSource: streamSource,
-      startupLatencyMs: null,
-      prewarmAttempted: prewarmAttempted,
-      prewarmSucceeded: prewarmSucceeded,
-      prewarmLatencyMs: prewarmLatencyMs,
-      playEndBehavior: state.playEndBehavior,
-      showVideoDebugInfo: state.showVideoDebugInfo,
-      useDoubleTapSeek: state.useDoubleTapSeek,
-      enableBackgroundPlayback: state.enableBackgroundPlayback,
-      enableNativePip: state.enableNativePip,
-      videoGravityOrientation: state.videoGravityOrientation,
-      selectedSubtitleLanguage: effectiveSubtitleLanguage,
-      selectedSubtitleType: effectiveSubtitleType,
-      defaultSubtitleLanguage: state.defaultSubtitleLanguage,
-      subtitleFontSize: state.subtitleFontSize,
-      subtitlePositionBottomRatio: state.subtitlePositionBottomRatio,
-      subtitleTextAlignment: state.subtitleTextAlignment,
-      fullscreenPhase: state.fullscreenPhase,
-    );
+      if (attempt == 0 && state.player != null) {
+        await _disposeControllers();
+      } else if (attempt > 0) {
+        await _disposeControllers(
+          scene: scene,
+          player: player,
+          controller: videoController,
+        );
+      }
 
-    try {
+      final session = _sessionController.createOwnedSession();
+      player = session.player;
+      videoController = session.controller;
+      startupSessionCreated = true;
+      _activeSceneRef = scene;
+      _firstFrameLoggedSceneId = null;
+      _lastIsPlaying = null;
+
+      AppLogStore.instance.add(
+        'PlayerState playScene: updating state.activeScene to ${scene.id} attempt=${attempt + 1}',
+        source: 'player_provider',
+      );
+
+      state = GlobalPlayerState(
+        activeScene: scene,
+        player: player,
+        videoController: videoController,
+        isPlaying: false,
+        isFullScreen:
+            state.isFullScreen, // Preserve fullscreen state across scenes
+        isInPipMode: state.isInPipMode, // Preserve PiP state across scenes
+        viewMode: state.viewMode, // Preserve UI context
+        streamMimeType: mimeType,
+        streamLabel: streamLabel,
+        streamSource: streamSource,
+        startupLatencyMs: null,
+        prewarmAttempted: prewarmAttempted,
+        prewarmSucceeded: prewarmSucceeded,
+        prewarmLatencyMs: prewarmLatencyMs,
+        playEndBehavior: state.playEndBehavior,
+        showVideoDebugInfo: state.showVideoDebugInfo,
+        useDoubleTapSeek: state.useDoubleTapSeek,
+        enableBackgroundPlayback: state.enableBackgroundPlayback,
+        enableNativePip: state.enableNativePip,
+        videoGravityOrientation: state.videoGravityOrientation,
+        selectedSubtitleLanguage: effectiveSubtitleLanguage,
+        selectedSubtitleType: effectiveSubtitleType,
+        defaultSubtitleLanguage: state.defaultSubtitleLanguage,
+        subtitleFontSize: state.subtitleFontSize,
+        subtitlePositionBottomRatio: state.subtitlePositionBottomRatio,
+        subtitleTextAlignment: state.subtitleTextAlignment,
+        fullscreenPhase: state.fullscreenPhase,
+      );
+
       await player.open(
         Media(
           effectiveStreamUrl,
@@ -962,11 +980,42 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         play: false,
       );
 
+      if (!ref.mounted ||
+          startupToken != _playSceneGeneration ||
+          state.player != player) {
+        throw StateError('stale playback startup');
+      }
+
       if (subtitleUrl != null && subtitleUrl.isNotEmpty) {
         await player.setSubtitleTrack(SubtitleTrack.uri(subtitleUrl));
       } else {
         await player.setSubtitleTrack(SubtitleTrack.no());
       }
+    }
+
+    try {
+      await _startupRecovery.run<void>(
+        start: openStartupAttempt,
+        onSlowStartup: (attempt) async {
+          AppLogStore.instance.add(
+            'provider slow startup scene=${scene.id} attempt=${attempt + 1}; prewarming current stream',
+            source: 'player_provider',
+          );
+          await ref
+              .read(streamPrewarmerProvider.notifier)
+              .prewarm(scene, effectiveStreamUrl, headers: httpHeaders);
+        },
+        onRetry: (attempt, error) async {
+          AppLogStore.instance.add(
+            'provider startup retry scene=${scene.id} attempt=${attempt + 1} error=$error',
+            source: 'player_provider',
+          );
+        },
+        isCurrent: () =>
+            ref.mounted &&
+            startupToken == _playSceneGeneration &&
+            state.activeScene?.id == scene.id,
+      );
 
       if (!ref.mounted) {
         await _disposeControllers();
@@ -1031,10 +1080,10 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
         'provider initialize error scene=${scene.id} error=$e',
         source: 'player_provider',
       );
-      if (ref.mounted) {
+      if (ref.mounted && startupToken == _playSceneGeneration) {
         stop();
-      } else {
-        await _disposeControllers();
+      } else if (!isTestMode && startupSessionCreated) {
+        await player.dispose();
       }
     }
   }

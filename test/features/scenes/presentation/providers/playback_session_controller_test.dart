@@ -137,6 +137,31 @@ void main() {
 
       verifyNever(player1.dispose());
     });
+
+    test('startup recovery warms the stream and retries once', () async {
+      final recovery = PlaybackStartupRecovery();
+      final starts = <int>[];
+      final slowStarts = <int>[];
+      final retries = <int>[];
+
+      final result = await recovery.run<String>(
+        start: (attempt) {
+          starts.add(attempt);
+          if (attempt == 0) return Completer<String>().future;
+          return Future.value('ready');
+        },
+        onSlowStartup: (attempt) async => slowStarts.add(attempt),
+        onRetry: (attempt, error) async => retries.add(attempt),
+        isCurrent: () => true,
+        slowStartupDelay: const Duration(milliseconds: 1),
+        retryTimeout: const Duration(milliseconds: 10),
+      );
+
+      expect(result, 'ready');
+      expect(starts, [0, 1]);
+      expect(slowStarts, [0]);
+      expect(retries, [0]);
+    });
   });
 }
 
