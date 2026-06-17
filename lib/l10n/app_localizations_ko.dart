@@ -2949,4 +2949,33 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get stats_library_stats_tooltip => '길게 눌러 라이브러리 통계 보기';
+
+  @override
+  String get stats_loading => '로드 중';
+
+  @override
+  String get cache_label_image => '영상';
+
+  @override
+  String get cache_label_video => '동영상';
+
+  @override
+  String get scene_tagger_scraped_metadata => '스크랩된 메타데이터';
+
+  @override
+  String get scene_tagger_local_scene => '지역 현장';
+
+  @override
+  String get scene_details_delete_warning =>
+      '이 장면을 삭제하는 방법을 선택하세요. 이 작업은 취소할 수 없습니다.';
+
+  @override
+  String scene_details_delete_failed(String error) {
+    return '장면 삭제 실패: $error';
+  }
+
+  @override
+  String mini_player_now_playing(String title) {
+    return '현재 재생 중: $title. 장면 세부정보를 열려면 탭하세요.';
+  }
 }

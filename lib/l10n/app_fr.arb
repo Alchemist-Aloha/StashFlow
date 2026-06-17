@@ -1051,5 +1051,13 @@
   "settings_security_subtitle": "Paramètres de verrouillage de l'application et du code",
   "tools_section_subtitle": "Flux de travail de maintenance et de métadonnées pour les scènes.",
   "tools_scene_deduplication_subtitle": "Rechercher et gérer les scènes en double.",
-  "tools_scene_tagger_subtitle": "Scraper les pages de scènes actuelles avec Stash-box."
+  "tools_scene_tagger_subtitle": "Scraper les pages de scènes actuelles avec Stash-box.",
+  "stats_loading": "Chargement",
+  "cache_label_image": "image",
+  "cache_label_video": "vidéo",
+  "scene_tagger_scraped_metadata": "Métadonnées grattées",
+  "scene_tagger_local_scene": "Scène locale",
+  "scene_details_delete_warning": "Choisissez comment cette scène doit être supprimée. Cette action ne peut pas être annulée.",
+  "scene_details_delete_failed": "Échec de la suppression de la scène : {error}",
+  "mini_player_now_playing": "Lecture en cours : {title}. Appuyez pour ouvrir les détails de la scène."
 }

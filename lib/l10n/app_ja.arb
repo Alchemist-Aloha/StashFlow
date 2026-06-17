@@ -1051,5 +1051,13 @@
   "settings_security_subtitle": "アプリロックとパスコードの設定",
   "tools_section_subtitle": "シーンのメンテナンスとメタデータのワークフロー。",
   "tools_scene_deduplication_subtitle": "重複するシーンを見つけて管理します。",
-  "tools_scene_tagger_subtitle": "Stash-boxを使用して現在のシーンページをスクレイピングします。"
+  "tools_scene_tagger_subtitle": "Stash-boxを使用して現在のシーンページをスクレイピングします。",
+  "stats_loading": "読み込み中",
+  "cache_label_image": "画像",
+  "cache_label_video": "ビデオ",
+  "scene_tagger_scraped_metadata": "スクレイピングされたメタデータ",
+  "scene_tagger_local_scene": "現地の様子",
+  "scene_details_delete_warning": "このシーンを削除する方法を選択します。この操作は元に戻すことができません。",
+  "scene_details_delete_failed": "シーンの削除に失敗しました: {error}",
+  "mini_player_now_playing": "現在再生中: {title}。タップしてシーンの詳細を開きます。"
 }

@@ -3007,4 +3007,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stats_library_stats_tooltip => 'Long press for library stats';
+
+  @override
+  String get stats_loading => 'Loading';
+
+  @override
+  String get cache_label_image => 'image';
+
+  @override
+  String get cache_label_video => 'video';
+
+  @override
+  String get scene_tagger_scraped_metadata => 'Scraped metadata';
+
+  @override
+  String get scene_tagger_local_scene => 'Local scene';
+
+  @override
+  String get scene_details_delete_warning =>
+      'Choose how this scene should be deleted. This action cannot be undone.';
+
+  @override
+  String scene_details_delete_failed(String error) {
+    return 'Failed to delete scene: $error';
+  }
+
+  @override
+  String mini_player_now_playing(String title) {
+    return 'Now playing: $title. Tap to open scene details.';
+  }
 }

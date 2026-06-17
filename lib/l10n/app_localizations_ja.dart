@@ -2951,4 +2951,33 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get stats_library_stats_tooltip => '長押しでライブラリ統計を表示';
+
+  @override
+  String get stats_loading => '読み込み中';
+
+  @override
+  String get cache_label_image => '画像';
+
+  @override
+  String get cache_label_video => 'ビデオ';
+
+  @override
+  String get scene_tagger_scraped_metadata => 'スクレイピングされたメタデータ';
+
+  @override
+  String get scene_tagger_local_scene => '現地の様子';
+
+  @override
+  String get scene_details_delete_warning =>
+      'このシーンを削除する方法を選択します。この操作は元に戻すことができません。';
+
+  @override
+  String scene_details_delete_failed(String error) {
+    return 'シーンの削除に失敗しました: $error';
+  }
+
+  @override
+  String mini_player_now_playing(String title) {
+    return '現在再生中: $title。タップしてシーンの詳細を開きます。';
+  }
 }

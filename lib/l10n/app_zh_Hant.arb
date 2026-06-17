@@ -1037,5 +1037,13 @@
   "settings_security_subtitle": "應用鎖和密碼設定",
   "tools_section_subtitle": "場景的維護和元數據工作流。",
   "tools_scene_deduplication_subtitle": "查找並管理重複的場景。",
-  "tools_scene_tagger_subtitle": "使用 Stash-box 刮削當前場景頁面。"
+  "tools_scene_tagger_subtitle": "使用 Stash-box 刮削當前場景頁面。",
+  "stats_loading": "載入中",
+  "cache_label_image": "影像",
+  "cache_label_video": "影片",
+  "scene_tagger_scraped_metadata": "Scraped metadata",
+  "scene_tagger_local_scene": "當地場景",
+  "scene_details_delete_warning": "選擇如何刪除該場景。此操作無法撤銷。",
+  "scene_details_delete_failed": "無法刪除場景：{error}",
+  "mini_player_now_playing": "正在播放：{title}。點擊可開啟場景詳細資訊。"
 }

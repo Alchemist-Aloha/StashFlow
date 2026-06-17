@@ -151,7 +151,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Choose how this scene should be deleted. This action cannot be undone.',
+                    l10n.scene_details_delete_warning,
                     style: dialogContext.textTheme.bodyMedium,
                   ),
                   const SizedBox(height: AppTheme.spacingSmall),
@@ -236,7 +236,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                               ScaffoldMessenger.of(dialogContext).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    'Failed to delete scene: ${e.toString()}',
+                                    l10n.scene_details_delete_failed(e.toString()),
                                   ),
                                 ),
                               );

@@ -5429,6 +5429,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Long press for library stats'**
   String get stats_library_stats_tooltip;
+
+  /// No description provided for @stats_loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading'**
+  String get stats_loading;
+
+  /// No description provided for @cache_label_image.
+  ///
+  /// In en, this message translates to:
+  /// **'image'**
+  String get cache_label_image;
+
+  /// No description provided for @cache_label_video.
+  ///
+  /// In en, this message translates to:
+  /// **'video'**
+  String get cache_label_video;
+
+  /// No description provided for @scene_tagger_scraped_metadata.
+  ///
+  /// In en, this message translates to:
+  /// **'Scraped metadata'**
+  String get scene_tagger_scraped_metadata;
+
+  /// No description provided for @scene_tagger_local_scene.
+  ///
+  /// In en, this message translates to:
+  /// **'Local scene'**
+  String get scene_tagger_local_scene;
+
+  /// No description provided for @scene_details_delete_warning.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how this scene should be deleted. This action cannot be undone.'**
+  String get scene_details_delete_warning;
+
+  /// No description provided for @scene_details_delete_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete scene: {error}'**
+  String scene_details_delete_failed(String error);
+
+  /// No description provided for @mini_player_now_playing.
+  ///
+  /// In en, this message translates to:
+  /// **'Now playing: {title}. Tap to open scene details.'**
+  String mini_player_now_playing(String title);
 }
 
 class _AppLocalizationsDelegate

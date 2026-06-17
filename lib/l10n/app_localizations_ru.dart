@@ -3048,4 +3048,33 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Удерживайте для статистики библиотеки';
+
+  @override
+  String get stats_loading => 'Загрузка';
+
+  @override
+  String get cache_label_image => 'изображение';
+
+  @override
+  String get cache_label_video => 'видео';
+
+  @override
+  String get scene_tagger_scraped_metadata => 'Удаленные метаданные';
+
+  @override
+  String get scene_tagger_local_scene => 'Местная сцена';
+
+  @override
+  String get scene_details_delete_warning =>
+      'Выберите, как следует удалить эту сцену. Это действие невозможно отменить.';
+
+  @override
+  String scene_details_delete_failed(String error) {
+    return 'Не удалось удалить сцену: $error.';
+  }
+
+  @override
+  String mini_player_now_playing(String title) {
+    return 'Сейчас играет: $title. Нажмите, чтобы открыть сведения о сцене.';
+  }
 }

@@ -1051,5 +1051,13 @@
   "settings_security_subtitle": "Configuración de bloqueo de aplicación y contraseña",
   "tools_section_subtitle": "Flujos de trabajo de mantenimiento y metadatos para escenas.",
   "tools_scene_deduplication_subtitle": "Buscar y gestionar escenas duplicadas.",
-  "tools_scene_tagger_subtitle": "Extraer páginas de escenas actuales con Stash-box."
+  "tools_scene_tagger_subtitle": "Extraer páginas de escenas actuales con Stash-box.",
+  "stats_loading": "Cargando",
+  "cache_label_image": "imagen",
+  "cache_label_video": "video",
+  "scene_tagger_scraped_metadata": "Metadatos eliminados",
+  "scene_tagger_local_scene": "escena local",
+  "scene_details_delete_warning": "Elija cómo se debe eliminar esta escena. Esta acción no se puede deshacer.",
+  "scene_details_delete_failed": "No se pudo eliminar la escena: {error}",
+  "mini_player_now_playing": "Reproduciendo ahora: {title}. Toque para abrir los detalles de la escena."
 }

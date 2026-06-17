@@ -2895,6 +2895,34 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get stats_library_stats_tooltip => '长按查看资料库统计';
+
+  @override
+  String get stats_loading => '加载中';
+
+  @override
+  String get cache_label_image => '图像';
+
+  @override
+  String get cache_label_video => '视频';
+
+  @override
+  String get scene_tagger_scraped_metadata => '抓取的元数据';
+
+  @override
+  String get scene_tagger_local_scene => '当地场景';
+
+  @override
+  String get scene_details_delete_warning => '选择如何删除该场景。此操作无法撤消。';
+
+  @override
+  String scene_details_delete_failed(String error) {
+    return '无法删除场景：$error';
+  }
+
+  @override
+  String mini_player_now_playing(String title) {
+    return '正在播放：$title。点击可打开场景详细信息。';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5787,6 +5815,34 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get stats_library_stats_tooltip => '长按查看资料库统计';
+
+  @override
+  String get stats_loading => '加载中';
+
+  @override
+  String get cache_label_image => '图像';
+
+  @override
+  String get cache_label_video => '视频';
+
+  @override
+  String get scene_tagger_scraped_metadata => '抓取的元数据';
+
+  @override
+  String get scene_tagger_local_scene => '当地场景';
+
+  @override
+  String get scene_details_delete_warning => '选择如何删除该场景。此操作无法撤消。';
+
+  @override
+  String scene_details_delete_failed(String error) {
+    return '无法删除场景：$error';
+  }
+
+  @override
+  String mini_player_now_playing(String title) {
+    return '正在播放：$title。点击可打开场景详细信息。';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8683,4 +8739,32 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get stats_library_stats_tooltip => '長按查看資料庫統計';
+
+  @override
+  String get stats_loading => '載入中';
+
+  @override
+  String get cache_label_image => '影像';
+
+  @override
+  String get cache_label_video => '影片';
+
+  @override
+  String get scene_tagger_scraped_metadata => 'Scraped metadata';
+
+  @override
+  String get scene_tagger_local_scene => '當地場景';
+
+  @override
+  String get scene_details_delete_warning => '選擇如何刪除該場景。此操作無法撤銷。';
+
+  @override
+  String scene_details_delete_failed(String error) {
+    return '無法刪除場景：$error';
+  }
+
+  @override
+  String mini_player_now_playing(String title) {
+    return '正在播放：$title。點擊可開啟場景詳細資訊。';
+  }
 }

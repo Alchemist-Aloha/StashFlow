@@ -3071,4 +3071,33 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Tieni premuto per le statistiche della libreria';
+
+  @override
+  String get stats_loading => 'Caricamento';
+
+  @override
+  String get cache_label_image => 'immagine';
+
+  @override
+  String get cache_label_video => 'video';
+
+  @override
+  String get scene_tagger_scraped_metadata => 'Metadati raschiati';
+
+  @override
+  String get scene_tagger_local_scene => 'Scena locale';
+
+  @override
+  String get scene_details_delete_warning =>
+      'Scegli come eliminare questa scena. Questa azione non può essere annullata.';
+
+  @override
+  String scene_details_delete_failed(String error) {
+    return 'Impossibile eliminare la scena: $error';
+  }
+
+  @override
+  String mini_player_now_playing(String title) {
+    return 'Ora in riproduzione: $title. Tocca per aprire i dettagli della scena.';
+  }
 }
