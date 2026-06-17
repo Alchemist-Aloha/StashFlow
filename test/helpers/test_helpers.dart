@@ -401,6 +401,19 @@ class MockTagRepository extends MockRepositoryState<Tag>
 
 class MockImageRepository extends MockRepositoryState<Image>
     implements ImageRepository {
+  final List<
+    ({
+      int? page,
+      int? perPage,
+      String? filter,
+      String? sort,
+      bool? descending,
+      String? galleryId,
+      ImageFilter? imageFilter,
+    })
+  >
+  findImageCalls = [];
+
   @override
   Future<List<Image>> findImages({
     int? page,
@@ -412,6 +425,15 @@ class MockImageRepository extends MockRepositoryState<Image>
     ImageFilter? imageFilter,
   }) async {
     if (shouldThrow) throw Exception(errorMessage);
+    findImageCalls.add((
+      page: page,
+      perPage: perPage,
+      filter: filter,
+      sort: sort,
+      descending: descending,
+      galleryId: galleryId,
+      imageFilter: imageFilter,
+    ));
     return data;
   }
 

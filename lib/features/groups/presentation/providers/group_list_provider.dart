@@ -43,7 +43,8 @@ class GroupSort extends _$GroupSort {
   }
 
   void setSort({String? sort, bool descending = true}) {
-    state = (sort: sort, descending: descending, randomSeed: state.randomSeed);
+    final seed = sort == 'random' ? ref.read(groupRandomSeedProvider) : null;
+    state = (sort: sort, descending: descending, randomSeed: seed);
   }
 
   Future<void> saveAsDefault() async {
@@ -78,8 +79,8 @@ class GroupList extends _$GroupList {
     final repository = ref.watch(groupRepositoryProvider);
 
     String? effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
-      effectiveSort = 'random_${sortConfig.randomSeed}';
+    if (effectiveSort == 'random') {
+      effectiveSort = 'random_${ref.watch(groupRandomSeedProvider)}';
     }
 
     return repository.findGroups(
@@ -120,8 +121,8 @@ class GroupList extends _$GroupList {
     final sortConfig = ref.read(groupSortProvider);
 
     String? effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
-      effectiveSort = 'random_${sortConfig.randomSeed}';
+    if (effectiveSort == 'random') {
+      effectiveSort = 'random_${ref.read(groupRandomSeedProvider)}';
     }
 
     try {

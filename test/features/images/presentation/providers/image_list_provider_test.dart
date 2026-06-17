@@ -59,5 +59,20 @@ void main() {
       expect(sortState.sort, 'rating');
       expect(sortState.descending, false);
     });
+
+    test('refresh changes effective random sort seed', () async {
+      final sort = container.read(imageSortProvider.notifier);
+      sort.setSort(sort: 'random', descending: true);
+
+      await container.read(imageListProvider.future);
+      final firstSort = mockRepository.findImageCalls.single.sort;
+
+      await container.read(imageListProvider.notifier).refresh();
+      final secondSort = mockRepository.findImageCalls.last.sort;
+
+      expect(firstSort, startsWith('random_'));
+      expect(secondSort, startsWith('random_'));
+      expect(secondSort, isNot(firstSort));
+    });
   });
 }

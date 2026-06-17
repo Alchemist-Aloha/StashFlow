@@ -67,7 +67,8 @@ class GallerySort extends _$GallerySort {
   }
 
   void setSort({String? sort, bool descending = true}) {
-    state = (sort: sort, descending: descending, randomSeed: state.randomSeed);
+    final seed = sort == 'random' ? ref.read(galleryRandomSeedProvider) : null;
+    state = (sort: sort, descending: descending, randomSeed: seed);
   }
 
   Future<void> saveAsDefault() async {
@@ -176,8 +177,8 @@ class GalleryList extends _$GalleryList {
     final repository = ref.watch(galleryRepositoryProvider);
 
     String? effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
-      effectiveSort = 'random_${sortConfig.randomSeed}';
+    if (effectiveSort == 'random') {
+      effectiveSort = 'random_${ref.watch(galleryRandomSeedProvider)}';
     }
 
     return repository.findGalleries(
@@ -232,8 +233,8 @@ class GalleryList extends _$GalleryList {
     final organizedFilter = ref.read(galleryOrganizedOnlyProvider);
 
     String? effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
-      effectiveSort = 'random_${sortConfig.randomSeed}';
+    if (effectiveSort == 'random') {
+      effectiveSort = 'random_${ref.read(galleryRandomSeedProvider)}';
     }
 
     try {

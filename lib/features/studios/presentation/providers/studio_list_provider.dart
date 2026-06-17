@@ -70,7 +70,8 @@ class StudioSort extends _$StudioSort {
   }
 
   void setSort({String? sort, bool descending = true}) {
-    state = (sort: sort, descending: descending, randomSeed: state.randomSeed);
+    final seed = sort == 'random' ? ref.read(studioRandomSeedProvider) : null;
+    state = (sort: sort, descending: descending, randomSeed: seed);
   }
 
   Future<void> saveAsDefault() async {
@@ -133,8 +134,8 @@ class StudioList extends _$StudioList {
     final repository = ref.read(studioRepositoryProvider);
 
     String? effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
-      effectiveSort = 'random_${sortConfig.randomSeed}';
+    if (effectiveSort == 'random') {
+      effectiveSort = 'random_${ref.watch(studioRandomSeedProvider)}';
     }
 
     return repository.findStudios(
@@ -169,9 +170,9 @@ class StudioList extends _$StudioList {
 
   void setFavoritesOnly(bool enabled) {
     final currentFilter = ref.read(studioFilterStateProvider);
-    ref.read(studioFilterStateProvider.notifier).update(
-          currentFilter.copyWith(favorite: enabled),
-        );
+    ref
+        .read(studioFilterStateProvider.notifier)
+        .update(currentFilter.copyWith(favorite: enabled));
     _currentPage = 1;
     _hasMore = true;
     _isLoadingMore = false;
@@ -197,8 +198,8 @@ class StudioList extends _$StudioList {
     final filterState = ref.read(studioFilterStateProvider);
 
     String? effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
-      effectiveSort = 'random_${sortConfig.randomSeed}';
+    if (effectiveSort == 'random') {
+      effectiveSort = 'random_${ref.read(studioRandomSeedProvider)}';
     }
 
     try {

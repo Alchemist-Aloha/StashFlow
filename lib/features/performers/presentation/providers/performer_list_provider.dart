@@ -13,7 +13,6 @@ import '../../../../core/utils/pagination.dart';
 
 part 'performer_list_provider.g.dart';
 
-
 // Provider for Repository interface
 final performerRepositoryProvider = Provider<PerformerRepository>((ref) {
   final client = ref.watch(graphqlClientProvider);
@@ -72,7 +71,10 @@ class PerformerSort extends _$PerformerSort {
   }
 
   void setSort({String? sort, bool descending = true}) {
-    state = (sort: sort, descending: descending, randomSeed: state.randomSeed);
+    final seed = sort == 'random'
+        ? ref.read(performerRandomSeedProvider)
+        : null;
+    state = (sort: sort, descending: descending, randomSeed: seed);
   }
 
   Future<void> saveAsDefault() async {
@@ -117,7 +119,6 @@ class PerformerFilterState extends _$PerformerFilterState {
   }
 }
 
-
 @Riverpod(keepAlive: true)
 class PerformerList extends _$PerformerList {
   int _currentPage = 1;
@@ -136,8 +137,8 @@ class PerformerList extends _$PerformerList {
     final repository = ref.read(performerRepositoryProvider);
 
     String? effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
-      effectiveSort = 'random_${sortConfig.randomSeed}';
+    if (effectiveSort == 'random') {
+      effectiveSort = 'random_${ref.watch(performerRandomSeedProvider)}';
     }
 
     return repository.findPerformers(
@@ -172,9 +173,9 @@ class PerformerList extends _$PerformerList {
 
   void setFavoritesOnly(bool enabled) {
     final currentFilter = ref.read(performerFilterStateProvider);
-    ref.read(performerFilterStateProvider.notifier).update(
-          currentFilter.copyWith(favorite: enabled),
-        );
+    ref
+        .read(performerFilterStateProvider.notifier)
+        .update(currentFilter.copyWith(favorite: enabled));
     _currentPage = 1;
     _hasMore = true;
     _isLoadingMore = false;
@@ -200,8 +201,8 @@ class PerformerList extends _$PerformerList {
     final filterState = ref.read(performerFilterStateProvider);
 
     String? effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
-      effectiveSort = 'random_${sortConfig.randomSeed}';
+    if (effectiveSort == 'random') {
+      effectiveSort = 'random_${ref.read(performerRandomSeedProvider)}';
     }
 
     try {
