@@ -61,10 +61,7 @@ class StudioSort extends _$StudioSort {
     final sort = prefs.getString(_sortKey) ?? 'name';
     final descending = prefs.getBool(_descKey) ?? false;
 
-    int? seed;
-    if (sort == 'random') {
-      seed = ref.watch(studioRandomSeedProvider);
-    }
+    final seed = sort == 'random' ? ref.read(studioRandomSeedProvider) : null;
 
     return (sort: sort, descending: descending, randomSeed: seed);
   }

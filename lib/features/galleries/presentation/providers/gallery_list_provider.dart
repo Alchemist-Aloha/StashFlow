@@ -58,10 +58,7 @@ class GallerySort extends _$GallerySort {
     final sort = prefs.getString(_sortKey) ?? 'path';
     final descending = prefs.getBool(_descKey) ?? false;
 
-    int? seed;
-    if (sort == 'random') {
-      seed = ref.watch(galleryRandomSeedProvider);
-    }
+    final seed = sort == 'random' ? ref.read(galleryRandomSeedProvider) : null;
 
     return (sort: sort, descending: descending, randomSeed: seed);
   }

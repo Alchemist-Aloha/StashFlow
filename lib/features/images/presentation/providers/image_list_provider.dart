@@ -57,10 +57,7 @@ class ImageSort extends _$ImageSort {
     final sort = prefs.getString(_sortKey) ?? 'path';
     final descending = prefs.getBool(_descKey) ?? false;
 
-    int? seed;
-    if (sort == 'random') {
-      seed = ref.watch(imageRandomSeedProvider);
-    }
+    final seed = sort == 'random' ? ref.read(imageRandomSeedProvider) : null;
 
     return (sort: sort, descending: descending, randomSeed: seed);
   }

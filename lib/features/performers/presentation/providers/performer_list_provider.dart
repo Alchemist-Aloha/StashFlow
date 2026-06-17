@@ -62,10 +62,9 @@ class PerformerSort extends _$PerformerSort {
     final sort = prefs.getString(_sortKey) ?? 'name';
     final descending = prefs.getBool(_descKey) ?? false;
 
-    int? seed;
-    if (sort == 'random') {
-      seed = ref.watch(performerRandomSeedProvider);
-    }
+    final seed = sort == 'random'
+        ? ref.read(performerRandomSeedProvider)
+        : null;
 
     return (sort: sort, descending: descending, randomSeed: seed);
   }

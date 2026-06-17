@@ -59,10 +59,7 @@ class TagSort extends _$TagSort {
     final sort = prefs.getString(_sortKey) ?? 'name';
     final descending = prefs.getBool(_descKey) ?? false;
 
-    int? seed;
-    if (sort == 'random') {
-      seed = ref.watch(tagRandomSeedProvider);
-    }
+    final seed = sort == 'random' ? ref.read(tagRandomSeedProvider) : null;
 
     return (sort: sort, descending: descending, randomSeed: seed);
   }

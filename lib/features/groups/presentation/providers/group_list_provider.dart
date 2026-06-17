@@ -34,10 +34,7 @@ class GroupSort extends _$GroupSort {
     final sort = prefs.getString(_sortKey) ?? 'name';
     final descending = prefs.getBool(_descKey) ?? false;
 
-    int? seed;
-    if (sort == 'random') {
-      seed = ref.watch(groupRandomSeedProvider);
-    }
+    final seed = sort == 'random' ? ref.read(groupRandomSeedProvider) : null;
 
     return (sort: sort, descending: descending, randomSeed: seed);
   }
