@@ -33,6 +33,7 @@ class GalleryStrip extends ConsumerWidget {
 
     // Initial prefetch
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) return;
       final initialCount = galleries.length < kPrefetchDistance
           ? galleries.length
           : kPrefetchDistance;

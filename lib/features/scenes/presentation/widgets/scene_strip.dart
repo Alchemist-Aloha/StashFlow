@@ -36,6 +36,7 @@ class SceneStrip extends ConsumerWidget {
 
     // Initial prefetch
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) return;
       final initialCount = scenes.length < kPrefetchDistance
           ? scenes.length
           : kPrefetchDistance;

@@ -55,6 +55,7 @@ class MediaStrip extends StatelessWidget {
     // are warmed before the user scrolls. Also compute stride to account
     // for separators and padding so visible index calculation matches layout.
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) return;
       final initialCount = items.length < kPrefetchDistance
           ? items.length
           : kPrefetchDistance;
