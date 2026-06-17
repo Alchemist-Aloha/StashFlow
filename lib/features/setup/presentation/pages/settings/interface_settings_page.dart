@@ -707,6 +707,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
         ),
       ),
       builder: (context) {
+        final textTheme = context.textTheme;
+        final fontSizeFactor = context.dimensions.fontSizeFactor;
+
         return SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -735,11 +738,11 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                             ? Icons.check_circle_rounded
                             : Icons.circle_outlined,
                         color: isSelected ? colorScheme.primary : null,
-                        size: 24 * context.dimensions.fontSizeFactor,
+                        size: 24 * fontSizeFactor,
                       ),
                       title: Text(
                         entry.value,
-                        style: context.textTheme.bodyLarge?.copyWith(
+                        style: textTheme.bodyLarge?.copyWith(
                           fontWeight: isSelected ? FontWeight.bold : null,
                         ),
                       ),
