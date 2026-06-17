@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +13,50 @@ import '../../../helpers/test_helpers.dart';
 
 void main() {
   group('ListPageScaffold', () {
+    test('guards post-frame measurement callbacks after dispose', () {
+      final source = File(
+        'lib/core/presentation/widgets/list_page_scaffold.dart',
+      ).readAsStringSync();
+
+      expect(
+        source,
+        isNot(
+          contains(
+            'addPostFrameCallback((_) {\n'
+            '      _pageSizeReportScheduled = false;\n'
+            '      if (!mounted) return;',
+          ),
+        ),
+      );
+      expect(
+        source,
+        isNot(
+          contains(
+            'addPostFrameCallback((_) {\n'
+            '                                                  if (_measuredItemExtent',
+          ),
+        ),
+      );
+      expect(
+        source,
+        isNot(
+          contains(
+            'addPostFrameCallback((_) {\n'
+            '                                                if (_measuredItemExtent',
+          ),
+        ),
+      );
+      expect(
+        source,
+        isNot(
+          contains(
+            'addPostFrameCallback((_) {\n'
+            '                                            if (_measuredItemExtent',
+          ),
+        ),
+      );
+    });
+
     testWidgets('shows loading state correctly', (WidgetTester tester) async {
       await pumpTestWidget(
         tester,
@@ -112,7 +158,7 @@ void main() {
     });
 
     testWidgets(
-      'uses one viewport of cache and grid density controls cached item count',
+      'uses two viewports of cache and grid density controls cached item count',
       (WidgetTester tester) async {
         await tester.binding.setSurfaceSize(const Size(800, 600));
         addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -153,13 +199,13 @@ void main() {
         final twoColumns = await pumpGrid(2);
         final fiveColumns = await pumpGrid(5);
 
-        expect(twoColumns.cacheExtent, const ScrollCacheExtent.viewport(1.0));
-        expect(fiveColumns.cacheExtent, const ScrollCacheExtent.viewport(1.0));
+        expect(twoColumns.cacheExtent, const ScrollCacheExtent.viewport(2.0));
+        expect(fiveColumns.cacheExtent, const ScrollCacheExtent.viewport(2.0));
         expect(fiveColumns.builtCount, greaterThan(twoColumns.builtCount));
       },
     );
 
-    testWidgets('uses one viewport of cache for list and masonry layouts', (
+    testWidgets('uses configured cache for list and masonry layouts', (
       WidgetTester tester,
     ) async {
       await tester.binding.setSurfaceSize(const Size(800, 600));
@@ -180,7 +226,7 @@ void main() {
       await tester.pump();
       expect(
         tester.widget<ListView>(find.byType(ListView)).scrollCacheExtent,
-        const ScrollCacheExtent.viewport(1.0),
+        const ScrollCacheExtent.viewport(2.0),
       );
 
       await pumpTestWidget(
