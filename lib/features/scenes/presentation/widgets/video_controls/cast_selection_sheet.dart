@@ -27,6 +27,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
     super.initState();
     // Start discovery when the sheet is opened.
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       debugPrint('CastSelectionSheet: start discovery');
       ref.read(castServiceProvider.notifier).startDiscovery();
     });
