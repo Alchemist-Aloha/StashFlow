@@ -19,7 +19,7 @@ final galleryRepositoryProvider = Provider<GalleryRepository>((ref) {
   return GraphQLGalleryRepository(client);
 });
 
-@riverpod
+@Riverpod(keepAlive: true)
 class GalleryScrollController extends _$GalleryScrollController {
   @override
   ScrollController build() {

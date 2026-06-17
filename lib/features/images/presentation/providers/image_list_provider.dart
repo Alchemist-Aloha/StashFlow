@@ -18,7 +18,7 @@ final imageRepositoryProvider = Provider<ImageRepository>((ref) {
   return GraphQLImageRepository(client);
 });
 
-@riverpod
+@Riverpod(keepAlive: true)
 class ImageScrollController extends _$ImageScrollController {
   @override
   ScrollController build() {
