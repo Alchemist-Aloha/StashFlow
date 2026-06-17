@@ -1,8 +1,18 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/marquee_text.dart';
 
 void main() {
+  test('MarqueeText does not keep an unused timer field', () {
+    final source = File(
+      'lib/core/presentation/widgets/marquee_text.dart',
+    ).readAsStringSync();
+
+    expect(source, isNot(contains('Timer? _timer')));
+  });
+
   Widget buildTestWidget(Widget child) {
     return MaterialApp(
       home: Scaffold(
