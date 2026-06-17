@@ -983,6 +983,7 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
 
           // Prefetch initial adjacent images
           WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
             _prefetchAdjacent(items, _currentIndex, headers);
           });
         }

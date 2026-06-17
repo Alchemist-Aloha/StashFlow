@@ -57,6 +57,22 @@ void main() {
   });
 
   group('ImageFullscreenPage', () {
+    test('guards initial post-frame prefetch after dispose', () {
+      final source = File(
+        'lib/features/images/presentation/pages/image_fullscreen_page.dart',
+      ).readAsStringSync();
+
+      expect(
+        source,
+        contains(
+          'WidgetsBinding.instance.addPostFrameCallback((_) {\n'
+          '            if (!mounted) return;\n'
+          '            _prefetchAdjacent(items, _currentIndex, headers);\n'
+          '          });',
+        ),
+      );
+    });
+
     testWidgets('displays images and allows vertical navigation', (
       tester,
     ) async {
