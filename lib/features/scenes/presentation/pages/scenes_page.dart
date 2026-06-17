@@ -116,6 +116,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     super.initState();
     // Initialize state from persisted providers after the first frame.
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final sortConfig = ref.read(sceneSortProvider);
       setState(() {
         _sortField = switch (sortConfig.sort) {
@@ -290,17 +291,21 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
       _SceneSortField.resumeTime => context.l10n.scenes_sort_resume_time,
       _SceneSortField.playDuration => context.l10n.scenes_sort_play_duration,
       _SceneSortField.interactive => context.l10n.scenes_sort_interactive,
-      _SceneSortField.interactiveSpeed => context.l10n.scenes_sort_interactive_speed,
-      _SceneSortField.perceptualSimilarity => context.l10n.scenes_sort_perceptual_similarity,
+      _SceneSortField.interactiveSpeed =>
+        context.l10n.scenes_sort_interactive_speed,
+      _SceneSortField.perceptualSimilarity =>
+        context.l10n.scenes_sort_perceptual_similarity,
       _SceneSortField.performerAge => context.l10n.scenes_sort_performer_age,
       _SceneSortField.studio => context.l10n.scenes_sort_studio,
       _SceneSortField.path => context.l10n.scenes_sort_path,
       _SceneSortField.fileModTime => context.l10n.scenes_sort_file_mod_time,
       _SceneSortField.tagCount => context.l10n.scenes_sort_tag_count,
-      _SceneSortField.performerCount => context.l10n.scenes_sort_performer_count,
+      _SceneSortField.performerCount =>
+        context.l10n.scenes_sort_performer_count,
       _SceneSortField.oCounter => context.l10n.scenes_sort_o_counter,
       _SceneSortField.lastOAt => context.l10n.scenes_sort_last_o_at,
-      _SceneSortField.groupSceneNumber => context.l10n.scenes_sort_group_scene_number,
+      _SceneSortField.groupSceneNumber =>
+        context.l10n.scenes_sort_group_scene_number,
       _SceneSortField.code => context.l10n.scenes_sort_code,
     };
   }

@@ -44,6 +44,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final sortConfig = ref.read(tagSortProvider);
       setState(() {
         _sortOption = _sortOptionForKey(sortConfig.sort);

@@ -45,6 +45,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final sortConfig = ref.read(studioSortProvider);
       setState(() {
         _sortOption = _sortOptionForKey(sortConfig.sort);
