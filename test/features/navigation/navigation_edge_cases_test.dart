@@ -1,9 +1,26 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 void main() {
   group('Navigation edge cases', () {
+    test('ShellPage guards startup post-frame callback after dispose', () {
+      final source = File(
+        'lib/features/navigation/presentation/shell_page.dart',
+      ).readAsStringSync();
+
+      expect(
+        source,
+        contains(
+          'WidgetsBinding.instance.addPostFrameCallback((_) {\n'
+          '      if (!mounted) return;\n'
+          '      _checkServerConfiguration();',
+        ),
+      );
+    });
+
     testWidgets(
       'deep link while app is alive does not resurrect stale route history',
       (tester) async {
@@ -129,9 +146,8 @@ void main() {
           GoRoute(path: '/', builder: (context, state) => const _AuthGate()),
           GoRoute(
             path: '/login',
-            builder: (context, state) => const Scaffold(
-              body: Center(child: Text('Login Page')),
-            ),
+            builder: (context, state) =>
+                const Scaffold(body: Center(child: Text('Login Page'))),
           ),
         ],
       );
@@ -144,50 +160,51 @@ void main() {
       expect(find.text('Login Page'), findsOneWidget);
     });
 
-    testWidgets('player-like route is disposed after pop transition completes', (
-      tester,
-    ) async {
-      final disposed = ValueNotifier<bool>(false);
+    testWidgets(
+      'player-like route is disposed after pop transition completes',
+      (tester) async {
+        final disposed = ValueNotifier<bool>(false);
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: Builder(
-              builder: (context) => Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      PageRouteBuilder<void>(
-                        transitionDuration: const Duration(milliseconds: 200),
-                        reverseTransitionDuration:
-                            const Duration(milliseconds: 200),
-                        pageBuilder: (_, _, _) => _FakePlayerPage(
-                          disposed: disposed,
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder: (context) => Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        PageRouteBuilder<void>(
+                          transitionDuration: const Duration(milliseconds: 200),
+                          reverseTransitionDuration: const Duration(
+                            milliseconds: 200,
+                          ),
+                          pageBuilder: (_, _, _) =>
+                              _FakePlayerPage(disposed: disposed),
                         ),
-                      ),
-                    );
-                  },
-                  child: const Text('Open Player'),
+                      );
+                    },
+                    child: const Text('Open Player'),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      );
+        );
 
-      await tester.tap(find.text('Open Player'));
-      await tester.pumpAndSettle();
-      expect(find.text('Player Route'), findsOneWidget);
-      expect(disposed.value, isFalse);
+        await tester.tap(find.text('Open Player'));
+        await tester.pumpAndSettle();
+        expect(find.text('Player Route'), findsOneWidget);
+        expect(disposed.value, isFalse);
 
-      await tester.binding.handlePopRoute();
-      await tester.pump(const Duration(milliseconds: 50));
-      expect(disposed.value, isFalse);
+        await tester.binding.handlePopRoute();
+        await tester.pump(const Duration(milliseconds: 50));
+        expect(disposed.value, isFalse);
 
-      await tester.pumpAndSettle();
-      expect(disposed.value, isTrue);
-      expect(find.text('Open Player'), findsOneWidget);
-    });
+        await tester.pumpAndSettle();
+        expect(disposed.value, isTrue);
+        expect(find.text('Open Player'), findsOneWidget);
+      },
+    );
   });
 }
 
@@ -214,7 +231,9 @@ class _SearchLikePageState extends State<_SearchLikePage> {
       },
       child: Scaffold(
         appBar: AppBar(),
-        body: Center(child: Text(_searchOpen ? 'Search Open' : 'Search Closed')),
+        body: Center(
+          child: Text(_searchOpen ? 'Search Open' : 'Search Closed'),
+        ),
       ),
     );
   }
@@ -252,9 +271,8 @@ class _NestedTabsTestAppState extends State<_NestedTabsTestApp> {
             onGenerateRoute: (settings) {
               if (settings.name == '/detail') {
                 return MaterialPageRoute<void>(
-                  builder: (_) => const Scaffold(
-                    body: Center(child: Text('Tab A Detail')),
-                  ),
+                  builder: (_) =>
+                      const Scaffold(body: Center(child: Text('Tab A Detail'))),
                 );
               }
               return MaterialPageRoute<void>(
@@ -265,9 +283,8 @@ class _NestedTabsTestAppState extends State<_NestedTabsTestApp> {
                       children: [
                         const Text('Tab A Root'),
                         ElevatedButton(
-                          onPressed: () => _tabANavKey.currentState?.pushNamed(
-                            '/detail',
-                          ),
+                          onPressed: () =>
+                              _tabANavKey.currentState?.pushNamed('/detail'),
                           child: const Text('Open A Detail'),
                         ),
                       ],
@@ -280,9 +297,8 @@ class _NestedTabsTestAppState extends State<_NestedTabsTestApp> {
           Navigator(
             key: _tabBNavKey,
             onGenerateRoute: (_) => MaterialPageRoute<void>(
-              builder: (_) => const Scaffold(
-                body: Center(child: Text('Tab B Root')),
-              ),
+              builder: (_) =>
+                  const Scaffold(body: Center(child: Text('Tab B Root'))),
             ),
           ),
         ],
@@ -340,6 +356,9 @@ class _FakePlayerPageState extends State<_FakePlayerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(), body: const Center(child: Text('Player Route')));
+    return Scaffold(
+      appBar: AppBar(),
+      body: const Center(child: Text('Player Route')),
+    );
   }
 }
