@@ -141,19 +141,15 @@ class _TagFilterPanelState extends ConsumerState<TagFilterPanel> {
       title: context.l10n.filter_group_general,
       initiallyExpanded: true,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(context.l10n.common_favorites_only),
-            Switch(
-              value: _tempFavoritesOnly,
-              onChanged: (value) {
-                setState(() {
-                  _tempFavoritesOnly = value;
-                });
-              },
-            ),
-          ],
+        SwitchListTile(
+          title: Text(context.l10n.common_favorites_only),
+          contentPadding: EdgeInsets.zero,
+          value: _tempFavoritesOnly,
+          onChanged: (value) {
+            setState(() {
+              _tempFavoritesOnly = value;
+            });
+          },
         ),
       ],
     );
