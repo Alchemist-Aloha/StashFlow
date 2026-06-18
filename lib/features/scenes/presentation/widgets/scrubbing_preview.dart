@@ -65,6 +65,7 @@ class _ScrubbingPreviewState extends ConsumerState<ScrubbingPreview> {
         final sprites = snapshot.data!;
         if (sprites.isEmpty) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
             widget.onVttUnavailable?.call();
           });
           return const SizedBox.shrink();
