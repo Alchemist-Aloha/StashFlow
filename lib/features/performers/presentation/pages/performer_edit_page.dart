@@ -520,7 +520,9 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
                         firstDate: DateTime(1900),
                         lastDate: DateTime.now(),
                       );
-                      if (picked != null) setState(() => _setBirthdate(picked));
+                      if (picked != null && context.mounted) {
+                        setState(() => _setBirthdate(picked));
+                      }
                     },
                   ),
                 ),
@@ -541,7 +543,9 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
                         firstDate: DateTime(1900),
                         lastDate: DateTime.now(),
                       );
-                      if (picked != null) setState(() => _setDeathDate(picked));
+                      if (picked != null && context.mounted) {
+                        setState(() => _setDeathDate(picked));
+                      }
                     },
                   ),
                 ),

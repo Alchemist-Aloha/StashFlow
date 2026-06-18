@@ -93,7 +93,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
       firstDate: DateTime(1900),
       lastDate: DateTime(2100),
     );
-    if (picked != null) {
+    if (picked != null && mounted) {
       setState(() {
         _selectedDate = picked;
         _dateController.text = picked.toIso8601String().split('T').first;
@@ -126,7 +126,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
       ),
     );
 
-    if (result != null) {
+    if (result != null && mounted) {
       setState(() {
         _selectedStudioId = result.id;
         _selectedStudioName = result.name;
@@ -145,7 +145,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
       ),
     );
 
-    if (results != null) {
+    if (results != null && mounted) {
       setState(() {
         _selectedPerformerIds = results.map((p) => p.id).toList();
         _selectedPerformerNames = results.map((p) => p.name).toList();
@@ -164,7 +164,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
       ),
     );
 
-    if (results != null) {
+    if (results != null && mounted) {
       setState(() {
         _selectedTagIds = results.map((t) => t.id).toList();
         _selectedTagNames = results.map((t) => t.name).toList();
