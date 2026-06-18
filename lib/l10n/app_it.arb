@@ -1056,5 +1056,17 @@
   "settings_security_subtitle": "Impostazioni del blocco dell'applicazione e del passcode",
   "tools_section_subtitle": "Flussi di lavoro di manutenzione e metadati per le scene.",
   "tools_scene_deduplication_subtitle": "Trova e gestisci le scene duplicate.",
-  "tools_scene_tagger_subtitle": "Scrape delle pagine delle scene correnti con Stash-box."
+  "tools_scene_tagger_subtitle": "Scrape delle pagine delle scene correnti con Stash-box.",
+  "common_stats": "Statistiche",
+  "image_filter_saved_to_server": "Filtro immagine salvato sul server",
+  "studio_filter_saved_to_server": "Filtro Studio salvato sul server",
+  "gallery_filter_saved_to_server": "Filtro della galleria salvato sul server",
+  "performer_filter_saved_to_server": "Filtro dell'esecutore salvato sul server",
+  "tag_filter_saved_to_server": "Filtro tag salvato sul server",
+  "mini_player_now_playing": "Ora in riproduzione: {displayTitle}. Tocca per aprire i dettagli della scena.",
+  "server_profile_drawer_attempting_login": "Tentativo di accesso...",
+  "server_profile_drawer_error_login_failed": "Errore: accesso non riuscito. Controlla le credenziali.",
+  "server_profile_drawer_error": "Errore: {error}",
+  "server_profile_drawer_url_is_required": "L'URL è obbligatorio",
+  "scene_filter_saved_to_server": "Filtro scena salvato sul server"
 }

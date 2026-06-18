@@ -3072,4 +3072,52 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Appui long pour les statistiques de la bibliothèque';
+
+  @override
+  String get common_stats => 'Statistiques';
+
+  @override
+  String get image_filter_saved_to_server =>
+      'Filtre d\'image enregistré sur le serveur';
+
+  @override
+  String get studio_filter_saved_to_server =>
+      'Filtre Studio enregistré sur le serveur';
+
+  @override
+  String get gallery_filter_saved_to_server =>
+      'Filtre de galerie enregistré sur le serveur';
+
+  @override
+  String get performer_filter_saved_to_server =>
+      'Filtre d\'intervenant enregistré sur le serveur';
+
+  @override
+  String get tag_filter_saved_to_server =>
+      'Filtre de balises enregistré sur le serveur';
+
+  @override
+  String mini_player_now_playing(String displayTitle) {
+    return 'Lecture en cours : $displayTitle. Appuyez pour ouvrir les détails de la scène.';
+  }
+
+  @override
+  String get server_profile_drawer_attempting_login =>
+      'Tentative de connexion...';
+
+  @override
+  String get server_profile_drawer_error_login_failed =>
+      'Erreur : La connexion a échoué. Vérifiez les informations d\'identification.';
+
+  @override
+  String server_profile_drawer_error(String error) {
+    return 'Erreur : $error';
+  }
+
+  @override
+  String get server_profile_drawer_url_is_required => 'L\'URL est obligatoire';
+
+  @override
+  String get scene_filter_saved_to_server =>
+      'Filtre de scène enregistré sur le serveur';
 }

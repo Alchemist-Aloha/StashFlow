@@ -2949,4 +2949,45 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get stats_library_stats_tooltip => '길게 눌러 라이브러리 통계 보기';
+
+  @override
+  String get common_stats => '통계';
+
+  @override
+  String get image_filter_saved_to_server => '서버에 저장된 이미지 필터';
+
+  @override
+  String get studio_filter_saved_to_server => '서버에 Studio 필터가 저장되었습니다.';
+
+  @override
+  String get gallery_filter_saved_to_server => '서버에 갤러리 필터가 저장되었습니다.';
+
+  @override
+  String get performer_filter_saved_to_server => '서버에 저장된 수행자 필터';
+
+  @override
+  String get tag_filter_saved_to_server => '서버에 태그 필터가 저장됨';
+
+  @override
+  String mini_player_now_playing(String displayTitle) {
+    return '현재 재생 중: $displayTitle. 장면 세부정보를 열려면 탭하세요.';
+  }
+
+  @override
+  String get server_profile_drawer_attempting_login => '로그인을 시도하는 중...';
+
+  @override
+  String get server_profile_drawer_error_login_failed =>
+      '오류: 로그인에 실패했습니다. 자격 증명을 확인하세요.';
+
+  @override
+  String server_profile_drawer_error(String error) {
+    return '오류: $error';
+  }
+
+  @override
+  String get server_profile_drawer_url_is_required => 'URL이 필요합니다';
+
+  @override
+  String get scene_filter_saved_to_server => '서버에 저장된 장면 필터';
 }

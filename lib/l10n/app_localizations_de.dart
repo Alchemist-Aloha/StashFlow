@@ -3053,4 +3053,52 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Lange drücken für Bibliotheksstatistiken';
+
+  @override
+  String get common_stats => 'Statistiken';
+
+  @override
+  String get image_filter_saved_to_server =>
+      'Bildfilter auf Server gespeichert';
+
+  @override
+  String get studio_filter_saved_to_server =>
+      'Studiofilter auf dem Server gespeichert';
+
+  @override
+  String get gallery_filter_saved_to_server =>
+      'Galeriefilter auf dem Server gespeichert';
+
+  @override
+  String get performer_filter_saved_to_server =>
+      'Darstellerfilter auf dem Server gespeichert';
+
+  @override
+  String get tag_filter_saved_to_server =>
+      'Tag-Filter auf dem Server gespeichert';
+
+  @override
+  String mini_player_now_playing(String displayTitle) {
+    return 'Wird gerade abgespielt: $displayTitle. Tippen Sie hier, um Szenendetails zu öffnen.';
+  }
+
+  @override
+  String get server_profile_drawer_attempting_login =>
+      'Ich versuche mich anzumelden...';
+
+  @override
+  String get server_profile_drawer_error_login_failed =>
+      'Fehler: Anmeldung fehlgeschlagen. Überprüfen Sie die Anmeldeinformationen.';
+
+  @override
+  String server_profile_drawer_error(String error) {
+    return 'Fehler: $error';
+  }
+
+  @override
+  String get server_profile_drawer_url_is_required => 'URL ist erforderlich';
+
+  @override
+  String get scene_filter_saved_to_server =>
+      'Szenenfilter auf dem Server gespeichert';
 }

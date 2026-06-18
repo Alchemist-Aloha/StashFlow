@@ -1051,5 +1051,17 @@
   "settings_security_subtitle": "Настройки блокировки приложения и пароля",
   "tools_section_subtitle": "Рабочие процессы обслуживания и метаданных для сцен.",
   "tools_scene_deduplication_subtitle": "Поиск и управление дубликатами сцен.",
-  "tools_scene_tagger_subtitle": "Скрапинг страниц текущих сцен с помощью Stash-box."
+  "tools_scene_tagger_subtitle": "Скрапинг страниц текущих сцен с помощью Stash-box.",
+  "common_stats": "Статистика",
+  "image_filter_saved_to_server": "Фильтр изображений сохранен на сервере",
+  "studio_filter_saved_to_server": "Фильтр Studio сохранен на сервере.",
+  "gallery_filter_saved_to_server": "Фильтр галереи сохранен на сервере.",
+  "performer_filter_saved_to_server": "Фильтр исполнителей сохранен на сервере",
+  "tag_filter_saved_to_server": "Фильтр тегов сохранен на сервере.",
+  "mini_player_now_playing": "Сейчас играет: {displayTitle}. Нажмите, чтобы открыть сведения о сцене.",
+  "server_profile_drawer_attempting_login": "Попытка входа...",
+  "server_profile_drawer_error_login_failed": "Ошибка: Не удалось войти. Проверьте учетные данные.",
+  "server_profile_drawer_error": "Ошибка: {error}.",
+  "server_profile_drawer_url_is_required": "URL-адрес необязателен.",
+  "scene_filter_saved_to_server": "Фильтр сцен сохранен на сервере."
 }

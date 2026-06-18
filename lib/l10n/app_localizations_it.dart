@@ -3071,4 +3071,50 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Tieni premuto per le statistiche della libreria';
+
+  @override
+  String get common_stats => 'Statistiche';
+
+  @override
+  String get image_filter_saved_to_server =>
+      'Filtro immagine salvato sul server';
+
+  @override
+  String get studio_filter_saved_to_server =>
+      'Filtro Studio salvato sul server';
+
+  @override
+  String get gallery_filter_saved_to_server =>
+      'Filtro della galleria salvato sul server';
+
+  @override
+  String get performer_filter_saved_to_server =>
+      'Filtro dell\'esecutore salvato sul server';
+
+  @override
+  String get tag_filter_saved_to_server => 'Filtro tag salvato sul server';
+
+  @override
+  String mini_player_now_playing(String displayTitle) {
+    return 'Ora in riproduzione: $displayTitle. Tocca per aprire i dettagli della scena.';
+  }
+
+  @override
+  String get server_profile_drawer_attempting_login =>
+      'Tentativo di accesso...';
+
+  @override
+  String get server_profile_drawer_error_login_failed =>
+      'Errore: accesso non riuscito. Controlla le credenziali.';
+
+  @override
+  String server_profile_drawer_error(String error) {
+    return 'Errore: $error';
+  }
+
+  @override
+  String get server_profile_drawer_url_is_required => 'L\'URL è obbligatorio';
+
+  @override
+  String get scene_filter_saved_to_server => 'Filtro scena salvato sul server';
 }

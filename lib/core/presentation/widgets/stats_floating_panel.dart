@@ -16,22 +16,17 @@ class StatsFloatingPanel extends ConsumerWidget {
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
-      barrierLabel: 'Stats',
+      barrierLabel: context.l10n.common_stats,
       barrierColor: colorScheme.scrim.withValues(alpha: 0.6),
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) {
-        return const Center(
-          child: StatsFloatingPanel(),
-        );
+        return const Center(child: StatsFloatingPanel());
       },
       transitionBuilder: (context, anim1, anim2, child) {
         final curve = Curves.easeOutBack.transform(anim1.value);
         return Transform.scale(
           scale: curve,
-          child: Opacity(
-            opacity: anim1.value,
-            child: child,
-          ),
+          child: Opacity(opacity: anim1.value, child: child),
         );
       },
     );
@@ -95,7 +90,11 @@ class StatsFloatingPanel extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, AppDimensions dims, ColorScheme colorScheme) {
+  Widget _buildHeader(
+    BuildContext context,
+    AppDimensions dims,
+    ColorScheme colorScheme,
+  ) {
     return Padding(
       padding: EdgeInsets.fromLTRB(
         dims.spacingMedium * 1.5,

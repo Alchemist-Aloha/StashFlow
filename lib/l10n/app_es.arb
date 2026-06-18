@@ -1051,5 +1051,17 @@
   "settings_security_subtitle": "Configuración de bloqueo de aplicación y contraseña",
   "tools_section_subtitle": "Flujos de trabajo de mantenimiento y metadatos para escenas.",
   "tools_scene_deduplication_subtitle": "Buscar y gestionar escenas duplicadas.",
-  "tools_scene_tagger_subtitle": "Extraer páginas de escenas actuales con Stash-box."
+  "tools_scene_tagger_subtitle": "Extraer páginas de escenas actuales con Stash-box.",
+  "common_stats": "Estadísticas",
+  "image_filter_saved_to_server": "Filtro de imagen guardado en el servidor",
+  "studio_filter_saved_to_server": "Filtro de estudio guardado en el servidor",
+  "gallery_filter_saved_to_server": "Filtro de galería guardado en el servidor",
+  "performer_filter_saved_to_server": "Filtro de intérprete guardado en el servidor",
+  "tag_filter_saved_to_server": "Filtro de etiquetas guardado en el servidor",
+  "mini_player_now_playing": "Reproduciendo ahora: {displayTitle}. Toque para abrir los detalles de la escena.",
+  "server_profile_drawer_attempting_login": "Intentando iniciar sesión...",
+  "server_profile_drawer_error_login_failed": "Error: Error al iniciar sesión. Verificar credenciales.",
+  "server_profile_drawer_error": "Error: {error}",
+  "server_profile_drawer_url_is_required": "La URL es obligatoria",
+  "scene_filter_saved_to_server": "Filtro de escena guardado en el servidor"
 }

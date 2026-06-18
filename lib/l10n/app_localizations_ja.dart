@@ -2951,4 +2951,45 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get stats_library_stats_tooltip => '長押しでライブラリ統計を表示';
+
+  @override
+  String get common_stats => '統計';
+
+  @override
+  String get image_filter_saved_to_server => '画像フィルターをサーバーに保存';
+
+  @override
+  String get studio_filter_saved_to_server => 'スタジオフィルターがサーバーに保存されました';
+
+  @override
+  String get gallery_filter_saved_to_server => 'ギャラリーフィルターがサーバーに保存されました';
+
+  @override
+  String get performer_filter_saved_to_server => '実行者フィルターがサーバーに保存されました';
+
+  @override
+  String get tag_filter_saved_to_server => 'Tag filter saved to server';
+
+  @override
+  String mini_player_now_playing(String displayTitle) {
+    return '現在再生中: $displayTitle。タップしてシーンの詳細を開きます。';
+  }
+
+  @override
+  String get server_profile_drawer_attempting_login => 'ログインを試みています...';
+
+  @override
+  String get server_profile_drawer_error_login_failed =>
+      'エラー: ログインに失敗しました。資格情報を確認します。';
+
+  @override
+  String server_profile_drawer_error(String error) {
+    return 'エラー: $error';
+  }
+
+  @override
+  String get server_profile_drawer_url_is_required => 'URLは必須です';
+
+  @override
+  String get scene_filter_saved_to_server => 'シーンフィルターがサーバーに保存されました';
 }

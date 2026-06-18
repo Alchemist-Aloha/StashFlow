@@ -5429,6 +5429,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Long press for library stats'**
   String get stats_library_stats_tooltip;
+
+  /// No description provided for @common_stats.
+  ///
+  /// In en, this message translates to:
+  /// **'Stats'**
+  String get common_stats;
+
+  /// No description provided for @image_filter_saved_to_server.
+  ///
+  /// In en, this message translates to:
+  /// **'Image filter saved to server'**
+  String get image_filter_saved_to_server;
+
+  /// No description provided for @studio_filter_saved_to_server.
+  ///
+  /// In en, this message translates to:
+  /// **'Studio filter saved to server'**
+  String get studio_filter_saved_to_server;
+
+  /// No description provided for @gallery_filter_saved_to_server.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery filter saved to server'**
+  String get gallery_filter_saved_to_server;
+
+  /// No description provided for @performer_filter_saved_to_server.
+  ///
+  /// In en, this message translates to:
+  /// **'Performer filter saved to server'**
+  String get performer_filter_saved_to_server;
+
+  /// No description provided for @tag_filter_saved_to_server.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag filter saved to server'**
+  String get tag_filter_saved_to_server;
+
+  /// No description provided for @mini_player_now_playing.
+  ///
+  /// In en, this message translates to:
+  /// **'Now playing: {displayTitle}. Tap to open scene details.'**
+  String mini_player_now_playing(String displayTitle);
+
+  /// No description provided for @server_profile_drawer_attempting_login.
+  ///
+  /// In en, this message translates to:
+  /// **'Attempting login...'**
+  String get server_profile_drawer_attempting_login;
+
+  /// No description provided for @server_profile_drawer_error_login_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: Login failed. Check credentials.'**
+  String get server_profile_drawer_error_login_failed;
+
+  /// No description provided for @server_profile_drawer_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String server_profile_drawer_error(String error);
+
+  /// No description provided for @server_profile_drawer_url_is_required.
+  ///
+  /// In en, this message translates to:
+  /// **'URL is required'**
+  String get server_profile_drawer_url_is_required;
+
+  /// No description provided for @scene_filter_saved_to_server.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene filter saved to server'**
+  String get scene_filter_saved_to_server;
 }
 
 class _AppLocalizationsDelegate

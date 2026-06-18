@@ -3048,4 +3048,49 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Удерживайте для статистики библиотеки';
+
+  @override
+  String get common_stats => 'Статистика';
+
+  @override
+  String get image_filter_saved_to_server =>
+      'Фильтр изображений сохранен на сервере';
+
+  @override
+  String get studio_filter_saved_to_server =>
+      'Фильтр Studio сохранен на сервере.';
+
+  @override
+  String get gallery_filter_saved_to_server =>
+      'Фильтр галереи сохранен на сервере.';
+
+  @override
+  String get performer_filter_saved_to_server =>
+      'Фильтр исполнителей сохранен на сервере';
+
+  @override
+  String get tag_filter_saved_to_server => 'Фильтр тегов сохранен на сервере.';
+
+  @override
+  String mini_player_now_playing(String displayTitle) {
+    return 'Сейчас играет: $displayTitle. Нажмите, чтобы открыть сведения о сцене.';
+  }
+
+  @override
+  String get server_profile_drawer_attempting_login => 'Попытка входа...';
+
+  @override
+  String get server_profile_drawer_error_login_failed =>
+      'Ошибка: Не удалось войти. Проверьте учетные данные.';
+
+  @override
+  String server_profile_drawer_error(String error) {
+    return 'Ошибка: $error.';
+  }
+
+  @override
+  String get server_profile_drawer_url_is_required => 'URL-адрес необязателен.';
+
+  @override
+  String get scene_filter_saved_to_server => 'Фильтр сцен сохранен на сервере.';
 }

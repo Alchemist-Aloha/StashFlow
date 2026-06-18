@@ -40,8 +40,8 @@ class _SceneSavedFilterDialogState
           .values
           .where((value) => value != null)
           .length,
-      defaultSortLabel: 'date',
-      saveSuccessMessage: 'Scene filter saved to server',
+      defaultSortLabel: context.l10n.common_date,
+      saveSuccessMessage: context.l10n.scene_filter_saved_to_server,
       loadPresets: () => ref.read(sceneSavedFilterRepositoryProvider).findAll(),
       savePreset: ({required String name, String? existingId}) {
         return ref

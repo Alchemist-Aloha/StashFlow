@@ -1051,5 +1051,17 @@
   "settings_security_subtitle": "앱 잠금 및 비밀번호 설정",
   "tools_section_subtitle": "씬에 대한 유지 관리 및 메타데이터 워크플로.",
   "tools_scene_deduplication_subtitle": "중복된 씬을 찾아 관리합니다.",
-  "tools_scene_tagger_subtitle": "Stash-box로 현재 씬 페이지를 스크랩합니다."
+  "tools_scene_tagger_subtitle": "Stash-box로 현재 씬 페이지를 스크랩합니다.",
+  "common_stats": "통계",
+  "image_filter_saved_to_server": "서버에 저장된 이미지 필터",
+  "studio_filter_saved_to_server": "서버에 Studio 필터가 저장되었습니다.",
+  "gallery_filter_saved_to_server": "서버에 갤러리 필터가 저장되었습니다.",
+  "performer_filter_saved_to_server": "서버에 저장된 수행자 필터",
+  "tag_filter_saved_to_server": "서버에 태그 필터가 저장됨",
+  "mini_player_now_playing": "현재 재생 중: {displayTitle}. 장면 세부정보를 열려면 탭하세요.",
+  "server_profile_drawer_attempting_login": "로그인을 시도하는 중...",
+  "server_profile_drawer_error_login_failed": "오류: 로그인에 실패했습니다. 자격 증명을 확인하세요.",
+  "server_profile_drawer_error": "오류: {error}",
+  "server_profile_drawer_url_is_required": "URL이 필요합니다",
+  "scene_filter_saved_to_server": "서버에 저장된 장면 필터"
 }

@@ -345,8 +345,8 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
         sort: sortConfig.sort,
         descending: sortConfig.descending,
         activeFilterCount: _activeFilterCount(effectiveFilter),
-        defaultSortLabel: 'path',
-        saveSuccessMessage: 'Image filter saved to server',
+        defaultSortLabel: context.l10n.common_path,
+        saveSuccessMessage: context.l10n.image_filter_saved_to_server,
         loadPresets: () => ref
             .read(savedFilterRepositoryProvider)
             .findAll(

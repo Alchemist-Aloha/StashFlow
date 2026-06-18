@@ -1037,5 +1037,17 @@
   "settings_security_subtitle": "應用鎖和密碼設定",
   "tools_section_subtitle": "場景的維護和元數據工作流。",
   "tools_scene_deduplication_subtitle": "查找並管理重複的場景。",
-  "tools_scene_tagger_subtitle": "使用 Stash-box 刮削當前場景頁面。"
+  "tools_scene_tagger_subtitle": "使用 Stash-box 刮削當前場景頁面。",
+  "common_stats": "統計數據",
+  "image_filter_saved_to_server": "影像過濾器保存到伺服器",
+  "studio_filter_saved_to_server": "工作室過濾器保存到伺服器",
+  "gallery_filter_saved_to_server": "圖庫過濾器保存到伺服器",
+  "performer_filter_saved_to_server": "表演者過濾器儲存到伺服器",
+  "tag_filter_saved_to_server": "標籤過濾器儲存到伺服器",
+  "mini_player_now_playing": "正在播放：{displayTitle}。點擊可開啟場景詳細資訊。",
+  "server_profile_drawer_attempting_login": "正在嘗試登入...",
+  "server_profile_drawer_error_login_failed": "錯誤：登入失敗。檢查憑證。",
+  "server_profile_drawer_error": "錯誤：{error}",
+  "server_profile_drawer_url_is_required": "網址為必填項",
+  "scene_filter_saved_to_server": "場景濾鏡儲存到伺服器"
 }

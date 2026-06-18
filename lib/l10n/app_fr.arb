@@ -1051,5 +1051,17 @@
   "settings_security_subtitle": "Paramètres de verrouillage de l'application et du code",
   "tools_section_subtitle": "Flux de travail de maintenance et de métadonnées pour les scènes.",
   "tools_scene_deduplication_subtitle": "Rechercher et gérer les scènes en double.",
-  "tools_scene_tagger_subtitle": "Scraper les pages de scènes actuelles avec Stash-box."
+  "tools_scene_tagger_subtitle": "Scraper les pages de scènes actuelles avec Stash-box.",
+  "common_stats": "Statistiques",
+  "image_filter_saved_to_server": "Filtre d'image enregistré sur le serveur",
+  "studio_filter_saved_to_server": "Filtre Studio enregistré sur le serveur",
+  "gallery_filter_saved_to_server": "Filtre de galerie enregistré sur le serveur",
+  "performer_filter_saved_to_server": "Filtre d'intervenant enregistré sur le serveur",
+  "tag_filter_saved_to_server": "Filtre de balises enregistré sur le serveur",
+  "mini_player_now_playing": "Lecture en cours : {displayTitle}. Appuyez pour ouvrir les détails de la scène.",
+  "server_profile_drawer_attempting_login": "Tentative de connexion...",
+  "server_profile_drawer_error_login_failed": "Erreur : La connexion a échoué. Vérifiez les informations d'identification.",
+  "server_profile_drawer_error": "Erreur : {error}",
+  "server_profile_drawer_url_is_required": "L'URL est obligatoire",
+  "scene_filter_saved_to_server": "Filtre de scène enregistré sur le serveur"
 }

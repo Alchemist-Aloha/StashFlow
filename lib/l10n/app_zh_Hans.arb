@@ -1037,5 +1037,17 @@
   "settings_security_subtitle": "应用锁和密码设置",
   "tools_section_subtitle": "场景的维护和元数据工作流。",
   "tools_scene_deduplication_subtitle": "查找并管理重复场景。",
-  "tools_scene_tagger_subtitle": "使用 Stash-box 刮削当前场景页面。"
+  "tools_scene_tagger_subtitle": "使用 Stash-box 刮削当前场景页面。",
+  "common_stats": "统计数据",
+  "image_filter_saved_to_server": "图像过滤器保存到服务器",
+  "studio_filter_saved_to_server": "工作室过滤器保存到服务器",
+  "gallery_filter_saved_to_server": "图库过滤器保存到服务器",
+  "performer_filter_saved_to_server": "表演者过滤器保存到服务器",
+  "tag_filter_saved_to_server": "标签过滤器保存到服务器",
+  "mini_player_now_playing": "正在播放：{displayTitle}。点击可打开场景详细信息。",
+  "server_profile_drawer_attempting_login": "正在尝试登录...",
+  "server_profile_drawer_error_login_failed": "错误：登录失败。检查凭据。",
+  "server_profile_drawer_error": "错误：{error}",
+  "server_profile_drawer_url_is_required": "网址为必填项",
+  "scene_filter_saved_to_server": "场景滤镜保存到服务器"
 }

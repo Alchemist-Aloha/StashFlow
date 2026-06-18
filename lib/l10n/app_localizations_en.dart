@@ -3007,4 +3007,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stats_library_stats_tooltip => 'Long press for library stats';
+
+  @override
+  String get common_stats => 'Stats';
+
+  @override
+  String get image_filter_saved_to_server => 'Image filter saved to server';
+
+  @override
+  String get studio_filter_saved_to_server => 'Studio filter saved to server';
+
+  @override
+  String get gallery_filter_saved_to_server => 'Gallery filter saved to server';
+
+  @override
+  String get performer_filter_saved_to_server =>
+      'Performer filter saved to server';
+
+  @override
+  String get tag_filter_saved_to_server => 'Tag filter saved to server';
+
+  @override
+  String mini_player_now_playing(String displayTitle) {
+    return 'Now playing: $displayTitle. Tap to open scene details.';
+  }
+
+  @override
+  String get server_profile_drawer_attempting_login => 'Attempting login...';
+
+  @override
+  String get server_profile_drawer_error_login_failed =>
+      'Error: Login failed. Check credentials.';
+
+  @override
+  String server_profile_drawer_error(String error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get server_profile_drawer_url_is_required => 'URL is required';
+
+  @override
+  String get scene_filter_saved_to_server => 'Scene filter saved to server';
 }

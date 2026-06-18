@@ -1072,5 +1072,17 @@
   "settings_security_subtitle": "App-Sperre und Passcode-Einstellungen",
   "tools_section_subtitle": "Wartungs- und Metadaten-Workflows für Szenen.",
   "tools_scene_deduplication_subtitle": "Duplikate finden und verwalten.",
-  "tools_scene_tagger_subtitle": "Aktuelle Szenenseiten mit Stash-box scrapen."
+  "tools_scene_tagger_subtitle": "Aktuelle Szenenseiten mit Stash-box scrapen.",
+  "common_stats": "Statistiken",
+  "image_filter_saved_to_server": "Bildfilter auf Server gespeichert",
+  "studio_filter_saved_to_server": "Studiofilter auf dem Server gespeichert",
+  "gallery_filter_saved_to_server": "Galeriefilter auf dem Server gespeichert",
+  "performer_filter_saved_to_server": "Darstellerfilter auf dem Server gespeichert",
+  "tag_filter_saved_to_server": "Tag-Filter auf dem Server gespeichert",
+  "mini_player_now_playing": "Wird gerade abgespielt: {displayTitle}. Tippen Sie hier, um Szenendetails zu öffnen.",
+  "server_profile_drawer_attempting_login": "Ich versuche mich anzumelden...",
+  "server_profile_drawer_error_login_failed": "Fehler: Anmeldung fehlgeschlagen. Überprüfen Sie die Anmeldeinformationen.",
+  "server_profile_drawer_error": "Fehler: {error}",
+  "server_profile_drawer_url_is_required": "URL ist erforderlich",
+  "scene_filter_saved_to_server": "Szenenfilter auf dem Server gespeichert"
 }

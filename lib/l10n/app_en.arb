@@ -1400,5 +1400,31 @@
       }
     }
   },
-  "stats_library_stats_tooltip": "Long press for library stats"
+  "stats_library_stats_tooltip": "Long press for library stats",
+  "common_stats": "Stats",
+  "image_filter_saved_to_server": "Image filter saved to server",
+  "studio_filter_saved_to_server": "Studio filter saved to server",
+  "gallery_filter_saved_to_server": "Gallery filter saved to server",
+  "performer_filter_saved_to_server": "Performer filter saved to server",
+  "tag_filter_saved_to_server": "Tag filter saved to server",
+  "mini_player_now_playing": "Now playing: {displayTitle}. Tap to open scene details.",
+  "@mini_player_now_playing": {
+    "placeholders": {
+      "displayTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "server_profile_drawer_attempting_login": "Attempting login...",
+  "server_profile_drawer_error_login_failed": "Error: Login failed. Check credentials.",
+  "server_profile_drawer_error": "Error: {error}",
+  "@server_profile_drawer_error": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "server_profile_drawer_url_is_required": "URL is required",
+  "scene_filter_saved_to_server": "Scene filter saved to server"
 }

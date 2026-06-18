@@ -388,8 +388,8 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
         sort: sortConfig.sort,
         descending: sortConfig.descending,
         activeFilterCount: _activeFilterCount(filter),
-        defaultSortLabel: 'name',
-        saveSuccessMessage: 'Performer filter saved to server',
+        defaultSortLabel: context.l10n.common_name,
+        saveSuccessMessage: context.l10n.performer_filter_saved_to_server,
         loadPresets: () => ref
             .read(savedFilterRepositoryProvider)
             .findAll(

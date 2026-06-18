@@ -1051,5 +1051,17 @@
   "settings_security_subtitle": "アプリロックとパスコードの設定",
   "tools_section_subtitle": "シーンのメンテナンスとメタデータのワークフロー。",
   "tools_scene_deduplication_subtitle": "重複するシーンを見つけて管理します。",
-  "tools_scene_tagger_subtitle": "Stash-boxを使用して現在のシーンページをスクレイピングします。"
+  "tools_scene_tagger_subtitle": "Stash-boxを使用して現在のシーンページをスクレイピングします。",
+  "common_stats": "統計",
+  "image_filter_saved_to_server": "画像フィルターをサーバーに保存",
+  "studio_filter_saved_to_server": "スタジオフィルターがサーバーに保存されました",
+  "gallery_filter_saved_to_server": "ギャラリーフィルターがサーバーに保存されました",
+  "performer_filter_saved_to_server": "実行者フィルターがサーバーに保存されました",
+  "tag_filter_saved_to_server": "Tag filter saved to server",
+  "mini_player_now_playing": "現在再生中: {displayTitle}。タップしてシーンの詳細を開きます。",
+  "server_profile_drawer_attempting_login": "ログインを試みています...",
+  "server_profile_drawer_error_login_failed": "エラー: ログインに失敗しました。資格情報を確認します。",
+  "server_profile_drawer_error": "エラー: {error}",
+  "server_profile_drawer_url_is_required": "URLは必須です",
+  "scene_filter_saved_to_server": "シーンフィルターがサーバーに保存されました"
 }

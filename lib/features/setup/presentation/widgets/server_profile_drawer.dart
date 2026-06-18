@@ -15,7 +15,8 @@ class ServerProfileDrawer extends ConsumerStatefulWidget {
   const ServerProfileDrawer({super.key, this.profile});
 
   @override
-  ConsumerState<ServerProfileDrawer> createState() => _ServerProfileDrawerState();
+  ConsumerState<ServerProfileDrawer> createState() =>
+      _ServerProfileDrawerState();
 }
 
 class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
@@ -44,7 +45,8 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
     _authMode = widget.profile?.authMode ?? AuthMode.apiKey;
     _allowWebPasswordLogin = widget.profile?.allowWebPasswordLogin ?? false;
 
-    _showAdvancedAuth = _authMode == AuthMode.basic || _authMode == AuthMode.bearer;
+    _showAdvancedAuth =
+        _authMode == AuthMode.basic || _authMode == AuthMode.bearer;
 
     if (widget.profile != null) {
       _loadCredentials();
@@ -54,9 +56,15 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
   Future<void> _loadCredentials() async {
     final secureStorage = ref.read(secureStorageProvider);
     final profileId = widget.profile!.id;
-    final apiKey = await secureStorage.read(key: 'profile_${profileId}_api_key');
-    final username = await secureStorage.read(key: 'profile_${profileId}_username');
-    final password = await secureStorage.read(key: 'profile_${profileId}_password');
+    final apiKey = await secureStorage.read(
+      key: 'profile_${profileId}_api_key',
+    );
+    final username = await secureStorage.read(
+      key: 'profile_${profileId}_username',
+    );
+    final password = await secureStorage.read(
+      key: 'profile_${profileId}_password',
+    );
 
     if (mounted) {
       setState(() {
@@ -92,7 +100,10 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
       var cookieHeader = '';
 
       if (_authMode == AuthMode.password) {
-        setState(() => _testResult = 'Attempting login...');
+        setState(
+          () =>
+              _testResult = context.l10n.server_profile_drawer_attempting_login,
+        );
         final service = await ref.read(authServiceProvider.future);
         final endpointUri = Uri.parse(baseUrl);
         final loggedIn = await service.login(
@@ -102,13 +113,19 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
         );
 
         if (!loggedIn) {
-          setState(() => _testResult = 'Error: Login failed. Check credentials.');
+          setState(
+            () => _testResult =
+                context.l10n.server_profile_drawer_error_login_failed,
+          );
           return;
         }
 
         cookieHeader = await service.cookieHeaderFor(requestUri: endpointUri);
         if (cookieHeader.isEmpty) {
-          setState(() => _testResult = 'Error: Login failed. Check credentials.');
+          setState(
+            () => _testResult =
+                context.l10n.server_profile_drawer_error_login_failed,
+          );
           return;
         }
       }
@@ -133,13 +150,15 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
       // We only need to refresh the top-level status provider.
       // Riverpod will handle the invalidation chain for profileGraphqlClient
       // and its credential dependencies.
-      final result = await ref.refresh(connectionStatusProvider(tempProfile).future);
+      final result = await ref.refresh(
+        connectionStatusProvider(tempProfile).future,
+      );
       setState(() {
         _testResult = result;
       });
     } catch (e) {
       setState(() {
-        _testResult = 'Error: $e';
+        _testResult = context.l10n.server_profile_drawer_error(e.toString());
       });
     } finally {
       setState(() {
@@ -151,8 +170,9 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final id = widget.profile?.id ?? DateTime.now().millisecondsSinceEpoch.toString();
-    
+    final id =
+        widget.profile?.id ?? DateTime.now().millisecondsSinceEpoch.toString();
+
     final notifier = ref.read(serverProfilesProvider.notifier);
 
     // Write credentials FIRST to ensure they are available when the profile list updates
@@ -223,7 +243,9 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
     );
 
     if (confirm == true) {
-      await ref.read(serverProfilesProvider.notifier).removeProfile(widget.profile!.id);
+      await ref
+          .read(serverProfilesProvider.notifier)
+          .removeProfile(widget.profile!.id);
       if (mounted) {
         Navigator.of(context).pop();
       }
@@ -233,7 +255,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Container(
       padding: EdgeInsets.only(
         // Using MediaQuery.viewInsetsOf(context) instead of MediaQuery.of(context).viewInsets
@@ -250,7 +272,9 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  widget.profile == null ? l10n.settings_server_profile_add : l10n.settings_server_profile_edit,
+                  widget.profile == null
+                      ? l10n.settings_server_profile_add
+                      : l10n.settings_server_profile_edit,
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 24),
@@ -274,7 +298,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'URL is required';
+                      return context.l10n.server_profile_drawer_url_is_required;
                     }
                     return null;
                   },
@@ -318,7 +342,9 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
                             ? const SizedBox(
                                 width: 16,
                                 height: 16,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
                             : const Icon(Icons.sync),
                         label: Text(l10n.settings_server_test),
@@ -332,7 +358,10 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
                     if (widget.profile != null)
                       IconButton(
                         onPressed: _delete,
-                        icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
+                        icon: Icon(
+                          Icons.delete_outline,
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                         tooltip: l10n.settings_server_profile_delete,
                       ),
                     const Spacer(),
@@ -420,10 +449,14 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
         controller: _apiKeyController,
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
-          labelText: _authMode == AuthMode.apiKey ? l10n.settings_server_auth_apikey : l10n.common_token,
+          labelText: _authMode == AuthMode.apiKey
+              ? l10n.settings_server_auth_apikey
+              : l10n.common_token,
           border: const OutlineInputBorder(),
           suffixIcon: IconButton(
-            icon: Icon(_obscureApiKey ? Icons.visibility : Icons.visibility_off),
+            icon: Icon(
+              _obscureApiKey ? Icons.visibility : Icons.visibility_off,
+            ),
             tooltip: _obscureApiKey ? l10n.common_show : l10n.common_hide,
             onPressed: () => setState(() => _obscureApiKey = !_obscureApiKey),
           ),
@@ -449,9 +482,12 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
               labelText: l10n.settings_server_password,
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
-                icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
+                icon: Icon(
+                  _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                ),
                 tooltip: _obscurePassword ? l10n.common_show : l10n.common_hide,
-                onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                onPressed: () =>
+                    setState(() => _obscurePassword = !_obscurePassword),
               ),
             ),
             obscureText: _obscurePassword,

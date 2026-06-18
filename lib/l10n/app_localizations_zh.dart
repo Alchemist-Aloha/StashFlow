@@ -2895,6 +2895,46 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get stats_library_stats_tooltip => '长按查看资料库统计';
+
+  @override
+  String get common_stats => '统计数据';
+
+  @override
+  String get image_filter_saved_to_server => '图像过滤器保存到服务器';
+
+  @override
+  String get studio_filter_saved_to_server => '工作室过滤器保存到服务器';
+
+  @override
+  String get gallery_filter_saved_to_server => '图库过滤器保存到服务器';
+
+  @override
+  String get performer_filter_saved_to_server => '表演者过滤器保存到服务器';
+
+  @override
+  String get tag_filter_saved_to_server => '标签过滤器保存到服务器';
+
+  @override
+  String mini_player_now_playing(String displayTitle) {
+    return '正在播放：$displayTitle。点击可打开场景详细信息。';
+  }
+
+  @override
+  String get server_profile_drawer_attempting_login => '正在尝试登录...';
+
+  @override
+  String get server_profile_drawer_error_login_failed => '错误：登录失败。检查凭据。';
+
+  @override
+  String server_profile_drawer_error(String error) {
+    return '错误：$error';
+  }
+
+  @override
+  String get server_profile_drawer_url_is_required => '网址为必填项';
+
+  @override
+  String get scene_filter_saved_to_server => '场景滤镜保存到服务器';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5787,6 +5827,46 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get stats_library_stats_tooltip => '长按查看资料库统计';
+
+  @override
+  String get common_stats => '统计数据';
+
+  @override
+  String get image_filter_saved_to_server => '图像过滤器保存到服务器';
+
+  @override
+  String get studio_filter_saved_to_server => '工作室过滤器保存到服务器';
+
+  @override
+  String get gallery_filter_saved_to_server => '图库过滤器保存到服务器';
+
+  @override
+  String get performer_filter_saved_to_server => '表演者过滤器保存到服务器';
+
+  @override
+  String get tag_filter_saved_to_server => '标签过滤器保存到服务器';
+
+  @override
+  String mini_player_now_playing(String displayTitle) {
+    return '正在播放：$displayTitle。点击可打开场景详细信息。';
+  }
+
+  @override
+  String get server_profile_drawer_attempting_login => '正在尝试登录...';
+
+  @override
+  String get server_profile_drawer_error_login_failed => '错误：登录失败。检查凭据。';
+
+  @override
+  String server_profile_drawer_error(String error) {
+    return '错误：$error';
+  }
+
+  @override
+  String get server_profile_drawer_url_is_required => '网址为必填项';
+
+  @override
+  String get scene_filter_saved_to_server => '场景滤镜保存到服务器';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8683,4 +8763,44 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get stats_library_stats_tooltip => '長按查看資料庫統計';
+
+  @override
+  String get common_stats => '統計數據';
+
+  @override
+  String get image_filter_saved_to_server => '影像過濾器保存到伺服器';
+
+  @override
+  String get studio_filter_saved_to_server => '工作室過濾器保存到伺服器';
+
+  @override
+  String get gallery_filter_saved_to_server => '圖庫過濾器保存到伺服器';
+
+  @override
+  String get performer_filter_saved_to_server => '表演者過濾器儲存到伺服器';
+
+  @override
+  String get tag_filter_saved_to_server => '標籤過濾器儲存到伺服器';
+
+  @override
+  String mini_player_now_playing(String displayTitle) {
+    return '正在播放：$displayTitle。點擊可開啟場景詳細資訊。';
+  }
+
+  @override
+  String get server_profile_drawer_attempting_login => '正在嘗試登入...';
+
+  @override
+  String get server_profile_drawer_error_login_failed => '錯誤：登入失敗。檢查憑證。';
+
+  @override
+  String server_profile_drawer_error(String error) {
+    return '錯誤：$error';
+  }
+
+  @override
+  String get server_profile_drawer_url_is_required => '網址為必填項';
+
+  @override
+  String get scene_filter_saved_to_server => '場景濾鏡儲存到伺服器';
 }
