@@ -59,21 +59,18 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
     setState(() => _saving = true);
     try {
       await widget.savePreset(name: name, existingId: match?.id);
+      if (!mounted) return;
       setState(() {
         _savedFiltersFuture = widget.loadPresets();
       });
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(widget.saveSuccessMessage)));
-      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(widget.saveSuccessMessage)));
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              context.l10n.failed_to_save_filter(error.toString()),
-            ),
+            content: Text(context.l10n.failed_to_save_filter(error.toString())),
           ),
         );
       }
@@ -120,14 +117,13 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
         throw StateError('Preset could not be deleted');
       }
 
+      if (!mounted) return;
       setState(() {
         _savedFiltersFuture = widget.loadPresets();
       });
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(context.l10n.preset_deleted)));
-      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.preset_deleted)));
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -361,9 +357,7 @@ class _ActiveSettingsSummary extends StatelessWidget {
                 ),
                 Chip(
                   visualDensity: VisualDensity.compact,
-                  label: Text(
-                    context.l10n.filters_count(activeFilterCount),
-                  ),
+                  label: Text(context.l10n.filters_count(activeFilterCount)),
                 ),
                 if (searchQuery.isNotEmpty)
                   Chip(
@@ -407,13 +401,11 @@ class _SavedFilterList<T extends SavedFilterConfig<dynamic>>
 
     if (snapshot.hasError) {
       return Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
             Text(
-              context.l10n.failed_to_load_presets(
-                snapshot.error.toString(),
-              ),
+              context.l10n.failed_to_load_presets(snapshot.error.toString()),
             ),
             SizedBox(height: context.dimensions.spacingSmall),
             OutlinedButton(
