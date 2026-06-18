@@ -1,0 +1,7 @@
+💡 What: Added a 500ms time-based throttle to the `onFetchNextPage` callback in `ListPageScaffold`'s `ScrollNotification` listener.
+
+🎯 Why: During rapid or continuous scrolling near the bottom of a list, `NotificationListener<ScrollNotification>` fires on every frame. Without throttling, `shouldLoadNextPage` evaluates to true repeatedly, triggering the fetch callback dozens of times per second until the new data finally loads and updates the maximum scroll extent. This causes unnecessary overhead, redundant function calls, and potential O(N) operations inside provider layers, leading to GC pressure and UI stuttering.
+
+📊 Impact: Significantly reduces the number of redundant callback executions and provider state lookups during infinite scroll pagination, preventing scroll stutter and improving overall list view smoothness.
+
+🔬 Measurement: Observe the scroll performance when quickly scrolling to the bottom of large paginated grids (like the Scene list). You can also verify by placing a print statement inside the `onFetchNextPage` callback and noting it fires at most once per 500ms rather than dozens of times.
