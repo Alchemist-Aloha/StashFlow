@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import '../../utils/l10n_extensions.dart';
 
 /// A centered loading indicator for asynchronous operations.
 class LoadingStateView extends StatelessWidget {
@@ -7,7 +8,7 @@ class LoadingStateView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: CircularProgressIndicator());
+    return Center(child: CircularProgressIndicator(semanticsLabel: context.l10n.common_loading));
   }
 }
 
