@@ -5429,6 +5429,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Long press for library stats'**
   String get stats_library_stats_tooltip;
+
+  /// Confirmation text when deleting a scene
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how this scene should be deleted. This action cannot be undone.'**
+  String get scenes_delete_confirm;
+
+  /// Video playback speed text
+  ///
+  /// In en, this message translates to:
+  /// **'{speed}x Speed'**
+  String scenes_speed_x(String speed);
+
+  /// Error message when scene deletion fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete scene: {error}'**
+  String scenes_delete_failed(String error);
 }
 
 class _AppLocalizationsDelegate

@@ -2949,4 +2949,17 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get stats_library_stats_tooltip => '길게 눌러 라이브러리 통계 보기';
+
+  @override
+  String get scenes_delete_confirm => '이 장면을 삭제할 방법을 선택하세요. 이 작업은 취소할 수 없습니다.';
+
+  @override
+  String scenes_speed_x(String speed) {
+    return '$speed배속';
+  }
+
+  @override
+  String scenes_delete_failed(String error) {
+    return '장면 삭제 실패: $error';
+  }
 }

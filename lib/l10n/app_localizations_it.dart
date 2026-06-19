@@ -3071,4 +3071,18 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Tieni premuto per le statistiche della libreria';
+
+  @override
+  String get scenes_delete_confirm =>
+      'Scegli come eliminare questa scena. Questa azione non può essere annullata.';
+
+  @override
+  String scenes_speed_x(String speed) {
+    return 'Velocità ${speed}x';
+  }
+
+  @override
+  String scenes_delete_failed(String error) {
+    return 'Impossibile eliminare la scena: $error';
+  }
 }

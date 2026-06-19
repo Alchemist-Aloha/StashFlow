@@ -197,7 +197,7 @@ class _AppearanceSettingsPageState
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '${(value * 100).toInt()}%',
+              context.l10n.common_percent((value * 100).toInt()),
               style: textTheme.titleMedium?.copyWith(
                 color: colorScheme.primary,
                 fontWeight: FontWeight.bold,

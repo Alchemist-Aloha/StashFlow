@@ -3007,4 +3007,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stats_library_stats_tooltip => 'Long press for library stats';
+
+  @override
+  String get scenes_delete_confirm =>
+      'Choose how this scene should be deleted. This action cannot be undone.';
+
+  @override
+  String scenes_speed_x(String speed) {
+    return '${speed}x Speed';
+  }
+
+  @override
+  String scenes_delete_failed(String error) {
+    return 'Failed to delete scene: $error';
+  }
 }

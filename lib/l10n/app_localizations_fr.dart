@@ -3072,4 +3072,18 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Appui long pour les statistiques de la bibliothèque';
+
+  @override
+  String get scenes_delete_confirm =>
+      'Choisissez comment cette scène doit être supprimée. Cette action est irréversible.';
+
+  @override
+  String scenes_speed_x(String speed) {
+    return 'Vitesse ${speed}x';
+  }
+
+  @override
+  String scenes_delete_failed(String error) {
+    return 'Échec de la suppression de la scène : $error';
+  }
 }

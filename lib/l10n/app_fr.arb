@@ -1051,5 +1051,8 @@
   "settings_security_subtitle": "Paramètres de verrouillage de l'application et du code",
   "tools_section_subtitle": "Flux de travail de maintenance et de métadonnées pour les scènes.",
   "tools_scene_deduplication_subtitle": "Rechercher et gérer les scènes en double.",
-  "tools_scene_tagger_subtitle": "Scraper les pages de scènes actuelles avec Stash-box."
+  "tools_scene_tagger_subtitle": "Scraper les pages de scènes actuelles avec Stash-box.",
+  "scenes_delete_confirm": "Choisissez comment cette scène doit être supprimée. Cette action est irréversible.",
+  "scenes_delete_failed": "Échec de la suppression de la scène : {error}",
+  "scenes_speed_x": "Vitesse {speed}x"
 }

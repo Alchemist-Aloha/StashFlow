@@ -856,7 +856,9 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                '${_currentSpeed.toStringAsFixed(1)}x Speed',
+                                context.l10n.scenes_speed_x(
+                                  _currentSpeed.toStringAsFixed(1),
+                                ),
                                 style: context.textTheme.bodyMedium?.copyWith(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,

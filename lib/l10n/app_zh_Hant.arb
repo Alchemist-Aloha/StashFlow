@@ -1037,5 +1037,8 @@
   "settings_security_subtitle": "應用鎖和密碼設定",
   "tools_section_subtitle": "場景的維護和元數據工作流。",
   "tools_scene_deduplication_subtitle": "查找並管理重複的場景。",
-  "tools_scene_tagger_subtitle": "使用 Stash-box 刮削當前場景頁面。"
+  "tools_scene_tagger_subtitle": "使用 Stash-box 刮削當前場景頁面。",
+  "scenes_delete_confirm": "選擇應如何刪除此場景。此操作無法撤消。",
+  "scenes_delete_failed": "無法刪除場景：{error}",
+  "scenes_speed_x": "{speed}倍速"
 }

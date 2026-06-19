@@ -1056,5 +1056,8 @@
   "settings_security_subtitle": "Impostazioni del blocco dell'applicazione e del passcode",
   "tools_section_subtitle": "Flussi di lavoro di manutenzione e metadati per le scene.",
   "tools_scene_deduplication_subtitle": "Trova e gestisci le scene duplicate.",
-  "tools_scene_tagger_subtitle": "Scrape delle pagine delle scene correnti con Stash-box."
+  "tools_scene_tagger_subtitle": "Scrape delle pagine delle scene correnti con Stash-box.",
+  "scenes_delete_confirm": "Scegli come eliminare questa scena. Questa azione non può essere annullata.",
+  "scenes_delete_failed": "Impossibile eliminare la scena: {error}",
+  "scenes_speed_x": "Velocità {speed}x"
 }

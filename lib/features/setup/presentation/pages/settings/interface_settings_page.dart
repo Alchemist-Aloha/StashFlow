@@ -960,7 +960,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
           children: [
             Text(label, style: textTheme.titleSmall),
             Text(
-              '${value.toInt()} px',
+              context.l10n.common_px(value.toInt()),
               style: textTheme.labelLarge?.copyWith(
                 color: colorScheme.primary,
                 fontWeight: FontWeight.bold,

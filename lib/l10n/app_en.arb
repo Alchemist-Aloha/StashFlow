@@ -1400,5 +1400,29 @@
       }
     }
   },
-  "stats_library_stats_tooltip": "Long press for library stats"
+  "stats_library_stats_tooltip": "Long press for library stats",
+  "scenes_delete_confirm": "Choose how this scene should be deleted. This action cannot be undone.",
+  "@scenes_delete_confirm": {
+    "description": "Confirmation text when deleting a scene"
+  },
+  "scenes_speed_x": "{speed}x Speed",
+  "@scenes_speed_x": {
+    "description": "Video playback speed text",
+    "placeholders": {
+      "speed": {
+        "type": "String",
+        "example": "1.5"
+      }
+    }
+  },
+  "scenes_delete_failed": "Failed to delete scene: {error}",
+  "@scenes_delete_failed": {
+    "description": "Error message when scene deletion fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Network error"
+      }
+    }
+  }
 }

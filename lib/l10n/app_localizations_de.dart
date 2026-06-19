@@ -3053,4 +3053,18 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Lange drücken für Bibliotheksstatistiken';
+
+  @override
+  String get scenes_delete_confirm =>
+      'Wählen Sie, wie diese Szene gelöscht werden soll. Diese Aktion kann nicht rückgängig gemacht werden.';
+
+  @override
+  String scenes_speed_x(String speed) {
+    return '${speed}x Geschwindigkeit';
+  }
+
+  @override
+  String scenes_delete_failed(String error) {
+    return 'Szene konnte nicht gelöscht werden: $error';
+  }
 }

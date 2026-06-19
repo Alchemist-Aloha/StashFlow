@@ -2895,6 +2895,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get stats_library_stats_tooltip => '长按查看资料库统计';
+
+  @override
+  String get scenes_delete_confirm => '选择应如何删除此场景。此操作无法撤消。';
+
+  @override
+  String scenes_speed_x(String speed) {
+    return '$speed倍速';
+  }
+
+  @override
+  String scenes_delete_failed(String error) {
+    return '无法删除场景：$error';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5787,6 +5800,19 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get stats_library_stats_tooltip => '长按查看资料库统计';
+
+  @override
+  String get scenes_delete_confirm => '选择应如何删除此场景。此操作无法撤消。';
+
+  @override
+  String scenes_speed_x(String speed) {
+    return '$speed倍速';
+  }
+
+  @override
+  String scenes_delete_failed(String error) {
+    return '无法删除场景：$error';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8683,4 +8709,17 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get stats_library_stats_tooltip => '長按查看資料庫統計';
+
+  @override
+  String get scenes_delete_confirm => '選擇應如何刪除此場景。此操作無法撤消。';
+
+  @override
+  String scenes_speed_x(String speed) {
+    return '$speed倍速';
+  }
+
+  @override
+  String scenes_delete_failed(String error) {
+    return '無法刪除場景：$error';
+  }
 }

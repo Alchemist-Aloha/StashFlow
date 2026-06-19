@@ -2951,4 +2951,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get stats_library_stats_tooltip => '長押しでライブラリ統計を表示';
+
+  @override
+  String get scenes_delete_confirm => 'このシーンの削除方法を選択してください。この操作は元に戻せません。';
+
+  @override
+  String scenes_speed_x(String speed) {
+    return '$speed倍速';
+  }
+
+  @override
+  String scenes_delete_failed(String error) {
+    return 'シーンの削除に失敗しました: $error';
+  }
 }

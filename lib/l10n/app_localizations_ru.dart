@@ -3048,4 +3048,18 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Удерживайте для статистики библиотеки';
+
+  @override
+  String get scenes_delete_confirm =>
+      'Выберите, как следует удалить эту сцену. Это действие нельзя отменить.';
+
+  @override
+  String scenes_speed_x(String speed) {
+    return 'Скорость ${speed}x';
+  }
+
+  @override
+  String scenes_delete_failed(String error) {
+    return 'Не удалось удалить сцену: $error';
+  }
 }

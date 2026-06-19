@@ -1072,5 +1072,8 @@
   "settings_security_subtitle": "App-Sperre und Passcode-Einstellungen",
   "tools_section_subtitle": "Wartungs- und Metadaten-Workflows für Szenen.",
   "tools_scene_deduplication_subtitle": "Duplikate finden und verwalten.",
-  "tools_scene_tagger_subtitle": "Aktuelle Szenenseiten mit Stash-box scrapen."
+  "tools_scene_tagger_subtitle": "Aktuelle Szenenseiten mit Stash-box scrapen.",
+  "scenes_delete_confirm": "Wählen Sie, wie diese Szene gelöscht werden soll. Diese Aktion kann nicht rückgängig gemacht werden.",
+  "scenes_delete_failed": "Szene konnte nicht gelöscht werden: {error}",
+  "scenes_speed_x": "{speed}x Geschwindigkeit"
 }
