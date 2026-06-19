@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
+import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../domain/entities/group_saved_filter_config.dart';
 import '../widgets/group_filter_panel.dart';
 import '../providers/group_list_provider.dart';
 import '../../domain/entities/group.dart';
@@ -254,6 +257,68 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
     );
   }
 
+  void _showSavedFilterDialog() {
+    final sortConfig = ref.read(groupSortProvider);
+    final currentFilter = ref.read(groupListFilterProvider);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => SavedFilterDialog<GroupSavedFilterConfig>(
+        searchQuery: ref.read(groupSearchQueryProvider),
+        sort: sortConfig.sort,
+        descending: sortConfig.descending,
+        activeFilterCount: _activeFilterCount(),
+        defaultSortLabel: 'name',
+        saveSuccessMessage: 'Group filter saved to server',
+        loadPresets: () => ref.read(savedFilterRepositoryProvider).findAll(
+          mode: 'GROUPS',
+          fromRaw: (raw) => GroupSavedFilterConfig.fromServerPayload(
+            id: raw['id'] as String,
+            name: raw['name'] as String,
+            findFilter: raw['find_filter'],
+            objectFilter: raw['object_filter'],
+          ),
+        ),
+        savePreset: ({required String name, String? existingId}) {
+          return ref.read(savedFilterRepositoryProvider).save(
+            input: GroupSavedFilterConfig.current(
+              id: existingId,
+              name: name,
+              searchQuery: ref.read(groupSearchQueryProvider),
+              sort: sortConfig.sort,
+              descending: sortConfig.descending,
+              filter: currentFilter,
+            ).toSaveInput(),
+            fromRaw: (raw) => GroupSavedFilterConfig.fromServerPayload(
+              id: raw['id'] as String,
+              name: raw['name'] as String,
+              findFilter: raw['find_filter'],
+              objectFilter: raw['object_filter'],
+            ),
+          );
+        },
+        deletePreset: (id) =>
+            ref.read(savedFilterRepositoryProvider).delete(id: id),
+        onLoad: _applySavedFilterConfig,
+      ),
+    );
+  }
+
+  void _applySavedFilterConfig(GroupSavedFilterConfig config) {
+    setState(() {
+      _sortOption = _sortOptionForKey(config.sort);
+      _sortDescending = config.descending;
+    });
+
+    ref.read(groupSearchQueryProvider.notifier).update(config.searchQuery);
+    ref.read(groupListProvider.notifier).setFilter(config.filter);
+    ref
+        .read(groupSortProvider.notifier)
+        .setSort(sort: config.sort ?? 'name', descending: config.descending);
+    ref.invalidate(groupListProvider);
+  }
+
   int _activeFilterCount() {
     final filter = ref.read(groupListFilterProvider);
     var count = 0;
@@ -326,6 +391,11 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
                 ),
               ),
           ],
+        ),
+        IconButton(
+          tooltip: context.l10n.common_saved_filters,
+          icon: const Icon(Icons.bookmarks_outlined),
+          onPressed: _showSavedFilterDialog,
         ),
       ],
       padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingSmall),
