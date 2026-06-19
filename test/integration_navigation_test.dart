@@ -5,6 +5,9 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
+import 'package:stash_app_flutter/features/groups/domain/entities/group.dart';
+import 'package:stash_app_flutter/features/groups/domain/repositories/group_repository.dart';
+import 'package:stash_app_flutter/features/groups/presentation/providers/group_list_provider.dart';
 import 'package:stash_app_flutter/features/performers/presentation/providers/performer_list_provider.dart';
 import 'package:stash_app_flutter/features/performers/domain/entities/performer.dart';
 import 'package:stash_app_flutter/features/navigation/presentation/router.dart';
@@ -15,6 +18,7 @@ import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.d
 import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
 import 'package:stash_app_flutter/features/scenes/domain/models/scraper.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
+import 'package:stash_app_flutter/features/setup/presentation/providers/navigation_tabs_provider.dart';
 import 'helpers/test_helpers.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
 
@@ -164,6 +168,36 @@ class LocalMockSceneRepository implements SceneRepository {
 
   @override
   Future<int> countScenesMissingPhash() async => 0;
+}
+
+class LocalMockGroupRepository implements GroupRepository {
+  final List<Group> groups;
+
+  LocalMockGroupRepository([this.groups = const []]);
+
+  @override
+  Future<List<Group>> findGroups({
+    int? page,
+    int? perPage,
+    String? filter,
+    String? sort,
+    bool? descending,
+    dynamic groupFilter,
+  }) async => groups;
+
+  @override
+  Future<Group> getGroupById(String id, {bool refresh = false}) async {
+    return groups.firstWhere((group) => group.id == id);
+  }
+}
+
+class MockNavigationTabsNotifier extends NavigationTabsNotifier {
+  final List<NavigationTab> initialTabs;
+
+  MockNavigationTabsNotifier(this.initialTabs);
+
+  @override
+  List<NavigationTab> build() => initialTabs;
 }
 
 // Simple test notifiers to override the layout state
@@ -605,5 +639,90 @@ void main() {
     // Tap Galleries Tab
     await tester.tap(find.text('Galleries').last);
     await tester.pumpAndSettle();
+  });
+
+  testWidgets('Integration: Groups tab is hidden by default', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
+    final mockRepo = LocalMockSceneRepository(testScenes);
+    final mockPerformerRepo = MockPerformerRepository()..withData([]);
+    final mockGroupRepo = LocalMockGroupRepository();
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [
+        sceneRepositoryProvider.overrideWithValue(mockRepo),
+        performerRepositoryProvider.overrideWithValue(mockPerformerRepo),
+        groupRepositoryProvider.overrideWithValue(mockGroupRepo),
+        sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
+        sceneGridLayoutProvider.overrideWith(TestSceneGridLayout.new),
+      ],
+      child: Consumer(
+        builder: (context, ref, _) {
+          final goRouter = ref.watch(routerProvider);
+          return MaterialApp.router(
+            routerConfig: goRouter,
+            theme: AppTheme.darkTheme,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          );
+        },
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    expect(find.text('Groups'), findsNothing);
+  });
+
+  testWidgets('Integration: Groups tab appears when enabled', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
+    final mockRepo = LocalMockSceneRepository(testScenes);
+    final mockPerformerRepo = MockPerformerRepository()..withData([]);
+    final mockGroupRepo = LocalMockGroupRepository();
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [
+        sceneRepositoryProvider.overrideWithValue(mockRepo),
+        performerRepositoryProvider.overrideWithValue(mockPerformerRepo),
+        groupRepositoryProvider.overrideWithValue(mockGroupRepo),
+        sceneTiktokLayoutProvider.overrideWith(TestSceneTiktokLayout.new),
+        sceneGridLayoutProvider.overrideWith(TestSceneGridLayout.new),
+        navigationTabsProvider.overrideWith(
+          () => MockNavigationTabsNotifier([
+            const NavigationTab(type: NavigationTabType.scenes),
+            const NavigationTab(type: NavigationTabType.performers),
+            const NavigationTab(type: NavigationTabType.studios),
+            const NavigationTab(type: NavigationTabType.tags),
+            const NavigationTab(type: NavigationTabType.galleries),
+            const NavigationTab(type: NavigationTabType.groups, visible: true),
+          ]),
+        ),
+      ],
+      child: Consumer(
+        builder: (context, ref, _) {
+          final goRouter = ref.watch(routerProvider);
+          return MaterialApp.router(
+            routerConfig: goRouter,
+            theme: AppTheme.darkTheme,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          );
+        },
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    expect(find.text('Groups').last, findsOneWidget);
   });
 }

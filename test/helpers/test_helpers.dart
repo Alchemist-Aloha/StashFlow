@@ -12,16 +12,19 @@ import 'package:stash_app_flutter/features/performers/domain/repositories/perfor
 import 'package:stash_app_flutter/features/studios/domain/repositories/studio_repository.dart';
 import 'package:stash_app_flutter/features/tags/domain/repositories/tag_repository.dart';
 import 'package:stash_app_flutter/features/images/domain/repositories/image_repository.dart';
+import 'package:stash_app_flutter/features/groups/domain/repositories/group_repository.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_deduplication.dart';
 import 'package:stash_app_flutter/features/performers/domain/entities/performer.dart';
 import 'package:stash_app_flutter/features/studios/domain/entities/studio.dart';
 import 'package:stash_app_flutter/features/tags/domain/entities/tag.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image.dart';
+import 'package:stash_app_flutter/features/groups/domain/entities/group.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
 import 'package:stash_app_flutter/features/performers/domain/entities/performer_filter.dart';
 import 'package:stash_app_flutter/features/studios/domain/entities/studio_filter.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image_filter.dart';
+import 'package:stash_app_flutter/features/groups/domain/entities/group_filter.dart';
 import 'package:stash_app_flutter/features/scenes/domain/models/scraper.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_performer.dart';
@@ -396,6 +399,28 @@ class MockTagRepository extends MockRepositoryState<Tag>
   @override
   Future<void> setTagFavorite(String id, bool favorite) async {
     if (shouldThrow) throw Exception(errorMessage);
+  }
+}
+
+class MockGroupRepository extends MockRepositoryState<Group>
+    implements GroupRepository {
+  @override
+  Future<List<Group>> findGroups({
+    int? page,
+    int? perPage,
+    String? filter,
+    String? sort,
+    bool? descending,
+    GroupFilter? groupFilter,
+  }) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    return data;
+  }
+
+  @override
+  Future<Group> getGroupById(String id, {bool refresh = false}) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    return data.firstWhere((g) => g.id == id);
   }
 }
 

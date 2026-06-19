@@ -1,7 +1,10 @@
 import 'dart:math';
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/group.dart';
+import '../../domain/entities/group_filter.dart';
 import '../../domain/repositories/group_repository.dart';
 import '../../data/repositories/graphql_group_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
@@ -14,6 +17,30 @@ final groupRepositoryProvider = Provider<GroupRepository>((ref) {
   final client = ref.watch(graphqlClientProvider);
   return GraphQLGroupRepository(client);
 });
+
+final groupScrollControllerProvider =
+    NotifierProvider<GroupScrollController, ScrollController>(
+      GroupScrollController.new,
+    );
+
+class GroupScrollController extends Notifier<ScrollController> {
+  @override
+  ScrollController build() {
+    final controller = ScrollController();
+    ref.onDispose(controller.dispose);
+    return controller;
+  }
+
+  void scrollToTop() {
+    if (state.hasClients) {
+      state.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+}
 
 @Riverpod(keepAlive: true)
 class GroupRandomSeed extends _$GroupRandomSeed {
@@ -59,10 +86,41 @@ class GroupSearchQuery extends _$GroupSearchQuery {
   void update(String query) => state = query;
 }
 
+final groupListFilterProvider =
+    NotifierProvider<GroupListFilterNotifier, GroupFilter>(
+      GroupListFilterNotifier.new,
+    );
+
+class GroupListFilterNotifier extends Notifier<GroupFilter> {
+  static const _storageKey = 'group_list_filter';
+
+  @override
+  GroupFilter build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    final raw = prefs.getString(_storageKey);
+    if (raw == null || raw.isEmpty) return GroupFilter.empty();
+
+    try {
+      return GroupFilter.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    } catch (_) {
+      return GroupFilter.empty();
+    }
+  }
+
+  void set(GroupFilter filter) {
+    state = filter;
+  }
+
+  Future<void> saveAsDefault() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setString(_storageKey, jsonEncode(state.toJson()));
+  }
+}
+
 @riverpod
 class GroupList extends _$GroupList {
   int _currentPage = 1;
-  static const int _perPage = kDefaultPageSize;
+  int _perPage = kDefaultPageSize;
   bool _hasMore = true;
   bool _isLoadingMore = false;
 
@@ -73,6 +131,7 @@ class GroupList extends _$GroupList {
     _isLoadingMore = false;
     final query = ref.watch(groupSearchQueryProvider);
     final sortConfig = ref.watch(groupSortProvider);
+    final groupFilter = ref.watch(groupListFilterProvider);
     final repository = ref.watch(groupRepositoryProvider);
 
     String? effectiveSort = sortConfig.sort;
@@ -86,6 +145,7 @@ class GroupList extends _$GroupList {
       filter: query.isEmpty ? null : query,
       sort: effectiveSort,
       descending: sortConfig.descending,
+      groupFilter: groupFilter.isEmpty ? null : groupFilter,
     );
   }
 
@@ -109,6 +169,23 @@ class GroupList extends _$GroupList {
     ref.invalidateSelf();
   }
 
+  void setFilter(GroupFilter filter) {
+    ref.read(groupListFilterProvider.notifier).set(filter);
+    _currentPage = 1;
+    _hasMore = true;
+    _isLoadingMore = false;
+    ref.invalidateSelf();
+  }
+
+  void setPerPage(int perPage) {
+    if (_perPage == perPage) return;
+    _perPage = perPage;
+    _currentPage = 1;
+    _hasMore = true;
+    _isLoadingMore = false;
+    ref.invalidateSelf();
+  }
+
   Future<void> fetchNextPage() async {
     if (_isLoadingMore || !_hasMore || state.isLoading) return;
 
@@ -116,6 +193,7 @@ class GroupList extends _$GroupList {
     final repository = ref.read(groupRepositoryProvider);
     final query = ref.read(groupSearchQueryProvider);
     final sortConfig = ref.read(groupSortProvider);
+    final groupFilter = ref.read(groupListFilterProvider);
 
     String? effectiveSort = sortConfig.sort;
     if (effectiveSort == 'random') {
@@ -130,6 +208,7 @@ class GroupList extends _$GroupList {
         filter: query.isEmpty ? null : query,
         sort: effectiveSort,
         descending: sortConfig.descending,
+        groupFilter: groupFilter.isEmpty ? null : groupFilter,
       );
 
       if (nextGroups.isEmpty) {
