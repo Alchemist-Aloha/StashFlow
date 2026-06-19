@@ -38,14 +38,7 @@ class _AppearanceSettingsPageState
   @override
   void initState() {
     super.initState();
-    _customHexFocusNode.addListener(_onTextFieldFocusChanged);
     _load();
-  }
-
-  void _onTextFieldFocusChanged() {
-    if (_customHexFocusNode.hasFocus) {
-      return;
-    }
   }
 
   Future<void> _load() async {
@@ -83,9 +76,7 @@ class _AppearanceSettingsPageState
   @override
   void dispose() {
     _customHexController.dispose();
-    _customHexFocusNode
-      ..removeListener(_onTextFieldFocusChanged)
-      ..dispose();
+    _customHexFocusNode.dispose();
     super.dispose();
   }
 

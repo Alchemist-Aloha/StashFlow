@@ -18,7 +18,7 @@ final imageRepositoryProvider = Provider<ImageRepository>((ref) {
   return GraphQLImageRepository(client);
 });
 
-@riverpod
+@Riverpod(keepAlive: true)
 class ImageScrollController extends _$ImageScrollController {
   @override
   ScrollController build() {
@@ -57,16 +57,14 @@ class ImageSort extends _$ImageSort {
     final sort = prefs.getString(_sortKey) ?? 'path';
     final descending = prefs.getBool(_descKey) ?? false;
 
-    int? seed;
-    if (sort == 'random') {
-      seed = ref.watch(imageRandomSeedProvider);
-    }
+    final seed = sort == 'random' ? ref.read(imageRandomSeedProvider) : null;
 
     return (sort: sort, descending: descending, randomSeed: seed);
   }
 
   void setSort({String? sort, bool descending = true}) {
-    state = (sort: sort, descending: descending, randomSeed: state.randomSeed);
+    final seed = sort == 'random' ? ref.read(imageRandomSeedProvider) : null;
+    state = (sort: sort, descending: descending, randomSeed: seed);
   }
 
   Future<void> saveAsDefault() async {
@@ -150,8 +148,8 @@ class ImageList extends _$ImageList {
     final repository = ref.read(imageRepositoryProvider);
 
     String? effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
-      effectiveSort = 'random_${sortConfig.randomSeed}';
+    if (effectiveSort == 'random') {
+      effectiveSort = 'random_${ref.watch(imageRandomSeedProvider)}';
     }
 
     return repository.findImages(
@@ -207,8 +205,8 @@ class ImageList extends _$ImageList {
     final organizedFilter = ref.read(imageOrganizedOnlyProvider);
 
     String? effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
-      effectiveSort = 'random_${sortConfig.randomSeed}';
+    if (effectiveSort == 'random') {
+      effectiveSort = 'random_${ref.read(imageRandomSeedProvider)}';
     }
 
     try {

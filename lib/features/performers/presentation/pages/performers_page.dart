@@ -57,6 +57,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final sortConfig = ref.read(performerSortProvider);
       setState(() {
         _sortOption = _sortOptionForKey(sortConfig.sort);

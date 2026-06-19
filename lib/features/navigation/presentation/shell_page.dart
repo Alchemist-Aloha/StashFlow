@@ -97,6 +97,7 @@ class _ShellPageState extends ConsumerState<ShellPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       _checkServerConfiguration();
       // Defer non-critical startup checks off the first frame.
       _deferredStartupTimer = Timer(const Duration(milliseconds: 1200), () {

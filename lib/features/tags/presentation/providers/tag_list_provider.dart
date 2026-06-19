@@ -59,16 +59,14 @@ class TagSort extends _$TagSort {
     final sort = prefs.getString(_sortKey) ?? 'name';
     final descending = prefs.getBool(_descKey) ?? false;
 
-    int? seed;
-    if (sort == 'random') {
-      seed = ref.watch(tagRandomSeedProvider);
-    }
+    final seed = sort == 'random' ? ref.read(tagRandomSeedProvider) : null;
 
     return (sort: sort, descending: descending, randomSeed: seed);
   }
 
   void setSort({String? sort, bool descending = true}) {
-    state = (sort: sort, descending: descending, randomSeed: state.randomSeed);
+    final seed = sort == 'random' ? ref.read(tagRandomSeedProvider) : null;
+    state = (sort: sort, descending: descending, randomSeed: seed);
   }
 
   Future<void> saveAsDefault() async {
@@ -120,8 +118,8 @@ class TagList extends _$TagList {
     final repository = ref.read(tagRepositoryProvider);
 
     String? effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
-      effectiveSort = 'random_${sortConfig.randomSeed}';
+    if (effectiveSort == 'random') {
+      effectiveSort = 'random_${ref.watch(tagRandomSeedProvider)}';
     }
 
     return repository.findTags(
@@ -181,8 +179,8 @@ class TagList extends _$TagList {
     final favoritesOnly = ref.read(tagFavoritesOnlyProvider);
 
     String? effectiveSort = sortConfig.sort;
-    if (effectiveSort == 'random' && sortConfig.randomSeed != null) {
-      effectiveSort = 'random_${sortConfig.randomSeed}';
+    if (effectiveSort == 'random') {
+      effectiveSort = 'random_${ref.read(tagRandomSeedProvider)}';
     }
 
     try {

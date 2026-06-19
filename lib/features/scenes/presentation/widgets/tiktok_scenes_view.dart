@@ -115,8 +115,10 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
   Timer? _manageTimer;
 
   Future<void> _manageControllers() async {
+    if (!mounted) return;
+
     final scenesAsync = ref.read(sceneListProvider);
-    if (!scenesAsync.hasValue || !mounted) return;
+    if (!scenesAsync.hasValue) return;
 
     // Safety check: only manage if we are likely the active view
     final router = GoRouter.of(context);
@@ -373,6 +375,7 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
         // Initialize first batch if needed
         if (_controllers.isEmpty && _initFutures.isEmpty) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
             _manageControllers();
           });
         }

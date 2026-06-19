@@ -86,6 +86,7 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     super.initState();
     // Prewarm the stream if this scene is not yet active.
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       _startPlaybackIfNeeded(force: widget.autoPlayOnMount);
     });
   }
@@ -120,6 +121,8 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
   /// Automatically start playback if this scene is designated as active,
   /// or if requested by the user.
   Future<void> _startPlaybackIfNeeded({bool force = false}) async {
+    if (!mounted) return;
+
     final playerState = ref.read(playerStateProvider);
     final router = GoRouter.maybeOf(context);
     final currentPath = router?.routeInformationProvider.value.uri.path ?? '';

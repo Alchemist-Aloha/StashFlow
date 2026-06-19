@@ -27,6 +27,7 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
     super.initState();
     // Start discovery when the sheet is opened.
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       debugPrint('CastSelectionSheet: start discovery');
       ref.read(castServiceProvider.notifier).startDiscovery();
     });
@@ -65,44 +66,50 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
 
   Future<String?> _showPinDialog() {
     final pinController = TextEditingController();
-    return showDialog<String>(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(context.l10n.cast_airplay_pairing),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(context.l10n.cast_enter_pin),
-            const SizedBox(height: 16),
-            TextField(
-              textInputAction: TextInputAction.next,
-              controller: pinController,
-              autofocus: true,
-              maxLength: 4,
-              keyboardType: TextInputType.number,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 24, letterSpacing: 8),
-              decoration: const InputDecoration(
-                counterText: '',
-                border: OutlineInputBorder(),
-              ),
+    return () async {
+      try {
+        return await showDialog<String>(
+          context: context,
+          barrierDismissible: false,
+          builder: (dialogContext) => AlertDialog(
+            title: Text(context.l10n.cast_airplay_pairing),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(context.l10n.cast_enter_pin),
+                const SizedBox(height: 16),
+                TextField(
+                  textInputAction: TextInputAction.next,
+                  controller: pinController,
+                  autofocus: true,
+                  maxLength: 4,
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 24, letterSpacing: 8),
+                  decoration: const InputDecoration(
+                    counterText: '',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(context.l10n.common_cancel),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: Text(context.l10n.common_cancel),
+              ),
+              FilledButton(
+                onPressed: () =>
+                    Navigator.of(dialogContext).pop(pinController.text),
+                child: Text(context.l10n.cast_pair),
+              ),
+            ],
           ),
-          FilledButton(
-            onPressed: () =>
-                Navigator.of(dialogContext).pop(pinController.text),
-            child: Text(context.l10n.cast_pair),
-          ),
-        ],
-      ),
-    );
+        );
+      } finally {
+        pinController.dispose();
+      }
+    }();
   }
 
   Future<void> _connectToDevice(dc.CastDevice device) async {

@@ -55,6 +55,7 @@ class MediaStrip extends StatelessWidget {
     // are warmed before the user scrolls. Also compute stride to account
     // for separators and padding so visible index calculation matches layout.
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) return;
       final initialCount = items.length < kPrefetchDistance
           ? items.length
           : kPrefetchDistance;
@@ -112,14 +113,13 @@ class MediaStrip extends StatelessWidget {
           return false;
         },
         child: Scrollbar(
-          child: ListView.separated(
+          child: ListView.builder(
             padding: EdgeInsets.symmetric(
               horizontal: context.dimensions.spacingMedium,
             ),
             scrollDirection: Axis.horizontal,
+            itemExtent: stride,
             itemCount: items.length,
-            separatorBuilder: (_, _) =>
-                SizedBox(width: context.dimensions.spacingSmall),
             itemBuilder: (context, index) {
               final item = items[index];
 
@@ -128,40 +128,45 @@ class MediaStrip extends StatelessWidget {
               // The initial and scroll-based prefetching accurately handle warming
               // the cache with memCacheWidth constraints.
 
-              return RepaintBoundary(
-                child: InkWell(
-                  onTap: item.onTap,
-                  borderRadius: BorderRadius.circular(
-                    AppTheme.radiusMedium * context.dimensions.fontSizeFactor,
-                  ),
-                  child: SizedBox(
-                    width: effectiveItemWidth,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                            AppTheme.radiusMedium *
-                                context.dimensions.fontSizeFactor,
+              return Padding(
+                padding: EdgeInsets.only(
+                  right: index == items.length - 1 ? 0 : separatorWidth,
+                ),
+                child: RepaintBoundary(
+                  child: InkWell(
+                    onTap: item.onTap,
+                    borderRadius: BorderRadius.circular(
+                      AppTheme.radiusMedium * context.dimensions.fontSizeFactor,
+                    ),
+                    child: SizedBox(
+                      width: effectiveItemWidth,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(
+                              AppTheme.radiusMedium *
+                                  context.dimensions.fontSizeFactor,
+                            ),
+                            child: StashImage(
+                              imageUrl: item.thumbnailUrl,
+                              width: effectiveItemWidth,
+                              height: effectiveItemWidth * (9 / 16),
+                              fit: BoxFit.cover,
+                              memCacheWidth: (effectiveItemWidth * 2).toInt(),
+                            ),
                           ),
-                          child: StashImage(
-                            imageUrl: item.thumbnailUrl,
-                            width: effectiveItemWidth,
-                            height: effectiveItemWidth * (9 / 16),
-                            fit: BoxFit.cover,
-                            memCacheWidth: (effectiveItemWidth * 2).toInt(),
+                          SizedBox(height: context.dimensions.spacingSmall),
+                          Text(
+                            item.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: context.textTheme.bodySmall?.copyWith(
+                              color: context.colors.onSurface,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: context.dimensions.spacingSmall),
-                        Text(
-                          item.title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: context.textTheme.bodySmall?.copyWith(
-                            color: context.colors.onSurface,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),

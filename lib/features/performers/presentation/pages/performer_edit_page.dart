@@ -36,6 +36,8 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
   late TextEditingController _eyeColorController;
   late TextEditingController _hairColorController;
   late TextEditingController _weightController;
+  late TextEditingController _birthdateController;
+  late TextEditingController _deathDateController;
 
   String? _selectedGender;
   String? _selectedCircumcised;
@@ -48,6 +50,19 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
   String? _scrapedImage;
   bool _isSaving = false;
   bool _isScraping = false;
+
+  static String _formatDate(DateTime? date) =>
+      date?.toIso8601String().split('T').first ?? '';
+
+  void _setBirthdate(DateTime? date) {
+    _birthdate = date;
+    _birthdateController.text = _formatDate(date);
+  }
+
+  void _setDeathDate(DateTime? date) {
+    _deathDate = date;
+    _deathDateController.text = _formatDate(date);
+  }
 
   @override
   void initState() {
@@ -78,6 +93,8 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
     _selectedCircumcised = p.circumcised;
     _birthdate = p.birthdate != null ? DateTime.tryParse(p.birthdate!) : null;
     _deathDate = p.deathDate != null ? DateTime.tryParse(p.deathDate!) : null;
+    _birthdateController = TextEditingController(text: _formatDate(_birthdate));
+    _deathDateController = TextEditingController(text: _formatDate(_deathDate));
 
     _urlControllers = p.urls.isEmpty
         ? [TextEditingController()]
@@ -105,6 +122,8 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
     _eyeColorController.dispose();
     _hairColorController.dispose();
     _weightController.dispose();
+    _birthdateController.dispose();
+    _deathDateController.dispose();
     for (var c in _urlControllers) {
       c.dispose();
     }
@@ -218,7 +237,7 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
         if (merged.details != null) _detailsController.text = merged.details!;
         if (merged.gender != null) _selectedGender = merged.gender;
         if (merged.birthdate != null) {
-          _birthdate = DateTime.tryParse(merged.birthdate!);
+          _setBirthdate(DateTime.tryParse(merged.birthdate!));
         }
         if (merged.ethnicity != null) {
           _ethnicityController.text = merged.ethnicity!;
@@ -488,10 +507,7 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
                 Expanded(
                   child: TextField(
                     readOnly: true,
-                    controller: TextEditingController(
-                      text:
-                          _birthdate?.toIso8601String().split('T').first ?? '',
-                    ),
+                    controller: _birthdateController,
                     decoration: InputDecoration(
                       labelText: context.l10n.performers_field_birthdate,
                       border: const OutlineInputBorder(),
@@ -504,7 +520,9 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
                         firstDate: DateTime(1900),
                         lastDate: DateTime.now(),
                       );
-                      if (picked != null) setState(() => _birthdate = picked);
+                      if (picked != null && context.mounted) {
+                        setState(() => _setBirthdate(picked));
+                      }
                     },
                   ),
                 ),
@@ -512,10 +530,7 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
                 Expanded(
                   child: TextField(
                     readOnly: true,
-                    controller: TextEditingController(
-                      text:
-                          _deathDate?.toIso8601String().split('T').first ?? '',
-                    ),
+                    controller: _deathDateController,
                     decoration: InputDecoration(
                       labelText: context.l10n.performers_field_deathdate,
                       border: const OutlineInputBorder(),
@@ -528,7 +543,9 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
                         firstDate: DateTime(1900),
                         lastDate: DateTime.now(),
                       );
-                      if (picked != null) setState(() => _deathDate = picked);
+                      if (picked != null && context.mounted) {
+                        setState(() => _setDeathDate(picked));
+                      }
                     },
                   ),
                 ),

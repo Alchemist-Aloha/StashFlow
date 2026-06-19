@@ -587,10 +587,10 @@ packages:
     dependency: transitive
     description:
       name: gql_code_builder
-      sha256: ad16d7cca772439c2a45d0ea47f9f526dea5f6c97b9e955a42a7a7b979602a5f
+      sha256: deb9a659b7236edfe9d0b72c5b724cf4a33ce50686b7eac97cc48ba2bf5615d2
       url: "https://pub.dev"
     source: hosted
-    version: "0.15.1"
+    version: "0.15.2"
   gql_code_builder_serializers:
     dependency: transitive
     description:
@@ -1248,10 +1248,10 @@ packages:
     dependency: "direct main"
     description:
       name: screen_brightness
-      sha256: "41ecd1026d6e80f60261ac55ceea6677c71be98280bfbb04a38d4853a1e5fe2e"
+      sha256: e0edf92c08889e8f493cde291e7c687db2b4a1471f2371c074070b75d7c7d79b
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.10"
+    version: "2.1.11"
   screen_brightness_android:
     dependency: "direct overridden"
     description:
@@ -1272,10 +1272,10 @@ packages:
     dependency: transitive
     description:
       name: screen_brightness_macos
-      sha256: "37ab776fd18e57e13a24761a69f834a92ccc811c3b3b51b3b357b55b0dee6fb8"
+      sha256: b0957237b842d846a84363b69f229b339a8f91faced55041e245b2ebff7b0142
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.3"
+    version: "2.1.4"
   screen_brightness_ohos:
     dependency: transitive
     description:

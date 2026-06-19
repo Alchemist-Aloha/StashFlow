@@ -56,6 +56,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final sortConfig = ref.read(gallerySortProvider);
       setState(() {
         _sortOption = _sortOptionForKey(sortConfig.sort);

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 
 class MarqueeText extends StatefulWidget {
@@ -21,54 +20,71 @@ class MarqueeText extends StatefulWidget {
 
 class _MarqueeTextState extends State<MarqueeText> {
   late ScrollController _scrollController;
-  Timer? _timer;
+  int _scrollGeneration = 0;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _startScrolling();
+      if (!mounted) return;
+      _startScrolling(_scrollGeneration);
     });
   }
 
   @override
   void didUpdateWidget(MarqueeText oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.text != widget.text) {
-      _timer?.cancel();
-      _scrollController.jumpTo(0);
-      _startScrolling();
+    if (oldWidget.text != widget.text ||
+        oldWidget.scrollDuration != widget.scrollDuration ||
+        oldWidget.pauseDuration != widget.pauseDuration) {
+      _scrollGeneration++;
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(0);
+      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _startScrolling(_scrollGeneration);
+      });
     }
   }
 
-  void _startScrolling() async {
-    if (!_scrollController.hasClients) return;
+  void _startScrolling(int generation) async {
+    if (!_isCurrentGeneration(generation) || !_scrollController.hasClients) {
+      return;
+    }
 
     final maxScrollExtent = _scrollController.position.maxScrollExtent;
     if (maxScrollExtent <= 0) return;
 
     await Future.delayed(widget.pauseDuration);
-    if (!mounted) return;
+    if (!_isCurrentGeneration(generation) || !_scrollController.hasClients) {
+      return;
+    }
 
-    _scrollController
-        .animateTo(
-          maxScrollExtent,
-          duration: widget.scrollDuration,
-          curve: Curves.linear,
-        )
-        .then((_) async {
-          if (!mounted) return;
-          await Future.delayed(widget.pauseDuration);
-          if (!mounted) return;
-          _scrollController.jumpTo(0);
-          _startScrolling();
-        });
+    await _scrollController.animateTo(
+      maxScrollExtent,
+      duration: widget.scrollDuration,
+      curve: Curves.linear,
+    );
+
+    if (!_isCurrentGeneration(generation)) return;
+
+    await Future.delayed(widget.pauseDuration);
+    if (!_isCurrentGeneration(generation) || !_scrollController.hasClients) {
+      return;
+    }
+
+    _scrollController.jumpTo(0);
+    _startScrolling(generation);
   }
+
+  bool _isCurrentGeneration(int generation) =>
+      mounted && generation == _scrollGeneration;
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _scrollGeneration++;
     _scrollController.dispose();
     super.dispose();
   }

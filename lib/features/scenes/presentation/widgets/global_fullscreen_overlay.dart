@@ -52,6 +52,7 @@ class _GlobalFullscreenOverlayState
 
     // Check initial state
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final phase = ref.read(
         playerStateProvider.select((s) => s.fullscreenPhase),
       );
@@ -78,6 +79,8 @@ class _GlobalFullscreenOverlayState
   }
 
   void _onFullScreenChanged(bool isFullScreen) {
+    if (!mounted) return;
+
     if (isFullScreen && !_isVisible) {
       AppLogStore.instance.add(
         'GlobalFullscreenOverlay: showing overlay',

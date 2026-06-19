@@ -33,6 +33,7 @@ class GalleryStrip extends ConsumerWidget {
 
     // Initial prefetch
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) return;
       final initialCount = galleries.length < kPrefetchDistance
           ? galleries.length
           : kPrefetchDistance;
@@ -95,23 +96,27 @@ class GalleryStrip extends ConsumerWidget {
           return false;
         },
         child: Scrollbar(
-          child: ListView.separated(
+          child: ListView.builder(
             padding: EdgeInsets.symmetric(
               horizontal: context.dimensions.spacingMedium,
             ),
             scrollDirection: Axis.horizontal,
+            itemExtent: stride,
             itemCount: galleries.length,
-            separatorBuilder: (_, _) =>
-                SizedBox(width: context.dimensions.spacingSmall),
             itemBuilder: (context, index) {
               final gallery = galleries[index];
 
-              return SizedBox(
-                width: effectiveItemWidth,
-                child: GalleryCard(
-                  gallery: gallery,
-                  isGrid: true,
-                  onTap: onTap != null ? () => onTap!(gallery) : null,
+              return Padding(
+                padding: EdgeInsets.only(
+                  right: index == galleries.length - 1 ? 0 : separatorWidth,
+                ),
+                child: SizedBox(
+                  width: effectiveItemWidth,
+                  child: GalleryCard(
+                    gallery: gallery,
+                    isGrid: true,
+                    onTap: onTap != null ? () => onTap!(gallery) : null,
+                  ),
                 ),
               );
             },

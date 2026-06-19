@@ -29,7 +29,11 @@ class SecuritySettingsPage extends ConsumerWidget {
                   contentPadding: EdgeInsets.zero,
                   title: Text(context.l10n.settings_security_passcode),
                   subtitle: Text(
-                    settings.hasPasscode ? context.l10n.settings_security_passcode_configured : context.l10n.settings_security_passcode_not_configured,
+                    settings.hasPasscode
+                        ? context.l10n.settings_security_passcode_configured
+                        : context
+                              .l10n
+                              .settings_security_passcode_not_configured,
                   ),
                   trailing: Wrap(
                     spacing: 8,
@@ -41,11 +45,19 @@ class SecuritySettingsPage extends ConsumerWidget {
                           await notifier.setPasscode(passcode);
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(context.l10n.settings_security_passcode_saved)),
+                              SnackBar(
+                                content: Text(
+                                  context.l10n.settings_security_passcode_saved,
+                                ),
+                              ),
                             );
                           }
                         },
-                        child: Text(settings.hasPasscode ? context.l10n.common_change : context.l10n.common_set),
+                        child: Text(
+                          settings.hasPasscode
+                              ? context.l10n.common_change
+                              : context.l10n.common_set,
+                        ),
                       ),
                       if (settings.hasPasscode)
                         TextButton(
@@ -54,7 +66,11 @@ class SecuritySettingsPage extends ConsumerWidget {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text(context.l10n.settings_security_passcode_removed),
+                                  content: Text(
+                                    context
+                                        .l10n
+                                        .settings_security_passcode_removed,
+                                  ),
                                 ),
                               );
                             }
@@ -96,9 +112,13 @@ class SecuritySettingsPage extends ConsumerWidget {
                 Divider(height: context.dimensions.spacingLarge),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: Text(context.l10n.settings_security_background_lock_timer),
+                  title: Text(
+                    context.l10n.settings_security_background_lock_timer,
+                  ),
                   subtitle: Text(
-                    context.l10n.settings_security_background_lock_timer_subtitle,
+                    context
+                        .l10n
+                        .settings_security_background_lock_timer_subtitle,
                   ),
                   trailing: DropdownButton<int>(
                     value: settings.backgroundLockSeconds,
@@ -139,77 +159,86 @@ class SecuritySettingsPage extends ConsumerWidget {
     final confirmController = TextEditingController();
     String? error;
 
-    final result = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text(context.l10n.settings_security_set_passcode),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: controller,
-                    keyboardType: TextInputType.number,
-                    obscureText: true,
-                    maxLength: 8,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.settings_security_passcode_prompt,
-                    ),
-                  ),
-                  TextField(
-                    controller: confirmController,
-                    keyboardType: TextInputType.number,
-                    obscureText: true,
-                    maxLength: 8,
-                    decoration: InputDecoration(labelText: context.l10n.settings_security_confirm_passcode),
-                  ),
-                  if (error != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Text(
-                        error!,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.error,
-                        ),
+    try {
+      return await showDialog<String>(
+        context: context,
+        builder: (dialogContext) {
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return AlertDialog(
+                title: Text(context.l10n.settings_security_set_passcode),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: controller,
+                      keyboardType: TextInputType.number,
+                      obscureText: true,
+                      maxLength: 8,
+                      decoration: InputDecoration(
+                        labelText:
+                            context.l10n.settings_security_passcode_prompt,
                       ),
                     ),
+                    TextField(
+                      controller: confirmController,
+                      keyboardType: TextInputType.number,
+                      obscureText: true,
+                      maxLength: 8,
+                      decoration: InputDecoration(
+                        labelText:
+                            context.l10n.settings_security_confirm_passcode,
+                      ),
+                    ),
+                    if (error != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          error!,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(),
+                    child: Text(context.l10n.common_cancel),
+                  ),
+                  FilledButton(
+                    onPressed: () {
+                      final passcode = controller.text.trim();
+                      final confirm = confirmController.text.trim();
+                      final numeric = RegExp(r'^\d{4,8}$');
+                      if (!numeric.hasMatch(passcode)) {
+                        setState(
+                          () => error =
+                              context.l10n.settings_security_error_numeric,
+                        );
+                        return;
+                      }
+                      if (passcode != confirm) {
+                        setState(
+                          () => error =
+                              context.l10n.settings_security_error_mismatch,
+                        );
+                        return;
+                      }
+                      Navigator.of(dialogContext).pop(passcode);
+                    },
+                    child: Text(context.l10n.common_save),
+                  ),
                 ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(dialogContext).pop(),
-                  child: Text(context.l10n.common_cancel),
-                ),
-                FilledButton(
-                  onPressed: () {
-                    final passcode = controller.text.trim();
-                    final confirm = confirmController.text.trim();
-                    final numeric = RegExp(r'^\d{4,8}$');
-                    if (!numeric.hasMatch(passcode)) {
-                      setState(
-                        () => error = context.l10n.settings_security_error_numeric,
-                      );
-                      return;
-                    }
-                    if (passcode != confirm) {
-                      setState(() => error = context.l10n.settings_security_error_mismatch);
-                      return;
-                    }
-                    Navigator.of(dialogContext).pop(passcode);
-                  },
-                  child: Text(context.l10n.common_save),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-
-    controller.dispose();
-    confirmController.dispose();
-    return result;
+              );
+            },
+          );
+        },
+      );
+    } finally {
+      controller.dispose();
+      confirmController.dispose();
+    }
   }
 }

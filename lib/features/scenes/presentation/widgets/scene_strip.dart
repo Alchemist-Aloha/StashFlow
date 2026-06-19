@@ -36,6 +36,7 @@ class SceneStrip extends ConsumerWidget {
 
     // Initial prefetch
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) return;
       final initialCount = scenes.length < kPrefetchDistance
           ? scenes.length
           : kPrefetchDistance;
@@ -95,39 +96,43 @@ class SceneStrip extends ConsumerWidget {
           return false;
         },
         child: Scrollbar(
-          child: ListView.separated(
+          child: ListView.builder(
             padding: EdgeInsets.symmetric(
               horizontal: context.dimensions.spacingMedium,
             ),
             scrollDirection: Axis.horizontal,
+            itemExtent: stride,
             itemCount: scenes.length,
-            separatorBuilder: (_, _) =>
-                SizedBox(width: context.dimensions.spacingSmall),
             itemBuilder: (context, index) {
               final scene = scenes[index];
 
-              return SizedBox(
-                width: effectiveItemWidth,
-                child: SceneCard(
-                  scene: scene,
-                  isGrid: true,
-                  showPerformers: false,
-                  useHero: false,
-                  onTap: queueId != null || onTap != null
-                      ? () {
-                          final playbackQueueId = queueId;
-                          if (playbackQueueId != null) {
-                            ref
-                                .read(playbackQueueProvider.notifier)
-                                .setSequence(
-                                  scenes,
-                                  index,
-                                  queueId: playbackQueueId,
-                                );
+              return Padding(
+                padding: EdgeInsets.only(
+                  right: index == scenes.length - 1 ? 0 : separatorWidth,
+                ),
+                child: SizedBox(
+                  width: effectiveItemWidth,
+                  child: SceneCard(
+                    scene: scene,
+                    isGrid: true,
+                    showPerformers: false,
+                    useHero: false,
+                    onTap: queueId != null || onTap != null
+                        ? () {
+                            final playbackQueueId = queueId;
+                            if (playbackQueueId != null) {
+                              ref
+                                  .read(playbackQueueProvider.notifier)
+                                  .setSequence(
+                                    scenes,
+                                    index,
+                                    queueId: playbackQueueId,
+                                  );
+                            }
+                            onTap?.call(scene);
                           }
-                          onTap?.call(scene);
-                        }
-                      : null,
+                        : null,
+                  ),
                 ),
               );
             },

@@ -42,3 +42,10 @@
 ## 2026-06-06 - [Hoist Scroll Calculations]
 **Learning:** In Dart/Flutter, `pubspec.lock` files can be unintentionally downgraded or modified by running `flutter test` or `flutter pub get` when the local environment SDK doesn't strictly match the locked versions. Agent operations must always verify `git status` post-testing to catch and revert these side-effects (`git restore pubspec.lock`) before proposing a PR.
 **Action:** Always run `git status` and revert any unintended changes to `pubspec.lock` after running Flutter tests or analyzer in the agent sandbox.
+
+## 2026-06-16 - [O(N) to O(1) ListView Rendering]
+**Learning:** When using `ListView.separated` in Flutter, the framework must dynamically calculate the size of every item and separator during scrolling, creating O(N) layout complexity. For lists where all items share the exact same width (like horizontal image strips), this dynamic calculation is pure overhead.
+**Action:** Convert `ListView.separated` to `ListView.builder`, and explicitly set the `itemExtent` property to the fixed item width + separator width (the `stride`). Pad the child inside the `itemBuilder` to account for the separator. This forces Flutter into O(1) layout math, significantly improving scroll performance.
+## 2024-05-30 - [Hoist textTheme and dimensions from ListView itemBuilder]
+**Learning:** Performing invariant lookups like `context.textTheme` and `context.dimensions.fontSizeFactor` inside a `ListView.builder`'s `itemBuilder` callback forces redundant O(1) inherited widget lookups on every single rendered item during scroll.
+**Action:** Always hoist these layout and styling variables out of the `itemBuilder` and into the parent widget's `build` (or builder) method to reduce GC pressure and ensure optimal rendering performance.

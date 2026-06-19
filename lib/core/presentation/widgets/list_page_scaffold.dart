@@ -248,8 +248,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
 
     _pageSizeReportScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _pageSizeReportScheduled = false;
       if (!mounted) return;
+      _pageSizeReportScheduled = false;
       final pageSize = _getPageSize(context, responsiveDelegate);
       if (pageSize == _lastReportedPageSize) return;
       _lastReportedPageSize = pageSize;
@@ -578,7 +578,9 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                   builder: (context, constraints) {
                                     final horizontalPadding =
                                         widget.padding
-                                            ?.resolve(Directionality.of(context))
+                                            ?.resolve(
+                                              Directionality.of(context),
+                                            )
                                             .horizontal ??
                                         0.0;
                                     if (!constraints.hasBoundedWidth ||
@@ -614,6 +616,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                               _measuredItemExtent == null) {
                                             WidgetsBinding.instance
                                                 .addPostFrameCallback((_) {
+                                                  if (!mounted) return;
                                                   if (_measuredItemExtent ==
                                                           null &&
                                                       _firstItemKey
@@ -662,6 +665,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                             _measuredItemExtent == null) {
                                           WidgetsBinding.instance
                                               .addPostFrameCallback((_) {
+                                                if (!mounted) return;
                                                 if (_measuredItemExtent ==
                                                         null &&
                                                     _firstItemKey
@@ -711,6 +715,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                         _measuredItemExtent == null) {
                                       WidgetsBinding.instance
                                           .addPostFrameCallback((_) {
+                                            if (!mounted) return;
                                             if (_measuredItemExtent == null &&
                                                 _firstItemKey.currentContext !=
                                                     null) {
