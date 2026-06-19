@@ -169,6 +169,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   DateTime? _lastHorizontalSwipeTime;
   static const _horizontalSwipeThreshold = Duration(milliseconds: 500);
 
+  DateTime? _lastFetchTime;
+
   @override
   void initState() {
     super.initState();
@@ -756,7 +758,15 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                       return NotificationListener<ScrollNotification>(
                         onNotification: (ScrollNotification scrollInfo) {
                           if (shouldLoadNextPage(scrollInfo.metrics)) {
-                            widget.onFetchNextPage?.call();
+                            // ⚡ Bolt: Throttle pagination fetch calls during rapid scrolling.
+                            // Why: scrollInfo metrics trigger continuously at the end of the list.
+                            // Impact: Prevents firing multiple simultaneous network requests.
+                            final now = DateTime.now();
+                            if (_lastFetchTime == null ||
+                                now.difference(_lastFetchTime!) > const Duration(milliseconds: 500)) {
+                              _lastFetchTime = now;
+                              widget.onFetchNextPage?.call();
+                            }
                           }
                           return false;
                         },

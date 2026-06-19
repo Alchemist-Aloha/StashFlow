@@ -49,3 +49,6 @@
 ## 2024-05-30 - [Hoist textTheme and dimensions from ListView itemBuilder]
 **Learning:** Performing invariant lookups like `context.textTheme` and `context.dimensions.fontSizeFactor` inside a `ListView.builder`'s `itemBuilder` callback forces redundant O(1) inherited widget lookups on every single rendered item during scroll.
 **Action:** Always hoist these layout and styling variables out of the `itemBuilder` and into the parent widget's `build` (or builder) method to reduce GC pressure and ensure optimal rendering performance.
+## 2026-06-19 - [Throttling ScrollNotification API calls]
+**Learning:** The `NotificationListener<ScrollNotification>` inside `ListPageScaffold` triggers rapidly on every single frame during scrolling. This could lead to multiple simultaneous pagination requests being fired when the user scrolls near the end of the list.
+**Action:** Throttle the `onFetchNextPage` callback inside `NotificationListener` by storing a `_lastFetchTime` and comparing it against `DateTime.now()` with a 500ms threshold to prevent redundant network requests.
