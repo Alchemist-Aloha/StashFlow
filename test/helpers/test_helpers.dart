@@ -56,6 +56,18 @@ class MockSceneRepository extends MockRepositoryState<Scene>
   String? deletedSceneId;
   bool? deletedSceneDeleteFile;
   bool? deletedSceneDeleteGenerated;
+  final List<
+    ({
+      String sceneId,
+      String title,
+      double seconds,
+      double? endSeconds,
+      String? primaryTagId,
+      List<String> tagIds,
+    })
+  >
+  createdSceneMarkers = [];
+  final List<bool> getSceneByIdRefreshValues = [];
   List<SceneDuplicateGroup> duplicateGroups = [];
   int missingPhashCount = 0;
   int? lastDuplicateDistance;
@@ -135,7 +147,41 @@ class MockSceneRepository extends MockRepositoryState<Scene>
   @override
   Future<Scene> getSceneById(String id, {bool refresh = false}) async {
     if (shouldThrow) throw Exception(errorMessage);
+    getSceneByIdRefreshValues.add(refresh);
     return data.firstWhere((s) => s.id == id);
+  }
+
+  @override
+  Future<SceneMarker> createSceneMarker({
+    required String sceneId,
+    required String title,
+    double seconds = 0,
+    double? endSeconds,
+    String? primaryTagId,
+    List<String> tagIds = const [],
+  }) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    createdSceneMarkers.add((
+      sceneId: sceneId,
+      title: title,
+      seconds: seconds,
+      endSeconds: endSeconds,
+      primaryTagId: primaryTagId,
+      tagIds: tagIds,
+    ));
+    return SceneMarker(
+      id: 'marker-${createdSceneMarkers.length}',
+      title: title,
+      seconds: seconds,
+      endSeconds: endSeconds,
+      screenshot: null,
+      preview: null,
+      stream: null,
+      primaryTagId: primaryTagId,
+      primaryTagName: null,
+      tagIds: tagIds,
+      tagNames: const [],
+    );
   }
 
   @override

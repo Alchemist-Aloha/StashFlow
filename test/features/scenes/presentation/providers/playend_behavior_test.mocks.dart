@@ -55,29 +55,34 @@ class _FakeScene_0 extends _i1.SmartFake implements _i2.Scene {
     : super(parent, parentInvocation);
 }
 
-class _FakePlayerState_1 extends _i1.SmartFake implements _i3.PlayerState {
-  _FakePlayerState_1(Object parent, Invocation parentInvocation)
+class _FakeSceneMarker_1 extends _i1.SmartFake implements _i2.SceneMarker {
+  _FakeSceneMarker_1(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakePlayerStream_2 extends _i1.SmartFake implements _i4.PlayerStream {
-  _FakePlayerStream_2(Object parent, Invocation parentInvocation)
+class _FakePlayerState_2 extends _i1.SmartFake implements _i3.PlayerState {
+  _FakePlayerState_2(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakePlayer_3 extends _i1.SmartFake implements _i5.Player {
-  _FakePlayer_3(Object parent, Invocation parentInvocation)
+class _FakePlayerStream_3 extends _i1.SmartFake implements _i4.PlayerStream {
+  _FakePlayerStream_3(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeCompleter_4<T> extends _i1.SmartFake implements _i6.Completer<T> {
-  _FakeCompleter_4(Object parent, Invocation parentInvocation)
+class _FakePlayer_4 extends _i1.SmartFake implements _i5.Player {
+  _FakePlayer_4(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeValueNotifier_5<T> extends _i1.SmartFake
+class _FakeCompleter_5<T> extends _i1.SmartFake implements _i6.Completer<T> {
+  _FakeCompleter_5(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeValueNotifier_6<T> extends _i1.SmartFake
     implements _i7.ValueNotifier<T> {
-  _FakeValueNotifier_5(Object parent, Invocation parentInvocation)
+  _FakeValueNotifier_6(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
@@ -273,6 +278,40 @@ class MockSceneRepository extends _i1.Mock implements _i8.SceneRepository {
           as _i6.Future<void>);
 
   @override
+  _i6.Future<_i2.SceneMarker> createSceneMarker({
+    required String? sceneId,
+    required String? title,
+    double? seconds = 0.0,
+    double? endSeconds,
+    String? primaryTagId,
+    List<String>? tagIds = const [],
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#createSceneMarker, [], {
+              #sceneId: sceneId,
+              #title: title,
+              #seconds: seconds,
+              #endSeconds: endSeconds,
+              #primaryTagId: primaryTagId,
+              #tagIds: tagIds,
+            }),
+            returnValue: _i6.Future<_i2.SceneMarker>.value(
+              _FakeSceneMarker_1(
+                this,
+                Invocation.method(#createSceneMarker, [], {
+                  #sceneId: sceneId,
+                  #title: title,
+                  #seconds: seconds,
+                  #endSeconds: endSeconds,
+                  #primaryTagId: primaryTagId,
+                  #tagIds: tagIds,
+                }),
+              ),
+            ),
+          )
+          as _i6.Future<_i2.SceneMarker>);
+
+  @override
   _i6.Future<void> deleteScene(
     String? id, {
     required bool? deleteFile,
@@ -326,7 +365,7 @@ class MockPlayer extends _i1.Mock implements _i5.Player {
   _i3.PlayerState get state =>
       (super.noSuchMethod(
             Invocation.getter(#state),
-            returnValue: _FakePlayerState_1(this, Invocation.getter(#state)),
+            returnValue: _FakePlayerState_2(this, Invocation.getter(#state)),
           )
           as _i3.PlayerState);
 
@@ -334,7 +373,7 @@ class MockPlayer extends _i1.Mock implements _i5.Player {
   _i4.PlayerStream get stream =>
       (super.noSuchMethod(
             Invocation.getter(#stream),
-            returnValue: _FakePlayerStream_2(this, Invocation.getter(#stream)),
+            returnValue: _FakePlayerStream_3(this, Invocation.getter(#stream)),
           )
           as _i4.PlayerStream);
 
@@ -342,7 +381,7 @@ class MockPlayer extends _i1.Mock implements _i5.Player {
   _i4.PlayerStream get streams =>
       (super.noSuchMethod(
             Invocation.getter(#streams),
-            returnValue: _FakePlayerStream_2(this, Invocation.getter(#streams)),
+            returnValue: _FakePlayerStream_3(this, Invocation.getter(#streams)),
           )
           as _i4.PlayerStream);
 
@@ -585,7 +624,7 @@ class MockVideoController extends _i1.Mock implements _i20.VideoController {
   _i5.Player get player =>
       (super.noSuchMethod(
             Invocation.getter(#player),
-            returnValue: _FakePlayer_3(this, Invocation.getter(#player)),
+            returnValue: _FakePlayer_4(this, Invocation.getter(#player)),
           )
           as _i5.Player);
 
@@ -593,7 +632,7 @@ class MockVideoController extends _i1.Mock implements _i20.VideoController {
   _i6.Completer<_i21.PlatformVideoController> get platform =>
       (super.noSuchMethod(
             Invocation.getter(#platform),
-            returnValue: _FakeCompleter_4<_i21.PlatformVideoController>(
+            returnValue: _FakeCompleter_5<_i21.PlatformVideoController>(
               this,
               Invocation.getter(#platform),
             ),
@@ -604,7 +643,7 @@ class MockVideoController extends _i1.Mock implements _i20.VideoController {
   _i7.ValueNotifier<_i21.PlatformVideoController?> get notifier =>
       (super.noSuchMethod(
             Invocation.getter(#notifier),
-            returnValue: _FakeValueNotifier_5<_i21.PlatformVideoController?>(
+            returnValue: _FakeValueNotifier_6<_i21.PlatformVideoController?>(
               this,
               Invocation.getter(#notifier),
             ),
@@ -615,7 +654,7 @@ class MockVideoController extends _i1.Mock implements _i20.VideoController {
   _i7.ValueNotifier<int?> get id =>
       (super.noSuchMethod(
             Invocation.getter(#id),
-            returnValue: _FakeValueNotifier_5<int?>(
+            returnValue: _FakeValueNotifier_6<int?>(
               this,
               Invocation.getter(#id),
             ),
@@ -626,7 +665,7 @@ class MockVideoController extends _i1.Mock implements _i20.VideoController {
   _i7.ValueNotifier<_i22.Rect?> get rect =>
       (super.noSuchMethod(
             Invocation.getter(#rect),
-            returnValue: _FakeValueNotifier_5<_i22.Rect?>(
+            returnValue: _FakeValueNotifier_6<_i22.Rect?>(
               this,
               Invocation.getter(#rect),
             ),

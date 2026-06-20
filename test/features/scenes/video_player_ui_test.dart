@@ -158,6 +158,97 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
   });
 
+  testWidgets(
+    'SceneDetailsPage hides markers section when scene has no markers',
+    (tester) async {
+      tester.view.physicalSize = const Size(1200, 1600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final mockRepo = MockSceneRepository()..withData([testScene]);
+
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+        child: SceneDetailsPage(sceneId: testScene.id),
+      );
+      await tester.pump(const Duration(seconds: 1));
+
+      expect(find.text('Markers'), findsNothing);
+    },
+  );
+
+  testWidgets('SceneDetailsPage displays existing scene markers', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final sceneWithMarker = testScene.copyWith(
+      markers: const [
+        SceneMarker(
+          id: 'm1',
+          title: 'Opening beat',
+          seconds: 65,
+          endSeconds: 95,
+          screenshot: null,
+          preview: null,
+          stream: null,
+          primaryTagId: 't1',
+          primaryTagName: 'Beat',
+          tagIds: ['t1'],
+          tagNames: ['Beat'],
+        ),
+      ],
+    );
+    final mockRepo = MockSceneRepository()..withData([sceneWithMarker]);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+      child: SceneDetailsPage(sceneId: sceneWithMarker.id),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(find.text('Markers'), findsOneWidget);
+    expect(find.text('Opening beat'), findsOneWidget);
+    expect(find.text('01:05 - 01:35'), findsOneWidget);
+    expect(find.text('Beat'), findsOneWidget);
+  });
+
+  testWidgets('SceneDetailsPage creates marker then refreshes scene details', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final mockRepo = MockSceneRepository()..withData([testScene]);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+      child: SceneDetailsPage(sceneId: testScene.id),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    await tester.tap(find.byTooltip('Add marker'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'New marker');
+    await tester.tap(find.widgetWithText(FilledButton, 'Create'));
+    await tester.pumpAndSettle();
+
+    expect(mockRepo.createdSceneMarkers, hasLength(1));
+    expect(mockRepo.createdSceneMarkers.single.sceneId, testScene.id);
+    expect(mockRepo.createdSceneMarkers.single.title, 'New marker');
+    expect(mockRepo.createdSceneMarkers.single.seconds, 0);
+    expect(mockRepo.getSceneByIdRefreshValues, contains(true));
+  });
+
   testWidgets('SceneDetailsPage deletes metadata only by default', (
     tester,
   ) async {

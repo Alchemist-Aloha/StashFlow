@@ -22,6 +22,7 @@ class Fragment$SlimSceneData {
     this.studio,
     required this.performers,
     required this.tags,
+    required this.scene_markers,
     this.$__typename = 'Scene',
   });
 
@@ -43,6 +44,7 @@ class Fragment$SlimSceneData {
     final l$studio = json['studio'];
     final l$performers = json['performers'];
     final l$tags = json['tags'];
+    final l$scene_markers = json['scene_markers'];
     final l$$__typename = json['__typename'];
     return Fragment$SlimSceneData(
       id: (l$id as String),
@@ -92,6 +94,13 @@ class Fragment$SlimSceneData {
             ),
           )
           .toList(),
+      scene_markers: (l$scene_markers as List<dynamic>)
+          .map(
+            (e) => Fragment$SlimSceneData$scene_markers.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
       $__typename: (l$$__typename as String),
     );
   }
@@ -129,6 +138,8 @@ class Fragment$SlimSceneData {
   final List<Fragment$SlimSceneData$performers> performers;
 
   final List<Fragment$SlimSceneData$tags> tags;
+
+  final List<Fragment$SlimSceneData$scene_markers> scene_markers;
 
   final String $__typename;
 
@@ -168,6 +179,10 @@ class Fragment$SlimSceneData {
     _resultData['performers'] = l$performers.map((e) => e.toJson()).toList();
     final l$tags = tags;
     _resultData['tags'] = l$tags.map((e) => e.toJson()).toList();
+    final l$scene_markers = scene_markers;
+    _resultData['scene_markers'] = l$scene_markers
+        .map((e) => e.toJson())
+        .toList();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -192,6 +207,7 @@ class Fragment$SlimSceneData {
     final l$studio = studio;
     final l$performers = performers;
     final l$tags = tags;
+    final l$scene_markers = scene_markers;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -211,6 +227,7 @@ class Fragment$SlimSceneData {
       l$studio,
       Object.hashAll(l$performers.map((v) => v)),
       Object.hashAll(l$tags.map((v) => v)),
+      Object.hashAll(l$scene_markers.map((v) => v)),
       l$$__typename,
     ]);
   }
@@ -347,6 +364,18 @@ class Fragment$SlimSceneData {
         return false;
       }
     }
+    final l$scene_markers = scene_markers;
+    final lOther$scene_markers = other.scene_markers;
+    if (l$scene_markers.length != lOther$scene_markers.length) {
+      return false;
+    }
+    for (int i = 0; i < l$scene_markers.length; i++) {
+      final l$scene_markers$entry = l$scene_markers[i];
+      final lOther$scene_markers$entry = lOther$scene_markers[i];
+      if (l$scene_markers$entry != lOther$scene_markers$entry) {
+        return false;
+      }
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -388,6 +417,7 @@ abstract class CopyWith$Fragment$SlimSceneData<TRes> {
     Fragment$SlimSceneData$studio? studio,
     List<Fragment$SlimSceneData$performers>? performers,
     List<Fragment$SlimSceneData$tags>? tags,
+    List<Fragment$SlimSceneData$scene_markers>? scene_markers,
     String? $__typename,
   });
   TRes files(
@@ -428,6 +458,16 @@ abstract class CopyWith$Fragment$SlimSceneData<TRes> {
     )
     _fn,
   );
+  TRes scene_markers(
+    Iterable<Fragment$SlimSceneData$scene_markers> Function(
+      Iterable<
+        CopyWith$Fragment$SlimSceneData$scene_markers<
+          Fragment$SlimSceneData$scene_markers
+        >
+      >,
+    )
+    _fn,
+  );
 }
 
 class _CopyWithImpl$Fragment$SlimSceneData<TRes>
@@ -458,6 +498,7 @@ class _CopyWithImpl$Fragment$SlimSceneData<TRes>
     Object? studio = _undefined,
     Object? performers = _undefined,
     Object? tags = _undefined,
+    Object? scene_markers = _undefined,
     Object? $__typename = _undefined,
   }) => _then(
     Fragment$SlimSceneData(
@@ -506,6 +547,9 @@ class _CopyWithImpl$Fragment$SlimSceneData<TRes>
       tags: tags == _undefined || tags == null
           ? _instance.tags
           : (tags as List<Fragment$SlimSceneData$tags>),
+      scene_markers: scene_markers == _undefined || scene_markers == null
+          ? _instance.scene_markers
+          : (scene_markers as List<Fragment$SlimSceneData$scene_markers>),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
@@ -593,6 +637,23 @@ class _CopyWithImpl$Fragment$SlimSceneData<TRes>
       ),
     ).toList(),
   );
+
+  TRes scene_markers(
+    Iterable<Fragment$SlimSceneData$scene_markers> Function(
+      Iterable<
+        CopyWith$Fragment$SlimSceneData$scene_markers<
+          Fragment$SlimSceneData$scene_markers
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    scene_markers: _fn(
+      _instance.scene_markers.map(
+        (e) => CopyWith$Fragment$SlimSceneData$scene_markers(e, (i) => i),
+      ),
+    ).toList(),
+  );
 }
 
 class _CopyWithStubImpl$Fragment$SlimSceneData<TRes>
@@ -619,6 +680,7 @@ class _CopyWithStubImpl$Fragment$SlimSceneData<TRes>
     Fragment$SlimSceneData$studio? studio,
     List<Fragment$SlimSceneData$performers>? performers,
     List<Fragment$SlimSceneData$tags>? tags,
+    List<Fragment$SlimSceneData$scene_markers>? scene_markers,
     String? $__typename,
   }) => _res;
 
@@ -635,6 +697,8 @@ class _CopyWithStubImpl$Fragment$SlimSceneData<TRes>
   performers(_fn) => _res;
 
   tags(_fn) => _res;
+
+  scene_markers(_fn) => _res;
 }
 
 const fragmentDefinitionSlimSceneData = FragmentDefinitionNode(
@@ -984,6 +1048,134 @@ const fragmentDefinitionSlimSceneData = FragmentDefinitionNode(
               arguments: [],
               directives: [],
               selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: '__typename'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+          ],
+        ),
+      ),
+      FieldNode(
+        name: NameNode(value: 'scene_markers'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: SelectionSetNode(
+          selections: [
+            FieldNode(
+              name: NameNode(value: 'id'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'title'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'seconds'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'end_seconds'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'screenshot'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'preview'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'stream'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'primary_tag'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: SelectionSetNode(
+                selections: [
+                  FieldNode(
+                    name: NameNode(value: 'id'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'name'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: '__typename'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                ],
+              ),
+            ),
+            FieldNode(
+              name: NameNode(value: 'tags'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: SelectionSetNode(
+                selections: [
+                  FieldNode(
+                    name: NameNode(value: 'id'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'name'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: '__typename'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                ],
+              ),
             ),
             FieldNode(
               name: NameNode(value: '__typename'),
@@ -2182,6 +2374,616 @@ class _CopyWithStubImpl$Fragment$SlimSceneData$tags<TRes>
   call({String? id, String? name, String? $__typename}) => _res;
 }
 
+class Fragment$SlimSceneData$scene_markers {
+  Fragment$SlimSceneData$scene_markers({
+    required this.id,
+    required this.title,
+    required this.seconds,
+    this.end_seconds,
+    required this.screenshot,
+    required this.preview,
+    required this.stream,
+    required this.primary_tag,
+    required this.tags,
+    this.$__typename = 'SceneMarker',
+  });
+
+  factory Fragment$SlimSceneData$scene_markers.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$id = json['id'];
+    final l$title = json['title'];
+    final l$seconds = json['seconds'];
+    final l$end_seconds = json['end_seconds'];
+    final l$screenshot = json['screenshot'];
+    final l$preview = json['preview'];
+    final l$stream = json['stream'];
+    final l$primary_tag = json['primary_tag'];
+    final l$tags = json['tags'];
+    final l$$__typename = json['__typename'];
+    return Fragment$SlimSceneData$scene_markers(
+      id: (l$id as String),
+      title: (l$title as String),
+      seconds: (l$seconds as num).toDouble(),
+      end_seconds: (l$end_seconds as num?)?.toDouble(),
+      screenshot: (l$screenshot as String),
+      preview: (l$preview as String),
+      stream: (l$stream as String),
+      primary_tag: Fragment$SlimSceneData$scene_markers$primary_tag.fromJson(
+        (l$primary_tag as Map<String, dynamic>),
+      ),
+      tags: (l$tags as List<dynamic>)
+          .map(
+            (e) => Fragment$SlimSceneData$scene_markers$tags.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String title;
+
+  final double seconds;
+
+  final double? end_seconds;
+
+  final String screenshot;
+
+  final String preview;
+
+  final String stream;
+
+  final Fragment$SlimSceneData$scene_markers$primary_tag primary_tag;
+
+  final List<Fragment$SlimSceneData$scene_markers$tags> tags;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$title = title;
+    _resultData['title'] = l$title;
+    final l$seconds = seconds;
+    _resultData['seconds'] = l$seconds;
+    final l$end_seconds = end_seconds;
+    _resultData['end_seconds'] = l$end_seconds;
+    final l$screenshot = screenshot;
+    _resultData['screenshot'] = l$screenshot;
+    final l$preview = preview;
+    _resultData['preview'] = l$preview;
+    final l$stream = stream;
+    _resultData['stream'] = l$stream;
+    final l$primary_tag = primary_tag;
+    _resultData['primary_tag'] = l$primary_tag.toJson();
+    final l$tags = tags;
+    _resultData['tags'] = l$tags.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$title = title;
+    final l$seconds = seconds;
+    final l$end_seconds = end_seconds;
+    final l$screenshot = screenshot;
+    final l$preview = preview;
+    final l$stream = stream;
+    final l$primary_tag = primary_tag;
+    final l$tags = tags;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$title,
+      l$seconds,
+      l$end_seconds,
+      l$screenshot,
+      l$preview,
+      l$stream,
+      l$primary_tag,
+      Object.hashAll(l$tags.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$SlimSceneData$scene_markers ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$title = title;
+    final lOther$title = other.title;
+    if (l$title != lOther$title) {
+      return false;
+    }
+    final l$seconds = seconds;
+    final lOther$seconds = other.seconds;
+    if (l$seconds != lOther$seconds) {
+      return false;
+    }
+    final l$end_seconds = end_seconds;
+    final lOther$end_seconds = other.end_seconds;
+    if (l$end_seconds != lOther$end_seconds) {
+      return false;
+    }
+    final l$screenshot = screenshot;
+    final lOther$screenshot = other.screenshot;
+    if (l$screenshot != lOther$screenshot) {
+      return false;
+    }
+    final l$preview = preview;
+    final lOther$preview = other.preview;
+    if (l$preview != lOther$preview) {
+      return false;
+    }
+    final l$stream = stream;
+    final lOther$stream = other.stream;
+    if (l$stream != lOther$stream) {
+      return false;
+    }
+    final l$primary_tag = primary_tag;
+    final lOther$primary_tag = other.primary_tag;
+    if (l$primary_tag != lOther$primary_tag) {
+      return false;
+    }
+    final l$tags = tags;
+    final lOther$tags = other.tags;
+    if (l$tags.length != lOther$tags.length) {
+      return false;
+    }
+    for (int i = 0; i < l$tags.length; i++) {
+      final l$tags$entry = l$tags[i];
+      final lOther$tags$entry = lOther$tags[i];
+      if (l$tags$entry != lOther$tags$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$SlimSceneData$scene_markers
+    on Fragment$SlimSceneData$scene_markers {
+  CopyWith$Fragment$SlimSceneData$scene_markers<
+    Fragment$SlimSceneData$scene_markers
+  >
+  get copyWith => CopyWith$Fragment$SlimSceneData$scene_markers(this, (i) => i);
+}
+
+abstract class CopyWith$Fragment$SlimSceneData$scene_markers<TRes> {
+  factory CopyWith$Fragment$SlimSceneData$scene_markers(
+    Fragment$SlimSceneData$scene_markers instance,
+    TRes Function(Fragment$SlimSceneData$scene_markers) then,
+  ) = _CopyWithImpl$Fragment$SlimSceneData$scene_markers;
+
+  factory CopyWith$Fragment$SlimSceneData$scene_markers.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$SlimSceneData$scene_markers;
+
+  TRes call({
+    String? id,
+    String? title,
+    double? seconds,
+    double? end_seconds,
+    String? screenshot,
+    String? preview,
+    String? stream,
+    Fragment$SlimSceneData$scene_markers$primary_tag? primary_tag,
+    List<Fragment$SlimSceneData$scene_markers$tags>? tags,
+    String? $__typename,
+  });
+  CopyWith$Fragment$SlimSceneData$scene_markers$primary_tag<TRes>
+  get primary_tag;
+  TRes tags(
+    Iterable<Fragment$SlimSceneData$scene_markers$tags> Function(
+      Iterable<
+        CopyWith$Fragment$SlimSceneData$scene_markers$tags<
+          Fragment$SlimSceneData$scene_markers$tags
+        >
+      >,
+    )
+    _fn,
+  );
+}
+
+class _CopyWithImpl$Fragment$SlimSceneData$scene_markers<TRes>
+    implements CopyWith$Fragment$SlimSceneData$scene_markers<TRes> {
+  _CopyWithImpl$Fragment$SlimSceneData$scene_markers(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$SlimSceneData$scene_markers _instance;
+
+  final TRes Function(Fragment$SlimSceneData$scene_markers) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? title = _undefined,
+    Object? seconds = _undefined,
+    Object? end_seconds = _undefined,
+    Object? screenshot = _undefined,
+    Object? preview = _undefined,
+    Object? stream = _undefined,
+    Object? primary_tag = _undefined,
+    Object? tags = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Fragment$SlimSceneData$scene_markers(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      title: title == _undefined || title == null
+          ? _instance.title
+          : (title as String),
+      seconds: seconds == _undefined || seconds == null
+          ? _instance.seconds
+          : (seconds as double),
+      end_seconds: end_seconds == _undefined
+          ? _instance.end_seconds
+          : (end_seconds as double?),
+      screenshot: screenshot == _undefined || screenshot == null
+          ? _instance.screenshot
+          : (screenshot as String),
+      preview: preview == _undefined || preview == null
+          ? _instance.preview
+          : (preview as String),
+      stream: stream == _undefined || stream == null
+          ? _instance.stream
+          : (stream as String),
+      primary_tag: primary_tag == _undefined || primary_tag == null
+          ? _instance.primary_tag
+          : (primary_tag as Fragment$SlimSceneData$scene_markers$primary_tag),
+      tags: tags == _undefined || tags == null
+          ? _instance.tags
+          : (tags as List<Fragment$SlimSceneData$scene_markers$tags>),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+
+  CopyWith$Fragment$SlimSceneData$scene_markers$primary_tag<TRes>
+  get primary_tag {
+    final local$primary_tag = _instance.primary_tag;
+    return CopyWith$Fragment$SlimSceneData$scene_markers$primary_tag(
+      local$primary_tag,
+      (e) => call(primary_tag: e),
+    );
+  }
+
+  TRes tags(
+    Iterable<Fragment$SlimSceneData$scene_markers$tags> Function(
+      Iterable<
+        CopyWith$Fragment$SlimSceneData$scene_markers$tags<
+          Fragment$SlimSceneData$scene_markers$tags
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    tags: _fn(
+      _instance.tags.map(
+        (e) => CopyWith$Fragment$SlimSceneData$scene_markers$tags(e, (i) => i),
+      ),
+    ).toList(),
+  );
+}
+
+class _CopyWithStubImpl$Fragment$SlimSceneData$scene_markers<TRes>
+    implements CopyWith$Fragment$SlimSceneData$scene_markers<TRes> {
+  _CopyWithStubImpl$Fragment$SlimSceneData$scene_markers(this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? title,
+    double? seconds,
+    double? end_seconds,
+    String? screenshot,
+    String? preview,
+    String? stream,
+    Fragment$SlimSceneData$scene_markers$primary_tag? primary_tag,
+    List<Fragment$SlimSceneData$scene_markers$tags>? tags,
+    String? $__typename,
+  }) => _res;
+
+  CopyWith$Fragment$SlimSceneData$scene_markers$primary_tag<TRes>
+  get primary_tag =>
+      CopyWith$Fragment$SlimSceneData$scene_markers$primary_tag.stub(_res);
+
+  tags(_fn) => _res;
+}
+
+class Fragment$SlimSceneData$scene_markers$primary_tag {
+  Fragment$SlimSceneData$scene_markers$primary_tag({
+    required this.id,
+    required this.name,
+    this.$__typename = 'Tag',
+  });
+
+  factory Fragment$SlimSceneData$scene_markers$primary_tag.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$$__typename = json['__typename'];
+    return Fragment$SlimSceneData$scene_markers$primary_tag(
+      id: (l$id as String),
+      name: (l$name as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$id, l$name, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$SlimSceneData$scene_markers$primary_tag ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$SlimSceneData$scene_markers$primary_tag
+    on Fragment$SlimSceneData$scene_markers$primary_tag {
+  CopyWith$Fragment$SlimSceneData$scene_markers$primary_tag<
+    Fragment$SlimSceneData$scene_markers$primary_tag
+  >
+  get copyWith =>
+      CopyWith$Fragment$SlimSceneData$scene_markers$primary_tag(this, (i) => i);
+}
+
+abstract class CopyWith$Fragment$SlimSceneData$scene_markers$primary_tag<TRes> {
+  factory CopyWith$Fragment$SlimSceneData$scene_markers$primary_tag(
+    Fragment$SlimSceneData$scene_markers$primary_tag instance,
+    TRes Function(Fragment$SlimSceneData$scene_markers$primary_tag) then,
+  ) = _CopyWithImpl$Fragment$SlimSceneData$scene_markers$primary_tag;
+
+  factory CopyWith$Fragment$SlimSceneData$scene_markers$primary_tag.stub(
+    TRes res,
+  ) = _CopyWithStubImpl$Fragment$SlimSceneData$scene_markers$primary_tag;
+
+  TRes call({String? id, String? name, String? $__typename});
+}
+
+class _CopyWithImpl$Fragment$SlimSceneData$scene_markers$primary_tag<TRes>
+    implements CopyWith$Fragment$SlimSceneData$scene_markers$primary_tag<TRes> {
+  _CopyWithImpl$Fragment$SlimSceneData$scene_markers$primary_tag(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$SlimSceneData$scene_markers$primary_tag _instance;
+
+  final TRes Function(Fragment$SlimSceneData$scene_markers$primary_tag) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Fragment$SlimSceneData$scene_markers$primary_tag(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      name: name == _undefined || name == null
+          ? _instance.name
+          : (name as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Fragment$SlimSceneData$scene_markers$primary_tag<TRes>
+    implements CopyWith$Fragment$SlimSceneData$scene_markers$primary_tag<TRes> {
+  _CopyWithStubImpl$Fragment$SlimSceneData$scene_markers$primary_tag(this._res);
+
+  TRes _res;
+
+  call({String? id, String? name, String? $__typename}) => _res;
+}
+
+class Fragment$SlimSceneData$scene_markers$tags {
+  Fragment$SlimSceneData$scene_markers$tags({
+    required this.id,
+    required this.name,
+    this.$__typename = 'Tag',
+  });
+
+  factory Fragment$SlimSceneData$scene_markers$tags.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$$__typename = json['__typename'];
+    return Fragment$SlimSceneData$scene_markers$tags(
+      id: (l$id as String),
+      name: (l$name as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$id, l$name, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$SlimSceneData$scene_markers$tags ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$SlimSceneData$scene_markers$tags
+    on Fragment$SlimSceneData$scene_markers$tags {
+  CopyWith$Fragment$SlimSceneData$scene_markers$tags<
+    Fragment$SlimSceneData$scene_markers$tags
+  >
+  get copyWith =>
+      CopyWith$Fragment$SlimSceneData$scene_markers$tags(this, (i) => i);
+}
+
+abstract class CopyWith$Fragment$SlimSceneData$scene_markers$tags<TRes> {
+  factory CopyWith$Fragment$SlimSceneData$scene_markers$tags(
+    Fragment$SlimSceneData$scene_markers$tags instance,
+    TRes Function(Fragment$SlimSceneData$scene_markers$tags) then,
+  ) = _CopyWithImpl$Fragment$SlimSceneData$scene_markers$tags;
+
+  factory CopyWith$Fragment$SlimSceneData$scene_markers$tags.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$SlimSceneData$scene_markers$tags;
+
+  TRes call({String? id, String? name, String? $__typename});
+}
+
+class _CopyWithImpl$Fragment$SlimSceneData$scene_markers$tags<TRes>
+    implements CopyWith$Fragment$SlimSceneData$scene_markers$tags<TRes> {
+  _CopyWithImpl$Fragment$SlimSceneData$scene_markers$tags(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$SlimSceneData$scene_markers$tags _instance;
+
+  final TRes Function(Fragment$SlimSceneData$scene_markers$tags) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Fragment$SlimSceneData$scene_markers$tags(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      name: name == _undefined || name == null
+          ? _instance.name
+          : (name as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Fragment$SlimSceneData$scene_markers$tags<TRes>
+    implements CopyWith$Fragment$SlimSceneData$scene_markers$tags<TRes> {
+  _CopyWithStubImpl$Fragment$SlimSceneData$scene_markers$tags(this._res);
+
+  TRes _res;
+
+  call({String? id, String? name, String? $__typename}) => _res;
+}
+
 class Fragment$SceneData implements Fragment$SlimSceneData {
   Fragment$SceneData({
     required this.id,
@@ -2201,6 +3003,7 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     this.studio,
     required this.performers,
     required this.tags,
+    required this.scene_markers,
     this.$__typename = 'Scene',
     this.details,
     this.director,
@@ -2224,6 +3027,7 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     final l$studio = json['studio'];
     final l$performers = json['performers'];
     final l$tags = json['tags'];
+    final l$scene_markers = json['scene_markers'];
     final l$$__typename = json['__typename'];
     final l$details = json['details'];
     final l$director = json['director'];
@@ -2273,6 +3077,13 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
                 Fragment$SceneData$tags.fromJson((e as Map<String, dynamic>)),
           )
           .toList(),
+      scene_markers: (l$scene_markers as List<dynamic>)
+          .map(
+            (e) => Fragment$SceneData$scene_markers.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
       $__typename: (l$$__typename as String),
       details: (l$details as String?),
       director: (l$director as String?),
@@ -2312,6 +3123,8 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
   final List<Fragment$SceneData$performers> performers;
 
   final List<Fragment$SceneData$tags> tags;
+
+  final List<Fragment$SceneData$scene_markers> scene_markers;
 
   final String $__typename;
 
@@ -2355,6 +3168,10 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     _resultData['performers'] = l$performers.map((e) => e.toJson()).toList();
     final l$tags = tags;
     _resultData['tags'] = l$tags.map((e) => e.toJson()).toList();
+    final l$scene_markers = scene_markers;
+    _resultData['scene_markers'] = l$scene_markers
+        .map((e) => e.toJson())
+        .toList();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     final l$details = details;
@@ -2383,6 +3200,7 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
     final l$studio = studio;
     final l$performers = performers;
     final l$tags = tags;
+    final l$scene_markers = scene_markers;
     final l$$__typename = $__typename;
     final l$details = details;
     final l$director = director;
@@ -2404,6 +3222,7 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
       l$studio,
       Object.hashAll(l$performers.map((v) => v)),
       Object.hashAll(l$tags.map((v) => v)),
+      Object.hashAll(l$scene_markers.map((v) => v)),
       l$$__typename,
       l$details,
       l$director,
@@ -2542,6 +3361,18 @@ class Fragment$SceneData implements Fragment$SlimSceneData {
         return false;
       }
     }
+    final l$scene_markers = scene_markers;
+    final lOther$scene_markers = other.scene_markers;
+    if (l$scene_markers.length != lOther$scene_markers.length) {
+      return false;
+    }
+    for (int i = 0; i < l$scene_markers.length; i++) {
+      final l$scene_markers$entry = l$scene_markers[i];
+      final lOther$scene_markers$entry = lOther$scene_markers[i];
+      if (l$scene_markers$entry != lOther$scene_markers$entry) {
+        return false;
+      }
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -2593,6 +3424,7 @@ abstract class CopyWith$Fragment$SceneData<TRes> {
     Fragment$SceneData$studio? studio,
     List<Fragment$SceneData$performers>? performers,
     List<Fragment$SceneData$tags>? tags,
+    List<Fragment$SceneData$scene_markers>? scene_markers,
     String? $__typename,
     String? details,
     String? director,
@@ -2627,6 +3459,16 @@ abstract class CopyWith$Fragment$SceneData<TRes> {
     )
     _fn,
   );
+  TRes scene_markers(
+    Iterable<Fragment$SceneData$scene_markers> Function(
+      Iterable<
+        CopyWith$Fragment$SceneData$scene_markers<
+          Fragment$SceneData$scene_markers
+        >
+      >,
+    )
+    _fn,
+  );
 }
 
 class _CopyWithImpl$Fragment$SceneData<TRes>
@@ -2657,6 +3499,7 @@ class _CopyWithImpl$Fragment$SceneData<TRes>
     Object? studio = _undefined,
     Object? performers = _undefined,
     Object? tags = _undefined,
+    Object? scene_markers = _undefined,
     Object? $__typename = _undefined,
     Object? details = _undefined,
     Object? director = _undefined,
@@ -2707,6 +3550,9 @@ class _CopyWithImpl$Fragment$SceneData<TRes>
       tags: tags == _undefined || tags == null
           ? _instance.tags
           : (tags as List<Fragment$SceneData$tags>),
+      scene_markers: scene_markers == _undefined || scene_markers == null
+          ? _instance.scene_markers
+          : (scene_markers as List<Fragment$SceneData$scene_markers>),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
@@ -2788,6 +3634,23 @@ class _CopyWithImpl$Fragment$SceneData<TRes>
       _instance.tags.map((e) => CopyWith$Fragment$SceneData$tags(e, (i) => i)),
     ).toList(),
   );
+
+  TRes scene_markers(
+    Iterable<Fragment$SceneData$scene_markers> Function(
+      Iterable<
+        CopyWith$Fragment$SceneData$scene_markers<
+          Fragment$SceneData$scene_markers
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    scene_markers: _fn(
+      _instance.scene_markers.map(
+        (e) => CopyWith$Fragment$SceneData$scene_markers(e, (i) => i),
+      ),
+    ).toList(),
+  );
 }
 
 class _CopyWithStubImpl$Fragment$SceneData<TRes>
@@ -2814,6 +3677,7 @@ class _CopyWithStubImpl$Fragment$SceneData<TRes>
     Fragment$SceneData$studio? studio,
     List<Fragment$SceneData$performers>? performers,
     List<Fragment$SceneData$tags>? tags,
+    List<Fragment$SceneData$scene_markers>? scene_markers,
     String? $__typename,
     String? details,
     String? director,
@@ -2832,6 +3696,8 @@ class _CopyWithStubImpl$Fragment$SceneData<TRes>
   performers(_fn) => _res;
 
   tags(_fn) => _res;
+
+  scene_markers(_fn) => _res;
 }
 
 const fragmentDefinitionSceneData = FragmentDefinitionNode(
@@ -4315,6 +5181,608 @@ class _CopyWithImpl$Fragment$SceneData$tags<TRes>
 class _CopyWithStubImpl$Fragment$SceneData$tags<TRes>
     implements CopyWith$Fragment$SceneData$tags<TRes> {
   _CopyWithStubImpl$Fragment$SceneData$tags(this._res);
+
+  TRes _res;
+
+  call({String? id, String? name, String? $__typename}) => _res;
+}
+
+class Fragment$SceneData$scene_markers
+    implements Fragment$SlimSceneData$scene_markers {
+  Fragment$SceneData$scene_markers({
+    required this.id,
+    required this.title,
+    required this.seconds,
+    this.end_seconds,
+    required this.screenshot,
+    required this.preview,
+    required this.stream,
+    required this.primary_tag,
+    required this.tags,
+    this.$__typename = 'SceneMarker',
+  });
+
+  factory Fragment$SceneData$scene_markers.fromJson(Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$title = json['title'];
+    final l$seconds = json['seconds'];
+    final l$end_seconds = json['end_seconds'];
+    final l$screenshot = json['screenshot'];
+    final l$preview = json['preview'];
+    final l$stream = json['stream'];
+    final l$primary_tag = json['primary_tag'];
+    final l$tags = json['tags'];
+    final l$$__typename = json['__typename'];
+    return Fragment$SceneData$scene_markers(
+      id: (l$id as String),
+      title: (l$title as String),
+      seconds: (l$seconds as num).toDouble(),
+      end_seconds: (l$end_seconds as num?)?.toDouble(),
+      screenshot: (l$screenshot as String),
+      preview: (l$preview as String),
+      stream: (l$stream as String),
+      primary_tag: Fragment$SceneData$scene_markers$primary_tag.fromJson(
+        (l$primary_tag as Map<String, dynamic>),
+      ),
+      tags: (l$tags as List<dynamic>)
+          .map(
+            (e) => Fragment$SceneData$scene_markers$tags.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String title;
+
+  final double seconds;
+
+  final double? end_seconds;
+
+  final String screenshot;
+
+  final String preview;
+
+  final String stream;
+
+  final Fragment$SceneData$scene_markers$primary_tag primary_tag;
+
+  final List<Fragment$SceneData$scene_markers$tags> tags;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$title = title;
+    _resultData['title'] = l$title;
+    final l$seconds = seconds;
+    _resultData['seconds'] = l$seconds;
+    final l$end_seconds = end_seconds;
+    _resultData['end_seconds'] = l$end_seconds;
+    final l$screenshot = screenshot;
+    _resultData['screenshot'] = l$screenshot;
+    final l$preview = preview;
+    _resultData['preview'] = l$preview;
+    final l$stream = stream;
+    _resultData['stream'] = l$stream;
+    final l$primary_tag = primary_tag;
+    _resultData['primary_tag'] = l$primary_tag.toJson();
+    final l$tags = tags;
+    _resultData['tags'] = l$tags.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$title = title;
+    final l$seconds = seconds;
+    final l$end_seconds = end_seconds;
+    final l$screenshot = screenshot;
+    final l$preview = preview;
+    final l$stream = stream;
+    final l$primary_tag = primary_tag;
+    final l$tags = tags;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$title,
+      l$seconds,
+      l$end_seconds,
+      l$screenshot,
+      l$preview,
+      l$stream,
+      l$primary_tag,
+      Object.hashAll(l$tags.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$SceneData$scene_markers ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$title = title;
+    final lOther$title = other.title;
+    if (l$title != lOther$title) {
+      return false;
+    }
+    final l$seconds = seconds;
+    final lOther$seconds = other.seconds;
+    if (l$seconds != lOther$seconds) {
+      return false;
+    }
+    final l$end_seconds = end_seconds;
+    final lOther$end_seconds = other.end_seconds;
+    if (l$end_seconds != lOther$end_seconds) {
+      return false;
+    }
+    final l$screenshot = screenshot;
+    final lOther$screenshot = other.screenshot;
+    if (l$screenshot != lOther$screenshot) {
+      return false;
+    }
+    final l$preview = preview;
+    final lOther$preview = other.preview;
+    if (l$preview != lOther$preview) {
+      return false;
+    }
+    final l$stream = stream;
+    final lOther$stream = other.stream;
+    if (l$stream != lOther$stream) {
+      return false;
+    }
+    final l$primary_tag = primary_tag;
+    final lOther$primary_tag = other.primary_tag;
+    if (l$primary_tag != lOther$primary_tag) {
+      return false;
+    }
+    final l$tags = tags;
+    final lOther$tags = other.tags;
+    if (l$tags.length != lOther$tags.length) {
+      return false;
+    }
+    for (int i = 0; i < l$tags.length; i++) {
+      final l$tags$entry = l$tags[i];
+      final lOther$tags$entry = lOther$tags[i];
+      if (l$tags$entry != lOther$tags$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$SceneData$scene_markers
+    on Fragment$SceneData$scene_markers {
+  CopyWith$Fragment$SceneData$scene_markers<Fragment$SceneData$scene_markers>
+  get copyWith => CopyWith$Fragment$SceneData$scene_markers(this, (i) => i);
+}
+
+abstract class CopyWith$Fragment$SceneData$scene_markers<TRes> {
+  factory CopyWith$Fragment$SceneData$scene_markers(
+    Fragment$SceneData$scene_markers instance,
+    TRes Function(Fragment$SceneData$scene_markers) then,
+  ) = _CopyWithImpl$Fragment$SceneData$scene_markers;
+
+  factory CopyWith$Fragment$SceneData$scene_markers.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$SceneData$scene_markers;
+
+  TRes call({
+    String? id,
+    String? title,
+    double? seconds,
+    double? end_seconds,
+    String? screenshot,
+    String? preview,
+    String? stream,
+    Fragment$SceneData$scene_markers$primary_tag? primary_tag,
+    List<Fragment$SceneData$scene_markers$tags>? tags,
+    String? $__typename,
+  });
+  CopyWith$Fragment$SceneData$scene_markers$primary_tag<TRes> get primary_tag;
+  TRes tags(
+    Iterable<Fragment$SceneData$scene_markers$tags> Function(
+      Iterable<
+        CopyWith$Fragment$SceneData$scene_markers$tags<
+          Fragment$SceneData$scene_markers$tags
+        >
+      >,
+    )
+    _fn,
+  );
+}
+
+class _CopyWithImpl$Fragment$SceneData$scene_markers<TRes>
+    implements CopyWith$Fragment$SceneData$scene_markers<TRes> {
+  _CopyWithImpl$Fragment$SceneData$scene_markers(this._instance, this._then);
+
+  final Fragment$SceneData$scene_markers _instance;
+
+  final TRes Function(Fragment$SceneData$scene_markers) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? title = _undefined,
+    Object? seconds = _undefined,
+    Object? end_seconds = _undefined,
+    Object? screenshot = _undefined,
+    Object? preview = _undefined,
+    Object? stream = _undefined,
+    Object? primary_tag = _undefined,
+    Object? tags = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Fragment$SceneData$scene_markers(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      title: title == _undefined || title == null
+          ? _instance.title
+          : (title as String),
+      seconds: seconds == _undefined || seconds == null
+          ? _instance.seconds
+          : (seconds as double),
+      end_seconds: end_seconds == _undefined
+          ? _instance.end_seconds
+          : (end_seconds as double?),
+      screenshot: screenshot == _undefined || screenshot == null
+          ? _instance.screenshot
+          : (screenshot as String),
+      preview: preview == _undefined || preview == null
+          ? _instance.preview
+          : (preview as String),
+      stream: stream == _undefined || stream == null
+          ? _instance.stream
+          : (stream as String),
+      primary_tag: primary_tag == _undefined || primary_tag == null
+          ? _instance.primary_tag
+          : (primary_tag as Fragment$SceneData$scene_markers$primary_tag),
+      tags: tags == _undefined || tags == null
+          ? _instance.tags
+          : (tags as List<Fragment$SceneData$scene_markers$tags>),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+
+  CopyWith$Fragment$SceneData$scene_markers$primary_tag<TRes> get primary_tag {
+    final local$primary_tag = _instance.primary_tag;
+    return CopyWith$Fragment$SceneData$scene_markers$primary_tag(
+      local$primary_tag,
+      (e) => call(primary_tag: e),
+    );
+  }
+
+  TRes tags(
+    Iterable<Fragment$SceneData$scene_markers$tags> Function(
+      Iterable<
+        CopyWith$Fragment$SceneData$scene_markers$tags<
+          Fragment$SceneData$scene_markers$tags
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    tags: _fn(
+      _instance.tags.map(
+        (e) => CopyWith$Fragment$SceneData$scene_markers$tags(e, (i) => i),
+      ),
+    ).toList(),
+  );
+}
+
+class _CopyWithStubImpl$Fragment$SceneData$scene_markers<TRes>
+    implements CopyWith$Fragment$SceneData$scene_markers<TRes> {
+  _CopyWithStubImpl$Fragment$SceneData$scene_markers(this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? title,
+    double? seconds,
+    double? end_seconds,
+    String? screenshot,
+    String? preview,
+    String? stream,
+    Fragment$SceneData$scene_markers$primary_tag? primary_tag,
+    List<Fragment$SceneData$scene_markers$tags>? tags,
+    String? $__typename,
+  }) => _res;
+
+  CopyWith$Fragment$SceneData$scene_markers$primary_tag<TRes> get primary_tag =>
+      CopyWith$Fragment$SceneData$scene_markers$primary_tag.stub(_res);
+
+  tags(_fn) => _res;
+}
+
+class Fragment$SceneData$scene_markers$primary_tag
+    implements Fragment$SlimSceneData$scene_markers$primary_tag {
+  Fragment$SceneData$scene_markers$primary_tag({
+    required this.id,
+    required this.name,
+    this.$__typename = 'Tag',
+  });
+
+  factory Fragment$SceneData$scene_markers$primary_tag.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$$__typename = json['__typename'];
+    return Fragment$SceneData$scene_markers$primary_tag(
+      id: (l$id as String),
+      name: (l$name as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$id, l$name, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$SceneData$scene_markers$primary_tag ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$SceneData$scene_markers$primary_tag
+    on Fragment$SceneData$scene_markers$primary_tag {
+  CopyWith$Fragment$SceneData$scene_markers$primary_tag<
+    Fragment$SceneData$scene_markers$primary_tag
+  >
+  get copyWith =>
+      CopyWith$Fragment$SceneData$scene_markers$primary_tag(this, (i) => i);
+}
+
+abstract class CopyWith$Fragment$SceneData$scene_markers$primary_tag<TRes> {
+  factory CopyWith$Fragment$SceneData$scene_markers$primary_tag(
+    Fragment$SceneData$scene_markers$primary_tag instance,
+    TRes Function(Fragment$SceneData$scene_markers$primary_tag) then,
+  ) = _CopyWithImpl$Fragment$SceneData$scene_markers$primary_tag;
+
+  factory CopyWith$Fragment$SceneData$scene_markers$primary_tag.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$SceneData$scene_markers$primary_tag;
+
+  TRes call({String? id, String? name, String? $__typename});
+}
+
+class _CopyWithImpl$Fragment$SceneData$scene_markers$primary_tag<TRes>
+    implements CopyWith$Fragment$SceneData$scene_markers$primary_tag<TRes> {
+  _CopyWithImpl$Fragment$SceneData$scene_markers$primary_tag(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$SceneData$scene_markers$primary_tag _instance;
+
+  final TRes Function(Fragment$SceneData$scene_markers$primary_tag) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Fragment$SceneData$scene_markers$primary_tag(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      name: name == _undefined || name == null
+          ? _instance.name
+          : (name as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Fragment$SceneData$scene_markers$primary_tag<TRes>
+    implements CopyWith$Fragment$SceneData$scene_markers$primary_tag<TRes> {
+  _CopyWithStubImpl$Fragment$SceneData$scene_markers$primary_tag(this._res);
+
+  TRes _res;
+
+  call({String? id, String? name, String? $__typename}) => _res;
+}
+
+class Fragment$SceneData$scene_markers$tags
+    implements Fragment$SlimSceneData$scene_markers$tags {
+  Fragment$SceneData$scene_markers$tags({
+    required this.id,
+    required this.name,
+    this.$__typename = 'Tag',
+  });
+
+  factory Fragment$SceneData$scene_markers$tags.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$$__typename = json['__typename'];
+    return Fragment$SceneData$scene_markers$tags(
+      id: (l$id as String),
+      name: (l$name as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$id, l$name, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$SceneData$scene_markers$tags ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$SceneData$scene_markers$tags
+    on Fragment$SceneData$scene_markers$tags {
+  CopyWith$Fragment$SceneData$scene_markers$tags<
+    Fragment$SceneData$scene_markers$tags
+  >
+  get copyWith =>
+      CopyWith$Fragment$SceneData$scene_markers$tags(this, (i) => i);
+}
+
+abstract class CopyWith$Fragment$SceneData$scene_markers$tags<TRes> {
+  factory CopyWith$Fragment$SceneData$scene_markers$tags(
+    Fragment$SceneData$scene_markers$tags instance,
+    TRes Function(Fragment$SceneData$scene_markers$tags) then,
+  ) = _CopyWithImpl$Fragment$SceneData$scene_markers$tags;
+
+  factory CopyWith$Fragment$SceneData$scene_markers$tags.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$SceneData$scene_markers$tags;
+
+  TRes call({String? id, String? name, String? $__typename});
+}
+
+class _CopyWithImpl$Fragment$SceneData$scene_markers$tags<TRes>
+    implements CopyWith$Fragment$SceneData$scene_markers$tags<TRes> {
+  _CopyWithImpl$Fragment$SceneData$scene_markers$tags(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$SceneData$scene_markers$tags _instance;
+
+  final TRes Function(Fragment$SceneData$scene_markers$tags) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Fragment$SceneData$scene_markers$tags(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      name: name == _undefined || name == null
+          ? _instance.name
+          : (name as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Fragment$SceneData$scene_markers$tags<TRes>
+    implements CopyWith$Fragment$SceneData$scene_markers$tags<TRes> {
+  _CopyWithStubImpl$Fragment$SceneData$scene_markers$tags(this._res);
 
   TRes _res;
 

@@ -280,6 +280,39 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     }
   }
 
+  Future<void> _showAddMarkerDialog(Scene scene) async {
+    final title = await showDialog<String>(
+      context: context,
+      builder: (_) => _AddMarkerDialog(cancelLabel: context.l10n.common_cancel),
+    );
+    if (title == null || title.trim().isEmpty) return;
+
+    try {
+      await ref
+          .read(sceneRepositoryProvider)
+          .createSceneMarker(
+            sceneId: scene.id,
+            title: title,
+            seconds: 0,
+            primaryTagId: scene.tagIds.isNotEmpty ? scene.tagIds.first : null,
+            tagIds: scene.tagIds.isNotEmpty ? [scene.tagIds.first] : const [],
+          );
+      await ref.read(sceneDetailsProvider(scene.id).notifier).refresh();
+      _invalidateSceneListUnlessRandom();
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Marker created')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to create marker: ${e.toString()}')),
+        );
+      }
+    }
+  }
+
   Future<void> _saveVideoToGallery(Scene scene) async {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -431,6 +464,14 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         actions: [
           sceneAsync.maybeWhen(
             data: (scene) => IconButton(
+              tooltip: 'Add marker',
+              icon: const Icon(Icons.bookmark_add_outlined),
+              onPressed: () => _showAddMarkerDialog(scene),
+            ),
+            orElse: () => const SizedBox.shrink(),
+          ),
+          sceneAsync.maybeWhen(
+            data: (scene) => IconButton(
               tooltip: context.l10n.common_more,
               icon: const Icon(Icons.info_outline_rounded),
               onPressed: () => _showSceneDetailsSheet(scene),
@@ -542,6 +583,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _buildTagsSection(context, scene),
+                              _buildMarkersSection(context, scene),
                               _buildPerformersSection(context, scene),
                               _buildMoreFromStudioSection(context, scene),
                             ],
@@ -580,6 +622,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                           children: [
                             _buildMainInfo(context, scene, scrapeEnabled),
                             _buildTagsSection(context, scene),
+                            _buildMarkersSection(context, scene),
                             _buildPerformersSection(context, scene),
                             _buildMoreFromStudioSection(context, scene),
                           ],
@@ -970,6 +1013,115 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
   }
 
+  Widget _buildMarkersSection(BuildContext context, Scene scene) {
+    if (scene.markers.isEmpty) return const SizedBox.shrink();
+
+    final markers = [...scene.markers]
+      ..sort((a, b) => a.seconds.compareTo(b.seconds));
+
+    return _buildSectionContainer(
+      context,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Markers',
+            style: context.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: AppTheme.spacingSmall),
+          Column(
+            children: [
+              for (var i = 0; i < markers.length; i++) ...[
+                _buildMarkerTile(context, markers[i]),
+                if (i != markers.length - 1)
+                  const SizedBox(height: AppTheme.spacingSmall),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMarkerTile(BuildContext context, SceneMarker marker) {
+    final imageUrl = marker.screenshot?.isNotEmpty == true
+        ? marker.screenshot
+        : marker.preview;
+    final tagName = marker.primaryTagName?.trim().isNotEmpty == true
+        ? marker.primaryTagName!.trim()
+        : marker.tagNames.firstWhere(
+            (name) => name.trim().isNotEmpty,
+            orElse: () => '',
+          );
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+          child: SizedBox(
+            width: 96,
+            height: 54,
+            child: imageUrl?.isNotEmpty == true
+                ? StashImage(imageUrl: imageUrl, fit: BoxFit.cover)
+                : ColoredBox(
+                    color: context.colors.surfaceVariant,
+                    child: Icon(
+                      Icons.bookmark_outline,
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
+          ),
+        ),
+        const SizedBox(width: AppTheme.spacingSmall),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                marker.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: context.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                _formatMarkerRange(marker),
+                style: context.textTheme.bodySmall?.copyWith(
+                  color: context.colors.onSurfaceVariant,
+                ),
+              ),
+              if (tagName.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Chip(
+                    label: Text(tagName),
+                    visualDensity: VisualDensity.compact,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    side: BorderSide.none,
+                    backgroundColor: context.colors.surfaceVariant,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _formatMarkerRange(SceneMarker marker) {
+    final start = _formatDuration(marker.seconds);
+    final endSeconds = marker.endSeconds;
+    if (endSeconds == null) return start;
+    return '$start - ${_formatDuration(endSeconds)}';
+  }
+
   Widget _buildPerformersSection(BuildContext context, Scene scene) {
     final performerIndexes = <int>[];
     for (var i = 0; i < scene.performerNames.length; i++) {
@@ -1134,6 +1286,60 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       backgroundColor: context.colors.surfaceVariant,
       side: BorderSide.none,
       visualDensity: VisualDensity.compact,
+    );
+  }
+}
+
+class _AddMarkerDialog extends StatefulWidget {
+  const _AddMarkerDialog({required this.cancelLabel});
+
+  final String cancelLabel;
+
+  @override
+  State<_AddMarkerDialog> createState() => _AddMarkerDialogState();
+}
+
+class _AddMarkerDialogState extends State<_AddMarkerDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final trimmed = _controller.text.trim();
+    if (trimmed.isNotEmpty) {
+      Navigator.of(context).pop(trimmed);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      icon: const Icon(Icons.bookmark_add_outlined),
+      title: const Text('Add marker'),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        textInputAction: TextInputAction.done,
+        decoration: const InputDecoration(labelText: 'Marker name'),
+        onSubmitted: (_) => _submit(),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(widget.cancelLabel),
+        ),
+        FilledButton(onPressed: _submit, child: const Text('Create')),
+      ],
     );
   }
 }

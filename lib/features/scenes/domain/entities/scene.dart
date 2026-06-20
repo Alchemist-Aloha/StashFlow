@@ -31,9 +31,30 @@ abstract class Scene with _$Scene {
     required List<String?> performerImagePaths,
     @JsonKey(name: 'tag_ids') required List<String> tagIds,
     @JsonKey(name: 'tag_names') required List<String> tagNames,
+    @Default([]) List<SceneMarker> markers,
   }) = _Scene;
 
   factory Scene.fromJson(Map<String, dynamic> json) => _$SceneFromJson(json);
+}
+
+@freezed
+abstract class SceneMarker with _$SceneMarker {
+  const factory SceneMarker({
+    required String id,
+    required String title,
+    required double seconds,
+    @JsonKey(name: 'end_seconds') required double? endSeconds,
+    required String? screenshot,
+    required String? preview,
+    required String? stream,
+    @JsonKey(name: 'primary_tag_id') required String? primaryTagId,
+    @JsonKey(name: 'primary_tag_name') required String? primaryTagName,
+    @JsonKey(name: 'tag_ids') required List<String> tagIds,
+    @JsonKey(name: 'tag_names') required List<String> tagNames,
+  }) = _SceneMarker;
+
+  factory SceneMarker.fromJson(Map<String, dynamic> json) =>
+      _$SceneMarkerFromJson(json);
 }
 
 @freezed

@@ -161,6 +161,7 @@ class GraphQLSceneRepository implements SceneRepository {
                 .toList(),
             tagIds: s.tags.map((t) => t.id).toList(),
             tagNames: s.tags.map((t) => t.name).toList(),
+            markers: const [],
           ),
         )
         .toList();
@@ -304,6 +305,7 @@ class GraphQLSceneRepository implements SceneRepository {
     BaseRepository.validateResult(result);
     final s = result.parsedData?.findScene;
     if (s == null) throw Exception('Scene not found');
+    final rawScene = result.data?['findScene'] as Map<String, dynamic>?;
 
     return Scene(
       id: s.id,
@@ -390,6 +392,188 @@ class GraphQLSceneRepository implements SceneRepository {
           .toList(),
       tagIds: s.tags.map((t) => t.id).toList(),
       tagNames: s.tags.map((t) => t.name).toList(),
+      markers: _mapSceneMarkers(rawScene?['scene_markers']),
+    );
+  }
+
+  @override
+  Future<SceneMarker> createSceneMarker({
+    required String sceneId,
+    required String title,
+    double seconds = 0,
+    double? endSeconds,
+    String? primaryTagId,
+    List<String> tagIds = const [],
+  }) async {
+    final trimmedTitle = title.trim();
+    if (trimmedTitle.isEmpty) {
+      throw ArgumentError.value(title, 'title', 'Marker title cannot be empty');
+    }
+
+    final resolvedPrimaryTagId = await _resolveMarkerPrimaryTagId(
+      explicitPrimaryTagId: primaryTagId,
+      fallbackName: trimmedTitle,
+    );
+    final resolvedTagIds = {
+      resolvedPrimaryTagId,
+      ...tagIds.where((id) => id.trim().isNotEmpty),
+    }.toList(growable: false);
+    final input = <String, dynamic>{
+      'scene_id': sceneId,
+      'title': trimmedTitle,
+      'seconds': seconds,
+      'primary_tag_id': resolvedPrimaryTagId,
+      'tag_ids': resolvedTagIds,
+    };
+    if (endSeconds != null) {
+      input['end_seconds'] = endSeconds;
+    }
+
+    final result = await client.mutate<Map<String, dynamic>>(
+      MutationOptions<Map<String, dynamic>>(
+        document: gql(r'''
+          mutation CreateSceneMarker($input: SceneMarkerCreateInput!) {
+            sceneMarkerCreate(input: $input) {
+              id
+              title
+              seconds
+              end_seconds
+              screenshot
+              preview
+              stream
+              primary_tag {
+                id
+                name
+              }
+              tags {
+                id
+                name
+              }
+            }
+          }
+        '''),
+        variables: {'input': input},
+        fetchPolicy: FetchPolicy.noCache,
+      ),
+    );
+    BaseRepository.validateResult(result);
+
+    final rawMarker = result.data?['sceneMarkerCreate'];
+    if (rawMarker is! Map<String, dynamic>) {
+      throw StateError('Scene marker was not created');
+    }
+    return _mapSceneMarker(rawMarker);
+  }
+
+  Future<String> _resolveMarkerPrimaryTagId({
+    required String? explicitPrimaryTagId,
+    required String fallbackName,
+  }) async {
+    final explicit = explicitPrimaryTagId?.trim();
+    if (explicit != null && explicit.isNotEmpty) return explicit;
+
+    final findResult = await client.query<Map<String, dynamic>>(
+      QueryOptions<Map<String, dynamic>>(
+        document: gql(r'''
+          query FindMarkerPrimaryTag($filter: FindFilterType) {
+            findTags(filter: $filter) {
+              tags {
+                id
+                name
+              }
+            }
+          }
+        '''),
+        variables: {
+          'filter': {'q': fallbackName, 'per_page': 20},
+        },
+        fetchPolicy: FetchPolicy.networkOnly,
+      ),
+    );
+    BaseRepository.validateResult(findResult);
+
+    final rawTags =
+        (findResult.data?['findTags'] as Map<String, dynamic>?)?['tags'];
+    if (rawTags is List) {
+      for (final rawTag in rawTags) {
+        if (rawTag is Map<String, dynamic> &&
+            (rawTag['name'] as String?)?.toLowerCase() ==
+                fallbackName.toLowerCase()) {
+          final id = rawTag['id'] as String?;
+          if (id != null && id.isNotEmpty) return id;
+        }
+      }
+    }
+
+    final createResult = await client.mutate<Map<String, dynamic>>(
+      MutationOptions<Map<String, dynamic>>(
+        document: gql(r'''
+          mutation CreateMarkerPrimaryTag($input: TagCreateInput!) {
+            tagCreate(input: $input) {
+              id
+            }
+          }
+        '''),
+        variables: {
+          'input': {'name': fallbackName},
+        },
+        fetchPolicy: FetchPolicy.noCache,
+      ),
+    );
+    BaseRepository.validateResult(createResult);
+
+    final id =
+        (createResult.data?['tagCreate'] as Map<String, dynamic>?)?['id']
+            as String?;
+    if (id == null || id.isEmpty) {
+      throw StateError('Primary marker tag was not created');
+    }
+    return id;
+  }
+
+  List<SceneMarker> _mapSceneMarkers(Object? rawMarkers) {
+    if (rawMarkers is! List) return const [];
+    return rawMarkers
+        .whereType<Map<String, dynamic>>()
+        .map(_mapSceneMarker)
+        .toList(growable: false);
+  }
+
+  SceneMarker _mapSceneMarker(Map<String, dynamic> marker) {
+    final primaryTag = marker['primary_tag'] as Map<String, dynamic>?;
+    final rawTags = marker['tags'];
+    final tags = rawTags is List
+        ? rawTags.whereType<Map<String, dynamic>>().toList(growable: false)
+        : const <Map<String, dynamic>>[];
+    final primaryTagId = primaryTag?['id'] as String?;
+
+    return SceneMarker(
+      id: marker['id'] as String,
+      title: marker['title'] as String? ?? '',
+      seconds: (marker['seconds'] as num?)?.toDouble() ?? 0,
+      endSeconds: (marker['end_seconds'] as num?)?.toDouble(),
+      screenshot: resolveGraphqlMediaUrl(
+        rawUrl: marker['screenshot'] as String?,
+        graphqlEndpoint: _graphqlEndpoint,
+      ),
+      preview: resolveGraphqlMediaUrl(
+        rawUrl: marker['preview'] as String?,
+        graphqlEndpoint: _graphqlEndpoint,
+      ),
+      stream: resolveGraphqlMediaUrl(
+        rawUrl: marker['stream'] as String?,
+        graphqlEndpoint: _graphqlEndpoint,
+      ),
+      primaryTagId: primaryTagId,
+      primaryTagName: primaryTag?['name'] as String?,
+      tagIds: tags
+          .map((tag) => tag['id'] as String?)
+          .whereType<String>()
+          .toList(growable: false),
+      tagNames: tags
+          .map((tag) => tag['name'] as String?)
+          .whereType<String>()
+          .toList(growable: false),
     );
   }
 
