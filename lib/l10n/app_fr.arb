@@ -1051,5 +1051,8 @@
   "settings_security_subtitle": "Paramètres de verrouillage de l'application et du code",
   "tools_section_subtitle": "Flux de travail de maintenance et de métadonnées pour les scènes.",
   "tools_scene_deduplication_subtitle": "Rechercher et gérer les scènes en double.",
-  "tools_scene_tagger_subtitle": "Scraper les pages de scènes actuelles avec Stash-box."
+  "tools_scene_tagger_subtitle": "Scraper les pages de scènes actuelles avec Stash-box.",
+  "scraped_metadata": "Métadonnées grattées",
+  "local_scene": "Scène locale",
+  "gigabytes": "{size} Go"
 }

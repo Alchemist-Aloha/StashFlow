@@ -1051,5 +1051,8 @@
   "settings_security_subtitle": "Настройки блокировки приложения и пароля",
   "tools_section_subtitle": "Рабочие процессы обслуживания и метаданных для сцен.",
   "tools_scene_deduplication_subtitle": "Поиск и управление дубликатами сцен.",
-  "tools_scene_tagger_subtitle": "Скрапинг страниц текущих сцен с помощью Stash-box."
+  "tools_scene_tagger_subtitle": "Скрапинг страниц текущих сцен с помощью Stash-box.",
+  "scraped_metadata": "Извлеченные метаданные",
+  "local_scene": "Местная сцена",
+  "gigabytes": "{size} ГБ"
 }

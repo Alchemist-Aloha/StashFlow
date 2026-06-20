@@ -3048,4 +3048,15 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Удерживайте для статистики библиотеки';
+
+  @override
+  String get scraped_metadata => 'Извлеченные метаданные';
+
+  @override
+  String get local_scene => 'Местная сцена';
+
+  @override
+  String gigabytes(String size) {
+    return '$size ГБ';
+  }
 }

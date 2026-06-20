@@ -1051,5 +1051,8 @@
   "settings_security_subtitle": "앱 잠금 및 비밀번호 설정",
   "tools_section_subtitle": "씬에 대한 유지 관리 및 메타데이터 워크플로.",
   "tools_scene_deduplication_subtitle": "중복된 씬을 찾아 관리합니다.",
-  "tools_scene_tagger_subtitle": "Stash-box로 현재 씬 페이지를 스크랩합니다."
+  "tools_scene_tagger_subtitle": "Stash-box로 현재 씬 페이지를 스크랩합니다.",
+  "scraped_metadata": "Scraped metadata",
+  "local_scene": "Local scene",
+  "gigabytes": "{size} GB"
 }

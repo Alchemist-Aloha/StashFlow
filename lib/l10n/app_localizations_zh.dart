@@ -2895,6 +2895,17 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get stats_library_stats_tooltip => '长按查看资料库统计';
+
+  @override
+  String get scraped_metadata => '抓取的元数据';
+
+  @override
+  String get local_scene => '当地场景';
+
+  @override
+  String gigabytes(String size) {
+    return '${size}GB';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5787,6 +5798,17 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get stats_library_stats_tooltip => '长按查看资料库统计';
+
+  @override
+  String get scraped_metadata => '抓取的元数据';
+
+  @override
+  String get local_scene => '当地场景';
+
+  @override
+  String gigabytes(String size) {
+    return '${size}GB';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8683,4 +8705,15 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get stats_library_stats_tooltip => '長按查看資料庫統計';
+
+  @override
+  String get scraped_metadata => '抓取的元數據';
+
+  @override
+  String get local_scene => '當地場景';
+
+  @override
+  String gigabytes(String size) {
+    return '${size}GB';
+  }
 }

@@ -5429,6 +5429,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Long press for library stats'**
   String get stats_library_stats_tooltip;
+
+  /// No description provided for @scraped_metadata.
+  ///
+  /// In en, this message translates to:
+  /// **'Scraped metadata'**
+  String get scraped_metadata;
+
+  /// No description provided for @local_scene.
+  ///
+  /// In en, this message translates to:
+  /// **'Local scene'**
+  String get local_scene;
+
+  /// No description provided for @gigabytes.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} GB'**
+  String gigabytes(String size);
 }
 
 class _AppLocalizationsDelegate

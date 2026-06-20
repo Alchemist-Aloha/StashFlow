@@ -2949,4 +2949,15 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get stats_library_stats_tooltip => '길게 눌러 라이브러리 통계 보기';
+
+  @override
+  String get scraped_metadata => 'Scraped metadata';
+
+  @override
+  String get local_scene => 'Local scene';
+
+  @override
+  String gigabytes(String size) {
+    return '$size GB';
+  }
 }

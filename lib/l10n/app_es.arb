@@ -1051,5 +1051,8 @@
   "settings_security_subtitle": "Configuración de bloqueo de aplicación y contraseña",
   "tools_section_subtitle": "Flujos de trabajo de mantenimiento y metadatos para escenas.",
   "tools_scene_deduplication_subtitle": "Buscar y gestionar escenas duplicadas.",
-  "tools_scene_tagger_subtitle": "Extraer páginas de escenas actuales con Stash-box."
+  "tools_scene_tagger_subtitle": "Extraer páginas de escenas actuales con Stash-box.",
+  "scraped_metadata": "Metadatos extraídos",
+  "local_scene": "escena local",
+  "gigabytes": "{size}GB"
 }

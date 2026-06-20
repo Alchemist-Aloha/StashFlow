@@ -3080,4 +3080,15 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Mantén pulsado para ver las estadísticas de la biblioteca';
+
+  @override
+  String get scraped_metadata => 'Metadatos extraídos';
+
+  @override
+  String get local_scene => 'escena local';
+
+  @override
+  String gigabytes(String size) {
+    return '${size}GB';
+  }
 }

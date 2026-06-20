@@ -3072,4 +3072,15 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Appui long pour les statistiques de la bibliothèque';
+
+  @override
+  String get scraped_metadata => 'Métadonnées grattées';
+
+  @override
+  String get local_scene => 'Scène locale';
+
+  @override
+  String gigabytes(String size) {
+    return '$size Go';
+  }
 }

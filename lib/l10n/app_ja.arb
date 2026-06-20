@@ -1051,5 +1051,8 @@
   "settings_security_subtitle": "アプリロックとパスコードの設定",
   "tools_section_subtitle": "シーンのメンテナンスとメタデータのワークフロー。",
   "tools_scene_deduplication_subtitle": "重複するシーンを見つけて管理します。",
-  "tools_scene_tagger_subtitle": "Stash-boxを使用して現在のシーンページをスクレイピングします。"
+  "tools_scene_tagger_subtitle": "Stash-boxを使用して現在のシーンページをスクレイピングします。",
+  "scraped_metadata": "スクレイピングされたメタデータ",
+  "local_scene": "現地の様子",
+  "gigabytes": "{size}GB"
 }

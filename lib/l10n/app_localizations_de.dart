@@ -3053,4 +3053,15 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Lange drücken für Bibliotheksstatistiken';
+
+  @override
+  String get scraped_metadata => 'Gekratzte Metadaten';
+
+  @override
+  String get local_scene => 'Lokale Szene';
+
+  @override
+  String gigabytes(String size) {
+    return '$size GB';
+  }
 }
