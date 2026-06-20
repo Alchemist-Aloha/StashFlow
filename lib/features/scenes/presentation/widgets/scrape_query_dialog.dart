@@ -136,18 +136,16 @@ class _ScrapeQueryDialogState extends ConsumerState<ScrapeQueryDialog> {
             ),
             if (widget.entityType == ScrapeEntityType.scene) ...[
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Checkbox(
-                    value: _useFingerprints,
-                    onChanged: (val) {
-                      setState(() {
-                        _useFingerprints = val ?? false;
-                      });
-                    },
-                  ),
-                  Text(context.l10n.details_scene_fingerprint_query),
-                ],
+              CheckboxListTile.adaptive(
+                contentPadding: EdgeInsets.zero,
+                controlAffinity: ListTileControlAffinity.leading,
+                title: Text(context.l10n.details_scene_fingerprint_query),
+                value: _useFingerprints,
+                onChanged: (val) {
+                  setState(() {
+                    _useFingerprints = val ?? false;
+                  });
+                },
               ),
             ],
             const SizedBox(height: 16),
@@ -177,8 +175,8 @@ class _ScrapeQueryDialogState extends ConsumerState<ScrapeQueryDialog> {
                       .toList(),
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error:
-                    (err, _) => Text(context.l10n.common_error(err.toString())),
+                error: (err, _) =>
+                    Text(context.l10n.common_error(err.toString())),
               ),
             ),
             RadioGroup<String>(
@@ -204,8 +202,8 @@ class _ScrapeQueryDialogState extends ConsumerState<ScrapeQueryDialog> {
                   );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error:
-                    (err, _) => Text(context.l10n.common_error(err.toString())),
+                error: (err, _) =>
+                    Text(context.l10n.common_error(err.toString())),
               ),
             ),
           ],
