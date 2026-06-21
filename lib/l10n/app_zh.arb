@@ -1051,5 +1051,10 @@
   "settings_security_subtitle": "应用锁和密码设置",
   "tools_section_subtitle": "场景的维护和元数据工作流。",
   "tools_scene_deduplication_subtitle": "查找并管理重复的场景。",
-  "tools_scene_tagger_subtitle": "使用 Stash-box 刮削当前场景页面。"
+  "tools_scene_tagger_subtitle": "使用 Stash-box 刮削当前场景页面。",
+  "scene_tagger_scraped_metadata": "抓取的元数据",
+  "scene_tagger_local_scene": "当地场景",
+  "mini_player_now_playing": "正在播放：{title}。点击可打开场景详细信息。",
+  "scene_details_delete_prompt": "选择如何删除该场景。此操作无法撤消。",
+  "scene_details_delete_failed": "无法删除场景：{error}"
 }

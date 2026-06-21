@@ -3072,4 +3072,24 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Appui long pour les statistiques de la bibliothèque';
+
+  @override
+  String get scene_tagger_scraped_metadata => 'Métadonnées grattées';
+
+  @override
+  String get scene_tagger_local_scene => 'Scène locale';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return 'Lecture en cours : $title. Appuyez pour ouvrir les détails de la scène.';
+  }
+
+  @override
+  String get scene_details_delete_prompt =>
+      'Choisissez comment cette scène doit être supprimée. Cette action ne peut pas être annulée.';
+
+  @override
+  String scene_details_delete_failed(String error) {
+    return 'Échec de la suppression de la scène : $error';
+  }
 }

@@ -3080,4 +3080,24 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Mantén pulsado para ver las estadísticas de la biblioteca';
+
+  @override
+  String get scene_tagger_scraped_metadata => 'Metadatos eliminados';
+
+  @override
+  String get scene_tagger_local_scene => 'escena local';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return 'Reproduciendo ahora: $title. Toque para abrir los detalles de la escena.';
+  }
+
+  @override
+  String get scene_details_delete_prompt =>
+      'Elija cómo se debe eliminar esta escena. Esta acción no se puede deshacer.';
+
+  @override
+  String scene_details_delete_failed(String error) {
+    return 'No se pudo eliminar la escena: $error';
+  }
 }

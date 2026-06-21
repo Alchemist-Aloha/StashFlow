@@ -1056,5 +1056,10 @@
   "settings_security_subtitle": "Impostazioni del blocco dell'applicazione e del passcode",
   "tools_section_subtitle": "Flussi di lavoro di manutenzione e metadati per le scene.",
   "tools_scene_deduplication_subtitle": "Trova e gestisci le scene duplicate.",
-  "tools_scene_tagger_subtitle": "Scrape delle pagine delle scene correnti con Stash-box."
+  "tools_scene_tagger_subtitle": "Scrape delle pagine delle scene correnti con Stash-box.",
+  "scene_tagger_scraped_metadata": "Metadati raschiati",
+  "scene_tagger_local_scene": "Scena locale",
+  "mini_player_now_playing": "Ora in riproduzione: {title}. Tocca per aprire i dettagli della scena.",
+  "scene_details_delete_prompt": "Scegli come eliminare questa scena. Questa azione non può essere annullata.",
+  "scene_details_delete_failed": "Impossibile eliminare la scena: {error}"
 }

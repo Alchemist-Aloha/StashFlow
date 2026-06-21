@@ -2895,6 +2895,25 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get stats_library_stats_tooltip => '长按查看资料库统计';
+
+  @override
+  String get scene_tagger_scraped_metadata => '抓取的元数据';
+
+  @override
+  String get scene_tagger_local_scene => '当地场景';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return '正在播放：$title。点击可打开场景详细信息。';
+  }
+
+  @override
+  String get scene_details_delete_prompt => '选择如何删除该场景。此操作无法撤消。';
+
+  @override
+  String scene_details_delete_failed(String error) {
+    return '无法删除场景：$error';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5787,6 +5806,25 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get stats_library_stats_tooltip => '长按查看资料库统计';
+
+  @override
+  String get scene_tagger_scraped_metadata => '抓取的元数据';
+
+  @override
+  String get scene_tagger_local_scene => '当地场景';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return '正在播放：$title。点击可打开场景详细信息。';
+  }
+
+  @override
+  String get scene_details_delete_prompt => '选择如何删除该场景。此操作无法撤消。';
+
+  @override
+  String scene_details_delete_failed(String error) {
+    return '无法删除场景：$error';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8683,4 +8721,23 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get stats_library_stats_tooltip => '長按查看資料庫統計';
+
+  @override
+  String get scene_tagger_scraped_metadata => '抓取的元數據';
+
+  @override
+  String get scene_tagger_local_scene => '當地場景';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return '正在播放：$title。點擊可開啟場景詳細資訊。';
+  }
+
+  @override
+  String get scene_details_delete_prompt => '選擇如何刪除該場景。此操作無法撤銷。';
+
+  @override
+  String scene_details_delete_failed(String error) {
+    return '無法刪除場景：$error';
+  }
 }

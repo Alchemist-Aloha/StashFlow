@@ -1360,7 +1360,7 @@
       }
     }
   },
-  "scene_tagger_checked_matches_summary": "{checked} checked • {matches} matches",
+  "scene_tagger_checked_matches_summary": "{checked} checked \u2022 {matches} matches",
   "@scene_tagger_checked_matches_summary": {
     "placeholders": {
       "checked": {
@@ -1400,5 +1400,24 @@
       }
     }
   },
-  "stats_library_stats_tooltip": "Long press for library stats"
+  "stats_library_stats_tooltip": "Long press for library stats",
+  "scene_tagger_scraped_metadata": "Scraped metadata",
+  "scene_tagger_local_scene": "Local scene",
+  "mini_player_now_playing": "Now playing: {title}. Tap to open scene details.",
+  "@mini_player_now_playing": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "scene_details_delete_prompt": "Choose how this scene should be deleted. This action cannot be undone.",
+  "scene_details_delete_failed": "Failed to delete scene: {error}",
+  "@scene_details_delete_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

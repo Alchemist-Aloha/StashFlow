@@ -2951,4 +2951,24 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get stats_library_stats_tooltip => '長押しでライブラリ統計を表示';
+
+  @override
+  String get scene_tagger_scraped_metadata => 'スクレイピングされたメタデータ';
+
+  @override
+  String get scene_tagger_local_scene => '現地の様子';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return '現在再生中: $title。タップしてシーンの詳細を開きます。';
+  }
+
+  @override
+  String get scene_details_delete_prompt =>
+      'このシーンを削除する方法を選択します。この操作は元に戻すことができません。';
+
+  @override
+  String scene_details_delete_failed(String error) {
+    return 'シーンの削除に失敗しました: $error';
+  }
 }
