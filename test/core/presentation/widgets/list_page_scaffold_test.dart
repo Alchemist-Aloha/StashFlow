@@ -131,6 +131,28 @@ void main() {
       }
     });
 
+    testWidgets('uses always-scrollable physics when refresh is available', (
+      WidgetTester tester,
+    ) async {
+      await pumpTestWidget(
+        tester,
+        child: ListPageScaffold<String>(
+          title: 'Test Title',
+          searchHint: 'Search...',
+          onSearchChanged: (_) {},
+          provider: const AsyncValue.data(['Item 1']),
+          onRefresh: () async {},
+          itemBuilder: (context, item, mw, mh) => ListTile(title: Text(item)),
+        ),
+      );
+      await tester.pump();
+
+      expect(
+        tester.widget<ListView>(find.byType(ListView)).physics,
+        isA<AlwaysScrollableScrollPhysics>(),
+      );
+    });
+
     testWidgets('shows grid view when gridDelegate is provided', (
       WidgetTester tester,
     ) async {

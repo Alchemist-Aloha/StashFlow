@@ -465,6 +465,26 @@ class GraphQLSceneRepository implements SceneRepository {
     return _mapSceneMarker(rawMarker);
   }
 
+  @override
+  Future<void> deleteSceneMarker(String markerId) async {
+    final result = await client.mutate<Map<String, dynamic>>(
+      MutationOptions<Map<String, dynamic>>(
+        document: gql(r'''
+          mutation DeleteSceneMarker($id: ID!) {
+            sceneMarkerDestroy(id: $id)
+          }
+        '''),
+        variables: {'id': markerId},
+        fetchPolicy: FetchPolicy.noCache,
+      ),
+    );
+    BaseRepository.validateResult(result);
+
+    if (result.data?['sceneMarkerDestroy'] != true) {
+      throw StateError('Scene marker was not deleted');
+    }
+  }
+
   Future<String> _resolveMarkerPrimaryTagId({
     required String? explicitPrimaryTagId,
     required String fallbackName,

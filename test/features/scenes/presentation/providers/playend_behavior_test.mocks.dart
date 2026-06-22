@@ -312,6 +312,15 @@ class MockSceneRepository extends _i1.Mock implements _i8.SceneRepository {
           as _i6.Future<_i2.SceneMarker>);
 
   @override
+  _i6.Future<void> deleteSceneMarker(String? markerId) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteSceneMarker, [markerId]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
   _i6.Future<void> deleteScene(
     String? id, {
     required bool? deleteFile,

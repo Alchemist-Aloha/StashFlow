@@ -62,6 +62,21 @@ void main() {
         expect(marker.primaryTagName, 'Opening beat');
       },
     );
+
+    test('deleteSceneMarker sends marker id to destroy mutation', () async {
+      final client = _FakeGraphQLClient(
+        queryData: const {'__typename': 'Query'},
+        mutationData: const {
+          '__typename': 'Mutation',
+          'sceneMarkerDestroy': true,
+        },
+      );
+      final repository = GraphQLSceneRepository(client);
+
+      await repository.deleteSceneMarker('marker-1');
+
+      expect(client.lastMutationVariables, {'id': 'marker-1'});
+    });
   });
 }
 

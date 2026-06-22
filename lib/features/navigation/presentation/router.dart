@@ -7,6 +7,7 @@ import '../../scenes/presentation/pages/scenes_page.dart';
 import '../../scenes/presentation/pages/scene_deduplication_page.dart';
 import '../../scenes/presentation/pages/scene_details_page.dart';
 import '../../scenes/presentation/pages/scene_edit_page.dart';
+import '../../scenes/presentation/pages/scene_markers_page.dart';
 import '../../scenes/presentation/pages/scene_tagger_page.dart';
 import '../../performers/domain/entities/performer.dart';
 import '../../performers/presentation/pages/performers_page.dart';
@@ -29,6 +30,7 @@ import '../../images/presentation/pages/image_fullscreen_page.dart';
 import '../../galleries/presentation/pages/galleries_page.dart';
 import '../../galleries/presentation/pages/gallery_details_page.dart';
 import '../../groups/presentation/pages/group_details_page.dart';
+import '../../groups/presentation/pages/group_media_grid_page.dart';
 import '../../groups/presentation/pages/groups_page.dart';
 import '../../setup/presentation/pages/settings/settings_hub_page.dart';
 import '../../setup/presentation/pages/settings/server_settings_page.dart';
@@ -81,6 +83,10 @@ GoRouter router(Ref ref) {
                 path: '/scenes',
                 builder: (context, state) => const ScenesPage(),
                 routes: [
+                  GoRoute(
+                    path: 'markers',
+                    builder: (context, state) => const SceneMarkersPage(),
+                  ),
                   GoRoute(
                     path: 'scene/:id',
                     pageBuilder: (context, state) => CustomTransitionPage(
@@ -268,6 +274,14 @@ GoRouter router(Ref ref) {
                     path: 'group/:id',
                     builder: (context, state) =>
                         GroupDetailsPage(groupId: state.pathParameters['id']!),
+                    routes: [
+                      GoRoute(
+                        path: 'media',
+                        builder: (context, state) => GroupMediaGridPage(
+                          groupId: state.pathParameters['id']!,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -340,6 +354,13 @@ GoRouter router(Ref ref) {
         path: '/group/:id',
         builder: (context, state) =>
             GroupDetailsPage(groupId: state.pathParameters['id']!),
+        routes: [
+          GoRoute(
+            path: 'media',
+            builder: (context, state) =>
+                GroupMediaGridPage(groupId: state.pathParameters['id']!),
+          ),
+        ],
       ),
       GoRoute(
         path: '/gallery/:id',

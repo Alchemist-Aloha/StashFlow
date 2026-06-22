@@ -15,7 +15,21 @@ import '../../../galleries/domain/entities/gallery.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 
 class SceneFilterPanel extends ConsumerStatefulWidget {
-  const SceneFilterPanel({super.key});
+  const SceneFilterPanel({
+    super.key,
+    this.initialFilter,
+    this.initialOrganized,
+    this.onApply,
+    this.onSaveDefault,
+    this.saveSuccessMessage,
+  });
+
+  final SceneFilter? initialFilter;
+  final OrganizedFilter? initialOrganized;
+  final void Function(SceneFilter filter, OrganizedFilter organized)? onApply;
+  final Future<void> Function(SceneFilter filter, OrganizedFilter organized)?
+  onSaveDefault;
+  final String? saveSuccessMessage;
 
   @override
   ConsumerState<SceneFilterPanel> createState() => _SceneFilterPanelState();
@@ -28,8 +42,34 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
   @override
   void initState() {
     super.initState();
-    _tempFilter = ref.read(sceneFilterStateProvider);
-    _tempOrganized = ref.read(sceneOrganizedOnlyProvider);
+    _tempFilter = widget.initialFilter ?? ref.read(sceneFilterStateProvider);
+    _tempOrganized =
+        widget.initialOrganized ?? ref.read(sceneOrganizedOnlyProvider);
+  }
+
+  void _applyFilter() {
+    final onApply = widget.onApply;
+    if (onApply != null) {
+      onApply(_tempFilter, _tempOrganized);
+      return;
+    }
+
+    ref.read(sceneFilterStateProvider.notifier).update(_tempFilter);
+    ref.read(sceneOrganizedOnlyProvider.notifier).set(_tempOrganized);
+  }
+
+  Future<void> _saveDefaultFilter() async {
+    final onSaveDefault = widget.onSaveDefault;
+    if (onSaveDefault != null) {
+      await onSaveDefault(_tempFilter, _tempOrganized);
+      return;
+    }
+
+    _applyFilter();
+    await Future.wait([
+      ref.read(sceneFilterStateProvider.notifier).saveAsDefault(),
+      ref.read(sceneOrganizedOnlyProvider.notifier).saveAsDefault(),
+    ]);
   }
 
   @override
@@ -105,12 +145,7 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          ref
-                              .read(sceneFilterStateProvider.notifier)
-                              .update(_tempFilter);
-                          ref
-                              .read(sceneOrganizedOnlyProvider.notifier)
-                              .set(_tempOrganized);
+                          _applyFilter();
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
@@ -128,25 +163,15 @@ class _SceneFilterPanelState extends ConsumerState<SceneFilterPanel> {
                       width: double.infinity,
                       child: TextButton(
                         onPressed: () async {
-                          ref
-                              .read(sceneFilterStateProvider.notifier)
-                              .update(_tempFilter);
-                          ref
-                              .read(sceneOrganizedOnlyProvider.notifier)
-                              .set(_tempOrganized);
-                          await Future.wait([
-                            ref
-                                .read(sceneFilterStateProvider.notifier)
-                                .saveAsDefault(),
-                            ref
-                                .read(sceneOrganizedOnlyProvider.notifier)
-                                .saveAsDefault(),
-                          ]);
+                          await _saveDefaultFilter();
                           if (context.mounted) {
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(context.l10n.scenes_filter_saved),
+                                content: Text(
+                                  widget.saveSuccessMessage ??
+                                      context.l10n.scenes_filter_saved,
+                                ),
                               ),
                             );
                           }

@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 
-import '../../../../core/presentation/widgets/list_page_scaffold.dart';
-import '../../../../core/presentation/widgets/grid_utils.dart';
-import '../../../scenes/presentation/widgets/scene_card.dart';
-import '../../../scenes/domain/entities/scene.dart';
+import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
 import '../../../scenes/presentation/providers/playback_queue_provider.dart';
+import '../../../scenes/presentation/widgets/entity_scene_media_grid.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../providers/tag_media_provider.dart';
 
@@ -26,53 +23,18 @@ class TagMediaGridPage extends ConsumerWidget {
     final mediaAsync = ref.watch(tagMediaGridProvider(tagId));
     final isGridView = ref.watch(tagMediaGridLayoutProvider);
     final gridColumns = ref.watch(tagGridColumnsProvider);
-    final scenes = mediaAsync.value ?? const <Scene>[];
 
-    // ⚡ Bolt: Hoist routing layout variables out of the itemBuilder loop.
-    // Why: Looking up the router via InheritedWidget causes redundant O(1) traversals
-    // on every rendered list item during scroll.
-    // Impact: Avoids GC pressure and reduces scroll stuttering.
-    final router = GoRouter.of(context);
-    final currentPath = router.routeInformationProvider.value.uri.path;
-    final isAtRoot = currentPath.endsWith('/media');
-
-    return ListPageScaffold<Scene>(
-      title: context
-          .l10n
-          .studios_media_title, // Assuming tag media uses similar title or check l10n
-      searchHint: context.l10n.common_search_placeholder,
-      onSearchChanged: (_) {},
-      provider: mediaAsync,
+    return EntitySceneMediaGrid(
+      title: context.l10n.studios_media_title,
+      entityId: tagId,
+      filterKind: EntityMediaFilterKind.tag,
+      mediaAsync: mediaAsync,
+      isGridView: isGridView,
+      gridColumns: gridColumns,
+      queueId: PlaybackQueueIds.tagMedia(tagId),
       onRefresh: () => ref.refresh(tagMediaGridProvider(tagId).future),
       onFetchNextPage: () =>
           ref.read(tagMediaGridProvider(tagId).notifier).fetchNextPage(),
-      loadingItemBuilder: (context, isGrid, index) =>
-          SceneCard.skeleton(isGrid: isGrid, useMasonry: isGrid),
-      gridDelegate: isGridView
-          ? GridUtils.createDelegate(crossAxisCount: gridColumns ?? 2)
-          : null,
-      useMasonry: isGridView,
-      padding: isGridView ? GridUtils.defaultPadding : EdgeInsets.zero,
-      itemBuilder: (context, item, memCacheWidth, memCacheHeight) {
-        return SceneCard(
-          scene: item,
-          isGrid: isGridView,
-          useMasonry: isGridView,
-          memCacheWidth: memCacheWidth,
-          memCacheHeight: memCacheHeight,
-          useHero: isAtRoot,
-          onTap: () {
-            ref
-                .read(playbackQueueProvider.notifier)
-                .setSequenceForScene(
-                  PlaybackQueueIds.tagMedia(tagId),
-                  scenes,
-                  item.id,
-                );
-            context.push('/scenes/scene/${item.id}', extra: true);
-          },
-        );
-      },
     );
   }
 }

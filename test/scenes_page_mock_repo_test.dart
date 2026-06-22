@@ -72,6 +72,9 @@ class FakeSceneRepository implements SceneRepository {
   }
 
   @override
+  Future<void> deleteSceneMarker(String markerId) async {}
+
+  @override
   Future<List<Scraper>> listScrapers({required List<String> types}) async => [];
 
   @override

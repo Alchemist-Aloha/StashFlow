@@ -1,32 +1,43 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/domain/entities/criterion.dart';
 import '../../../scenes/domain/entities/scene.dart';
+import '../../../scenes/domain/entities/scene_filter.dart';
 import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
 import '../../../scenes/presentation/providers/scene_list_provider.dart';
 
-part 'studio_media_provider.g.dart';
+part 'group_media_provider.g.dart';
 
-@riverpod
-FutureOr<List<Scene>> studioMedia(Ref ref, String studioId) async {
+final groupMediaProvider = FutureProvider.family<List<Scene>, String>((
+  ref,
+  groupId,
+) async {
   ref.keepAlive();
   final repository = ref.read(sceneRepositoryProvider);
 
-  return repository.findScenes(page: 1, perPage: 24, studioId: studioId);
-}
+  return repository.findScenes(
+    page: 1,
+    perPage: 24,
+    sceneFilter: SceneFilter(
+      groups: HierarchicalMultiCriterion(value: [groupId]),
+    ),
+  );
+});
 
 @riverpod
-class StudioMediaGrid extends _$StudioMediaGrid {
+class GroupMediaGrid extends _$GroupMediaGrid {
   static const int _perPage = 30;
-  static const _filterKind = EntityMediaFilterKind.studio;
+  static const _filterKind = EntityMediaFilterKind.group;
   int _currentPage = 1;
   bool _hasMore = true;
   bool _isLoadingMore = false;
-  String? _studioId;
+  String? _groupId;
 
   @override
-  FutureOr<List<Scene>> build(String studioId) async {
+  FutureOr<List<Scene>> build(String groupId) async {
     ref.keepAlive();
-    _studioId = studioId;
+    _groupId = groupId;
     _currentPage = 1;
     _hasMore = true;
     final query = ref.watch(entityMediaSearchQueryProvider(_filterKind));
@@ -35,7 +46,7 @@ class StudioMediaGrid extends _$StudioMediaGrid {
     final filter = sceneFilterForEntityMedia(
       filter: baseFilter,
       kind: _filterKind,
-      entityId: studioId,
+      entityId: groupId,
     );
     final organizedFilter = ref.watch(
       entityMediaOrganizedOnlyProvider(_filterKind),
@@ -46,6 +57,7 @@ class StudioMediaGrid extends _$StudioMediaGrid {
       effectiveSort =
           'random_${ref.watch(entityMediaRandomSeedProvider(_filterKind))}';
     }
+
     return repository.findScenes(
       page: _currentPage,
       perPage: _perPage,
@@ -58,7 +70,7 @@ class StudioMediaGrid extends _$StudioMediaGrid {
   }
 
   Future<void> fetchNextPage() async {
-    if (_isLoadingMore || !_hasMore || _studioId == null) return;
+    if (_isLoadingMore || !_hasMore || _groupId == null) return;
 
     _isLoadingMore = true;
     try {
@@ -69,7 +81,7 @@ class StudioMediaGrid extends _$StudioMediaGrid {
       final filter = sceneFilterForEntityMedia(
         filter: baseFilter,
         kind: _filterKind,
-        entityId: _studioId!,
+        entityId: _groupId!,
       );
       final organizedFilter = ref.read(
         entityMediaOrganizedOnlyProvider(_filterKind),
@@ -79,6 +91,7 @@ class StudioMediaGrid extends _$StudioMediaGrid {
         effectiveSort =
             'random_${ref.read(entityMediaRandomSeedProvider(_filterKind))}';
       }
+
       final nextPage = _currentPage + 1;
       final nextItems = await repository.findScenes(
         page: nextPage,

@@ -280,20 +280,27 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     }
   }
 
-  Future<void> _showAddMarkerDialog(Scene scene) async {
+  Future<void> _showAddMarkerDialog(
+    Scene scene, {
+    required double markerSeconds,
+  }) async {
     final title = await showDialog<String>(
       context: context,
       builder: (_) => _AddMarkerDialog(cancelLabel: context.l10n.common_cancel),
     );
-    if (title == null || title.trim().isEmpty) return;
+    if (title == null) return;
+
+    final markerTitle = title.trim().isEmpty
+        ? '${scene.displayTitle} - ${_formatDuration(markerSeconds)}'
+        : title.trim();
 
     try {
       await ref
           .read(sceneRepositoryProvider)
           .createSceneMarker(
             sceneId: scene.id,
-            title: title,
-            seconds: 0,
+            title: markerTitle,
+            seconds: markerSeconds,
             primaryTagId: scene.tagIds.isNotEmpty ? scene.tagIds.first : null,
             tagIds: scene.tagIds.isNotEmpty ? [scene.tagIds.first] : const [],
           );
@@ -311,6 +318,63 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         );
       }
     }
+  }
+
+  Future<void> _showDeleteMarkerDialog({
+    required Scene scene,
+    required SceneMarker marker,
+  }) async {
+    final deleted = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          icon: Icon(Icons.delete_outline, color: dialogContext.colors.error),
+          title: const Text('Delete marker'),
+          content: Text('Delete marker "${marker.title}"?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(context.l10n.common_cancel),
+            ),
+            FilledButton.icon(
+              style: FilledButton.styleFrom(
+                backgroundColor: dialogContext.colors.error,
+                foregroundColor: dialogContext.colors.onError,
+              ),
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              icon: const Icon(Icons.delete_outline),
+              label: Text(context.l10n.common_delete),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (deleted != true) return;
+
+    try {
+      await ref.read(sceneRepositoryProvider).deleteSceneMarker(marker.id);
+      await ref.read(sceneDetailsProvider(scene.id).notifier).refresh();
+      _invalidateSceneListUnlessRandom();
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Marker deleted')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete marker: ${e.toString()}')),
+        );
+      }
+    }
+  }
+
+  double _currentMarkerSeconds(Scene scene) {
+    final playerState = ref.read(playerStateProvider);
+    if (playerState.activeScene?.id != scene.id) return 0;
+    final position = playerState.player?.state.position ?? Duration.zero;
+    return position.inMilliseconds / 1000.0;
   }
 
   Future<void> _saveVideoToGallery(Scene scene) async {
@@ -466,7 +530,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
             data: (scene) => IconButton(
               tooltip: 'Add marker',
               icon: const Icon(Icons.bookmark_add_outlined),
-              onPressed: () => _showAddMarkerDialog(scene),
+              onPressed: () => _showAddMarkerDialog(
+                scene,
+                markerSeconds: _currentMarkerSeconds(scene),
+              ),
             ),
             orElse: () => const SizedBox.shrink(),
           ),
@@ -1034,7 +1101,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           Column(
             children: [
               for (var i = 0; i < markers.length; i++) ...[
-                _buildMarkerTile(context, markers[i]),
+                _buildMarkerTile(context, scene, markers[i]),
                 if (i != markers.length - 1)
                   const SizedBox(height: AppTheme.spacingSmall),
               ],
@@ -1045,7 +1112,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
   }
 
-  Widget _buildMarkerTile(BuildContext context, SceneMarker marker) {
+  Widget _buildMarkerTile(
+    BuildContext context,
+    Scene scene,
+    SceneMarker marker,
+  ) {
     final imageUrl = marker.screenshot?.isNotEmpty == true
         ? marker.screenshot
         : marker.preview;
@@ -1110,6 +1181,13 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               ],
             ],
           ),
+        ),
+        IconButton(
+          tooltip: 'Delete marker ${marker.title}',
+          icon: const Icon(Icons.delete_outline),
+          color: context.colors.error,
+          onPressed: () =>
+              _showDeleteMarkerDialog(scene: scene, marker: marker),
         ),
       ],
     );
@@ -1315,10 +1393,7 @@ class _AddMarkerDialogState extends State<_AddMarkerDialog> {
   }
 
   void _submit() {
-    final trimmed = _controller.text.trim();
-    if (trimmed.isNotEmpty) {
-      Navigator.of(context).pop(trimmed);
-    }
+    Navigator.of(context).pop(_controller.text.trim());
   }
 
   @override

@@ -64,6 +64,7 @@ abstract class SceneRepository {
     String? primaryTagId,
     List<String> tagIds = const [],
   });
+  Future<void> deleteSceneMarker(String markerId);
   Future<void> deleteScene(
     String id, {
     required bool deleteFile,

@@ -655,6 +655,11 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
           icon: const Icon(Icons.bookmarks_outlined),
           onPressed: _showSavedFilterDialog,
         ),
+        IconButton(
+          tooltip: 'Markers',
+          icon: const Icon(Icons.sell_outlined),
+          onPressed: () => context.push('/scenes/markers'),
+        ),
       ],
       gridDelegate: isGridView
           ? GridUtils.createDelegate(

@@ -13,7 +13,21 @@ import '../../../tags/domain/entities/tag.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 
 class GalleryFilterPanel extends ConsumerStatefulWidget {
-  const GalleryFilterPanel({super.key});
+  const GalleryFilterPanel({
+    super.key,
+    this.initialFilter,
+    this.initialOrganized,
+    this.onApply,
+    this.onSaveDefault,
+    this.saveSuccessMessage,
+  });
+
+  final GalleryFilter? initialFilter;
+  final OrganizedFilter? initialOrganized;
+  final void Function(GalleryFilter filter, OrganizedFilter organized)? onApply;
+  final Future<void> Function(GalleryFilter filter, OrganizedFilter organized)?
+  onSaveDefault;
+  final String? saveSuccessMessage;
 
   @override
   ConsumerState<GalleryFilterPanel> createState() => _GalleryFilterPanelState();
@@ -26,8 +40,34 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
   @override
   void initState() {
     super.initState();
-    _tempFilter = ref.read(galleryFilterStateProvider);
-    _tempOrganized = ref.read(galleryOrganizedOnlyProvider);
+    _tempFilter = widget.initialFilter ?? ref.read(galleryFilterStateProvider);
+    _tempOrganized =
+        widget.initialOrganized ?? ref.read(galleryOrganizedOnlyProvider);
+  }
+
+  void _applyFilter() {
+    final onApply = widget.onApply;
+    if (onApply != null) {
+      onApply(_tempFilter, _tempOrganized);
+      return;
+    }
+
+    ref.read(galleryFilterStateProvider.notifier).update(_tempFilter);
+    ref.read(galleryOrganizedOnlyProvider.notifier).set(_tempOrganized);
+  }
+
+  Future<void> _saveDefaultFilter() async {
+    final onSaveDefault = widget.onSaveDefault;
+    if (onSaveDefault != null) {
+      await onSaveDefault(_tempFilter, _tempOrganized);
+      return;
+    }
+
+    _applyFilter();
+    await Future.wait([
+      ref.read(galleryFilterStateProvider.notifier).saveAsDefault(),
+      ref.read(galleryOrganizedOnlyProvider.notifier).saveAsDefault(),
+    ]);
   }
 
   @override
@@ -100,12 +140,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          ref
-                              .read(galleryFilterStateProvider.notifier)
-                              .update(_tempFilter);
-                          ref
-                              .read(galleryOrganizedOnlyProvider.notifier)
-                              .set(_tempOrganized);
+                          _applyFilter();
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
@@ -123,26 +158,14 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                       width: double.infinity,
                       child: TextButton(
                         onPressed: () async {
-                          ref
-                              .read(galleryFilterStateProvider.notifier)
-                              .update(_tempFilter);
-                          ref
-                              .read(galleryOrganizedOnlyProvider.notifier)
-                              .set(_tempOrganized);
-                          await Future.wait([
-                            ref
-                                .read(galleryFilterStateProvider.notifier)
-                                .saveAsDefault(),
-                            ref
-                                .read(galleryOrganizedOnlyProvider.notifier)
-                                .saveAsDefault(),
-                          ]);
+                          await _saveDefaultFilter();
                           if (context.mounted) {
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  context.l10n.galleries_filter_saved,
+                                  widget.saveSuccessMessage ??
+                                      context.l10n.galleries_filter_saved,
                                 ),
                               ),
                             );

@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 import '../../../../core/utils/l10n_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/error_state_view.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../scenes/domain/entities/scene.dart';
+import '../../../scenes/presentation/providers/playback_queue_provider.dart';
+import '../../../scenes/presentation/widgets/scene_strip.dart';
 import '../providers/group_details_provider.dart';
-import '../providers/group_list_provider.dart';
+import '../providers/group_media_provider.dart';
 
 class GroupDetailsPage extends ConsumerWidget {
   final String groupId;
@@ -16,9 +21,9 @@ class GroupDetailsPage extends ConsumerWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
       elevation: 0,
-      color: Theme.of(context).colorScheme.primaryContainer.withValues(
-        alpha: 0.1,
-      ),
+      color: Theme.of(
+        context,
+      ).colorScheme.primaryContainer.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
       ),
@@ -32,17 +37,19 @@ class GroupDetailsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final groupAsync = ref.watch(groupDetailsProvider(groupId));
+    final mediaAsync = ref.watch(groupMediaProvider(groupId));
 
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.details_group)),
       body: groupAsync.when(
         data: (group) => RefreshIndicator(
           onRefresh: () async {
-            await ref
-                .read(groupRepositoryProvider)
-                .getGroupById(groupId, refresh: true);
             ref.invalidate(groupDetailsProvider(groupId));
-            return ref.read(groupDetailsProvider(groupId).future);
+            ref.invalidate(groupMediaProvider(groupId));
+            await Future.wait([
+              ref.read(groupDetailsProvider(groupId).future),
+              ref.read(groupMediaProvider(groupId).future),
+            ]);
           },
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -121,6 +128,68 @@ class GroupDetailsPage extends ConsumerWidget {
                           ),
                         ),
                       ],
+                      const SizedBox(height: AppTheme.spacingMedium),
+                      _buildSectionContainer(
+                        context,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SectionHeader(
+                              title: context.l10n.details_media,
+                              onViewAll: () => context.push(
+                                '/groups/group/${group.id}/media',
+                              ),
+                              padding: EdgeInsets.zero,
+                            ),
+                            mediaAsync.when(
+                              data: (scenes) {
+                                if (scenes.isEmpty) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(
+                                      AppTheme.spacingSmall,
+                                    ),
+                                    child: Text(
+                                      context.l10n.common_no_media_found,
+                                      style: context.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color:
+                                                context.colors.onSurfaceVariant,
+                                          ),
+                                    ),
+                                  );
+                                }
+                                final List<Scene> sceneList = scenes;
+                                final shuffledItems = sceneList.toList()
+                                  ..shuffle(Random(group.id.hashCode));
+                                return SceneStrip(
+                                  scenes: shuffledItems,
+                                  queueId: PlaybackQueueIds.groupStrip(
+                                    group.id,
+                                  ),
+                                  onTap: (scene) => context.push(
+                                    '/scenes/scene/${scene.id}',
+                                    extra: true,
+                                  ),
+                                );
+                              },
+                              loading: () => const SizedBox(
+                                height: 100,
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ),
+                              error: (err, stack) => Text(
+                                context.l10n.common_error(err.toString()),
+                                style: context.textTheme.bodyMedium?.copyWith(
+                                  color: context.colors.onSurface.withValues(
+                                    alpha: 0.7,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),

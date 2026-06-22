@@ -112,6 +112,24 @@ class TagGalleriesGridLayout extends _$TagGalleriesGridLayout {
 }
 
 @riverpod
+class GroupMediaGridLayout extends _$GroupMediaGridLayout {
+  static const _storageKey = 'group_media_grid_layout';
+
+  @override
+  bool build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getBool(_storageKey) ?? true;
+  }
+
+  Future<void> set(bool value) async {
+    if (state == value) return;
+    state = value;
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setBool(_storageKey, value);
+  }
+}
+
+@riverpod
 class SceneGridColumns extends _$SceneGridColumns {
   static const _storageKey = 'scene_grid_columns_v2';
 
@@ -250,6 +268,29 @@ class TagGridColumns extends _$TagGridColumns {
 }
 
 @riverpod
+class GroupGridColumns extends _$GroupGridColumns {
+  static const _storageKey = 'group_grid_columns_v2';
+
+  @override
+  int? build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    final value = prefs.getInt(_storageKey);
+    return value == 0 ? null : value;
+  }
+
+  Future<void> set(int? value) async {
+    if (state == value) return;
+    state = value;
+    final prefs = ref.read(sharedPreferencesProvider);
+    if (value == null) {
+      await prefs.setInt(_storageKey, 0);
+    } else {
+      await prefs.setInt(_storageKey, value);
+    }
+  }
+}
+
+@riverpod
 class MaxPerformerAvatars extends _$MaxPerformerAvatars {
   static const _storageKey = 'max_performer_avatars';
 
@@ -345,4 +386,3 @@ class AppGlobalScale extends _$AppGlobalScale {
     await prefs.setDouble(_storageKey, value);
   }
 }
-

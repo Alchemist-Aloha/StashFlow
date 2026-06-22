@@ -271,32 +271,36 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
         activeFilterCount: _activeFilterCount(),
         defaultSortLabel: 'name',
         saveSuccessMessage: 'Group filter saved to server',
-        loadPresets: () => ref.read(savedFilterRepositoryProvider).findAll(
-          mode: 'GROUPS',
-          fromRaw: (raw) => GroupSavedFilterConfig.fromServerPayload(
-            id: raw['id'] as String,
-            name: raw['name'] as String,
-            findFilter: raw['find_filter'],
-            objectFilter: raw['object_filter'],
-          ),
-        ),
-        savePreset: ({required String name, String? existingId}) {
-          return ref.read(savedFilterRepositoryProvider).save(
-            input: GroupSavedFilterConfig.current(
-              id: existingId,
-              name: name,
-              searchQuery: ref.read(groupSearchQueryProvider),
-              sort: sortConfig.sort,
-              descending: sortConfig.descending,
-              filter: currentFilter,
-            ).toSaveInput(),
-            fromRaw: (raw) => GroupSavedFilterConfig.fromServerPayload(
-              id: raw['id'] as String,
-              name: raw['name'] as String,
-              findFilter: raw['find_filter'],
-              objectFilter: raw['object_filter'],
+        loadPresets: () => ref
+            .read(savedFilterRepositoryProvider)
+            .findAll(
+              mode: 'GROUPS',
+              fromRaw: (raw) => GroupSavedFilterConfig.fromServerPayload(
+                id: raw['id'] as String,
+                name: raw['name'] as String,
+                findFilter: raw['find_filter'],
+                objectFilter: raw['object_filter'],
+              ),
             ),
-          );
+        savePreset: ({required String name, String? existingId}) {
+          return ref
+              .read(savedFilterRepositoryProvider)
+              .save(
+                input: GroupSavedFilterConfig.current(
+                  id: existingId,
+                  name: name,
+                  searchQuery: ref.read(groupSearchQueryProvider),
+                  sort: sortConfig.sort,
+                  descending: sortConfig.descending,
+                  filter: currentFilter,
+                ).toSaveInput(),
+                fromRaw: (raw) => GroupSavedFilterConfig.fromServerPayload(
+                  id: raw['id'] as String,
+                  name: raw['name'] as String,
+                  findFilter: raw['find_filter'],
+                  objectFilter: raw['object_filter'],
+                ),
+              );
         },
         deletePreset: (id) =>
             ref.read(savedFilterRepositoryProvider).delete(id: id),

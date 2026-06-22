@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:media_kit/media_kit.dart' as mk;
+import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
@@ -12,6 +14,7 @@ import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_vid
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_card.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 
 import '../../helpers/test_helpers.dart';
@@ -246,6 +249,89 @@ void main() {
     expect(mockRepo.createdSceneMarkers.single.sceneId, testScene.id);
     expect(mockRepo.createdSceneMarkers.single.title, 'New marker');
     expect(mockRepo.createdSceneMarkers.single.seconds, 0);
+    expect(mockRepo.getSceneByIdRefreshValues, contains(true));
+  });
+
+  testWidgets(
+    'SceneDetailsPage uses current player time and fallback title for unnamed marker',
+    (tester) async {
+      tester.view.physicalSize = const Size(1200, 1600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final mockRepo = MockSceneRepository()..withData([testScene]);
+
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [
+          sceneRepositoryProvider.overrideWithValue(mockRepo),
+          playerStateProvider.overrideWith(
+            () => _TestPlayerState(
+              activeScene: testScene,
+              position: const Duration(seconds: 65),
+            ),
+          ),
+        ],
+        child: SceneDetailsPage(sceneId: testScene.id),
+      );
+      await tester.pump(const Duration(seconds: 1));
+
+      await tester.tap(find.byTooltip('Add marker'));
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.tap(find.widgetWithText(FilledButton, 'Create'));
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(mockRepo.createdSceneMarkers, hasLength(1));
+      expect(mockRepo.createdSceneMarkers.single.title, 'Test Scene - 01:05');
+      expect(mockRepo.createdSceneMarkers.single.seconds, 65);
+    },
+  );
+
+  testWidgets('SceneDetailsPage deletes marker after confirmation', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final sceneWithMarker = testScene.copyWith(
+      markers: const [
+        SceneMarker(
+          id: 'm1',
+          title: 'Opening beat',
+          seconds: 65,
+          endSeconds: null,
+          screenshot: null,
+          preview: null,
+          stream: null,
+          primaryTagId: 't1',
+          primaryTagName: 'Beat',
+          tagIds: ['t1'],
+          tagNames: ['Beat'],
+        ),
+      ],
+    );
+    final mockRepo = MockSceneRepository()..withData([sceneWithMarker]);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+      child: SceneDetailsPage(sceneId: sceneWithMarker.id),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    await tester.tap(find.byTooltip('Delete marker Opening beat'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Delete marker'), findsOneWidget);
+    expect(find.text('Delete marker "Opening beat"?'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
+    await tester.pumpAndSettle();
+
+    expect(mockRepo.deletedSceneMarkerIds, ['m1']);
     expect(mockRepo.getSceneByIdRefreshValues, contains(true));
   });
 
@@ -698,4 +784,41 @@ void main() {
       expect(shouldRouteToNextScene('s1', testScene, 's1', null), isFalse);
     },
   );
+}
+
+class _TestPlayerState extends PlayerState {
+  _TestPlayerState({required this.activeScene, required this.position});
+
+  final Scene activeScene;
+  final Duration position;
+
+  @override
+  GlobalPlayerState build() {
+    return GlobalPlayerState(
+      activeScene: activeScene,
+      player: _TestPlayer(position),
+    );
+  }
+}
+
+class _TestPlayer extends Mock implements mk.Player {
+  _TestPlayer(this.position);
+
+  final Duration position;
+
+  @override
+  mk.PlayerState get state => _TestMediaPlayerState(position: position);
+
+  @override
+  Future<void> play() async {}
+}
+
+class _TestMediaPlayerState extends Mock implements mk.PlayerState {
+  _TestMediaPlayerState({required this.position});
+
+  @override
+  final Duration position;
+
+  @override
+  bool get playing => true;
 }

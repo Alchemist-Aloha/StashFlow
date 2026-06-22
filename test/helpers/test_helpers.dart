@@ -56,6 +56,7 @@ class MockSceneRepository extends MockRepositoryState<Scene>
   String? deletedSceneId;
   bool? deletedSceneDeleteFile;
   bool? deletedSceneDeleteGenerated;
+  final List<String> deletedSceneMarkerIds = [];
   final List<
     ({
       String sceneId,
@@ -182,6 +183,12 @@ class MockSceneRepository extends MockRepositoryState<Scene>
       tagIds: tagIds,
       tagNames: const [],
     );
+  }
+
+  @override
+  Future<void> deleteSceneMarker(String markerId) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    deletedSceneMarkerIds.add(markerId);
   }
 
   @override
