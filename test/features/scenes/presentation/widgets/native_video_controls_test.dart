@@ -7,6 +7,7 @@ import 'package:mockito/mockito.dart';
 import 'package:media_kit/media_kit.dart' as mk;
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/native_video_controls.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/video_controls/video_progress_bar.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
@@ -231,6 +232,35 @@ void main() {
       findsNothing,
     );
   });
+
+  testWidgets('renders grey top gradient behind inline back row', (
+    tester,
+  ) async {
+    await _pumpControls(tester, scene: _buildScene(), onInlineBack: () {});
+
+    expect(find.byKey(const Key('inline_video_top_gradient')), findsOneWidget);
+  });
+
+  testWidgets('renders grey top gradient behind fullscreen back row', (
+    tester,
+  ) async {
+    await _pumpControls(
+      tester,
+      scene: _buildScene(),
+      onFullScreenToggle: () {},
+    );
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(NativeVideoControls)),
+    );
+    container.read(playerStateProvider.notifier).setFullScreen(true);
+    await tester.pump();
+
+    expect(
+      find.byKey(const Key('fullscreen_video_top_gradient')),
+      findsOneWidget,
+    );
+  });
 }
 
 Scene _buildScene({
@@ -277,6 +307,7 @@ Future<void> _pumpControls(
   bool showControls = true,
   bool isPlaying = false,
   VoidCallback? onInlineBack,
+  VoidCallback? onFullScreenToggle,
 }) async {
   final mockController = FakeVideoController(isPlaying: isPlaying);
 
@@ -294,6 +325,7 @@ Future<void> _pumpControls(
             useDoubleTapSeek: true,
             enableNativePip: false,
             onInlineBack: onInlineBack,
+            onFullScreenToggle: onFullScreenToggle,
             showControls: showControls,
             scene: scene,
           ),

@@ -485,6 +485,35 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
     );
   }
 
+  Widget _buildTopGradientOverlay({required bool isFullScreen}) {
+    return IgnorePointer(
+      child: AnimatedOpacity(
+        opacity: _controlsVisible ? 1 : 0,
+        duration: const Duration(milliseconds: 180),
+        child: Container(
+          key: Key(
+            isFullScreen
+                ? 'fullscreen_video_top_gradient'
+                : 'inline_video_top_gradient',
+          ),
+          height: isFullScreen ? 124 : 88,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.grey.shade900.withAlpha(235),
+                Colors.grey.shade800.withAlpha(150),
+                Colors.grey.shade700.withAlpha(36),
+                Colors.transparent,
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildSeekFeedbackOverlay(ColorScheme colorScheme) {
     final seconds = _seekFeedbackSeconds;
     final isVisible = seconds != null;
@@ -1261,6 +1290,17 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                             ),
                           ),
                         ),
+                      ),
+                    ),
+
+                  if ((!isFullScreen && widget.onInlineBack != null) ||
+                      (isFullScreen && widget.onFullScreenToggle != null))
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: _buildTopGradientOverlay(
+                        isFullScreen: isFullScreen,
                       ),
                     ),
 
