@@ -413,7 +413,7 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
         ).colorScheme.primaryContainer.withValues(alpha: 0.3),
         child: ListTile(
           leading: const Icon(Icons.group_work),
-          onTap: () => context.push('/group/${group.id}'),
+          onTap: () => context.push('/groups/group/${group.id}'),
           title: Text(
             group.name.isEmpty ? context.l10n.groups_unnamed : group.name,
             style: context.textTheme.bodyLarge?.copyWith(

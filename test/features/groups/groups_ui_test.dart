@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:graphql/client.dart';
+import 'package:go_router/go_router.dart';
 import 'package:stash_app_flutter/core/data/repositories/graphql_saved_filter_repository.dart';
+import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
+import 'package:stash_app_flutter/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/features/groups/domain/entities/group.dart';
 import 'package:stash_app_flutter/features/groups/presentation/pages/groups_page.dart';
@@ -69,6 +72,48 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Saved Presets'), findsOneWidget);
+  });
+
+  testWidgets('GroupsPage opens group details within the groups shell route', (
+    tester,
+  ) async {
+    final mockRepo = MockGroupRepository()..withData([testGroup]);
+    final router = GoRouter(
+      initialLocation: '/groups',
+      routes: [
+        GoRoute(
+          path: '/groups',
+          builder: (context, state) => const GroupsPage(),
+          routes: [
+            GoRoute(
+              path: 'group/:id',
+              builder: (context, state) =>
+                  Text('Group detail: ${state.pathParameters['id']}'),
+            ),
+          ],
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          groupRepositoryProvider.overrideWithValue(mockRepo),
+        ],
+        child: MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text(testGroup.name));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Group detail: ${testGroup.id}'), findsOneWidget);
   });
 }
 
