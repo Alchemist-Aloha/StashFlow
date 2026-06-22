@@ -281,14 +281,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.9.0"
-  cupertino_icons:
-    dependency: "direct main"
-    description:
-      name: cupertino_icons
-      sha256: "41e005c33bd814be4d3096aff55b1908d419fde52ca656c8c47719ec745873cd"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.9"
   dart_cast:
     dependency: "direct main"
     description:
@@ -398,14 +390,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_app_lock:
-    dependency: "direct main"
-    description:
-      name: flutter_app_lock
-      sha256: "5892851c5a26e0fd1ef646d77d87ea208af7cc4261b3a1d3c491f9e22e84091d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.3.0"
   flutter_cache_manager:
     dependency: "direct main"
     description:
@@ -420,7 +404,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_hooks:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_hooks
       sha256: "8ae1f090e5f4ef5cfa6670ce1ab5dddadd33f3533a7f9ba19d9f958aa2a89f42"
@@ -687,14 +671,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.2"
-  hive:
-    dependency: transitive
-    description:
-      name: hive
-      sha256: "8dcf6db979d7933da8217edcec84e9df1bdb4e4edc7fc77dbd5aa74356d6d941"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.3"
   hive_ce:
     dependency: transitive
     description:
@@ -703,14 +679,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.19.3"
-  hive_flutter:
-    dependency: "direct main"
-    description:
-      name: hive_flutter
-      sha256: dca1da446b1d808a51689fb5d0c6c9510c0a2ba01e22805d492c73b68e33eecc
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.0"
   hooks:
     dependency: transitive
     description:
@@ -719,14 +687,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
-  hooks_riverpod:
-    dependency: "direct main"
-    description:
-      name: hooks_riverpod
-      sha256: dcaf59f0f41489ff08ce61438ada564d67f40cfa37cc7c8589da78fb600c2edc
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.3.2"
   http:
     dependency: "direct main"
     description:
@@ -821,7 +781,7 @@ packages:
     source: hosted
     version: "0.7.2"
   json_annotation:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: json_annotation
       sha256: "2a743920d81b7910627f68ee2c9ac1fc0bfee32b9fc3403587d7c6791ca12f80"
@@ -1125,7 +1085,7 @@ packages:
     source: hosted
     version: "3.1.6"
   plugin_platform_interface:
-    dependency: "direct dev"
+    dependency: transitive
     description:
       name: plugin_platform_interface
       sha256: "4820fbfdb9478b1ebae27888254d445073732dae3d6ea81f0b7e06d5dedc3f02"
@@ -1530,7 +1490,7 @@ packages:
     source: hosted
     version: "1.12.1"
   state_notifier:
-    dependency: "direct dev"
+    dependency: transitive
     description:
       name: state_notifier
       sha256: b8677376aa54f2d7c58280d5a007f9e8774f1968d1fb1c096adcb4792fba29bb
