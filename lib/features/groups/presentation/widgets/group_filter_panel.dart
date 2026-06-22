@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:stash_app_flutter/core/domain/entities/criterion.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/filter_bottom_sheet_scaffold.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/filter_widgets.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';

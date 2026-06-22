@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/domain/entities/criterion.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/filter_bottom_sheet_scaffold.dart';
 import '../../../../core/presentation/widgets/filter_widgets.dart';
 import '../../../../core/utils/l10n_extensions.dart';
