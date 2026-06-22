@@ -140,6 +140,29 @@ void main() {
     },
   );
 
+  testWidgets('SceneDetailsPage offsets video below top safe area on mobile', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(400, 1000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final mockRepo = MockSceneRepository()..withData([testScene]);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+      child: const MediaQuery(
+        data: MediaQueryData(padding: EdgeInsets.only(top: 24)),
+        child: SceneDetailsPage(sceneId: 's1'),
+      ),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(tester.getTopLeft(find.byType(SceneVideoPlayer)).dy, equals(24));
+  });
+
   testWidgets('SceneDetailsPage updates rating', (tester) async {
     tester.view.physicalSize = const Size(1200, 1600);
     tester.view.devicePixelRatio = 1.0;

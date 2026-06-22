@@ -531,65 +531,111 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               orElse: () => null,
             )
           : null,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          // Subtract 8px margin from the body height to ensure video is fully visible
-          final safeMaxHeight = constraints.maxHeight - 8;
+      body: SafeArea(
+        top: true,
+        bottom: false,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // Subtract 8px margin from the body height to ensure video is fully visible
+            final safeMaxHeight = constraints.maxHeight - 8;
 
-          return sceneAsync.when(
-            data: (scene) {
-              final useTwoColumns = !Responsive.isMobile(context);
+            return sceneAsync.when(
+              data: (scene) {
+                final useTwoColumns = !Responsive.isMobile(context);
 
-              if (useTwoColumns) {
+                if (useTwoColumns) {
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      ref.invalidate(sceneDetailsProvider(widget.sceneId));
+                      return ref.read(
+                        sceneDetailsProvider(widget.sceneId).future,
+                      );
+                    },
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Left Column: Video, Title, Info, Details (61.8%)
+                        Expanded(
+                          flex: 618,
+                          child: SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SceneVideoPlayer(
+                                  key: _playerKey,
+                                  scene: scene,
+                                  autoPlayOnMount: widget.autoPlayOnMount,
+                                  maxHeight: safeMaxHeight,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(
+                                    AppTheme.spacingMedium,
+                                  ),
+                                  child: _buildMainInfo(context, scene),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Divider
+                        VerticalDivider(
+                          width: 1,
+                          thickness: 1,
+                          color: context.colors.outline.withValues(alpha: 0.1),
+                        ),
+                        // Right Column: Tags, Performers, More from Studio (38.2%)
+                        Expanded(
+                          flex: 382,
+                          child: SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: const EdgeInsets.all(
+                              AppTheme.spacingMedium,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildTagsSection(context, scene),
+                                _buildMarkersSection(context, scene),
+                                _buildPerformersSection(context, scene),
+                                _buildMoreFromStudioSection(context, scene),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                // Mobile View (Default Column)
                 return RefreshIndicator(
                   onRefresh: () async {
+                    await ref
+                        .read(sceneRepositoryProvider)
+                        .getSceneById(widget.sceneId, refresh: true);
                     ref.invalidate(sceneDetailsProvider(widget.sceneId));
                     return ref.read(
                       sceneDetailsProvider(widget.sceneId).future,
                     );
                   },
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Left Column: Video, Title, Info, Details (61.8%)
-                      Expanded(
-                        flex: 618,
-                        child: SingleChildScrollView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SceneVideoPlayer(
-                                key: _playerKey,
-                                scene: scene,
-                                autoPlayOnMount: widget.autoPlayOnMount,
-                                maxHeight: safeMaxHeight,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(
-                                  AppTheme.spacingMedium,
-                                ),
-                                child: _buildMainInfo(context, scene),
-                              ),
-                            ],
-                          ),
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SceneVideoPlayer(
+                          key: _playerKey,
+                          scene: scene,
+                          autoPlayOnMount: widget.autoPlayOnMount,
+                          maxHeight: safeMaxHeight,
                         ),
-                      ),
-                      // Divider
-                      VerticalDivider(
-                        width: 1,
-                        thickness: 1,
-                        color: context.colors.outline.withValues(alpha: 0.1),
-                      ),
-                      // Right Column: Tags, Performers, More from Studio (38.2%)
-                      Expanded(
-                        flex: 382,
-                        child: SingleChildScrollView(
-                          physics: const AlwaysScrollableScrollPhysics(),
+                        Padding(
                           padding: const EdgeInsets.all(AppTheme.spacingMedium),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              _buildMainInfo(context, scene),
                               _buildTagsSection(context, scene),
                               _buildMarkersSection(context, scene),
                               _buildPerformersSection(context, scene),
@@ -597,57 +643,20 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                             ],
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
-              }
-
-              // Mobile View (Default Column)
-              return RefreshIndicator(
-                onRefresh: () async {
-                  await ref
-                      .read(sceneRepositoryProvider)
-                      .getSceneById(widget.sceneId, refresh: true);
-                  ref.invalidate(sceneDetailsProvider(widget.sceneId));
-                  return ref.read(sceneDetailsProvider(widget.sceneId).future);
-                },
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SceneVideoPlayer(
-                        key: _playerKey,
-                        scene: scene,
-                        autoPlayOnMount: widget.autoPlayOnMount,
-                        maxHeight: safeMaxHeight,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildMainInfo(context, scene),
-                            _buildTagsSection(context, scene),
-                            _buildMarkersSection(context, scene),
-                            _buildPerformersSection(context, scene),
-                            _buildMoreFromStudioSection(context, scene),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, stack) => ErrorStateView(
-              message: context.l10n.common_error(err.toString()),
-              onRetry: () => ref.refresh(sceneDetailsProvider(widget.sceneId)),
-            ),
-          );
-        },
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => ErrorStateView(
+                message: context.l10n.common_error(err.toString()),
+                onRetry: () =>
+                    ref.refresh(sceneDetailsProvider(widget.sceneId)),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
