@@ -12,14 +12,15 @@ The program is mainly tested with Android and Windows builds, and the web versio
 ## 📸 Screenshots
 
 <p align="center">
- <img src="asset/scenes.jpg" alt="Scenes feed" width="220" />
- <img src="asset/scene_filter.jpg" alt="Scenes filter" width="220" />
- <img src="asset/scene_sort.jpg" alt="Scenes sort" width="220" />
+   <img src="asset/scenes.jpg" alt="Scenes feed" width="220" />
+   <img src="asset/scene_details.jpg" alt="Scene details playback" width="220" />
+   <img src="asset/edit_scene.jpg" alt="Scene details editor" width="220" />
+
 </p>
 <p align="center">
- <img src="asset/scene_details.jpg" alt="Scene details playback" width="220" />
- <img src="asset/edit_scene.jpg" alt="Scene details editor" width="220" />
- <img src="asset/settings.jpg" alt="Setting page" width="220" />
+   <img src="asset/scene_filter.jpg" alt="Scenes filter" width="220" />
+   <img src="asset/scene_sort.jpg" alt="Scenes sort" width="220" />
+   <img src="asset/library_stats.jpg" alt="Library stats" width="220" />
 </p>
 
 ## ✨ Key Features
