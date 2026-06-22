@@ -364,6 +364,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
                   children: [
                     if (widget.profile != null)
                       IconButton(
+                        tooltip: l10n.settings_server_profile_delete,
                         onPressed: _delete,
                         icon: Icon(
                           Icons.delete_outline,
