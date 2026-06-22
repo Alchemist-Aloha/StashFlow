@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../utils/l10n_extensions.dart';
 import '../theme/app_theme.dart';
+import 'bottom_sheet_panel_chrome.dart';
 
 class ListSortBottomSheet<T> extends StatefulWidget {
   const ListSortBottomSheet({
@@ -36,12 +37,20 @@ class ListSortBottomSheet<T> extends StatefulWidget {
 class _ListSortBottomSheetState<T> extends State<ListSortBottomSheet<T>> {
   late T _tempOption;
   late bool _tempDescending;
+  late final ScrollController _optionsScrollController;
 
   @override
   void initState() {
     super.initState();
     _tempOption = widget.initialOption;
     _tempDescending = widget.initialDescending;
+    _optionsScrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _optionsScrollController.dispose();
+    super.dispose();
   }
 
   void _apply() {
@@ -66,48 +75,44 @@ class _ListSortBottomSheetState<T> extends State<ListSortBottomSheet<T>> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.all(context.dimensions.spacingLarge),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    widget.title,
-                    style: context.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _tempOption = widget.resetOption;
-                      _tempDescending = widget.resetDescending;
-                    });
-                  },
-                  child: Text(context.l10n.common_reset),
-                ),
-              ],
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          BottomSheetPanelHeader(
+            title: widget.title,
+            onReset: () {
+              setState(() {
+                _tempOption = widget.resetOption;
+                _tempDescending = widget.resetDescending;
+              });
+            },
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: context.dimensions.spacingLarge,
             ),
-            SizedBox(height: context.dimensions.spacingMedium),
-            Text(
+            child: Text(
               context.l10n.common_sort_method,
               style: context.textTheme.labelLarge,
             ),
-            SizedBox(height: context.dimensions.spacingSmall),
-            Flexible(
+          ),
+          SizedBox(height: context.dimensions.spacingSmall),
+          Flexible(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: context.dimensions.spacingLarge,
+              ),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
                   maxHeight: MediaQuery.sizeOf(context).height * 0.22,
                 ),
                 child: Scrollbar(
+                  controller: _optionsScrollController,
                   thumbVisibility: true,
                   child: SingleChildScrollView(
+                    controller: _optionsScrollController,
+                    primary: false,
                     padding: EdgeInsets.symmetric(
                       vertical: context.dimensions.spacingSmall,
                     ),
@@ -131,13 +136,23 @@ class _ListSortBottomSheetState<T> extends State<ListSortBottomSheet<T>> {
                 ),
               ),
             ),
-            SizedBox(height: context.dimensions.spacingMedium),
-            Text(
+          ),
+          SizedBox(height: context.dimensions.spacingMedium),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: context.dimensions.spacingLarge,
+            ),
+            child: Text(
               context.l10n.common_direction,
               style: context.textTheme.labelLarge,
             ),
-            SizedBox(height: context.dimensions.spacingSmall),
-            SizedBox(
+          ),
+          SizedBox(height: context.dimensions.spacingSmall),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: context.dimensions.spacingLarge,
+            ),
+            child: SizedBox(
               width: double.infinity,
               child: SegmentedButton<bool>(
                 segments: [
@@ -157,37 +172,14 @@ class _ListSortBottomSheetState<T> extends State<ListSortBottomSheet<T>> {
                     setState(() => _tempDescending = value.first),
               ),
             ),
-            SizedBox(height: context.dimensions.spacingLarge),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _apply,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: context.colors.primary,
-                  foregroundColor: context.colors.onPrimary,
-                  padding: EdgeInsets.symmetric(
-                    vertical: context.dimensions.spacingMedium,
-                  ),
-                ),
-                child: Text(context.l10n.common_apply_sort),
-              ),
-            ),
-            SizedBox(height: context.dimensions.spacingSmall),
-            SizedBox(
-              width: double.infinity,
-              child: TextButton(
-                onPressed: _saveDefault,
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.symmetric(
-                    vertical: context.dimensions.spacingMedium,
-                  ),
-                ),
-                child: Text(context.l10n.common_save_default),
-              ),
-            ),
-            SizedBox(height: context.dimensions.spacingMedium),
-          ],
-        ),
+          ),
+          BottomSheetPanelActions(
+            primaryLabel: context.l10n.common_apply_sort,
+            secondaryLabel: context.l10n.common_save_default,
+            onPrimary: _apply,
+            onSecondary: _saveDefault,
+          ),
+        ],
       ),
     );
   }

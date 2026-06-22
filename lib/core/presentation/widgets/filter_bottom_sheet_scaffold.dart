@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../utils/l10n_extensions.dart';
 import '../theme/app_theme.dart';
+import 'bottom_sheet_panel_chrome.dart';
 
 class FilterBottomSheetScaffold extends StatelessWidget {
   const FilterBottomSheetScaffold({
@@ -40,24 +41,7 @@ class FilterBottomSheetScaffold extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           child: Column(
             children: [
-              Padding(
-                padding: EdgeInsets.all(context.dimensions.spacingMedium),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      title,
-                      style: context.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: onReset,
-                      child: Text(context.l10n.common_reset),
-                    ),
-                  ],
-                ),
-              ),
+              BottomSheetPanelHeader(title: title, onReset: onReset),
               const Divider(height: 1),
               Expanded(
                 child: SingleChildScrollView(
@@ -71,53 +55,25 @@ class FilterBottomSheetScaffold extends StatelessWidget {
                 ),
               ),
               const Divider(height: 1),
-              Padding(
-                padding: EdgeInsets.all(context.dimensions.spacingMedium),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          onApply();
-                          Navigator.pop(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: context.colors.primary,
-                          foregroundColor: context.colors.onPrimary,
-                          padding: EdgeInsets.symmetric(
-                            vertical: context.dimensions.spacingMedium,
-                          ),
-                        ),
-                        child: Text(context.l10n.common_apply_filters),
-                      ),
-                    ),
-                    SizedBox(height: context.dimensions.spacingSmall),
-                    SizedBox(
-                      width: double.infinity,
-                      child: TextButton(
-                        onPressed: () async {
-                          await onSaveDefault();
-                          if (!context.mounted) return;
+              BottomSheetPanelActions(
+                primaryLabel: context.l10n.common_apply_filters,
+                secondaryLabel: context.l10n.common_save_default,
+                onPrimary: () {
+                  onApply();
+                  Navigator.pop(context);
+                },
+                onSecondary: () async {
+                  await onSaveDefault();
+                  if (!context.mounted) return;
 
-                          Navigator.pop(context);
-                          final message = saveDefaultSuccessMessage;
-                          if (message != null) {
-                            ScaffoldMessenger.of(
-                              context,
-                            ).showSnackBar(SnackBar(content: Text(message)));
-                          }
-                        },
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                            vertical: context.dimensions.spacingMedium,
-                          ),
-                        ),
-                        child: Text(context.l10n.common_save_default),
-                      ),
-                    ),
-                  ],
-                ),
+                  Navigator.pop(context);
+                  final message = saveDefaultSuccessMessage;
+                  if (message != null) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(message)));
+                  }
+                },
               ),
             ],
           ),
