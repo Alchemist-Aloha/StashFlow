@@ -56,6 +56,21 @@ class MockSceneRepository implements SceneRepository {
   }) async {}
 
   @override
+  Future<SceneMarker> createSceneMarker({
+    required String sceneId,
+    required String title,
+    double seconds = 0,
+    double? endSeconds,
+    String? primaryTagId,
+    List<String> tagIds = const [],
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> deleteSceneMarker(String markerId) async {}
+
+  @override
   Future<List<Scraper>> listScrapers({required List<String> types}) async => [];
 
   @override

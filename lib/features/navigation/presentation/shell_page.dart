@@ -226,6 +226,8 @@ class _ShellPageState extends ConsumerState<ShellPage> {
         return context.l10n.nav_tags;
       case NavigationTabType.galleries:
         return context.l10n.nav_galleries;
+      case NavigationTabType.groups:
+        return context.l10n.groups_title;
     }
   }
 
@@ -329,6 +331,8 @@ class _ShellPageState extends ConsumerState<ShellPage> {
             break;
           case NavigationTabType.galleries:
             ref.read(galleryScrollControllerProvider.notifier).scrollToTop();
+            break;
+          case NavigationTabType.groups:
             break;
         }
       }

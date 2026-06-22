@@ -1,7 +1,9 @@
 import 'package:graphql/client.dart';
 import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
+import 'package:stash_app_flutter/core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../domain/entities/group.dart';
+import '../../domain/entities/group_filter.dart';
 import '../../domain/repositories/group_repository.dart';
 import '../graphql/groups.graphql.dart';
 
@@ -17,12 +19,14 @@ class GraphQLGroupRepository implements GroupRepository {
     String? filter,
     String? sort,
     bool? descending,
+    GroupFilter? groupFilter,
   }) async {
     final result = await client.query$FindGroups(
       Options$Query$FindGroups(
         fetchPolicy: FetchPolicy.cacheAndNetwork,
         variables: Variables$Query$FindGroups(
           filter: Input$FindFilterType(
+            q: filter,
             page: page,
             per_page: perPage,
             sort: sort,
@@ -30,14 +34,11 @@ class GraphQLGroupRepository implements GroupRepository {
                 ? Enum$SortDirectionEnum.DESC
                 : Enum$SortDirectionEnum.ASC,
           ),
-          group_filter: filter != null
-              ? Input$GroupFilterType(
-                  name: Input$StringCriterionInput(
-                    value: filter,
-                    modifier: Enum$CriterionModifier.EQUALS,
-                  ),
-                )
-              : null,
+          group_filter: Input$GroupFilterType(
+            is_missing: groupFilter?.isMissingField,
+            sub_group_count: mapIntCriterion(groupFilter?.subGroupCount),
+            scene_count: mapIntCriterion(groupFilter?.sceneCount),
+          ),
         ),
       ),
     );

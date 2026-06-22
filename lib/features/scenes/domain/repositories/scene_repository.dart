@@ -56,6 +56,15 @@ abstract class SceneRepository {
     double? resumeTime,
     double? playDuration,
   });
+  Future<SceneMarker> createSceneMarker({
+    required String sceneId,
+    required String title,
+    double seconds = 0,
+    double? endSeconds,
+    String? primaryTagId,
+    List<String> tagIds = const [],
+  });
+  Future<void> deleteSceneMarker(String markerId);
   Future<void> deleteScene(
     String id, {
     required bool deleteFile,

@@ -9,7 +9,8 @@ enum NavigationTabType {
   performers('performers', 'Performers', Icons.people),
   studios('studios', 'Studios', Icons.business),
   tags('tags', 'Tags', Icons.local_offer),
-  galleries('galleries', 'Galleries', Icons.perm_media);
+  galleries('galleries', 'Galleries', Icons.perm_media),
+  groups('groups', 'Groups', Icons.group_work);
 
   final String id;
   final String label;
@@ -50,24 +51,46 @@ class NavigationTab {
 class NavigationTabsNotifier extends Notifier<List<NavigationTab>> {
   static const _key = 'navigation_tabs_config';
 
+  static bool _defaultVisibilityFor(NavigationTabType type) {
+    return type != NavigationTabType.groups;
+  }
+
+  List<NavigationTab> _defaultTabs() {
+    return NavigationTabType.values
+        .map(
+          (type) =>
+              NavigationTab(type: type, visible: _defaultVisibilityFor(type)),
+        )
+        .toList();
+  }
+
+  List<NavigationTab> _normalizeTabs(List<NavigationTab> tabs) {
+    final tabsByType = {for (final tab in tabs) tab.type: tab};
+    return NavigationTabType.values
+        .map(
+          (type) =>
+              tabsByType[type] ??
+              NavigationTab(type: type, visible: _defaultVisibilityFor(type)),
+        )
+        .toList();
+  }
+
   @override
   List<NavigationTab> build() {
     final prefs = ref.watch(sharedPreferencesProvider);
     final raw = prefs.getString(_key);
 
     if (raw == null) {
-      return NavigationTabType.values
-          .map((t) => NavigationTab(type: t))
-          .toList();
+      return _defaultTabs();
     }
 
     try {
       final List<dynamic> decoded = jsonDecode(raw);
-      return decoded.map((j) => NavigationTab.fromJson(j)).toList();
+      return _normalizeTabs(
+        decoded.map((j) => NavigationTab.fromJson(j)).toList(),
+      );
     } catch (_) {
-      return NavigationTabType.values
-          .map((t) => NavigationTab(type: t))
-          .toList();
+      return _defaultTabs();
     }
   }
 

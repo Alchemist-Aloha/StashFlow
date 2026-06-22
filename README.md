@@ -2,9 +2,9 @@
 
 ### Your Stash library, everywhere
 
-A modern, multi-platform client for your **Stash** server. Designed for seamless browsing, effortless discovery, and high-quality playback across **Android**, **Desktop** (Windows, macOS, Linux), and the [**Web**](https://alchemist-aloha.github.io/StashFlow/).
+A modern, multi-platform client for your **Stash** server. Built for fast browsing, playback, and library management across **Android**, **Desktop** (Windows, macOS, Linux), and the [**Web**](https://alchemist-aloha.github.io/StashFlow/).
 
-The program is mainly tested with Android and Windows builds, and the web version is a demo with limited features due to browser restrictions. For the best experience, use the native Android or Desktop versions. Testing and feedback on all platforms are welcome!
+The app is primarily tested on Android and Windows. The web build is best treated as a demo because browser restrictions limit authentication and playback behavior. For the full experience, use a native build.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-1.22.0-green.svg)](pubspec.yaml)
@@ -12,61 +12,29 @@ The program is mainly tested with Android and Windows builds, and the web versio
 ## 📸 Screenshots
 
 <p align="center">
- <img src="asset/scenes.jpg" alt="Scenes feed" width="220" />
- <img src="asset/scene_filter.jpg" alt="Scenes filter" width="220" />
- <img src="asset/scene_sort.jpg" alt="Scenes sort" width="220" />
+   <img src="asset/scenes.jpg" alt="Scenes feed" width="220" />
+   <img src="asset/scene_details.jpg" alt="Scene details playback" width="220" />
+   <img src="asset/edit_scene.jpg" alt="Scene details editor" width="220" />
+
 </p>
 <p align="center">
- <img src="asset/scene_details.jpg" alt="Scene details playback" width="220" />
- <img src="asset/edit_scene.jpg" alt="Scene details editor" width="220" />
- <img src="asset/settings.jpg" alt="Setting page" width="220" />
+   <img src="asset/scene_filter.jpg" alt="Scenes filter" width="220" />
+   <img src="asset/scene_sort.jpg" alt="Scenes sort" width="220" />
+   <img src="asset/library_stats.jpg" alt="Library stats" width="220" />
 </p>
 
 ## ✨ Key Features
 
-### 🌍 Multi-Platform Support
+### ✨ Key Features
 
-- 📱 **Android:** Full-featured mobile experience with PiP and background audio.
-- 💻 **Desktop:** Native performance on Windows, macOS, and Linux with keyboard shortcuts and window management.
-- 🌐 **Web:** Demo-focused access from modern browsers. Note: Due to CORS limitations, only API Key login is supported and video playback is not perfect. Native versions are recommended for the full experience.
-
-### 🧭 Interface & Navigation
-
-- 📱 **Adaptive UI:** Responsive design that transitions from mobile-first layouts to expansive desktop views, including a side **Navigation Rail** and intelligent grids that scale up to 5+ columns.
-- 📱 **Flexible Layouts:** Switch between **Grid/List** and **TikTok-style** vertical discovery layouts.
-- 🎲 **Discovery Tools:** Use floating "Random" actions and "Surprise Me" entries to quickly explore your library.
-
-### 🎬 Video Player & Subtitles
-
-- 🎬 **Seamless Playback:** Native-feel player with multiple stream strategies, startup diagnostics, **Autoplay Next**, and queue continuity.
-- 💬 **Subtitle Support:** Load external **VTT/SRT** subtitles automatically. Customize **font size** and **vertical position** to suit your device.
-- 🌐 **Multi-Language:** Set a **default subtitle language** (English, Chinese, German, etc.) to auto-load whenever available.
-- 🎵 **System Integration:** Supports `audio_service` controls (notifications/lock screen), background audio, and **Picture-in-Picture (PiP)**.
-- 🆕 **Improved Subtitle Handling:** External subtitles are auto-detected and loaded when available. Users can customize `subtitle_font_size` and `subtitle_position_bottom_ratio`, and set `default_subtitle_language` to prefer a language when multiple tracks exist.
-
-### 🖼️ Images & Galleries
-
-- 🖼️ **Media Libraries:** Browse high-resolution **Images** and **Galleries** with smooth animations and responsive layouts.
-- 🖼️ **Enhanced Fullscreen Image Viewer:** Choose vertical/horizontal swipe direction, use previous/next quick-nav buttons, and avoid accidental UI hide when tapping overlay controls.
-- ▶️ **Configurable Slideshow:** Start/stop slideshow, tune interval/transition/direction/loop, and save preferred defaults.
-- ⭐ **Inline Rating Actions:** Rate either the current **Image** or its parent **Gallery** directly in fullscreen, with remembered rating target selection.
-- 🆕 **Sprite Image (Thumbnail Atlas) Support:** The app detects sprite metadata and uses thumbnail atlases for fast seek previews and compact gallery grids. Sprite parsing and rendering are handled during metadata resolution to provide smooth hover/seek preview UX.
-
-### 🔎 Browsing, Search & Filters
-
-- 👤 **Rich Browsing:** Explore Scenes, Images, Performers, Studios, Tags, Galleries, and Groups with fast pagination and global search.
-- 🔍 **Advanced Filtering:** Use menu sorting (Date, Rating, Play Count, Random) and comprehensive multi-filter sheets.
-
-### 🛠️ Editing & Metadata
-
-- 🛠️ **Metadata Editor:** Update Scene **Title**, **Details**, **Date**, and **URLs** in a fullscreen editor.
-- 🏷️ **Entity Association:** Assign **Studios**, **Performers**, and **Tags** from searchable pickers.
-- 📡 **Smart Scraping:** Pull metadata from multiple scrape matches with **automatic merge** support for existing entities.
-
-### ⚡ Reliability & Configuration
-
-- ⚡ **Performance Optimized:** Includes prefetching, and automatic recovery from corrupt cache files for low-latency usage.
-- 🛠️ **Native Customization:** Configure server connection, UI preferences, and streaming-related behaviors in one place.
+- 📱 **Cross-platform** support for Android, desktop, and web.
+- 🧭 **Flexible navigation** with customizable primary tabs and responsive layouts.
+- 🎬 **Playback tools** including queue continuity, autoplay next, PiP, background audio, cast support, and subtitle controls.
+- 🖼️ **Media browsing** for scenes, markers, images, galleries, performers, studios, tags, and groups.
+- 🔎 **Filtering and sorting** with saved per-page defaults and server-side presets.
+- 🛠️ **Editing and scraping** for scene metadata, entity associations, and match merging.
+- ⚙️ **Settings coverage** for server profiles, interface, playback, storage, security, keybinds, and developer options.
+- 🌐 **Localized UI** with multiple supported languages.
 
 ## 🚀 Getting Started
 

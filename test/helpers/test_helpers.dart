@@ -12,16 +12,19 @@ import 'package:stash_app_flutter/features/performers/domain/repositories/perfor
 import 'package:stash_app_flutter/features/studios/domain/repositories/studio_repository.dart';
 import 'package:stash_app_flutter/features/tags/domain/repositories/tag_repository.dart';
 import 'package:stash_app_flutter/features/images/domain/repositories/image_repository.dart';
+import 'package:stash_app_flutter/features/groups/domain/repositories/group_repository.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_deduplication.dart';
 import 'package:stash_app_flutter/features/performers/domain/entities/performer.dart';
 import 'package:stash_app_flutter/features/studios/domain/entities/studio.dart';
 import 'package:stash_app_flutter/features/tags/domain/entities/tag.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image.dart';
+import 'package:stash_app_flutter/features/groups/domain/entities/group.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
 import 'package:stash_app_flutter/features/performers/domain/entities/performer_filter.dart';
 import 'package:stash_app_flutter/features/studios/domain/entities/studio_filter.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image_filter.dart';
+import 'package:stash_app_flutter/features/groups/domain/entities/group_filter.dart';
 import 'package:stash_app_flutter/features/scenes/domain/models/scraper.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_performer.dart';
@@ -53,6 +56,19 @@ class MockSceneRepository extends MockRepositoryState<Scene>
   String? deletedSceneId;
   bool? deletedSceneDeleteFile;
   bool? deletedSceneDeleteGenerated;
+  final List<String> deletedSceneMarkerIds = [];
+  final List<
+    ({
+      String sceneId,
+      String title,
+      double seconds,
+      double? endSeconds,
+      String? primaryTagId,
+      List<String> tagIds,
+    })
+  >
+  createdSceneMarkers = [];
+  final List<bool> getSceneByIdRefreshValues = [];
   List<SceneDuplicateGroup> duplicateGroups = [];
   int missingPhashCount = 0;
   int? lastDuplicateDistance;
@@ -132,7 +148,47 @@ class MockSceneRepository extends MockRepositoryState<Scene>
   @override
   Future<Scene> getSceneById(String id, {bool refresh = false}) async {
     if (shouldThrow) throw Exception(errorMessage);
+    getSceneByIdRefreshValues.add(refresh);
     return data.firstWhere((s) => s.id == id);
+  }
+
+  @override
+  Future<SceneMarker> createSceneMarker({
+    required String sceneId,
+    required String title,
+    double seconds = 0,
+    double? endSeconds,
+    String? primaryTagId,
+    List<String> tagIds = const [],
+  }) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    createdSceneMarkers.add((
+      sceneId: sceneId,
+      title: title,
+      seconds: seconds,
+      endSeconds: endSeconds,
+      primaryTagId: primaryTagId,
+      tagIds: tagIds,
+    ));
+    return SceneMarker(
+      id: 'marker-${createdSceneMarkers.length}',
+      title: title,
+      seconds: seconds,
+      endSeconds: endSeconds,
+      screenshot: null,
+      preview: null,
+      stream: null,
+      primaryTagId: primaryTagId,
+      primaryTagName: null,
+      tagIds: tagIds,
+      tagNames: const [],
+    );
+  }
+
+  @override
+  Future<void> deleteSceneMarker(String markerId) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    deletedSceneMarkerIds.add(markerId);
   }
 
   @override
@@ -396,6 +452,28 @@ class MockTagRepository extends MockRepositoryState<Tag>
   @override
   Future<void> setTagFavorite(String id, bool favorite) async {
     if (shouldThrow) throw Exception(errorMessage);
+  }
+}
+
+class MockGroupRepository extends MockRepositoryState<Group>
+    implements GroupRepository {
+  @override
+  Future<List<Group>> findGroups({
+    int? page,
+    int? perPage,
+    String? filter,
+    String? sort,
+    bool? descending,
+    GroupFilter? groupFilter,
+  }) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    return data;
+  }
+
+  @override
+  Future<Group> getGroupById(String id, {bool refresh = false}) async {
+    if (shouldThrow) throw Exception(errorMessage);
+    return data.firstWhere((g) => g.id == id);
   }
 }
 

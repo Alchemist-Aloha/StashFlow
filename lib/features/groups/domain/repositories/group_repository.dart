@@ -1,4 +1,5 @@
 import '../entities/group.dart';
+import '../entities/group_filter.dart';
 
 abstract class GroupRepository {
   Future<List<Group>> findGroups({
@@ -7,6 +8,7 @@ abstract class GroupRepository {
     String? filter,
     String? sort,
     bool? descending,
+    GroupFilter? groupFilter,
   });
   Future<Group> getGroupById(String id, {bool refresh = false});
 }

@@ -593,6 +593,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                     if (widget.useMasonry) {
                                       return MasonryGridView.builder(
                                         controller: widget.scrollController,
+                                        physics:
+                                            const AlwaysScrollableScrollPhysics(),
                                         padding: widget.padding,
                                         cacheExtent: viewportCacheExtent,
                                         gridDelegate:
@@ -654,6 +656,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
 
                                     return GridView.builder(
                                       controller: widget.scrollController,
+                                      physics:
+                                          const AlwaysScrollableScrollPhysics(),
                                       padding: widget.padding,
                                       scrollCacheExtent:
                                           const ScrollCacheExtent.viewport(2.0),
@@ -703,6 +707,8 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                                 )
                               : ListView.builder(
                                   controller: widget.scrollController,
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
                                   padding: widget.padding,
                                   scrollCacheExtent:
                                       const ScrollCacheExtent.viewport(2.0),

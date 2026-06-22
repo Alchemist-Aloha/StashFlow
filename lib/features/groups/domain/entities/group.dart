@@ -5,6 +5,8 @@ class Group {
   final int? rating100;
   final String? director;
   final String? synopsis;
+  final int? sceneCount;
+  final int? subGroupCount;
 
   const Group({
     required this.id,
@@ -13,6 +15,8 @@ class Group {
     this.rating100,
     this.director,
     this.synopsis,
+    this.sceneCount,
+    this.subGroupCount,
   });
 
   factory Group.fromJson(Map<String, dynamic> json) {
@@ -23,6 +27,8 @@ class Group {
       rating100: json['rating100'] as int?,
       director: json['director']?.toString(),
       synopsis: json['synopsis']?.toString(),
+      sceneCount: json['scene_count'] as int?,
+      subGroupCount: json['sub_group_count'] as int?,
     );
   }
 }

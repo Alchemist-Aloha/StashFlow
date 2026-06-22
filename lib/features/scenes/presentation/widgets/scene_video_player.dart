@@ -465,6 +465,12 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
               scene: widget.scene,
               controller: controller,
               onFullScreenToggle: _toggleFullScreen,
+              onInlineBack: () {
+                final router = GoRouter.of(context);
+                if (router.canPop()) {
+                  router.pop();
+                }
+              },
               fit: BoxFit.contain,
               squareFit: BoxFit.contain,
             ),

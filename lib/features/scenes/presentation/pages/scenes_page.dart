@@ -17,6 +17,7 @@ import '../../../setup/presentation/providers/navigation_customization_provider.
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
+import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/utils/app_log_store.dart';
@@ -315,170 +316,25 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) {
-        _SceneSortField tempField = _sortField;
-        bool tempDescending = _sortDescending;
-
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return SafeArea(
-              child: Padding(
-                padding: EdgeInsets.all(context.dimensions.spacingLarge),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            context.l10n.sort_scenes,
-                            style: context.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            setModalState(() {
-                              tempField = _SceneSortField.date;
-                              tempDescending = true;
-                            });
-                          },
-                          child: Text(context.l10n.common_reset),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: context.dimensions.spacingMedium),
-                    Text(
-                      context.l10n.common_sort_method,
-                      style: context.textTheme.labelLarge,
-                    ),
-                    SizedBox(height: context.dimensions.spacingSmall),
-                    Flexible(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          // Using MediaQuery.sizeOf(context) instead of MediaQuery.of(context).size
-                          // to prevent unnecessary rebuilds when unrelated MediaQueryData properties change.
-                          maxHeight: MediaQuery.sizeOf(context).height * 0.22,
-                        ),
-                        child: Scrollbar(
-                          thumbVisibility: true,
-                          child: SingleChildScrollView(
-                            padding: EdgeInsets.symmetric(
-                              vertical: context.dimensions.spacingSmall,
-                            ),
-                            child: Wrap(
-                              spacing: context.dimensions.spacingSmall,
-                              runSpacing: context.dimensions.spacingSmall,
-                              children: _SceneSortField.values
-                                  .map(
-                                    (field) => ChoiceChip(
-                                      label: Text(_sortFieldLabel(field)),
-                                      selected: tempField == field,
-                                      onSelected: (selected) {
-                                        if (!selected) return;
-                                        setModalState(() {
-                                          tempField = field;
-                                        });
-                                      },
-                                    ),
-                                  )
-                                  .toList(),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: context.dimensions.spacingMedium),
-                    Text(
-                      context.l10n.common_direction,
-                      style: context.textTheme.labelLarge,
-                    ),
-                    SizedBox(height: context.dimensions.spacingSmall),
-                    SizedBox(
-                      width: double.infinity,
-                      child: SegmentedButton<bool>(
-                        segments: [
-                          ButtonSegment(
-                            value: true,
-                            label: Text(context.l10n.common_descending),
-                            icon: Icon(Icons.arrow_downward),
-                          ),
-                          ButtonSegment(
-                            value: false,
-                            label: Text(context.l10n.common_ascending),
-                            icon: Icon(Icons.arrow_upward),
-                          ),
-                        ],
-                        selected: {tempDescending},
-                        onSelectionChanged: (value) =>
-                            setModalState(() => tempDescending = value.first),
-                      ),
-                    ),
-                    SizedBox(height: context.dimensions.spacingLarge),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _sortField = tempField;
-                            _sortDescending = tempDescending;
-                          });
-                          _applyServerSort();
-                          Navigator.pop(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: context.colors.primary,
-                          foregroundColor: context.colors.onPrimary,
-                          padding: EdgeInsets.symmetric(
-                            vertical: context.dimensions.spacingMedium,
-                          ),
-                        ),
-                        child: Text(context.l10n.common_apply_sort),
-                      ),
-                    ),
-                    SizedBox(height: context.dimensions.spacingSmall),
-                    SizedBox(
-                      width: double.infinity,
-                      child: TextButton(
-                        onPressed: () async {
-                          setState(() {
-                            _sortField = tempField;
-                            _sortDescending = tempDescending;
-                          });
-                          _applyServerSort();
-                          await ref
-                              .read(sceneSortProvider.notifier)
-                              .saveAsDefault();
-                          if (context.mounted) {
-                            Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  context.l10n.scenes_sort_saved_default,
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                            vertical: context.dimensions.spacingMedium,
-                          ),
-                        ),
-                        child: Text(context.l10n.common_save_default),
-                      ),
-                    ),
-                    SizedBox(height: context.dimensions.spacingMedium),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
+      builder: (context) => ListSortBottomSheet<_SceneSortField>(
+        title: context.l10n.sort_scenes,
+        options: _SceneSortField.values,
+        initialOption: _sortField,
+        initialDescending: _sortDescending,
+        resetOption: _SceneSortField.date,
+        resetDescending: true,
+        optionLabel: _sortFieldLabel,
+        onApply: (field, descending) {
+          setState(() {
+            _sortField = field;
+            _sortDescending = descending;
+          });
+          _applyServerSort();
+        },
+        onSaveDefault: () =>
+            ref.read(sceneSortProvider.notifier).saveAsDefault(),
+        saveDefaultSuccessMessage: context.l10n.scenes_sort_saved_default,
+      ),
     );
   }
 
@@ -654,6 +510,11 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
           tooltip: context.l10n.common_saved_filters,
           icon: const Icon(Icons.bookmarks_outlined),
           onPressed: _showSavedFilterDialog,
+        ),
+        IconButton(
+          tooltip: 'Markers',
+          icon: const Icon(Icons.sell_outlined),
+          onPressed: () => context.push('/scenes/markers'),
         ),
       ],
       gridDelegate: isGridView

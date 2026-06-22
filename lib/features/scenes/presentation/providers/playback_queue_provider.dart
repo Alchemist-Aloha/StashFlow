@@ -23,12 +23,16 @@ class PlaybackQueueIds {
 
   static String tagStrip(String tagId) => 'tag:$tagId:strip';
 
+  static String groupStrip(String groupId) => 'group:$groupId:strip';
+
   static String studioMedia(String studioId) => 'studio:$studioId:media';
 
   static String performerMedia(String performerId) =>
       'performer:$performerId:media';
 
   static String tagMedia(String tagId) => 'tag:$tagId:media';
+
+  static String groupMedia(String groupId) => 'group:$groupId:media';
 }
 
 class PlaybackQueueSnapshot {

@@ -5,6 +5,8 @@ fragment GroupData on Group {
   rating100
   director
   synopsis
+  scene_count
+  sub_group_count
 }
 
 query FindGroups($filter: FindFilterType, $group_filter: GroupFilterType) {

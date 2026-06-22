@@ -2,6 +2,15 @@ import 'dart:async';
 import 'package:dart_cast/dart_cast.dart' as dc;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../utils/app_log_store.dart';
+
+void logCastProcess(String message, {String source = 'cast_service'}) {
+  if (AppLogStore.instance.isEnabled) {
+    AppLogStore.instance.add(message, source: source);
+    return;
+  }
+  debugPrint(message);
+}
 
 class CastState {
   final List<dc.CastDevice> discoveredDevices;
@@ -80,10 +89,10 @@ class AppCastService extends Notifier<CastState> {
         }
       },
     );
-    debugPrint('CastService: initialized');
+    logCastProcess('CastService: initialized');
 
     ref.onDispose(() {
-      debugPrint('CastService: disposing');
+      logCastProcess('CastService: disposing');
       _subscription?.cancel();
       _sessionSubscription?.cancel();
       _positionSubscription?.cancel();
@@ -97,27 +106,29 @@ class AppCastService extends Notifier<CastState> {
   dc.CastService get castService => _castService;
 
   void startDiscovery() {
-    debugPrint('CastService: start discovery');
+    logCastProcess('CastService: start discovery');
     _subscription?.cancel();
     state = state.copyWith(discoveredDevices: []);
     _subscription = _castService
         .startDiscovery(timeout: const Duration(seconds: 15))
         .listen(
           (devices) {
-            debugPrint('CastService: discovered ${devices.length} device(s)');
+            logCastProcess(
+              'CastService: discovered ${devices.length} device(s)',
+            );
             state = state.copyWith(discoveredDevices: devices);
           },
           onDone: () {
-            debugPrint('CastService: discovery completed');
+            logCastProcess('CastService: discovery completed');
           },
           onError: (error) {
-            debugPrint('CastService: discovery error: $error');
+            logCastProcess('CastService: discovery error: $error');
           },
         );
   }
 
   void stopDiscovery() {
-    debugPrint('CastService: stop discovery');
+    logCastProcess('CastService: stop discovery');
     _subscription?.cancel();
     _castService.stopDiscovery();
     state = state.copyWith(discoveredDevices: []);
@@ -130,19 +141,31 @@ class AppCastService extends Notifier<CastState> {
     Duration confirmationTimeout = const Duration(milliseconds: 2500),
     Duration retryDelay = const Duration(milliseconds: 400),
   }) async {
+    logCastProcess(
+      'CastService: loading media device=${session.device.name} protocol=${session.device.protocol.name} type=${media.type.name} url=${media.url}',
+    );
     if (session.device.protocol != dc.CastProtocol.chromecast) {
       await session.loadMedia(media);
+      logCastProcess(
+        'CastService: media load complete device=${session.device.name}',
+      );
       return;
     }
 
     for (var attempt = 1; attempt <= maxAttempts; attempt++) {
+      logCastProcess(
+        'CastService: Chromecast load attempt $attempt/$maxAttempts device=${session.device.name}',
+      );
       await session.loadMedia(media);
       if (await _waitForPlaybackConfirmation(session, confirmationTimeout)) {
+        logCastProcess(
+          'CastService: Chromecast playback confirmed device=${session.device.name} state=${session.state.name}',
+        );
         return;
       }
 
       if (attempt < maxAttempts) {
-        debugPrint(
+        logCastProcess(
           'CastService: Chromecast load did not enter playback; retrying ($attempt/$maxAttempts)',
         );
         await Future<void>.delayed(retryDelay);
@@ -185,6 +208,9 @@ class AppCastService extends Notifier<CastState> {
     await _sessionSubscription?.cancel();
     await _positionSubscription?.cancel();
     await _stateSubscription?.cancel();
+    logCastProcess(
+      'CastService: active session set device=${session.device.name} protocol=${session.device.protocol.name} localResumePosition=$localResumePosition localWasPlaying=$localWasPlaying',
+    );
     state = state.copyWith(
       activeSession: session,
       isCasting: true,
@@ -195,9 +221,15 @@ class AppCastService extends Notifier<CastState> {
     );
 
     _positionSubscription = session.positionStream.listen((position) {
+      logCastProcess(
+        'CastService: remote position updated device=${session.device.name} position=$position',
+      );
       state = state.copyWith(remotePosition: position);
     });
     _stateSubscription = session.stateStream.listen((sessionState) {
+      logCastProcess(
+        'CastService: remote state updated device=${session.device.name} state=${sessionState.name}',
+      );
       if (sessionState == dc.SessionState.playing ||
           sessionState == dc.SessionState.buffering) {
         state = state.copyWith(remoteIsPlaying: true);
@@ -222,18 +254,28 @@ class AppCastService extends Notifier<CastState> {
     await _stateSubscription?.cancel();
 
     try {
-      debugPrint('CastService: restarting active session media');
+      logCastProcess(
+        'CastService: restarting active session media device=${session.device.name} type=${media.type.name} url=${media.url}',
+      );
       try {
         await session.disconnect();
       } catch (e) {
-        debugPrint('CastService: error disconnecting previous media: $e');
+        logCastProcess(
+          'CastService: error disconnecting previous media device=${session.device.name}: $e',
+        );
       }
 
       await session.connect();
+      logCastProcess(
+        'CastService: reconnected session device=${session.device.name}',
+      );
       await loadMediaAndConfirm(session, media);
 
       if (session.device.protocol == dc.CastProtocol.airplay &&
           localResumePosition > Duration.zero) {
+        logCastProcess(
+          'CastService: seeking AirPlay after restart device=${session.device.name} position=$localResumePosition',
+        );
         await session.seek(localResumePosition);
       }
 
@@ -243,7 +285,9 @@ class AppCastService extends Notifier<CastState> {
         localWasPlaying: localWasPlaying,
       );
     } catch (e) {
-      debugPrint('CastService: failed to restart active session media: $e');
+      logCastProcess(
+        'CastService: failed to restart active session media device=${session.device.name}: $e',
+      );
       state = state.copyWith(
         isCasting: false,
         remotePosition: Duration.zero,
@@ -258,11 +302,15 @@ class AppCastService extends Notifier<CastState> {
   Future<void> stopCasting() async {
     final session = state.activeSession;
     if (session != null) {
-      debugPrint('CastService: stopping session');
+      logCastProcess(
+        'CastService: stopping session device=${session.device.name}',
+      );
       try {
         await session.disconnect();
       } catch (e) {
-        debugPrint('CastService: error disconnecting session: $e');
+        logCastProcess(
+          'CastService: error disconnecting session device=${session.device.name}: $e',
+        );
       }
     }
     await _sessionSubscription?.cancel();
@@ -275,11 +323,13 @@ class AppCastService extends Notifier<CastState> {
       clearActiveSession: true,
       clearLocalHandoff: true,
     );
+    logCastProcess('CastService: session stopped');
   }
 
   Future<void> play() async {
     final session = state.activeSession;
     if (session == null) return;
+    logCastProcess('CastService: play requested device=${session.device.name}');
     await session.play();
     state = state.copyWith(remoteIsPlaying: true);
   }
@@ -287,6 +337,9 @@ class AppCastService extends Notifier<CastState> {
   Future<void> pause() async {
     final session = state.activeSession;
     if (session == null) return;
+    logCastProcess(
+      'CastService: pause requested device=${session.device.name}',
+    );
     await session.pause();
     state = state.copyWith(remoteIsPlaying: false);
   }
@@ -294,6 +347,9 @@ class AppCastService extends Notifier<CastState> {
   Future<void> seek(Duration position) async {
     final session = state.activeSession;
     if (session == null) return;
+    logCastProcess(
+      'CastService: seek requested device=${session.device.name} position=$position',
+    );
     await session.seek(position);
     state = state.copyWith(remotePosition: position);
   }

@@ -8,6 +8,7 @@ import '../widgets/studio_filter_panel.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
+import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
@@ -124,171 +125,27 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
   }
 
   void _showSortPanel() {
-    var tempOption = _sortOption;
-    var tempDescending = _sortDescending;
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) {
-          return Container(
-            padding: EdgeInsets.all(context.dimensions.spacingMedium),
-            decoration: BoxDecoration(
-              color: context.colors.surface,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(AppTheme.radiusExtraLarge),
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      context.l10n.studios_sort_title,
-                      style: context.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setModalState(() {
-                          tempOption = _StudioSortOption.name;
-                          tempDescending = false;
-                        });
-                      },
-                      child: Text(context.l10n.common_reset),
-                    ),
-                  ],
-                ),
-                SizedBox(height: context.dimensions.spacingMedium),
-                Text(
-                  context.l10n.common_sort_method,
-                  style: context.textTheme.labelLarge,
-                ),
-                SizedBox(height: context.dimensions.spacingSmall),
-                Flexible(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      // Using MediaQuery.sizeOf(context) instead of MediaQuery.of(context).size
-                      // to prevent unnecessary rebuilds when unrelated MediaQueryData properties change.
-                      maxHeight: MediaQuery.sizeOf(context).height * 0.22,
-                    ),
-                    child: Scrollbar(
-                      thumbVisibility: true,
-                      child: SingleChildScrollView(
-                        padding: EdgeInsets.symmetric(
-                          vertical: context.dimensions.spacingSmall,
-                        ),
-                        child: Wrap(
-                          spacing: context.dimensions.spacingSmall,
-                          runSpacing: context.dimensions.spacingSmall,
-                          children: _StudioSortOption.values
-                              .map(
-                                (option) => ChoiceChip(
-                                  label: Text(_sortLabel(option)),
-                                  selected: tempOption == option,
-                                  onSelected: (selected) {
-                                    if (!selected) return;
-                                    setModalState(() {
-                                      tempOption = option;
-                                    });
-                                  },
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: context.dimensions.spacingMedium),
-                Text(
-                  context.l10n.common_direction,
-                  style: context.textTheme.labelLarge,
-                ),
-                SizedBox(height: context.dimensions.spacingSmall),
-                SizedBox(
-                  width: double.infinity,
-                  child: SegmentedButton<bool>(
-                    segments: [
-                      ButtonSegment(
-                        value: true,
-                        label: Text(context.l10n.common_descending),
-                        icon: const Icon(Icons.arrow_downward),
-                      ),
-                      ButtonSegment(
-                        value: false,
-                        label: Text(context.l10n.common_ascending),
-                        icon: const Icon(Icons.arrow_upward),
-                      ),
-                    ],
-                    selected: {tempDescending},
-                    onSelectionChanged: (value) =>
-                        setModalState(() => tempDescending = value.first),
-                  ),
-                ),
-                SizedBox(height: context.dimensions.spacingLarge),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _sortOption = tempOption;
-                        _sortDescending = tempDescending;
-                      });
-                      _applyServerSort(_sortOption);
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: context.colors.primary,
-                      foregroundColor: context.colors.onPrimary,
-                      padding: EdgeInsets.symmetric(
-                        vertical: context.dimensions.spacingMedium,
-                      ),
-                    ),
-                    child: Text(context.l10n.common_apply_sort),
-                  ),
-                ),
-                SizedBox(height: context.dimensions.spacingSmall),
-                SizedBox(
-                  width: double.infinity,
-                  child: TextButton(
-                    onPressed: () async {
-                      setState(() {
-                        _sortOption = tempOption;
-                        _sortDescending = tempDescending;
-                      });
-                      _applyServerSort(_sortOption);
-                      await ref
-                          .read(studioSortProvider.notifier)
-                          .saveAsDefault();
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(context.l10n.studios_sort_saved),
-                          ),
-                        );
-                      }
-                    },
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                        vertical: context.dimensions.spacingMedium,
-                      ),
-                    ),
-                    child: Text(context.l10n.common_save_default),
-                  ),
-                ),
-                SizedBox(height: context.dimensions.spacingMedium),
-              ],
-            ),
-          );
+      builder: (context) => ListSortBottomSheet<_StudioSortOption>(
+        title: context.l10n.studios_sort_title,
+        options: _StudioSortOption.values,
+        initialOption: _sortOption,
+        initialDescending: _sortDescending,
+        resetOption: _StudioSortOption.name,
+        resetDescending: false,
+        optionLabel: _sortLabel,
+        onApply: (option, descending) {
+          setState(() {
+            _sortOption = option;
+            _sortDescending = descending;
+          });
+          _applyServerSort(option);
         },
+        onSaveDefault: () =>
+            ref.read(studioSortProvider.notifier).saveAsDefault(),
+        saveDefaultSuccessMessage: context.l10n.studios_sort_saved,
       ),
     );
   }

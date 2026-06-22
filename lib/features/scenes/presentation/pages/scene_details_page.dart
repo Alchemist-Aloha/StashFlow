@@ -28,7 +28,6 @@ import '../providers/video_player_provider.dart';
 import 'scene_info_page.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
-import '../../../setup/presentation/providers/scrape_customization_provider.dart';
 import '../../domain/entities/scene.dart';
 import '../widgets/scene_video_player.dart';
 import '../widgets/scene_strip.dart';
@@ -280,6 +279,103 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     }
   }
 
+  Future<void> _showAddMarkerDialog(
+    Scene scene, {
+    required double markerSeconds,
+  }) async {
+    final title = await showDialog<String>(
+      context: context,
+      builder: (_) => _AddMarkerDialog(cancelLabel: context.l10n.common_cancel),
+    );
+    if (title == null) return;
+
+    final markerTitle = title.trim().isEmpty
+        ? '${scene.displayTitle} - ${_formatDuration(markerSeconds)}'
+        : title.trim();
+
+    try {
+      await ref
+          .read(sceneRepositoryProvider)
+          .createSceneMarker(
+            sceneId: scene.id,
+            title: markerTitle,
+            seconds: markerSeconds,
+            primaryTagId: scene.tagIds.isNotEmpty ? scene.tagIds.first : null,
+            tagIds: scene.tagIds.isNotEmpty ? [scene.tagIds.first] : const [],
+          );
+      await ref.read(sceneDetailsProvider(scene.id).notifier).refresh();
+      _invalidateSceneListUnlessRandom();
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Marker created')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to create marker: ${e.toString()}')),
+        );
+      }
+    }
+  }
+
+  Future<void> _showDeleteMarkerDialog({
+    required Scene scene,
+    required SceneMarker marker,
+  }) async {
+    final deleted = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          icon: Icon(Icons.delete_outline, color: dialogContext.colors.error),
+          title: const Text('Delete marker'),
+          content: Text('Delete marker "${marker.title}"?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(context.l10n.common_cancel),
+            ),
+            FilledButton.icon(
+              style: FilledButton.styleFrom(
+                backgroundColor: dialogContext.colors.error,
+                foregroundColor: dialogContext.colors.onError,
+              ),
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              icon: const Icon(Icons.delete_outline),
+              label: Text(context.l10n.common_delete),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (deleted != true) return;
+
+    try {
+      await ref.read(sceneRepositoryProvider).deleteSceneMarker(marker.id);
+      await ref.read(sceneDetailsProvider(scene.id).notifier).refresh();
+      _invalidateSceneListUnlessRandom();
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Marker deleted')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete marker: ${e.toString()}')),
+        );
+      }
+    }
+  }
+
+  double _currentMarkerSeconds(Scene scene) {
+    final playerState = ref.read(playerStateProvider);
+    if (playerState.activeScene?.id != scene.id) return 0;
+    final position = playerState.player?.state.position ?? Duration.zero;
+    return position.inMilliseconds / 1000.0;
+  }
+
   Future<void> _saveVideoToGallery(Scene scene) async {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -423,51 +519,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   Widget build(BuildContext context) {
     final sceneAsync = ref.watch(sceneDetailsProvider(widget.sceneId));
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
-    final scrapeEnabled = ref.watch(scrapeEnabledProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.details_scene),
-        actions: [
-          sceneAsync.maybeWhen(
-            data: (scene) => IconButton(
-              tooltip: context.l10n.common_more,
-              icon: const Icon(Icons.info_outline_rounded),
-              onPressed: () => _showSceneDetailsSheet(scene),
-            ),
-            orElse: () => const SizedBox.shrink(),
-          ),
-          if (!kIsWeb)
-            sceneAsync.maybeWhen(
-              data: (scene) => IconButton(
-                tooltip: context.l10n.common_download,
-                icon: const Icon(Icons.download_outlined),
-                onPressed: () => _saveVideoToGallery(scene),
-              ),
-              orElse: () => const SizedBox.shrink(),
-            ),
-          if (scrapeEnabled)
-            sceneAsync.maybeWhen(
-              data: (scene) => IconButton(
-                tooltip: context.l10n.common_edit,
-                icon: const Icon(Icons.edit_outlined),
-                onPressed: () => context.push(
-                  '/scenes/scene/${scene.id}/edit',
-                  extra: scene,
-                ),
-              ),
-              orElse: () => const SizedBox.shrink(),
-            ),
-          sceneAsync.maybeWhen(
-            data: (scene) => IconButton(
-              tooltip: context.l10n.delete_scene,
-              icon: const Icon(Icons.delete_outline),
-              onPressed: () => _showDeleteSceneDialog(scene),
-            ),
-            orElse: () => const SizedBox.shrink(),
-          ),
-        ],
-      ),
       floatingActionButton: randomNavigationEnabled
           ? sceneAsync.maybeWhen(
               data: (_) => FloatingActionButton.small(
@@ -478,125 +531,132 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
               orElse: () => null,
             )
           : null,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          // Subtract 8px margin from the body height to ensure video is fully visible
-          final safeMaxHeight = constraints.maxHeight - 8;
+      body: SafeArea(
+        top: true,
+        bottom: false,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // Subtract 8px margin from the body height to ensure video is fully visible
+            final safeMaxHeight = constraints.maxHeight - 8;
 
-          return sceneAsync.when(
-            data: (scene) {
-              final useTwoColumns = !Responsive.isMobile(context);
+            return sceneAsync.when(
+              data: (scene) {
+                final useTwoColumns = !Responsive.isMobile(context);
 
-              if (useTwoColumns) {
+                if (useTwoColumns) {
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      ref.invalidate(sceneDetailsProvider(widget.sceneId));
+                      return ref.read(
+                        sceneDetailsProvider(widget.sceneId).future,
+                      );
+                    },
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Left Column: Video, Title, Info, Details (61.8%)
+                        Expanded(
+                          flex: 618,
+                          child: SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SceneVideoPlayer(
+                                  key: _playerKey,
+                                  scene: scene,
+                                  autoPlayOnMount: widget.autoPlayOnMount,
+                                  maxHeight: safeMaxHeight,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(
+                                    AppTheme.spacingMedium,
+                                  ),
+                                  child: _buildMainInfo(context, scene),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Divider
+                        VerticalDivider(
+                          width: 1,
+                          thickness: 1,
+                          color: context.colors.outline.withValues(alpha: 0.1),
+                        ),
+                        // Right Column: Tags, Performers, More from Studio (38.2%)
+                        Expanded(
+                          flex: 382,
+                          child: SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: const EdgeInsets.all(
+                              AppTheme.spacingMedium,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildTagsSection(context, scene),
+                                _buildMarkersSection(context, scene),
+                                _buildPerformersSection(context, scene),
+                                _buildMoreFromStudioSection(context, scene),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                // Mobile View (Default Column)
                 return RefreshIndicator(
                   onRefresh: () async {
+                    await ref
+                        .read(sceneRepositoryProvider)
+                        .getSceneById(widget.sceneId, refresh: true);
                     ref.invalidate(sceneDetailsProvider(widget.sceneId));
                     return ref.read(
                       sceneDetailsProvider(widget.sceneId).future,
                     );
                   },
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Left Column: Video, Title, Info, Details (61.8%)
-                      Expanded(
-                        flex: 618,
-                        child: SingleChildScrollView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SceneVideoPlayer(
-                                key: _playerKey,
-                                scene: scene,
-                                autoPlayOnMount: widget.autoPlayOnMount,
-                                maxHeight: safeMaxHeight,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(
-                                  AppTheme.spacingMedium,
-                                ),
-                                child: _buildMainInfo(
-                                  context,
-                                  scene,
-                                  scrapeEnabled,
-                                ),
-                              ),
-                            ],
-                          ),
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SceneVideoPlayer(
+                          key: _playerKey,
+                          scene: scene,
+                          autoPlayOnMount: widget.autoPlayOnMount,
+                          maxHeight: safeMaxHeight,
                         ),
-                      ),
-                      // Divider
-                      VerticalDivider(
-                        width: 1,
-                        thickness: 1,
-                        color: context.colors.outline.withValues(alpha: 0.1),
-                      ),
-                      // Right Column: Tags, Performers, More from Studio (38.2%)
-                      Expanded(
-                        flex: 382,
-                        child: SingleChildScrollView(
-                          physics: const AlwaysScrollableScrollPhysics(),
+                        Padding(
                           padding: const EdgeInsets.all(AppTheme.spacingMedium),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              _buildMainInfo(context, scene),
                               _buildTagsSection(context, scene),
+                              _buildMarkersSection(context, scene),
                               _buildPerformersSection(context, scene),
                               _buildMoreFromStudioSection(context, scene),
                             ],
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
-              }
-
-              // Mobile View (Default Column)
-              return RefreshIndicator(
-                onRefresh: () async {
-                  await ref
-                      .read(sceneRepositoryProvider)
-                      .getSceneById(widget.sceneId, refresh: true);
-                  ref.invalidate(sceneDetailsProvider(widget.sceneId));
-                  return ref.read(sceneDetailsProvider(widget.sceneId).future);
-                },
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SceneVideoPlayer(
-                        key: _playerKey,
-                        scene: scene,
-                        autoPlayOnMount: widget.autoPlayOnMount,
-                        maxHeight: safeMaxHeight,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(AppTheme.spacingMedium),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildMainInfo(context, scene, scrapeEnabled),
-                            _buildTagsSection(context, scene),
-                            _buildPerformersSection(context, scene),
-                            _buildMoreFromStudioSection(context, scene),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, stack) => ErrorStateView(
-              message: context.l10n.common_error(err.toString()),
-              onRetry: () => ref.refresh(sceneDetailsProvider(widget.sceneId)),
-            ),
-          );
-        },
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => ErrorStateView(
+                message: context.l10n.common_error(err.toString()),
+                onRetry: () =>
+                    ref.refresh(sceneDetailsProvider(widget.sceneId)),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -618,7 +678,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
   }
 
-  Widget _buildMainInfo(BuildContext context, Scene scene, bool scrapeEnabled) {
+  Widget _buildMainInfo(BuildContext context, Scene scene) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -631,7 +691,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           children: [
             _buildTechnicalMetadata(context, scene),
             const SizedBox(height: AppTheme.spacingSmall),
-            _buildActions(context, scene, scrapeEnabled),
+            _buildActions(context, scene),
             const SizedBox(height: AppTheme.spacingMedium),
           ],
         ),
@@ -751,95 +811,139 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
   }
 
-  Widget _buildActions(BuildContext context, Scene scene, bool scrapeEnabled) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      crossAxisAlignment: WrapCrossAlignment.center,
+  Widget _buildActions(BuildContext context, Scene scene) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (var i = 1; i <= 5; i++)
-          IconButton(
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-            tooltip: context.l10n.scene_rating_stars(i),
-            onPressed: () async {
-              final currentRating = scene.rating100 ?? 0;
-              final newRating = (currentRating == i * 20) ? 0 : i * 20;
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            for (var i = 1; i <= 5; i++)
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                tooltip: context.l10n.scene_rating_stars(i),
+                onPressed: () async {
+                  final currentRating = scene.rating100 ?? 0;
+                  final newRating = (currentRating == i * 20) ? 0 : i * 20;
 
-              try {
-                await ref
-                    .read(sceneRepositoryProvider)
-                    .updateSceneRating(scene.id, newRating);
-                await ref
-                    .read(sceneRepositoryProvider)
-                    .getSceneById(scene.id, refresh: true);
-                ref.invalidate(sceneDetailsProvider(scene.id));
-                _invalidateSceneListUnlessRandom();
-              } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        context.l10n.details_failed_update_rating(e.toString()),
+                  try {
+                    await ref
+                        .read(sceneRepositoryProvider)
+                        .updateSceneRating(scene.id, newRating);
+                    await ref
+                        .read(sceneRepositoryProvider)
+                        .getSceneById(scene.id, refresh: true);
+                    ref.invalidate(sceneDetailsProvider(scene.id));
+                    _invalidateSceneListUnlessRandom();
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            context.l10n.details_failed_update_rating(
+                              e.toString(),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                  }
+                },
+                icon: Icon(
+                  (scene.rating100 ?? 0) >= i * 20
+                      ? Icons.star
+                      : Icons.star_border,
+                  color: context.colors.ratingColor,
+                  size: 28,
+                ),
+              ),
+            FilledButton.tonalIcon(
+              onPressed: () async {
+                try {
+                  await ref
+                      .read(sceneRepositoryProvider)
+                      .incrementSceneOCounter(scene.id);
+                  await ref
+                      .read(sceneRepositoryProvider)
+                      .getSceneById(scene.id, refresh: true);
+                  ref.invalidate(sceneDetailsProvider(scene.id));
+                  _invalidateSceneListUnlessRandom();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(context.l10n.details_o_count_incremented),
                       ),
-                    ),
-                  );
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          context.l10n.details_failed_increment_o_count(
+                            e.toString(),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
                 }
-              }
-            },
-            icon: Icon(
-              (scene.rating100 ?? 0) >= i * 20 ? Icons.star : Icons.star_border,
-              color: context.colors.ratingColor,
-              size: 28,
+              },
+              style: FilledButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                minimumSize: const Size(0, 32),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              ),
+              icon: const Icon(Icons.water_drop_outlined),
+              label: Text('${scene.oCounter}'),
             ),
-          ),
-        // if (scene.rating100 != null && scene.rating100! > 0)
-        //   Text(
-        //     (scene.rating100! / 20).toStringAsFixed(1),
-        //     style: context.textTheme.bodyMedium?.copyWith(
-        //       color: context.colors.onSurface.withValues(alpha: 0.7),
-        //     ),
-        //   ),
-        FilledButton.tonalIcon(
-          onPressed: () async {
-            try {
-              await ref
-                  .read(sceneRepositoryProvider)
-                  .incrementSceneOCounter(scene.id);
-              await ref
-                  .read(sceneRepositoryProvider)
-                  .getSceneById(scene.id, refresh: true);
-              ref.invalidate(sceneDetailsProvider(scene.id));
-              _invalidateSceneListUnlessRandom();
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(context.l10n.details_o_count_incremented),
-                  ),
-                );
-              }
-            } catch (e) {
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      context.l10n.details_failed_increment_o_count(
-                        e.toString(),
-                      ),
-                    ),
-                  ),
-                );
-              }
-            }
-          },
-          style: FilledButton.styleFrom(
-            visualDensity: VisualDensity.compact,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            minimumSize: const Size(0, 32),
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          ),
-          icon: const Icon(Icons.water_drop_outlined),
-          label: Text('${scene.oCounter}'),
+          ],
+        ),
+        const SizedBox(height: AppTheme.spacingSmall),
+        Wrap(
+          spacing: 4,
+          runSpacing: 4,
+          children: [
+            IconButton(
+              key: const Key('scene_action_add_marker'),
+              tooltip: 'Add marker',
+              icon: const Icon(Icons.bookmark_add_outlined),
+              onPressed: () => _showAddMarkerDialog(
+                scene,
+                markerSeconds: _currentMarkerSeconds(scene),
+              ),
+            ),
+            IconButton(
+              key: const Key('scene_action_info'),
+              tooltip: context.l10n.common_more,
+              icon: const Icon(Icons.info_outline_rounded),
+              onPressed: () => _showSceneDetailsSheet(scene),
+            ),
+            if (!kIsWeb)
+              IconButton(
+                key: const Key('scene_action_download'),
+                tooltip: context.l10n.common_download,
+                icon: const Icon(Icons.download_outlined),
+                onPressed: () => _saveVideoToGallery(scene),
+              ),
+            IconButton(
+              key: const Key('scene_action_edit'),
+              tooltip: context.l10n.common_edit,
+              icon: const Icon(Icons.edit_outlined),
+              onPressed: () =>
+                  context.push('/scenes/scene/${scene.id}/edit', extra: scene),
+            ),
+            IconButton(
+              key: const Key('scene_action_delete'),
+              tooltip: context.l10n.delete_scene,
+              icon: const Icon(Icons.delete_outline),
+              onPressed: () => _showDeleteSceneDialog(scene),
+            ),
+          ],
         ),
       ],
     );
@@ -968,6 +1072,126 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         ],
       ),
     );
+  }
+
+  Widget _buildMarkersSection(BuildContext context, Scene scene) {
+    if (scene.markers.isEmpty) return const SizedBox.shrink();
+
+    final markers = [...scene.markers]
+      ..sort((a, b) => a.seconds.compareTo(b.seconds));
+
+    return _buildSectionContainer(
+      context,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Markers',
+            style: context.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: AppTheme.spacingSmall),
+          Column(
+            children: [
+              for (var i = 0; i < markers.length; i++) ...[
+                _buildMarkerTile(context, scene, markers[i]),
+                if (i != markers.length - 1)
+                  const SizedBox(height: AppTheme.spacingSmall),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMarkerTile(
+    BuildContext context,
+    Scene scene,
+    SceneMarker marker,
+  ) {
+    final imageUrl = marker.screenshot?.isNotEmpty == true
+        ? marker.screenshot
+        : marker.preview;
+    final tagName = marker.primaryTagName?.trim().isNotEmpty == true
+        ? marker.primaryTagName!.trim()
+        : marker.tagNames.firstWhere(
+            (name) => name.trim().isNotEmpty,
+            orElse: () => '',
+          );
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+          child: SizedBox(
+            width: 96,
+            height: 54,
+            child: imageUrl?.isNotEmpty == true
+                ? StashImage(imageUrl: imageUrl, fit: BoxFit.cover)
+                : ColoredBox(
+                    color: context.colors.surfaceVariant,
+                    child: Icon(
+                      Icons.bookmark_outline,
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
+          ),
+        ),
+        const SizedBox(width: AppTheme.spacingSmall),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                marker.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: context.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                _formatMarkerRange(marker),
+                style: context.textTheme.bodySmall?.copyWith(
+                  color: context.colors.onSurfaceVariant,
+                ),
+              ),
+              if (tagName.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Chip(
+                    label: Text(tagName),
+                    visualDensity: VisualDensity.compact,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    side: BorderSide.none,
+                    backgroundColor: context.colors.surfaceVariant,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+        IconButton(
+          tooltip: 'Delete marker ${marker.title}',
+          icon: const Icon(Icons.delete_outline),
+          color: context.colors.error,
+          onPressed: () =>
+              _showDeleteMarkerDialog(scene: scene, marker: marker),
+        ),
+      ],
+    );
+  }
+
+  String _formatMarkerRange(SceneMarker marker) {
+    final start = _formatDuration(marker.seconds);
+    final endSeconds = marker.endSeconds;
+    if (endSeconds == null) return start;
+    return '$start - ${_formatDuration(endSeconds)}';
   }
 
   Widget _buildPerformersSection(BuildContext context, Scene scene) {
@@ -1134,6 +1358,57 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       backgroundColor: context.colors.surfaceVariant,
       side: BorderSide.none,
       visualDensity: VisualDensity.compact,
+    );
+  }
+}
+
+class _AddMarkerDialog extends StatefulWidget {
+  const _AddMarkerDialog({required this.cancelLabel});
+
+  final String cancelLabel;
+
+  @override
+  State<_AddMarkerDialog> createState() => _AddMarkerDialogState();
+}
+
+class _AddMarkerDialogState extends State<_AddMarkerDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    Navigator.of(context).pop(_controller.text.trim());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      icon: const Icon(Icons.bookmark_add_outlined),
+      title: const Text('Add marker'),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        textInputAction: TextInputAction.done,
+        decoration: const InputDecoration(labelText: 'Marker name'),
+        onSubmitted: (_) => _submit(),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(widget.cancelLabel),
+        ),
+        FilledButton(onPressed: _submit, child: const Text('Create')),
+      ],
     );
   }
 }

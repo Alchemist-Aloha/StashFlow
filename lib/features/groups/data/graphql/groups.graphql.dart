@@ -11,6 +11,8 @@ class Fragment$GroupData {
     this.rating100,
     this.director,
     this.synopsis,
+    required this.scene_count,
+    required this.sub_group_count,
     this.$__typename = 'Group',
   });
 
@@ -21,6 +23,8 @@ class Fragment$GroupData {
     final l$rating100 = json['rating100'];
     final l$director = json['director'];
     final l$synopsis = json['synopsis'];
+    final l$scene_count = json['scene_count'];
+    final l$sub_group_count = json['sub_group_count'];
     final l$$__typename = json['__typename'];
     return Fragment$GroupData(
       id: (l$id as String),
@@ -29,6 +33,8 @@ class Fragment$GroupData {
       rating100: (l$rating100 as int?),
       director: (l$director as String?),
       synopsis: (l$synopsis as String?),
+      scene_count: (l$scene_count as int),
+      sub_group_count: (l$sub_group_count as int),
       $__typename: (l$$__typename as String),
     );
   }
@@ -44,6 +50,10 @@ class Fragment$GroupData {
   final String? director;
 
   final String? synopsis;
+
+  final int scene_count;
+
+  final int sub_group_count;
 
   final String $__typename;
 
@@ -61,6 +71,10 @@ class Fragment$GroupData {
     _resultData['director'] = l$director;
     final l$synopsis = synopsis;
     _resultData['synopsis'] = l$synopsis;
+    final l$scene_count = scene_count;
+    _resultData['scene_count'] = l$scene_count;
+    final l$sub_group_count = sub_group_count;
+    _resultData['sub_group_count'] = l$sub_group_count;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -74,6 +88,8 @@ class Fragment$GroupData {
     final l$rating100 = rating100;
     final l$director = director;
     final l$synopsis = synopsis;
+    final l$scene_count = scene_count;
+    final l$sub_group_count = sub_group_count;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -82,6 +98,8 @@ class Fragment$GroupData {
       l$rating100,
       l$director,
       l$synopsis,
+      l$scene_count,
+      l$sub_group_count,
       l$$__typename,
     ]);
   }
@@ -124,6 +142,16 @@ class Fragment$GroupData {
     if (l$synopsis != lOther$synopsis) {
       return false;
     }
+    final l$scene_count = scene_count;
+    final lOther$scene_count = other.scene_count;
+    if (l$scene_count != lOther$scene_count) {
+      return false;
+    }
+    final l$sub_group_count = sub_group_count;
+    final lOther$sub_group_count = other.sub_group_count;
+    if (l$sub_group_count != lOther$sub_group_count) {
+      return false;
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -154,6 +182,8 @@ abstract class CopyWith$Fragment$GroupData<TRes> {
     int? rating100,
     String? director,
     String? synopsis,
+    int? scene_count,
+    int? sub_group_count,
     String? $__typename,
   });
 }
@@ -175,6 +205,8 @@ class _CopyWithImpl$Fragment$GroupData<TRes>
     Object? rating100 = _undefined,
     Object? director = _undefined,
     Object? synopsis = _undefined,
+    Object? scene_count = _undefined,
+    Object? sub_group_count = _undefined,
     Object? $__typename = _undefined,
   }) => _then(
     Fragment$GroupData(
@@ -192,6 +224,12 @@ class _CopyWithImpl$Fragment$GroupData<TRes>
       synopsis: synopsis == _undefined
           ? _instance.synopsis
           : (synopsis as String?),
+      scene_count: scene_count == _undefined || scene_count == null
+          ? _instance.scene_count
+          : (scene_count as int),
+      sub_group_count: sub_group_count == _undefined || sub_group_count == null
+          ? _instance.sub_group_count
+          : (sub_group_count as int),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
@@ -212,6 +250,8 @@ class _CopyWithStubImpl$Fragment$GroupData<TRes>
     int? rating100,
     String? director,
     String? synopsis,
+    int? scene_count,
+    int? sub_group_count,
     String? $__typename,
   }) => _res;
 }
@@ -261,6 +301,20 @@ const fragmentDefinitionGroupData = FragmentDefinitionNode(
       ),
       FieldNode(
         name: NameNode(value: 'synopsis'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+      FieldNode(
+        name: NameNode(value: 'scene_count'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+      FieldNode(
+        name: NameNode(value: 'sub_group_count'),
         alias: null,
         arguments: [],
         directives: [],

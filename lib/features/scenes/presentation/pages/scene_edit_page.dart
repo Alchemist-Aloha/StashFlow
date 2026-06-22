@@ -7,7 +7,6 @@ import '../../domain/entities/scene_title_utils.dart';
 import '../providers/scene_scrape_provider.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
-import '../../../setup/presentation/providers/scrape_customization_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../studios/domain/entities/studio.dart';
 import '../../../performers/domain/entities/performer.dart';
@@ -409,8 +408,6 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    final scrapeEnabled = ref.watch(scrapeEnabledProvider);
-
     final sTags = _scrapedTags;
     final sPerformers = _scrapedPerformers;
 
@@ -431,32 +428,31 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
       appBar: AppBar(
         title: Text(context.l10n.scenes_edit_title),
         actions: [
-          if (scrapeEnabled)
-            if (_isScraping)
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: context.dimensions.spacingMedium,
-                  ),
-                  child: const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
+          if (_isScraping)
+            Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.dimensions.spacingMedium,
                 ),
-              )
-            else ...[
-              IconButton(
-                onPressed: _generatePhash,
-                icon: const Icon(Icons.fingerprint),
-                tooltip: context.l10n.details_scene_fingerprint_query,
+                child: const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
               ),
-              IconButton(
-                onPressed: _scrape,
-                icon: const Icon(Icons.search),
-                tooltip: context.l10n.details_scene_scrape,
-              ),
-            ],
+            )
+          else ...[
+            IconButton(
+              onPressed: _generatePhash,
+              icon: const Icon(Icons.fingerprint),
+              tooltip: context.l10n.details_scene_fingerprint_query,
+            ),
+            IconButton(
+              onPressed: _scrape,
+              icon: const Icon(Icons.search),
+              tooltip: context.l10n.details_scene_scrape,
+            ),
+          ],
           IconButton(
             onPressed: _isSaving ? null : _save,
             icon: _isSaving

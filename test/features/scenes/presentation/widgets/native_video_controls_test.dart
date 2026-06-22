@@ -7,16 +7,21 @@ import 'package:mockito/mockito.dart';
 import 'package:media_kit/media_kit.dart' as mk;
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/native_video_controls.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/video_controls/video_progress_bar.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 
 class FakePlayer extends Mock implements mk.Player {
+  FakePlayer({this.isPlaying = false});
+
+  final bool isPlaying;
+
   @override
   mk.PlayerStream get stream => MockPlayerStream();
 
   @override
-  mk.PlayerState get state => mk.PlayerState();
+  mk.PlayerState get state => mk.PlayerState(playing: isPlaying);
 }
 
 class MockPlayerStream extends Fake implements mk.PlayerStream {
@@ -73,8 +78,12 @@ class MockPlayerStream extends Fake implements mk.PlayerStream {
 }
 
 class FakeVideoController extends Mock implements VideoController {
+  FakeVideoController({this.isPlaying = false});
+
+  final bool isPlaying;
+
   @override
-  mk.Player get player => FakePlayer();
+  mk.Player get player => FakePlayer(isPlaying: isPlaying);
 
   @override
   ValueNotifier<PlatformVideoController?> get notifier => ValueNotifier(null);
@@ -196,6 +205,62 @@ void main() {
 
     expect(find.text('Unknown (srt)'), findsOneWidget);
   });
+
+  testWidgets('inline back control follows video controls visibility', (
+    tester,
+  ) async {
+    var backPressed = false;
+
+    await _pumpControls(
+      tester,
+      scene: _buildScene(),
+      isPlaying: true,
+      onInlineBack: () => backPressed = true,
+    );
+
+    expect(find.byKey(const Key('inline_video_back_button')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('inline_video_back_button')));
+    await tester.pump();
+
+    expect(backPressed, isTrue);
+
+    await tester.pump(const Duration(milliseconds: 1100));
+
+    expect(
+      find.byKey(const Key('inline_video_back_button')).hitTestable(),
+      findsNothing,
+    );
+  });
+
+  testWidgets('renders grey top gradient behind inline back row', (
+    tester,
+  ) async {
+    await _pumpControls(tester, scene: _buildScene(), onInlineBack: () {});
+
+    expect(find.byKey(const Key('inline_video_top_gradient')), findsOneWidget);
+  });
+
+  testWidgets('renders grey top gradient behind fullscreen back row', (
+    tester,
+  ) async {
+    await _pumpControls(
+      tester,
+      scene: _buildScene(),
+      onFullScreenToggle: () {},
+    );
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(NativeVideoControls)),
+    );
+    container.read(playerStateProvider.notifier).setFullScreen(true);
+    await tester.pump();
+
+    expect(
+      find.byKey(const Key('fullscreen_video_top_gradient')),
+      findsOneWidget,
+    );
+  });
 }
 
 Scene _buildScene({
@@ -240,8 +305,11 @@ Future<void> _pumpControls(
   WidgetTester tester, {
   required Scene scene,
   bool showControls = true,
+  bool isPlaying = false,
+  VoidCallback? onInlineBack,
+  VoidCallback? onFullScreenToggle,
 }) async {
-  final mockController = FakeVideoController();
+  final mockController = FakeVideoController(isPlaying: isPlaying);
 
   final mockPrefs = await SharedPreferences.getInstance();
 
@@ -256,6 +324,8 @@ Future<void> _pumpControls(
             controller: mockController,
             useDoubleTapSeek: true,
             enableNativePip: false,
+            onInlineBack: onInlineBack,
+            onFullScreenToggle: onFullScreenToggle,
             showControls: showControls,
             scene: scene,
           ),

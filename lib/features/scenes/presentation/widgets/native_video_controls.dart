@@ -34,6 +34,7 @@ class NativeVideoControls extends ConsumerStatefulWidget {
     required this.useDoubleTapSeek,
     required this.enableNativePip,
     this.onFullScreenToggle,
+    this.onInlineBack,
     required this.scene,
     this.onScaleStart,
     this.onScaleUpdate,
@@ -47,6 +48,7 @@ class NativeVideoControls extends ConsumerStatefulWidget {
   final bool useDoubleTapSeek;
   final bool enableNativePip;
   final VoidCallback? onFullScreenToggle;
+  final VoidCallback? onInlineBack;
   final Scene scene;
   final GestureScaleStartCallback? onScaleStart;
   final GestureScaleUpdateCallback? onScaleUpdate;
@@ -480,6 +482,35 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
       ),
       padding: const EdgeInsets.all(4),
       minimumSize: const Size(26, 26),
+    );
+  }
+
+  Widget _buildTopGradientOverlay({required bool isFullScreen}) {
+    return IgnorePointer(
+      child: AnimatedOpacity(
+        opacity: _controlsVisible ? 1 : 0,
+        duration: const Duration(milliseconds: 180),
+        child: Container(
+          key: Key(
+            isFullScreen
+                ? 'fullscreen_video_top_gradient'
+                : 'inline_video_top_gradient',
+          ),
+          height: isFullScreen ? 124 : 88,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.grey.shade900.withAlpha(235),
+                Colors.grey.shade800.withAlpha(150),
+                Colors.grey.shade700.withAlpha(36),
+                Colors.transparent,
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -1230,7 +1261,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                   if (playerState.showVideoDebugInfo)
                     Positioned(
                       top: isFullScreen ? 60 : 8,
-                      left: 8,
+                      left: !isFullScreen && widget.onInlineBack != null
+                          ? 60
+                          : 8,
                       child: IgnorePointer(
                         child: AnimatedOpacity(
                           opacity: _controlsVisible ? 1 : 0,
@@ -1254,6 +1287,39 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                 color: Colors.white70,
                                 fontSize: context.fontSizes.small,
                               ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  if ((!isFullScreen && widget.onInlineBack != null) ||
+                      (isFullScreen && widget.onFullScreenToggle != null))
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: _buildTopGradientOverlay(
+                        isFullScreen: isFullScreen,
+                      ),
+                    ),
+
+                  if (!isFullScreen && widget.onInlineBack != null)
+                    Positioned(
+                      top: 8,
+                      left: 8,
+                      child: SafeArea(
+                        child: IgnorePointer(
+                          ignoring: !_controlsVisible,
+                          child: AnimatedOpacity(
+                            opacity: _controlsVisible ? 1 : 0,
+                            duration: const Duration(milliseconds: 180),
+                            child: IconButton(
+                              key: const Key('inline_video_back_button'),
+                              tooltip: context.l10n.common_back,
+                              style: _controlButtonStyle(colorScheme),
+                              icon: const Icon(Icons.arrow_back_rounded),
+                              onPressed: widget.onInlineBack,
                             ),
                           ),
                         ),

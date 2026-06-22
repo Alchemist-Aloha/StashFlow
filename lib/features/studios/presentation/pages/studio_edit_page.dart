@@ -8,7 +8,6 @@ import '../../../scenes/presentation/widgets/enhanced_scrape_dialog.dart';
 import '../../domain/entities/studio.dart';
 import '../providers/studio_details_provider.dart';
 import '../providers/studio_scrape_provider.dart';
-import '../../../setup/presentation/providers/scrape_customization_provider.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_studio.dart';
 
 class StudioEditPage extends ConsumerStatefulWidget {
@@ -184,30 +183,27 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    final scrapeEnabled = ref.watch(scrapeEnabledProvider);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.scenes_edit_studio),
         actions: [
-          if (scrapeEnabled)
-            if (_isScraping)
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
+          if (_isScraping)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
                 ),
-              )
-            else
-              IconButton(
-                onPressed: _scrape,
-                icon: const Icon(Icons.search),
-                tooltip: context.l10n.details_scene_scrape,
               ),
+            )
+          else
+            IconButton(
+              onPressed: _scrape,
+              icon: const Icon(Icons.search),
+              tooltip: context.l10n.details_scene_scrape,
+            ),
           IconButton(
             onPressed: _isSaving ? null : _save,
             icon: _isSaving

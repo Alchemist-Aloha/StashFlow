@@ -5,6 +5,7 @@ import '../../domain/entities/gallery_filter.dart';
 import '../../../../core/domain/entities/criterion.dart';
 import '../providers/gallery_list_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/filter_bottom_sheet_scaffold.dart';
 import '../../../../core/presentation/widgets/filter_widgets.dart';
 import '../../../scenes/presentation/widgets/entity_picker.dart';
 import '../../../studios/domain/entities/studio.dart';
@@ -13,7 +14,21 @@ import '../../../tags/domain/entities/tag.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 
 class GalleryFilterPanel extends ConsumerStatefulWidget {
-  const GalleryFilterPanel({super.key});
+  const GalleryFilterPanel({
+    super.key,
+    this.initialFilter,
+    this.initialOrganized,
+    this.onApply,
+    this.onSaveDefault,
+    this.saveSuccessMessage,
+  });
+
+  final GalleryFilter? initialFilter;
+  final OrganizedFilter? initialOrganized;
+  final void Function(GalleryFilter filter, OrganizedFilter organized)? onApply;
+  final Future<void> Function(GalleryFilter filter, OrganizedFilter organized)?
+  onSaveDefault;
+  final String? saveSuccessMessage;
 
   @override
   ConsumerState<GalleryFilterPanel> createState() => _GalleryFilterPanelState();
@@ -26,143 +41,58 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
   @override
   void initState() {
     super.initState();
-    _tempFilter = ref.read(galleryFilterStateProvider);
-    _tempOrganized = ref.read(galleryOrganizedOnlyProvider);
+    _tempFilter = widget.initialFilter ?? ref.read(galleryFilterStateProvider);
+    _tempOrganized =
+        widget.initialOrganized ?? ref.read(galleryOrganizedOnlyProvider);
+  }
+
+  void _applyFilter() {
+    final onApply = widget.onApply;
+    if (onApply != null) {
+      onApply(_tempFilter, _tempOrganized);
+      return;
+    }
+
+    ref.read(galleryFilterStateProvider.notifier).update(_tempFilter);
+    ref.read(galleryOrganizedOnlyProvider.notifier).set(_tempOrganized);
+  }
+
+  Future<void> _saveDefaultFilter() async {
+    final onSaveDefault = widget.onSaveDefault;
+    if (onSaveDefault != null) {
+      await onSaveDefault(_tempFilter, _tempOrganized);
+      return;
+    }
+
+    _applyFilter();
+    await Future.wait([
+      ref.read(galleryFilterStateProvider.notifier).saveAsDefault(),
+      ref.read(galleryOrganizedOnlyProvider.notifier).saveAsDefault(),
+    ]);
   }
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
-    final safeBottom = MediaQuery.paddingOf(context).bottom;
-
-    return SafeArea(
-      top: false,
-      child: FractionallySizedBox(
-        heightFactor: 0.9,
-        child: Material(
-          color: context.colors.surface,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(AppTheme.radiusExtraLarge),
-            ),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.all(context.dimensions.spacingMedium),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      context.l10n.galleries_filter_title,
-                      style: context.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _tempFilter = GalleryFilter.empty();
-                          _tempOrganized = OrganizedFilter.all;
-                        });
-                      },
-                      child: Text(context.l10n.common_reset),
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(height: 1),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.only(
-                    bottom:
-                        bottomInset +
-                        safeBottom +
-                        context.dimensions.spacingLarge,
-                  ),
-                  child: Column(
-                    children: [
-                      _buildGeneralSection(),
-                      _buildMetadataSection(),
-                      _buildLibrarySection(),
-                      _buildSystemSection(),
-                    ],
-                  ),
-                ),
-              ),
-              const Divider(height: 1),
-              Padding(
-                padding: EdgeInsets.all(context.dimensions.spacingMedium),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          ref
-                              .read(galleryFilterStateProvider.notifier)
-                              .update(_tempFilter);
-                          ref
-                              .read(galleryOrganizedOnlyProvider.notifier)
-                              .set(_tempOrganized);
-                          Navigator.pop(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: context.colors.primary,
-                          foregroundColor: context.colors.onPrimary,
-                          padding: EdgeInsets.symmetric(
-                            vertical: context.dimensions.spacingMedium,
-                          ),
-                        ),
-                        child: Text(context.l10n.common_apply_filters),
-                      ),
-                    ),
-                    SizedBox(height: context.dimensions.spacingSmall),
-                    SizedBox(
-                      width: double.infinity,
-                      child: TextButton(
-                        onPressed: () async {
-                          ref
-                              .read(galleryFilterStateProvider.notifier)
-                              .update(_tempFilter);
-                          ref
-                              .read(galleryOrganizedOnlyProvider.notifier)
-                              .set(_tempOrganized);
-                          await Future.wait([
-                            ref
-                                .read(galleryFilterStateProvider.notifier)
-                                .saveAsDefault(),
-                            ref
-                                .read(galleryOrganizedOnlyProvider.notifier)
-                                .saveAsDefault(),
-                          ]);
-                          if (context.mounted) {
-                            Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  context.l10n.galleries_filter_saved,
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                            vertical: context.dimensions.spacingMedium,
-                          ),
-                        ),
-                        child: Text(context.l10n.common_save_default),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+    return FilterBottomSheetScaffold(
+      title: context.l10n.galleries_filter_title,
+      onReset: () {
+        setState(() {
+          _tempFilter = GalleryFilter.empty();
+          _tempOrganized = OrganizedFilter.all;
+        });
+      },
+      body: Column(
+        children: [
+          _buildGeneralSection(),
+          _buildMetadataSection(),
+          _buildLibrarySection(),
+          _buildSystemSection(),
+        ],
       ),
+      onApply: _applyFilter,
+      onSaveDefault: _saveDefaultFilter,
+      saveDefaultSuccessMessage:
+          widget.saveSuccessMessage ?? context.l10n.galleries_filter_saved,
     );
   }
 

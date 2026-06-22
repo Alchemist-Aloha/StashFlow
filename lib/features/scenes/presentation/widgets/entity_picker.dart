@@ -4,9 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../studios/presentation/providers/studio_list_provider.dart';
 import '../../../performers/presentation/providers/performer_list_provider.dart';
 import '../../../tags/presentation/providers/tag_list_provider.dart';
+import '../providers/scene_list_provider.dart';
 import '../../../studios/domain/entities/studio.dart';
 import '../../../performers/domain/entities/performer.dart';
 import '../../../tags/domain/entities/tag.dart';
+import '../../domain/entities/scene.dart';
 
 class EntityPicker<T> extends ConsumerStatefulWidget {
   final String title;
@@ -58,6 +60,9 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
         break;
       case 'tag':
         listAsync = ref.watch(tagListProvider);
+        break;
+      case 'scene':
+        listAsync = ref.watch(sceneListProvider);
         break;
       default:
         listAsync = const AsyncValue.data([]);
@@ -166,6 +171,9 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
       case 'tag':
         ref.read(tagSearchQueryProvider.notifier).update(query);
         break;
+      case 'scene':
+        ref.read(sceneSearchQueryProvider.notifier).update(query);
+        break;
     }
   }
 
@@ -173,6 +181,7 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
     if (item is Studio) return item.id;
     if (item is Performer) return item.id;
     if (item is Tag) return item.id;
+    if (item is Scene) return item.id;
     return '';
   }
 
@@ -180,6 +189,7 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
     if (item is Studio) return item.name;
     if (item is Performer) return item.name;
     if (item is Tag) return item.name;
+    if (item is Scene) return item.title;
     return '';
   }
 }

@@ -46,6 +46,23 @@ fragment SlimSceneData on Scene {
     id
     name
   }
+  scene_markers {
+    id
+    title
+    seconds
+    end_seconds
+    screenshot
+    preview
+    stream
+    primary_tag {
+      id
+      name
+    }
+    tags {
+      id
+      name
+    }
+  }
 }
 
 fragment SceneData on Scene {

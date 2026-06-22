@@ -5,8 +5,21 @@ import 'package:dart_cast/dart_cast.dart' as dc;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stash_app_flutter/core/data/services/cast_service.dart';
+import 'package:stash_app_flutter/core/utils/app_log_store.dart';
 
 void main() {
+  setUp(() {
+    AppLogStore.instance
+      ..clear()
+      ..isEnabled = true;
+  });
+
+  tearDown(() {
+    AppLogStore.instance
+      ..clear()
+      ..isEnabled = false;
+  });
+
   test(
     'tracks local handoff position while casting and clears session on stop',
     () async {
@@ -52,6 +65,39 @@ void main() {
       expect(state.remoteIsPlaying, isFalse);
     },
   );
+
+  test('records cast process logs in the app debug log store', () async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final session = _FakeCastSession();
+    final notifier = container.read(castServiceProvider.notifier);
+
+    await notifier.setActiveSession(
+      session,
+      localResumePosition: const Duration(seconds: 42),
+      localWasPlaying: true,
+    );
+    await notifier.pause();
+    await notifier.seek(const Duration(seconds: 60));
+    await notifier.stopCasting();
+
+    final entries = AppLogStore.instance.entries
+        .where((entry) => entry.source == 'cast_service')
+        .map((entry) => entry.message)
+        .toList();
+
+    expect(
+      entries,
+      containsAllInOrder([
+        contains('active session set device=Fake Cast'),
+        contains('pause requested device=Fake Cast'),
+        contains('seek requested device=Fake Cast position=0:01:00.000000'),
+        contains('stopping session device=Fake Cast'),
+        contains('session stopped'),
+      ]),
+    );
+  });
 
   test(
     'retries Chromecast media load until playback state is confirmed',
