@@ -3080,4 +3080,15 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Mantén pulsado para ver las estadísticas de la biblioteca';
+
+  @override
+  String get scene_tagger_scraped_metadata => 'Metadatos eliminados';
+
+  @override
+  String get scene_tagger_local_scene => 'escena local';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return 'En reproducción: $title. Toque para abrir los detalles de la escena.';
+  }
 }

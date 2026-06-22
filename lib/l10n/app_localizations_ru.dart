@@ -3048,4 +3048,15 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Удерживайте для статистики библиотеки';
+
+  @override
+  String get scene_tagger_scraped_metadata => 'Удаленные метаданные';
+
+  @override
+  String get scene_tagger_local_scene => 'Местная сцена';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return 'Сейчас воспроизводится: $title. Нажмите, чтобы открыть сведения о сцене.';
+  }
 }

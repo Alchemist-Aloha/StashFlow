@@ -1072,5 +1072,8 @@
   "settings_security_subtitle": "App-Sperre und Passcode-Einstellungen",
   "tools_section_subtitle": "Wartungs- und Metadaten-Workflows für Szenen.",
   "tools_scene_deduplication_subtitle": "Duplikate finden und verwalten.",
-  "tools_scene_tagger_subtitle": "Aktuelle Szenenseiten mit Stash-box scrapen."
+  "tools_scene_tagger_subtitle": "Aktuelle Szenenseiten mit Stash-box scrapen.",
+  "scene_tagger_scraped_metadata": "Gekratzte Metadaten",
+  "scene_tagger_local_scene": "Lokale Szene",
+  "mini_player_now_playing": "Spielt gerade: {title}. Tippen Sie hier, um Szenendetails zu öffnen."
 }

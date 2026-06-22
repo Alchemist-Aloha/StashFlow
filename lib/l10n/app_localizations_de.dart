@@ -3053,4 +3053,15 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Lange drücken für Bibliotheksstatistiken';
+
+  @override
+  String get scene_tagger_scraped_metadata => 'Gekratzte Metadaten';
+
+  @override
+  String get scene_tagger_local_scene => 'Lokale Szene';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return 'Spielt gerade: $title. Tippen Sie hier, um Szenendetails zu öffnen.';
+  }
 }

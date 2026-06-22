@@ -5429,6 +5429,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Long press for library stats'**
   String get stats_library_stats_tooltip;
+
+  /// No description provided for @scene_tagger_scraped_metadata.
+  ///
+  /// In en, this message translates to:
+  /// **'Scraped metadata'**
+  String get scene_tagger_scraped_metadata;
+
+  /// No description provided for @scene_tagger_local_scene.
+  ///
+  /// In en, this message translates to:
+  /// **'Local scene'**
+  String get scene_tagger_local_scene;
+
+  /// No description provided for @mini_player_now_playing.
+  ///
+  /// In en, this message translates to:
+  /// **'Now playing: {title}. Tap to open scene details.'**
+  String mini_player_now_playing(String title);
 }
 
 class _AppLocalizationsDelegate

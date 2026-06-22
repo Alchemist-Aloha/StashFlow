@@ -295,7 +295,7 @@ class StatsFloatingPanel extends ConsumerWidget {
             icon: Icons.play_lesson_rounded,
             label: l10n.stats_total_plays,
             value: '000',
-            subtitle: '0 unique items',
+            subtitle: context.l10n.stats_unique_items(0),
           ),
           _StatItem(
             icon: Icons.favorite_rounded,
