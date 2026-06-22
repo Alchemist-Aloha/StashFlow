@@ -45,7 +45,7 @@ class _GroupFilterPanelState extends ConsumerState<GroupFilterPanel> {
             initiallyExpanded: true,
             children: [
               DropdownButtonFormField<String?>(
-                value: _tempFilter.isMissingField,
+                initialValue: _tempFilter.isMissingField,
                 decoration: const InputDecoration(labelText: 'Missing Field'),
                 items: [
                   DropdownMenuItem<String?>(
