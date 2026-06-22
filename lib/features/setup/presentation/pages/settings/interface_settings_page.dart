@@ -7,7 +7,6 @@ import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/navigation_customization_provider.dart';
 import 'package:stash_app_flutter/features/setup/presentation/providers/main_page_orientation_provider.dart';
-import 'package:stash_app_flutter/features/setup/presentation/providers/scrape_customization_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/player_settings.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
@@ -29,7 +28,6 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
       'image_fullscreen_vertical_swipe';
 
   bool _showRandomNavigation = true;
-  bool _showScrapeButton = false;
   bool _sceneGridLayout = false;
   bool _sceneTiktokLayout = false;
   bool _galleryGridLayout = true;
@@ -70,7 +68,6 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     final prefs = ref.read(sharedPreferencesProvider);
 
     _showRandomNavigation = ref.read(randomNavigationEnabledProvider);
-    _showScrapeButton = ref.read(scrapeEnabledProvider);
     _sceneGridLayout = ref.read(sceneGridLayoutProvider);
     _sceneTiktokLayout = ref.read(sceneTiktokLayoutProvider);
     _galleryGridLayout = ref.read(galleryGridLayoutProvider);
@@ -112,7 +109,6 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     ref
         .read(randomNavigationEnabledProvider.notifier)
         .set(_showRandomNavigation);
-    ref.read(scrapeEnabledProvider.notifier).set(_showScrapeButton);
     ref.read(sceneGridLayoutProvider.notifier).set(_sceneGridLayout);
     ref.read(sceneTiktokLayoutProvider.notifier).set(_sceneTiktokLayout);
     ref.read(galleryGridLayoutProvider.notifier).set(_galleryGridLayout);
@@ -250,47 +246,6 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                             setState(
                               () => _useActualSceneVideoInMiniPlayer = value,
                             );
-                            await _saveSettings();
-                          },
-                        ),
-                        Divider(height: context.dimensions.spacingLarge),
-                        SwitchListTile.adaptive(
-                          contentPadding: EdgeInsets.zero,
-                          title: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  context.l10n.settings_interface_show_edit,
-                                ),
-                              ),
-                              SizedBox(width: context.dimensions.spacingSmall),
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: context.dimensions.spacingSmall,
-                                  vertical:
-                                      3 * context.dimensions.fontSizeFactor,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: colorScheme.surfaceContainerHighest,
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                child: Text(
-                                  context.l10n.wip,
-                                  style: textTheme.labelSmall?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 0.4,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          subtitle: Text(
-                            context.l10n.settings_interface_show_edit_subtitle,
-                          ),
-                          value: _showScrapeButton,
-                          onChanged: (value) async {
-                            setState(() => _showScrapeButton = value);
                             await _saveSettings();
                           },
                         ),

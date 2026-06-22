@@ -28,7 +28,6 @@ import '../providers/video_player_provider.dart';
 import 'scene_info_page.dart';
 import '../../data/repositories/stream_resolver.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
-import '../../../setup/presentation/providers/scrape_customization_provider.dart';
 import '../../domain/entities/scene.dart';
 import '../widgets/scene_video_player.dart';
 import '../widgets/scene_strip.dart';
@@ -520,62 +519,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
   Widget build(BuildContext context) {
     final sceneAsync = ref.watch(sceneDetailsProvider(widget.sceneId));
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
-    final scrapeEnabled = ref.watch(scrapeEnabledProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.details_scene),
-        actions: [
-          sceneAsync.maybeWhen(
-            data: (scene) => IconButton(
-              tooltip: 'Add marker',
-              icon: const Icon(Icons.bookmark_add_outlined),
-              onPressed: () => _showAddMarkerDialog(
-                scene,
-                markerSeconds: _currentMarkerSeconds(scene),
-              ),
-            ),
-            orElse: () => const SizedBox.shrink(),
-          ),
-          sceneAsync.maybeWhen(
-            data: (scene) => IconButton(
-              tooltip: context.l10n.common_more,
-              icon: const Icon(Icons.info_outline_rounded),
-              onPressed: () => _showSceneDetailsSheet(scene),
-            ),
-            orElse: () => const SizedBox.shrink(),
-          ),
-          if (!kIsWeb)
-            sceneAsync.maybeWhen(
-              data: (scene) => IconButton(
-                tooltip: context.l10n.common_download,
-                icon: const Icon(Icons.download_outlined),
-                onPressed: () => _saveVideoToGallery(scene),
-              ),
-              orElse: () => const SizedBox.shrink(),
-            ),
-          if (scrapeEnabled)
-            sceneAsync.maybeWhen(
-              data: (scene) => IconButton(
-                tooltip: context.l10n.common_edit,
-                icon: const Icon(Icons.edit_outlined),
-                onPressed: () => context.push(
-                  '/scenes/scene/${scene.id}/edit',
-                  extra: scene,
-                ),
-              ),
-              orElse: () => const SizedBox.shrink(),
-            ),
-          sceneAsync.maybeWhen(
-            data: (scene) => IconButton(
-              tooltip: context.l10n.delete_scene,
-              icon: const Icon(Icons.delete_outline),
-              onPressed: () => _showDeleteSceneDialog(scene),
-            ),
-            orElse: () => const SizedBox.shrink(),
-          ),
-        ],
-      ),
       floatingActionButton: randomNavigationEnabled
           ? sceneAsync.maybeWhen(
               data: (_) => FloatingActionButton.small(
@@ -624,11 +569,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                                 padding: const EdgeInsets.all(
                                   AppTheme.spacingMedium,
                                 ),
-                                child: _buildMainInfo(
-                                  context,
-                                  scene,
-                                  scrapeEnabled,
-                                ),
+                                child: _buildMainInfo(context, scene),
                               ),
                             ],
                           ),
@@ -687,7 +628,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildMainInfo(context, scene, scrapeEnabled),
+                            _buildMainInfo(context, scene),
                             _buildTagsSection(context, scene),
                             _buildMarkersSection(context, scene),
                             _buildPerformersSection(context, scene),
@@ -728,7 +669,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
   }
 
-  Widget _buildMainInfo(BuildContext context, Scene scene, bool scrapeEnabled) {
+  Widget _buildMainInfo(BuildContext context, Scene scene) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -741,7 +682,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           children: [
             _buildTechnicalMetadata(context, scene),
             const SizedBox(height: AppTheme.spacingSmall),
-            _buildActions(context, scene, scrapeEnabled),
+            _buildActions(context, scene),
             const SizedBox(height: AppTheme.spacingMedium),
           ],
         ),
@@ -861,95 +802,139 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
     );
   }
 
-  Widget _buildActions(BuildContext context, Scene scene, bool scrapeEnabled) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      crossAxisAlignment: WrapCrossAlignment.center,
+  Widget _buildActions(BuildContext context, Scene scene) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (var i = 1; i <= 5; i++)
-          IconButton(
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-            tooltip: context.l10n.scene_rating_stars(i),
-            onPressed: () async {
-              final currentRating = scene.rating100 ?? 0;
-              final newRating = (currentRating == i * 20) ? 0 : i * 20;
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            for (var i = 1; i <= 5; i++)
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                tooltip: context.l10n.scene_rating_stars(i),
+                onPressed: () async {
+                  final currentRating = scene.rating100 ?? 0;
+                  final newRating = (currentRating == i * 20) ? 0 : i * 20;
 
-              try {
-                await ref
-                    .read(sceneRepositoryProvider)
-                    .updateSceneRating(scene.id, newRating);
-                await ref
-                    .read(sceneRepositoryProvider)
-                    .getSceneById(scene.id, refresh: true);
-                ref.invalidate(sceneDetailsProvider(scene.id));
-                _invalidateSceneListUnlessRandom();
-              } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        context.l10n.details_failed_update_rating(e.toString()),
+                  try {
+                    await ref
+                        .read(sceneRepositoryProvider)
+                        .updateSceneRating(scene.id, newRating);
+                    await ref
+                        .read(sceneRepositoryProvider)
+                        .getSceneById(scene.id, refresh: true);
+                    ref.invalidate(sceneDetailsProvider(scene.id));
+                    _invalidateSceneListUnlessRandom();
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            context.l10n.details_failed_update_rating(
+                              e.toString(),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                  }
+                },
+                icon: Icon(
+                  (scene.rating100 ?? 0) >= i * 20
+                      ? Icons.star
+                      : Icons.star_border,
+                  color: context.colors.ratingColor,
+                  size: 28,
+                ),
+              ),
+            FilledButton.tonalIcon(
+              onPressed: () async {
+                try {
+                  await ref
+                      .read(sceneRepositoryProvider)
+                      .incrementSceneOCounter(scene.id);
+                  await ref
+                      .read(sceneRepositoryProvider)
+                      .getSceneById(scene.id, refresh: true);
+                  ref.invalidate(sceneDetailsProvider(scene.id));
+                  _invalidateSceneListUnlessRandom();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(context.l10n.details_o_count_incremented),
                       ),
-                    ),
-                  );
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          context.l10n.details_failed_increment_o_count(
+                            e.toString(),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
                 }
-              }
-            },
-            icon: Icon(
-              (scene.rating100 ?? 0) >= i * 20 ? Icons.star : Icons.star_border,
-              color: context.colors.ratingColor,
-              size: 28,
+              },
+              style: FilledButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                minimumSize: const Size(0, 32),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              ),
+              icon: const Icon(Icons.water_drop_outlined),
+              label: Text('${scene.oCounter}'),
             ),
-          ),
-        // if (scene.rating100 != null && scene.rating100! > 0)
-        //   Text(
-        //     (scene.rating100! / 20).toStringAsFixed(1),
-        //     style: context.textTheme.bodyMedium?.copyWith(
-        //       color: context.colors.onSurface.withValues(alpha: 0.7),
-        //     ),
-        //   ),
-        FilledButton.tonalIcon(
-          onPressed: () async {
-            try {
-              await ref
-                  .read(sceneRepositoryProvider)
-                  .incrementSceneOCounter(scene.id);
-              await ref
-                  .read(sceneRepositoryProvider)
-                  .getSceneById(scene.id, refresh: true);
-              ref.invalidate(sceneDetailsProvider(scene.id));
-              _invalidateSceneListUnlessRandom();
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(context.l10n.details_o_count_incremented),
-                  ),
-                );
-              }
-            } catch (e) {
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      context.l10n.details_failed_increment_o_count(
-                        e.toString(),
-                      ),
-                    ),
-                  ),
-                );
-              }
-            }
-          },
-          style: FilledButton.styleFrom(
-            visualDensity: VisualDensity.compact,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            minimumSize: const Size(0, 32),
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          ),
-          icon: const Icon(Icons.water_drop_outlined),
-          label: Text('${scene.oCounter}'),
+          ],
+        ),
+        const SizedBox(height: AppTheme.spacingSmall),
+        Wrap(
+          spacing: 4,
+          runSpacing: 4,
+          children: [
+            IconButton(
+              key: const Key('scene_action_add_marker'),
+              tooltip: 'Add marker',
+              icon: const Icon(Icons.bookmark_add_outlined),
+              onPressed: () => _showAddMarkerDialog(
+                scene,
+                markerSeconds: _currentMarkerSeconds(scene),
+              ),
+            ),
+            IconButton(
+              key: const Key('scene_action_info'),
+              tooltip: context.l10n.common_more,
+              icon: const Icon(Icons.info_outline_rounded),
+              onPressed: () => _showSceneDetailsSheet(scene),
+            ),
+            if (!kIsWeb)
+              IconButton(
+                key: const Key('scene_action_download'),
+                tooltip: context.l10n.common_download,
+                icon: const Icon(Icons.download_outlined),
+                onPressed: () => _saveVideoToGallery(scene),
+              ),
+            IconButton(
+              key: const Key('scene_action_edit'),
+              tooltip: context.l10n.common_edit,
+              icon: const Icon(Icons.edit_outlined),
+              onPressed: () =>
+                  context.push('/scenes/scene/${scene.id}/edit', extra: scene),
+            ),
+            IconButton(
+              key: const Key('scene_action_delete'),
+              tooltip: context.l10n.delete_scene,
+              icon: const Icon(Icons.delete_outline),
+              onPressed: () => _showDeleteSceneDialog(scene),
+            ),
+          ],
         ),
       ],
     );

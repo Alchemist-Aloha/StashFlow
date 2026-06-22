@@ -107,6 +107,39 @@ void main() {
     expect(find.text('Test Studio'), findsOneWidget);
   });
 
+  testWidgets(
+    'SceneDetailsPage renders scene actions below rating and O counter',
+    (tester) async {
+      tester.view.physicalSize = const Size(1200, 1600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final mockRepo = MockSceneRepository()..withData([testScene]);
+
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+        child: SceneDetailsPage(sceneId: testScene.id),
+      );
+      await tester.pump(const Duration(seconds: 1));
+
+      expect(find.byType(AppBar), findsNothing);
+      expect(find.byKey(const Key('scene_action_add_marker')), findsOneWidget);
+      expect(find.byKey(const Key('scene_action_info')), findsOneWidget);
+      expect(find.byKey(const Key('scene_action_download')), findsOneWidget);
+      expect(find.byKey(const Key('scene_action_edit')), findsOneWidget);
+      expect(find.byKey(const Key('scene_action_delete')), findsOneWidget);
+
+      expect(
+        tester.getTopLeft(find.byKey(const Key('scene_action_edit'))).dy,
+        greaterThan(
+          tester.getTopLeft(find.byIcon(Icons.water_drop_outlined)).dy,
+        ),
+      );
+    },
+  );
+
   testWidgets('SceneDetailsPage updates rating', (tester) async {
     tester.view.physicalSize = const Size(1200, 1600);
     tester.view.devicePixelRatio = 1.0;
@@ -698,12 +731,11 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // SceneDetailsPage has an AppBar (height 56) and we have an 8px margin.
-    // safeMaxHeight = 2000 - 56 - 8 = 1936.
+    // Without a top AppBar, safeMaxHeight = 2000 - 8 = 1992.
 
     final playerFinder = find.byType(SceneVideoPlayer);
     final player = tester.widget<SceneVideoPlayer>(playerFinder);
-    expect(player.maxHeight, equals(1936.0));
+    expect(player.maxHeight, equals(1992.0));
   });
 
   testWidgets('SceneCard long press opens scene info media section', (

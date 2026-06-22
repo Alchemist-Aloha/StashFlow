@@ -12,11 +12,15 @@ import 'package:stash_app_flutter/features/scenes/presentation/widgets/video_con
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 
 class FakePlayer extends Mock implements mk.Player {
+  FakePlayer({this.isPlaying = false});
+
+  final bool isPlaying;
+
   @override
   mk.PlayerStream get stream => MockPlayerStream();
 
   @override
-  mk.PlayerState get state => mk.PlayerState();
+  mk.PlayerState get state => mk.PlayerState(playing: isPlaying);
 }
 
 class MockPlayerStream extends Fake implements mk.PlayerStream {
@@ -73,8 +77,12 @@ class MockPlayerStream extends Fake implements mk.PlayerStream {
 }
 
 class FakeVideoController extends Mock implements VideoController {
+  FakeVideoController({this.isPlaying = false});
+
+  final bool isPlaying;
+
   @override
-  mk.Player get player => FakePlayer();
+  mk.Player get player => FakePlayer(isPlaying: isPlaying);
 
   @override
   ValueNotifier<PlatformVideoController?> get notifier => ValueNotifier(null);
@@ -196,6 +204,33 @@ void main() {
 
     expect(find.text('Unknown (srt)'), findsOneWidget);
   });
+
+  testWidgets('inline back control follows video controls visibility', (
+    tester,
+  ) async {
+    var backPressed = false;
+
+    await _pumpControls(
+      tester,
+      scene: _buildScene(),
+      isPlaying: true,
+      onInlineBack: () => backPressed = true,
+    );
+
+    expect(find.byKey(const Key('inline_video_back_button')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('inline_video_back_button')));
+    await tester.pump();
+
+    expect(backPressed, isTrue);
+
+    await tester.pump(const Duration(milliseconds: 1100));
+
+    expect(
+      find.byKey(const Key('inline_video_back_button')).hitTestable(),
+      findsNothing,
+    );
+  });
 }
 
 Scene _buildScene({
@@ -240,8 +275,10 @@ Future<void> _pumpControls(
   WidgetTester tester, {
   required Scene scene,
   bool showControls = true,
+  bool isPlaying = false,
+  VoidCallback? onInlineBack,
 }) async {
-  final mockController = FakeVideoController();
+  final mockController = FakeVideoController(isPlaying: isPlaying);
 
   final mockPrefs = await SharedPreferences.getInstance();
 
@@ -256,6 +293,7 @@ Future<void> _pumpControls(
             controller: mockController,
             useDoubleTapSeek: true,
             enableNativePip: false,
+            onInlineBack: onInlineBack,
             showControls: showControls,
             scene: scene,
           ),

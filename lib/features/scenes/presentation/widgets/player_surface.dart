@@ -31,6 +31,7 @@ class PlayerSurface extends ConsumerStatefulWidget {
     required this.scene,
     required this.controller,
     required this.onFullScreenToggle,
+    this.onInlineBack,
     this.fit = BoxFit.contain,
     this.squareFit = BoxFit.contain,
     this.showControls = true,
@@ -40,6 +41,7 @@ class PlayerSurface extends ConsumerStatefulWidget {
   final Scene scene;
   final VideoController controller;
   final VoidCallback onFullScreenToggle;
+  final VoidCallback? onInlineBack;
   final BoxFit fit;
   final BoxFit squareFit;
   final bool showControls;
@@ -233,6 +235,7 @@ class _PlayerSurfaceState extends ConsumerState<PlayerSurface> {
                     useDoubleTapSeek: playerState.useDoubleTapSeek,
                     enableNativePip: playerState.enableNativePip,
                     onFullScreenToggle: widget.onFullScreenToggle,
+                    onInlineBack: widget.onInlineBack,
                     scene: widget.scene,
                     onScaleStart: _onScaleStart,
                     onScaleUpdate: _onScaleUpdate,

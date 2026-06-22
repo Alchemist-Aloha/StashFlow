@@ -28,6 +28,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      expect(find.text('Show Edit Button'), findsNothing);
       expect(find.text('Use actual scene video in miniplayer'), findsOneWidget);
       expect(
         find.textContaining('Show the live scene video surface'),

@@ -16,7 +16,6 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../providers/studio_list_provider.dart';
-import '../../../setup/presentation/providers/scrape_customization_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_strip.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_strip.dart';
@@ -64,24 +63,22 @@ class StudioDetailsPage extends ConsumerWidget {
     final mediaAsync = ref.watch(studioMediaProvider(studioId));
     final galleriesAsync = ref.watch(studioGalleriesProvider(studioId));
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
-    final scrapeEnabled = ref.watch(scrapeEnabledProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.details_studio),
         actions: [
-          if (scrapeEnabled)
-            studioAsync.maybeWhen(
-              data: (studio) => IconButton(
-                tooltip: context.l10n.common_edit,
-                icon: const Icon(Icons.edit_outlined),
-                onPressed: () => context.push(
-                  '/studios/studio/${studio.id}/edit',
-                  extra: studio,
-                ),
+          studioAsync.maybeWhen(
+            data: (studio) => IconButton(
+              tooltip: context.l10n.common_edit,
+              icon: const Icon(Icons.edit_outlined),
+              onPressed: () => context.push(
+                '/studios/studio/${studio.id}/edit',
+                extra: studio,
               ),
-              orElse: () => const SizedBox.shrink(),
             ),
+            orElse: () => const SizedBox.shrink(),
+          ),
         ],
       ),
       floatingActionButton: randomNavigationEnabled

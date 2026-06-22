@@ -17,7 +17,6 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
 import '../providers/performer_list_provider.dart';
-import '../../../setup/presentation/providers/scrape_customization_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_strip.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/widgets/gallery_strip.dart';
@@ -84,24 +83,22 @@ class PerformerDetailsPage extends ConsumerWidget {
     final mediaAsync = ref.watch(performerMediaProvider(performerId));
     final galleriesAsync = ref.watch(performerGalleriesProvider(performerId));
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
-    final scrapeEnabled = ref.watch(scrapeEnabledProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.details_performer),
         actions: [
-          if (scrapeEnabled)
-            performerAsync.maybeWhen(
-              data: (performer) => IconButton(
-                tooltip: context.l10n.common_edit,
-                icon: const Icon(Icons.edit_outlined),
-                onPressed: () => context.push(
-                  '/performers/performer/${performer.id}/edit',
-                  extra: performer,
-                ),
+          performerAsync.maybeWhen(
+            data: (performer) => IconButton(
+              tooltip: context.l10n.common_edit,
+              icon: const Icon(Icons.edit_outlined),
+              onPressed: () => context.push(
+                '/performers/performer/${performer.id}/edit',
+                extra: performer,
               ),
-              orElse: () => const SizedBox.shrink(),
             ),
+            orElse: () => const SizedBox.shrink(),
+          ),
         ],
       ),
       floatingActionButton: randomNavigationEnabled

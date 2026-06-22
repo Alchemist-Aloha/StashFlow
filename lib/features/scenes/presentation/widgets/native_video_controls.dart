@@ -34,6 +34,7 @@ class NativeVideoControls extends ConsumerStatefulWidget {
     required this.useDoubleTapSeek,
     required this.enableNativePip,
     this.onFullScreenToggle,
+    this.onInlineBack,
     required this.scene,
     this.onScaleStart,
     this.onScaleUpdate,
@@ -47,6 +48,7 @@ class NativeVideoControls extends ConsumerStatefulWidget {
   final bool useDoubleTapSeek;
   final bool enableNativePip;
   final VoidCallback? onFullScreenToggle;
+  final VoidCallback? onInlineBack;
   final Scene scene;
   final GestureScaleStartCallback? onScaleStart;
   final GestureScaleUpdateCallback? onScaleUpdate;
@@ -1230,7 +1232,9 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                   if (playerState.showVideoDebugInfo)
                     Positioned(
                       top: isFullScreen ? 60 : 8,
-                      left: 8,
+                      left: !isFullScreen && widget.onInlineBack != null
+                          ? 60
+                          : 8,
                       child: IgnorePointer(
                         child: AnimatedOpacity(
                           opacity: _controlsVisible ? 1 : 0,
@@ -1254,6 +1258,28 @@ class _NativeVideoControlsState extends ConsumerState<NativeVideoControls>
                                 color: Colors.white70,
                                 fontSize: context.fontSizes.small,
                               ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  if (!isFullScreen && widget.onInlineBack != null)
+                    Positioned(
+                      top: 8,
+                      left: 8,
+                      child: SafeArea(
+                        child: IgnorePointer(
+                          ignoring: !_controlsVisible,
+                          child: AnimatedOpacity(
+                            opacity: _controlsVisible ? 1 : 0,
+                            duration: const Duration(milliseconds: 180),
+                            child: IconButton(
+                              key: const Key('inline_video_back_button'),
+                              tooltip: context.l10n.common_back,
+                              style: _controlButtonStyle(colorScheme),
+                              icon: const Icon(Icons.arrow_back_rounded),
+                              onPressed: widget.onInlineBack,
                             ),
                           ),
                         ),

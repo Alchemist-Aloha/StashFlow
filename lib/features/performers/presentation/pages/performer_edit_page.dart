@@ -8,7 +8,6 @@ import '../../../scenes/presentation/widgets/enhanced_scrape_dialog.dart';
 import '../../domain/entities/performer.dart';
 import '../providers/performer_details_provider.dart';
 import '../providers/performer_scrape_provider.dart';
-import '../../../setup/presentation/providers/scrape_customization_provider.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_performer.dart';
 
 class PerformerEditPage extends ConsumerStatefulWidget {
@@ -381,30 +380,27 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    final scrapeEnabled = ref.watch(scrapeEnabledProvider);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.scenes_edit_performer),
         actions: [
-          if (scrapeEnabled)
-            if (_isScraping)
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
+          if (_isScraping)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
                 ),
-              )
-            else
-              IconButton(
-                onPressed: _scrape,
-                icon: const Icon(Icons.search),
-                tooltip: context.l10n.details_scene_scrape,
               ),
+            )
+          else
+            IconButton(
+              onPressed: _scrape,
+              icon: const Icon(Icons.search),
+              tooltip: context.l10n.details_scene_scrape,
+            ),
           IconButton(
             onPressed: _isSaving ? null : _save,
             icon: _isSaving
