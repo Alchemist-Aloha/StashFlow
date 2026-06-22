@@ -7,6 +7,7 @@ import '../../../setup/presentation/providers/navigation_customization_provider.
 import '../widgets/tag_filter_panel.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
+import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
@@ -123,167 +124,26 @@ class _TagsPageState extends ConsumerState<TagsPage> {
   }
 
   void _showSortPanel() {
-    var tempOption = _sortOption;
-    var tempDescending = _sortDescending;
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) {
-          return Container(
-            padding: const EdgeInsets.all(AppTheme.spacingMedium),
-            decoration: BoxDecoration(
-              color: context.colors.surface,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(AppTheme.radiusExtraLarge),
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      context.l10n.tags_sort_title,
-                      style: context.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setModalState(() {
-                          tempOption = _TagSortOption.name;
-                          tempDescending = false;
-                        });
-                      },
-                      child: Text(context.l10n.common_reset),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppTheme.spacingMedium),
-                Text(
-                  context.l10n.common_sort_method,
-                  style: context.textTheme.labelLarge,
-                ),
-                const SizedBox(height: AppTheme.spacingSmall),
-                Flexible(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      // Using MediaQuery.sizeOf(context) instead of MediaQuery.of(context).size
-                      // to prevent unnecessary rebuilds when unrelated MediaQueryData properties change.
-                      maxHeight: MediaQuery.sizeOf(context).height * 0.22,
-                    ),
-                    child: Scrollbar(
-                      thumbVisibility: true,
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: AppTheme.spacingSmall,
-                        ),
-                        child: Wrap(
-                          spacing: AppTheme.spacingSmall,
-                          runSpacing: AppTheme.spacingSmall,
-                          children: _TagSortOption.values
-                              .map(
-                                (option) => ChoiceChip(
-                                  label: Text(_sortLabel(option)),
-                                  selected: tempOption == option,
-                                  onSelected: (selected) {
-                                    if (!selected) return;
-                                    setModalState(() {
-                                      tempOption = option;
-                                    });
-                                  },
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: AppTheme.spacingMedium),
-                Text(
-                  context.l10n.common_direction,
-                  style: context.textTheme.labelLarge,
-                ),
-                const SizedBox(height: AppTheme.spacingSmall),
-                SizedBox(
-                  width: double.infinity,
-                  child: SegmentedButton<bool>(
-                    segments: [
-                      ButtonSegment(
-                        value: true,
-                        label: Text(context.l10n.common_descending),
-                        icon: const Icon(Icons.arrow_downward),
-                      ),
-                      ButtonSegment(
-                        value: false,
-                        label: Text(context.l10n.common_ascending),
-                        icon: const Icon(Icons.arrow_upward),
-                      ),
-                    ],
-                    selected: {tempDescending},
-                    onSelectionChanged: (value) =>
-                        setModalState(() => tempDescending = value.first),
-                  ),
-                ),
-                const SizedBox(height: AppTheme.spacingLarge),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _sortOption = tempOption;
-                        _sortDescending = tempDescending;
-                      });
-                      _applyServerSort(_sortOption);
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: context.colors.primary,
-                      foregroundColor: context.colors.onPrimary,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppTheme.spacingMedium,
-                      ),
-                    ),
-                    child: Text(context.l10n.common_apply_sort),
-                  ),
-                ),
-                const SizedBox(height: AppTheme.spacingSmall),
-                SizedBox(
-                  width: double.infinity,
-                  child: TextButton(
-                    onPressed: () async {
-                      setState(() {
-                        _sortOption = tempOption;
-                        _sortDescending = tempDescending;
-                      });
-                      _applyServerSort(_sortOption);
-                      await ref.read(tagSortProvider.notifier).saveAsDefault();
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(context.l10n.tags_sort_saved)),
-                        );
-                      }
-                    },
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppTheme.spacingMedium,
-                      ),
-                    ),
-                    child: Text(context.l10n.common_save_default),
-                  ),
-                ),
-                const SizedBox(height: AppTheme.spacingMedium),
-              ],
-            ),
-          );
+      builder: (context) => ListSortBottomSheet<_TagSortOption>(
+        title: context.l10n.tags_sort_title,
+        options: _TagSortOption.values,
+        initialOption: _sortOption,
+        initialDescending: _sortDescending,
+        resetOption: _TagSortOption.name,
+        resetDescending: false,
+        optionLabel: _sortLabel,
+        onApply: (option, descending) {
+          setState(() {
+            _sortOption = option;
+            _sortDescending = descending;
+          });
+          _applyServerSort(option);
         },
+        onSaveDefault: () => ref.read(tagSortProvider.notifier).saveAsDefault(),
+        saveDefaultSuccessMessage: context.l10n.tags_sort_saved,
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:math';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
+import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
 import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
@@ -150,166 +151,25 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) {
-        _GallerySortOption tempOption = _sortOption;
-        bool tempDescending = _sortDescending;
-
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return SafeArea(
-              child: Padding(
-                padding: EdgeInsets.all(context.dimensions.spacingLarge),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          context.l10n.galleries_sort_title,
-                          style: context.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            setModalState(() {
-                              tempOption = _GallerySortOption.path;
-                              tempDescending = false;
-                            });
-                          },
-                          child: Text(context.l10n.common_reset),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: context.dimensions.spacingMedium),
-                    Text(
-                      context.l10n.common_sort_method,
-                      style: context.textTheme.labelLarge,
-                    ),
-                    SizedBox(height: context.dimensions.spacingSmall),
-                    Flexible(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          // Using MediaQuery.sizeOf(context) instead of MediaQuery.of(context).size
-                          // to prevent unnecessary rebuilds when unrelated MediaQueryData properties change.
-                          maxHeight: MediaQuery.sizeOf(context).height * 0.22,
-                        ),
-                        child: Scrollbar(
-                          thumbVisibility: true,
-                          child: SingleChildScrollView(
-                            padding: EdgeInsets.symmetric(
-                              vertical: context.dimensions.spacingSmall,
-                            ),
-                            child: Wrap(
-                              spacing: context.dimensions.spacingSmall,
-                              runSpacing: context.dimensions.spacingSmall,
-                              children: _GallerySortOption.values
-                                  .map(
-                                    (option) => ChoiceChip(
-                                      label: Text(_sortOptionLabel(option)),
-                                      selected: tempOption == option,
-                                      onSelected: (selected) {
-                                        if (!selected) return;
-                                        setModalState(() {
-                                          tempOption = option;
-                                        });
-                                      },
-                                    ),
-                                  )
-                                  .toList(),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: context.dimensions.spacingMedium),
-                    Text(
-                      context.l10n.common_direction,
-                      style: context.textTheme.labelLarge,
-                    ),
-                    SizedBox(height: context.dimensions.spacingSmall),
-                    SizedBox(
-                      width: double.infinity,
-                      child: SegmentedButton<bool>(
-                        segments: [
-                          ButtonSegment(
-                            value: true,
-                            label: Text(context.l10n.common_descending),
-                            icon: const Icon(Icons.arrow_downward),
-                          ),
-                          ButtonSegment(
-                            value: false,
-                            label: Text(context.l10n.common_ascending),
-                            icon: const Icon(Icons.arrow_upward),
-                          ),
-                        ],
-                        selected: {tempDescending},
-                        onSelectionChanged: (value) =>
-                            setModalState(() => tempDescending = value.first),
-                      ),
-                    ),
-                    SizedBox(height: context.dimensions.spacingLarge),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _sortOption = tempOption;
-                            _sortDescending = tempDescending;
-                          });
-                          _applyServerSort();
-                          Navigator.pop(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: context.colors.primary,
-                          foregroundColor: context.colors.onPrimary,
-                          padding: EdgeInsets.symmetric(
-                            vertical: context.dimensions.spacingMedium,
-                          ),
-                        ),
-                        child: Text(context.l10n.common_apply_sort),
-                      ),
-                    ),
-                    SizedBox(height: context.dimensions.spacingSmall),
-                    SizedBox(
-                      width: double.infinity,
-                      child: TextButton(
-                        onPressed: () async {
-                          setState(() {
-                            _sortOption = tempOption;
-                            _sortDescending = tempDescending;
-                          });
-                          _applyServerSort();
-                          await ref
-                              .read(gallerySortProvider.notifier)
-                              .saveAsDefault();
-                          if (context.mounted) {
-                            Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(context.l10n.tags_sort_saved),
-                              ),
-                            );
-                          }
-                        },
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                            vertical: context.dimensions.spacingMedium,
-                          ),
-                        ),
-                        child: Text(context.l10n.common_save_default),
-                      ),
-                    ),
-                    SizedBox(height: context.dimensions.spacingMedium),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
+      builder: (context) => ListSortBottomSheet<_GallerySortOption>(
+        title: context.l10n.galleries_sort_title,
+        options: _GallerySortOption.values,
+        initialOption: _sortOption,
+        initialDescending: _sortDescending,
+        resetOption: _GallerySortOption.path,
+        resetDescending: false,
+        optionLabel: _sortOptionLabel,
+        onApply: (option, descending) {
+          setState(() {
+            _sortOption = option;
+            _sortDescending = descending;
+          });
+          _applyServerSort();
+        },
+        onSaveDefault: () =>
+            ref.read(gallerySortProvider.notifier).saveAsDefault(),
+        saveDefaultSuccessMessage: context.l10n.tags_sort_saved,
+      ),
     );
   }
 

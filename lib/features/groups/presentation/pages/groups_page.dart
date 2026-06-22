@@ -3,10 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
+import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/list_page_scaffold.dart';
+import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
 import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../../../core/utils/l10n_extensions.dart';
-import '../../../../core/presentation/widgets/list_page_scaffold.dart';
-import '../../../../core/presentation/theme/app_theme.dart';
 import '../../domain/entities/group_saved_filter_config.dart';
 import '../widgets/group_filter_panel.dart';
 import '../providers/group_list_provider.dart';
@@ -105,145 +106,26 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
   }
 
   void _showSortPanel() {
-    var tempOption = _sortOption;
-    var tempDescending = _sortDescending;
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) {
-          return Container(
-            padding: const EdgeInsets.all(AppTheme.spacingMedium),
-            decoration: BoxDecoration(
-              color: context.colors.surface,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(AppTheme.radiusExtraLarge),
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      context.l10n.common_sort,
-                      style: context.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setModalState(() {
-                          tempOption = _GroupSortOption.name;
-                          tempDescending = false;
-                        });
-                      },
-                      child: Text(context.l10n.common_reset),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppTheme.spacingMedium),
-                Text(
-                  context.l10n.common_sort_method,
-                  style: context.textTheme.labelLarge,
-                ),
-                const SizedBox(height: AppTheme.spacingSmall),
-                Flexible(
-                  child: SingleChildScrollView(
-                    child: Wrap(
-                      spacing: AppTheme.spacingSmall,
-                      runSpacing: AppTheme.spacingSmall,
-                      children: _GroupSortOption.values
-                          .map(
-                            (option) => ChoiceChip(
-                              label: Text(_sortLabel(option)),
-                              selected: tempOption == option,
-                              onSelected: (selected) {
-                                if (!selected) return;
-                                setModalState(() => tempOption = option);
-                              },
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: AppTheme.spacingMedium),
-                Text(
-                  context.l10n.common_direction,
-                  style: context.textTheme.labelLarge,
-                ),
-                const SizedBox(height: AppTheme.spacingSmall),
-                SizedBox(
-                  width: double.infinity,
-                  child: SegmentedButton<bool>(
-                    segments: [
-                      ButtonSegment(
-                        value: true,
-                        label: Text(context.l10n.common_descending),
-                        icon: const Icon(Icons.arrow_downward),
-                      ),
-                      ButtonSegment(
-                        value: false,
-                        label: Text(context.l10n.common_ascending),
-                        icon: const Icon(Icons.arrow_upward),
-                      ),
-                    ],
-                    selected: {tempDescending},
-                    onSelectionChanged: (value) =>
-                        setModalState(() => tempDescending = value.first),
-                  ),
-                ),
-                const SizedBox(height: AppTheme.spacingLarge),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _sortOption = tempOption;
-                        _sortDescending = tempDescending;
-                      });
-                      _applyServerSort(_sortOption);
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: context.colors.primary,
-                      foregroundColor: context.colors.onPrimary,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppTheme.spacingMedium,
-                      ),
-                    ),
-                    child: Text(context.l10n.common_apply_sort),
-                  ),
-                ),
-                const SizedBox(height: AppTheme.spacingSmall),
-                SizedBox(
-                  width: double.infinity,
-                  child: TextButton(
-                    onPressed: () async {
-                      setState(() {
-                        _sortOption = tempOption;
-                        _sortDescending = tempDescending;
-                      });
-                      _applyServerSort(_sortOption);
-                      await ref
-                          .read(groupSortProvider.notifier)
-                          .saveAsDefault();
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                      }
-                    },
-                    child: Text(context.l10n.common_save_default),
-                  ),
-                ),
-              ],
-            ),
-          );
+      builder: (context) => ListSortBottomSheet<_GroupSortOption>(
+        title: context.l10n.common_sort,
+        options: _GroupSortOption.values,
+        initialOption: _sortOption,
+        initialDescending: _sortDescending,
+        resetOption: _GroupSortOption.name,
+        resetDescending: false,
+        optionLabel: _sortLabel,
+        onApply: (option, descending) {
+          setState(() {
+            _sortOption = option;
+            _sortDescending = descending;
+          });
+          _applyServerSort(option);
         },
+        onSaveDefault: () =>
+            ref.read(groupSortProvider.notifier).saveAsDefault(),
       ),
     );
   }

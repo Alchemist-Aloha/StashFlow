@@ -49,6 +49,26 @@ void main() {
     expect(find.text('Sort'), findsWidgets);
   });
 
+  testWidgets(
+    'GroupsPage sort panel matches the scene-list scrollable chip layout',
+    (tester) async {
+      final mockRepo = MockGroupRepository()..withData([testGroup]);
+
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        overrides: [groupRepositoryProvider.overrideWithValue(mockRepo)],
+        child: const GroupsPage(),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.sort));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(Scrollbar), findsOneWidget);
+    },
+  );
+
   testWidgets('GroupsPage exposes saved preset dialog action', (tester) async {
     final mockRepo = MockGroupRepository()..withData([testGroup]);
     final savedFilterRepository = GraphQLSavedFilterRepository(

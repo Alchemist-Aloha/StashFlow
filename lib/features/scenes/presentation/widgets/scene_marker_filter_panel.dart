@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/domain/entities/criterion.dart';
-import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/widgets/filter_bottom_sheet_scaffold.dart';
 import '../../../../core/presentation/widgets/filter_widgets.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../performers/domain/entities/performer.dart';
@@ -32,122 +32,27 @@ class _SceneMarkerFilterPanelState
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
-    final safeBottom = MediaQuery.paddingOf(context).bottom;
-
-    return SafeArea(
-      top: false,
-      child: FractionallySizedBox(
-        heightFactor: 0.9,
-        child: Material(
-          color: context.colors.surface,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(AppTheme.radiusExtraLarge),
-            ),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.all(context.dimensions.spacingMedium),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Filter markers',
-                      style: context.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _tempFilter = const SceneMarkerFilter();
-                        });
-                      },
-                      child: Text(context.l10n.common_reset),
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(height: 1),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.only(
-                    bottom:
-                        bottomInset +
-                        safeBottom +
-                        context.dimensions.spacingLarge,
-                  ),
-                  child: Column(
-                    children: [
-                      _buildMarkerSection(),
-                      _buildSceneSection(),
-                      _buildDatesSection(),
-                    ],
-                  ),
-                ),
-              ),
-              const Divider(height: 1),
-              Padding(
-                padding: EdgeInsets.all(context.dimensions.spacingMedium),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          ref
-                              .read(sceneMarkerFilterStateProvider.notifier)
-                              .update(_tempFilter);
-                          Navigator.pop(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: context.colors.primary,
-                          foregroundColor: context.colors.onPrimary,
-                          padding: EdgeInsets.symmetric(
-                            vertical: context.dimensions.spacingMedium,
-                          ),
-                        ),
-                        child: Text(context.l10n.common_apply_filters),
-                      ),
-                    ),
-                    SizedBox(height: context.dimensions.spacingSmall),
-                    SizedBox(
-                      width: double.infinity,
-                      child: TextButton(
-                        onPressed: () async {
-                          ref
-                              .read(sceneMarkerFilterStateProvider.notifier)
-                              .update(_tempFilter);
-                          await ref
-                              .read(sceneMarkerFilterStateProvider.notifier)
-                              .saveAsDefault();
-                          if (context.mounted) {
-                            Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Marker filter saved as default'),
-                              ),
-                            );
-                          }
-                        },
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                            vertical: context.dimensions.spacingMedium,
-                          ),
-                        ),
-                        child: Text(context.l10n.common_save_default),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+    return FilterBottomSheetScaffold(
+      title: 'Filter markers',
+      onReset: () {
+        setState(() {
+          _tempFilter = const SceneMarkerFilter();
+        });
+      },
+      body: Column(
+        children: [
+          _buildMarkerSection(),
+          _buildSceneSection(),
+          _buildDatesSection(),
+        ],
       ),
+      onApply: () =>
+          ref.read(sceneMarkerFilterStateProvider.notifier).update(_tempFilter),
+      onSaveDefault: () async {
+        ref.read(sceneMarkerFilterStateProvider.notifier).update(_tempFilter);
+        await ref.read(sceneMarkerFilterStateProvider.notifier).saveAsDefault();
+      },
+      saveDefaultSuccessMessage: 'Marker filter saved as default',
     );
   }
 

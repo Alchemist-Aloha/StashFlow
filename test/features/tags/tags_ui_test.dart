@@ -40,4 +40,29 @@ void main() {
     expect(find.byType(ListTile), findsOneWidget);
     expect(find.text('Test Tag'), findsOneWidget);
   });
+
+  testWidgets('TagsPage sort panel uses the scene-list title layout', (
+    tester,
+  ) async {
+    final mockRepo = MockTagRepository()..withData([testTag]);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [tagRepositoryProvider.overrideWithValue(mockRepo)],
+      child: const TagsPage(),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.sort));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.ancestor(
+        of: find.text('Sort Tags'),
+        matching: find.byType(Expanded),
+      ),
+      findsOneWidget,
+    );
+  });
 }
