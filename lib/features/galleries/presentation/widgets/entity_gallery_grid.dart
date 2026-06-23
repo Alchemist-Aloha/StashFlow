@@ -303,6 +303,19 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
         .setSort(sort: config.sort ?? 'path', descending: config.descending);
   }
 
+  void _openAllEntityImages() {
+    ref.read(imageFilterStateProvider.notifier).clear();
+    ref
+        .read(imageFilterStateProvider.notifier)
+        .updateFilter(
+          imageFilterForEntityGalleries(
+            kind: widget.filterKind,
+            entityId: widget.entityId,
+          ),
+        );
+    context.push('/galleries/images');
+  }
+
   @override
   Widget build(BuildContext context) {
     final filter = ref.watch(
@@ -359,6 +372,11 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
           tooltip: context.l10n.common_saved_filters,
           icon: const Icon(Icons.bookmarks_outlined),
           onPressed: _showSavedFilterDialog,
+        ),
+        IconButton(
+          icon: const Icon(Icons.image),
+          tooltip: context.l10n.galleries_all_images,
+          onPressed: _openAllEntityImages,
         ),
       ],
       itemBuilder: (context, item, memCacheWidth, memCacheHeight) {

@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/domain/entities/criterion.dart';
 import '../../../../core/domain/entities/filter_options.dart';
+import '../../../images/domain/entities/image_filter.dart';
 import '../../domain/entities/gallery_filter.dart';
 
 part 'entity_gallery_filter_scope.g.dart';
@@ -28,6 +29,21 @@ GalleryFilter galleryFilterForEntityGalleries({
     ),
   };
 }
+
+ImageFilter imageFilterForEntityGalleries({
+  required EntityGalleryFilterKind kind,
+  required String entityId,
+}) => switch (kind) {
+  EntityGalleryFilterKind.performer => ImageFilter(
+    performers: MultiCriterion(value: [entityId]),
+  ),
+  EntityGalleryFilterKind.studio => ImageFilter(
+    studios: HierarchicalMultiCriterion(value: [entityId]),
+  ),
+  EntityGalleryFilterKind.tag => ImageFilter(
+    tags: HierarchicalMultiCriterion(value: [entityId]),
+  ),
+};
 
 @Riverpod(keepAlive: true)
 class EntityGallerySort extends _$EntityGallerySort {
