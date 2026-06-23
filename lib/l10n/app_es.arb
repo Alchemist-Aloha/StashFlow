@@ -1051,5 +1051,15 @@
   "settings_security_subtitle": "Configuración de bloqueo de aplicación y contraseña",
   "tools_section_subtitle": "Flujos de trabajo de mantenimiento y metadatos para escenas.",
   "tools_scene_deduplication_subtitle": "Buscar y gestionar escenas duplicadas.",
-  "tools_scene_tagger_subtitle": "Extraer páginas de escenas actuales con Stash-box."
+  "tools_scene_tagger_subtitle": "Extraer páginas de escenas actuales con Stash-box.",
+  "scene_details_marker_created": "Marcador creado",
+  "scene_details_failed_to_create_marker": "No se pudo crear el marcador: {error}",
+  "scene_details_delete_marker_title": "Eliminar marcadores",
+  "scene_details_delete_marker_content": "¿Eliminar el marcador \"{title}\"?",
+  "scene_details_marker_deleted": "Marcador eliminado",
+  "scene_details_failed_to_delete_marker": "No se pudo eliminar el marcador: {error}",
+  "scene_details_add_marker": "Agregar marcador",
+  "scene_details_create_marker": "Crear",
+  "scene_details_delete_marker_tooltip": "Eliminar marcador {title}",
+  "scenes_page_markers_tooltip": "Marcadores"
 }
