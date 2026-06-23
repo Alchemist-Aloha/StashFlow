@@ -254,6 +254,11 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
 
   @override
   Widget build(BuildContext context) {
+    // Hoist the router lookup out of the itemBuilder loop to prevent O(N) context lookups
+    final useHero = GoRouter.of(
+      context,
+    ).routeInformationProvider.value.uri.path.endsWith('/media');
+
     final filter = ref.watch(entityMediaFilterStateProvider(widget.filterKind));
     final scopedFilter = _scopedFilter(filter);
     final baseFilter = _scopedFilter(SceneFilter.empty());
@@ -317,9 +322,7 @@ class _EntitySceneMediaGridState extends ConsumerState<EntitySceneMediaGrid> {
           useMasonry: widget.isGridView,
           memCacheWidth: memCacheWidth,
           memCacheHeight: memCacheHeight,
-          useHero: GoRouter.of(
-            context,
-          ).routeInformationProvider.value.uri.path.endsWith('/media'),
+          useHero: useHero,
           onTap: () {
             ref
                 .read(playbackQueueProvider.notifier)

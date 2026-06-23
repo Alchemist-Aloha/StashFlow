@@ -160,6 +160,7 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
   final _searchController = SearchController();
   String? _currentQuery;
   String? _lastSubmittedText;
+  DateTime _lastFetchTime = DateTime.fromMillisecondsSinceEpoch(0);
 
   bool _pageSizeReportScheduled = false;
   int? _lastReportedPageSize;
@@ -762,7 +763,12 @@ class _ListPageScaffoldState<T> extends ConsumerState<ListPageScaffold<T>> {
                       return NotificationListener<ScrollNotification>(
                         onNotification: (ScrollNotification scrollInfo) {
                           if (shouldLoadNextPage(scrollInfo.metrics)) {
-                            widget.onFetchNextPage?.call();
+                            final now = DateTime.now();
+                            if (now.difference(_lastFetchTime).inMilliseconds >
+                                500) {
+                              _lastFetchTime = now;
+                              widget.onFetchNextPage?.call();
+                            }
                           }
                           return false;
                         },
