@@ -360,71 +360,79 @@ class _SceneCardState extends ConsumerState<SceneCard> {
         ).colorScheme.primaryContainer.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
         clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: widget.onTap,
-          onLongPress: () => _showMenu(context, ref),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AspectRatio(
-                // Clamp aspect ratio to prevent extremely tall or wide items from
-                // breaking the list layout flow.
-                aspectRatio: aspectRatio.clamp(0.5, 2.5),
-                child: _buildThumbnail(context, duration, aspectRatio),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.scene.displayTitle,
-                            style: context.textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              fontSize:
-                                  context.dimensions.cardTitleFontSize *
-                                  context.dimensions.fontSizeFactor,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${widget.scene.studioName ?? context.l10n.common_unknown} • ${widget.scene.date.year}',
-                            style: context.textTheme.labelMedium?.copyWith(
-                              color: context.colors.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          if (widget.showPerformers &&
-                              ref.watch(showPerformerAvatarsProvider) &&
-                              widget.scene.performerNames.isNotEmpty) ...[
-                            const SizedBox(height: 8),
-                            _PerformerAvatarRow(
-                              performerImagePaths:
-                                  widget.scene.performerImagePaths,
-                              performerNames: widget.scene.performerNames,
-                              performerIds: widget.scene.performerIds,
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      tooltip: context.l10n.common_more,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      onPressed: () => _showMenu(context, ref),
-                      icon: const Icon(Icons.more_vert, size: 20, color: null),
-                    ),
-                  ],
+        child: Semantics(
+          button: true,
+          label: widget.scene.displayTitle,
+          child: InkWell(
+            onTap: widget.onTap,
+            onLongPress: () => _showMenu(context, ref),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AspectRatio(
+                  // Clamp aspect ratio to prevent extremely tall or wide items from
+                  // breaking the list layout flow.
+                  aspectRatio: aspectRatio.clamp(0.5, 2.5),
+                  child: _buildThumbnail(context, duration, aspectRatio),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.scene.displayTitle,
+                              style: context.textTheme.bodySmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize:
+                                    context.dimensions.cardTitleFontSize *
+                                    context.dimensions.fontSizeFactor,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${widget.scene.studioName ?? context.l10n.common_unknown} • ${widget.scene.date.year}',
+                              style: context.textTheme.labelMedium?.copyWith(
+                                color: context.colors.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            if (widget.showPerformers &&
+                                ref.watch(showPerformerAvatarsProvider) &&
+                                widget.scene.performerNames.isNotEmpty) ...[
+                              const SizedBox(height: 8),
+                              _PerformerAvatarRow(
+                                performerImagePaths:
+                                    widget.scene.performerImagePaths,
+                                performerNames: widget.scene.performerNames,
+                                performerIds: widget.scene.performerIds,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        tooltip: context.l10n.common_more,
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        onPressed: () => _showMenu(context, ref),
+                        icon: const Icon(
+                          Icons.more_vert,
+                          size: 20,
+                          color: null,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -450,88 +458,95 @@ class _SceneCardState extends ConsumerState<SceneCard> {
         ).colorScheme.primaryContainer.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
         clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: widget.onTap,
-          onLongPress: () => _showMenu(context, ref),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AspectRatio(
-                aspectRatio: widget.useMasonry
-                    ? aspectRatio.clamp(0.5, 2.5)
-                    : 16 / 9,
-                child: _buildThumbnail(
-                  context,
-                  duration,
-                  widget.useMasonry ? aspectRatio.clamp(0.5, 2.5) : 16 / 9,
+        child: Semantics(
+          button: true,
+          label: widget.scene.displayTitle,
+          child: InkWell(
+            onTap: widget.onTap,
+            onLongPress: () => _showMenu(context, ref),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AspectRatio(
+                  aspectRatio: widget.useMasonry
+                      ? aspectRatio.clamp(0.5, 2.5)
+                      : 16 / 9,
+                  child: _buildThumbnail(
+                    context,
+                    duration,
+                    widget.useMasonry ? aspectRatio.clamp(0.5, 2.5) : 16 / 9,
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.scene.displayTitle,
-                            style: context.textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              fontSize:
-                                  context.dimensions.cardTitleFontSize *
-                                  context.dimensions.fontSizeFactor,
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.scene.displayTitle,
+                              style: context.textTheme.bodySmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize:
+                                    context.dimensions.cardTitleFontSize *
+                                    context.dimensions.fontSizeFactor,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            widget.scene.studioName ??
-                                context.l10n.common_unknown,
-                            style: context.textTheme.labelSmall?.copyWith(
-                              color: context.colors.primary,
-                              fontWeight: FontWeight.bold,
+                            const SizedBox(height: 2),
+                            Text(
+                              widget.scene.studioName ??
+                                  context.l10n.common_unknown,
+                              style: context.textTheme.labelSmall?.copyWith(
+                                color: context.colors.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          if (widget.showPerformers &&
-                              ref.watch(showPerformerAvatarsProvider) &&
-                              widget.scene.performerNames.isNotEmpty) ...[
-                            const SizedBox(height: 4),
-                            _PerformerAvatarRow(
-                              performerImagePaths:
-                                  widget.scene.performerImagePaths,
-                              performerNames: widget.scene.performerNames,
-                              performerIds: widget.scene.performerIds,
-                            ),
+                            if (widget.showPerformers &&
+                                ref.watch(showPerformerAvatarsProvider) &&
+                                widget.scene.performerNames.isNotEmpty) ...[
+                              const SizedBox(height: 4),
+                              _PerformerAvatarRow(
+                                performerImagePaths:
+                                    widget.scene.performerImagePaths,
+                                performerNames: widget.scene.performerNames,
+                                performerIds: widget.scene.performerIds,
+                              ),
+                            ],
                           ],
-                        ],
-                      ),
-                    ),
-                    SizedBox.square(
-                      dimension: 32,
-                      child: IconButton(
-                        tooltip: context.l10n.common_more,
-                        padding: EdgeInsets.zero,
-                        visualDensity: VisualDensity.compact,
-                        constraints: const BoxConstraints.tightFor(
-                          width: 32,
-                          height: 32,
-                        ),
-                        onPressed: () => _showMenu(context, ref),
-                        icon: const Icon(
-                          Icons.more_vert,
-                          size: 16,
-                          color: null,
                         ),
                       ),
-                    ),
-                  ],
+                      SizedBox.square(
+                        dimension: 32,
+                        child: IconButton(
+                          tooltip: context.l10n.common_more,
+                          padding: EdgeInsets.zero,
+                          visualDensity: VisualDensity.compact,
+                          constraints: const BoxConstraints.tightFor(
+                            width: 32,
+                            height: 32,
+                          ),
+                          onPressed: () => _showMenu(context, ref),
+                          icon: const Icon(
+                            Icons.more_vert,
+                            size: 16,
+                            color: null,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
