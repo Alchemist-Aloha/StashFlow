@@ -2,21 +2,46 @@
 
 ## ✨ New Features
 
-### Scene Details and Markers
+### Scene Markers
+- Scene markers now have a dedicated browse page with full filter and saved filter support.
+- Markers display on a dedicated card view, and marker strings have been extracted to ARB localization.
 
-- Scene details now keep the primary actions in the main info area instead of the app bar, with edit and scrape actions always visible.
-- The inline player has a proper back control, and scene markers now have a dedicated browse page with saved filter support.
+### Entity Gallery Images
+- Performer, studio, and tag detail pages now show images from their associated galleries via a new media grid.
+- Gallery images are fetched with `networkOnly` fetch policy to ensure fresh data, scoped through gallery associations.
+- A new **Entity Image Filter Method** setting lets users choose how entity images are displayed: from all galleries or filtered through a specific gallery.
 
-### Groups and Entity Browsing
+### Groups
+- Groups are now available as a hidden browse tab (disabled by default, enable in Customize Tabs).
+- Group details page includes media grid and saved filter dialog with configuration management.
+- Official groups filter support added.
 
-- Groups are now a first-class browse section with details and media pages, and the tab remains hidden by default until enabled in Customize Tabs.
-- Performer, studio, tag, gallery, and image pages now use page-specific sort and filter defaults instead of sharing the main scene defaults.
+### Image Filter Panel — Gallery Search
+- The Gallery filter in the Image Filter panel now works correctly — the entity picker populates with gallery results and supports search.
 
-### Playback and Diagnostics
-
-- Cast operations now emit structured process logging through `AppLogStore` when debug logging is enabled, which makes discovery and session issues easier to trace.
+### Cast Debug Logging
+- Cast operations emit structured process logging through `AppLogStore` when debug logging is enabled, making discovery and session issues easier to trace.
 
 ## 🎨 UI & UX Improvements
 
-- Sort and filter sheets were standardized across the library, with shared bottom-sheet chrome and more consistent action layouts.
-- The scene details view was refreshed around the rating/O-counter row and inline player controls, keeping playback actions and metadata actions in one place.
+- **Bottom Sheet Standardization**: Shared bottom-sheet chrome (`BottomSheetPanelHeader`, `BottomSheetPanelActions`) and a consistent `FilterBottomSheetScaffold` applied across all library page filter and sort sheets.
+- **Scene Details Redesign**: Scene details layout reorganized — primary actions kept in the main info area rather than the app bar, edit and scrape actions always visible, inline player controls with proper back navigation, and a top gradient overlay for both inline and fullscreen video controls.
+- **Sort & Filter Sheets**: All library pages (scenes, studios, performers, tags, galleries, images) now use unified sort/filter bottom sheets with consistent action layouts.
+- **Interface Settings Reorganized**: Settings page restructured for clarity, with new layout options for scene markers and group media grids with persistence.
+
+## 🐛 Bug Fixes
+
+- Fixed gallery entity picker returning empty results in the Image Filter panel (missing `'gallery'` case in `EntityPicker`).
+- Fixed `DropdownButtonFormField` to properly use `initialValue` for missing or empty values.
+- Updated media notification handling and cleanup for scene cover images.
+
+## 🌐 Localization
+
+- Hardcoded marker strings extracted to ARB files across all supported languages (en, de, es, fr, it, ja, ko, ru, zh).
+
+## 🔧 Technical Updates
+
+- `safe_local_storage` updated to v2.0.4.
+- Removed unused dependencies; updated dependencies for compatibility.
+- `scrape_customization_provider` removed following scene scrape preference streamlining.
+- Various code refactors for readability and maintainability.
