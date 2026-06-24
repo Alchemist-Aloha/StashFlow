@@ -1051,5 +1051,15 @@
   "settings_security_subtitle": "Paramètres de verrouillage de l'application et du code",
   "tools_section_subtitle": "Flux de travail de maintenance et de métadonnées pour les scènes.",
   "tools_scene_deduplication_subtitle": "Rechercher et gérer les scènes en double.",
-  "tools_scene_tagger_subtitle": "Scraper les pages de scènes actuelles avec Stash-box."
+  "tools_scene_tagger_subtitle": "Scraper les pages de scènes actuelles avec Stash-box.",
+  "scene_details_marker_created": "Marqueur créé",
+  "scene_details_failed_to_create_marker": "Échec de la création du marqueur : {error}",
+  "scene_details_delete_marker_title": "Supprimer des marqueurs",
+  "scene_details_delete_marker_content": "Supprimer le marqueur \"{title}\" ?",
+  "scene_details_marker_deleted": "Marqueur supprimé",
+  "scene_details_failed_to_delete_marker": "Échec de la suppression du marqueur : {error}",
+  "scene_details_add_marker": "Ajouter un marqueur",
+  "scene_details_create_marker": "Créer",
+  "scene_details_delete_marker_tooltip": "Supprimer le marqueur {title}",
+  "scenes_page_markers_tooltip": "Marqueurs"
 }

@@ -130,6 +130,24 @@ class GroupMediaGridLayout extends _$GroupMediaGridLayout {
 }
 
 @riverpod
+class SceneMarkerGridLayout extends _$SceneMarkerGridLayout {
+  static const _storageKey = 'scene_marker_grid_layout';
+
+  @override
+  bool build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getBool(_storageKey) ?? true;
+  }
+
+  Future<void> set(bool value) async {
+    if (state == value) return;
+    state = value;
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setBool(_storageKey, value);
+  }
+}
+
+@riverpod
 class SceneGridColumns extends _$SceneGridColumns {
   static const _storageKey = 'scene_grid_columns_v2';
 
@@ -270,6 +288,29 @@ class TagGridColumns extends _$TagGridColumns {
 @riverpod
 class GroupGridColumns extends _$GroupGridColumns {
   static const _storageKey = 'group_grid_columns_v2';
+
+  @override
+  int? build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    final value = prefs.getInt(_storageKey);
+    return value == 0 ? null : value;
+  }
+
+  Future<void> set(int? value) async {
+    if (state == value) return;
+    state = value;
+    final prefs = ref.read(sharedPreferencesProvider);
+    if (value == null) {
+      await prefs.setInt(_storageKey, 0);
+    } else {
+      await prefs.setInt(_storageKey, value);
+    }
+  }
+}
+
+@riverpod
+class SceneMarkerGridColumns extends _$SceneMarkerGridColumns {
+  static const _storageKey = 'scene_marker_grid_columns_v2';
 
   @override
   int? build() {

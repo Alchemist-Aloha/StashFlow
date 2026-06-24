@@ -1148,6 +1148,22 @@ class AppLocalizationsZh extends AppLocalizations {
       '播放时显示实时场景视频画面，而不是场景截图。';
 
   @override
+  String get settings_interface_entity_image_filtering =>
+      'Entity image filtering';
+
+  @override
+  String get settings_interface_entity_image_filtering_subtitle =>
+      'Choose whether entity image pages match image metadata or related galleries.';
+
+  @override
+  String get settings_interface_entity_image_filtering_direct =>
+      'Direct entity';
+
+  @override
+  String get settings_interface_entity_image_filtering_galleries =>
+      'Related galleries';
+
+  @override
   String get settings_interface_customize_tabs => '自定义标签页';
 
   @override
@@ -2895,6 +2911,44 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get stats_library_stats_tooltip => '长按查看资料库统计';
+
+  @override
+  String get scene_details_marker_created => '标记已创建';
+
+  @override
+  String scene_details_failed_to_create_marker(String error) {
+    return '无法创建标记：$error';
+  }
+
+  @override
+  String get scene_details_delete_marker_title => '删除标记';
+
+  @override
+  String scene_details_delete_marker_content(String title) {
+    return '删除标记“$title”吗？';
+  }
+
+  @override
+  String get scene_details_marker_deleted => '标记已删除';
+
+  @override
+  String scene_details_failed_to_delete_marker(String error) {
+    return '无法删除标记：$error';
+  }
+
+  @override
+  String get scene_details_add_marker => '添加标记';
+
+  @override
+  String get scene_details_create_marker => '创造';
+
+  @override
+  String scene_details_delete_marker_tooltip(String title) {
+    return '删除标记 $title';
+  }
+
+  @override
+  String get scenes_page_markers_tooltip => '标记';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5787,6 +5841,44 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get stats_library_stats_tooltip => '长按查看资料库统计';
+
+  @override
+  String get scene_details_marker_created => '标记已创建';
+
+  @override
+  String scene_details_failed_to_create_marker(String error) {
+    return '无法创建标记：$error';
+  }
+
+  @override
+  String get scene_details_delete_marker_title => '删除标记';
+
+  @override
+  String scene_details_delete_marker_content(String title) {
+    return '删除标记“$title”吗？';
+  }
+
+  @override
+  String get scene_details_marker_deleted => '标记已删除';
+
+  @override
+  String scene_details_failed_to_delete_marker(String error) {
+    return '无法删除标记：$error';
+  }
+
+  @override
+  String get scene_details_add_marker => '添加标记';
+
+  @override
+  String get scene_details_create_marker => '创造';
+
+  @override
+  String scene_details_delete_marker_tooltip(String title) {
+    return '删除标记 $title';
+  }
+
+  @override
+  String get scenes_page_markers_tooltip => '标记';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8683,4 +8775,42 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get stats_library_stats_tooltip => '長按查看資料庫統計';
+
+  @override
+  String get scene_details_marker_created => '標記已建立';
+
+  @override
+  String scene_details_failed_to_create_marker(String error) {
+    return '無法建立標記：$error';
+  }
+
+  @override
+  String get scene_details_delete_marker_title => '刪除標記';
+
+  @override
+  String scene_details_delete_marker_content(String title) {
+    return '刪除標記“$title”嗎？';
+  }
+
+  @override
+  String get scene_details_marker_deleted => '標記已刪除';
+
+  @override
+  String scene_details_failed_to_delete_marker(String error) {
+    return '無法刪除標記：$error';
+  }
+
+  @override
+  String get scene_details_add_marker => '添加標記';
+
+  @override
+  String get scene_details_create_marker => '創造';
+
+  @override
+  String scene_details_delete_marker_tooltip(String title) {
+    return '刪除標記 $title';
+  }
+
+  @override
+  String get scenes_page_markers_tooltip => '標記';
 }

@@ -1,7 +1,11 @@
 import 'dart:async';
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:clock/clock.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -338,6 +342,9 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
   /// Internal flag to track the last speed reported to the media handler.
   double? _lastSpeed;
 
+  /// Path to temporary notification cover art file, cleaned up on scene change.
+  String? _notificationArtTempPath;
+
   late final PlaybackActivityTracker _activityTracker;
   late final PlaybackSessionController _sessionController;
   final PlaybackStartupRecovery _startupRecovery =
@@ -393,6 +400,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     ref.onDispose(() {
       WidgetsBinding.instance.removeObserver(this);
       PipMode.isInPipMode.removeListener(_onPipModeChanged);
+      _cleanupNotificationArt();
       _activityTracker.dispose();
 
       unawaited(
@@ -474,6 +482,115 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
     }
 
     state = state.copyWith(isInPipMode: nextInPip);
+  }
+
+  /// Fetches the scene cover image with proper auth headers and updates
+  /// the system media notification via a local temp file.
+  ///
+  /// Android's MediaSession does not support `data:` URIs for album art,
+  /// and the system notification image loader cannot supply custom HTTP
+  /// headers for auth modes like Basic, Cookie, or Bearer. We work around
+  /// both limitations by fetching the image in-app (with auth headers),
+  /// writing it to a temp file, and passing a `file://` URI to audio_service.
+  void _updateMediaNotification(Scene scene, Duration? duration) {
+    final screenshotUrl = scene.paths.screenshot?.trim();
+    if (screenshotUrl == null || screenshotUrl.isEmpty) {
+      _cleanupNotificationArt();
+      mediaHandler?.updateMetadata(
+        id: scene.id,
+        title: scene.title,
+        studio: scene.studioName,
+        duration: duration,
+      );
+      return;
+    }
+
+    if (isTestMode) {
+      mediaHandler?.updateMetadata(
+        id: scene.id,
+        title: scene.title,
+        studio: scene.studioName,
+        duration: duration,
+      );
+      return;
+    }
+
+    // Fire-and-forget: fetch the image in the background so it doesn't
+    // block playback startup.
+    unawaited(_fetchAndUpdateArt(scene, screenshotUrl, duration));
+  }
+
+  /// Deletes the old temp notification art file if it exists.
+  void _cleanupNotificationArt() {
+    final oldPath = _notificationArtTempPath;
+    _notificationArtTempPath = null;
+    if (oldPath != null) {
+      try {
+        File(oldPath).deleteSync();
+      } catch (_) {
+        // Best-effort cleanup; ignore failures.
+      }
+    }
+  }
+
+  Future<void> _fetchAndUpdateArt(
+    Scene scene,
+    String url,
+    Duration? duration,
+  ) async {
+    try {
+      final headers = ref.read(mediaHeadersProvider);
+      final apiKey = ref.read(serverApiKeyProvider);
+
+      final effectiveUrl = appendApiKey(url, apiKey.trim());
+
+      final dio = Dio(
+        BaseOptions(
+          headers: headers,
+          responseType: ResponseType.bytes,
+          receiveTimeout: const Duration(seconds: 10),
+          connectTimeout: const Duration(seconds: 5),
+        ),
+      );
+
+      final response = await dio.getUri(Uri.parse(effectiveUrl));
+      if (response.statusCode == 200 && response.data is List<int>) {
+        final tempDir = await getTemporaryDirectory();
+        final tempFile = File(
+          '${tempDir.path}/stash_notification_art_${scene.id}.jpg',
+        );
+
+        await tempFile.writeAsBytes(response.data as List<int>);
+        if (!ref.mounted) return;
+
+        // Clean up previous temp file before recording the new one.
+        _cleanupNotificationArt();
+        _notificationArtTempPath = tempFile.path;
+
+        mediaHandler?.updateMetadata(
+          id: scene.id,
+          title: scene.title,
+          studio: scene.studioName,
+          thumbnailUri: Uri.file(tempFile.path).toString(),
+          duration: duration,
+        );
+        return;
+      }
+    } catch (e) {
+      AppLogStore.instance.add(
+        'Failed to fetch scene cover for notification: $e',
+        source: 'player_provider',
+      );
+    }
+
+    // Fallback: no art available.
+    if (!ref.mounted) return;
+    mediaHandler?.updateMetadata(
+      id: scene.id,
+      title: scene.title,
+      studio: scene.studioName,
+      duration: duration,
+    );
   }
 
   void setAutoplayNext(bool value) {
@@ -1056,16 +1173,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       );
 
       if (!isTestMode) {
-        mediaHandler?.updateMetadata(
-          id: scene.id,
-          title: scene.title,
-          studio: scene.studioName,
-          thumbnailUri: appendApiKey(
-            scene.paths.screenshot ?? '',
-            ref.read(serverApiKeyProvider),
-          ),
-          duration: player.state.duration,
-        );
+        _updateMediaNotification(scene, player.state.duration);
       }
 
       AppLogStore.instance.add(
@@ -1171,16 +1279,7 @@ class PlayerState extends _$PlayerState with WidgetsBindingObserver {
       startupLatencyMs: 0, // Attached, no initialization latency to report
     );
 
-    mediaHandler?.updateMetadata(
-      id: scene.id,
-      title: scene.title,
-      studio: scene.studioName,
-      thumbnailUri: appendApiKey(
-        scene.paths.screenshot ?? '',
-        ref.read(serverApiKeyProvider),
-      ),
-      duration: player.state.duration,
-    );
+    _updateMediaNotification(scene, player.state.duration);
 
     if (!isTestMode) {
       unawaited(WakelockPlus.enable());

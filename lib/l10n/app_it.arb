@@ -1056,5 +1056,15 @@
   "settings_security_subtitle": "Impostazioni del blocco dell'applicazione e del passcode",
   "tools_section_subtitle": "Flussi di lavoro di manutenzione e metadati per le scene.",
   "tools_scene_deduplication_subtitle": "Trova e gestisci le scene duplicate.",
-  "tools_scene_tagger_subtitle": "Scrape delle pagine delle scene correnti con Stash-box."
+  "tools_scene_tagger_subtitle": "Scrape delle pagine delle scene correnti con Stash-box.",
+  "scene_details_marker_created": "Marcatore creato",
+  "scene_details_failed_to_create_marker": "Impossibile creare l'indicatore: {error}",
+  "scene_details_delete_marker_title": "Elimina marcatori",
+  "scene_details_delete_marker_content": "Eliminare l'indicatore \"{title}\"?",
+  "scene_details_marker_deleted": "Indicatore eliminato",
+  "scene_details_failed_to_delete_marker": "Impossibile eliminare l'indicatore: {error}",
+  "scene_details_add_marker": "Aggiungi marcatore",
+  "scene_details_create_marker": "Creare",
+  "scene_details_delete_marker_tooltip": "Elimina indicatore {title}",
+  "scenes_page_markers_tooltip": "Marcatori"
 }

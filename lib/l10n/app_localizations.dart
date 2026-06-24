@@ -2268,6 +2268,30 @@ abstract class AppLocalizations {
   /// **'Show the live scene video surface instead of the scene screenshot when playback is active.'**
   String get settings_interface_use_actual_scene_video_miniplayer_subtitle;
 
+  /// No description provided for @settings_interface_entity_image_filtering.
+  ///
+  /// In en, this message translates to:
+  /// **'Entity image filtering'**
+  String get settings_interface_entity_image_filtering;
+
+  /// No description provided for @settings_interface_entity_image_filtering_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose whether entity image pages match image metadata or related galleries.'**
+  String get settings_interface_entity_image_filtering_subtitle;
+
+  /// No description provided for @settings_interface_entity_image_filtering_direct.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct entity'**
+  String get settings_interface_entity_image_filtering_direct;
+
+  /// No description provided for @settings_interface_entity_image_filtering_galleries.
+  ///
+  /// In en, this message translates to:
+  /// **'Related galleries'**
+  String get settings_interface_entity_image_filtering_galleries;
+
   /// No description provided for @settings_interface_customize_tabs.
   ///
   /// In en, this message translates to:
@@ -5429,6 +5453,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Long press for library stats'**
   String get stats_library_stats_tooltip;
+
+  /// No description provided for @scene_details_marker_created.
+  ///
+  /// In en, this message translates to:
+  /// **'Marker created'**
+  String get scene_details_marker_created;
+
+  /// No description provided for @scene_details_failed_to_create_marker.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create marker: {error}'**
+  String scene_details_failed_to_create_marker(String error);
+
+  /// No description provided for @scene_details_delete_marker_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete marker'**
+  String get scene_details_delete_marker_title;
+
+  /// No description provided for @scene_details_delete_marker_content.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete marker \"{title}\"?'**
+  String scene_details_delete_marker_content(String title);
+
+  /// No description provided for @scene_details_marker_deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Marker deleted'**
+  String get scene_details_marker_deleted;
+
+  /// No description provided for @scene_details_failed_to_delete_marker.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete marker: {error}'**
+  String scene_details_failed_to_delete_marker(String error);
+
+  /// No description provided for @scene_details_add_marker.
+  ///
+  /// In en, this message translates to:
+  /// **'Add marker'**
+  String get scene_details_add_marker;
+
+  /// No description provided for @scene_details_create_marker.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get scene_details_create_marker;
+
+  /// No description provided for @scene_details_delete_marker_tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete marker {title}'**
+  String scene_details_delete_marker_tooltip(String title);
+
+  /// No description provided for @scenes_page_markers_tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Markers'**
+  String get scenes_page_markers_tooltip;
 }
 
 class _AppLocalizationsDelegate

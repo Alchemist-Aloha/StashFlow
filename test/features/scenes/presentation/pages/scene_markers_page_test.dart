@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_marker.dart';
 import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_marker_repository.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_markers_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_marker_list_provider.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_marker_card.dart';
 
 import '../../../../helpers/test_helpers.dart';
 
@@ -74,7 +76,8 @@ void main() {
     expect(find.text('Duration'), findsOneWidget);
 
     await tester.enterText(find.byType(TextFormField).first, '30');
-    await tester.tap(find.text('Dates'));
+    await tester.ensureVisible(find.text('Dates'));
+    await tester.tap(find.text('Dates'), warnIfMissed: false);
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextFormField).at(1), '2024-01-01');
     await tester.tap(find.text('Apply Filters'));
@@ -105,14 +108,31 @@ void main() {
 
     expect(find.byTooltip('Saved filters'), findsOneWidget);
   });
+
+  testWidgets('respects persisted list layout preference', (tester) async {
+    SharedPreferences.setMockInitialValues({
+      'scene_marker_grid_layout': false,
+    });
+    final prefs = await SharedPreferences.getInstance();
+    final repository = _FakeSceneMarkerRepository([_marker()]);
+
+    await _pumpPage(tester, repository, prefs: prefs);
+
+    expect(
+      tester.widget<SceneMarkerCard>(find.byType(SceneMarkerCard)).isGrid,
+      isFalse,
+    );
+  });
 }
 
 Future<void> _pumpPage(
   WidgetTester tester,
   _FakeSceneMarkerRepository repository,
+  {SharedPreferences? prefs,}
 ) async {
   await pumpTestWidget(
     tester,
+    prefs: prefs,
     overrides: [sceneMarkerRepositoryProvider.overrideWithValue(repository)],
     child: const SceneMarkersPage(),
   );

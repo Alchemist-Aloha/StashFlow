@@ -1183,6 +1183,22 @@ class AppLocalizationsFr extends AppLocalizations {
       'Affiche la surface vidéo en direct au lieu de la capture de la scène quand la lecture est active.';
 
   @override
+  String get settings_interface_entity_image_filtering =>
+      'Entity image filtering';
+
+  @override
+  String get settings_interface_entity_image_filtering_subtitle =>
+      'Choose whether entity image pages match image metadata or related galleries.';
+
+  @override
+  String get settings_interface_entity_image_filtering_direct =>
+      'Direct entity';
+
+  @override
+  String get settings_interface_entity_image_filtering_galleries =>
+      'Related galleries';
+
+  @override
   String get settings_interface_customize_tabs => 'Personnaliser les onglets';
 
   @override
@@ -3072,4 +3088,42 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Appui long pour les statistiques de la bibliothèque';
+
+  @override
+  String get scene_details_marker_created => 'Marqueur créé';
+
+  @override
+  String scene_details_failed_to_create_marker(String error) {
+    return 'Échec de la création du marqueur : $error';
+  }
+
+  @override
+  String get scene_details_delete_marker_title => 'Supprimer des marqueurs';
+
+  @override
+  String scene_details_delete_marker_content(String title) {
+    return 'Supprimer le marqueur \"$title\" ?';
+  }
+
+  @override
+  String get scene_details_marker_deleted => 'Marqueur supprimé';
+
+  @override
+  String scene_details_failed_to_delete_marker(String error) {
+    return 'Échec de la suppression du marqueur : $error';
+  }
+
+  @override
+  String get scene_details_add_marker => 'Ajouter un marqueur';
+
+  @override
+  String get scene_details_create_marker => 'Créer';
+
+  @override
+  String scene_details_delete_marker_tooltip(String title) {
+    return 'Supprimer le marqueur $title';
+  }
+
+  @override
+  String get scenes_page_markers_tooltip => 'Marqueurs';
 }

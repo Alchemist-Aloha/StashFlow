@@ -512,7 +512,7 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
           onPressed: _showSavedFilterDialog,
         ),
         IconButton(
-          tooltip: 'Markers',
+          tooltip: context.l10n.scenes_page_markers_tooltip,
           icon: const Icon(Icons.sell_outlined),
           onPressed: () => context.push('/scenes/markers'),
         ),

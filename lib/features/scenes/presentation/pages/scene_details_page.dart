@@ -308,12 +308,12 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Marker created')));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.scene_details_marker_created)));
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to create marker: ${e.toString()}')),
+          SnackBar(content: Text(context.l10n.scene_details_failed_to_create_marker(e.toString()))),
         );
       }
     }
@@ -328,8 +328,8 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       builder: (dialogContext) {
         return AlertDialog(
           icon: Icon(Icons.delete_outline, color: dialogContext.colors.error),
-          title: const Text('Delete marker'),
-          content: Text('Delete marker "${marker.title}"?'),
+          title: Text(context.l10n.scene_details_delete_marker_title),
+          content: Text(context.l10n.scene_details_delete_marker_content(marker.title)),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
@@ -358,12 +358,12 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Marker deleted')));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.scene_details_marker_deleted)));
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to delete marker: ${e.toString()}')),
+          SnackBar(content: Text(context.l10n.scene_details_failed_to_delete_marker(e.toString()))),
         );
       }
     }
@@ -910,7 +910,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           children: [
             IconButton(
               key: const Key('scene_action_add_marker'),
-              tooltip: 'Add marker',
+              tooltip: context.l10n.scene_details_add_marker,
               icon: const Icon(Icons.bookmark_add_outlined),
               onPressed: () => _showAddMarkerDialog(
                 scene,
@@ -1177,7 +1177,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           ),
         ),
         IconButton(
-          tooltip: 'Delete marker ${marker.title}',
+          tooltip: context.l10n.scene_details_delete_marker_tooltip(marker.title),
           icon: const Icon(Icons.delete_outline),
           color: context.colors.error,
           onPressed: () =>
@@ -1394,7 +1394,7 @@ class _AddMarkerDialogState extends State<_AddMarkerDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       icon: const Icon(Icons.bookmark_add_outlined),
-      title: const Text('Add marker'),
+      title: Text(context.l10n.scene_details_add_marker),
       content: TextField(
         controller: _controller,
         autofocus: true,
@@ -1407,7 +1407,7 @@ class _AddMarkerDialogState extends State<_AddMarkerDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: Text(widget.cancelLabel),
         ),
-        FilledButton(onPressed: _submit, child: const Text('Create')),
+        FilledButton(onPressed: _submit, child: Text(context.l10n.scene_details_create_marker)),
       ],
     );
   }

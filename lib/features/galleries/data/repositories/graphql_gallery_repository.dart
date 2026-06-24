@@ -83,7 +83,7 @@ class GraphQLGalleryRepository implements GalleryRepository {
       Options$Query$FindGalleries(
         fetchPolicy: sort == 'random'
             ? FetchPolicy.noCache
-            : FetchPolicy.cacheAndNetwork,
+            : FetchPolicy.networkOnly,
         variables: Variables$Query$FindGalleries(
           filter: Input$FindFilterType(
             q: filter ?? galleryFilter?.searchQuery,

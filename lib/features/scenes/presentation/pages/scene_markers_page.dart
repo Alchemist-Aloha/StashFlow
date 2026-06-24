@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/grid_utils.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
@@ -148,6 +149,8 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
   Widget build(BuildContext context) {
     final markersAsync = ref.watch(sceneMarkerListProvider);
     final filter = ref.watch(sceneMarkerFilterStateProvider);
+    final isGridLayout = ref.watch(sceneMarkerGridLayoutProvider);
+    final gridColumns = ref.watch(sceneMarkerGridColumnsProvider) ?? 2;
     final hasCustomSort =
         _sortField != _MarkerSortField.createdAt || !_sortDescending;
 
@@ -162,8 +165,10 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
           ref.read(sceneMarkerListProvider.notifier).fetchNextPage(),
       onPageSizeChanged: (pageSize) =>
           ref.read(sceneMarkerListProvider.notifier).setPerPage(pageSize),
-      useMasonry: true,
-      gridDelegate: GridUtils.createDelegate(crossAxisCount: 2),
+      useMasonry: isGridLayout,
+      gridDelegate: isGridLayout
+          ? GridUtils.createDelegate(crossAxisCount: gridColumns)
+          : null,
       padding: GridUtils.defaultPadding,
       actions: [
         Stack(
@@ -195,7 +200,7 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
         ),
       ],
       itemBuilder: (context, marker, memCacheWidth, memCacheHeight) {
-        return SceneMarkerCard(marker: marker, isGrid: true);
+        return SceneMarkerCard(marker: marker, isGrid: isGridLayout);
       },
     );
   }
