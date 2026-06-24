@@ -3086,4 +3086,86 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get scenes_page_markers_tooltip => 'Маркеры';
+
+  @override
+  String get tools_scene_marker_filter_saved_default =>
+      'Фильтр маркеров сохранен по умолчанию.';
+
+  @override
+  String get tools_scene_marker_sort_saved_default =>
+      'Сортировка маркеров сохранена по умолчанию.';
+
+  @override
+  String get tools_scene_marker_search_hint => 'Маркеры поиска';
+
+  @override
+  String get tools_scene_marker_empty_message => 'Маркеры не найдены';
+
+  @override
+  String get tools_scene_marker_filter_markers => 'Фильтровать маркеры';
+
+  @override
+  String get tools_scene_marker_marker => 'Маркер';
+
+  @override
+  String get tools_scene_marker_duration => 'Продолжительность';
+
+  @override
+  String get tools_scene_marker_scene => 'Сцена';
+
+  @override
+  String get tools_scene_marker_dates => 'Даты';
+
+  @override
+  String get tools_scene_marker_created_at => 'Создано в';
+
+  @override
+  String get tools_scene_marker_updated_at => 'Обновлено в';
+
+  @override
+  String get tools_scene_marker_scene_date => 'Дата сцены';
+
+  @override
+  String get tools_scene_marker_scene_created_at => 'Сцена создана в';
+
+  @override
+  String get tools_scene_marker_scene_updated_at => 'Сцена обновлена ​​в';
+
+  @override
+  String get tools_scene_tagger_scraped_metadata => 'Удаленные метаданные';
+
+  @override
+  String get tools_scene_tagger_local_scene => 'Местная сцена';
+
+  @override
+  String get tools_scene_marker_sort_markers => 'Сортировка маркеров';
+
+  @override
+  String get tools_scene_marker_markers => 'Маркеры';
+
+  @override
+  String get tools_scene_marker_marker_time => 'Маркер времени';
+
+  @override
+  String common_now_playing(String displayTitle) {
+    return 'Сейчас играет: $displayTitle. Нажмите, чтобы открыть сведения о сцене.';
+  }
+
+  @override
+  String get groups_sub_group_count => 'Количество подгрупп';
+
+  @override
+  String get groups_missing_field => 'Отсутствует поле';
+
+  @override
+  String get groups_missing_field_director => 'Директор';
+
+  @override
+  String get groups_missing_field_synopsis => 'Краткое содержание';
+
+  @override
+  String get groups_missing_field_date => 'Дата';
+
+  @override
+  String get groups_missing_field_url => 'URL-адрес';
 }

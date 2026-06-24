@@ -57,7 +57,7 @@ enum _TaggerMode {
 class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
   static const _pageSizeOptions = [10, 25, 50, 100];
   static const _sortOptions = <String, String>{
-    'date': 'Date',
+    'date': context.l10n.groups_missing_field_date,
     'title': 'Title',
     'created_at': 'Created',
     'updated_at': 'Updated',
@@ -335,18 +335,12 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
           );
       if (!mounted) return;
       _removeSceneFromResults(scene.id);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.saved_item(scene.title)),
-        ),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.saved_item(scene.title))),
       );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.failed_to_save(error.toString()))),
       );
     }
@@ -790,7 +784,7 @@ class _TaggerSceneCard extends StatelessWidget {
                   sceneId: scene.id,
                   scraped: scraped,
                   error: result?.error,
-                  title: 'Scraped metadata',
+                  title: context.l10n.tools_scene_tagger_scraped_metadata,
                 ),
               ),
             ],
@@ -808,7 +802,7 @@ class _TaggerSceneCard extends StatelessWidget {
                 sceneId: scene.id,
                 scraped: scraped,
                 error: result?.error,
-                title: 'Scraped metadata',
+                title: context.l10n.tools_scene_tagger_scraped_metadata,
               ),
             ],
           );
@@ -899,7 +893,7 @@ class _LocalSceneSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _MetadataPanel(
-      title: 'Local scene',
+      title: context.l10n.tools_scene_tagger_local_scene,
       media: _ScenePreviewPlayer(
         key: ValueKey('scene_preview_player_${scene.id}'),
         scene: scene,
@@ -1351,7 +1345,10 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
                           decoration: BoxDecoration(
                             color: Colors.black.withValues(alpha: 0.5),
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white24, width: 1.5),
+                            border: Border.all(
+                              color: Colors.white24,
+                              width: 1.5,
+                            ),
                           ),
                           child: const Icon(
                             Icons.play_arrow_rounded,

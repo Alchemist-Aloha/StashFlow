@@ -2987,4 +2987,84 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get scenes_page_markers_tooltip => '마커';
+
+  @override
+  String get tools_scene_marker_filter_saved_default => '마커 필터가 기본값으로 저장됨';
+
+  @override
+  String get tools_scene_marker_sort_saved_default => '마커 정렬이 기본으로 저장됨';
+
+  @override
+  String get tools_scene_marker_search_hint => '검색 마커';
+
+  @override
+  String get tools_scene_marker_empty_message => '마커를 찾을 수 없습니다.';
+
+  @override
+  String get tools_scene_marker_filter_markers => '필터 마커';
+
+  @override
+  String get tools_scene_marker_marker => '채점자';
+
+  @override
+  String get tools_scene_marker_duration => '지속';
+
+  @override
+  String get tools_scene_marker_scene => '장면';
+
+  @override
+  String get tools_scene_marker_dates => '날짜';
+
+  @override
+  String get tools_scene_marker_created_at => '생성 날짜';
+
+  @override
+  String get tools_scene_marker_updated_at => '업데이트 날짜';
+
+  @override
+  String get tools_scene_marker_scene_date => '장면 날짜';
+
+  @override
+  String get tools_scene_marker_scene_created_at => '장면 생성 시간';
+
+  @override
+  String get tools_scene_marker_scene_updated_at => '장면 업데이트 시간';
+
+  @override
+  String get tools_scene_tagger_scraped_metadata => '스크랩된 메타데이터';
+
+  @override
+  String get tools_scene_tagger_local_scene => '지역 현장';
+
+  @override
+  String get tools_scene_marker_sort_markers => '정렬 마커';
+
+  @override
+  String get tools_scene_marker_markers => '마커';
+
+  @override
+  String get tools_scene_marker_marker_time => '마커 시간';
+
+  @override
+  String common_now_playing(String displayTitle) {
+    return '현재 재생 중: $displayTitle. 장면 세부정보를 열려면 탭하세요.';
+  }
+
+  @override
+  String get groups_sub_group_count => '하위 그룹 수';
+
+  @override
+  String get groups_missing_field => '누락된 필드';
+
+  @override
+  String get groups_missing_field_director => '감독';
+
+  @override
+  String get groups_missing_field_synopsis => '개요';
+
+  @override
+  String get groups_missing_field_date => '날짜';
+
+  @override
+  String get groups_missing_field_url => 'URL';
 }

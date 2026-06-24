@@ -2933,6 +2933,86 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get scenes_page_markers_tooltip => '标记';
+
+  @override
+  String get tools_scene_marker_filter_saved_default => '标记过滤器保存为默认值';
+
+  @override
+  String get tools_scene_marker_sort_saved_default => '标记排序保存为默认值';
+
+  @override
+  String get tools_scene_marker_search_hint => '搜索标记';
+
+  @override
+  String get tools_scene_marker_empty_message => '未找到标记';
+
+  @override
+  String get tools_scene_marker_filter_markers => '过滤标记';
+
+  @override
+  String get tools_scene_marker_marker => '标记';
+
+  @override
+  String get tools_scene_marker_duration => '期间';
+
+  @override
+  String get tools_scene_marker_scene => '场景';
+
+  @override
+  String get tools_scene_marker_dates => '枣子';
+
+  @override
+  String get tools_scene_marker_created_at => '创建于';
+
+  @override
+  String get tools_scene_marker_updated_at => '更新于';
+
+  @override
+  String get tools_scene_marker_scene_date => '场景日期';
+
+  @override
+  String get tools_scene_marker_scene_created_at => '场景创建于';
+
+  @override
+  String get tools_scene_marker_scene_updated_at => '场景更新于';
+
+  @override
+  String get tools_scene_tagger_scraped_metadata => '抓取的元数据';
+
+  @override
+  String get tools_scene_tagger_local_scene => '当地场景';
+
+  @override
+  String get tools_scene_marker_sort_markers => '对标记进行排序';
+
+  @override
+  String get tools_scene_marker_markers => '标记';
+
+  @override
+  String get tools_scene_marker_marker_time => '标记时间';
+
+  @override
+  String common_now_playing(String displayTitle) {
+    return '正在播放：$displayTitle。点击可打开场景详细信息。';
+  }
+
+  @override
+  String get groups_sub_group_count => '子组计数';
+
+  @override
+  String get groups_missing_field => '缺失字段';
+
+  @override
+  String get groups_missing_field_director => '导演';
+
+  @override
+  String get groups_missing_field_synopsis => '概要';
+
+  @override
+  String get groups_missing_field_date => '日期';
+
+  @override
+  String get groups_missing_field_url => '网址';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5863,6 +5943,86 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get scenes_page_markers_tooltip => '标记';
+
+  @override
+  String get tools_scene_marker_filter_saved_default => '标记过滤器保存为默认值';
+
+  @override
+  String get tools_scene_marker_sort_saved_default => '标记排序保存为默认值';
+
+  @override
+  String get tools_scene_marker_search_hint => '搜索标记';
+
+  @override
+  String get tools_scene_marker_empty_message => '未找到标记';
+
+  @override
+  String get tools_scene_marker_filter_markers => '过滤标记';
+
+  @override
+  String get tools_scene_marker_marker => '标记';
+
+  @override
+  String get tools_scene_marker_duration => '期间';
+
+  @override
+  String get tools_scene_marker_scene => '场景';
+
+  @override
+  String get tools_scene_marker_dates => '枣子';
+
+  @override
+  String get tools_scene_marker_created_at => '创建于';
+
+  @override
+  String get tools_scene_marker_updated_at => '更新于';
+
+  @override
+  String get tools_scene_marker_scene_date => '场景日期';
+
+  @override
+  String get tools_scene_marker_scene_created_at => '场景创建于';
+
+  @override
+  String get tools_scene_marker_scene_updated_at => '场景更新于';
+
+  @override
+  String get tools_scene_tagger_scraped_metadata => '抓取的元数据';
+
+  @override
+  String get tools_scene_tagger_local_scene => '当地场景';
+
+  @override
+  String get tools_scene_marker_sort_markers => '对标记进行排序';
+
+  @override
+  String get tools_scene_marker_markers => '标记';
+
+  @override
+  String get tools_scene_marker_marker_time => '标记时间';
+
+  @override
+  String common_now_playing(String displayTitle) {
+    return '正在播放：$displayTitle。点击可打开场景详细信息。';
+  }
+
+  @override
+  String get groups_sub_group_count => '子组计数';
+
+  @override
+  String get groups_missing_field => '缺失字段';
+
+  @override
+  String get groups_missing_field_director => '导演';
+
+  @override
+  String get groups_missing_field_synopsis => '概要';
+
+  @override
+  String get groups_missing_field_date => '日期';
+
+  @override
+  String get groups_missing_field_url => '网址';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8797,4 +8957,84 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get scenes_page_markers_tooltip => '標記';
+
+  @override
+  String get tools_scene_marker_filter_saved_default => '標記過濾器儲存為預設值';
+
+  @override
+  String get tools_scene_marker_sort_saved_default => '標記排序儲存為預設值';
+
+  @override
+  String get tools_scene_marker_search_hint => '搜尋標記';
+
+  @override
+  String get tools_scene_marker_empty_message => '未找到標記';
+
+  @override
+  String get tools_scene_marker_filter_markers => '過濾標記';
+
+  @override
+  String get tools_scene_marker_marker => '標記';
+
+  @override
+  String get tools_scene_marker_duration => '期間';
+
+  @override
+  String get tools_scene_marker_scene => '場景';
+
+  @override
+  String get tools_scene_marker_dates => '棗子';
+
+  @override
+  String get tools_scene_marker_created_at => '創建於';
+
+  @override
+  String get tools_scene_marker_updated_at => '更新於';
+
+  @override
+  String get tools_scene_marker_scene_date => '場景日期';
+
+  @override
+  String get tools_scene_marker_scene_created_at => '場景創建於';
+
+  @override
+  String get tools_scene_marker_scene_updated_at => '場景更新於';
+
+  @override
+  String get tools_scene_tagger_scraped_metadata => '抓取的元數據';
+
+  @override
+  String get tools_scene_tagger_local_scene => '當地場景';
+
+  @override
+  String get tools_scene_marker_sort_markers => 'Sort markers';
+
+  @override
+  String get tools_scene_marker_markers => '標記';
+
+  @override
+  String get tools_scene_marker_marker_time => '標記時間';
+
+  @override
+  String common_now_playing(String displayTitle) {
+    return '正在播放：$displayTitle。點擊可開啟場景詳細資訊。';
+  }
+
+  @override
+  String get groups_sub_group_count => '子組計數';
+
+  @override
+  String get groups_missing_field => '缺失字段';
+
+  @override
+  String get groups_missing_field_director => '導演';
+
+  @override
+  String get groups_missing_field_synopsis => '概要';
+
+  @override
+  String get groups_missing_field_date => '日期';
+
+  @override
+  String get groups_missing_field_url => '網址';
 }

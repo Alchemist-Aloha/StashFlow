@@ -32,7 +32,7 @@ class MiniPlayer extends ConsumerWidget {
 
     return Semantics(
       button: true,
-      label: 'Now playing: $displayTitle. Tap to open scene details.',
+      label: context.l10n.common_now_playing(displayTitle),
       child: Container(
         height: 66, // Increased height by 10% (from 60)
         decoration: BoxDecoration(

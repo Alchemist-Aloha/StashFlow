@@ -3110,4 +3110,86 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get scenes_page_markers_tooltip => 'Marqueurs';
+
+  @override
+  String get tools_scene_marker_filter_saved_default =>
+      'Filtre de marqueur enregistré par défaut';
+
+  @override
+  String get tools_scene_marker_sort_saved_default =>
+      'Tri des marqueurs enregistré par défaut';
+
+  @override
+  String get tools_scene_marker_search_hint => 'Marqueurs de recherche';
+
+  @override
+  String get tools_scene_marker_empty_message => 'Aucun marqueur trouvé';
+
+  @override
+  String get tools_scene_marker_filter_markers => 'Marqueurs de filtre';
+
+  @override
+  String get tools_scene_marker_marker => 'Marqueur';
+
+  @override
+  String get tools_scene_marker_duration => 'Durée';
+
+  @override
+  String get tools_scene_marker_scene => 'Scène';
+
+  @override
+  String get tools_scene_marker_dates => 'Dates';
+
+  @override
+  String get tools_scene_marker_created_at => 'Créé à';
+
+  @override
+  String get tools_scene_marker_updated_at => 'Mis à jour à';
+
+  @override
+  String get tools_scene_marker_scene_date => 'Date de la scène';
+
+  @override
+  String get tools_scene_marker_scene_created_at => 'Scène créée à';
+
+  @override
+  String get tools_scene_marker_scene_updated_at => 'Scène mise à jour à';
+
+  @override
+  String get tools_scene_tagger_scraped_metadata => 'Métadonnées grattées';
+
+  @override
+  String get tools_scene_tagger_local_scene => 'Scène locale';
+
+  @override
+  String get tools_scene_marker_sort_markers => 'Trier les marqueurs';
+
+  @override
+  String get tools_scene_marker_markers => 'Marqueurs';
+
+  @override
+  String get tools_scene_marker_marker_time => 'Temps marqueur';
+
+  @override
+  String common_now_playing(String displayTitle) {
+    return 'Lecture en cours : $displayTitle. Appuyez pour ouvrir les détails de la scène.';
+  }
+
+  @override
+  String get groups_sub_group_count => 'Nombre de sous-groupes';
+
+  @override
+  String get groups_missing_field => 'Champ manquant';
+
+  @override
+  String get groups_missing_field_director => 'Directeur';
+
+  @override
+  String get groups_missing_field_synopsis => 'Synopsis';
+
+  @override
+  String get groups_missing_field_date => 'Date';
+
+  @override
+  String get groups_missing_field_url => 'URL';
 }

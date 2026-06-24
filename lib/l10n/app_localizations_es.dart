@@ -3118,4 +3118,86 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get scenes_page_markers_tooltip => 'Marcadores';
+
+  @override
+  String get tools_scene_marker_filter_saved_default =>
+      'Filtro de marcador guardado por defecto';
+
+  @override
+  String get tools_scene_marker_sort_saved_default =>
+      'Clasificación de marcadores guardada de forma predeterminada';
+
+  @override
+  String get tools_scene_marker_search_hint => 'Marcadores de búsqueda';
+
+  @override
+  String get tools_scene_marker_empty_message => 'No se encontraron marcadores';
+
+  @override
+  String get tools_scene_marker_filter_markers => 'Marcadores de filtro';
+
+  @override
+  String get tools_scene_marker_marker => 'Marcador';
+
+  @override
+  String get tools_scene_marker_duration => 'Duración';
+
+  @override
+  String get tools_scene_marker_scene => 'Escena';
+
+  @override
+  String get tools_scene_marker_dates => 'Fechas';
+
+  @override
+  String get tools_scene_marker_created_at => 'Creado en';
+
+  @override
+  String get tools_scene_marker_updated_at => 'Actualizado en';
+
+  @override
+  String get tools_scene_marker_scene_date => 'Escena Fecha';
+
+  @override
+  String get tools_scene_marker_scene_created_at => 'Escena creada en';
+
+  @override
+  String get tools_scene_marker_scene_updated_at => 'Escena actualizada en';
+
+  @override
+  String get tools_scene_tagger_scraped_metadata => 'Metadatos eliminados';
+
+  @override
+  String get tools_scene_tagger_local_scene => 'Escena local';
+
+  @override
+  String get tools_scene_marker_sort_markers => 'Ordenar marcadores';
+
+  @override
+  String get tools_scene_marker_markers => 'Marcadores';
+
+  @override
+  String get tools_scene_marker_marker_time => 'Tiempo marcador';
+
+  @override
+  String common_now_playing(String displayTitle) {
+    return 'Reproduciendo ahora: $displayTitle. Toque para abrir los detalles de la escena.';
+  }
+
+  @override
+  String get groups_sub_group_count => 'Recuento de subgrupos';
+
+  @override
+  String get groups_missing_field => 'Campo faltante';
+
+  @override
+  String get groups_missing_field_director => 'Director';
+
+  @override
+  String get groups_missing_field_synopsis => 'Sinopsis';
+
+  @override
+  String get groups_missing_field_date => 'Fecha';
+
+  @override
+  String get groups_missing_field_url => 'URL';
 }

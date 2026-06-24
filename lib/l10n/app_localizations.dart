@@ -5489,6 +5489,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Markers'**
   String get scenes_page_markers_tooltip;
+
+  /// No description provided for @tools_scene_marker_filter_saved_default.
+  ///
+  /// In en, this message translates to:
+  /// **'Marker filter saved as default'**
+  String get tools_scene_marker_filter_saved_default;
+
+  /// No description provided for @tools_scene_marker_sort_saved_default.
+  ///
+  /// In en, this message translates to:
+  /// **'Marker sort saved as default'**
+  String get tools_scene_marker_sort_saved_default;
+
+  /// No description provided for @tools_scene_marker_search_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search markers'**
+  String get tools_scene_marker_search_hint;
+
+  /// No description provided for @tools_scene_marker_empty_message.
+  ///
+  /// In en, this message translates to:
+  /// **'No markers found'**
+  String get tools_scene_marker_empty_message;
+
+  /// No description provided for @tools_scene_marker_filter_markers.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter markers'**
+  String get tools_scene_marker_filter_markers;
+
+  /// No description provided for @tools_scene_marker_marker.
+  ///
+  /// In en, this message translates to:
+  /// **'Marker'**
+  String get tools_scene_marker_marker;
+
+  /// No description provided for @tools_scene_marker_duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get tools_scene_marker_duration;
+
+  /// No description provided for @tools_scene_marker_scene.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene'**
+  String get tools_scene_marker_scene;
+
+  /// No description provided for @tools_scene_marker_dates.
+  ///
+  /// In en, this message translates to:
+  /// **'Dates'**
+  String get tools_scene_marker_dates;
+
+  /// No description provided for @tools_scene_marker_created_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Created At'**
+  String get tools_scene_marker_created_at;
+
+  /// No description provided for @tools_scene_marker_updated_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated At'**
+  String get tools_scene_marker_updated_at;
+
+  /// No description provided for @tools_scene_marker_scene_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Date'**
+  String get tools_scene_marker_scene_date;
+
+  /// No description provided for @tools_scene_marker_scene_created_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Created At'**
+  String get tools_scene_marker_scene_created_at;
+
+  /// No description provided for @tools_scene_marker_scene_updated_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Updated At'**
+  String get tools_scene_marker_scene_updated_at;
+
+  /// No description provided for @tools_scene_tagger_scraped_metadata.
+  ///
+  /// In en, this message translates to:
+  /// **'Scraped metadata'**
+  String get tools_scene_tagger_scraped_metadata;
+
+  /// No description provided for @tools_scene_tagger_local_scene.
+  ///
+  /// In en, this message translates to:
+  /// **'Local scene'**
+  String get tools_scene_tagger_local_scene;
+
+  /// No description provided for @tools_scene_marker_sort_markers.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort markers'**
+  String get tools_scene_marker_sort_markers;
+
+  /// No description provided for @tools_scene_marker_markers.
+  ///
+  /// In en, this message translates to:
+  /// **'Markers'**
+  String get tools_scene_marker_markers;
+
+  /// No description provided for @tools_scene_marker_marker_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Marker time'**
+  String get tools_scene_marker_marker_time;
+
+  /// No description provided for @common_now_playing.
+  ///
+  /// In en, this message translates to:
+  /// **'Now playing: {displayTitle}. Tap to open scene details.'**
+  String common_now_playing(String displayTitle);
+
+  /// No description provided for @groups_sub_group_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Sub-group Count'**
+  String get groups_sub_group_count;
+
+  /// No description provided for @groups_missing_field.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing Field'**
+  String get groups_missing_field;
+
+  /// No description provided for @groups_missing_field_director.
+  ///
+  /// In en, this message translates to:
+  /// **'Director'**
+  String get groups_missing_field_director;
+
+  /// No description provided for @groups_missing_field_synopsis.
+  ///
+  /// In en, this message translates to:
+  /// **'Synopsis'**
+  String get groups_missing_field_synopsis;
+
+  /// No description provided for @groups_missing_field_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get groups_missing_field_date;
+
+  /// No description provided for @groups_missing_field_url.
+  ///
+  /// In en, this message translates to:
+  /// **'URL'**
+  String get groups_missing_field_url;
 }
 
 class _AppLocalizationsDelegate

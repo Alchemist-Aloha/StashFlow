@@ -16,11 +16,11 @@ class GroupFilterPanel extends ConsumerStatefulWidget {
 class _GroupFilterPanelState extends ConsumerState<GroupFilterPanel> {
   late GroupFilter _tempFilter;
 
-  static const _missingFieldOptions = <String, String>{
-    'director': 'Director',
-    'synopsis': 'Synopsis',
-    'date': 'Date',
-    'url': 'URL',
+  Map<String, String> get _missingFieldOptions => <String, String>{
+    'director': context.l10n.groups_missing_field_director,
+    'synopsis': context.l10n.groups_missing_field_synopsis,
+    'date': context.l10n.groups_missing_field_date,
+    'url': context.l10n.groups_missing_field_url,
   };
 
   @override
@@ -46,7 +46,9 @@ class _GroupFilterPanelState extends ConsumerState<GroupFilterPanel> {
             children: [
               DropdownButtonFormField<String?>(
                 initialValue: _tempFilter.isMissingField,
-                decoration: const InputDecoration(labelText: 'Missing Field'),
+                decoration: InputDecoration(
+                  labelText: context.l10n.groups_missing_field,
+                ),
                 items: [
                   DropdownMenuItem<String?>(
                     value: null,
@@ -69,7 +71,7 @@ class _GroupFilterPanelState extends ConsumerState<GroupFilterPanel> {
                 },
               ),
               IntCriterionInput(
-                label: 'Sub-group Count',
+                label: context.l10n.groups_sub_group_count,
                 value: _tempFilter.subGroupCount,
                 onChanged: (value) {
                   setState(() {

@@ -3109,4 +3109,86 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get scenes_page_markers_tooltip => 'Marcatori';
+
+  @override
+  String get tools_scene_marker_filter_saved_default =>
+      'Filtro marcatore salvato come predefinito';
+
+  @override
+  String get tools_scene_marker_sort_saved_default =>
+      'Ordinamento dei marcatori salvato come predefinito';
+
+  @override
+  String get tools_scene_marker_search_hint => 'Cerca marcatori';
+
+  @override
+  String get tools_scene_marker_empty_message => 'Nessun indicatore trovato';
+
+  @override
+  String get tools_scene_marker_filter_markers => 'Marcatori di filtro';
+
+  @override
+  String get tools_scene_marker_marker => 'Marcatore';
+
+  @override
+  String get tools_scene_marker_duration => 'Durata';
+
+  @override
+  String get tools_scene_marker_scene => 'Scena';
+
+  @override
+  String get tools_scene_marker_dates => 'Date';
+
+  @override
+  String get tools_scene_marker_created_at => 'Creato a';
+
+  @override
+  String get tools_scene_marker_updated_at => 'Aggiornato a';
+
+  @override
+  String get tools_scene_marker_scene_date => 'Data della scena';
+
+  @override
+  String get tools_scene_marker_scene_created_at => 'Scena creata a';
+
+  @override
+  String get tools_scene_marker_scene_updated_at => 'Scena aggiornata a';
+
+  @override
+  String get tools_scene_tagger_scraped_metadata => 'Metadati raschiati';
+
+  @override
+  String get tools_scene_tagger_local_scene => 'Scena locale';
+
+  @override
+  String get tools_scene_marker_sort_markers => 'Ordina i marcatori';
+
+  @override
+  String get tools_scene_marker_markers => 'Marcatori';
+
+  @override
+  String get tools_scene_marker_marker_time => 'Indicatore del tempo';
+
+  @override
+  String common_now_playing(String displayTitle) {
+    return 'Ora in riproduzione: $displayTitle. Tocca per aprire i dettagli della scena.';
+  }
+
+  @override
+  String get groups_sub_group_count => 'Conteggio sottogruppi';
+
+  @override
+  String get groups_missing_field => 'Campo mancante';
+
+  @override
+  String get groups_missing_field_director => 'Direttore';
+
+  @override
+  String get groups_missing_field_synopsis => 'Sinossi';
+
+  @override
+  String get groups_missing_field_date => 'Data';
+
+  @override
+  String get groups_missing_field_url => 'URL';
 }

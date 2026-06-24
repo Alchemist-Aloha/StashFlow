@@ -2989,4 +2989,86 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get scenes_page_markers_tooltip => 'マーカー';
+
+  @override
+  String get tools_scene_marker_filter_saved_default =>
+      'マーカーフィルターがデフォルトとして保存されました';
+
+  @override
+  String get tools_scene_marker_sort_saved_default =>
+      'マーカーの並べ替えがデフォルトとして保存されました';
+
+  @override
+  String get tools_scene_marker_search_hint => '検索マーカー';
+
+  @override
+  String get tools_scene_marker_empty_message => 'マーカーが見つかりません';
+
+  @override
+  String get tools_scene_marker_filter_markers => 'フィルターマーカー';
+
+  @override
+  String get tools_scene_marker_marker => 'マーカー';
+
+  @override
+  String get tools_scene_marker_duration => '間隔';
+
+  @override
+  String get tools_scene_marker_scene => 'シーン';
+
+  @override
+  String get tools_scene_marker_dates => '日付';
+
+  @override
+  String get tools_scene_marker_created_at => '作成日';
+
+  @override
+  String get tools_scene_marker_updated_at => '更新日';
+
+  @override
+  String get tools_scene_marker_scene_date => 'シーンの日付';
+
+  @override
+  String get tools_scene_marker_scene_created_at => 'シーンの作成日';
+
+  @override
+  String get tools_scene_marker_scene_updated_at => 'シーンの更新日時';
+
+  @override
+  String get tools_scene_tagger_scraped_metadata => 'スクレイピングされたメタデータ';
+
+  @override
+  String get tools_scene_tagger_local_scene => '現地の様子';
+
+  @override
+  String get tools_scene_marker_sort_markers => 'ソートマーカー';
+
+  @override
+  String get tools_scene_marker_markers => 'マーカー';
+
+  @override
+  String get tools_scene_marker_marker_time => 'マーカータイム';
+
+  @override
+  String common_now_playing(String displayTitle) {
+    return '現在再生中: $displayTitle。タップしてシーンの詳細を開きます。';
+  }
+
+  @override
+  String get groups_sub_group_count => 'サブグループ数';
+
+  @override
+  String get groups_missing_field => '不足しているフィールド';
+
+  @override
+  String get groups_missing_field_director => '監督';
+
+  @override
+  String get groups_missing_field_synopsis => 'あらすじ';
+
+  @override
+  String get groups_missing_field_date => '日付';
+
+  @override
+  String get groups_missing_field_url => 'URL';
 }

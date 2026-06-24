@@ -79,7 +79,7 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
       context: context,
       isScrollControlled: true,
       builder: (context) => ListSortBottomSheet<_MarkerSortField>(
-        title: 'Sort markers',
+        title: context.l10n.tools_scene_marker_sort_markers,
         options: _MarkerSortField.values,
         initialOption: _sortField,
         initialDescending: _sortDescending,
@@ -95,7 +95,8 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
         },
         onSaveDefault: () =>
             ref.read(sceneMarkerSortProvider.notifier).saveAsDefault(),
-        saveDefaultSuccessMessage: 'Marker sort saved as default',
+        saveDefaultSuccessMessage:
+            context.l10n.tools_scene_marker_sort_saved_default,
       ),
     );
   }
@@ -152,11 +153,11 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
         _sortField != _MarkerSortField.createdAt || !_sortDescending;
 
     return ListPageScaffold<SceneMarkerSummary>(
-      title: 'Markers',
-      searchHint: 'Search markers',
+      title: context.l10n.tools_scene_marker_markers,
+      searchHint: context.l10n.tools_scene_marker_search_hint,
       onSearchChanged: _onSearchChanged,
       provider: markersAsync,
-      emptyMessage: 'No markers found',
+      emptyMessage: context.l10n.tools_scene_marker_empty_message,
       onRefresh: () => ref.read(sceneMarkerListProvider.notifier).refresh(),
       onFetchNextPage: () =>
           ref.read(sceneMarkerListProvider.notifier).fetchNextPage(),

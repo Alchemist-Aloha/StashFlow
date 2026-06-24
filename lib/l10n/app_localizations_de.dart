@@ -3091,4 +3091,86 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get scenes_page_markers_tooltip => 'Markierungen';
+
+  @override
+  String get tools_scene_marker_filter_saved_default =>
+      'Markierungsfilter als Standard gespeichert';
+
+  @override
+  String get tools_scene_marker_sort_saved_default =>
+      'Markierungssortierung als Standard gespeichert';
+
+  @override
+  String get tools_scene_marker_search_hint => 'Suchmarkierungen';
+
+  @override
+  String get tools_scene_marker_empty_message => 'Keine Markierungen gefunden';
+
+  @override
+  String get tools_scene_marker_filter_markers => 'Filtermarkierungen';
+
+  @override
+  String get tools_scene_marker_marker => 'Marker';
+
+  @override
+  String get tools_scene_marker_duration => 'Dauer';
+
+  @override
+  String get tools_scene_marker_scene => 'Szene';
+
+  @override
+  String get tools_scene_marker_dates => 'Termine';
+
+  @override
+  String get tools_scene_marker_created_at => 'Erstellt am';
+
+  @override
+  String get tools_scene_marker_updated_at => 'Aktualisiert am';
+
+  @override
+  String get tools_scene_marker_scene_date => 'Szenendatum';
+
+  @override
+  String get tools_scene_marker_scene_created_at => 'Szene erstellt am';
+
+  @override
+  String get tools_scene_marker_scene_updated_at => 'Szene aktualisiert um';
+
+  @override
+  String get tools_scene_tagger_scraped_metadata => 'Gekratzte Metadaten';
+
+  @override
+  String get tools_scene_tagger_local_scene => 'Lokale Szene';
+
+  @override
+  String get tools_scene_marker_sort_markers => 'Sortiermarkierungen';
+
+  @override
+  String get tools_scene_marker_markers => 'Markierungen';
+
+  @override
+  String get tools_scene_marker_marker_time => 'Markierungszeit';
+
+  @override
+  String common_now_playing(String displayTitle) {
+    return 'Spielt gerade: $displayTitle. Tippen Sie hier, um Szenendetails zu öffnen.';
+  }
+
+  @override
+  String get groups_sub_group_count => 'Anzahl der Untergruppen';
+
+  @override
+  String get groups_missing_field => 'Fehlendes Feld';
+
+  @override
+  String get groups_missing_field_director => 'Direktor';
+
+  @override
+  String get groups_missing_field_synopsis => 'Zusammenfassung';
+
+  @override
+  String get groups_missing_field_date => 'Datum';
+
+  @override
+  String get groups_missing_field_url => 'URL';
 }
