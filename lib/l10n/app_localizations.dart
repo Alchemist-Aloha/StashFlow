@@ -2268,6 +2268,30 @@ abstract class AppLocalizations {
   /// **'Show the live scene video surface instead of the scene screenshot when playback is active.'**
   String get settings_interface_use_actual_scene_video_miniplayer_subtitle;
 
+  /// No description provided for @settings_interface_entity_image_filtering.
+  ///
+  /// In en, this message translates to:
+  /// **'Entity image filtering'**
+  String get settings_interface_entity_image_filtering;
+
+  /// No description provided for @settings_interface_entity_image_filtering_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose whether entity image pages match image metadata or related galleries.'**
+  String get settings_interface_entity_image_filtering_subtitle;
+
+  /// No description provided for @settings_interface_entity_image_filtering_direct.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct entity'**
+  String get settings_interface_entity_image_filtering_direct;
+
+  /// No description provided for @settings_interface_entity_image_filtering_galleries.
+  ///
+  /// In en, this message translates to:
+  /// **'Related galleries'**
+  String get settings_interface_entity_image_filtering_galleries;
+
   /// No description provided for @settings_interface_customize_tabs.
   ///
   /// In en, this message translates to:

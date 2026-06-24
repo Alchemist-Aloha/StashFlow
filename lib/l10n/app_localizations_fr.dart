@@ -1183,6 +1183,22 @@ class AppLocalizationsFr extends AppLocalizations {
       'Affiche la surface vidéo en direct au lieu de la capture de la scène quand la lecture est active.';
 
   @override
+  String get settings_interface_entity_image_filtering =>
+      'Entity image filtering';
+
+  @override
+  String get settings_interface_entity_image_filtering_subtitle =>
+      'Choose whether entity image pages match image metadata or related galleries.';
+
+  @override
+  String get settings_interface_entity_image_filtering_direct =>
+      'Direct entity';
+
+  @override
+  String get settings_interface_entity_image_filtering_galleries =>
+      'Related galleries';
+
+  @override
   String get settings_interface_customize_tabs => 'Personnaliser les onglets';
 
   @override

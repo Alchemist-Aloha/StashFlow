@@ -1,1 +1,71 @@
-{}
+{
+  "de": [
+    "settings_interface_entity_image_filtering",
+    "settings_interface_entity_image_filtering_subtitle",
+    "settings_interface_entity_image_filtering_direct",
+    "settings_interface_entity_image_filtering_galleries"
+  ],
+
+  "es": [
+    "settings_interface_entity_image_filtering",
+    "settings_interface_entity_image_filtering_subtitle",
+    "settings_interface_entity_image_filtering_direct",
+    "settings_interface_entity_image_filtering_galleries"
+  ],
+
+  "fr": [
+    "settings_interface_entity_image_filtering",
+    "settings_interface_entity_image_filtering_subtitle",
+    "settings_interface_entity_image_filtering_direct",
+    "settings_interface_entity_image_filtering_galleries"
+  ],
+
+  "it": [
+    "settings_interface_entity_image_filtering",
+    "settings_interface_entity_image_filtering_subtitle",
+    "settings_interface_entity_image_filtering_direct",
+    "settings_interface_entity_image_filtering_galleries"
+  ],
+
+  "ja": [
+    "settings_interface_entity_image_filtering",
+    "settings_interface_entity_image_filtering_subtitle",
+    "settings_interface_entity_image_filtering_direct",
+    "settings_interface_entity_image_filtering_galleries"
+  ],
+
+  "ko": [
+    "settings_interface_entity_image_filtering",
+    "settings_interface_entity_image_filtering_subtitle",
+    "settings_interface_entity_image_filtering_direct",
+    "settings_interface_entity_image_filtering_galleries"
+  ],
+
+  "ru": [
+    "settings_interface_entity_image_filtering",
+    "settings_interface_entity_image_filtering_subtitle",
+    "settings_interface_entity_image_filtering_direct",
+    "settings_interface_entity_image_filtering_galleries"
+  ],
+
+  "zh": [
+    "settings_interface_entity_image_filtering",
+    "settings_interface_entity_image_filtering_subtitle",
+    "settings_interface_entity_image_filtering_direct",
+    "settings_interface_entity_image_filtering_galleries"
+  ],
+
+  "zh_Hans": [
+    "settings_interface_entity_image_filtering",
+    "settings_interface_entity_image_filtering_subtitle",
+    "settings_interface_entity_image_filtering_direct",
+    "settings_interface_entity_image_filtering_galleries"
+  ],
+
+  "zh_Hant": [
+    "settings_interface_entity_image_filtering",
+    "settings_interface_entity_image_filtering_subtitle",
+    "settings_interface_entity_image_filtering_direct",
+    "settings_interface_entity_image_filtering_galleries"
+  ]
+}

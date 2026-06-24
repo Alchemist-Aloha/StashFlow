@@ -12,6 +12,10 @@ part 'entity_gallery_filter_scope.g.dart';
 
 enum EntityGalleryFilterKind { performer, studio, tag }
 
+enum EntityImageFilterMethod { directEntity, relatedGalleries }
+
+const entityImageFilterMethodPreferenceKey = 'entity_image_filter_method';
+
 GalleryFilter galleryFilterForEntityGalleries({
   required GalleryFilter filter,
   required EntityGalleryFilterKind kind,
@@ -33,19 +37,54 @@ GalleryFilter galleryFilterForEntityGalleries({
 ImageFilter imageFilterForEntityGalleries({
   required EntityGalleryFilterKind kind,
   required String entityId,
-}) => ImageFilter(
-  galleriesFilter: switch (kind) {
-    EntityGalleryFilterKind.performer => GalleryFilter(
+  EntityImageFilterMethod method = EntityImageFilterMethod.directEntity,
+}) => switch (method) {
+  EntityImageFilterMethod.directEntity => switch (kind) {
+    EntityGalleryFilterKind.performer => ImageFilter(
       performers: MultiCriterion(value: [entityId]),
     ),
-    EntityGalleryFilterKind.studio => GalleryFilter(
+    EntityGalleryFilterKind.studio => ImageFilter(
       studios: HierarchicalMultiCriterion(value: [entityId]),
     ),
-    EntityGalleryFilterKind.tag => GalleryFilter(
+    EntityGalleryFilterKind.tag => ImageFilter(
       tags: HierarchicalMultiCriterion(value: [entityId]),
     ),
   },
-);
+  EntityImageFilterMethod.relatedGalleries => ImageFilter(
+    galleriesFilter: switch (kind) {
+      EntityGalleryFilterKind.performer => GalleryFilter(
+        performers: MultiCriterion(value: [entityId]),
+      ),
+      EntityGalleryFilterKind.studio => GalleryFilter(
+        studios: HierarchicalMultiCriterion(value: [entityId]),
+      ),
+      EntityGalleryFilterKind.tag => GalleryFilter(
+        tags: HierarchicalMultiCriterion(value: [entityId]),
+      ),
+    },
+  ),
+};
+
+@Riverpod(keepAlive: true)
+class EntityImageFilterMethodSetting extends _$EntityImageFilterMethodSetting {
+  @override
+  EntityImageFilterMethod build() {
+    final stored = ref
+        .read(sharedPreferencesProvider)
+        .getString(entityImageFilterMethodPreferenceKey);
+    return EntityImageFilterMethod.values.firstWhere(
+      (method) => method.name == stored,
+      orElse: () => EntityImageFilterMethod.directEntity,
+    );
+  }
+
+  Future<void> set(EntityImageFilterMethod method) async {
+    state = method;
+    await ref
+        .read(sharedPreferencesProvider)
+        .setString(entityImageFilterMethodPreferenceKey, method.name);
+  }
+}
 
 @Riverpod(keepAlive: true)
 class EntityGallerySort extends _$EntityGallerySort {

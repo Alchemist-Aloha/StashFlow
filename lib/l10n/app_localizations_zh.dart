@@ -1148,6 +1148,22 @@ class AppLocalizationsZh extends AppLocalizations {
       '播放时显示实时场景视频画面，而不是场景截图。';
 
   @override
+  String get settings_interface_entity_image_filtering =>
+      'Entity image filtering';
+
+  @override
+  String get settings_interface_entity_image_filtering_subtitle =>
+      'Choose whether entity image pages match image metadata or related galleries.';
+
+  @override
+  String get settings_interface_entity_image_filtering_direct =>
+      'Direct entity';
+
+  @override
+  String get settings_interface_entity_image_filtering_galleries =>
+      'Related galleries';
+
+  @override
   String get settings_interface_customize_tabs => '自定义标签页';
 
   @override

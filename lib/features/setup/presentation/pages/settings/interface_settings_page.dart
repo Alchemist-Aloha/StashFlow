@@ -11,6 +11,7 @@ import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_l
 import 'package:stash_app_flutter/features/scenes/presentation/providers/player_settings.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_list_provider.dart';
+import 'package:stash_app_flutter/features/galleries/presentation/providers/entity_gallery_filter_scope.dart';
 import 'package:stash_app_flutter/core/presentation/providers/layout_settings_provider.dart';
 import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
 import '../../widgets/settings_page_shell.dart';
@@ -33,6 +34,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   bool _galleryGridLayout = true;
   bool _mainPageGravityOrientation = true;
   bool _useActualSceneVideoInMiniPlayer = true;
+  EntityImageFilterMethod _entityImageFilterMethod =
+      EntityImageFilterMethod.directEntity;
   bool _imageFullscreenVerticalSwipe = true;
 
   int? _sceneGridColumns;
@@ -79,6 +82,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     _useActualSceneVideoInMiniPlayer = PlayerSettingsStore(
       prefs,
     ).load().useActualSceneVideoInMiniPlayer;
+    _entityImageFilterMethod = ref.read(entityImageFilterMethodSettingProvider);
     _imageFullscreenVerticalSwipe =
         prefs.getBool(_imageFullscreenVerticalSwipeKey) ?? true;
 
@@ -126,6 +130,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     ref
         .read(playerStateProvider.notifier)
         .setUseActualSceneVideoInMiniPlayer(_useActualSceneVideoInMiniPlayer);
+    await ref
+        .read(entityImageFilterMethodSettingProvider.notifier)
+        .set(_entityImageFilterMethod);
 
     ref.read(sceneGridColumnsProvider.notifier).set(_sceneGridColumns);
     ref.read(galleryGridColumnsProvider.notifier).set(_galleryGridColumns);
@@ -215,6 +222,47 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                           value: _showRandomNavigation,
                           onChanged: (value) async {
                             setState(() => _showRandomNavigation = value);
+                            await _saveSettings();
+                          },
+                        ),
+                        Divider(height: context.dimensions.spacingLarge),
+                        _buildSegmentedSetting(
+                          context: context,
+                          label: context
+                              .l10n
+                              .settings_interface_entity_image_filtering,
+                          description: context
+                              .l10n
+                              .settings_interface_entity_image_filtering_subtitle,
+                          segments: [
+                            ButtonSegment<String>(
+                              value: EntityImageFilterMethod.directEntity.name,
+                              label: Text(
+                                context
+                                    .l10n
+                                    .settings_interface_entity_image_filtering_direct,
+                              ),
+                            ),
+                            ButtonSegment<String>(
+                              value:
+                                  EntityImageFilterMethod.relatedGalleries.name,
+                              label: Text(
+                                context
+                                    .l10n
+                                    .settings_interface_entity_image_filtering_galleries,
+                              ),
+                            ),
+                          ],
+                          selected: {_entityImageFilterMethod.name},
+                          onSelectionChanged: (selection) async {
+                            if (selection.isEmpty) return;
+                            setState(() {
+                              _entityImageFilterMethod = EntityImageFilterMethod
+                                  .values
+                                  .firstWhere(
+                                    (method) => method.name == selection.first,
+                                  );
+                            });
                             await _saveSettings();
                           },
                         ),
@@ -465,9 +513,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                     subtitle: 'Default browsing mode for markers',
                     segmentedKey: const Key('marker-layout-segmented'),
                     label: context.l10n.settings_interface_layout_default,
-                    description: context
-                        .l10n
-                        .settings_interface_layout_default_desc,
+                    description:
+                        context.l10n.settings_interface_layout_default_desc,
                     gridValue: _markerGridLayout,
                     onChanged: (isGrid) {
                       setState(() => _markerGridLayout = isGrid);
@@ -612,9 +659,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                     subtitle: 'Media defaults for groups',
                     segmentedKey: const Key('group-layout-segmented'),
                     label: context.l10n.settings_interface_media_layout,
-                    description: context
-                        .l10n
-                        .settings_interface_media_layout_subtitle,
+                    description:
+                        context.l10n.settings_interface_media_layout_subtitle,
                     gridValue: _groupMediaGridLayout,
                     onChanged: (isGrid) {
                       setState(() => _groupMediaGridLayout = isGrid);

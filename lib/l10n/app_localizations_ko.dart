@@ -1152,6 +1152,22 @@ class AppLocalizationsKo extends AppLocalizations {
       '재생 중일 때 장면 스크린샷 대신 실시간 비디오 화면을 표시합니다.';
 
   @override
+  String get settings_interface_entity_image_filtering =>
+      'Entity image filtering';
+
+  @override
+  String get settings_interface_entity_image_filtering_subtitle =>
+      'Choose whether entity image pages match image metadata or related galleries.';
+
+  @override
+  String get settings_interface_entity_image_filtering_direct =>
+      'Direct entity';
+
+  @override
+  String get settings_interface_entity_image_filtering_galleries =>
+      'Related galleries';
+
+  @override
   String get settings_interface_customize_tabs => '탭 사용자 정의';
 
   @override

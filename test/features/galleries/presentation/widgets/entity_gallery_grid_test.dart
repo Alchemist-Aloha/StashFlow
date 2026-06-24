@@ -14,98 +14,139 @@ import 'package:stash_app_flutter/features/images/presentation/providers/image_l
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets(
-    'all-images action resets image state and scopes every entity kind',
-    (tester) async {
-      SharedPreferences.setMockInitialValues({});
-      final prefs = await SharedPreferences.getInstance();
-      final container = ProviderContainer(
-        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
-      );
-      addTearDown(container.dispose);
+  Future<void> expectEntityImageFilter({
+    required WidgetTester tester,
+    required ProviderContainer container,
+    required EntityImageFilterMethod method,
+  }) async {
+    await container
+        .read(entityImageFilterMethodSettingProvider.notifier)
+        .set(method);
 
-      for (final testCase in [
-        (kind: EntityGalleryFilterKind.performer, id: 'performer-1'),
-        (kind: EntityGalleryFilterKind.studio, id: 'studio-1'),
-        (kind: EntityGalleryFilterKind.tag, id: 'tag-1'),
-      ]) {
-        container.read(imageFilterStateProvider.notifier).clear();
-        container
-            .read(imageFilterStateProvider.notifier)
-            .setGalleryId('old-gallery');
-        container
-            .read(imageFilterStateProvider.notifier)
-            .updateFilter(
-              const ImageFilter(
-                tags: HierarchicalMultiCriterion(value: ['old-tag']),
-              ),
-            );
-        final router = GoRouter(
-          initialLocation: '/galleries',
-          routes: [
-            GoRoute(
-              path: '/galleries',
-              builder: (_, __) => EntityGalleryGrid(
-                title: 'Galleries',
-                entityId: testCase.id,
-                filterKind: testCase.kind,
-                galleriesAsync: const AsyncData<List<Gallery>>([]),
-                isGridView: true,
-                gridColumns: 2,
-                onRefresh: () async {},
-                onFetchNextPage: () {},
-              ),
+    for (final testCase in [
+      (kind: EntityGalleryFilterKind.performer, id: 'performer-1'),
+      (kind: EntityGalleryFilterKind.studio, id: 'studio-1'),
+      (kind: EntityGalleryFilterKind.tag, id: 'tag-1'),
+    ]) {
+      container.read(imageFilterStateProvider.notifier).clear();
+      container
+          .read(imageFilterStateProvider.notifier)
+          .setGalleryId('old-gallery');
+      container
+          .read(imageFilterStateProvider.notifier)
+          .updateFilter(
+            const ImageFilter(
+              tags: HierarchicalMultiCriterion(value: ['old-tag']),
             ),
-            GoRoute(
-              path: '/galleries/images',
-              builder: (_, __) => const Text('images destination'),
-            ),
-          ],
-        );
-        addTearDown(router.dispose);
-
-        await tester.pumpWidget(
-          UncontrolledProviderScope(
-            container: container,
-            child: MaterialApp.router(
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-              theme: AppTheme.lightTheme,
-              routerConfig: router,
+          );
+      final router = GoRouter(
+        initialLocation: '/galleries',
+        routes: [
+          GoRoute(
+            path: '/galleries',
+            builder: (_, __) => EntityGalleryGrid(
+              title: 'Galleries',
+              entityId: testCase.id,
+              filterKind: testCase.kind,
+              galleriesAsync: const AsyncData<List<Gallery>>([]),
+              isGridView: true,
+              gridColumns: 2,
+              onRefresh: () async {},
+              onFetchNextPage: () {},
             ),
           ),
-        );
-        await tester.pumpAndSettle();
-        await tester.tap(find.byTooltip('All Images'));
-        await tester.pumpAndSettle();
+          GoRoute(
+            path: '/galleries/images',
+            builder: (_, __) => const Text('images destination'),
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
 
-        expect(find.text('images destination'), findsOneWidget);
-        final state = container.read(imageFilterStateProvider);
-        expect(state.galleryId, isNull);
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp.router(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            theme: AppTheme.lightTheme,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('All Images'));
+      await tester.pumpAndSettle();
 
+      expect(find.text('images destination'), findsOneWidget);
+      final state = container.read(imageFilterStateProvider);
+      expect(state.galleryId, isNull);
+
+      if (method == EntityImageFilterMethod.directEntity) {
+        expect(state.filter.galleriesFilter, isNull);
         switch (testCase.kind) {
           case EntityGalleryFilterKind.performer:
-            expect(state.filter.performers, isNull);
+            expect(state.filter.performers?.value, [testCase.id]);
+            break;
+          case EntityGalleryFilterKind.studio:
+            expect(state.filter.studios?.value, [testCase.id]);
+            break;
+          case EntityGalleryFilterKind.tag:
+            expect(state.filter.tags?.value, [testCase.id]);
+            break;
+        }
+      } else {
+        expect(state.filter.performers, isNull);
+        expect(state.filter.studios, isNull);
+        expect(state.filter.tags, isNull);
+        switch (testCase.kind) {
+          case EntityGalleryFilterKind.performer:
             expect(state.filter.galleriesFilter?.performers?.value, [
               testCase.id,
             ]);
-            expect(state.filter.galleriesFilter?.studios, isNull);
-            expect(state.filter.galleriesFilter?.tags, isNull);
             break;
           case EntityGalleryFilterKind.studio:
-            expect(state.filter.studios, isNull);
             expect(state.filter.galleriesFilter?.studios?.value, [testCase.id]);
-            expect(state.filter.galleriesFilter?.performers, isNull);
-            expect(state.filter.galleriesFilter?.tags, isNull);
             break;
           case EntityGalleryFilterKind.tag:
-            expect(state.filter.tags, isNull);
             expect(state.filter.galleriesFilter?.tags?.value, [testCase.id]);
-            expect(state.filter.galleriesFilter?.performers, isNull);
-            expect(state.filter.galleriesFilter?.studios, isNull);
             break;
         }
       }
-    },
-  );
+    }
+  }
+
+  testWidgets('all-images action defaults to direct entity filtering', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final container = ProviderContainer(
+      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+    );
+    addTearDown(container.dispose);
+
+    await expectEntityImageFilter(
+      tester: tester,
+      container: container,
+      method: EntityImageFilterMethod.directEntity,
+    );
+  });
+
+  testWidgets('all-images action uses related galleries when selected', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final container = ProviderContainer(
+      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+    );
+    addTearDown(container.dispose);
+
+    await expectEntityImageFilter(
+      tester: tester,
+      container: container,
+      method: EntityImageFilterMethod.relatedGalleries,
+    );
+  });
 }

@@ -1166,6 +1166,22 @@ class AppLocalizationsEn extends AppLocalizations {
       'Show the live scene video surface instead of the scene screenshot when playback is active.';
 
   @override
+  String get settings_interface_entity_image_filtering =>
+      'Entity image filtering';
+
+  @override
+  String get settings_interface_entity_image_filtering_subtitle =>
+      'Choose whether entity image pages match image metadata or related galleries.';
+
+  @override
+  String get settings_interface_entity_image_filtering_direct =>
+      'Direct entity';
+
+  @override
+  String get settings_interface_entity_image_filtering_galleries =>
+      'Related galleries';
+
+  @override
   String get settings_interface_customize_tabs => 'Customize Tabs';
 
   @override

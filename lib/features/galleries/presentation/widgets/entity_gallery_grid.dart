@@ -304,6 +304,7 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
   }
 
   void _openAllEntityImages() {
+    final method = ref.read(entityImageFilterMethodSettingProvider);
     ref.read(imageFilterStateProvider.notifier).clear();
     ref
         .read(imageFilterStateProvider.notifier)
@@ -311,6 +312,7 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
           imageFilterForEntityGalleries(
             kind: widget.filterKind,
             entityId: widget.entityId,
+            method: method,
           ),
         );
     context.push('/galleries/images');
