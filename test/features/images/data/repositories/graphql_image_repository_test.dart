@@ -6,7 +6,10 @@ import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
 import 'package:stash_app_flutter/core/data/graphql/schema.graphql.dart';
 import 'package:stash_app_flutter/features/images/data/repositories/graphql_image_repository.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image.dart';
+import 'package:stash_app_flutter/features/images/domain/entities/image_filter.dart';
 import 'package:stash_app_flutter/features/images/data/graphql/images.graphql.dart';
+import 'package:stash_app_flutter/features/galleries/domain/entities/gallery_filter.dart';
+import 'package:stash_app_flutter/core/domain/entities/criterion.dart';
 
 import 'graphql_image_repository_test.mocks.dart';
 
@@ -84,6 +87,61 @@ void main() {
       expect(result.first.id, '1');
       expect(result.first.title, 'Test Image');
       expect(result.first.paths.thumbnail, 'http://localhost:9999/thumb.jpg');
+    });
+
+    test('findImages sends related gallery criteria', () async {
+      final options = Options$Query$FindImages(
+        variables: Variables$Query$FindImages(
+          filter: Input$FindFilterType(),
+          image_filter: Input$ImageFilterType(),
+        ),
+      );
+      final mockQueryResult = QueryResult<Query$FindImages>(
+        source: QueryResultSource.network,
+        data: const {
+          'findImages': {
+            'count': 0,
+            'images': [],
+            '__typename': 'ImageQueryResult',
+          },
+          '__typename': 'Query',
+        },
+        options: options,
+      );
+      when(
+        mockClient.query<Query$FindImages>(any),
+      ).thenAnswer((_) async => mockQueryResult);
+
+      await repository.findImages(
+        imageFilter: const ImageFilter(
+          galleriesFilter: GalleryFilter(
+            performers: MultiCriterion(value: ['performer-1']),
+            studios: HierarchicalMultiCriterion(value: ['studio-1']),
+            tags: HierarchicalMultiCriterion(value: ['tag-1']),
+          ),
+        ),
+      );
+
+      final request =
+          verify(mockClient.query<Query$FindImages>(captureAny)).captured.single
+              as Options$Query$FindImages;
+      expect(
+        request.variables['image_filter'],
+        containsPair('galleries_filter', {
+          'performers': {
+            'value': ['performer-1'],
+            'modifier': 'INCLUDES',
+          },
+          'studios': {
+            'value': ['studio-1'],
+            'modifier': 'INCLUDES',
+          },
+          'tags': {
+            'value': ['tag-1'],
+            'modifier': 'INCLUDES',
+          },
+        }),
+      );
     });
 
     test('getImageById returns an image on success', () async {

@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:stash_app_flutter/core/domain/entities/criterion.dart';
+import 'package:stash_app_flutter/features/galleries/domain/entities/gallery_filter.dart';
 
 part 'image_filter.freezed.dart';
 part 'image_filter.g.dart';
@@ -31,6 +32,7 @@ abstract class ImageFilter with _$ImageFilter {
     bool? performerFavorite,
     IntCriterion? performerAge,
     MultiCriterion? galleries,
+    GalleryFilter? galleriesFilter,
     DateCriterion? createdAt,
     DateCriterion? updatedAt,
   }) = _ImageFilter;

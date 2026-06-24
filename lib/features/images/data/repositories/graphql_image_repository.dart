@@ -65,6 +65,19 @@ class GraphQLImageRepository implements ImageRepository {
                   : imageFilter?.galleries,
             )
           : null,
+      galleries_filter: imageFilter?.galleriesFilter == null
+          ? null
+          : Input$GalleryFilterType(
+              performers: mapMultiCriterion(
+                imageFilter!.galleriesFilter!.performers,
+              ),
+              studios: mapHierarchicalMultiCriterion(
+                imageFilter.galleriesFilter!.studios,
+              ),
+              tags: mapHierarchicalMultiCriterion(
+                imageFilter.galleriesFilter!.tags,
+              ),
+            ),
       created_at: mapTimestampCriterion(imageFilter?.createdAt),
       updated_at: mapTimestampCriterion(imageFilter?.updatedAt),
     );
