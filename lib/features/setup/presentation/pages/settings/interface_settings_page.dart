@@ -41,6 +41,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   int? _imageGridColumns;
   int? _studioGridColumns;
   int? _tagGridColumns;
+  int? _groupGridColumns;
+  int? _markerGridColumns;
 
   double? _cardTitleFontSize;
 
@@ -55,6 +57,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
   bool _studioGalleriesGridLayout = true;
   bool _tagMediaGridLayout = true;
   bool _tagGalleriesGridLayout = true;
+  bool _groupMediaGridLayout = true;
+  bool _markerGridLayout = true;
 
   bool _loading = true;
 
@@ -84,6 +88,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     _imageGridColumns = ref.read(imageGridColumnsProvider);
     _studioGridColumns = ref.read(studioGridColumnsProvider);
     _tagGridColumns = ref.read(tagGridColumnsProvider);
+    _groupGridColumns = ref.read(groupGridColumnsProvider);
+    _markerGridColumns = ref.read(sceneMarkerGridColumnsProvider);
 
     _cardTitleFontSize = ref.read(cardTitleFontSizeProvider);
 
@@ -99,6 +105,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     _studioGalleriesGridLayout = ref.read(studioGalleriesGridLayoutProvider);
     _tagMediaGridLayout = ref.read(tagMediaGridLayoutProvider);
     _tagGalleriesGridLayout = ref.read(tagGalleriesGridLayoutProvider);
+    _groupMediaGridLayout = ref.read(groupMediaGridLayoutProvider);
+    _markerGridLayout = ref.read(sceneMarkerGridLayoutProvider);
 
     setState(() => _loading = false);
   }
@@ -125,6 +133,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     ref.read(imageGridColumnsProvider.notifier).set(_imageGridColumns);
     ref.read(studioGridColumnsProvider.notifier).set(_studioGridColumns);
     ref.read(tagGridColumnsProvider.notifier).set(_tagGridColumns);
+    ref.read(groupGridColumnsProvider.notifier).set(_groupGridColumns);
+    ref.read(sceneMarkerGridColumnsProvider.notifier).set(_markerGridColumns);
 
     ref.read(cardTitleFontSizeProvider.notifier).set(_cardTitleFontSize);
 
@@ -148,6 +158,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     ref
         .read(tagGalleriesGridLayoutProvider.notifier)
         .set(_tagGalleriesGridLayout);
+    ref.read(groupMediaGridLayoutProvider.notifier).set(_groupMediaGridLayout);
+    ref.read(sceneMarkerGridLayoutProvider.notifier).set(_markerGridLayout);
 
     await prefs.setBool(
       _imageFullscreenVerticalSwipeKey,
@@ -157,9 +169,6 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
     ref.watch(appLanguageProvider);
     final currentLanguageKey = ref
         .read(sharedPreferencesProvider)
@@ -450,6 +459,27 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                     ),
                   ),
                   SizedBox(height: context.dimensions.spacingLarge),
+                  _buildSingleLayoutSection(
+                    context: context,
+                    title: 'Marker Layout',
+                    subtitle: 'Default browsing mode for markers',
+                    segmentedKey: const Key('marker-layout-segmented'),
+                    label: context.l10n.settings_interface_layout_default,
+                    description: context
+                        .l10n
+                        .settings_interface_layout_default_desc,
+                    gridValue: _markerGridLayout,
+                    onChanged: (isGrid) {
+                      setState(() => _markerGridLayout = isGrid);
+                      _saveSettings();
+                    },
+                    gridColumnsValue: _markerGridColumns,
+                    onGridColumnsChanged: (value) async {
+                      setState(() => _markerGridColumns = value);
+                      await _saveSettings();
+                    },
+                  ),
+                  SizedBox(height: context.dimensions.spacingLarge),
                   SettingsSectionCard(
                     title: context.l10n.settings_interface_image_viewer,
                     subtitle:
@@ -575,9 +605,85 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                       await _saveSettings();
                     },
                   ),
+                  SizedBox(height: context.dimensions.spacingLarge),
+                  _buildSingleLayoutSection(
+                    context: context,
+                    title: 'Group Layouts',
+                    subtitle: 'Media defaults for groups',
+                    segmentedKey: const Key('group-layout-segmented'),
+                    label: context.l10n.settings_interface_media_layout,
+                    description: context
+                        .l10n
+                        .settings_interface_media_layout_subtitle,
+                    gridValue: _groupMediaGridLayout,
+                    onChanged: (isGrid) {
+                      setState(() => _groupMediaGridLayout = isGrid);
+                      _saveSettings();
+                    },
+                    gridColumnsValue: _groupGridColumns,
+                    onGridColumnsChanged: (value) async {
+                      setState(() => _groupGridColumns = value);
+                      await _saveSettings();
+                    },
+                  ),
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildSingleLayoutSection({
+    required BuildContext context,
+    required String title,
+    required String subtitle,
+    required Key segmentedKey,
+    required String label,
+    required String description,
+    required bool gridValue,
+    required ValueChanged<bool> onChanged,
+    required int? gridColumnsValue,
+    required ValueChanged<int?> onGridColumnsChanged,
+  }) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return SettingsSectionCard(
+      title: title,
+      subtitle: subtitle,
+      child: Column(
+        children: [
+          _buildSegmentedSetting(
+            context: context,
+            segmentedKey: segmentedKey,
+            label: label,
+            description: description,
+            segments: [
+              ButtonSegment<String>(
+                value: 'list',
+                label: Text(l10n.settings_interface_layout_list),
+                icon: Icon(Icons.view_list),
+              ),
+              ButtonSegment<String>(
+                value: 'grid',
+                label: Text(l10n.settings_interface_layout_grid),
+                icon: Icon(Icons.grid_view),
+              ),
+            ],
+            selected: {gridValue ? 'grid' : 'list'},
+            onSelectionChanged: (selection) {
+              if (selection.isEmpty) return;
+              onChanged(selection.first == 'grid');
+            },
+          ),
+          if (gridValue) ...[
+            Divider(height: context.dimensions.spacingLarge),
+            _buildGridColumnSetting(
+              label: l10n.settings_interface_grid_columns,
+              value: gridColumnsValue,
+              onChanged: onGridColumnsChanged,
+            ),
+          ],
+        ],
+      ),
     );
   }
 
@@ -720,6 +826,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
 
   Widget _buildSegmentedSetting({
     required BuildContext context,
+    Key? segmentedKey,
     required String label,
     required String description,
     required List<ButtonSegment<String>> segments,
@@ -737,6 +844,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 560;
         final segmentedButton = SegmentedButton<String>(
+          key: segmentedKey,
           segments: segments,
           selected: selected,
           showSelectedIcon: false,
