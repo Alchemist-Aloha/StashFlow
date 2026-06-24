@@ -33,17 +33,19 @@ GalleryFilter galleryFilterForEntityGalleries({
 ImageFilter imageFilterForEntityGalleries({
   required EntityGalleryFilterKind kind,
   required String entityId,
-}) => switch (kind) {
-  EntityGalleryFilterKind.performer => ImageFilter(
-    performers: MultiCriterion(value: [entityId]),
-  ),
-  EntityGalleryFilterKind.studio => ImageFilter(
-    studios: HierarchicalMultiCriterion(value: [entityId]),
-  ),
-  EntityGalleryFilterKind.tag => ImageFilter(
-    tags: HierarchicalMultiCriterion(value: [entityId]),
-  ),
-};
+}) => ImageFilter(
+  galleriesFilter: switch (kind) {
+    EntityGalleryFilterKind.performer => GalleryFilter(
+      performers: MultiCriterion(value: [entityId]),
+    ),
+    EntityGalleryFilterKind.studio => GalleryFilter(
+      studios: HierarchicalMultiCriterion(value: [entityId]),
+    ),
+    EntityGalleryFilterKind.tag => GalleryFilter(
+      tags: HierarchicalMultiCriterion(value: [entityId]),
+    ),
+  },
+);
 
 @Riverpod(keepAlive: true)
 class EntityGallerySort extends _$EntityGallerySort {

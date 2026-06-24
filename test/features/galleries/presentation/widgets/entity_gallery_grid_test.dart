@@ -85,19 +85,24 @@ void main() {
 
         switch (testCase.kind) {
           case EntityGalleryFilterKind.performer:
-            expect(state.filter.performers?.value, [testCase.id]);
-            expect(state.filter.studios, isNull);
-            expect(state.filter.tags, isNull);
+            expect(state.filter.performers, isNull);
+            expect(state.filter.galleriesFilter?.performers?.value, [
+              testCase.id,
+            ]);
+            expect(state.filter.galleriesFilter?.studios, isNull);
+            expect(state.filter.galleriesFilter?.tags, isNull);
             break;
           case EntityGalleryFilterKind.studio:
-            expect(state.filter.studios?.value, [testCase.id]);
-            expect(state.filter.performers, isNull);
-            expect(state.filter.tags, isNull);
+            expect(state.filter.studios, isNull);
+            expect(state.filter.galleriesFilter?.studios?.value, [testCase.id]);
+            expect(state.filter.galleriesFilter?.performers, isNull);
+            expect(state.filter.galleriesFilter?.tags, isNull);
             break;
           case EntityGalleryFilterKind.tag:
-            expect(state.filter.tags?.value, [testCase.id]);
-            expect(state.filter.performers, isNull);
-            expect(state.filter.studios, isNull);
+            expect(state.filter.tags, isNull);
+            expect(state.filter.galleriesFilter?.tags?.value, [testCase.id]);
+            expect(state.filter.galleriesFilter?.performers, isNull);
+            expect(state.filter.galleriesFilter?.studios, isNull);
             break;
         }
       }
