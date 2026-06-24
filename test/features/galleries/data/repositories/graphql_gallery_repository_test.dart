@@ -6,7 +6,9 @@ import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
 import 'package:stash_app_flutter/core/data/graphql/schema.graphql.dart';
 import 'package:stash_app_flutter/features/galleries/data/repositories/graphql_gallery_repository.dart';
 import 'package:stash_app_flutter/features/galleries/domain/entities/gallery.dart';
+import 'package:stash_app_flutter/features/galleries/domain/entities/gallery_filter.dart';
 import 'package:stash_app_flutter/features/galleries/data/graphql/galleries.graphql.dart';
+import 'package:stash_app_flutter/core/domain/entities/criterion.dart';
 
 import 'graphql_gallery_repository_test.mocks.dart';
 
@@ -82,6 +84,57 @@ void main() {
       expect(result.first.id, '1');
       expect(result.first.title, 'Test Gallery');
       expect(result.first.imageCount, 10);
+    });
+
+    test('findGalleries awaits the filtered network response', () async {
+      final options = Options$Query$FindGalleries(
+        variables: Variables$Query$FindGalleries(
+          filter: Input$FindFilterType(),
+          gallery_filter: Input$GalleryFilterType(),
+        ),
+      );
+      final mockQueryResult = QueryResult<Query$FindGalleries>(
+        source: QueryResultSource.network,
+        data: const {
+          'findGalleries': {
+            'count': 0,
+            'galleries': [],
+            '__typename': 'GalleryQueryResult',
+          },
+          '__typename': 'Query',
+        },
+        options: options,
+      );
+      when(
+        mockClient.query<Query$FindGalleries>(any),
+      ).thenAnswer((_) async => mockQueryResult);
+
+      await repository.findGalleries(
+        galleryFilter: const GalleryFilter(
+          performers: MultiCriterion(value: ['performer-1']),
+        ),
+      );
+
+      final request =
+          verify(
+                mockClient.query<Query$FindGalleries>(captureAny),
+              ).captured.single
+              as Options$Query$FindGalleries;
+      expect(request.fetchPolicy, FetchPolicy.networkOnly);
+      expect(
+        (request.variables['gallery_filter'] as Map<String, dynamic>)
+            .cast<String, dynamic>()['performers'],
+        {
+          'value': ['performer-1'],
+          'modifier': 'INCLUDES',
+        },
+      );
+      expect(
+        ((request.variables['gallery_filter'] as Map<String, dynamic>)
+                .cast<String, dynamic>()['performers']
+            as Map<String, dynamic>)['value'],
+        ['performer-1'],
+      );
     });
 
     test('getGalleryById returns a gallery on success', () async {
