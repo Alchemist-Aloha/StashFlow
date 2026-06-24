@@ -1153,20 +1153,17 @@ class AppLocalizationsJa extends AppLocalizations {
       '再生中はシーンのスクリーンショットの代わりにライブ動画サーフェスを表示します。';
 
   @override
-  String get settings_interface_entity_image_filtering =>
-      'Entity image filtering';
+  String get settings_interface_entity_image_filtering => 'エンティティ画像フィルタリング';
 
   @override
   String get settings_interface_entity_image_filtering_subtitle =>
-      'Choose whether entity image pages match image metadata or related galleries.';
+      'エンティティ画像ページが画像メタデータと一致するか、関連ギャラリーと一致するかを選択します。';
 
   @override
-  String get settings_interface_entity_image_filtering_direct =>
-      'Direct entity';
+  String get settings_interface_entity_image_filtering_direct => '直接エンティティ';
 
   @override
-  String get settings_interface_entity_image_filtering_galleries =>
-      'Related galleries';
+  String get settings_interface_entity_image_filtering_galleries => '関連ギャラリー';
 
   @override
   String get settings_interface_customize_tabs => 'タブをカスタマイズ';

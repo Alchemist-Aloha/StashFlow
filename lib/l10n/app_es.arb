@@ -1061,5 +1061,9 @@
   "scene_details_add_marker": "Agregar marcador",
   "scene_details_create_marker": "Crear",
   "scene_details_delete_marker_tooltip": "Eliminar marcador {title}",
-  "scenes_page_markers_tooltip": "Marcadores"
+  "scenes_page_markers_tooltip": "Marcadores",
+  "settings_interface_entity_image_filtering": "Filtrado de imágenes de entidad",
+  "settings_interface_entity_image_filtering_subtitle": "Elige si las páginas de imágenes de entidad coinciden con los metadatos de imagen o las galerías relacionadas.",
+  "settings_interface_entity_image_filtering_direct": "Entidad directa",
+  "settings_interface_entity_image_filtering_galleries": "Galerías relacionadas"
 }

@@ -1061,5 +1061,9 @@
   "scene_details_add_marker": "Добавить маркер",
   "scene_details_create_marker": "Создавать",
   "scene_details_delete_marker_tooltip": "Удалить маркер {title}",
-  "scenes_page_markers_tooltip": "Маркеры"
+  "scenes_page_markers_tooltip": "Маркеры",
+  "settings_interface_entity_image_filtering": "Фильтрация изображений сущностей",
+  "settings_interface_entity_image_filtering_subtitle": "Выберите, должны ли страницы изображений сущностей соответствовать метаданным изображений или связанным галереям.",
+  "settings_interface_entity_image_filtering_direct": "Прямая сущность",
+  "settings_interface_entity_image_filtering_galleries": "Связанные галереи"
 }

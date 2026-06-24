@@ -1082,5 +1082,9 @@
   "scene_details_add_marker": "Markierung hinzufügen",
   "scene_details_create_marker": "Erstellen",
   "scene_details_delete_marker_tooltip": "Markierung {title} löschen",
-  "scenes_page_markers_tooltip": "Markierungen"
+  "scenes_page_markers_tooltip": "Markierungen",
+  "settings_interface_entity_image_filtering": "Entitätsbildfilterung",
+  "settings_interface_entity_image_filtering_subtitle": "Wählen Sie, ob Entitätsbildseiten mit Bildmetadaten oder zugehörigen Galerien übereinstimmen sollen.",
+  "settings_interface_entity_image_filtering_direct": "Direkte Entität",
+  "settings_interface_entity_image_filtering_galleries": "Zugehörige Galerien"
 }
