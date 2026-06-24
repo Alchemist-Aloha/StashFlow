@@ -199,7 +199,7 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
     if (item is Performer) return item.name;
     if (item is Tag) return item.name;
     if (item is Scene) return item.title;
-    if (item is Gallery) return item.title;
+    if (item is Gallery) return item.displayName;
     return '';
   }
 }
