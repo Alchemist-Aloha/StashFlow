@@ -3007,4 +3007,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stats_library_stats_tooltip => 'Long press for library stats';
+
+  @override
+  String get scene_details_marker_created => 'Marker created';
+
+  @override
+  String scene_details_failed_to_create_marker(String error) {
+    return 'Failed to create marker: $error';
+  }
+
+  @override
+  String get scene_details_delete_marker_title => 'Delete marker';
+
+  @override
+  String scene_details_delete_marker_content(String title) {
+    return 'Delete marker \"$title\"?';
+  }
+
+  @override
+  String get scene_details_marker_deleted => 'Marker deleted';
+
+  @override
+  String scene_details_failed_to_delete_marker(String error) {
+    return 'Failed to delete marker: $error';
+  }
+
+  @override
+  String get scene_details_add_marker => 'Add marker';
+
+  @override
+  String get scene_details_create_marker => 'Create';
+
+  @override
+  String scene_details_delete_marker_tooltip(String title) {
+    return 'Delete marker $title';
+  }
+
+  @override
+  String get scenes_page_markers_tooltip => 'Markers';
 }

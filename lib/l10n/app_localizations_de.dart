@@ -3053,4 +3053,42 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Lange drücken für Bibliotheksstatistiken';
+
+  @override
+  String get scene_details_marker_created => 'Markierung erstellt';
+
+  @override
+  String scene_details_failed_to_create_marker(String error) {
+    return 'Markierung konnte nicht erstellt werden: $error';
+  }
+
+  @override
+  String get scene_details_delete_marker_title => 'Markierungen löschen';
+
+  @override
+  String scene_details_delete_marker_content(String title) {
+    return 'Markierung „$title“ löschen?';
+  }
+
+  @override
+  String get scene_details_marker_deleted => 'Markierung gelöscht';
+
+  @override
+  String scene_details_failed_to_delete_marker(String error) {
+    return 'Markierung konnte nicht gelöscht werden: $error';
+  }
+
+  @override
+  String get scene_details_add_marker => 'Markierung hinzufügen';
+
+  @override
+  String get scene_details_create_marker => 'Erstellen';
+
+  @override
+  String scene_details_delete_marker_tooltip(String title) {
+    return 'Markierung $title löschen';
+  }
+
+  @override
+  String get scenes_page_markers_tooltip => 'Markierungen';
 }

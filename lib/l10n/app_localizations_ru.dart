@@ -3048,4 +3048,42 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get stats_library_stats_tooltip =>
       'Удерживайте для статистики библиотеки';
+
+  @override
+  String get scene_details_marker_created => 'Маркер создан';
+
+  @override
+  String scene_details_failed_to_create_marker(String error) {
+    return 'Не удалось создать маркер: $error.';
+  }
+
+  @override
+  String get scene_details_delete_marker_title => 'Удалить маркеры';
+
+  @override
+  String scene_details_delete_marker_content(String title) {
+    return 'Удалить маркер \"$title\"?';
+  }
+
+  @override
+  String get scene_details_marker_deleted => 'Маркер удален.';
+
+  @override
+  String scene_details_failed_to_delete_marker(String error) {
+    return 'Не удалось удалить маркер: $error.';
+  }
+
+  @override
+  String get scene_details_add_marker => 'Добавить маркер';
+
+  @override
+  String get scene_details_create_marker => 'Создавать';
+
+  @override
+  String scene_details_delete_marker_tooltip(String title) {
+    return 'Удалить маркер $title';
+  }
+
+  @override
+  String get scenes_page_markers_tooltip => 'Маркеры';
 }

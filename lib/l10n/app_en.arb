@@ -1360,7 +1360,7 @@
       }
     }
   },
-  "scene_tagger_checked_matches_summary": "{checked} checked • {matches} matches",
+  "scene_tagger_checked_matches_summary": "{checked} checked \u2022 {matches} matches",
   "@scene_tagger_checked_matches_summary": {
     "placeholders": {
       "checked": {
@@ -1400,5 +1400,43 @@
       }
     }
   },
-  "stats_library_stats_tooltip": "Long press for library stats"
+  "stats_library_stats_tooltip": "Long press for library stats",
+  "scene_details_marker_created": "Marker created",
+  "scene_details_failed_to_create_marker": "Failed to create marker: {error}",
+  "@scene_details_failed_to_create_marker": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "scene_details_delete_marker_title": "Delete marker",
+  "scene_details_delete_marker_content": "Delete marker \"{title}\"?",
+  "@scene_details_delete_marker_content": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "scene_details_marker_deleted": "Marker deleted",
+  "scene_details_failed_to_delete_marker": "Failed to delete marker: {error}",
+  "@scene_details_failed_to_delete_marker": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "scene_details_add_marker": "Add marker",
+  "scene_details_create_marker": "Create",
+  "scene_details_delete_marker_tooltip": "Delete marker {title}",
+  "@scene_details_delete_marker_tooltip": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "scenes_page_markers_tooltip": "Markers"
 }

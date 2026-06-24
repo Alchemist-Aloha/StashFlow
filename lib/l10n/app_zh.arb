@@ -1051,5 +1051,15 @@
   "settings_security_subtitle": "应用锁和密码设置",
   "tools_section_subtitle": "场景的维护和元数据工作流。",
   "tools_scene_deduplication_subtitle": "查找并管理重复的场景。",
-  "tools_scene_tagger_subtitle": "使用 Stash-box 刮削当前场景页面。"
+  "tools_scene_tagger_subtitle": "使用 Stash-box 刮削当前场景页面。",
+  "scene_details_marker_created": "标记已创建",
+  "scene_details_failed_to_create_marker": "无法创建标记：{error}",
+  "scene_details_delete_marker_title": "删除标记",
+  "scene_details_delete_marker_content": "删除标记“{title}”吗？",
+  "scene_details_marker_deleted": "标记已删除",
+  "scene_details_failed_to_delete_marker": "无法删除标记：{error}",
+  "scene_details_add_marker": "添加标记",
+  "scene_details_create_marker": "创造",
+  "scene_details_delete_marker_tooltip": "删除标记 {title}",
+  "scenes_page_markers_tooltip": "标记"
 }

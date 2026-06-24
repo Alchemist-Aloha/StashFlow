@@ -2949,4 +2949,42 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get stats_library_stats_tooltip => '길게 눌러 라이브러리 통계 보기';
+
+  @override
+  String get scene_details_marker_created => '마커가 생성되었습니다.';
+
+  @override
+  String scene_details_failed_to_create_marker(String error) {
+    return '마커 생성 실패: $error';
+  }
+
+  @override
+  String get scene_details_delete_marker_title => '마커 삭제';
+
+  @override
+  String scene_details_delete_marker_content(String title) {
+    return '마커 \'$title\'을 삭제하시겠습니까?';
+  }
+
+  @override
+  String get scene_details_marker_deleted => '마커가 삭제되었습니다.';
+
+  @override
+  String scene_details_failed_to_delete_marker(String error) {
+    return '마커 삭제 실패: $error';
+  }
+
+  @override
+  String get scene_details_add_marker => '마커 추가';
+
+  @override
+  String get scene_details_create_marker => '만들다';
+
+  @override
+  String scene_details_delete_marker_tooltip(String title) {
+    return '마커 $title 삭제';
+  }
+
+  @override
+  String get scenes_page_markers_tooltip => '마커';
 }

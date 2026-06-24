@@ -2951,4 +2951,42 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get stats_library_stats_tooltip => '長押しでライブラリ統計を表示';
+
+  @override
+  String get scene_details_marker_created => 'マーカーが作成されました';
+
+  @override
+  String scene_details_failed_to_create_marker(String error) {
+    return 'マーカーの作成に失敗しました: $error';
+  }
+
+  @override
+  String get scene_details_delete_marker_title => 'マーカーの削除';
+
+  @override
+  String scene_details_delete_marker_content(String title) {
+    return 'マーカー「$title」を削除しますか?';
+  }
+
+  @override
+  String get scene_details_marker_deleted => 'マーカーが削除されました';
+
+  @override
+  String scene_details_failed_to_delete_marker(String error) {
+    return 'マーカーの削除に失敗しました: $error';
+  }
+
+  @override
+  String get scene_details_add_marker => 'マーカーを追加する';
+
+  @override
+  String get scene_details_create_marker => '作成する';
+
+  @override
+  String scene_details_delete_marker_tooltip(String title) {
+    return 'マーカー $title を削除';
+  }
+
+  @override
+  String get scenes_page_markers_tooltip => 'マーカー';
 }

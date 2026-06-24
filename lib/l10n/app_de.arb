@@ -1072,5 +1072,15 @@
   "settings_security_subtitle": "App-Sperre und Passcode-Einstellungen",
   "tools_section_subtitle": "Wartungs- und Metadaten-Workflows für Szenen.",
   "tools_scene_deduplication_subtitle": "Duplikate finden und verwalten.",
-  "tools_scene_tagger_subtitle": "Aktuelle Szenenseiten mit Stash-box scrapen."
+  "tools_scene_tagger_subtitle": "Aktuelle Szenenseiten mit Stash-box scrapen.",
+  "scene_details_marker_created": "Markierung erstellt",
+  "scene_details_failed_to_create_marker": "Markierung konnte nicht erstellt werden: {error}",
+  "scene_details_delete_marker_title": "Markierungen löschen",
+  "scene_details_delete_marker_content": "Markierung „{title}“ löschen?",
+  "scene_details_marker_deleted": "Markierung gelöscht",
+  "scene_details_failed_to_delete_marker": "Markierung konnte nicht gelöscht werden: {error}",
+  "scene_details_add_marker": "Markierung hinzufügen",
+  "scene_details_create_marker": "Erstellen",
+  "scene_details_delete_marker_tooltip": "Markierung {title} löschen",
+  "scenes_page_markers_tooltip": "Markierungen"
 }
