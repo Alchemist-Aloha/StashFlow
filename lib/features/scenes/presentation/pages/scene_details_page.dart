@@ -150,7 +150,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Choose how this scene should be deleted. This action cannot be undone.',
+                    context.l10n.delete_scenes_help,
                     style: dialogContext.textTheme.bodyMedium,
                   ),
                   const SizedBox(height: AppTheme.spacingSmall),
@@ -1086,7 +1086,7 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Markers',
+            context.l10n.scenes_page_markers_tooltip,
             style: context.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -1399,7 +1399,7 @@ class _AddMarkerDialogState extends State<_AddMarkerDialog> {
         controller: _controller,
         autofocus: true,
         textInputAction: TextInputAction.done,
-        decoration: const InputDecoration(labelText: 'Marker name'),
+        decoration: const InputDecoration(labelText: context.l10n.auto_marker_name),
         onSubmitted: (_) => _submit(),
       ),
       actions: [

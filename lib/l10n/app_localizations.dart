@@ -5513,6 +5513,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Markers'**
   String get scenes_page_markers_tooltip;
+
+  /// No description provided for @auto_marker_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Marker name'**
+  String get auto_marker_name;
+
+  /// No description provided for @auto_missing_field.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing Field'**
+  String get auto_missing_field;
 }
 
 class _AppLocalizationsDelegate

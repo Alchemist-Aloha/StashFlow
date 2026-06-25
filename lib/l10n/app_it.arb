@@ -1070,5 +1070,7 @@
   "settings_interface_entity_image_filtering": "Filtraggio immagini entità",
   "settings_interface_entity_image_filtering_subtitle": "Scegli se le pagine delle immagini dell'entità corrispondono ai metadati dell'immagine o alle gallerie correlate.",
   "settings_interface_entity_image_filtering_direct": "Entità diretta",
-  "settings_interface_entity_image_filtering_galleries": "Gallerie correlate"
+  "settings_interface_entity_image_filtering_galleries": "Gallerie correlate",
+  "auto_marker_name": "Nome del marcatore",
+  "auto_missing_field": "Campo mancante"
 }

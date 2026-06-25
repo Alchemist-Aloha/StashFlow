@@ -3107,4 +3107,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get scenes_page_markers_tooltip => 'Markierungen';
+
+  @override
+  String get auto_marker_name => 'Markierungsname';
+
+  @override
+  String get auto_missing_field => 'Fehlendes Feld';
 }
