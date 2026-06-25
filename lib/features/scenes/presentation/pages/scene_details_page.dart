@@ -306,14 +306,18 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       await ref.read(sceneDetailsProvider(scene.id).notifier).refresh();
       _invalidateSceneListUnlessRandom();
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(context.l10n.scene_details_marker_created)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.scene_details_marker_created)),
+        );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.scene_details_failed_to_create_marker(e.toString()))),
+          SnackBar(
+            content: Text(
+              context.l10n.scene_details_failed_to_create_marker(e.toString()),
+            ),
+          ),
         );
       }
     }
@@ -329,7 +333,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
         return AlertDialog(
           icon: Icon(Icons.delete_outline, color: dialogContext.colors.error),
           title: Text(context.l10n.scene_details_delete_marker_title),
-          content: Text(context.l10n.scene_details_delete_marker_content(marker.title)),
+          content: Text(
+            context.l10n.scene_details_delete_marker_content(marker.title),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
@@ -356,14 +362,18 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
       await ref.read(sceneDetailsProvider(scene.id).notifier).refresh();
       _invalidateSceneListUnlessRandom();
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(context.l10n.scene_details_marker_deleted)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.scene_details_marker_deleted)),
+        );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.scene_details_failed_to_delete_marker(e.toString()))),
+          SnackBar(
+            content: Text(
+              context.l10n.scene_details_failed_to_delete_marker(e.toString()),
+            ),
+          ),
         );
       }
     }
@@ -1177,7 +1187,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
           ),
         ),
         IconButton(
-          tooltip: context.l10n.scene_details_delete_marker_tooltip(marker.title),
+          tooltip: context.l10n.scene_details_delete_marker_tooltip(
+            marker.title,
+          ),
           icon: const Icon(Icons.delete_outline),
           color: context.colors.error,
           onPressed: () =>
@@ -1407,7 +1419,10 @@ class _AddMarkerDialogState extends State<_AddMarkerDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: Text(widget.cancelLabel),
         ),
-        FilledButton(onPressed: _submit, child: Text(context.l10n.scene_details_create_marker)),
+        FilledButton(
+          onPressed: _submit,
+          child: Text(context.l10n.scene_details_create_marker),
+        ),
       ],
     );
   }
