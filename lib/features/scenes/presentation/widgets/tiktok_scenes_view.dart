@@ -923,24 +923,35 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                                 if (widget.scene.studioName != null &&
                                     widget.scene.studioName!.isNotEmpty) ...[
                                   const SizedBox(height: 4),
-                                  GestureDetector(
-                                    onTap: () {
-                                      if (widget.scene.studioId != null) {
-                                        context.push(
-                                          '/studios/studio/${widget.scene.studioId}',
-                                        );
-                                      }
-                                    },
-                                    child: Text(
-                                      widget.scene.studioName!,
-                                      style: context.textTheme.bodyMedium
-                                          ?.copyWith(
-                                            color: Colors.white,
-                                            fontSize: context.fontSizes.body,
-                                            fontWeight: FontWeight.w500,
-                                            decoration:
-                                                TextDecoration.underline,
+                                  Tooltip(
+                                    message: context.l10n.details_studio,
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      clipBehavior: Clip.antiAlias,
+                                      borderRadius: BorderRadius.circular(4),
+                                      child: InkWell(
+                                        onTap: () {
+                                          if (widget.scene.studioId != null) {
+                                            context.push(
+                                              '/studios/studio/${widget.scene.studioId}',
+                                            );
+                                          }
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 1.0),
+                                          child: Text(
+                                            widget.scene.studioName!,
+                                            style: context.textTheme.bodyMedium
+                                                ?.copyWith(
+                                                  color: Colors.white,
+                                                  fontSize: context.fontSizes.body,
+                                                  fontWeight: FontWeight.w500,
+                                                  decoration:
+                                                      TextDecoration.underline,
+                                                ),
                                           ),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ],
