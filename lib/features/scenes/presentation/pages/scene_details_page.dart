@@ -1399,7 +1399,7 @@ class _AddMarkerDialogState extends State<_AddMarkerDialog> {
         controller: _controller,
         autofocus: true,
         textInputAction: TextInputAction.done,
-        decoration: const InputDecoration(labelText: context.l10n.auto_marker_name),
+        decoration: InputDecoration(labelText: context.l10n.auto_marker_name),
         onSubmitted: (_) => _submit(),
       ),
       actions: [

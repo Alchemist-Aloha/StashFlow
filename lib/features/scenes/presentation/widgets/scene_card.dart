@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
@@ -12,6 +14,9 @@ import '../pages/scene_info_page.dart';
 import 'scrubbing_preview.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
+import '../../../../core/utils/vtt_service.dart';
+
+enum _VttAvailability { unknown, checking, available, unavailable }
 
 /// A card widget that displays a summary of a [Scene].
 ///
@@ -125,7 +130,7 @@ class SceneCard extends ConsumerStatefulWidget {
 class _SceneCardState extends ConsumerState<SceneCard> {
   bool _isScrubbing = false;
   double _scrubTime = 0;
-  bool _isVttValid = true;
+  _VttAvailability _vttAvailability = _VttAvailability.unknown;
 
   @override
   void didUpdateWidget(SceneCard oldWidget) {
@@ -136,8 +141,46 @@ class _SceneCardState extends ConsumerState<SceneCard> {
         oldWidget.scene.paths.vtt != widget.scene.paths.vtt) {
       _isScrubbing = false;
       _scrubTime = 0;
-      _isVttValid = true;
+      _vttAvailability = _VttAvailability.unknown;
     }
+  }
+
+  void _markVttUnavailable() {
+    if (!mounted) return;
+    setState(() {
+      _vttAvailability = _VttAvailability.unavailable;
+      _isScrubbing = false;
+    });
+  }
+
+  void _verifyVttAvailability(String vttUrl, Map<String, String>? headers) {
+    if (_vttAvailability != _VttAvailability.unknown) return;
+
+    setState(() {
+      _vttAvailability = _VttAvailability.checking;
+      _isScrubbing = false;
+    });
+
+    unawaited(
+      ref
+          .read(vttServiceProvider)
+          .fetchSpriteInfo(vttUrl, headers)
+          .then((sprites) {
+            if (!mounted || widget.scene.paths.vtt?.trim() != vttUrl) return;
+            setState(() {
+              _vttAvailability = (sprites != null && sprites.isNotEmpty)
+                  ? _VttAvailability.available
+                  : _VttAvailability.unavailable;
+              if (_vttAvailability != _VttAvailability.available) {
+                _isScrubbing = false;
+              }
+            });
+          })
+          .catchError((Object _) {
+            if (!mounted || widget.scene.paths.vtt?.trim() != vttUrl) return;
+            _markVttUnavailable();
+          }),
+    );
   }
 
   /// Displays a custom scene info sheet for navigation actions.
@@ -185,7 +228,12 @@ class _SceneCardState extends ConsumerState<SceneCard> {
         : 0.0;
 
     final vttUrl = widget.scene.paths.vtt?.trim() ?? '';
-    final canScrub = vttUrl.isNotEmpty && totalDuration > 0 && _isVttValid;
+    final canAttemptScrub =
+        vttUrl.isNotEmpty &&
+        totalDuration > 0 &&
+        _vttAvailability != _VttAvailability.unavailable;
+    final canScrub =
+        canAttemptScrub && _vttAvailability == _VttAvailability.available;
 
     // Safety guard: if VTT is not available, ensure scrubbing is disabled.
     if (!canScrub && _isScrubbing) {
@@ -216,14 +264,7 @@ class _SceneCardState extends ConsumerState<SceneCard> {
               headers: headers,
               width: double.infinity,
               height: double.infinity,
-              onVttUnavailable: () {
-                if (mounted) {
-                  setState(() {
-                    _isVttValid = false;
-                    _isScrubbing = false;
-                  });
-                }
-              },
+              onVttUnavailable: _markVttUnavailable,
             ),
           ),
         Positioned(
@@ -243,15 +284,32 @@ class _SceneCardState extends ConsumerState<SceneCard> {
       ],
     );
 
-    if (isDesktop && canScrub) {
+    if (isDesktop && canAttemptScrub) {
       content = MouseRegion(
-        onEnter: (_) => setState(() => _isScrubbing = true),
+        onEnter: (_) {
+          if (canScrub) {
+            setState(() => _isScrubbing = true);
+          } else {
+            _verifyVttAvailability(vttUrl, headers);
+          }
+        },
         onExit: (_) => setState(() => _isScrubbing = false),
         onHover: (details) {
-          final box = context.findRenderObject() as RenderBox;
-          final localPos = details.localPosition;
-          final relativePos = (localPos.dx / box.size.width).clamp(0.0, 1.0);
+          if (!canScrub) {
+            _verifyVttAvailability(vttUrl, headers);
+            return;
+          }
+          final renderObject = context.findRenderObject();
+          if (renderObject is! RenderBox || renderObject.size.width <= 0) {
+            return;
+          }
+          final relativePos =
+              (details.localPosition.dx / renderObject.size.width).clamp(
+                0.0,
+                1.0,
+              );
           setState(() {
+            _isScrubbing = true;
             _scrubTime = relativePos * totalDuration;
           });
         },
@@ -260,33 +318,44 @@ class _SceneCardState extends ConsumerState<SceneCard> {
     }
 
     final thumbnail = GestureDetector(
-      onHorizontalDragStart: canScrub
+      onHorizontalDragStart: canAttemptScrub
           ? (_) {
-              setState(() {
-                _isScrubbing = true;
-              });
-            }
-          : null,
-      onHorizontalDragUpdate: canScrub
-          ? (details) {
-              if (_isScrubbing) {
-                final box = context.findRenderObject() as RenderBox;
-                final relativePos = (details.localPosition.dx / box.size.width)
-                    .clamp(0.0, 1.0);
-                setState(() {
-                  _scrubTime = relativePos * totalDuration;
-                });
+              if (canScrub) {
+                setState(() => _isScrubbing = true);
+              } else {
+                _verifyVttAvailability(vttUrl, headers);
               }
             }
           : null,
-      onHorizontalDragEnd: canScrub
+      onHorizontalDragUpdate: canAttemptScrub
+          ? (details) {
+              if (!canScrub) {
+                _verifyVttAvailability(vttUrl, headers);
+                return;
+              }
+              final renderObject = context.findRenderObject();
+              if (renderObject is! RenderBox || renderObject.size.width <= 0) {
+                return;
+              }
+              final relativePos =
+                  (details.localPosition.dx / renderObject.size.width).clamp(
+                    0.0,
+                    1.0,
+                  );
+              setState(() {
+                _isScrubbing = true;
+                _scrubTime = relativePos * totalDuration;
+              });
+            }
+          : null,
+      onHorizontalDragEnd: canAttemptScrub
           ? (_) {
               setState(() {
                 _isScrubbing = false;
               });
             }
           : null,
-      onHorizontalDragCancel: canScrub
+      onHorizontalDragCancel: canAttemptScrub
           ? () {
               setState(() {
                 _isScrubbing = false;
