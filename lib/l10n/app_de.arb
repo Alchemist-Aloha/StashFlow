@@ -1086,5 +1086,7 @@
   "settings_interface_entity_image_filtering": "Entitätsbildfilterung",
   "settings_interface_entity_image_filtering_subtitle": "Wählen Sie, ob Entitätsbildseiten mit Bildmetadaten oder zugehörigen Galerien übereinstimmen sollen.",
   "settings_interface_entity_image_filtering_direct": "Direkte Entität",
-  "settings_interface_entity_image_filtering_galleries": "Zugehörige Galerien"
+  "settings_interface_entity_image_filtering_galleries": "Zugehörige Galerien",
+  "auto_marker_name": "Markierungsname",
+  "auto_missing_field": "Fehlendes Feld"
 }

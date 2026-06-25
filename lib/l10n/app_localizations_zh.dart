@@ -2946,6 +2946,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get scenes_page_markers_tooltip => '标记';
+
+  @override
+  String get auto_marker_name => '标记名称';
+
+  @override
+  String get auto_missing_field => '缺失字段';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5889,6 +5895,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get scenes_page_markers_tooltip => '标记';
+
+  @override
+  String get auto_marker_name => '标记名称';
+
+  @override
+  String get auto_missing_field => '缺失字段';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8836,4 +8848,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get scenes_page_markers_tooltip => '標記';
+
+  @override
+  String get auto_marker_name => '標記名稱';
+
+  @override
+  String get auto_missing_field => '缺失字段';
 }

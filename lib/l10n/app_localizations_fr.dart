@@ -3126,4 +3126,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get scenes_page_markers_tooltip => 'Marqueurs';
+
+  @override
+  String get auto_marker_name => 'Nom du marqueur';
+
+  @override
+  String get auto_missing_field => 'Champ manquant';
 }
