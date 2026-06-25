@@ -3002,4 +3002,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get scenes_page_markers_tooltip => 'マーカー';
+
+  @override
+  String get auto_marker_name => 'マーカー名';
+
+  @override
+  String get auto_missing_field => '不足しているフィールド';
 }

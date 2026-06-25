@@ -1364,7 +1364,7 @@
       }
     }
   },
-  "scene_tagger_checked_matches_summary": "{checked} checked \u2022 {matches} matches",
+  "scene_tagger_checked_matches_summary": "{checked} checked • {matches} matches",
   "@scene_tagger_checked_matches_summary": {
     "placeholders": {
       "checked": {
@@ -1442,5 +1442,7 @@
       }
     }
   },
-  "scenes_page_markers_tooltip": "Markers"
+  "scenes_page_markers_tooltip": "Markers",
+  "auto_marker_name": "Marker name",
+  "auto_missing_field": "Missing Field"
 }

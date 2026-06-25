@@ -1065,5 +1065,7 @@
   "settings_interface_entity_image_filtering": "エンティティ画像フィルタリング",
   "settings_interface_entity_image_filtering_subtitle": "エンティティ画像ページが画像メタデータと一致するか、関連ギャラリーと一致するかを選択します。",
   "settings_interface_entity_image_filtering_direct": "直接エンティティ",
-  "settings_interface_entity_image_filtering_galleries": "関連ギャラリー"
+  "settings_interface_entity_image_filtering_galleries": "関連ギャラリー",
+  "auto_marker_name": "マーカー名",
+  "auto_missing_field": "不足しているフィールド"
 }

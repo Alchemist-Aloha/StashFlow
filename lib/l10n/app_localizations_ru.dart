@@ -3102,4 +3102,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get scenes_page_markers_tooltip => 'Маркеры';
+
+  @override
+  String get auto_marker_name => 'Имя маркера';
+
+  @override
+  String get auto_missing_field => 'Отсутствует поле';
 }

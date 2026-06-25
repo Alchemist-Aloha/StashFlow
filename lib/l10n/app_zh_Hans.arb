@@ -1051,5 +1051,7 @@
   "settings_interface_entity_image_filtering": "实体图像过滤",
   "settings_interface_entity_image_filtering_subtitle": "选择实体图像页面是匹配图像元数据还是关联图库。",
   "settings_interface_entity_image_filtering_direct": "直接实体",
-  "settings_interface_entity_image_filtering_galleries": "关联图库"
+  "settings_interface_entity_image_filtering_galleries": "关联图库",
+  "auto_marker_name": "标记名称",
+  "auto_missing_field": "缺失字段"
 }

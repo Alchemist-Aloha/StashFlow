@@ -1065,5 +1065,7 @@
   "settings_interface_entity_image_filtering": "Filtrado de imágenes de entidad",
   "settings_interface_entity_image_filtering_subtitle": "Elige si las páginas de imágenes de entidad coinciden con los metadatos de imagen o las galerías relacionadas.",
   "settings_interface_entity_image_filtering_direct": "Entidad directa",
-  "settings_interface_entity_image_filtering_galleries": "Galerías relacionadas"
+  "settings_interface_entity_image_filtering_galleries": "Galerías relacionadas",
+  "auto_marker_name": "Nombre del marcador",
+  "auto_missing_field": "Campo faltante"
 }
