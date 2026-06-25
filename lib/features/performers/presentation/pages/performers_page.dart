@@ -378,7 +378,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
         crossAxisCount: gridColumns ?? 3,
         crossAxisSpacing: context.dimensions.spacingSmall,
         mainAxisSpacing: context.dimensions.spacingSmall,
-        childAspectRatio: 0.85,
+        childAspectRatio: 0.56,
       ),
       mobileCrossAxisCount: gridColumns ?? 3,
       tabletCrossAxisCount: gridColumns ?? 5,

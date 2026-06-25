@@ -1152,20 +1152,17 @@ class AppLocalizationsKo extends AppLocalizations {
       '재생 중일 때 장면 스크린샷 대신 실시간 비디오 화면을 표시합니다.';
 
   @override
-  String get settings_interface_entity_image_filtering =>
-      'Entity image filtering';
+  String get settings_interface_entity_image_filtering => '엔티티 이미지 필터링';
 
   @override
   String get settings_interface_entity_image_filtering_subtitle =>
-      'Choose whether entity image pages match image metadata or related galleries.';
+      '엔티티 이미지 페이지가 이미지 메타데이터와 일치하는지 관련 갤러리와 일치하는지 선택하세요.';
 
   @override
-  String get settings_interface_entity_image_filtering_direct =>
-      'Direct entity';
+  String get settings_interface_entity_image_filtering_direct => '직접 엔티티';
 
   @override
-  String get settings_interface_entity_image_filtering_galleries =>
-      'Related galleries';
+  String get settings_interface_entity_image_filtering_galleries => '관련 갤러리';
 
   @override
   String get settings_interface_customize_tabs => '탭 사용자 정의';
@@ -3003,4 +3000,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get scenes_page_markers_tooltip => '마커';
+
+  @override
+  String get auto_marker_name => '마커 이름';
+
+  @override
+  String get auto_missing_field => '누락된 필드';
 }

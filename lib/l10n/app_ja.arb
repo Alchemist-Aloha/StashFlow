@@ -1061,5 +1061,11 @@
   "scene_details_add_marker": "マーカーを追加する",
   "scene_details_create_marker": "作成する",
   "scene_details_delete_marker_tooltip": "マーカー {title} を削除",
-  "scenes_page_markers_tooltip": "マーカー"
+  "scenes_page_markers_tooltip": "マーカー",
+  "settings_interface_entity_image_filtering": "エンティティ画像フィルタリング",
+  "settings_interface_entity_image_filtering_subtitle": "エンティティ画像ページが画像メタデータと一致するか、関連ギャラリーと一致するかを選択します。",
+  "settings_interface_entity_image_filtering_direct": "直接エンティティ",
+  "settings_interface_entity_image_filtering_galleries": "関連ギャラリー",
+  "auto_marker_name": "マーカー名",
+  "auto_missing_field": "不足しているフィールド"
 }

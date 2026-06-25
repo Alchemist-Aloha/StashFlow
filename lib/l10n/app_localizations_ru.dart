@@ -1174,19 +1174,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settings_interface_entity_image_filtering =>
-      'Entity image filtering';
+      'Фильтрация изображений сущностей';
 
   @override
   String get settings_interface_entity_image_filtering_subtitle =>
-      'Choose whether entity image pages match image metadata or related galleries.';
+      'Выберите, должны ли страницы изображений сущностей соответствовать метаданным изображений или связанным галереям.';
 
   @override
   String get settings_interface_entity_image_filtering_direct =>
-      'Direct entity';
+      'Прямая сущность';
 
   @override
   String get settings_interface_entity_image_filtering_galleries =>
-      'Related galleries';
+      'Связанные галереи';
 
   @override
   String get settings_interface_customize_tabs => 'Настройка вкладок';
@@ -3102,4 +3102,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get scenes_page_markers_tooltip => 'Маркеры';
+
+  @override
+  String get auto_marker_name => 'Имя маркера';
+
+  @override
+  String get auto_missing_field => 'Отсутствует поле';
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,9 +14,10 @@ import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/core/utils/vtt_service.dart';
 
 class MockVttService implements VttService {
-  MockVttService({this.hasSprites = true});
+  MockVttService({this.hasSprites = true, this.fetchResult});
 
   final bool hasSprites;
+  final Future<List<SpriteInfo>?>? fetchResult;
   int fetchCount = 0;
 
   @override
@@ -26,6 +29,10 @@ class MockVttService implements VttService {
     Map<String, String>? headers,
   ) async {
     fetchCount++;
+    final pendingResult = fetchResult;
+    if (pendingResult != null) {
+      return pendingResult;
+    }
     if (hasSprites && vttUrl.contains('sprites.vtt')) {
       return [
         const SpriteInfo(
@@ -225,6 +232,49 @@ void main() {
     final detector = tester.widget<GestureDetector>(detectorFinder);
     expect(detector.onHorizontalDragStart, isNull);
   });
+
+  testWidgets(
+    'SceneCard does not show scrub time before VTT availability is verified',
+    (tester) async {
+      final vttCompleter = Completer<List<SpriteInfo>?>();
+      final vttService = MockVttService(fetchResult: vttCompleter.future);
+
+      await tester.pumpWidget(
+        buildTestWidget(
+          SceneCard(scene: defaultTestScene, isGrid: true),
+          vttService: vttService,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('1:01:05'), findsOneWidget);
+
+      final detectorFinder = find.descendant(
+        of: find.byType(Hero),
+        matching: find.byType(GestureDetector),
+      );
+      final gesture = await tester.startGesture(
+        tester.getCenter(detectorFinder),
+      );
+      await gesture.moveBy(const Offset(30, 0));
+      await tester.pump();
+
+      expect(vttService.fetchCount, 1);
+      expect(find.text('1:01:05'), findsOneWidget);
+      expect(find.text('0:00'), findsNothing);
+
+      vttCompleter.complete([]);
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.text('1:01:05'), findsOneWidget);
+      final detector = tester.widget<GestureDetector>(detectorFinder);
+      expect(detector.onHorizontalDragStart, isNull);
+
+      await gesture.up();
+      await tester.pump();
+    },
+  );
 
   testWidgets('SceneCard pan gesture is disabled when VTT is absent', (
     tester,

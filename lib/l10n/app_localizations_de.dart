@@ -1180,19 +1180,19 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settings_interface_entity_image_filtering =>
-      'Entity image filtering';
+      'Entitätsbildfilterung';
 
   @override
   String get settings_interface_entity_image_filtering_subtitle =>
-      'Choose whether entity image pages match image metadata or related galleries.';
+      'Wählen Sie, ob Entitätsbildseiten mit Bildmetadaten oder zugehörigen Galerien übereinstimmen sollen.';
 
   @override
   String get settings_interface_entity_image_filtering_direct =>
-      'Direct entity';
+      'Direkte Entität';
 
   @override
   String get settings_interface_entity_image_filtering_galleries =>
-      'Related galleries';
+      'Zugehörige Galerien';
 
   @override
   String get settings_interface_customize_tabs => 'Tabs anpassen';
@@ -3107,4 +3107,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get scenes_page_markers_tooltip => 'Markierungen';
+
+  @override
+  String get auto_marker_name => 'Markierungsname';
+
+  @override
+  String get auto_missing_field => 'Fehlendes Feld';
 }

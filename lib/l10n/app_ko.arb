@@ -1061,5 +1061,11 @@
   "scene_details_add_marker": "마커 추가",
   "scene_details_create_marker": "만들다",
   "scene_details_delete_marker_tooltip": "마커 {title} 삭제",
-  "scenes_page_markers_tooltip": "마커"
+  "scenes_page_markers_tooltip": "마커",
+  "settings_interface_entity_image_filtering": "엔티티 이미지 필터링",
+  "settings_interface_entity_image_filtering_subtitle": "엔티티 이미지 페이지가 이미지 메타데이터와 일치하는지 관련 갤러리와 일치하는지 선택하세요.",
+  "settings_interface_entity_image_filtering_direct": "직접 엔티티",
+  "settings_interface_entity_image_filtering_galleries": "관련 갤러리",
+  "auto_marker_name": "마커 이름",
+  "auto_missing_field": "누락된 필드"
 }

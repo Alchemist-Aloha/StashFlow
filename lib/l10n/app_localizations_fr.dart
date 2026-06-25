@@ -1184,19 +1184,19 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settings_interface_entity_image_filtering =>
-      'Entity image filtering';
+      'Filtrage d\'images d\'entité';
 
   @override
   String get settings_interface_entity_image_filtering_subtitle =>
-      'Choose whether entity image pages match image metadata or related galleries.';
+      'Choisissez si les pages d\'images d\'entité correspondent aux métadonnées d\'image ou aux galeries associées.';
 
   @override
   String get settings_interface_entity_image_filtering_direct =>
-      'Direct entity';
+      'Entité directe';
 
   @override
   String get settings_interface_entity_image_filtering_galleries =>
-      'Related galleries';
+      'Galeries associées';
 
   @override
   String get settings_interface_customize_tabs => 'Personnaliser les onglets';
@@ -3126,4 +3126,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get scenes_page_markers_tooltip => 'Marqueurs';
+
+  @override
+  String get auto_marker_name => 'Nom du marqueur';
+
+  @override
+  String get auto_missing_field => 'Champ manquant';
 }

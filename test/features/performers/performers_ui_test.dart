@@ -207,4 +207,69 @@ void main() {
       findsNothing,
     );
   });
+
+  testWidgets('PerformersPage gives portrait cards enough height', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
+    final mockRepo = MockPerformerRepository()
+      ..withData([testPerformer, testPerformer2]);
+
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      overrides: [
+        performerRepositoryProvider.overrideWithValue(mockRepo),
+        performerSortProvider.overrideWith(MockPerformerSort.new),
+        performerSearchQueryProvider.overrideWith(MockPerformerSearchQuery.new),
+        performerFilterStateProvider.overrideWith(MockPerformerFilterState.new),
+      ],
+      child: const PerformersPage(),
+    );
+    await tester.pump(const Duration(seconds: 1));
+
+    final gridView = tester.widget<GridView>(find.byType(GridView));
+    final delegate =
+        gridView.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount;
+
+    expect(delegate.childAspectRatio, closeTo(0.56, 0.001));
+  });
+
+  testWidgets('PerformerCard uses a rounded portrait image clip', (tester) async {
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: const Scaffold(
+        body: Center(
+          child: SizedBox(
+            width: 160,
+            height: 300,
+            child: PerformerCard(performer: testPerformer),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byType(ClipOval), findsNothing);
+    expect(find.byType(ClipRRect), findsOneWidget);
+
+    final clip = tester.widget<ClipRRect>(find.byType(ClipRRect));
+    final imageSize = tester.getSize(find.byType(ClipRRect));
+    final sizedBox = tester.widget<SizedBox>(
+      find.ancestor(
+        of: find.byType(ClipRRect),
+        matching: find.byType(SizedBox),
+      ).first,
+    );
+    expect(clip.borderRadius, BorderRadius.circular(12));
+    expect(sizedBox.width, isNotNull);
+    expect(sizedBox.height, isNotNull);
+    expect(imageSize.width, closeTo(152, 0.001));
+    expect(sizedBox.width!, lessThan(sizedBox.height!));
+    expect(sizedBox.width! / sizedBox.height!, closeTo(2 / 3, 0.001));
+  });
 }

@@ -627,6 +627,12 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                             );
                             _saveSettings();
                           },
+                          alwaysShowGridColumns: true,
+                          gridColumnsLabel:
+                              '${context.l10n.performers_title} ${context.l10n.settings_interface_grid_columns}',
+                          gridColumnsSliderKey: const Key(
+                            'performer-list-grid-columns-slider',
+                          ),
                           gridColumnsValue: _performerGridColumns,
                           onGridColumnsChanged: (value) async {
                             setState(() => _performerGridColumns = value);
@@ -742,6 +748,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     required ValueChanged<bool> onMediaChanged,
     bool? galleriesGridValue,
     ValueChanged<bool>? onGalleriesChanged,
+    bool alwaysShowGridColumns = false,
+    String? gridColumnsLabel,
+    Key? gridColumnsSliderKey,
     required int? gridColumnsValue,
     required ValueChanged<int?> onGridColumnsChanged,
   }) {
@@ -763,7 +772,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     ];
 
     final bool showGridColumns =
-        mediaGridValue || (galleriesGridValue != null && galleriesGridValue);
+        alwaysShowGridColumns ||
+        mediaGridValue ||
+        (galleriesGridValue != null && galleriesGridValue);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -837,7 +848,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
         if (showGridColumns) ...[
           SizedBox(height: context.dimensions.spacingSmall),
           _buildGridColumnSetting(
-            label: l10n.settings_interface_grid_columns,
+            label: gridColumnsLabel ?? l10n.settings_interface_grid_columns,
+            sliderKey: gridColumnsSliderKey,
             value: gridColumnsValue,
             onChanged: onGridColumnsChanged,
           ),
@@ -989,6 +1001,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
 
   Widget _buildGridColumnSetting({
     required String label,
+    Key? sliderKey,
     required int? value,
     required ValueChanged<int?> onChanged,
   }) {
@@ -1031,6 +1044,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
           ],
         ),
         Slider(
+          key: sliderKey,
           value: displayValue,
           min: 1.0,
           max: 10.0,

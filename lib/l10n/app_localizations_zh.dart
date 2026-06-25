@@ -1148,20 +1148,17 @@ class AppLocalizationsZh extends AppLocalizations {
       '播放时显示实时场景视频画面，而不是场景截图。';
 
   @override
-  String get settings_interface_entity_image_filtering =>
-      'Entity image filtering';
+  String get settings_interface_entity_image_filtering => '实体图像过滤';
 
   @override
   String get settings_interface_entity_image_filtering_subtitle =>
-      'Choose whether entity image pages match image metadata or related galleries.';
+      '选择实体图像页面是匹配图像元数据还是关联图库。';
 
   @override
-  String get settings_interface_entity_image_filtering_direct =>
-      'Direct entity';
+  String get settings_interface_entity_image_filtering_direct => '直接实体';
 
   @override
-  String get settings_interface_entity_image_filtering_galleries =>
-      'Related galleries';
+  String get settings_interface_entity_image_filtering_galleries => '关联图库';
 
   @override
   String get settings_interface_customize_tabs => '自定义标签页';
@@ -2949,6 +2946,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get scenes_page_markers_tooltip => '标记';
+
+  @override
+  String get auto_marker_name => '标记名称';
+
+  @override
+  String get auto_missing_field => '缺失字段';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -4093,6 +4096,19 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
       '播放时显示实时场景视频画面，而不是场景截图。';
+
+  @override
+  String get settings_interface_entity_image_filtering => '实体图像过滤';
+
+  @override
+  String get settings_interface_entity_image_filtering_subtitle =>
+      '选择实体图像页面是匹配图像元数据还是关联图库。';
+
+  @override
+  String get settings_interface_entity_image_filtering_direct => '直接实体';
+
+  @override
+  String get settings_interface_entity_image_filtering_galleries => '关联图库';
 
   @override
   String get settings_interface_customize_tabs => '自定义标签页';
@@ -5879,6 +5895,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get scenes_page_markers_tooltip => '标记';
+
+  @override
+  String get auto_marker_name => '标记名称';
+
+  @override
+  String get auto_missing_field => '缺失字段';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7025,6 +7047,19 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
       '播放時顯示即時場景影片畫面，而不是場景截圖。';
+
+  @override
+  String get settings_interface_entity_image_filtering => '實體圖像過濾';
+
+  @override
+  String get settings_interface_entity_image_filtering_subtitle =>
+      '選擇實體圖像頁面是匹配圖像元數據還是關聯圖庫。';
+
+  @override
+  String get settings_interface_entity_image_filtering_direct => '直接實體';
+
+  @override
+  String get settings_interface_entity_image_filtering_galleries => '關聯圖庫';
 
   @override
   String get settings_interface_customize_tabs => '自訂分頁';
@@ -8813,4 +8848,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get scenes_page_markers_tooltip => '標記';
+
+  @override
+  String get auto_marker_name => '標記名稱';
+
+  @override
+  String get auto_missing_field => '缺失字段';
 }

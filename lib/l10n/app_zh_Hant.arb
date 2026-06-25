@@ -1047,5 +1047,11 @@
   "scene_details_add_marker": "添加標記",
   "scene_details_create_marker": "創造",
   "scene_details_delete_marker_tooltip": "刪除標記 {title}",
-  "scenes_page_markers_tooltip": "標記"
+  "scenes_page_markers_tooltip": "標記",
+  "settings_interface_entity_image_filtering": "實體圖像過濾",
+  "settings_interface_entity_image_filtering_subtitle": "選擇實體圖像頁面是匹配圖像元數據還是關聯圖庫。",
+  "settings_interface_entity_image_filtering_direct": "直接實體",
+  "settings_interface_entity_image_filtering_galleries": "關聯圖庫",
+  "auto_marker_name": "標記名稱",
+  "auto_missing_field": "缺失字段"
 }
