@@ -61,6 +61,8 @@ class PerformerCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final imageBorderRadius = BorderRadius.circular(AppTheme.radiusMedium);
+
     return RepaintBoundary(
       child: Skeletonizer(
         enabled: skeletonize,
@@ -76,14 +78,19 @@ class PerformerCard extends ConsumerWidget {
                 Expanded(
                   child: LayoutBuilder(
                     builder: (context, constraints) {
-                      final size = constraints.maxWidth < constraints.maxHeight
-                          ? constraints.maxWidth
-                          : constraints.maxHeight;
+                      const portraitAspectRatio = 2 / 3;
+                      final widthFromHeight =
+                          constraints.maxHeight * portraitAspectRatio;
+                      final width = widthFromHeight < constraints.maxWidth
+                          ? widthFromHeight
+                          : constraints.maxWidth;
+                      final height = width / portraitAspectRatio;
                       return Center(
                         child: SizedBox(
-                          width: size,
-                          height: size,
-                          child: ClipOval(
+                          width: width,
+                          height: height,
+                          child: ClipRRect(
+                            borderRadius: imageBorderRadius,
                             child: StashImage(
                               imageUrl: performer.imagePath ?? '',
                               fit: BoxFit.cover,

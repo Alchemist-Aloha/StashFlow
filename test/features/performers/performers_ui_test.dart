@@ -207,4 +207,37 @@ void main() {
       findsNothing,
     );
   });
+
+  testWidgets('PerformerCard uses a rounded portrait image clip', (tester) async {
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: const Scaffold(
+        body: Center(
+          child: SizedBox(
+            width: 160,
+            height: 220,
+            child: PerformerCard(performer: testPerformer),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byType(ClipOval), findsNothing);
+    expect(find.byType(ClipRRect), findsOneWidget);
+
+    final clip = tester.widget<ClipRRect>(find.byType(ClipRRect));
+    final sizedBox = tester.widget<SizedBox>(
+      find.ancestor(
+        of: find.byType(ClipRRect),
+        matching: find.byType(SizedBox),
+      ).first,
+    );
+    expect(clip.borderRadius, BorderRadius.circular(12));
+    expect(sizedBox.width, isNotNull);
+    expect(sizedBox.height, isNotNull);
+    expect(sizedBox.width!, lessThan(sizedBox.height!));
+    expect(sizedBox.width! / sizedBox.height!, closeTo(2 / 3, 0.001));
+  });
 }
