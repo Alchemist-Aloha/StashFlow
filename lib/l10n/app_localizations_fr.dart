@@ -2022,7 +2022,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String stats_unique_items(int count) {
-    return '$count unique items';
+    return '$count éléments uniques';
   }
 
   @override
@@ -2040,22 +2040,22 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String cast_connecting_to(String deviceName) {
-    return 'Connecting to $deviceName...';
+    return 'Connexion à $deviceName...';
   }
 
   @override
   String cast_casting_to(String deviceName) {
-    return 'Casting to $deviceName';
+    return 'Diffusion sur $deviceName';
   }
 
   @override
   String cast_pairing_failed(String error) {
-    return 'Pairing failed: $error';
+    return 'Échec de l\'appairage : $error';
   }
 
   @override
   String cast_failed_to_cast(String error) {
-    return 'Failed to cast: $error';
+    return 'Échec de la diffusion : $error';
   }
 
   @override
@@ -2729,7 +2729,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get no_saved_presets => 'Aucun préréglage enregistré';
 
   @override
-  String get scene_tagger => 'Balises de scène';
+  String get scene_tagger => 'Étiquetage des scènes';
 
   @override
   String get page_size => 'Taille des pages';
@@ -2741,7 +2741,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sort => 'Trier';
 
   @override
-  String get desc => 'Description';
+  String get desc => 'Décr.';
 
   @override
   String get asc => 'Asc.';
@@ -2762,10 +2762,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get start_tagging => 'Commencer à marquer';
 
   @override
-  String get stop => 'Arrêt';
+  String get stop => 'Arrêter';
 
   @override
-  String get open_scene => 'Scène ouverte';
+  String get open_scene => 'Ouvrir la scène';
 
   @override
   String get skip => 'Sauter';
@@ -2774,7 +2774,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get apply => 'Appliquer';
 
   @override
-  String get selected => 'Choisi';
+  String get selected => 'Sélectionné';
 
   @override
   String get select => 'Sélectionner';
@@ -2798,7 +2798,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get delete_metadata => 'Supprimer les métadonnées';
 
   @override
-  String get delete_files => 'Supprimer des fichiers';
+  String get delete_files => 'Supprimer les fichiers';
 
   @override
   String get scene_deduplication => 'Déduplication de scène';

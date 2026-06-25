@@ -2032,7 +2032,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String stats_unique_items(int count) {
-    return '$count unique items';
+    return '$count elementos únicos';
   }
 
   @override
@@ -2050,22 +2050,22 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String cast_connecting_to(String deviceName) {
-    return 'Connecting to $deviceName...';
+    return 'Conectando con $deviceName...';
   }
 
   @override
   String cast_casting_to(String deviceName) {
-    return 'Casting to $deviceName';
+    return 'Transmitiendo a $deviceName';
   }
 
   @override
   String cast_pairing_failed(String error) {
-    return 'Pairing failed: $error';
+    return 'Emparejamiento fallido: $error';
   }
 
   @override
   String cast_failed_to_cast(String error) {
-    return 'Failed to cast: $error';
+    return 'No se pudo transmitir: $error';
   }
 
   @override
@@ -2738,7 +2738,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get no_saved_presets => 'No hay ajustes preestablecidos guardados';
 
   @override
-  String get scene_tagger => 'Etiquetas de escena';
+  String get scene_tagger => 'Etiquetador de escenas';
 
   @override
   String get page_size => 'Tamaño de página';
@@ -2747,13 +2747,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get mode => 'Modo';
 
   @override
-  String get sort => 'Clasificar';
+  String get sort => 'Ordenar';
 
   @override
-  String get desc => 'Descripción';
+  String get desc => 'Desc.';
 
   @override
-  String get asc => 'asc';
+  String get asc => 'Asc.';
 
   @override
   String get filter => 'Filtrar';
@@ -2762,7 +2762,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get load_preset => 'Cargar preajuste';
 
   @override
-  String get preset => 'Programar';
+  String get preset => 'Preajuste';
 
   @override
   String get stash_box_scraper => 'Raspador de caja de almacenamiento';
@@ -2774,7 +2774,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get stop => 'Detener';
 
   @override
-  String get open_scene => 'escena abierta';
+  String get open_scene => 'Abrir escena';
 
   @override
   String get skip => 'Saltar';
@@ -2792,7 +2792,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get preview => 'Avance';
 
   @override
-  String get delete_scene => 'eliminar escena';
+  String get delete_scene => 'Eliminar escena';
 
   @override
   String get metadata_only => 'Solo metadatos';
@@ -2869,7 +2869,7 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get enter_preset_name => 'Introduzca el nombre preestablecido';
+  String get enter_preset_name => 'Introduce el nombre del preajuste';
 
   @override
   String get delete_scene_confirm =>

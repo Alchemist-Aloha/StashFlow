@@ -21,7 +21,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get common_yes => '是的';
 
   @override
-  String get common_no => '不';
+  String get common_no => '否';
 
   @override
   String get common_clear_history => '清除历史记录';
@@ -1280,7 +1280,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings_server_details_subtitle => '配置端点和身份验证方式';
 
   @override
-  String get settings_server_url => 'Stash URL';
+  String get settings_server_url => 'Stash 地址';
 
   @override
   String get settings_server_url_helper =>
@@ -1902,7 +1902,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String stats_unique_items(int count) {
-    return '$count unique items';
+    return '$count 个唯一项目';
   }
 
   @override
@@ -1919,22 +1919,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String cast_connecting_to(String deviceName) {
-    return 'Connecting to $deviceName...';
+    return '正在连接到 $deviceName...';
   }
 
   @override
   String cast_casting_to(String deviceName) {
-    return 'Casting to $deviceName';
+    return '正在投放到 $deviceName';
   }
 
   @override
   String cast_pairing_failed(String error) {
-    return 'Pairing failed: $error';
+    return '配对失败：$error';
   }
 
   @override
   String cast_failed_to_cast(String error) {
-    return 'Failed to cast: $error';
+    return '投放失败：$error';
   }
 
   @override
@@ -2559,7 +2559,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get common_saved_filters => '保存的筛选';
 
   @override
-  String get tools => 'Tools';
+  String get tools => '工具';
 
   @override
   String get tools_section_subtitle => '场景的维护和元数据工作流。';
@@ -2571,159 +2571,158 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tools_scene_tagger_subtitle => '使用 Stash-box 刮削当前场景页面。';
 
   @override
-  String get preset_deleted => 'Preset deleted';
+  String get preset_deleted => '预设已删除';
 
   @override
-  String get delete_preset => 'Delete Preset';
+  String get delete_preset => '删除预设';
 
   @override
-  String get common_delete => 'Delete';
+  String get common_delete => '删除';
 
   @override
-  String get save_preset => 'Save Preset';
+  String get save_preset => '保存预设';
 
   @override
-  String get no_saved_presets => 'No saved presets';
+  String get no_saved_presets => '没有已保存的预设';
 
   @override
-  String get scene_tagger => 'Scene Tagger';
+  String get scene_tagger => '场景标注';
 
   @override
-  String get page_size => 'Page size';
+  String get page_size => '每页数量';
 
   @override
-  String get mode => 'Mode';
+  String get mode => '模式';
 
   @override
-  String get sort => 'Sort';
+  String get sort => '排序';
 
   @override
-  String get desc => 'Desc';
+  String get desc => '降序';
 
   @override
-  String get asc => 'Asc';
+  String get asc => '升序';
 
   @override
-  String get filter => 'Filter';
+  String get filter => '筛选';
 
   @override
-  String get load_preset => 'Load preset';
+  String get load_preset => '加载预设';
 
   @override
-  String get preset => 'Preset';
+  String get preset => '预设';
 
   @override
-  String get stash_box_scraper => 'Stash-box scraper';
+  String get stash_box_scraper => 'Stash Box 抓取器';
 
   @override
-  String get start_tagging => 'Start tagging';
+  String get start_tagging => '开始标注';
 
   @override
-  String get stop => 'Stop';
+  String get stop => '停止';
 
   @override
-  String get open_scene => 'Open scene';
+  String get open_scene => '打开场景';
 
   @override
-  String get skip => 'Skip';
+  String get skip => '跳过';
 
   @override
-  String get apply => 'Apply';
+  String get apply => '应用';
 
   @override
-  String get selected => 'Selected';
+  String get selected => '已选择';
 
   @override
-  String get select => 'Select';
+  String get select => '选择';
 
   @override
-  String get preview => 'Preview';
+  String get preview => '预览';
 
   @override
-  String get delete_scene => 'Delete scene';
+  String get delete_scene => '删除场景';
 
   @override
-  String get metadata_only => 'Metadata only';
+  String get metadata_only => '仅元数据';
 
   @override
-  String get files => 'Files';
+  String get files => '文件';
 
   @override
-  String get scene_deleted => 'Scene deleted';
+  String get scene_deleted => '场景已删除';
 
   @override
-  String get delete_metadata => 'Delete metadata';
+  String get delete_metadata => '删除元数据';
 
   @override
-  String get delete_files => 'Delete files';
+  String get delete_files => '删除文件';
 
   @override
-  String get scene_deduplication => 'Scene Deduplication';
+  String get scene_deduplication => '场景去重';
 
   @override
-  String get no_duplicates_found => 'No duplicates found.';
+  String get no_duplicates_found => '未发现重复项。';
 
   @override
-  String get search_accuracy => 'Search Accuracy';
+  String get search_accuracy => '搜索精度';
 
   @override
-  String get duration_difference => 'Duration Difference';
+  String get duration_difference => '时长差异';
 
   @override
-  String get only_select_matching_codecs => 'Only select matching codecs';
+  String get only_select_matching_codecs => '仅选择匹配的编解码器';
 
   @override
-  String get select_scenes => 'Select scenes';
+  String get select_scenes => '选择场景';
 
   @override
-  String get all_but_largest_resolution => 'All but largest resolution';
+  String get all_but_largest_resolution => '除最大分辨率外全部';
 
   @override
-  String get all_but_largest_file => 'All but largest file';
+  String get all_but_largest_file => '除最大文件外全部';
 
   @override
-  String get all_but_oldest => 'All but oldest';
+  String get all_but_oldest => '除最旧项外全部';
 
   @override
-  String get all_but_youngest => 'All but youngest';
+  String get all_but_youngest => '除最新项外全部';
 
   @override
-  String get select_none => 'Select none';
+  String get select_none => '取消全选';
 
   @override
-  String get merge => 'Merge';
+  String get merge => '合并';
 
   @override
-  String get previous_page => 'Previous page';
+  String get previous_page => '上一页';
 
   @override
-  String get next_page => 'Next page';
+  String get next_page => '下一页';
 
   @override
   String scene_deduplication_page_count(int page, int totalPages) {
-    return 'Page $page of $totalPages';
+    return '第 $page 页，共 $totalPages 页';
   }
 
   @override
   String scene_tagger_result_count(int index, int total) {
-    return 'Result $index of $total';
+    return '结果 $index / $total';
   }
 
   @override
   String delete_preset_confirm(String name) {
-    return 'Delete \"$name\"? This action cannot be undone.';
+    return '删除“$name”？此操作无法撤销。';
   }
 
   @override
-  String get enter_preset_name => 'Enter preset name';
+  String get enter_preset_name => '输入预设名称';
 
   @override
-  String get delete_scene_confirm =>
-      'Are you sure you want to delete this scene?';
+  String get delete_scene_confirm => '确定要删除此场景吗？';
 
   @override
   String delete_selected_count(int selectedCount) {
-    return 'Delete selected ($selectedCount)';
+    return '删除已选项 ($selectedCount)';
   }
 
   @override
@@ -2971,7 +2970,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get common_yes => '是的';
 
   @override
-  String get common_no => '不';
+  String get common_no => '否';
 
   @override
   String get common_clear_history => '清除历史记录';
@@ -4230,7 +4229,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get settings_server_details_subtitle => '配置端点和身份验证方式';
 
   @override
-  String get settings_server_url => 'Stash URL';
+  String get settings_server_url => 'Stash 地址';
 
   @override
   String get settings_server_url_helper =>
@@ -4852,7 +4851,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String stats_unique_items(int count) {
-    return '$count unique items';
+    return '$count 个唯一项目';
   }
 
   @override
@@ -4869,22 +4868,22 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String cast_connecting_to(String deviceName) {
-    return 'Connecting to $deviceName...';
+    return '正在连接到 $deviceName...';
   }
 
   @override
   String cast_casting_to(String deviceName) {
-    return 'Casting to $deviceName';
+    return '正在投放到 $deviceName';
   }
 
   @override
   String cast_pairing_failed(String error) {
-    return 'Pairing failed: $error';
+    return '配对失败：$error';
   }
 
   @override
   String cast_failed_to_cast(String error) {
-    return 'Failed to cast: $error';
+    return '投放失败：$error';
   }
 
   @override
@@ -5536,22 +5535,22 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get no_saved_presets => '没有保存的预设';
 
   @override
-  String get scene_tagger => '场景标签';
+  String get scene_tagger => '场景标注';
 
   @override
-  String get page_size => '页面尺寸';
+  String get page_size => '每页数量';
 
   @override
   String get mode => '模式';
 
   @override
-  String get sort => '种类';
+  String get sort => '排序';
 
   @override
-  String get desc => '描述';
+  String get desc => '降序';
 
   @override
-  String get asc => '上升';
+  String get asc => '升序';
 
   @override
   String get filter => '筛选';
@@ -5563,22 +5562,22 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get preset => '预设';
 
   @override
-  String get stash_box_scraper => '储物盒刮刀';
+  String get stash_box_scraper => 'Stash Box 抓取器';
 
   @override
-  String get start_tagging => '开始标记';
+  String get start_tagging => '开始标注';
 
   @override
   String get stop => '停止';
 
   @override
-  String get open_scene => '开放场景';
+  String get open_scene => '打开场景';
 
   @override
   String get skip => '跳过';
 
   @override
-  String get apply => '申请';
+  String get apply => '应用';
 
   @override
   String get selected => '已选择';
@@ -5632,13 +5631,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get all_but_largest_file => '除最大文件外的所有文件';
 
   @override
-  String get all_but_oldest => '除了最古老的以外';
+  String get all_but_oldest => '除最旧项外全部';
 
   @override
-  String get all_but_youngest => '除了最年轻的以外，其他所有人';
+  String get all_but_youngest => '除最新项外全部';
 
   @override
-  String get select_none => '不选择';
+  String get select_none => '取消全选';
 
   @override
   String get merge => '合并';
@@ -5656,7 +5655,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String scene_tagger_result_count(int index, int total) {
-    return '结果 $index（共 $total）';
+    return '结果 $index / $total';
   }
 
   @override
@@ -5920,7 +5919,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get common_yes => '是的';
 
   @override
-  String get common_no => '不';
+  String get common_no => '否';
 
   @override
   String get common_clear_history => '清除歷史記錄';
@@ -7181,7 +7180,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings_server_details_subtitle => '設定端點和驗證方式';
 
   @override
-  String get settings_server_url => 'Stash URL';
+  String get settings_server_url => 'Stash 位址';
 
   @override
   String get settings_server_url_helper =>
@@ -7805,7 +7804,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String stats_unique_items(int count) {
-    return '$count unique items';
+    return '$count 個唯一項目';
   }
 
   @override
@@ -7822,22 +7821,22 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String cast_connecting_to(String deviceName) {
-    return 'Connecting to $deviceName...';
+    return '正在連線到 $deviceName...';
   }
 
   @override
   String cast_casting_to(String deviceName) {
-    return 'Casting to $deviceName';
+    return '正在投放到 $deviceName';
   }
 
   @override
   String cast_pairing_failed(String error) {
-    return 'Pairing failed: $error';
+    return '配對失敗：$error';
   }
 
   @override
   String cast_failed_to_cast(String error) {
-    return 'Failed to cast: $error';
+    return '投放失敗：$error';
   }
 
   @override
@@ -8489,22 +8488,22 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get no_saved_presets => '沒有儲存的預設';
 
   @override
-  String get scene_tagger => '場景標籤';
+  String get scene_tagger => '場景標註';
 
   @override
-  String get page_size => '頁面尺寸';
+  String get page_size => '每頁數量';
 
   @override
   String get mode => '模式';
 
   @override
-  String get sort => '種類';
+  String get sort => '排序';
 
   @override
-  String get desc => '描述';
+  String get desc => '降冪';
 
   @override
-  String get asc => '上升';
+  String get asc => '升冪';
 
   @override
   String get filter => '篩選';
@@ -8516,22 +8515,22 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get preset => '預設';
 
   @override
-  String get stash_box_scraper => '收納箱刮刀';
+  String get stash_box_scraper => 'Stash Box 擷取器';
 
   @override
-  String get start_tagging => '開始標記';
+  String get start_tagging => '開始標註';
 
   @override
   String get stop => '停止';
 
   @override
-  String get open_scene => '開放場景';
+  String get open_scene => '開啟場景';
 
   @override
   String get skip => '跳過';
 
   @override
-  String get apply => '申請';
+  String get apply => '套用';
 
   @override
   String get selected => '已選擇';
@@ -8585,13 +8584,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get all_but_largest_file => '除最大文件外的所有文件';
 
   @override
-  String get all_but_oldest => '除了最古老的以外';
+  String get all_but_oldest => '除最舊項外全部';
 
   @override
-  String get all_but_youngest => '除了最年輕的以外，其他人';
+  String get all_but_youngest => '除最新項外全部';
 
   @override
-  String get select_none => '不選擇';
+  String get select_none => '取消全選';
 
   @override
   String get merge => '合併';
@@ -8609,7 +8608,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String scene_tagger_result_count(int index, int total) {
-    return '結果 $index（共 $total）';
+    return '結果 $index / $total';
   }
 
   @override
