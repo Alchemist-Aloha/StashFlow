@@ -3006,4 +3006,69 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get auto_missing_field => '누락된 필드';
+
+  @override
+  String get filter_duration => '지속';
+
+  @override
+  String get filter_created_at => '생성 날짜';
+
+  @override
+  String get filter_updated_at => '업데이트 날짜';
+
+  @override
+  String get filter_scene_date => '장면 날짜';
+
+  @override
+  String get filter_scene_created_at => '장면 생성 시간';
+
+  @override
+  String get filter_scene_updated_at => '장면 업데이트 시간';
+
+  @override
+  String get filter_markers_title => '필터 마커';
+
+  @override
+  String get filter_markers_saved => '마커 필터가 기본값으로 저장됨';
+
+  @override
+  String get filter_marker_section => '채점자';
+
+  @override
+  String get filter_scene_section => '장면';
+
+  @override
+  String get filter_dates_section => '날짜';
+
+  @override
+  String now_playing_tooltip(String title) {
+    return '현재 재생 중: $title. 장면 세부정보를 열려면 탭하세요.';
+  }
+
+  @override
+  String get scraped_metadata_title => '스크랩된 메타데이터';
+
+  @override
+  String get local_scene_title => '지역 현장';
+
+  @override
+  String get sort_markers_title => '정렬 마커';
+
+  @override
+  String get sort_markers_saved => '마커 정렬이 기본으로 저장됨';
+
+  @override
+  String get sub_group_count => '하위 그룹 수';
+
+  @override
+  String get settings_groups_title => '여러 떼';
+
+  @override
+  String get settings_groups_subtitle => '그룹의 기본 탐색 모드';
+
+  @override
+  String get settings_markers_title => '마커';
+
+  @override
+  String get settings_markers_subtitle => '마커의 기본 탐색 모드';
 }

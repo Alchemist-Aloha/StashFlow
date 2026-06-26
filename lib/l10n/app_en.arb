@@ -1444,5 +1444,94 @@
   },
   "scenes_page_markers_tooltip": "Markers",
   "auto_marker_name": "Marker name",
-  "auto_missing_field": "Missing Field"
+  "auto_missing_field": "Missing Field",
+  "filter_duration": "Duration",
+  "@filter_duration": {
+    "description": "Duration filter label"
+  },
+  "filter_created_at": "Created At",
+  "@filter_created_at": {
+    "description": "Created At filter label"
+  },
+  "filter_updated_at": "Updated At",
+  "@filter_updated_at": {
+    "description": "Updated At filter label"
+  },
+  "filter_scene_date": "Scene Date",
+  "@filter_scene_date": {
+    "description": "Scene Date filter label"
+  },
+  "filter_scene_created_at": "Scene Created At",
+  "@filter_scene_created_at": {
+    "description": "Scene Created At filter label"
+  },
+  "filter_scene_updated_at": "Scene Updated At",
+  "@filter_scene_updated_at": {
+    "description": "Scene Updated At filter label"
+  },
+  "filter_markers_title": "Filter markers",
+  "@filter_markers_title": {
+    "description": "Title for markers filter panel"
+  },
+  "filter_markers_saved": "Marker filter saved as default",
+  "@filter_markers_saved": {
+    "description": "Success message when marker filter is saved"
+  },
+  "filter_marker_section": "Marker",
+  "@filter_marker_section": {
+    "description": "Marker section title"
+  },
+  "filter_scene_section": "Scene",
+  "@filter_scene_section": {
+    "description": "Scene section title"
+  },
+  "filter_dates_section": "Dates",
+  "@filter_dates_section": {
+    "description": "Dates section title"
+  },
+  "now_playing_tooltip": "Now playing: {title}. Tap to open scene details.",
+  "@now_playing_tooltip": {
+    "description": "Tooltip for mini player",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "scraped_metadata_title": "Scraped metadata",
+  "@scraped_metadata_title": {
+    "description": "Title for scraped metadata section"
+  },
+  "local_scene_title": "Local scene",
+  "@local_scene_title": {
+    "description": "Title for local scene section"
+  },
+  "sort_markers_title": "Sort markers",
+  "@sort_markers_title": {
+    "description": "Title for sort markers panel"
+  },
+  "sort_markers_saved": "Marker sort saved as default",
+  "@sort_markers_saved": {
+    "description": "Success message when marker sort is saved"
+  },
+  "sub_group_count": "Sub-group Count",
+  "@sub_group_count": {
+    "description": "Sub-group count filter label"
+  },
+  "settings_groups_title": "Groups",
+  "@settings_groups_title": {
+    "description": "Title for groups settings"
+  },
+  "settings_groups_subtitle": "Default browsing mode for groups",
+  "@settings_groups_subtitle": {
+    "description": "Subtitle for groups settings"
+  },
+  "settings_markers_title": "Markers",
+  "@settings_markers_title": {
+    "description": "Title for markers settings"
+  },
+  "settings_markers_subtitle": "Default browsing mode for markers",
+  "@settings_markers_subtitle": {
+    "description": "Subtitle for markers settings"
+  }
 }

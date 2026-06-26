@@ -3008,4 +3008,69 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get auto_missing_field => '不足しているフィールド';
+
+  @override
+  String get filter_duration => '間隔';
+
+  @override
+  String get filter_created_at => '作成日';
+
+  @override
+  String get filter_updated_at => '更新日';
+
+  @override
+  String get filter_scene_date => 'シーンの日付';
+
+  @override
+  String get filter_scene_created_at => 'シーンの作成日';
+
+  @override
+  String get filter_scene_updated_at => 'シーンの更新日時';
+
+  @override
+  String get filter_markers_title => 'フィルターマーカー';
+
+  @override
+  String get filter_markers_saved => 'マーカーフィルターがデフォルトとして保存されました';
+
+  @override
+  String get filter_marker_section => 'マーカー';
+
+  @override
+  String get filter_scene_section => 'シーン';
+
+  @override
+  String get filter_dates_section => '日付';
+
+  @override
+  String now_playing_tooltip(String title) {
+    return '現在再生中: $title。タップしてシーンの詳細を開きます。';
+  }
+
+  @override
+  String get scraped_metadata_title => 'スクレイピングされたメタデータ';
+
+  @override
+  String get local_scene_title => '現地の様子';
+
+  @override
+  String get sort_markers_title => 'ソートマーカー';
+
+  @override
+  String get sort_markers_saved => 'マーカーの並べ替えがデフォルトとして保存されました';
+
+  @override
+  String get sub_group_count => 'サブグループ数';
+
+  @override
+  String get settings_groups_title => 'グループ';
+
+  @override
+  String get settings_groups_subtitle => 'グループのデフォルトの閲覧モード';
+
+  @override
+  String get settings_markers_title => 'マーカー';
+
+  @override
+  String get settings_markers_subtitle => 'マーカーのデフォルトの閲覧モード';
 }

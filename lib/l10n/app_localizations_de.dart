@@ -3113,4 +3113,72 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get auto_missing_field => 'Fehlendes Feld';
+
+  @override
+  String get filter_duration => 'Dauer';
+
+  @override
+  String get filter_created_at => 'Erstellt am';
+
+  @override
+  String get filter_updated_at => 'Aktualisiert am';
+
+  @override
+  String get filter_scene_date => 'Szenendatum';
+
+  @override
+  String get filter_scene_created_at => 'Szene erstellt am';
+
+  @override
+  String get filter_scene_updated_at => 'Szene aktualisiert um';
+
+  @override
+  String get filter_markers_title => 'Filtermarkierungen';
+
+  @override
+  String get filter_markers_saved =>
+      'Markierungsfilter als Standard gespeichert';
+
+  @override
+  String get filter_marker_section => 'Marker';
+
+  @override
+  String get filter_scene_section => 'Szene';
+
+  @override
+  String get filter_dates_section => 'Termine';
+
+  @override
+  String now_playing_tooltip(String title) {
+    return 'Spielt gerade: $title. Tippen Sie hier, um Szenendetails zu öffnen.';
+  }
+
+  @override
+  String get scraped_metadata_title => 'Gekratzte Metadaten';
+
+  @override
+  String get local_scene_title => 'Lokale Szene';
+
+  @override
+  String get sort_markers_title => 'Sortiermarkierungen';
+
+  @override
+  String get sort_markers_saved =>
+      'Markierungssortierung als Standard gespeichert';
+
+  @override
+  String get sub_group_count => 'Anzahl der Untergruppen';
+
+  @override
+  String get settings_groups_title => 'Gruppen';
+
+  @override
+  String get settings_groups_subtitle => 'Standardbrowsermodus für Gruppen';
+
+  @override
+  String get settings_markers_title => 'Markierungen';
+
+  @override
+  String get settings_markers_subtitle =>
+      'Standard-Browsing-Modus für Markierungen';
 }

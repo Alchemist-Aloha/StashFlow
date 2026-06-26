@@ -2951,6 +2951,71 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get auto_missing_field => '缺失字段';
+
+  @override
+  String get filter_duration => '期间';
+
+  @override
+  String get filter_created_at => '创建于';
+
+  @override
+  String get filter_updated_at => '更新于';
+
+  @override
+  String get filter_scene_date => '场景日期';
+
+  @override
+  String get filter_scene_created_at => '场景创建于';
+
+  @override
+  String get filter_scene_updated_at => '场景更新于';
+
+  @override
+  String get filter_markers_title => '过滤标记';
+
+  @override
+  String get filter_markers_saved => '标记过滤器保存为默认值';
+
+  @override
+  String get filter_marker_section => '标记';
+
+  @override
+  String get filter_scene_section => '场景';
+
+  @override
+  String get filter_dates_section => '枣子';
+
+  @override
+  String now_playing_tooltip(String title) {
+    return '正在播放：$title。点击可打开场景详细信息。';
+  }
+
+  @override
+  String get scraped_metadata_title => '抓取的元数据';
+
+  @override
+  String get local_scene_title => '当地场景';
+
+  @override
+  String get sort_markers_title => '对标记进行排序';
+
+  @override
+  String get sort_markers_saved => '标记排序保存为默认值';
+
+  @override
+  String get sub_group_count => '子组计数';
+
+  @override
+  String get settings_groups_title => '团体';
+
+  @override
+  String get settings_groups_subtitle => '群组的默认浏览模式';
+
+  @override
+  String get settings_markers_title => '标记';
+
+  @override
+  String get settings_markers_subtitle => '标记的默认浏览模式';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5900,6 +5965,71 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get auto_missing_field => '缺失字段';
+
+  @override
+  String get filter_duration => '期间';
+
+  @override
+  String get filter_created_at => '创建于';
+
+  @override
+  String get filter_updated_at => '更新于';
+
+  @override
+  String get filter_scene_date => '场景日期';
+
+  @override
+  String get filter_scene_created_at => '场景创建于';
+
+  @override
+  String get filter_scene_updated_at => '场景更新于';
+
+  @override
+  String get filter_markers_title => '过滤标记';
+
+  @override
+  String get filter_markers_saved => '标记过滤器保存为默认值';
+
+  @override
+  String get filter_marker_section => '标记';
+
+  @override
+  String get filter_scene_section => '场景';
+
+  @override
+  String get filter_dates_section => '枣子';
+
+  @override
+  String now_playing_tooltip(String title) {
+    return '正在播放：$title。点击可打开场景详细信息。';
+  }
+
+  @override
+  String get scraped_metadata_title => '抓取的元数据';
+
+  @override
+  String get local_scene_title => '当地场景';
+
+  @override
+  String get sort_markers_title => '对标记进行排序';
+
+  @override
+  String get sort_markers_saved => '标记排序保存为默认值';
+
+  @override
+  String get sub_group_count => '子组计数';
+
+  @override
+  String get settings_groups_title => '团体';
+
+  @override
+  String get settings_groups_subtitle => '群组的默认浏览模式';
+
+  @override
+  String get settings_markers_title => '标记';
+
+  @override
+  String get settings_markers_subtitle => '标记的默认浏览模式';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8853,4 +8983,69 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get auto_missing_field => '缺失字段';
+
+  @override
+  String get filter_duration => '期間';
+
+  @override
+  String get filter_created_at => '創建於';
+
+  @override
+  String get filter_updated_at => '更新於';
+
+  @override
+  String get filter_scene_date => '場景日期';
+
+  @override
+  String get filter_scene_created_at => '場景創建於';
+
+  @override
+  String get filter_scene_updated_at => '場景更新於';
+
+  @override
+  String get filter_markers_title => '過濾標記';
+
+  @override
+  String get filter_markers_saved => '標記過濾器儲存為預設值';
+
+  @override
+  String get filter_marker_section => '標記';
+
+  @override
+  String get filter_scene_section => '場景';
+
+  @override
+  String get filter_dates_section => '棗子';
+
+  @override
+  String now_playing_tooltip(String title) {
+    return '正在播放：$title。點擊可開啟場景詳細資訊。';
+  }
+
+  @override
+  String get scraped_metadata_title => '抓取的元數據';
+
+  @override
+  String get local_scene_title => '當地場景';
+
+  @override
+  String get sort_markers_title => '對標記進行排序';
+
+  @override
+  String get sort_markers_saved => '標記排序儲存為預設值';
+
+  @override
+  String get sub_group_count => '子組計數';
+
+  @override
+  String get settings_groups_title => '團體';
+
+  @override
+  String get settings_groups_subtitle => '群組的預設瀏覽模式';
+
+  @override
+  String get settings_markers_title => '標記';
+
+  @override
+  String get settings_markers_subtitle => '標記的預設瀏覽模式';
 }

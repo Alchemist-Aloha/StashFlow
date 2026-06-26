@@ -3140,4 +3140,72 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get auto_missing_field => 'Campo faltante';
+
+  @override
+  String get filter_duration => 'Duración';
+
+  @override
+  String get filter_created_at => 'Creado en';
+
+  @override
+  String get filter_updated_at => 'Actualizado en';
+
+  @override
+  String get filter_scene_date => 'Escena Fecha';
+
+  @override
+  String get filter_scene_created_at => 'Escena creada en';
+
+  @override
+  String get filter_scene_updated_at => 'Escena actualizada en';
+
+  @override
+  String get filter_markers_title => 'Marcadores de filtro';
+
+  @override
+  String get filter_markers_saved => 'Filtro de marcador guardado por defecto';
+
+  @override
+  String get filter_marker_section => 'Marcador';
+
+  @override
+  String get filter_scene_section => 'Escena';
+
+  @override
+  String get filter_dates_section => 'Fechas';
+
+  @override
+  String now_playing_tooltip(String title) {
+    return 'Reproduciendo ahora: $title. Toque para abrir los detalles de la escena.';
+  }
+
+  @override
+  String get scraped_metadata_title => 'Metadatos eliminados';
+
+  @override
+  String get local_scene_title => 'escena local';
+
+  @override
+  String get sort_markers_title => 'Ordenar marcadores';
+
+  @override
+  String get sort_markers_saved =>
+      'Clasificación de marcadores guardada de forma predeterminada';
+
+  @override
+  String get sub_group_count => 'Recuento de subgrupos';
+
+  @override
+  String get settings_groups_title => 'Grupos';
+
+  @override
+  String get settings_groups_subtitle =>
+      'Modo de navegación predeterminado para grupos';
+
+  @override
+  String get settings_markers_title => 'Marcadores';
+
+  @override
+  String get settings_markers_subtitle =>
+      'Modo de navegación predeterminado para marcadores';
 }

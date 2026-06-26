@@ -3067,4 +3067,69 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get auto_missing_field => 'Missing Field';
+
+  @override
+  String get filter_duration => 'Duration';
+
+  @override
+  String get filter_created_at => 'Created At';
+
+  @override
+  String get filter_updated_at => 'Updated At';
+
+  @override
+  String get filter_scene_date => 'Scene Date';
+
+  @override
+  String get filter_scene_created_at => 'Scene Created At';
+
+  @override
+  String get filter_scene_updated_at => 'Scene Updated At';
+
+  @override
+  String get filter_markers_title => 'Filter markers';
+
+  @override
+  String get filter_markers_saved => 'Marker filter saved as default';
+
+  @override
+  String get filter_marker_section => 'Marker';
+
+  @override
+  String get filter_scene_section => 'Scene';
+
+  @override
+  String get filter_dates_section => 'Dates';
+
+  @override
+  String now_playing_tooltip(String title) {
+    return 'Now playing: $title. Tap to open scene details.';
+  }
+
+  @override
+  String get scraped_metadata_title => 'Scraped metadata';
+
+  @override
+  String get local_scene_title => 'Local scene';
+
+  @override
+  String get sort_markers_title => 'Sort markers';
+
+  @override
+  String get sort_markers_saved => 'Marker sort saved as default';
+
+  @override
+  String get sub_group_count => 'Sub-group Count';
+
+  @override
+  String get settings_groups_title => 'Groups';
+
+  @override
+  String get settings_groups_subtitle => 'Default browsing mode for groups';
+
+  @override
+  String get settings_markers_title => 'Markers';
+
+  @override
+  String get settings_markers_subtitle => 'Default browsing mode for markers';
 }

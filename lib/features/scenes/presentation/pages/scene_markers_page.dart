@@ -80,7 +80,7 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
       context: context,
       isScrollControlled: true,
       builder: (context) => ListSortBottomSheet<_MarkerSortField>(
-        title: 'Sort markers',
+        title: context.l10n.sort_markers_title,
         options: _MarkerSortField.values,
         initialOption: _sortField,
         initialDescending: _sortDescending,
@@ -96,7 +96,7 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
         },
         onSaveDefault: () =>
             ref.read(sceneMarkerSortProvider.notifier).saveAsDefault(),
-        saveDefaultSuccessMessage: 'Marker sort saved as default',
+        saveDefaultSuccessMessage: context.l10n.sort_markers_saved,
       ),
     );
   }
@@ -155,7 +155,7 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
         _sortField != _MarkerSortField.createdAt || !_sortDescending;
 
     return ListPageScaffold<SceneMarkerSummary>(
-      title: 'Markers',
+      title: context.l10n.markers_title,
       searchHint: 'Search markers',
       onSearchChanged: _onSearchChanged,
       provider: markersAsync,

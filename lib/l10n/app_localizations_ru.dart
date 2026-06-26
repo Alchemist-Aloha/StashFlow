@@ -3108,4 +3108,72 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get auto_missing_field => 'Отсутствует поле';
+
+  @override
+  String get filter_duration => 'Продолжительность';
+
+  @override
+  String get filter_created_at => 'Создано в';
+
+  @override
+  String get filter_updated_at => 'Обновлено в';
+
+  @override
+  String get filter_scene_date => 'Дата сцены';
+
+  @override
+  String get filter_scene_created_at => 'Сцена создана в';
+
+  @override
+  String get filter_scene_updated_at => 'Сцена обновлена ​​в';
+
+  @override
+  String get filter_markers_title => 'Фильтровать маркеры';
+
+  @override
+  String get filter_markers_saved => 'Фильтр маркеров сохранен по умолчанию.';
+
+  @override
+  String get filter_marker_section => 'Маркер';
+
+  @override
+  String get filter_scene_section => 'Сцена';
+
+  @override
+  String get filter_dates_section => 'Даты';
+
+  @override
+  String now_playing_tooltip(String title) {
+    return 'Сейчас играет: $title. Нажмите, чтобы открыть сведения о сцене.';
+  }
+
+  @override
+  String get scraped_metadata_title => 'Удаленные метаданные';
+
+  @override
+  String get local_scene_title => 'Местная сцена';
+
+  @override
+  String get sort_markers_title => 'Сортировка маркеров';
+
+  @override
+  String get sort_markers_saved =>
+      'Сортировка маркеров сохранена по умолчанию.';
+
+  @override
+  String get sub_group_count => 'Количество подгрупп';
+
+  @override
+  String get settings_groups_title => 'Группы';
+
+  @override
+  String get settings_groups_subtitle =>
+      'Режим просмотра по умолчанию для групп';
+
+  @override
+  String get settings_markers_title => 'Маркеры';
+
+  @override
+  String get settings_markers_subtitle =>
+      'Режим просмотра по умолчанию для маркеров';
 }

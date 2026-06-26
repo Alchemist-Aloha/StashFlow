@@ -5525,6 +5525,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Missing Field'**
   String get auto_missing_field;
+
+  /// Duration filter label
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get filter_duration;
+
+  /// Created At filter label
+  ///
+  /// In en, this message translates to:
+  /// **'Created At'**
+  String get filter_created_at;
+
+  /// Updated At filter label
+  ///
+  /// In en, this message translates to:
+  /// **'Updated At'**
+  String get filter_updated_at;
+
+  /// Scene Date filter label
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Date'**
+  String get filter_scene_date;
+
+  /// Scene Created At filter label
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Created At'**
+  String get filter_scene_created_at;
+
+  /// Scene Updated At filter label
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Updated At'**
+  String get filter_scene_updated_at;
+
+  /// Title for markers filter panel
+  ///
+  /// In en, this message translates to:
+  /// **'Filter markers'**
+  String get filter_markers_title;
+
+  /// Success message when marker filter is saved
+  ///
+  /// In en, this message translates to:
+  /// **'Marker filter saved as default'**
+  String get filter_markers_saved;
+
+  /// Marker section title
+  ///
+  /// In en, this message translates to:
+  /// **'Marker'**
+  String get filter_marker_section;
+
+  /// Scene section title
+  ///
+  /// In en, this message translates to:
+  /// **'Scene'**
+  String get filter_scene_section;
+
+  /// Dates section title
+  ///
+  /// In en, this message translates to:
+  /// **'Dates'**
+  String get filter_dates_section;
+
+  /// Tooltip for mini player
+  ///
+  /// In en, this message translates to:
+  /// **'Now playing: {title}. Tap to open scene details.'**
+  String now_playing_tooltip(String title);
+
+  /// Title for scraped metadata section
+  ///
+  /// In en, this message translates to:
+  /// **'Scraped metadata'**
+  String get scraped_metadata_title;
+
+  /// Title for local scene section
+  ///
+  /// In en, this message translates to:
+  /// **'Local scene'**
+  String get local_scene_title;
+
+  /// Title for sort markers panel
+  ///
+  /// In en, this message translates to:
+  /// **'Sort markers'**
+  String get sort_markers_title;
+
+  /// Success message when marker sort is saved
+  ///
+  /// In en, this message translates to:
+  /// **'Marker sort saved as default'**
+  String get sort_markers_saved;
+
+  /// Sub-group count filter label
+  ///
+  /// In en, this message translates to:
+  /// **'Sub-group Count'**
+  String get sub_group_count;
+
+  /// Title for groups settings
+  ///
+  /// In en, this message translates to:
+  /// **'Groups'**
+  String get settings_groups_title;
+
+  /// Subtitle for groups settings
+  ///
+  /// In en, this message translates to:
+  /// **'Default browsing mode for groups'**
+  String get settings_groups_subtitle;
+
+  /// Title for markers settings
+  ///
+  /// In en, this message translates to:
+  /// **'Markers'**
+  String get settings_markers_title;
+
+  /// Subtitle for markers settings
+  ///
+  /// In en, this message translates to:
+  /// **'Default browsing mode for markers'**
+  String get settings_markers_subtitle;
 }
 
 class _AppLocalizationsDelegate

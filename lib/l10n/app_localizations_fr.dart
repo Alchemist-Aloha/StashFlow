@@ -3132,4 +3132,71 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get auto_missing_field => 'Champ manquant';
+
+  @override
+  String get filter_duration => 'Durée';
+
+  @override
+  String get filter_created_at => 'Créé à';
+
+  @override
+  String get filter_updated_at => 'Mis à jour à';
+
+  @override
+  String get filter_scene_date => 'Date de la scène';
+
+  @override
+  String get filter_scene_created_at => 'Scène créée à';
+
+  @override
+  String get filter_scene_updated_at => 'Scène mise à jour à';
+
+  @override
+  String get filter_markers_title => 'Marqueurs de filtre';
+
+  @override
+  String get filter_markers_saved => 'Filtre de marqueur enregistré par défaut';
+
+  @override
+  String get filter_marker_section => 'Marqueur';
+
+  @override
+  String get filter_scene_section => 'Scène';
+
+  @override
+  String get filter_dates_section => 'Dates';
+
+  @override
+  String now_playing_tooltip(String title) {
+    return 'Lecture en cours : $title. Appuyez pour ouvrir les détails de la scène.';
+  }
+
+  @override
+  String get scraped_metadata_title => 'Métadonnées grattées';
+
+  @override
+  String get local_scene_title => 'Scène locale';
+
+  @override
+  String get sort_markers_title => 'Trier les marqueurs';
+
+  @override
+  String get sort_markers_saved => 'Tri des marqueurs enregistré par défaut';
+
+  @override
+  String get sub_group_count => 'Nombre de sous-groupes';
+
+  @override
+  String get settings_groups_title => 'Groupes';
+
+  @override
+  String get settings_groups_subtitle =>
+      'Mode de navigation par défaut pour les groupes';
+
+  @override
+  String get settings_markers_title => 'Marqueurs';
+
+  @override
+  String get settings_markers_subtitle =>
+      'Mode de navigation par défaut pour les marqueurs';
 }
