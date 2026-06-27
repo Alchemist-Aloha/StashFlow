@@ -235,7 +235,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                               ScaffoldMessenger.of(dialogContext).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    'Failed to delete scene: ${e.toString()}',
+                                    context.l10n.scenes_delete_failed(
+                                      e.toString(),
+                                    ),
                                   ),
                                 ),
                               );

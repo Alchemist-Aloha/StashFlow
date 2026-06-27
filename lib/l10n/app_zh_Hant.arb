@@ -1053,5 +1053,11 @@
   "settings_interface_entity_image_filtering_direct": "直接實體",
   "settings_interface_entity_image_filtering_galleries": "關聯圖庫",
   "auto_marker_name": "標記名稱",
-  "auto_missing_field": "缺失字段"
+  "auto_missing_field": "缺失字段",
+  "scenes_field_scene_date": "場景日期",
+  "scenes_field_scene_created_at": "場景創建於",
+  "scenes_field_scene_updated_at": "場景更新於",
+  "scenes_field_sub_group_count": "子組計數",
+  "mini_player_now_playing": "正在播放：{title}。點擊可開啟場景詳細資訊。",
+  "scenes_delete_failed": "無法刪除場景：{error}"
 }

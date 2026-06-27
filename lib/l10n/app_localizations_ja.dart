@@ -3008,4 +3008,26 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get auto_missing_field => '不足しているフィールド';
+
+  @override
+  String get scenes_field_scene_date => 'シーンの日付';
+
+  @override
+  String get scenes_field_scene_created_at => 'シーンの作成日';
+
+  @override
+  String get scenes_field_scene_updated_at => 'シーンの更新日時';
+
+  @override
+  String get scenes_field_sub_group_count => 'サブグループ数';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return '現在再生中: $title。タップしてシーンの詳細を開きます。';
+  }
+
+  @override
+  String scenes_delete_failed(String error) {
+    return 'シーンの削除に失敗しました: $error';
+  }
 }

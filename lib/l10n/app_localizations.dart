@@ -5525,6 +5525,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Missing Field'**
   String get auto_missing_field;
+
+  /// No description provided for @scenes_field_scene_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Date'**
+  String get scenes_field_scene_date;
+
+  /// No description provided for @scenes_field_scene_created_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Created At'**
+  String get scenes_field_scene_created_at;
+
+  /// No description provided for @scenes_field_scene_updated_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Updated At'**
+  String get scenes_field_scene_updated_at;
+
+  /// No description provided for @scenes_field_sub_group_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Sub-group Count'**
+  String get scenes_field_sub_group_count;
+
+  /// Accessibility label for the mini player
+  ///
+  /// In en, this message translates to:
+  /// **'Now playing: {title}. Tap to open scene details.'**
+  String mini_player_now_playing(String title);
+
+  /// No description provided for @scenes_delete_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete scene: {error}'**
+  String scenes_delete_failed(String error);
 }
 
 class _AppLocalizationsDelegate

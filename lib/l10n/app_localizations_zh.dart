@@ -2951,6 +2951,28 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get auto_missing_field => '缺失字段';
+
+  @override
+  String get scenes_field_scene_date => '场景日期';
+
+  @override
+  String get scenes_field_scene_created_at => '场景创建于';
+
+  @override
+  String get scenes_field_scene_updated_at => '场景更新于';
+
+  @override
+  String get scenes_field_sub_group_count => '子组计数';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return '正在播放：$title。点击可打开场景详细信息。';
+  }
+
+  @override
+  String scenes_delete_failed(String error) {
+    return '无法删除场景：$error';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5900,6 +5922,28 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get auto_missing_field => '缺失字段';
+
+  @override
+  String get scenes_field_scene_date => '场景日期';
+
+  @override
+  String get scenes_field_scene_created_at => '场景创建于';
+
+  @override
+  String get scenes_field_scene_updated_at => '场景更新于';
+
+  @override
+  String get scenes_field_sub_group_count => '子组计数';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return '正在播放：$title。点击可打开场景详细信息。';
+  }
+
+  @override
+  String scenes_delete_failed(String error) {
+    return '无法删除场景：$error';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8853,4 +8897,26 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get auto_missing_field => '缺失字段';
+
+  @override
+  String get scenes_field_scene_date => '場景日期';
+
+  @override
+  String get scenes_field_scene_created_at => '場景創建於';
+
+  @override
+  String get scenes_field_scene_updated_at => '場景更新於';
+
+  @override
+  String get scenes_field_sub_group_count => '子組計數';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return '正在播放：$title。點擊可開啟場景詳細資訊。';
+  }
+
+  @override
+  String scenes_delete_failed(String error) {
+    return '無法刪除場景：$error';
+  }
 }

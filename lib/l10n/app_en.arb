@@ -1444,5 +1444,26 @@
   },
   "scenes_page_markers_tooltip": "Markers",
   "auto_marker_name": "Marker name",
-  "auto_missing_field": "Missing Field"
+  "auto_missing_field": "Missing Field",
+  "scenes_field_scene_date": "Scene Date",
+  "scenes_field_scene_created_at": "Scene Created At",
+  "scenes_field_scene_updated_at": "Scene Updated At",
+  "scenes_field_sub_group_count": "Sub-group Count",
+  "mini_player_now_playing": "Now playing: {title}. Tap to open scene details.",
+  "@mini_player_now_playing": {
+    "description": "Accessibility label for the mini player",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "scenes_delete_failed": "Failed to delete scene: {error}",
+  "@scenes_delete_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

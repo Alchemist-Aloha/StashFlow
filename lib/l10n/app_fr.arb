@@ -1067,5 +1067,11 @@
   "settings_interface_entity_image_filtering_direct": "Entité directe",
   "settings_interface_entity_image_filtering_galleries": "Galeries associées",
   "auto_marker_name": "Nom du marqueur",
-  "auto_missing_field": "Champ manquant"
+  "auto_missing_field": "Champ manquant",
+  "scenes_field_scene_date": "Date de la scène",
+  "scenes_field_scene_created_at": "Scène créée à",
+  "scenes_field_scene_updated_at": "Scène mise à jour à",
+  "scenes_field_sub_group_count": "Nombre de sous-groupes",
+  "mini_player_now_playing": "Lecture en cours : {title}. Appuyez pour ouvrir les détails de la scène.",
+  "scenes_delete_failed": "Échec de la suppression de la scène : {error}"
 }

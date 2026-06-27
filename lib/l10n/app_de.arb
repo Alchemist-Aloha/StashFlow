@@ -1088,5 +1088,11 @@
   "settings_interface_entity_image_filtering_direct": "Direkte Entität",
   "settings_interface_entity_image_filtering_galleries": "Zugehörige Galerien",
   "auto_marker_name": "Markierungsname",
-  "auto_missing_field": "Fehlendes Feld"
+  "auto_missing_field": "Fehlendes Feld",
+  "scenes_field_scene_date": "Szenendatum",
+  "scenes_field_scene_created_at": "Szene erstellt am",
+  "scenes_field_scene_updated_at": "Szene aktualisiert um",
+  "scenes_field_sub_group_count": "Anzahl der Untergruppen",
+  "mini_player_now_playing": "Spielt gerade: {title}. Tippen Sie hier, um Szenendetails zu öffnen.",
+  "scenes_delete_failed": "Szene konnte nicht gelöscht werden: {error}"
 }

@@ -3132,4 +3132,26 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get auto_missing_field => 'Champ manquant';
+
+  @override
+  String get scenes_field_scene_date => 'Date de la scène';
+
+  @override
+  String get scenes_field_scene_created_at => 'Scène créée à';
+
+  @override
+  String get scenes_field_scene_updated_at => 'Scène mise à jour à';
+
+  @override
+  String get scenes_field_sub_group_count => 'Nombre de sous-groupes';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return 'Lecture en cours : $title. Appuyez pour ouvrir les détails de la scène.';
+  }
+
+  @override
+  String scenes_delete_failed(String error) {
+    return 'Échec de la suppression de la scène : $error';
+  }
 }

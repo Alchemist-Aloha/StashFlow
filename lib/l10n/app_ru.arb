@@ -1067,5 +1067,11 @@
   "settings_interface_entity_image_filtering_direct": "Прямая сущность",
   "settings_interface_entity_image_filtering_galleries": "Связанные галереи",
   "auto_marker_name": "Имя маркера",
-  "auto_missing_field": "Отсутствует поле"
+  "auto_missing_field": "Отсутствует поле",
+  "scenes_field_scene_date": "Дата сцены",
+  "scenes_field_scene_created_at": "Сцена создана в",
+  "scenes_field_scene_updated_at": "Сцена обновлена ​​в",
+  "scenes_field_sub_group_count": "Количество подгрупп",
+  "mini_player_now_playing": "Сейчас играет: {title}. Нажмите, чтобы открыть сведения о сцене.",
+  "scenes_delete_failed": "Не удалось удалить сцену: {error}"
 }

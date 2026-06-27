@@ -3067,4 +3067,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get auto_missing_field => 'Missing Field';
+
+  @override
+  String get scenes_field_scene_date => 'Scene Date';
+
+  @override
+  String get scenes_field_scene_created_at => 'Scene Created At';
+
+  @override
+  String get scenes_field_scene_updated_at => 'Scene Updated At';
+
+  @override
+  String get scenes_field_sub_group_count => 'Sub-group Count';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return 'Now playing: $title. Tap to open scene details.';
+  }
+
+  @override
+  String scenes_delete_failed(String error) {
+    return 'Failed to delete scene: $error';
+  }
 }

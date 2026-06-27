@@ -3140,4 +3140,26 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get auto_missing_field => 'Campo faltante';
+
+  @override
+  String get scenes_field_scene_date => 'Escena Fecha';
+
+  @override
+  String get scenes_field_scene_created_at => 'Escena creada en';
+
+  @override
+  String get scenes_field_scene_updated_at => 'Escena actualizada en';
+
+  @override
+  String get scenes_field_sub_group_count => 'Recuento de subgrupos';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return 'Reproduciendo ahora: $title. Toque para abrir los detalles de la escena.';
+  }
+
+  @override
+  String scenes_delete_failed(String error) {
+    return 'No se pudo eliminar la escena: $error';
+  }
 }

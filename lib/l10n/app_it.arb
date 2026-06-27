@@ -1072,5 +1072,11 @@
   "settings_interface_entity_image_filtering_direct": "Entità diretta",
   "settings_interface_entity_image_filtering_galleries": "Gallerie correlate",
   "auto_marker_name": "Nome del marcatore",
-  "auto_missing_field": "Campo mancante"
+  "auto_missing_field": "Campo mancante",
+  "scenes_field_scene_date": "Data della scena",
+  "scenes_field_scene_created_at": "Scena creata a",
+  "scenes_field_scene_updated_at": "Scena aggiornata a",
+  "scenes_field_sub_group_count": "Conteggio sottogruppi",
+  "mini_player_now_playing": "Ora in riproduzione: {title}. Tocca per aprire i dettagli della scena.",
+  "scenes_delete_failed": "Impossibile eliminare la scena: {error}"
 }

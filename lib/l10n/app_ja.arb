@@ -1067,5 +1067,11 @@
   "settings_interface_entity_image_filtering_direct": "直接エンティティ",
   "settings_interface_entity_image_filtering_galleries": "関連ギャラリー",
   "auto_marker_name": "マーカー名",
-  "auto_missing_field": "不足しているフィールド"
+  "auto_missing_field": "不足しているフィールド",
+  "scenes_field_scene_date": "シーンの日付",
+  "scenes_field_scene_created_at": "シーンの作成日",
+  "scenes_field_scene_updated_at": "シーンの更新日時",
+  "scenes_field_sub_group_count": "サブグループ数",
+  "mini_player_now_playing": "現在再生中: {title}。タップしてシーンの詳細を開きます。",
+  "scenes_delete_failed": "シーンの削除に失敗しました: {error}"
 }
