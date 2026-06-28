@@ -44,7 +44,7 @@ void main() {
         routes: [
           GoRoute(
             path: '/galleries',
-            builder: (_, __) => EntityGalleryGrid(
+            builder: (_, _) => EntityGalleryGrid(
               title: 'Galleries',
               entityId: testCase.id,
               filterKind: testCase.kind,
@@ -57,7 +57,7 @@ void main() {
           ),
           GoRoute(
             path: '/galleries/images',
-            builder: (_, __) => const Text('images destination'),
+            builder: (_, _) => const Text('images destination'),
           ),
         ],
       );
