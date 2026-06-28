@@ -21,7 +21,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get common_yes => 'SÌ';
 
   @override
-  String get common_no => 'NO';
+  String get common_no => 'No';
 
   @override
   String get common_clear_history => 'Cancella cronologia';
@@ -2021,7 +2021,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String stats_unique_items(int count) {
-    return '$count unique items';
+    return '$count elementi unici';
   }
 
   @override
@@ -2039,22 +2039,22 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String cast_connecting_to(String deviceName) {
-    return 'Connecting to $deviceName...';
+    return 'Connessione a $deviceName...';
   }
 
   @override
   String cast_casting_to(String deviceName) {
-    return 'Casting to $deviceName';
+    return 'Trasmissione su $deviceName';
   }
 
   @override
   String cast_pairing_failed(String error) {
-    return 'Pairing failed: $error';
+    return 'Associazione non riuscita: $error';
   }
 
   @override
   String cast_failed_to_cast(String error) {
-    return 'Failed to cast: $error';
+    return 'Trasmissione non riuscita: $error';
   }
 
   @override
@@ -2729,7 +2729,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get no_saved_presets => 'Nessun preset salvato';
 
   @override
-  String get scene_tagger => 'Tag di scena';
+  String get scene_tagger => 'Etichettatore scene';
 
   @override
   String get page_size => 'Dimensioni della pagina';
@@ -2738,7 +2738,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get mode => 'Modalità';
 
   @override
-  String get sort => 'Ordinare';
+  String get sort => 'Ordina';
 
   @override
   String get desc => 'Disc';
@@ -2753,7 +2753,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get load_preset => 'Carica preimpostazione';
 
   @override
-  String get preset => 'Preimpostato';
+  String get preset => 'Preimpostazione';
 
   @override
   String get stash_box_scraper => 'Raschietto per scatole portaoggetti';
@@ -2762,16 +2762,16 @@ class AppLocalizationsIt extends AppLocalizations {
   String get start_tagging => 'Inizia a taggare';
 
   @override
-  String get stop => 'Fermare';
+  String get stop => 'Arresta';
 
   @override
-  String get open_scene => 'Scena aperta';
+  String get open_scene => 'Apri scena';
 
   @override
   String get skip => 'Saltare';
 
   @override
-  String get apply => 'Fare domanda a';
+  String get apply => 'Applica';
 
   @override
   String get selected => 'Selezionato';
@@ -2860,7 +2860,7 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get enter_preset_name => 'Immettere il nome preimpostato';
+  String get enter_preset_name => 'Inserisci il nome del preset';
 
   @override
   String get delete_scene_confirm =>

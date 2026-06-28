@@ -21,7 +21,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get common_yes => 'Ja';
 
   @override
-  String get common_no => 'NEIN';
+  String get common_no => 'Nein';
 
   @override
   String get common_clear_history => 'Verlauf löschen';
@@ -2009,7 +2009,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String stats_unique_items(int count) {
-    return '$count unique items';
+    return '$count eindeutige Elemente';
   }
 
   @override
@@ -2027,22 +2027,22 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String cast_connecting_to(String deviceName) {
-    return 'Connecting to $deviceName...';
+    return 'Verbinde mit $deviceName...';
   }
 
   @override
   String cast_casting_to(String deviceName) {
-    return 'Casting to $deviceName';
+    return 'Wiedergabe auf $deviceName';
   }
 
   @override
   String cast_pairing_failed(String error) {
-    return 'Pairing failed: $error';
+    return 'Kopplung fehlgeschlagen: $error';
   }
 
   @override
   String cast_failed_to_cast(String error) {
-    return 'Failed to cast: $error';
+    return 'Übertragen fehlgeschlagen: $error';
   }
 
   @override
@@ -2724,10 +2724,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sort => 'Sortieren';
 
   @override
-  String get desc => 'Beschr';
+  String get desc => 'Abst.';
 
   @override
-  String get asc => 'Aufstieg';
+  String get asc => 'Aufst.';
 
   @override
   String get filter => 'Filter';
@@ -2736,7 +2736,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get load_preset => 'Voreinstellung laden';
 
   @override
-  String get preset => 'Voreingestellt';
+  String get preset => 'Voreinstellung';
 
   @override
   String get stash_box_scraper => 'Schaber für Vorratsboxen';
@@ -2748,7 +2748,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get stop => 'Stoppen';
 
   @override
-  String get open_scene => 'Offene Szene';
+  String get open_scene => 'Szene öffnen';
 
   @override
   String get skip => 'Überspringen';
@@ -2818,7 +2818,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get select_none => 'Wählen Sie „Keine“ aus';
 
   @override
-  String get merge => 'Verschmelzen';
+  String get merge => 'Zusammenführen';
 
   @override
   String get previous_page => 'Vorherige Seite';
@@ -2842,7 +2842,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get enter_preset_name => 'Geben Sie den voreingestellten Namen ein';
+  String get enter_preset_name => 'Name der Voreinstellung eingeben';
 
   @override
   String get delete_scene_confirm =>

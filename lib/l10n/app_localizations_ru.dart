@@ -2002,7 +2002,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String stats_unique_items(int count) {
-    return '$count unique items';
+    return '$count уникальных элементов';
   }
 
   @override
@@ -2020,22 +2020,22 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String cast_connecting_to(String deviceName) {
-    return 'Connecting to $deviceName...';
+    return 'Подключение к $deviceName...';
   }
 
   @override
   String cast_casting_to(String deviceName) {
-    return 'Casting to $deviceName';
+    return 'Трансляция на $deviceName';
   }
 
   @override
   String cast_pairing_failed(String error) {
-    return 'Pairing failed: $error';
+    return 'Сбой сопряжения: $error';
   }
 
   @override
   String cast_failed_to_cast(String error) {
-    return 'Failed to cast: $error';
+    return 'Не удалось начать трансляцию: $error';
   }
 
   @override
@@ -2715,10 +2715,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get mode => 'Режим';
 
   @override
-  String get sort => 'Сортировать';
+  String get sort => 'Сортировка';
 
   @override
-  String get desc => 'Описание';
+  String get desc => 'Убыв.';
 
   @override
   String get asc => 'По возрастанию';
@@ -2739,22 +2739,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String get start_tagging => 'Начать отмечать';
 
   @override
-  String get stop => 'Останавливаться';
+  String get stop => 'Остановить';
 
   @override
-  String get open_scene => 'Открытая сцена';
+  String get open_scene => 'Открыть сцену';
 
   @override
   String get skip => 'Пропускать';
 
   @override
-  String get apply => 'Применять';
+  String get apply => 'Применить';
 
   @override
   String get selected => 'Выбрано';
 
   @override
-  String get select => 'Выбирать';
+  String get select => 'Выбрать';
 
   @override
   String get preview => 'Предварительный просмотр';
@@ -2804,13 +2804,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get all_but_largest_file => 'Все, кроме самого большого файла';
 
   @override
-  String get all_but_oldest => 'Все, кроме старшего';
+  String get all_but_oldest => 'Все, кроме самого старого';
 
   @override
-  String get all_but_youngest => 'Все, кроме младшего';
+  String get all_but_youngest => 'Все, кроме самого нового';
 
   @override
-  String get select_none => 'Выбрать нет';
+  String get select_none => 'Ничего не выбирать';
 
   @override
   String get merge => 'Объединить';

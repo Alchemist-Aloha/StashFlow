@@ -1289,7 +1289,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings_server_details_subtitle => '엔드포인트 및 인증 방식 설정';
 
   @override
-  String get settings_server_url => 'Stash URL';
+  String get settings_server_url => 'Stash 주소';
 
   @override
   String get settings_server_url_helper =>
@@ -1925,7 +1925,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String stats_unique_items(int count) {
-    return '$count unique items';
+    return '고유 항목 $count개';
   }
 
   @override
@@ -1942,22 +1942,22 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String cast_connecting_to(String deviceName) {
-    return 'Connecting to $deviceName...';
+    return '$deviceName에 연결 중...';
   }
 
   @override
   String cast_casting_to(String deviceName) {
-    return 'Casting to $deviceName';
+    return '$deviceName로 전송 중';
   }
 
   @override
   String cast_pairing_failed(String error) {
-    return 'Pairing failed: $error';
+    return '페어링 실패: $error';
   }
 
   @override
   String cast_failed_to_cast(String error) {
-    return 'Failed to cast: $error';
+    return '캐스트 실패: $error';
   }
 
   @override
@@ -2612,19 +2612,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get no_saved_presets => '저장된 사전 설정이 없습니다.';
 
   @override
-  String get scene_tagger => '장면 태그';
+  String get scene_tagger => '장면 태깅';
 
   @override
   String get page_size => '페이지 크기';
 
   @override
-  String get mode => '방법';
+  String get mode => '모드';
 
   @override
-  String get sort => '종류';
+  String get sort => '정렬';
 
   @override
-  String get desc => '설명';
+  String get desc => '내림차순';
 
   @override
   String get asc => '오름차순';
@@ -2645,25 +2645,25 @@ class AppLocalizationsKo extends AppLocalizations {
   String get start_tagging => '태그 시작';
 
   @override
-  String get stop => '멈추다';
+  String get stop => '중지';
 
   @override
-  String get open_scene => '오픈 씬';
+  String get open_scene => '장면 열기';
 
   @override
   String get skip => '건너뛰다';
 
   @override
-  String get apply => '적용하다';
+  String get apply => '적용';
 
   @override
-  String get selected => '선택된';
+  String get selected => '선택됨';
 
   @override
-  String get select => '선택하다';
+  String get select => '선택';
 
   @override
-  String get preview => '시사';
+  String get preview => '미리보기';
 
   @override
   String get delete_scene => '장면 삭제';
@@ -2708,13 +2708,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get all_but_largest_file => '가장 큰 파일을 제외한 모든 파일';
 
   @override
-  String get all_but_oldest => '가장 나이 많은 사람 빼고 다';
+  String get all_but_oldest => '가장 오래된 항목만 제외';
 
   @override
-  String get all_but_youngest => '막내빼고 다';
+  String get all_but_youngest => '가장 최신 항목만 제외';
 
   @override
-  String get select_none => '없음을 선택하세요';
+  String get select_none => '선택 해제';
 
   @override
   String get merge => '병합';
@@ -2732,7 +2732,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String scene_tagger_result_count(int index, int total) {
-    return '$index 중 결과 $total';
+    return '결과 $index / $total';
   }
 
   @override

@@ -1925,7 +1925,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String stats_unique_items(int count) {
-    return '$count unique items';
+    return '固有アイテム数 $count';
   }
 
   @override
@@ -1942,22 +1942,22 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String cast_connecting_to(String deviceName) {
-    return 'Connecting to $deviceName...';
+    return '$deviceName に接続中...';
   }
 
   @override
   String cast_casting_to(String deviceName) {
-    return 'Casting to $deviceName';
+    return '$deviceName で再生中';
   }
 
   @override
   String cast_pairing_failed(String error) {
-    return 'Pairing failed: $error';
+    return 'ペアリングに失敗しました: $error';
   }
 
   @override
   String cast_failed_to_cast(String error) {
-    return 'Failed to cast: $error';
+    return 'キャストに失敗しました: $error';
   }
 
   @override
@@ -2614,7 +2614,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get no_saved_presets => '保存されたプリセットはありません';
 
   @override
-  String get scene_tagger => 'シーンタグ';
+  String get scene_tagger => 'シーンタグ付け';
 
   @override
   String get page_size => 'ページサイズ';
@@ -2623,10 +2623,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get mode => 'モード';
 
   @override
-  String get sort => '選別';
+  String get sort => '並び替え';
 
   @override
-  String get desc => '説明';
+  String get desc => '降順';
 
   @override
   String get asc => '昇順';
@@ -2650,7 +2650,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get stop => '停止';
 
   @override
-  String get open_scene => 'オープンシーン';
+  String get open_scene => 'シーンを開く';
 
   @override
   String get skip => 'スキップ';
