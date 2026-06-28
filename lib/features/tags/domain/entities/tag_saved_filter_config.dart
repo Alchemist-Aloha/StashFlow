@@ -50,7 +50,8 @@ class TagSavedFilterConfig extends SavedFilterConfig<bool> {
           ? direction.toUpperCase() == 'DESC'
           : true,
       perPage: findFilterMap['per_page'] as int?,
-      favorite: savedFilterReadBooleanCriterionValue(objectFilterMap['favorite']) ??
+      favorite:
+          savedFilterReadBooleanCriterionValue(objectFilterMap['favorite']) ??
           false,
     );
   }

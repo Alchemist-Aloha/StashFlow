@@ -437,7 +437,10 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                 child: const SizedBox(
                   width: 20,
                   height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    semanticsLabel: context.l10n.common_loading,
+                  ),
                 ),
               ),
             )
@@ -462,6 +465,7 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
                       color: Colors.white,
+                      semanticsLabel: context.l10n.common_loading,
                     ),
                   )
                 : const Icon(Icons.save),

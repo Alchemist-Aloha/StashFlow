@@ -19,7 +19,10 @@ class GalleryCard extends ConsumerWidget {
     this.memCacheWidth,
     this.memCacheHeight,
     super.key,
-  }) : gallery = const Gallery(id: 'skeleton', title: 'Loading'), // Skeletonizer ignores
+  }) : gallery = const Gallery(
+         id: 'skeleton',
+         title: 'Loading',
+       ), // Skeletonizer ignores
        skeletonize = true;
 
   const GalleryCard({
@@ -366,7 +369,7 @@ class GalleryCard extends ConsumerWidget {
   Widget _buildGalleryDetails(BuildContext context) {
     final theme = Theme.of(context);
     final hasDetails = (gallery.details ?? '').trim().isNotEmpty;
-    
+
     return Column(
       children: [
         _SectionCard(
@@ -374,17 +377,31 @@ class GalleryCard extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _MetaRow(label: context.l10n.galleries_field_id, value: gallery.id),
+              _MetaRow(
+                label: context.l10n.galleries_field_id,
+                value: gallery.id,
+              ),
               _MetaRow(
                 label: context.l10n.galleries_field_path,
-                value: gallery.path?.trim().isNotEmpty == true ? gallery.path! : '--',
+                value: gallery.path?.trim().isNotEmpty == true
+                    ? gallery.path!
+                    : '--',
                 selectable: true,
               ),
-              _MetaRow(label: context.l10n.galleries_field_date, value: gallery.date ?? '--'),
-              _MetaRow(label: context.l10n.galleries_field_image_count, value: gallery.imageCount?.toString() ?? '--'),
+              _MetaRow(
+                label: context.l10n.galleries_field_date,
+                value: gallery.date ?? '--',
+              ),
+              _MetaRow(
+                label: context.l10n.galleries_field_image_count,
+                value: gallery.imageCount?.toString() ?? '--',
+              ),
               if (hasDetails) ...[
                 const SizedBox(height: 8),
-                SelectableText(gallery.details!, style: theme.textTheme.bodyMedium),
+                SelectableText(
+                  gallery.details!,
+                  style: theme.textTheme.bodyMedium,
+                ),
               ],
             ],
           ),
@@ -396,12 +413,16 @@ class GalleryCard extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _MetaRow(
-                label: context.l10n.common_resolution, 
-                value: gallery.coverWidth != null && gallery.coverHeight != null 
-                    ? '${gallery.coverWidth} x ${gallery.coverHeight}' 
-                    : '--'
+                label: context.l10n.common_resolution,
+                value: gallery.coverWidth != null && gallery.coverHeight != null
+                    ? '${gallery.coverWidth} x ${gallery.coverHeight}'
+                    : '--',
               ),
-              _MetaRow(label: context.l10n.scene_info_screenshot, value: gallery.coverPath ?? '--', selectable: true),
+              _MetaRow(
+                label: context.l10n.scene_info_screenshot,
+                value: gallery.coverPath ?? '--',
+                selectable: true,
+              ),
             ],
           ),
         ),
@@ -423,7 +444,9 @@ class _SectionCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(
+          alpha: 0.35,
+        ),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -434,7 +457,9 @@ class _SectionCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ],
@@ -478,14 +503,8 @@ class _MetaRow extends StatelessWidget {
           ),
           Expanded(
             child: selectable
-                ? SelectableText(
-                    value,
-                    style: theme.textTheme.bodySmall,
-                  )
-                : Text(
-                    value,
-                    style: theme.textTheme.bodySmall,
-                  ),
+                ? SelectableText(value, style: theme.textTheme.bodySmall)
+                : Text(value, style: theme.textTheme.bodySmall),
           ),
         ],
       ),

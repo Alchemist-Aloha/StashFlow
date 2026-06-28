@@ -98,16 +98,12 @@ class _EnhancedScrapeDialogState extends State<EnhancedScrapeDialog> {
               ? s.ethnicity
               : o.ethnicity,
           country: _useScraped['country'] == true ? s.country : o.country,
-          eyeColor: _useScraped['eye_color'] == true
-              ? s.eyeColor
-              : o.eyeColor,
+          eyeColor: _useScraped['eye_color'] == true ? s.eyeColor : o.eyeColor,
           height: _useScraped['height'] == true ? s.height : o.height,
           measurements: _useScraped['measurements'] == true
               ? s.measurements
               : o.measurements,
-          fakeTits: _useScraped['fake_tits'] == true
-              ? s.fakeTits
-              : o.fakeTits,
+          fakeTits: _useScraped['fake_tits'] == true ? s.fakeTits : o.fakeTits,
           careerStart: _useScraped['career_start'] == true
               ? s.careerStart
               : o.careerStart,

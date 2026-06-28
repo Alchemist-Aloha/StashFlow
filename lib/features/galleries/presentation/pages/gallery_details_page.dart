@@ -16,9 +16,9 @@ class GalleryDetailsPage extends ConsumerWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: AppTheme.spacingMedium),
       elevation: 0,
-      color: Theme.of(context).colorScheme.primaryContainer.withValues(
-        alpha: 0.1,
-      ),
+      color: Theme.of(
+        context,
+      ).colorScheme.primaryContainer.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusExtraLarge),
       ),
@@ -130,7 +130,11 @@ class GalleryDetailsPage extends ConsumerWidget {
             ),
           ),
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => Center(
+          child: CircularProgressIndicator(
+            semanticsLabel: context.l10n.common_loading,
+          ),
+        ),
         error: (err, stack) => ErrorStateView(
           message: context.l10n.common_error(err.toString()),
           onRetry: () => ref.refresh(galleryDetailsProvider(galleryId)),

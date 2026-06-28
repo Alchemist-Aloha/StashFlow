@@ -54,7 +54,9 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
         builder: (_) => AlertDialog(
           content: Row(
             children: [
-              const CircularProgressIndicator(),
+              const CircularProgressIndicator(
+                semanticsLabel: context.l10n.common_loading,
+              ),
               const SizedBox(width: 24),
               Expanded(child: Text(message)),
             ],
@@ -364,7 +366,9 @@ class _CastSelectionSheetState extends ConsumerState<CastSelectionSheet> {
               child: Center(
                 child: Column(
                   children: [
-                    const CircularProgressIndicator(),
+                    const CircularProgressIndicator(
+                      semanticsLabel: context.l10n.common_loading,
+                    ),
                     const SizedBox(height: 16),
                     Text(context.l10n.cast_searching),
                   ],

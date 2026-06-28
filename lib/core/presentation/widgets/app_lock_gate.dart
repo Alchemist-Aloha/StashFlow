@@ -227,6 +227,7 @@ class _PasscodeLockScreenState extends ConsumerState<_PasscodeLockScreen> {
                                 height: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
+                                  semanticsLabel: context.l10n.common_loading,
                                 ),
                               )
                             : Text(context.l10n.auth_unlock),

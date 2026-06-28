@@ -446,7 +446,9 @@ class _TiktokScenesViewState extends ConsumerState<TiktokScenesView> {
 class CircularProgressContext extends StatelessWidget {
   const CircularProgressContext({super.key});
   @override
-  Widget build(BuildContext context) => const CircularProgressIndicator();
+  Widget build(BuildContext context) => const CircularProgressIndicator(
+    semanticsLabel: context.l10n.common_loading,
+  );
 }
 
 class TiktokSceneItem extends ConsumerStatefulWidget {
@@ -788,7 +790,11 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                           child: videoSurface,
                         )
                       : videoSurface)
-                : const Center(child: CircularProgressIndicator()),
+                : Center(
+                    child: CircularProgressIndicator(
+                      semanticsLabel: context.l10n.common_loading,
+                    ),
+                  ),
           ),
 
           if (controller != null &&
@@ -938,13 +944,17 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                                           }
                                         },
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 1.0),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 2.0,
+                                            vertical: 1.0,
+                                          ),
                                           child: Text(
                                             widget.scene.studioName!,
                                             style: context.textTheme.bodyMedium
                                                 ?.copyWith(
                                                   color: Colors.white,
-                                                  fontSize: context.fontSizes.body,
+                                                  fontSize:
+                                                      context.fontSizes.body,
                                                   fontWeight: FontWeight.w500,
                                                   decoration:
                                                       TextDecoration.underline,

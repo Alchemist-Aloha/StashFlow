@@ -194,7 +194,11 @@ class _PlayerSurfaceState extends ConsumerState<PlayerSurface> {
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.4),
                   ),
-                  child: const Center(child: CircularProgressIndicator()),
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      semanticsLabel: context.l10n.common_loading,
+                    ),
+                  ),
                 ),
               ),
             if (widget.showControls && castState.isCasting)

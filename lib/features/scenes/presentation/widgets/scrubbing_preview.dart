@@ -173,7 +173,10 @@ class _SpriteImage extends StatelessWidget {
         child: SizedBox(
           width: 24,
           height: 24,
-          child: CircularProgressIndicator(strokeWidth: 2),
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            semanticsLabel: context.l10n.common_loading,
+          ),
         ),
       ),
       errorWidget: (context, url, error) {

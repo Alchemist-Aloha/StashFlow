@@ -335,18 +335,12 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
           );
       if (!mounted) return;
       _removeSceneFromResults(scene.id);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.saved_item(scene.title)),
-        ),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.saved_item(scene.title))),
       );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.failed_to_save(error.toString()))),
       );
     }
@@ -440,7 +434,11 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
       return _ErrorBanner(message: _loadError!, onRetry: _loadScenes);
     }
     if (_loadingScenes) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(
+        child: CircularProgressIndicator(
+          semanticsLabel: context.l10n.common_loading,
+        ),
+      );
     }
 
     final summary = _mode == _TaggerMode.randomUnorganized
@@ -1300,7 +1298,11 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
                       child: Video(controller: controller),
                     ),
                     if (_initializing)
-                      const Center(child: CircularProgressIndicator()),
+                      Center(
+                        child: CircularProgressIndicator(
+                          semanticsLabel: context.l10n.common_loading,
+                        ),
+                      ),
                     if (_error != null && _error!.isNotEmpty)
                       Center(
                         child: Padding(
@@ -1351,7 +1353,10 @@ class _ScenePreviewPlayerState extends ConsumerState<_ScenePreviewPlayer> {
                           decoration: BoxDecoration(
                             color: Colors.black.withValues(alpha: 0.5),
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white24, width: 1.5),
+                            border: Border.all(
+                              color: Colors.white24,
+                              width: 1.5,
+                            ),
                           ),
                           child: const Icon(
                             Icons.play_arrow_rounded,

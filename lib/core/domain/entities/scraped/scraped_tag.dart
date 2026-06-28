@@ -10,5 +10,6 @@ abstract class ScrapedTag with _$ScrapedTag {
     required String name,
   }) = _ScrapedTag;
 
-  factory ScrapedTag.fromJson(Map<String, dynamic> json) => _$ScrapedTagFromJson(json);
+  factory ScrapedTag.fromJson(Map<String, dynamic> json) =>
+      _$ScrapedTagFromJson(json);
 }

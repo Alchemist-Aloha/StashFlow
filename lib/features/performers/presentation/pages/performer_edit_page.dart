@@ -391,7 +391,10 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
                 child: SizedBox(
                   width: 20,
                   height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    semanticsLabel: context.l10n.common_loading,
+                  ),
                 ),
               ),
             )
@@ -410,6 +413,7 @@ class _PerformerEditPageState extends ConsumerState<PerformerEditPage> {
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
                       color: Colors.white,
+                      semanticsLabel: context.l10n.common_loading,
                     ),
                   )
                 : const Icon(Icons.save),

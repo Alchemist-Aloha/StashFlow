@@ -36,5 +36,6 @@ abstract class ScrapedPerformer with _$ScrapedPerformer {
     @Default([]) List<ScrapedTag> tags,
   }) = _ScrapedPerformer;
 
-  factory ScrapedPerformer.fromJson(Map<String, dynamic> json) => _$ScrapedPerformerFromJson(json);
+  factory ScrapedPerformer.fromJson(Map<String, dynamic> json) =>
+      _$ScrapedPerformerFromJson(json);
 }

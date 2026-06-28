@@ -351,6 +351,7 @@ class _ServerProfileDrawerState extends ConsumerState<ServerProfileDrawer> {
                                 height: 16,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
+                                  semanticsLabel: context.l10n.common_loading,
                                 ),
                               )
                             : const Icon(Icons.sync),

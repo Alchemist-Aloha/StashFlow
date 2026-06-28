@@ -25,11 +25,13 @@ class TransformableVideoSurface extends StatefulWidget {
   final BoxConstraints constraints;
   final double horizontalPadding;
   final double maxWidthFactor;
+
   /// Optional notifier to sync transformations from external gesture detectors.
   final ValueNotifier<Matrix4>? transformationNotifier;
 
   @override
-  State<TransformableVideoSurface> createState() => _TransformableVideoSurfaceState();
+  State<TransformableVideoSurface> createState() =>
+      _TransformableVideoSurfaceState();
 }
 
 class _TransformableVideoSurfaceState extends State<TransformableVideoSurface> {
@@ -38,7 +40,8 @@ class _TransformableVideoSurfaceState extends State<TransformableVideoSurface> {
   @override
   void initState() {
     super.initState();
-    _transformationMatrix = widget.transformationNotifier?.value ?? Matrix4.identity();
+    _transformationMatrix =
+        widget.transformationNotifier?.value ?? Matrix4.identity();
     widget.transformationNotifier?.addListener(_onTransformationChanged);
   }
 
@@ -46,7 +49,9 @@ class _TransformableVideoSurfaceState extends State<TransformableVideoSurface> {
   void didUpdateWidget(TransformableVideoSurface oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.transformationNotifier != widget.transformationNotifier) {
-      oldWidget.transformationNotifier?.removeListener(_onTransformationChanged);
+      oldWidget.transformationNotifier?.removeListener(
+        _onTransformationChanged,
+      );
       widget.transformationNotifier?.addListener(_onTransformationChanged);
       if (widget.transformationNotifier != null) {
         _transformationMatrix = widget.transformationNotifier!.value;
@@ -76,10 +81,17 @@ class _TransformableVideoSurfaceState extends State<TransformableVideoSurface> {
       subtitleViewConfiguration: SubtitleViewConfiguration(
         visible: true,
         textAlign: widget.textAlign,
-        padding: EdgeInsets.fromLTRB(widget.horizontalPadding, 0, widget.horizontalPadding, widget.bottomRatio * widget.constraints.maxHeight),
-        style:TextStyle(
+        padding: EdgeInsets.fromLTRB(
+          widget.horizontalPadding,
+          0,
+          widget.horizontalPadding,
+          widget.bottomRatio * widget.constraints.maxHeight,
+        ),
+        style: TextStyle(
           color: Colors.white.withValues(alpha: 0.75),
-          fontSize: widget.fontSize * 4, // Scale up the font size for better visibility when transformed, and rely on the user to adjust it down if needed.
+          fontSize:
+              widget.fontSize *
+              4, // Scale up the font size for better visibility when transformed, and rely on the user to adjust it down if needed.
           backgroundColor: Colors.black.withValues(alpha: 0.4),
         ),
       ),
@@ -101,18 +113,12 @@ class _TransformableVideoSurfaceState extends State<TransformableVideoSurface> {
       );
     } else {
       content = Center(
-        child: AspectRatio(
-          aspectRatio: widget.aspectRatio,
-          child: content,
-        ),
+        child: AspectRatio(aspectRatio: widget.aspectRatio, child: content),
       );
     }
 
     return ClipRect(
-      child: Transform(
-        transform: _transformationMatrix,
-        child: content,
-      ),
+      child: Transform(transform: _transformationMatrix, child: content),
     );
   }
 }

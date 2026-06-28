@@ -36,22 +36,18 @@ class Scraper {
   factory Scraper.fromJson(Map<String, dynamic> json) => Scraper(
     id: json['id'] as String,
     name: json['name'] as String,
-    scene:
-        json['scene'] != null
-            ? ScraperSpec.fromJson(json['scene'] as Map<String, dynamic>)
-            : null,
-    performer:
-        json['performer'] != null
-            ? ScraperSpec.fromJson(json['performer'] as Map<String, dynamic>)
-            : null,
-    gallery:
-        json['gallery'] != null
-            ? ScraperSpec.fromJson(json['gallery'] as Map<String, dynamic>)
-            : null,
-    image:
-        json['image'] != null
-            ? ScraperSpec.fromJson(json['image'] as Map<String, dynamic>)
-            : null,
+    scene: json['scene'] != null
+        ? ScraperSpec.fromJson(json['scene'] as Map<String, dynamic>)
+        : null,
+    performer: json['performer'] != null
+        ? ScraperSpec.fromJson(json['performer'] as Map<String, dynamic>)
+        : null,
+    gallery: json['gallery'] != null
+        ? ScraperSpec.fromJson(json['gallery'] as Map<String, dynamic>)
+        : null,
+    image: json['image'] != null
+        ? ScraperSpec.fromJson(json['image'] as Map<String, dynamic>)
+        : null,
   );
 
   Map<String, dynamic> toJson() => {

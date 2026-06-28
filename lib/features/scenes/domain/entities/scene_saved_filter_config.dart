@@ -99,7 +99,8 @@ class SceneSavedFilterConfig extends SavedFilterConfig<SceneFilter> {
 
   static Object? _normalizeServerValue(String localKey, Object? value) {
     if (_booleanFields.contains(localKey)) {
-      return savedFilterReadBooleanCriterionValue(value) ?? savedFilterSkipValue;
+      return savedFilterReadBooleanCriterionValue(value) ??
+          savedFilterSkipValue;
     }
 
     if (_multiValueFields.contains(localKey)) {

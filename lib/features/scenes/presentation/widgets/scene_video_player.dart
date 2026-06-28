@@ -424,7 +424,9 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
               color: Colors.black,
               child: Center(
                 child: _isStarting
-                    ? const CircularProgressIndicator()
+                    ? const CircularProgressIndicator(
+                        semanticsLabel: context.l10n.common_loading,
+                      )
                     : IconButton.filledTonal(
                         tooltip: context.l10n.common_play,
                         style: IconButton.styleFrom(
@@ -447,7 +449,11 @@ class _SceneVideoPlayerState extends ConsumerState<SceneVideoPlayer> {
     if (controller == null) {
       return AspectRatio(
         aspectRatio: aspectRatio,
-        child: const Center(child: CircularProgressIndicator()),
+        child: Center(
+          child: CircularProgressIndicator(
+            semanticsLabel: context.l10n.common_loading,
+          ),
+        ),
       );
     }
 

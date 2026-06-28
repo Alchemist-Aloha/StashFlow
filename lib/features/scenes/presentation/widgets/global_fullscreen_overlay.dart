@@ -320,7 +320,9 @@ class _GlobalFullscreenOverlayState
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const CircularProgressIndicator(),
+            const CircularProgressIndicator(
+              semanticsLabel: context.l10n.common_loading,
+            ),
             const SizedBox(height: 16),
             Text(
               context.l10n.initializing_player,

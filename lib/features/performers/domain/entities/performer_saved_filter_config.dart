@@ -82,7 +82,8 @@ class PerformerSavedFilterConfig extends SavedFilterConfig<PerformerFilter> {
 
   static Object? _normalizeServerValue(String localKey, Object? value) {
     if (_booleanFields.contains(localKey)) {
-      return savedFilterReadBooleanCriterionValue(value) ?? savedFilterSkipValue;
+      return savedFilterReadBooleanCriterionValue(value) ??
+          savedFilterSkipValue;
     }
     if (localKey == 'isMissing') return savedFilterSkipValue;
     return value;
@@ -116,9 +117,5 @@ class PerformerSavedFilterConfig extends SavedFilterConfig<PerformerFilter> {
     for (final entry in _localToServerKeys.entries) entry.value: entry.key,
   };
 
-  static const _booleanFields = {
-    'favorite',
-    'ignoreAutoTag',
-    'isMissing',
-  };
+  static const _booleanFields = {'favorite', 'ignoreAutoTag', 'isMissing'};
 }

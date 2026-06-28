@@ -98,7 +98,8 @@ Map<String, dynamic> savedFilterFromServerObjectFilter({
   final output = <String, dynamic>{};
   for (final entry in objectFilter.entries) {
     final localKey = serverToLocalKeys[entry.key] ?? entry.key;
-    final normalized = normalizeValue?.call(localKey, entry.value) ?? entry.value;
+    final normalized =
+        normalizeValue?.call(localKey, entry.value) ?? entry.value;
     if (identical(normalized, savedFilterSkipValue)) continue;
     output[localKey] = normalized;
   }

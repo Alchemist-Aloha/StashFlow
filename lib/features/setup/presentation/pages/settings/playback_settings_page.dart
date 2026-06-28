@@ -64,8 +64,9 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     } else {
       // Migrate from autoplayNext
       final autoplayNext = prefs.getBool('autoplay_next') ?? false;
-      _playEndBehavior =
-          autoplayNext ? VideoEndBehavior.next : VideoEndBehavior.stop;
+      _playEndBehavior = autoplayNext
+          ? VideoEndBehavior.next
+          : VideoEndBehavior.stop;
     }
 
     _useDoubleTapSeek = prefs.getBool(_useDoubleTapSeekKey) ?? false;
@@ -98,10 +99,7 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
       _enableBackgroundPlayback,
     );
     await prefs.setBool(_enableNativePipKey, _enableNativePip);
-    await prefs.setBool(
-      _videoGravityOrientationKey,
-      _videoGravityOrientation,
-    );
+    await prefs.setBool(_videoGravityOrientationKey, _videoGravityOrientation);
     await prefs.setString(
       _defaultSubtitleLanguageKey,
       _defaultSubtitleLanguage,
@@ -136,7 +134,11 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
     return SettingsPageShell(
       title: context.l10n.settings_playback_title,
       child: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: CircularProgressIndicator(
+                semanticsLabel: context.l10n.common_loading,
+              ),
+            )
           : SingleChildScrollView(
               padding: EdgeInsets.all(context.dimensions.spacingLarge),
               child: Column(
@@ -211,9 +213,12 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                         Divider(height: context.dimensions.spacingLarge),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
-                          title: Text(context.l10n.settings_playback_direct_play),
+                          title: Text(
+                            context.l10n.settings_playback_direct_play,
+                          ),
                           subtitle: Text(
-                              context.l10n.settings_playback_direct_play_subtitle),
+                            context.l10n.settings_playback_direct_play_subtitle,
+                          ),
                           value: _directPlayOnNavigation,
                           onChanged: (value) async {
                             setState(() => _directPlayOnNavigation = value);
@@ -244,7 +249,9 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
                             context.l10n.settings_playback_resume_position,
                           ),
                           subtitle: Text(
-                            context.l10n.settings_playback_resume_position_subtitle,
+                            context
+                                .l10n
+                                .settings_playback_resume_position_subtitle,
                           ),
                           value: _resumePlayPosition,
                           onChanged: (value) async {
@@ -485,7 +492,9 @@ class _PlaybackSettingsPageState extends ConsumerState<PlaybackSettingsPage> {
 
         if (isNarrow) {
           return Padding(
-            padding: EdgeInsets.only(top: 4 * context.dimensions.fontSizeFactor),
+            padding: EdgeInsets.only(
+              top: 4 * context.dimensions.fontSizeFactor,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

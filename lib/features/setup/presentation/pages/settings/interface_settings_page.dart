@@ -184,7 +184,11 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     return SettingsPageShell(
       title: context.l10n.settings_interface_title,
       child: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: CircularProgressIndicator(
+                semanticsLabel: context.l10n.common_loading,
+              ),
+            )
           : SingleChildScrollView(
               padding: EdgeInsets.all(context.dimensions.spacingLarge),
               child: Column(

@@ -18,7 +18,6 @@ class SupportSettingsPage extends ConsumerWidget {
       child: ListView(
         padding: EdgeInsets.all(context.dimensions.spacingMedium),
         children: [
-
           // Update check section
           ref
               .watch(appUpdateProvider)
@@ -78,7 +77,9 @@ class SupportSettingsPage extends ConsumerWidget {
                         title: l10n.settings_support_version,
                         subtitle: '${l10n.appTitle} $version',
                         onTap: () async {
-                          final url = Uri.parse('https://github.com/Alchemist-Aloha/StashFlow/releases');
+                          final url = Uri.parse(
+                            'https://github.com/Alchemist-Aloha/StashFlow/releases',
+                          );
                           try {
                             if (await canLaunchUrl(url)) {
                               await launchUrl(

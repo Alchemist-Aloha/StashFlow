@@ -246,7 +246,10 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                       ? const SizedBox(
                           width: 16,
                           height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            semanticsLabel: context.l10n.common_loading,
+                          ),
                         )
                       : const Icon(Icons.delete_outline),
                   label: Text(context.l10n.common_delete),
@@ -658,7 +661,11 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
                   ),
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => Center(
+                child: CircularProgressIndicator(
+                  semanticsLabel: context.l10n.common_loading,
+                ),
+              ),
               error: (err, stack) => ErrorStateView(
                 message: context.l10n.common_error(err.toString()),
                 onRetry: () =>

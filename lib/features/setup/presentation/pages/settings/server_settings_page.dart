@@ -100,7 +100,7 @@ class _ServerSettingsPageState extends ConsumerState<ServerSettingsPage> {
     ref.listen(activeServerProfileIdProvider, (previous, next) async {
       if (previous != next && next != null) {
         await _flushRuntimeCachesAfterServerChange();
-        
+
         final profile = ref.read(activeProfileProvider);
         if (profile != null && profile.authMode == AuthMode.password) {
           ref.read(authProvider.notifier).login();

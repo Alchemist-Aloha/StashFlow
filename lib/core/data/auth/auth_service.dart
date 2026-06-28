@@ -65,7 +65,9 @@ class AuthService {
     }
 
     final loginUri = _resolveEndpoint(graphqlEndpoint, 'login');
-    debugPrint('AuthService: Attempting login to $loginUri for user: $trimmedUsername');
+    debugPrint(
+      'AuthService: Attempting login to $loginUri for user: $trimmedUsername',
+    );
     Response response;
     try {
       response = await _dio.postUri(

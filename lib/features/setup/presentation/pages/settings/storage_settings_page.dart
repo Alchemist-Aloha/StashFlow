@@ -29,7 +29,9 @@ class StorageSettingsPage extends ConsumerWidget {
                 children: [
                   ListTile(
                     title: Text(context.l10n.settings_storage_images),
-                    trailing: Text(context.l10n.settings_storage_mb(sizes.imageMb)),
+                    trailing: Text(
+                      context.l10n.settings_storage_mb(sizes.imageMb),
+                    ),
                     subtitle: Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Row(
@@ -37,19 +39,33 @@ class StorageSettingsPage extends ConsumerWidget {
                           ElevatedButton(
                             onPressed: () async {
                               final l10n = context.l10n;
-                              final scaffoldMessenger = ScaffoldMessenger.of(context);
+                              final scaffoldMessenger = ScaffoldMessenger.of(
+                                context,
+                              );
                               scaffoldMessenger.showSnackBar(
-                                SnackBar(content: Text(l10n.settings_storage_clearing_image)),
+                                SnackBar(
+                                  content: Text(
+                                    l10n.settings_storage_clearing_image,
+                                  ),
+                                ),
                               );
                               try {
                                 await service.clearImageCache();
                                 ref.invalidate(cacheSizesProvider);
                                 scaffoldMessenger.showSnackBar(
-                                  SnackBar(content: Text(l10n.settings_storage_cleared_image)),
+                                  SnackBar(
+                                    content: Text(
+                                      l10n.settings_storage_cleared_image,
+                                    ),
+                                  ),
                                 );
                               } catch (e) {
                                 scaffoldMessenger.showSnackBar(
-                                  SnackBar(content: Text(l10n.common_error(e.toString()))),
+                                  SnackBar(
+                                    content: Text(
+                                      l10n.common_error(e.toString()),
+                                    ),
+                                  ),
                                 );
                               }
                             },
@@ -61,7 +77,9 @@ class StorageSettingsPage extends ConsumerWidget {
                   ),
                   ListTile(
                     title: Text(context.l10n.settings_storage_videos),
-                    trailing: Text(context.l10n.settings_storage_mb(sizes.videoMb)),
+                    trailing: Text(
+                      context.l10n.settings_storage_mb(sizes.videoMb),
+                    ),
                     subtitle: Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Row(
@@ -69,19 +87,33 @@ class StorageSettingsPage extends ConsumerWidget {
                           ElevatedButton(
                             onPressed: () async {
                               final l10n = context.l10n;
-                              final scaffoldMessenger = ScaffoldMessenger.of(context);
+                              final scaffoldMessenger = ScaffoldMessenger.of(
+                                context,
+                              );
                               scaffoldMessenger.showSnackBar(
-                                SnackBar(content: Text(l10n.settings_storage_clearing_video)),
+                                SnackBar(
+                                  content: Text(
+                                    l10n.settings_storage_clearing_video,
+                                  ),
+                                ),
                               );
                               try {
                                 await service.clearVideoCache();
                                 ref.invalidate(cacheSizesProvider);
                                 scaffoldMessenger.showSnackBar(
-                                  SnackBar(content: Text(l10n.settings_storage_cleared_video)),
+                                  SnackBar(
+                                    content: Text(
+                                      l10n.settings_storage_cleared_video,
+                                    ),
+                                  ),
                                 );
                               } catch (e) {
                                 scaffoldMessenger.showSnackBar(
-                                  SnackBar(content: Text(l10n.common_error(e.toString()))),
+                                  SnackBar(
+                                    content: Text(
+                                      l10n.common_error(e.toString()),
+                                    ),
+                                  ),
                                 );
                               }
                             },
@@ -93,7 +125,9 @@ class StorageSettingsPage extends ConsumerWidget {
                   ),
                   ListTile(
                     title: Text(context.l10n.settings_storage_database),
-                    trailing: Text(context.l10n.settings_storage_mb(sizes.dbMb)),
+                    trailing: Text(
+                      context.l10n.settings_storage_mb(sizes.dbMb),
+                    ),
                     subtitle: Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Row(
@@ -101,19 +135,33 @@ class StorageSettingsPage extends ConsumerWidget {
                           ElevatedButton(
                             onPressed: () async {
                               final l10n = context.l10n;
-                              final scaffoldMessenger = ScaffoldMessenger.of(context);
+                              final scaffoldMessenger = ScaffoldMessenger.of(
+                                context,
+                              );
                               scaffoldMessenger.showSnackBar(
-                                SnackBar(content: Text(l10n.settings_storage_clearing_database)),
+                                SnackBar(
+                                  content: Text(
+                                    l10n.settings_storage_clearing_database,
+                                  ),
+                                ),
                               );
                               try {
                                 await service.clearDatabaseCache();
                                 ref.invalidate(cacheSizesProvider);
                                 scaffoldMessenger.showSnackBar(
-                                  SnackBar(content: Text(l10n.settings_storage_cleared_database)),
+                                  SnackBar(
+                                    content: Text(
+                                      l10n.settings_storage_cleared_database,
+                                    ),
+                                  ),
                                 );
                               } catch (e) {
                                 scaffoldMessenger.showSnackBar(
-                                  SnackBar(content: Text(l10n.common_error(e.toString()))),
+                                  SnackBar(
+                                    content: Text(
+                                      l10n.common_error(e.toString()),
+                                    ),
+                                  ),
                                 );
                               }
                             },
@@ -125,8 +173,13 @@ class StorageSettingsPage extends ConsumerWidget {
                   ),
                 ],
               ),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) => Text(context.l10n.settings_storage_error_loading),
+              loading: () => Center(
+                child: CircularProgressIndicator(
+                  semanticsLabel: context.l10n.common_loading,
+                ),
+              ),
+              error: (err, stack) =>
+                  Text(context.l10n.settings_storage_error_loading),
             ),
           ),
           SizedBox(height: context.dimensions.spacingMedium),
@@ -137,12 +190,26 @@ class StorageSettingsPage extends ConsumerWidget {
               children: [
                 DropdownButtonFormField<int>(
                   initialValue: ref.watch(maxImageCacheSizeProvider),
-                  decoration: InputDecoration(labelText: context.l10n.settings_storage_max_image_cache),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.settings_storage_max_image_cache,
+                  ),
                   items: [
-                    DropdownMenuItem(value: 100, child: Text(context.l10n.settings_storage_100_mb)),
-                    DropdownMenuItem(value: 500, child: Text(context.l10n.settings_storage_500_mb)),
-                    DropdownMenuItem(value: 1024, child: Text(context.l10n.settings_storage_1_gb)),
-                    DropdownMenuItem(value: 999999, child: Text(context.l10n.settings_storage_unlimited)),
+                    DropdownMenuItem(
+                      value: 100,
+                      child: Text(context.l10n.settings_storage_100_mb),
+                    ),
+                    DropdownMenuItem(
+                      value: 500,
+                      child: Text(context.l10n.settings_storage_500_mb),
+                    ),
+                    DropdownMenuItem(
+                      value: 1024,
+                      child: Text(context.l10n.settings_storage_1_gb),
+                    ),
+                    DropdownMenuItem(
+                      value: 999999,
+                      child: Text(context.l10n.settings_storage_unlimited),
+                    ),
                   ],
                   onChanged: (v) {
                     if (v != null) {
@@ -157,12 +224,26 @@ class StorageSettingsPage extends ConsumerWidget {
                 SizedBox(height: context.dimensions.spacingMedium),
                 DropdownButtonFormField<int>(
                   initialValue: ref.watch(maxVideoCacheSizeProvider),
-                  decoration: InputDecoration(labelText: context.l10n.settings_storage_max_video_cache),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.settings_storage_max_video_cache,
+                  ),
                   items: [
-                    DropdownMenuItem(value: 500, child: Text(context.l10n.settings_storage_500_mb)),
-                    DropdownMenuItem(value: 1024, child: Text(context.l10n.settings_storage_1_gb)),
-                    DropdownMenuItem(value: 2048, child: Text(context.l10n.settings_storage_2_gb)),
-                    DropdownMenuItem(value: 999999, child: Text(context.l10n.settings_storage_unlimited)),
+                    DropdownMenuItem(
+                      value: 500,
+                      child: Text(context.l10n.settings_storage_500_mb),
+                    ),
+                    DropdownMenuItem(
+                      value: 1024,
+                      child: Text(context.l10n.settings_storage_1_gb),
+                    ),
+                    DropdownMenuItem(
+                      value: 2048,
+                      child: Text(context.l10n.settings_storage_2_gb),
+                    ),
+                    DropdownMenuItem(
+                      value: 999999,
+                      child: Text(context.l10n.settings_storage_unlimited),
+                    ),
                   ],
                   onChanged: (v) {
                     if (v != null) {

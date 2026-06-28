@@ -8,7 +8,11 @@ class LoadingStateView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: CircularProgressIndicator(semanticsLabel: context.l10n.common_loading));
+    return Center(
+      child: CircularProgressIndicator(
+        semanticsLabel: context.l10n.common_loading,
+      ),
+    );
   }
 }
 
@@ -30,7 +34,7 @@ class ErrorStateView extends StatelessWidget {
     final theme = Theme.of(context);
     final dims = theme.extension<AppDimensions>();
     final colors = theme.extension<AppColors>();
-    
+
     // Fallback values if theme extensions are missing (e.g. in some tests)
     final spacingLarge = dims?.spacingLarge ?? 24.0;
     final spacingSmall = dims?.spacingSmall ?? 8.0;

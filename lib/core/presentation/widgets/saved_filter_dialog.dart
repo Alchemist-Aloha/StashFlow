@@ -183,7 +183,10 @@ class _SavedFilterDialogState<T extends SavedFilterConfig<dynamic>>
                           ? const SizedBox(
                               width: 16,
                               height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                semanticsLabel: context.l10n.common_loading,
+                              ),
                             )
                           : const Icon(Icons.save_outlined),
                       label: Text(context.l10n.common_save),
@@ -396,7 +399,11 @@ class _SavedFilterList<T extends SavedFilterConfig<dynamic>>
   @override
   Widget build(BuildContext context) {
     if (snapshot.connectionState == ConnectionState.waiting) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(
+        child: CircularProgressIndicator(
+          semanticsLabel: context.l10n.common_loading,
+        ),
+      );
     }
 
     if (snapshot.hasError) {
@@ -456,7 +463,10 @@ class _SavedFilterList<T extends SavedFilterConfig<dynamic>>
                       ? const SizedBox(
                           width: 18,
                           height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            semanticsLabel: context.l10n.common_loading,
+                          ),
                         )
                       : const Icon(Icons.delete_outline),
                 ),

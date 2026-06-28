@@ -194,7 +194,10 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
                 child: SizedBox(
                   width: 20,
                   height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    semanticsLabel: context.l10n.common_loading,
+                  ),
                 ),
               ),
             )
@@ -213,6 +216,7 @@ class _StudioEditPageState extends ConsumerState<StudioEditPage> {
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
                       color: Colors.white,
+                      semanticsLabel: context.l10n.common_loading,
                     ),
                   )
                 : const Icon(Icons.save),

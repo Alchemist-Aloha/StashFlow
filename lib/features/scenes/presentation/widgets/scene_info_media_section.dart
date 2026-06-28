@@ -315,7 +315,12 @@ class _SceneInfoPreviewPlayerState
       children: [
         if (controller != null)
           _PreviewNativeControls(child: Video(controller: controller)),
-        if (_initializing) const Center(child: CircularProgressIndicator()),
+        if (_initializing)
+          Center(
+            child: CircularProgressIndicator(
+              semanticsLabel: context.l10n.common_loading,
+            ),
+          ),
         if (_error != null)
           Center(
             child: Padding(

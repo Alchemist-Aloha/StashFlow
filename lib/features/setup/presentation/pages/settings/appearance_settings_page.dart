@@ -87,7 +87,11 @@ class _AppearanceSettingsPageState
     return SettingsPageShell(
       title: l10n.settings_appearance_title,
       child: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: CircularProgressIndicator(
+                semanticsLabel: context.l10n.common_loading,
+              ),
+            )
           : SingleChildScrollView(
               padding: EdgeInsets.all(context.dimensions.spacingLarge),
               child: Column(

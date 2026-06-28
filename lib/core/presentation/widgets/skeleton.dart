@@ -12,7 +12,8 @@ class Skeleton extends StatefulWidget {
   State<Skeleton> createState() => _SkeletonState();
 }
 
-class _SkeletonState extends State<Skeleton> with SingleTickerProviderStateMixin {
+class _SkeletonState extends State<Skeleton>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
   @override
@@ -33,7 +34,7 @@ class _SkeletonState extends State<Skeleton> with SingleTickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     // Base colors for the shimmer effect, adjusted for theme.
     final baseColor = isDark ? Colors.grey.shade800 : Colors.grey.shade300;
     final highlightColor = isDark ? Colors.grey.shade700 : Colors.grey.shade100;
@@ -46,15 +47,11 @@ class _SkeletonState extends State<Skeleton> with SingleTickerProviderStateMixin
             final double progress = _controller.value;
             // Move the gradient from left to right across the widget bounds.
             final double center = progress * 2 - 0.5;
-            
+
             return LinearGradient(
               begin: const Alignment(-1.0, 0),
               end: const Alignment(1.0, 0),
-              colors: [
-                baseColor,
-                highlightColor,
-                baseColor,
-              ],
+              colors: [baseColor, highlightColor, baseColor],
               stops: [
                 (center - 0.3).clamp(0.0, 1.0),
                 center.clamp(0.0, 1.0),

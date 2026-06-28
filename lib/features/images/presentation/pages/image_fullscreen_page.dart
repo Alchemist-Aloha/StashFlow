@@ -937,7 +937,11 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
     return imagesAsync.when(
       loading: () => const Scaffold(
         backgroundColor: Colors.black,
-        body: Center(child: CircularProgressIndicator()),
+        body: Center(
+          child: CircularProgressIndicator(
+            semanticsLabel: context.l10n.common_loading,
+          ),
+        ),
       ),
       error: (e, s) => Scaffold(
         backgroundColor: Colors.black,
@@ -1082,8 +1086,11 @@ class _ImageFullscreenPageState extends ConsumerState<ImageFullscreenPage> {
                                 loadStateChanged: (ExtendedImageState state) {
                                   switch (state.extendedImageLoadState) {
                                     case LoadState.loading:
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          semanticsLabel:
+                                              context.l10n.common_loading,
+                                        ),
                                       );
                                     case LoadState.completed:
                                       return state.completedWidget;

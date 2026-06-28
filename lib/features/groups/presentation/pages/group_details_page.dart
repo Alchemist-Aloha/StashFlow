@@ -172,10 +172,7 @@ class GroupDetailsPage extends ConsumerWidget {
                                   ),
                                 );
                               },
-                              loading: () => const SizedBox(
-                                height: 100,
-                                child: Center(
-                                  child: CircularProgressIndicator(),
+                              loading: () => SizedBox(height: 100, child: Center(child: CircularProgressIndicator(semanticsLabel: context.l10n.common_loading))),
                                 ),
                               ),
                               error: (err, stack) => Text(
@@ -197,7 +194,7 @@ class GroupDetailsPage extends ConsumerWidget {
             ),
           ),
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => Center(child: CircularProgressIndicator(semanticsLabel: context.l10n.common_loading)),
         error: (err, stack) => ErrorStateView(
           message: context.l10n.common_error(err.toString()),
           onRetry: () => ref.refresh(groupDetailsProvider(groupId)),

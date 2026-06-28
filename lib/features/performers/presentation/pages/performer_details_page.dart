@@ -449,10 +449,13 @@ class PerformerDetailsPage extends ConsumerWidget {
                                     ),
                                   );
                                 },
-                                loading: () => const SizedBox(
+                                loading: () => SizedBox(
                                   height: 100,
                                   child: Center(
-                                    child: CircularProgressIndicator(),
+                                    child: CircularProgressIndicator(
+                                      semanticsLabel:
+                                          context.l10n.common_loading,
+                                    ),
                                   ),
                                 ),
                                 error: (err, stack) => Text(
@@ -499,9 +502,13 @@ class PerformerDetailsPage extends ConsumerWidget {
                               ),
                             );
                           },
-                          loading: () => const SizedBox(
+                          loading: () => SizedBox(
                             height: 100,
-                            child: Center(child: CircularProgressIndicator()),
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                semanticsLabel: context.l10n.common_loading,
+                              ),
+                            ),
                           ),
                           error: (err, stack) => Text(
                             context.l10n.details_failed_load_galleries(
@@ -522,7 +529,11 @@ class PerformerDetailsPage extends ConsumerWidget {
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => Center(
+          child: CircularProgressIndicator(
+            semanticsLabel: context.l10n.common_loading,
+          ),
+        ),
         error: (err, stack) =>
             Center(child: Text(context.l10n.common_error(err.toString()))),
       ),
