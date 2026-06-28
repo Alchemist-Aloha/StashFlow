@@ -136,7 +136,7 @@ class _SceneMarkerFilterPanelState
       title: 'Dates',
       children: [
         DateCriterionInput(
-          label: 'Created At',
+          label: context.l10n.common_created_at,
           value: _tempFilter.createdAt,
           onChanged: (value) => setState(
             () => _tempFilter = _tempFilter.copyWith(
@@ -146,7 +146,7 @@ class _SceneMarkerFilterPanelState
           ),
         ),
         DateCriterionInput(
-          label: 'Updated At',
+          label: context.l10n.common_updated_at,
           value: _tempFilter.updatedAt,
           onChanged: (value) => setState(
             () => _tempFilter = _tempFilter.copyWith(
@@ -156,7 +156,7 @@ class _SceneMarkerFilterPanelState
           ),
         ),
         DateCriterionInput(
-          label: 'Scene Date',
+          label: context.l10n.filter_scene_date,
           value: _tempFilter.sceneDate,
           onChanged: (value) => setState(
             () => _tempFilter = _tempFilter.copyWith(
@@ -166,7 +166,7 @@ class _SceneMarkerFilterPanelState
           ),
         ),
         DateCriterionInput(
-          label: 'Scene Created At',
+          label: context.l10n.filter_scene_created_at,
           value: _tempFilter.sceneCreatedAt,
           onChanged: (value) => setState(
             () => _tempFilter = _tempFilter.copyWith(
@@ -176,7 +176,7 @@ class _SceneMarkerFilterPanelState
           ),
         ),
         DateCriterionInput(
-          label: 'Scene Updated At',
+          label: context.l10n.filter_scene_updated_at,
           value: _tempFilter.sceneUpdatedAt,
           onChanged: (value) => setState(
             () => _tempFilter = _tempFilter.copyWith(

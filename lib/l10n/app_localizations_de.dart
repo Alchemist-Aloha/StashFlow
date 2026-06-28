@@ -3113,4 +3113,27 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get auto_missing_field => 'Fehlendes Feld';
+
+  @override
+  String get common_created_at => 'Erstellt am';
+
+  @override
+  String get common_updated_at => 'Aktualisiert am';
+
+  @override
+  String get filter_scene_date => 'Szenendatum';
+
+  @override
+  String get filter_scene_created_at => 'Szene erstellt am';
+
+  @override
+  String get filter_scene_updated_at => 'Szene aktualisiert um';
+
+  @override
+  String mini_player_now_playing(String displayTitle) {
+    return 'Spielt gerade:$displayTitle. Tippen Sie hier, um Szenendetails zu öffnen.';
+  }
+
+  @override
+  String get filter_sub_group_count => 'Anzahl der Untergruppen';
 }

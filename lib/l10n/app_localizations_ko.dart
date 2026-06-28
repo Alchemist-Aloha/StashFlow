@@ -3006,4 +3006,27 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get auto_missing_field => '누락된 필드';
+
+  @override
+  String get common_created_at => '생성 날짜';
+
+  @override
+  String get common_updated_at => '업데이트 날짜';
+
+  @override
+  String get filter_scene_date => '장면 날짜';
+
+  @override
+  String get filter_scene_created_at => '장면 생성 시간';
+
+  @override
+  String get filter_scene_updated_at => '장면 업데이트 시간';
+
+  @override
+  String mini_player_now_playing(String displayTitle) {
+    return '지금 재생 중:$displayTitle. 장면 세부정보를 열려면 탭하세요.';
+  }
+
+  @override
+  String get filter_sub_group_count => '하위 그룹 수';
 }

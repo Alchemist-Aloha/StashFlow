@@ -5525,6 +5525,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Missing Field'**
   String get auto_missing_field;
+
+  /// No description provided for @common_created_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Created At'**
+  String get common_created_at;
+
+  /// No description provided for @common_updated_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated At'**
+  String get common_updated_at;
+
+  /// No description provided for @filter_scene_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Date'**
+  String get filter_scene_date;
+
+  /// No description provided for @filter_scene_created_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Created At'**
+  String get filter_scene_created_at;
+
+  /// No description provided for @filter_scene_updated_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Updated At'**
+  String get filter_scene_updated_at;
+
+  /// No description provided for @mini_player_now_playing.
+  ///
+  /// In en, this message translates to:
+  /// **'Now playing: {displayTitle}. Tap to open scene details.'**
+  String mini_player_now_playing(String displayTitle);
+
+  /// No description provided for @filter_sub_group_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Sub-group Count'**
+  String get filter_sub_group_count;
 }
 
 class _AppLocalizationsDelegate

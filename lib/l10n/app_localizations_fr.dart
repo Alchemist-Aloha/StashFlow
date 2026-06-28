@@ -3132,4 +3132,27 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get auto_missing_field => 'Champ manquant';
+
+  @override
+  String get common_created_at => 'Créé à';
+
+  @override
+  String get common_updated_at => 'Mis à jour à';
+
+  @override
+  String get filter_scene_date => 'Date de la scène';
+
+  @override
+  String get filter_scene_created_at => 'Scène créée à';
+
+  @override
+  String get filter_scene_updated_at => 'Scène mise à jour à';
+
+  @override
+  String mini_player_now_playing(String displayTitle) {
+    return 'Lecture en cours :$displayTitle. Appuyez pour ouvrir les détails de la scène.';
+  }
+
+  @override
+  String get filter_sub_group_count => 'Nombre de sous-groupes';
 }

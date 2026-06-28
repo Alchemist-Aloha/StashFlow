@@ -3108,4 +3108,27 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get auto_missing_field => 'Отсутствует поле';
+
+  @override
+  String get common_created_at => 'Создано в';
+
+  @override
+  String get common_updated_at => 'Обновлено в';
+
+  @override
+  String get filter_scene_date => 'Дата сцены';
+
+  @override
+  String get filter_scene_created_at => 'Сцена создана в';
+
+  @override
+  String get filter_scene_updated_at => 'Сцена обновлена ​​в';
+
+  @override
+  String mini_player_now_playing(String displayTitle) {
+    return 'Сейчас играет:$displayTitle. Нажмите, чтобы открыть сведения о сцене.';
+  }
+
+  @override
+  String get filter_sub_group_count => 'Количество подгрупп';
 }

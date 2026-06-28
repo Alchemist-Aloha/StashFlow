@@ -1444,5 +1444,19 @@
   },
   "scenes_page_markers_tooltip": "Markers",
   "auto_marker_name": "Marker name",
-  "auto_missing_field": "Missing Field"
+  "auto_missing_field": "Missing Field",
+  "common_created_at": "Created At",
+  "common_updated_at": "Updated At",
+  "filter_scene_date": "Scene Date",
+  "filter_scene_created_at": "Scene Created At",
+  "filter_scene_updated_at": "Scene Updated At",
+  "mini_player_now_playing": "Now playing: {displayTitle}. Tap to open scene details.",
+  "@mini_player_now_playing": {
+    "placeholders": {
+      "displayTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "filter_sub_group_count": "Sub-group Count"
 }
