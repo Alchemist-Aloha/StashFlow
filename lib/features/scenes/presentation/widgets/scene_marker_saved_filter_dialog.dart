@@ -5,6 +5,7 @@ import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../domain/entities/scene_marker.dart';
 import '../../domain/entities/scene_marker_saved_filter_config.dart';
 import '../providers/scene_marker_list_provider.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 
 class SceneMarkerSavedFilterDialog extends ConsumerStatefulWidget {
   const SceneMarkerSavedFilterDialog({
@@ -41,7 +42,7 @@ class _SceneMarkerSavedFilterDialogState
           .where((value) => value != null)
           .length,
       defaultSortLabel: 'created_at',
-      saveSuccessMessage: 'Marker filter saved to server',
+      saveSuccessMessage: context.l10n.saved_item('Marker filter'),
       loadPresets: () =>
           ref.read(sceneMarkerSavedFilterRepositoryProvider).findAll(),
       savePreset: ({required String name, String? existingId}) {

@@ -52,7 +52,7 @@ class _SceneMarkerFilterPanelState
         ref.read(sceneMarkerFilterStateProvider.notifier).update(_tempFilter);
         await ref.read(sceneMarkerFilterStateProvider.notifier).saveAsDefault();
       },
-      saveDefaultSuccessMessage: 'Marker filter saved as default',
+      saveDefaultSuccessMessage: context.l10n.scenes_filter_saved,
     );
   }
 

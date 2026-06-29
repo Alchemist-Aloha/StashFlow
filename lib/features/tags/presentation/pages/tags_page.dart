@@ -170,7 +170,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
         descending: sortConfig.descending,
         activeFilterCount: favoritesOnly ? 1 : 0,
         defaultSortLabel: 'name',
-        saveSuccessMessage: 'Tag filter saved to server',
+        saveSuccessMessage: context.l10n.saved_item('Tag filter'),
         loadPresets: () => ref
             .read(savedFilterRepositoryProvider)
             .findAll(

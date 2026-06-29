@@ -152,7 +152,7 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
         descending: sortConfig.descending,
         activeFilterCount: _activeFilterCount(),
         defaultSortLabel: 'name',
-        saveSuccessMessage: 'Group filter saved to server',
+        saveSuccessMessage: context.l10n.saved_item('Group filter'),
         loadPresets: () => ref
             .read(savedFilterRepositoryProvider)
             .findAll(

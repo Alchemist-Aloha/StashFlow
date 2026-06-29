@@ -5,6 +5,7 @@ import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../../domain/entities/scene_saved_filter_config.dart';
 import '../providers/scene_list_provider.dart';
+import '../../../../core/utils/l10n_extensions.dart';
 
 class SceneSavedFilterDialog extends ConsumerStatefulWidget {
   const SceneSavedFilterDialog({
@@ -41,7 +42,7 @@ class _SceneSavedFilterDialogState
           .where((value) => value != null)
           .length,
       defaultSortLabel: 'date',
-      saveSuccessMessage: 'Scene filter saved to server',
+      saveSuccessMessage: context.l10n.saved_item('Scene filter'),
       loadPresets: () => ref.read(sceneSavedFilterRepositoryProvider).findAll(),
       savePreset: ({required String name, String? existingId}) {
         return ref
