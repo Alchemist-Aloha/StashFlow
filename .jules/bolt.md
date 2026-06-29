@@ -49,3 +49,6 @@
 ## 2024-05-30 - [Hoist textTheme and dimensions from ListView itemBuilder]
 **Learning:** Performing invariant lookups like `context.textTheme` and `context.dimensions.fontSizeFactor` inside a `ListView.builder`'s `itemBuilder` callback forces redundant O(1) inherited widget lookups on every single rendered item during scroll.
 **Action:** Always hoist these layout and styling variables out of the `itemBuilder` and into the parent widget's `build` (or builder) method to reduce GC pressure and ensure optimal rendering performance.
+## 2024-06-29 - Throttle pagination data fetch on scroll
+**Learning:** The `NotificationListener<ScrollNotification>` callback in Flutter, when used for pagination (e.g. checking if `metrics.pixels >= maxScrollExtent - threshold`), will fire continuously on every frame while the user remains within the threshold zone at the bottom of the list. This leads to massive O(N) redundant network requests and synchronous evaluations in rapid succession if not throttled.
+**Action:** Always maintain a throttle (e.g., a `DateTime` comparison tracking the last fetch execution to limit calls to once every ~500ms) or short-circuit logic based on tracking visible indexes when executing expensive operations inside scroll notification listeners.
