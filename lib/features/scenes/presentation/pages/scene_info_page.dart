@@ -131,9 +131,15 @@ class _SceneInfoPageState extends ConsumerState<SceneInfoPage> {
                 text: scene.rating100 != null ? '${scene.rating100}' : '--',
               ),
               if (scene.organized)
-                _InfoChip(icon: Icons.check_circle_rounded, text: 'Organized'),
+                _InfoChip(
+                  icon: Icons.check_circle_rounded,
+                  text: context.l10n.organized_title,
+                ),
               if (scene.interactive)
-                _InfoChip(icon: Icons.touch_app_rounded, text: 'Interactive'),
+                _InfoChip(
+                  icon: Icons.touch_app_rounded,
+                  text: context.l10n.interactive_title,
+                ),
             ],
           ),
           const SizedBox(height: 16),

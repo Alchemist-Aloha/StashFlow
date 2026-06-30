@@ -80,7 +80,7 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
       context: context,
       isScrollControlled: true,
       builder: (context) => ListSortBottomSheet<_MarkerSortField>(
-        title: 'Sort markers',
+        title: context.l10n.sort_markers_title,
         options: _MarkerSortField.values,
         initialOption: _sortField,
         initialDescending: _sortDescending,
@@ -159,8 +159,8 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
         _sortField != _MarkerSortField.createdAt || !_sortDescending;
 
     return ListPageScaffold<SceneMarkerSummary>(
-      title: 'Markers',
-      searchHint: 'Search markers',
+      title: context.l10n.markers_title,
+      searchHint: context.l10n.markers_search_hint,
       onSearchChanged: _onSearchChanged,
       provider: markersAsync,
       emptyMessage: 'No markers found',

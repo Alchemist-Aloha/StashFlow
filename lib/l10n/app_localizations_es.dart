@@ -3140,4 +3140,85 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get auto_missing_field => 'Campo faltante';
+
+  @override
+  String get filter_markers_title => 'Marcadores de filtro';
+
+  @override
+  String get marker_title => 'Marcador';
+
+  @override
+  String get duration_title => 'Duración';
+
+  @override
+  String get scene_title => 'Escena';
+
+  @override
+  String get dates_title => 'Fechas';
+
+  @override
+  String get created_at_title => 'Creado en';
+
+  @override
+  String get updated_at_title => 'Actualizado en';
+
+  @override
+  String get scene_date_title => 'Escena Fecha';
+
+  @override
+  String get scene_created_at_title => 'Escena creada en';
+
+  @override
+  String get scene_updated_at_title => 'Escena actualizada en';
+
+  @override
+  String get organized_title => 'Organizado';
+
+  @override
+  String get interactive_title => 'Interactivo';
+
+  @override
+  String get scraped_metadata_title => 'Metadatos eliminados';
+
+  @override
+  String get local_scene_title => 'Escena local';
+
+  @override
+  String get sort_markers_title => 'Ordenar marcadores';
+
+  @override
+  String get markers_title => 'Marcadores';
+
+  @override
+  String get sub_group_count_title => 'Recuento de subgrupos';
+
+  @override
+  String get groups_browsing_mode_subtitle =>
+      'Modo de navegación predeterminado para grupos';
+
+  @override
+  String get markers_browsing_mode_subtitle =>
+      'Modo de navegación predeterminado para marcadores';
+
+  @override
+  String get entity_layouts_title => 'Diseños de entidad';
+
+  @override
+  String get entity_layouts_subtitle =>
+      'Valores predeterminados de diseño de galería y medios para artistas, estudios y etiquetas';
+
+  @override
+  String get stats_subtitle_0_gb => '0,00GB';
+
+  @override
+  String get stats_subtitle_0_unique_items => '0 artículos únicos';
+
+  @override
+  String get markers_search_hint => 'Marcadores de búsqueda';
+
+  @override
+  String get tags_title => 'Etiquetas';
+
+  @override
+  String get scenes_title => 'Escenas';
 }

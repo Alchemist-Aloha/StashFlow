@@ -3113,4 +3113,85 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get auto_missing_field => 'Fehlendes Feld';
+
+  @override
+  String get filter_markers_title => 'Filtermarkierungen';
+
+  @override
+  String get marker_title => 'Marker';
+
+  @override
+  String get duration_title => 'Dauer';
+
+  @override
+  String get scene_title => 'Szene';
+
+  @override
+  String get dates_title => 'Termine';
+
+  @override
+  String get created_at_title => 'Erstellt am';
+
+  @override
+  String get updated_at_title => 'Aktualisiert am';
+
+  @override
+  String get scene_date_title => 'Szenendatum';
+
+  @override
+  String get scene_created_at_title => 'Szene erstellt am';
+
+  @override
+  String get scene_updated_at_title => 'Szene aktualisiert um';
+
+  @override
+  String get organized_title => 'Organisiert';
+
+  @override
+  String get interactive_title => 'Interaktiv';
+
+  @override
+  String get scraped_metadata_title => 'Gekratzte Metadaten';
+
+  @override
+  String get local_scene_title => 'Lokale Szene';
+
+  @override
+  String get sort_markers_title => 'Sortiermarkierungen';
+
+  @override
+  String get markers_title => 'Markierungen';
+
+  @override
+  String get sub_group_count_title => 'Anzahl der Untergruppen';
+
+  @override
+  String get groups_browsing_mode_subtitle =>
+      'Standardbrowsermodus für Gruppen';
+
+  @override
+  String get markers_browsing_mode_subtitle =>
+      'Standard-Browsing-Modus für Markierungen';
+
+  @override
+  String get entity_layouts_title => 'Entitätslayouts';
+
+  @override
+  String get entity_layouts_subtitle =>
+      'Standardeinstellungen für das Medien- und Galerielayout für Künstler, Studios und Tags';
+
+  @override
+  String get stats_subtitle_0_gb => '0,00 GB';
+
+  @override
+  String get stats_subtitle_0_unique_items => '0 einzigartige Artikel';
+
+  @override
+  String get markers_search_hint => 'Suchmarkierungen';
+
+  @override
+  String get tags_title => 'Schlagworte';
+
+  @override
+  String get scenes_title => 'Szenen';
 }

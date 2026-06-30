@@ -784,7 +784,7 @@ class _TaggerSceneCard extends StatelessWidget {
                   sceneId: scene.id,
                   scraped: scraped,
                   error: result?.error,
-                  title: 'Scraped metadata',
+                  title: context.l10n.scraped_metadata_title,
                 ),
               ),
             ],
@@ -802,7 +802,7 @@ class _TaggerSceneCard extends StatelessWidget {
                 sceneId: scene.id,
                 scraped: scraped,
                 error: result?.error,
-                title: 'Scraped metadata',
+                title: context.l10n.scraped_metadata_title,
               ),
             ],
           );
@@ -893,7 +893,7 @@ class _LocalSceneSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _MetadataPanel(
-      title: 'Local scene',
+      title: context.l10n.local_scene_title,
       media: _ScenePreviewPlayer(
         key: ValueKey('scene_preview_player_${scene.id}'),
         scene: scene,

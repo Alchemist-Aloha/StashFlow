@@ -3006,4 +3006,82 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get auto_missing_field => '누락된 필드';
+
+  @override
+  String get filter_markers_title => '필터 마커';
+
+  @override
+  String get marker_title => '채점자';
+
+  @override
+  String get duration_title => '지속';
+
+  @override
+  String get scene_title => '장면';
+
+  @override
+  String get dates_title => '날짜';
+
+  @override
+  String get created_at_title => '생성 날짜';
+
+  @override
+  String get updated_at_title => '업데이트 날짜';
+
+  @override
+  String get scene_date_title => '장면 날짜';
+
+  @override
+  String get scene_created_at_title => '장면 생성 시간';
+
+  @override
+  String get scene_updated_at_title => '장면 업데이트 시간';
+
+  @override
+  String get organized_title => '정리됨';
+
+  @override
+  String get interactive_title => '인터랙티브';
+
+  @override
+  String get scraped_metadata_title => '스크랩된 메타데이터';
+
+  @override
+  String get local_scene_title => '지역 현장';
+
+  @override
+  String get sort_markers_title => '정렬 마커';
+
+  @override
+  String get markers_title => '마커';
+
+  @override
+  String get sub_group_count_title => '하위 그룹 수';
+
+  @override
+  String get groups_browsing_mode_subtitle => '그룹의 기본 탐색 모드';
+
+  @override
+  String get markers_browsing_mode_subtitle => '마커의 기본 탐색 모드';
+
+  @override
+  String get entity_layouts_title => '엔터티 레이아웃';
+
+  @override
+  String get entity_layouts_subtitle => '공연자, 스튜디오 및 태그에 대한 미디어 및 갤러리 레이아웃 기본값';
+
+  @override
+  String get stats_subtitle_0_gb => '0.00GB';
+
+  @override
+  String get stats_subtitle_0_unique_items => '0개의 고유 아이템';
+
+  @override
+  String get markers_search_hint => '검색 마커';
+
+  @override
+  String get tags_title => '태그';
+
+  @override
+  String get scenes_title => '장면';
 }

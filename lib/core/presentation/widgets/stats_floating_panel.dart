@@ -253,13 +253,13 @@ class StatsFloatingPanel extends ConsumerWidget {
             icon: Icons.movie_filter_rounded,
             label: l10n.stats_scenes,
             value: '000',
-            subtitle: '0.00 GB',
+            subtitle: context.l10n.stats_subtitle_0_gb,
           ),
           _StatItem(
             icon: Icons.photo_library_rounded,
             label: l10n.images_title,
             value: '000',
-            subtitle: '0.00 GB',
+            subtitle: context.l10n.stats_subtitle_0_gb,
           ),
           _StatItem(
             icon: Icons.auto_stories_rounded,
@@ -294,7 +294,7 @@ class StatsFloatingPanel extends ConsumerWidget {
             icon: Icons.play_lesson_rounded,
             label: l10n.stats_total_plays,
             value: '000',
-            subtitle: '0 unique items',
+            subtitle: context.l10n.stats_subtitle_0_unique_items,
           ),
           _StatItem(
             icon: Icons.favorite_rounded,
