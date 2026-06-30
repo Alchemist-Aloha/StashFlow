@@ -45,7 +45,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String nScenes(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
-
     );
     final String countString = countNumberFormat.format(count);
 
@@ -64,7 +63,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String nPerformers(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
-
     );
     final String countString = countNumberFormat.format(count);
 
@@ -83,7 +81,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String nPlays(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
-
     );
     final String countString = countNumberFormat.format(count);
 
@@ -155,7 +152,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get common_hide => 'скрыть';
 
   @override
-  String get galleries_filter_saved => 'Настройки фильтра сохранены по умолчанию';
+  String get galleries_filter_saved =>
+      'Настройки фильтра сохранены по умолчанию';
 
   @override
   String get common_setup_required => 'Требуется настройка';
@@ -281,7 +279,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sort_last_played_at => 'Последнее воспроизведение';
 
   @override
-  String get studios_sort_saved => 'Настройки сортировки сохранены по умолчанию';
+  String get studios_sort_saved =>
+      'Настройки сортировки сохранены по умолчанию';
 
   @override
   String get studios_no_random => 'Нет доступных студий для случайного выбора';
@@ -305,10 +304,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get scenes_no_random => 'Нет доступных сцен для случайного выбора';
 
   @override
-  String get performers_no_random => 'Нет доступных исполнителей для случайного выбора';
+  String get performers_no_random =>
+      'Нет доступных исполнителей для случайного выбора';
 
   @override
-  String get galleries_no_random => 'Нет доступных галерей для случайного выбора';
+  String get galleries_no_random =>
+      'Нет доступных галерей для случайного выбора';
 
   @override
   String common_error(String message) {
@@ -674,7 +675,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get scenes_sort_code => 'Код';
 
   @override
-  String get scenes_sort_saved_default => 'Настройки сортировки сохранены по умолчанию';
+  String get scenes_sort_saved_default =>
+      'Настройки сортировки сохранены по умолчанию';
 
   @override
   String get scenes_sort_tooltip => 'Параметры сортировки';
@@ -869,7 +871,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get filter_matches_regex => 'Соответствует регулярному выражению';
 
   @override
-  String get filter_not_matches_regex => 'Не соответствует регулярному выражению';
+  String get filter_not_matches_regex =>
+      'Не соответствует регулярному выражению';
 
   @override
   String get filter_between => 'Между';
@@ -945,13 +948,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_customize => 'Настройка StashFlow';
 
   @override
-  String get settings_customize_subtitle => 'Настройте воспроизведение, внешний вид, макет и инструменты поддержки в одном месте.';
+  String get settings_customize_subtitle =>
+      'Настройте воспроизведение, внешний вид, макет и инструменты поддержки в одном месте.';
 
   @override
   String get settings_core_section => 'Основные настройки';
 
   @override
-  String get settings_core_subtitle => 'Самые используемые страницы конфигурации';
+  String get settings_core_subtitle =>
+      'Самые используемые страницы конфигурации';
 
   @override
   String get settings_server => 'Сервер';
@@ -1020,7 +1025,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_keyboard_go_back => 'Назад';
 
   @override
-  String get settings_keyboard_play_pause_desc => 'Переключение между воспроизведением и паузой';
+  String get settings_keyboard_play_pause_desc =>
+      'Переключение между воспроизведением и паузой';
 
   @override
   String get settings_keyboard_seek_forward_5_desc => 'Вперед на 5 секунд';
@@ -1044,7 +1050,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_interface => 'Интерфейс';
 
   @override
-  String get settings_interface_subtitle => 'Навигация и настройки макета по умолчанию';
+  String get settings_interface_subtitle =>
+      'Навигация и настройки макета по умолчанию';
 
   @override
   String get settings_support => 'Поддержка';
@@ -1056,7 +1063,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_develop => 'Разработка';
 
   @override
-  String get settings_develop_subtitle => 'Расширенные инструменты и переопределения';
+  String get settings_develop_subtitle =>
+      'Расширенные инструменты и переопределения';
 
   @override
   String get settings_appearance_title => 'Настройки внешнего вида';
@@ -1065,7 +1073,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_appearance_theme_mode => 'Режим темы';
 
   @override
-  String get settings_appearance_theme_mode_subtitle => 'Выберите, как приложение следует за изменениями яркости';
+  String get settings_appearance_theme_mode_subtitle =>
+      'Выберите, как приложение следует за изменениями яркости';
 
   @override
   String get settings_appearance_theme_system => 'Системная';
@@ -1080,31 +1089,37 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_appearance_primary_color => 'Основной цвет';
 
   @override
-  String get settings_appearance_primary_color_subtitle => 'Выберите базовый цвет для палитры Material 3';
+  String get settings_appearance_primary_color_subtitle =>
+      'Выберите базовый цвет для палитры Material 3';
 
   @override
   String get settings_appearance_advanced_theming => 'Расширенная темизация';
 
   @override
-  String get settings_appearance_advanced_theming_subtitle => 'Оптимизация для конкретных типов экранов';
+  String get settings_appearance_advanced_theming_subtitle =>
+      'Оптимизация для конкретных типов экранов';
 
   @override
   String get settings_appearance_true_black => 'Истинный черный (AMOLED)';
 
   @override
-  String get settings_appearance_true_black_subtitle => 'Использовать чисто черный фон в темном режиме для экономии заряда батареи на OLED-экранах';
+  String get settings_appearance_true_black_subtitle =>
+      'Использовать чисто черный фон в темном режиме для экономии заряда батареи на OLED-экранах';
 
   @override
   String get settings_appearance_custom_hex => 'Пользовательский Hex-цвет';
 
   @override
-  String get settings_appearance_custom_hex_helper => 'Введите 8-значный ARGB hex-код';
+  String get settings_appearance_custom_hex_helper =>
+      'Введите 8-значный ARGB hex-код';
 
   @override
-  String get settings_appearance_font_size => 'Глобальный масштаб пользовательского интерфейса';
+  String get settings_appearance_font_size =>
+      'Глобальный масштаб пользовательского интерфейса';
 
   @override
-  String get settings_appearance_font_size_subtitle => 'Пропорционально масштабируйте типографику и интервалы.';
+  String get settings_appearance_font_size_subtitle =>
+      'Пропорционально масштабируйте типографику и интервалы.';
 
   @override
   String get settings_interface_title => 'Настройки интерфейса';
@@ -1113,7 +1128,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_interface_language => 'Язык';
 
   @override
-  String get settings_interface_language_subtitle => 'Переопределить язык системы по умолчанию';
+  String get settings_interface_language_subtitle =>
+      'Переопределить язык системы по умолчанию';
 
   @override
   String get settings_interface_app_language => 'Язык приложения';
@@ -1122,82 +1138,103 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_interface_navigation => 'Навигация';
 
   @override
-  String get settings_interface_navigation_subtitle => 'Видимость глобальных ярлыков навигации';
+  String get settings_interface_navigation_subtitle =>
+      'Видимость глобальных ярлыков навигации';
 
   @override
-  String get settings_interface_show_random => 'Показывать кнопки случайной навигации';
+  String get settings_interface_show_random =>
+      'Показывать кнопки случайной навигации';
 
   @override
-  String get settings_interface_show_random_subtitle => 'Включить или отключить плавающие кнопки казино на страницах списков и деталей';
+  String get settings_interface_show_random_subtitle =>
+      'Включить или отключить плавающие кнопки казино на страницах списков и деталей';
 
   @override
-  String get settings_interface_main_pages_gravity_orientation => 'Ориентация, управляемая гравитацией (основные страницы)';
+  String get settings_interface_main_pages_gravity_orientation =>
+      'Ориентация, управляемая гравитацией (основные страницы)';
 
   @override
-  String get settings_interface_main_pages_gravity_orientation_subtitle => 'Разрешить основным страницам поворачиваться с помощью датчика устройства. Полноэкранное воспроизведение видео использует собственные настройки ориентации.';
+  String get settings_interface_main_pages_gravity_orientation_subtitle =>
+      'Разрешить основным страницам поворачиваться с помощью датчика устройства. Полноэкранное воспроизведение видео использует собственные настройки ориентации.';
 
   @override
   String get settings_interface_show_edit => 'Показывать кнопку редактирования';
 
   @override
-  String get settings_interface_show_edit_subtitle => 'Включить или отключить кнопку редактирования на странице деталей сцены';
+  String get settings_interface_show_edit_subtitle =>
+      'Включить или отключить кнопку редактирования на странице деталей сцены';
 
   @override
-  String get settings_interface_use_actual_scene_video_miniplayer => 'Использовать настоящее видео сцены в мини-плеере';
+  String get settings_interface_use_actual_scene_video_miniplayer =>
+      'Использовать настоящее видео сцены в мини-плеере';
 
   @override
-  String get settings_interface_use_actual_scene_video_miniplayer_subtitle => 'Показывать живую видеоповерхность вместо скриншота сцены, когда воспроизведение активно.';
+  String get settings_interface_use_actual_scene_video_miniplayer_subtitle =>
+      'Показывать живую видеоповерхность вместо скриншота сцены, когда воспроизведение активно.';
 
   @override
-  String get settings_interface_entity_image_filtering => 'Фильтрация изображений сущностей';
+  String get settings_interface_entity_image_filtering =>
+      'Фильтрация изображений сущностей';
 
   @override
-  String get settings_interface_entity_image_filtering_subtitle => 'Выберите, должны ли страницы изображений сущностей соответствовать метаданным изображений или связанным галереям.';
+  String get settings_interface_entity_image_filtering_subtitle =>
+      'Выберите, должны ли страницы изображений сущностей соответствовать метаданным изображений или связанным галереям.';
 
   @override
-  String get settings_interface_entity_image_filtering_direct => 'Прямая сущность';
+  String get settings_interface_entity_image_filtering_direct =>
+      'Прямая сущность';
 
   @override
-  String get settings_interface_entity_image_filtering_galleries => 'Связанные галереи';
+  String get settings_interface_entity_image_filtering_galleries =>
+      'Связанные галереи';
 
   @override
   String get settings_interface_customize_tabs => 'Настройка вкладок';
 
   @override
-  String get settings_interface_customize_tabs_subtitle => 'Изменить порядок или скрыть элементы меню навигации';
+  String get settings_interface_customize_tabs_subtitle =>
+      'Изменить порядок или скрыть элементы меню навигации';
 
   @override
   String get settings_interface_scenes_layout => 'Макет сцен';
 
   @override
-  String get settings_interface_scenes_layout_subtitle => 'Режим просмотра по умолчанию для сцен';
+  String get settings_interface_scenes_layout_subtitle =>
+      'Режим просмотра по умолчанию для сцен';
 
   @override
   String get settings_interface_galleries_layout => 'Макет галерей';
 
   @override
-  String get settings_interface_galleries_layout_subtitle => 'Режим просмотра по умолчанию для галерей';
+  String get settings_interface_galleries_layout_subtitle =>
+      'Режим просмотра по умолчанию для галерей';
 
   @override
-  String get settings_interface_max_performer_avatars => 'Максимальное количество аватаров исполнителей';
+  String get settings_interface_max_performer_avatars =>
+      'Максимальное количество аватаров исполнителей';
 
   @override
-  String get settings_interface_max_performer_avatars_subtitle => 'Максимальное количество аватаров исполнителей, отображаемых в карточке сцены.';
+  String get settings_interface_max_performer_avatars_subtitle =>
+      'Максимальное количество аватаров исполнителей, отображаемых в карточке сцены.';
 
   @override
-  String get settings_interface_show_performer_avatars => 'Показывать аватары исполнителей';
+  String get settings_interface_show_performer_avatars =>
+      'Показывать аватары исполнителей';
 
   @override
-  String get settings_interface_show_performer_avatars_subtitle => 'Отображать иконки исполнителей на карточках сцен на всех платформах.';
+  String get settings_interface_show_performer_avatars_subtitle =>
+      'Отображать иконки исполнителей на карточках сцен на всех платформах.';
 
   @override
-  String get settings_interface_performer_avatar_size => 'Размер аватара исполнителя';
+  String get settings_interface_performer_avatar_size =>
+      'Размер аватара исполнителя';
 
   @override
   String get settings_interface_layout_default => 'Макет по умолчанию';
 
   @override
-  String get settings_interface_layout_default_desc => 'Выберите макет по умолчанию для страницы';
+  String get settings_interface_layout_default_desc =>
+      'Выберите макет по умолчанию для страницы';
 
   @override
   String get settings_interface_layout_list => 'Список';
@@ -1215,13 +1252,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_interface_image_viewer => 'Просмотр изображений';
 
   @override
-  String get settings_interface_image_viewer_subtitle => 'Настроить поведение полноэкранного просмотра изображений';
+  String get settings_interface_image_viewer_subtitle =>
+      'Настроить поведение полноэкранного просмотра изображений';
 
   @override
-  String get settings_interface_swipe_direction => 'Направление свайпа в полноэкранном режиме';
+  String get settings_interface_swipe_direction =>
+      'Направление свайпа в полноэкранном режиме';
 
   @override
-  String get settings_interface_swipe_direction_desc => 'Выберите способ перелистывания изображений в полноэкранном режиме';
+  String get settings_interface_swipe_direction_desc =>
+      'Выберите способ перелистывания изображений в полноэкранном режиме';
 
   @override
   String get settings_interface_swipe_vertical => 'Вертикально';
@@ -1236,31 +1276,36 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_interface_performer_layouts => 'Макеты исполнителей';
 
   @override
-  String get settings_interface_performer_layouts_subtitle => 'Настройки медиа и галерей для исполнителей по умолчанию';
+  String get settings_interface_performer_layouts_subtitle =>
+      'Настройки медиа и галерей для исполнителей по умолчанию';
 
   @override
   String get settings_interface_studio_layouts => 'Макеты студий';
 
   @override
-  String get settings_interface_studio_layouts_subtitle => 'Настройки медиа и галерей для студий по умолчанию';
+  String get settings_interface_studio_layouts_subtitle =>
+      'Настройки медиа и галерей для студий по умолчанию';
 
   @override
   String get settings_interface_tag_layouts => 'Макеты тегов';
 
   @override
-  String get settings_interface_tag_layouts_subtitle => 'Настройки медиа и галерей для тегов по умолчанию';
+  String get settings_interface_tag_layouts_subtitle =>
+      'Настройки медиа и галерей для тегов по умолчанию';
 
   @override
   String get settings_interface_media_layout => 'Макет медиа';
 
   @override
-  String get settings_interface_media_layout_subtitle => 'Макет для страницы Медиа';
+  String get settings_interface_media_layout_subtitle =>
+      'Макет для страницы Медиа';
 
   @override
   String get settings_interface_galleries_layout_item => 'Макет галерей';
 
   @override
-  String get settings_interface_galleries_layout_subtitle_item => 'Макет для страницы Галереи';
+  String get settings_interface_galleries_layout_subtitle_item =>
+      'Макет для страницы Галереи';
 
   @override
   String get settings_server_title => 'Настройки сервера';
@@ -1269,19 +1314,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_server_status => 'Статус подключения';
 
   @override
-  String get settings_server_status_subtitle => 'Текущее состояние подключения к настроенному серверу';
+  String get settings_server_status_subtitle =>
+      'Текущее состояние подключения к настроенному серверу';
 
   @override
   String get settings_server_details => 'Детали сервера';
 
   @override
-  String get settings_server_details_subtitle => 'Настройте адрес и метод аутентификации';
+  String get settings_server_details_subtitle =>
+      'Настройте адрес и метод аутентификации';
 
   @override
   String get settings_server_url => 'URL-адрес Stash';
 
   @override
-  String get settings_server_url_helper => 'Введите URL-адрес вашего сервера Stash. Если настроен пользовательский путь, укажите его здесь.';
+  String get settings_server_url_helper =>
+      'Введите URL-адрес вашего сервера Stash. Если настроен пользовательский путь, укажите его здесь.';
 
   @override
   String get settings_server_url_example => 'http://192.168.1.100:9999';
@@ -1299,10 +1347,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_server_auth_password => 'Имя пользователя + Пароль';
 
   @override
-  String get settings_server_auth_password_desc => 'Рекомендуется: используйте имя пользователя и пароль Stash.';
+  String get settings_server_auth_password_desc =>
+      'Рекомендуется: используйте имя пользователя и пароль Stash.';
 
   @override
-  String get settings_server_auth_apikey_desc => 'Используйте API-ключ для аутентификации по статическому токену.';
+  String get settings_server_auth_apikey_desc =>
+      'Используйте API-ключ для аутентификации по статическому токену.';
 
   @override
   String get settings_server_username => 'Имя пользователя';
@@ -1339,10 +1389,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_server_invalid_url => 'Недопустимый URL сервера';
 
   @override
-  String get settings_server_resolve_error => 'Не удалось разрешить URL сервера. Проверьте хост, порт и учетные данные.';
+  String get settings_server_resolve_error =>
+      'Не удалось разрешить URL сервера. Проверьте хост, порт и учетные данные.';
 
   @override
-  String get settings_server_logout_confirm => 'Выход выполнен, файлы cookie очищены.';
+  String get settings_server_logout_confirm =>
+      'Выход выполнен, файлы cookie очищены.';
 
   @override
   String get settings_server_profile_add => 'Добавить профиль';
@@ -1357,7 +1409,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_server_profile_delete => 'Удалить профиль';
 
   @override
-  String get settings_server_profile_delete_confirm => 'Вы уверены, что хотите удалить этот профиль? Это действие нельзя отменить.';
+  String get settings_server_profile_delete_confirm =>
+      'Вы уверены, что хотите удалить этот профиль? Это действие нельзя отменить.';
 
   @override
   String get settings_server_profile_active => 'Активен';
@@ -1369,16 +1422,20 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_server_profiles => 'Профили сервера';
 
   @override
-  String get settings_server_profiles_subtitle => 'Управление несколькими подключениями к серверу Stash';
+  String get settings_server_profiles_subtitle =>
+      'Управление несколькими подключениями к серверу Stash';
 
   @override
-  String get settings_server_auth_status_logging_in => 'Статус аутентификации: выполняется вход...';
+  String get settings_server_auth_status_logging_in =>
+      'Статус аутентификации: выполняется вход...';
 
   @override
-  String get settings_server_auth_status_logged_in => 'Статус аутентификации: вход выполнен';
+  String get settings_server_auth_status_logged_in =>
+      'Статус аутентификации: вход выполнен';
 
   @override
-  String get settings_server_auth_status_logged_out => 'Статус аутентификации: выход выполнен';
+  String get settings_server_auth_status_logged_out =>
+      'Статус аутентификации: выход выполнен';
 
   @override
   String get settings_playback_title => 'Настройки воспроизведения';
@@ -1387,31 +1444,38 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_playback_behavior => 'Поведение воспроизведения';
 
   @override
-  String get settings_playback_behavior_subtitle => 'Настройки воспроизведения и фонового режима по умолчанию';
+  String get settings_playback_behavior_subtitle =>
+      'Настройки воспроизведения и фонового режима по умолчанию';
 
   @override
   String get settings_playback_prefer_streams => 'Предпочитать sceneStreams';
 
   @override
-  String get settings_playback_prefer_streams_subtitle => 'Если отключено, воспроизведение использует paths.stream напрямую';
+  String get settings_playback_prefer_streams_subtitle =>
+      'Если отключено, воспроизведение использует paths.stream напрямую';
 
   @override
-  String get settings_playback_feed_random => 'Начать Ленту со случайного места';
+  String get settings_playback_feed_random =>
+      'Начать Ленту со случайного места';
 
   @override
-  String get settings_playback_feed_random_subtitle => 'При воспроизведении сцен в режиме Ленты начинать со случайного места между 0% и 90% длины видео';
+  String get settings_playback_feed_random_subtitle =>
+      'При воспроизведении сцен в режиме Ленты начинать со случайного места между 0% и 90% длины видео';
 
   @override
-  String get settings_playback_resume_position => 'Возобновить с последней игровой позиции';
+  String get settings_playback_resume_position =>
+      'Возобновить с последней игровой позиции';
 
   @override
-  String get settings_playback_resume_position_subtitle => 'При открытии видео автоматически возобновляется с того места, на котором вы остановились.';
+  String get settings_playback_resume_position_subtitle =>
+      'При открытии видео автоматически возобновляется с того места, на котором вы остановились.';
 
   @override
   String get settings_playback_end_behavior => 'Поведение в конце игры';
 
   @override
-  String get settings_playback_end_behavior_subtitle => 'Что делать, когда текущее воспроизведение заканчивается';
+  String get settings_playback_end_behavior_subtitle =>
+      'Что делать, когда текущее воспроизведение заканчивается';
 
   @override
   String get settings_playback_end_behavior_stop => 'Останавливаться';
@@ -1420,43 +1484,51 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_playback_end_behavior_loop => 'Зациклить текущую сцену';
 
   @override
-  String get settings_playback_end_behavior_next => 'Воспроизвести следующую сцену';
+  String get settings_playback_end_behavior_next =>
+      'Воспроизвести следующую сцену';
 
   @override
-  String get settings_playback_autoplay => 'Автовоспроизведение следующей сцены';
+  String get settings_playback_autoplay =>
+      'Автовоспроизведение следующей сцены';
 
   @override
-  String get settings_playback_autoplay_subtitle => 'Автоматически воспроизводить следующую сцену по завершении текущей';
+  String get settings_playback_autoplay_subtitle =>
+      'Автоматически воспроизводить следующую сцену по завершении текущей';
 
   @override
   String get settings_playback_background => 'Фоновое воспроизведение';
 
   @override
-  String get settings_playback_background_subtitle => 'Продолжать воспроизведение звука видео при сворачивании приложения';
+  String get settings_playback_background_subtitle =>
+      'Продолжать воспроизведение звука видео при сворачивании приложения';
 
   @override
   String get settings_playback_pip => 'Нативная «Картинка в картинке»';
 
   @override
-  String get settings_playback_pip_subtitle => 'Включить кнопку PiP на Android и автоматический переход при сворачивании';
+  String get settings_playback_pip_subtitle =>
+      'Включить кнопку PiP на Android и автоматический переход при сворачивании';
 
   @override
   String get settings_playback_subtitles => 'Настройки субтитров';
 
   @override
-  String get settings_playback_subtitles_subtitle => 'Автоматическая загрузка и внешний вид';
+  String get settings_playback_subtitles_subtitle =>
+      'Автоматическая загрузка и внешний вид';
 
   @override
   String get settings_playback_subtitle_lang => 'Язык субтитров по умолчанию';
 
   @override
-  String get settings_playback_subtitle_lang_subtitle => 'Автозагрузка при наличии';
+  String get settings_playback_subtitle_lang_subtitle =>
+      'Автозагрузка при наличии';
 
   @override
   String get settings_playback_subtitle_size => 'Размер шрифта субтитров';
 
   @override
-  String get settings_playback_subtitle_pos => 'Вертикальное положение субтитров';
+  String get settings_playback_subtitle_pos =>
+      'Вертикальное положение субтитров';
 
   @override
   String settings_playback_subtitle_pos_desc(String percent) {
@@ -1464,22 +1536,27 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get settings_playback_subtitle_align => 'Выравнивание текста субтитров';
+  String get settings_playback_subtitle_align =>
+      'Выравнивание текста субтитров';
 
   @override
-  String get settings_playback_subtitle_align_subtitle => 'Выравнивание для многострочных субтитров';
+  String get settings_playback_subtitle_align_subtitle =>
+      'Выравнивание для многострочных субтитров';
 
   @override
   String get settings_playback_seek => 'Взаимодействие при перемотке';
 
   @override
-  String get settings_playback_seek_subtitle => 'Выберите способ перемотки во время воспроизведения';
+  String get settings_playback_seek_subtitle =>
+      'Выберите способ перемотки во время воспроизведения';
 
   @override
-  String get settings_playback_seek_double_tap => 'Двойное нажатие влево/вправо для перемотки на 10с';
+  String get settings_playback_seek_double_tap =>
+      'Двойное нажатие влево/вправо для перемотки на 10с';
 
   @override
-  String get settings_playback_seek_drag => 'Перетаскивание временной шкалы для перемотки';
+  String get settings_playback_seek_drag =>
+      'Перетаскивание временной шкалы для перемотки';
 
   @override
   String get settings_playback_seek_drag_label => 'Перетаскивание';
@@ -1488,22 +1565,27 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_playback_seek_double_tap_label => 'Двойное нажатие';
 
   @override
-  String get settings_playback_gravity_orientation => 'Ориентация, управляемая гравитацией';
+  String get settings_playback_gravity_orientation =>
+      'Ориентация, управляемая гравитацией';
 
   @override
-  String get settings_playback_direct_play => 'Прямое воспроизведение при навигации по сценам';
+  String get settings_playback_direct_play =>
+      'Прямое воспроизведение при навигации по сценам';
 
   @override
-  String get settings_playback_direct_play_subtitle => 'При переходе из другой воспроизводящейся сцены, сразу включать новую сцену';
+  String get settings_playback_direct_play_subtitle =>
+      'При переходе из другой воспроизводящейся сцены, сразу включать новую сцену';
 
   @override
-  String get settings_playback_gravity_orientation_subtitle => 'Разрешить поворот между совпадающими ориентациями с помощью датчика устройства (например, переворачивать альбомную ориентацию влево/вправо).';
+  String get settings_playback_gravity_orientation_subtitle =>
+      'Разрешить поворот между совпадающими ориентациями с помощью датчика устройства (например, переворачивать альбомную ориентацию влево/вправо).';
 
   @override
   String get settings_playback_subtitle_lang_none_disabled => 'Нет (Отключено)';
 
   @override
-  String get settings_playback_subtitle_lang_auto_if_only_one => 'Авто (если только один)';
+  String get settings_playback_subtitle_lang_auto_if_only_one =>
+      'Авто (если только один)';
 
   @override
   String get settings_playback_subtitle_lang_english => 'Английский';
@@ -1542,16 +1624,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_support_title => 'Поддержка';
 
   @override
-  String get settings_support_diagnostics => 'Диагностика и информация о проекте';
+  String get settings_support_diagnostics =>
+      'Диагностика и информация о проекте';
 
   @override
-  String get settings_support_diagnostics_subtitle => 'Открыть журналы работы или перейти в репозиторий за помощью.';
+  String get settings_support_diagnostics_subtitle =>
+      'Открыть журналы работы или перейти в репозиторий за помощью.';
 
   @override
   String get settings_support_update_available => 'Доступно обновление';
 
   @override
-  String get settings_support_update_available_subtitle => 'На GitHub доступна более новая версия';
+  String get settings_support_update_available_subtitle =>
+      'На GitHub доступна более новая версия';
 
   @override
   String settings_support_update_to(String version) {
@@ -1559,88 +1644,106 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get settings_support_update_to_subtitle => 'Вас ждут новые функции и улучшения.';
+  String get settings_support_update_to_subtitle =>
+      'Вас ждут новые функции и улучшения.';
 
   @override
   String get settings_support_about => 'О программе';
 
   @override
-  String get settings_support_about_subtitle => 'Информация о проекте и исходном коде';
+  String get settings_support_about_subtitle =>
+      'Информация о проекте и исходном коде';
 
   @override
   String get settings_support_version => 'Версия';
 
   @override
-  String get settings_support_version_loading => 'Загрузка информации о версии...';
+  String get settings_support_version_loading =>
+      'Загрузка информации о версии...';
 
   @override
-  String get settings_support_version_unavailable => 'Информация о версии недоступна';
+  String get settings_support_version_unavailable =>
+      'Информация о версии недоступна';
 
   @override
   String get settings_support_github => 'Репозиторий GitHub';
 
   @override
-  String get settings_support_github_subtitle => 'Просмотр исходного кода и сообщение об ошибках';
+  String get settings_support_github_subtitle =>
+      'Просмотр исходного кода и сообщение об ошибках';
 
   @override
-  String get settings_support_github_error => 'Не удалось открыть ссылку на GitHub';
+  String get settings_support_github_error =>
+      'Не удалось открыть ссылку на GitHub';
 
   @override
   String get settings_support_issues => 'Сообщить о проблеме';
 
   @override
-  String get settings_support_issues_subtitle => 'Помогите улучшить StashFlow, сообщая об ошибках.';
+  String get settings_support_issues_subtitle =>
+      'Помогите улучшить StashFlow, сообщая об ошибках.';
 
   @override
   String get settings_develop_title => 'Разработка';
 
   @override
-  String get settings_develop_enable_logging => 'Включить отладочное логирование';
+  String get settings_develop_enable_logging =>
+      'Включить отладочное логирование';
 
   @override
-  String get settings_develop_enable_logging_subtitle => 'Записывать логи приложения для устранения неполадок';
+  String get settings_develop_enable_logging_subtitle =>
+      'Записывать логи приложения для устранения неполадок';
 
   @override
   String get settings_develop_diagnostics => 'Инструменты диагностики';
 
   @override
-  String get settings_develop_diagnostics_subtitle => 'Устранение неполадок и производительность';
+  String get settings_develop_diagnostics_subtitle =>
+      'Устранение неполадок и производительность';
 
   @override
-  String get settings_develop_video_debug => 'Показывать отладочную информацию видео';
+  String get settings_develop_video_debug =>
+      'Показывать отладочную информацию видео';
 
   @override
-  String get settings_develop_video_debug_subtitle => 'Отображать технические детали воспроизведения поверх видеоплеера.';
+  String get settings_develop_video_debug_subtitle =>
+      'Отображать технические детали воспроизведения поверх видеоплеера.';
 
   @override
   String get settings_develop_log_viewer => 'Просмотр журнала отладки';
 
   @override
-  String get settings_develop_log_viewer_subtitle => 'Открыть просмотр журналов приложения в реальном времени.';
+  String get settings_develop_log_viewer_subtitle =>
+      'Открыть просмотр журналов приложения в реальном времени.';
 
   @override
   String get settings_develop_logs_copied => 'Логи скопированы в буфер обмена';
 
   @override
-  String get settings_develop_no_logs => 'Журналы отсутствуют. Взаимодействуйте с приложением, чтобы собрать логи.';
+  String get settings_develop_no_logs =>
+      'Журналы отсутствуют. Взаимодействуйте с приложением, чтобы собрать логи.';
 
   @override
   String get settings_develop_web_overrides => 'Переопределения для Web';
 
   @override
-  String get settings_develop_web_overrides_subtitle => 'Расширенные флаги для веб-платформы';
+  String get settings_develop_web_overrides_subtitle =>
+      'Расширенные флаги для веб-платформы';
 
   @override
   String get settings_develop_web_auth => 'Разрешить вход по паролю в Web';
 
   @override
-  String get settings_develop_web_auth_subtitle => 'Переопределяет ограничение «только для нативных приложений» и делает видимым метод аутентификации по имени пользователя и паролю во Flutter Web.';
+  String get settings_develop_web_auth_subtitle =>
+      'Переопределяет ограничение «только для нативных приложений» и делает видимым метод аутентификации по имени пользователя и паролю во Flutter Web.';
 
   @override
-  String get settings_develop_proxy_auth => 'Включить режимы аутентификации через прокси';
+  String get settings_develop_proxy_auth =>
+      'Включить режимы аутентификации через прокси';
 
   @override
-  String get settings_develop_proxy_auth_subtitle => 'Включите расширенные методы Basic Auth и Bearer Token для использования с бэкендами без аутентификации за прокси-серверами, такими как Authentik.';
+  String get settings_develop_proxy_auth_subtitle =>
+      'Включите расширенные методы Basic Auth и Bearer Token для использования с бэкендами без аутентификации за прокси-серверами, такими как Authentik.';
 
   @override
   String get settings_server_auth_basic => 'Базовая аутентификация';
@@ -1649,10 +1752,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_server_auth_bearer => 'Токен носителя';
 
   @override
-  String get settings_server_auth_basic_desc => 'Отправляет заголовок \'Authorization: Basic <base64(user:pass)>\'.';
+  String get settings_server_auth_basic_desc =>
+      'Отправляет заголовок \'Authorization: Basic <base64(user:pass)>\'.';
 
   @override
-  String get settings_server_auth_bearer_desc => 'Отправляет заголовок \'Authorization: Bearer <token>\'.';
+  String get settings_server_auth_bearer_desc =>
+      'Отправляет заголовок \'Authorization: Bearer <token>\'.';
 
   @override
   String get common_edit => 'Редактировать';
@@ -1673,7 +1778,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get common_square => 'Квадрат';
 
   @override
-  String get performers_filter_saved => 'Параметры фильтра сохранены как по умолчанию';
+  String get performers_filter_saved =>
+      'Параметры фильтра сохранены как по умолчанию';
 
   @override
   String get images_title => 'Изображения';
@@ -1688,7 +1794,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get images_sort_title => 'Сортировать изображения';
 
   @override
-  String get images_sort_saved => 'Параметры сортировки сохранены как по умолчанию';
+  String get images_sort_saved =>
+      'Параметры сортировки сохранены как по умолчанию';
 
   @override
   String get image_rating_updated => 'Рейтинг изображения обновлен.';
@@ -1703,7 +1810,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get common_gallery => 'Галерея';
 
   @override
-  String get images_gallery_rating_unavailable => 'Рейтинг галереи доступен только при просмотре галереи.';
+  String get images_gallery_rating_unavailable =>
+      'Рейтинг галереи доступен только при просмотре галереи.';
 
   @override
   String images_rating(String rating) {
@@ -1714,7 +1822,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get images_filtered_by_gallery => 'Отфильтровано по галерее';
 
   @override
-  String get images_slideshow_need_two => 'Требуется как минимум 2 изображения для слайд-шоу.';
+  String get images_slideshow_need_two =>
+      'Требуется как минимум 2 изображения для слайд-шоу.';
 
   @override
   String get images_slideshow_start_title => 'Запустить слайд-шоу';
@@ -1809,13 +1918,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get scenes_select_performers => 'Выбрать исполнителей';
 
   @override
-  String get scenes_unmatched_scraped_tags => 'Несопоставленные полученные теги';
+  String get scenes_unmatched_scraped_tags =>
+      'Несопоставленные полученные теги';
 
   @override
-  String get scenes_unmatched_scraped_performers => 'Несопоставленные полученные исполнители';
+  String get scenes_unmatched_scraped_performers =>
+      'Несопоставленные полученные исполнители';
 
   @override
-  String get scenes_no_matching_performer_found => 'Не найден подходящий исполнитель в библиотеке';
+  String get scenes_no_matching_performer_found =>
+      'Не найден подходящий исполнитель в библиотеке';
 
   @override
   String get common_unknown => 'Неизвестно';
@@ -1900,7 +2012,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get cast_airplay_pairing => 'Сопряжение AirPlay';
 
   @override
-  String get cast_enter_pin => 'Введите 4-значный PIN-код, показанный на вашем телевизоре.';
+  String get cast_enter_pin =>
+      'Введите 4-значный PIN-код, показанный на вашем телевизоре.';
 
   @override
   String get cast_pair => 'Пара';
@@ -1947,7 +2060,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_storage_clearing_video => 'Очистка видеокеша...';
 
   @override
-  String get settings_storage_clearing_database => 'Очистка кэша базы данных...';
+  String get settings_storage_clearing_database =>
+      'Очистка кэша базы данных...';
 
   @override
   String get settings_storage_cleared_image => 'Кэш изображений очищен.';
@@ -1993,10 +2107,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_storage_limits => 'Пределы';
 
   @override
-  String get settings_storage_limits_subtitle => 'Установить максимальные размеры кэша';
+  String get settings_storage_limits_subtitle =>
+      'Установить максимальные размеры кэша';
 
   @override
-  String get settings_storage_max_image_cache => 'Максимальный кэш изображений (МБ)';
+  String get settings_storage_max_image_cache =>
+      'Максимальный кэш изображений (МБ)';
 
   @override
   String get settings_storage_max_video_cache => 'Макс. видеокэш (МБ)';
@@ -2011,7 +2127,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_storage_usage_subtitle => 'Место, занятое кэшем';
 
   @override
-  String get settings_storage_subtitle => 'Управление кэшем и лимитами хранилища';
+  String get settings_storage_subtitle =>
+      'Управление кэшем и лимитами хранилища';
 
   @override
   String get performers_field_name => 'Имя';
@@ -2236,7 +2353,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get scenes_field_updated_at => 'Обновлено';
 
   @override
-  String get cast_stopped_resuming_locally => 'Трансляция остановлена, возобновление локально';
+  String get cast_stopped_resuming_locally =>
+      'Трансляция остановлена, возобновление локально';
 
   @override
   String get cast_stop_casting => 'Остановить трансляцию';
@@ -2260,7 +2378,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get common_star => 'Звезда';
 
   @override
-  String get settings_interface_card_title_font_size => 'Размер шрифта заголовка карточки';
+  String get settings_interface_card_title_font_size =>
+      'Размер шрифта заголовка карточки';
 
   @override
   String get common_hint_date => 'ГГГГ-ММ-ДД';
@@ -2325,13 +2444,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sort_scenes => 'Сортировать сцены';
 
   @override
-  String get failed_to_load_tap_to_retry => 'Не удалось загрузить. Нажмите, чтобы повторить.';
+  String get failed_to_load_tap_to_retry =>
+      'Не удалось загрузить. Нажмите, чтобы повторить.';
 
   @override
-  String get would_you_like_to_visit_the_release_page_to_download_it => 'Хотите посетить страницу релиза, чтобы скачать его?';
+  String get would_you_like_to_visit_the_release_page_to_download_it =>
+      'Хотите посетить страницу релиза, чтобы скачать его?';
 
   @override
-  String get to_get_started_configure_stash_server => 'Для начала вам необходимо настроить данные подключения к серверу Stash.';
+  String get to_get_started_configure_stash_server =>
+      'Для начала вам необходимо настроить данные подключения к серверу Stash.';
 
   @override
   String get loading => 'Загрузка';
@@ -2434,7 +2556,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get main_startup_failed => 'StashFlow не удалось запустить';
 
   @override
-  String get main_startup_failed_desc => 'Служба запуска завершилась сбоем до того, как приложение смогло завершить инициализацию.Перезапустите приложение после проверки диагностики.';
+  String get main_startup_failed_desc =>
+      'Служба запуска завершилась сбоем до того, как приложение смогло завершить инициализацию.Перезапустите приложение после проверки диагностики.';
 
   @override
   String common_searching_for(String query) {
@@ -2472,22 +2595,28 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_security_passcode_removed => 'Код доступа удален.';
 
   @override
-  String get settings_security_enable_app_lock => 'Включить блокировку приложения';
+  String get settings_security_enable_app_lock =>
+      'Включить блокировку приложения';
 
   @override
-  String get settings_security_enable_app_lock_subtitle => 'Требовать пароль при возобновлении/запуске приложения.';
+  String get settings_security_enable_app_lock_subtitle =>
+      'Требовать пароль при возобновлении/запуске приложения.';
 
   @override
-  String get settings_security_lock_on_launch => 'Блокировка запуска приложения';
+  String get settings_security_lock_on_launch =>
+      'Блокировка запуска приложения';
 
   @override
-  String get settings_security_lock_on_launch_subtitle => 'Запросите пароль сразу после открытия приложения.';
+  String get settings_security_lock_on_launch_subtitle =>
+      'Запросите пароль сразу после открытия приложения.';
 
   @override
-  String get settings_security_background_lock_timer => 'Таймер блокировки фона';
+  String get settings_security_background_lock_timer =>
+      'Таймер блокировки фона';
 
   @override
-  String get settings_security_background_lock_timer_subtitle => 'Как долго приложение может оставаться в фоновом режиме перед блокировкой.';
+  String get settings_security_background_lock_timer_subtitle =>
+      'Как долго приложение может оставаться в фоновом режиме перед блокировкой.';
 
   @override
   String get settings_security_set_passcode => 'Установить пароль';
@@ -2499,7 +2628,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_security_confirm_passcode => 'Подтверждать';
 
   @override
-  String get settings_security_error_numeric => 'Используйте только цифры длиной 4–8.';
+  String get settings_security_error_numeric =>
+      'Используйте только цифры длиной 4–8.';
 
   @override
   String get settings_security_error_mismatch => 'Пароли не совпадают.';
@@ -2532,13 +2662,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_security_title => 'Безопасность';
 
   @override
-  String get settings_security_subtitle => 'Настройки блокировки приложения и пароля';
+  String get settings_security_subtitle =>
+      'Настройки блокировки приложения и пароля';
 
   @override
   String get settings_security_app_lock => 'Блокировка приложения';
 
   @override
-  String get settings_security_app_lock_subtitle => 'Защитите доступ с помощью пароля после фонового режима.';
+  String get settings_security_app_lock_subtitle =>
+      'Защитите доступ с помощью пароля после фонового режима.';
 
   @override
   String get common_saved_filters => 'Сохраненные фильтры';
@@ -2547,13 +2679,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tools => 'Инструменты';
 
   @override
-  String get tools_section_subtitle => 'Рабочие процессы обслуживания и метаданных для сцен.';
+  String get tools_section_subtitle =>
+      'Рабочие процессы обслуживания и метаданных для сцен.';
 
   @override
-  String get tools_scene_deduplication_subtitle => 'Поиск и управление дубликатами сцен.';
+  String get tools_scene_deduplication_subtitle =>
+      'Поиск и управление дубликатами сцен.';
 
   @override
-  String get tools_scene_tagger_subtitle => 'Скрапинг страниц текущих сцен с помощью Stash-box.';
+  String get tools_scene_tagger_subtitle =>
+      'Скрапинг страниц текущих сцен с помощью Stash-box.';
 
   @override
   String get preset_deleted => 'Предустановка удалена.';
@@ -2655,13 +2790,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get duration_difference => 'Разница в продолжительности';
 
   @override
-  String get only_select_matching_codecs => 'Выбирайте только соответствующие кодеки';
+  String get only_select_matching_codecs =>
+      'Выбирайте только соответствующие кодеки';
 
   @override
   String get select_scenes => 'Выберите сцены';
 
   @override
-  String get all_but_largest_resolution => 'Все, кроме самого большого разрешения';
+  String get all_but_largest_resolution =>
+      'Все, кроме самого большого разрешения';
 
   @override
   String get all_but_largest_file => 'Все, кроме самого большого файла';
@@ -2703,7 +2840,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get enter_preset_name => 'Введите имя пресета';
 
   @override
-  String get delete_scene_confirm => 'Вы уверены, что хотите удалить эту сцену?';
+  String get delete_scene_confirm =>
+      'Вы уверены, что хотите удалить эту сцену?';
 
   @override
   String delete_selected_count(int selectedCount) {
@@ -2720,10 +2858,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get available_presets => 'Доступные пресеты';
 
   @override
-  String get existing_names_are_overwritten => 'Существующие имена будут перезаписаны';
+  String get existing_names_are_overwritten =>
+      'Существующие имена будут перезаписаны';
 
   @override
-  String get active_settings_saved_server => 'Текущие активные настройки будут сохранены на сервере.';
+  String get active_settings_saved_server =>
+      'Текущие активные настройки будут сохранены на сервере.';
 
   @override
   String failed_to_save_filter(String error) {
@@ -2771,7 +2911,8 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get delete_scenes_help => 'Выберите, удалить только метаданные Stash или также удалить файлы сцен и созданные вспомогательные файлы.';
+  String get delete_scenes_help =>
+      'Выберите, удалить только метаданные Stash или также удалить файлы сцен и созданные вспомогательные файлы.';
 
   @override
   String deleted_n_scenes(int count) {
@@ -2792,7 +2933,8 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get merge_editing_not_wired => 'Редактирование слияния в StashFlow пока не подключено.';
+  String get merge_editing_not_wired =>
+      'Редактирование слияния в StashFlow пока не подключено.';
 
   @override
   String duplicate_sets_count(int count) {
@@ -2828,7 +2970,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String nTags(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
-
     );
     final String countString = countNumberFormat.format(count);
 
@@ -2846,7 +2987,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String nGroups(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
-
     );
     final String countString = countNumberFormat.format(count);
 
@@ -2864,7 +3004,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String nMarkers(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
-
     );
     final String countString = countNumberFormat.format(count);
 
@@ -2882,7 +3021,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String nGalleries(num count) {
     final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
       locale: localeName,
-
     );
     final String countString = countNumberFormat.format(count);
 
@@ -2910,7 +3048,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get no_matched_scenes_yet => 'Пока нет совпавших сцен.';
 
   @override
-  String get no_scenes_match_configuration => 'Нет сцен, соответствующих этой конфигурации.';
+  String get no_scenes_match_configuration =>
+      'Нет сцен, соответствующих этой конфигурации.';
 
   @override
   String scene_tagger_checked_count(int count) {
@@ -2923,7 +3062,8 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get stats_library_stats_tooltip => 'Удерживайте для статистики библиотеки';
+  String get stats_library_stats_tooltip =>
+      'Удерживайте для статистики библиотеки';
 
   @override
   String get scene_details_marker_created => 'Маркер создан';
