@@ -119,7 +119,7 @@ void main() {
       expect(input['find_filter']['q'], 'clip');
       expect(input['find_filter']['sort'], 'rating');
       expect(input['find_filter']['direction'], 'DESC');
-      expect(find.text('Scene filter saved to server'), findsOneWidget);
+      expect(find.text('Saved Scene filter'), findsOneWidget);
     },
   );
 

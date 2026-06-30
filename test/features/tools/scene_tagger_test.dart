@@ -477,13 +477,13 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('开始标记'));
+    await tester.tap(find.text('开始标注'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('配置'));
     await tester.pumpAndSettle();
 
-    final applyButton = find.widgetWithText(FilledButton, '申请').first;
+    final applyButton = find.widgetWithText(FilledButton, '应用').first;
     await tester.ensureVisible(applyButton);
     await tester.tap(applyButton);
     await tester.pumpAndSettle();

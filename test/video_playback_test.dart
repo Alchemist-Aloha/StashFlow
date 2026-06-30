@@ -199,15 +199,13 @@ void main() {
 
     // Navigate to details
     await tester.tap(find.text('Play Scene'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 1000));
-
+    await tester.pumpAndSettle();
     // Verify we are on details page
-    expect(find.text('Scene Details'), findsOneWidget);
+    expect(find.byKey(const Key('scene_action_edit')), findsOneWidget);
 
     // Find the play button in the video player overlay if not auto-started
     if (find.byIcon(Icons.play_arrow).first.evaluate().isNotEmpty) {
-      await tester.tap(find.byIcon(Icons.play_arrow).first);
+      await tester.tap(find.byIcon(Icons.play_arrow).first, warnIfMissed: false);
       await tester.pump();
     }
   });

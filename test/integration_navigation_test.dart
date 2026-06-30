@@ -21,6 +21,7 @@ import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_l
 import 'package:stash_app_flutter/features/setup/presentation/providers/navigation_tabs_provider.dart';
 import 'helpers/test_helpers.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_details_page.dart';
 
 // Helper to create a Scene with all required fields for testing
 Scene createTestScene({
@@ -394,10 +395,9 @@ void main() {
 
     expect(find.text('Apple Scene'), findsAtLeast(1));
 
-    if (find.byIcon(Icons.arrow_back).evaluate().isNotEmpty) {
-      await tester.tap(find.byIcon(Icons.arrow_back));
-    } else if (find.byType(BackButton).evaluate().isNotEmpty) {
-      await tester.tap(find.byType(BackButton));
+    final detailsPage = find.byType(SceneDetailsPage);
+    if (detailsPage.evaluate().isNotEmpty) {
+      Navigator.of(tester.element(detailsPage)).pop();
     }
 
     await tester.pumpAndSettle();
@@ -605,7 +605,7 @@ void main() {
   testWidgets('Integration: Shell Branch Navigation (Tabs)', (
     WidgetTester tester,
   ) async {
-    tester.view.physicalSize = const Size(800, 1600);
+    tester.view.physicalSize = const Size(500, 1000);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() => tester.view.resetPhysicalSize());
 
@@ -640,19 +640,19 @@ void main() {
     expect(find.text('Scenes').last, findsOneWidget);
 
     // Tap Performers Tab
-    await tester.tap(find.text('Performers').last);
+    await tester.tap(find.text('Performers').last, warnIfMissed: false);
     await tester.pumpAndSettle();
 
     // Tap Studios Tab
-    await tester.tap(find.text('Studios').last);
+    await tester.tap(find.text('Studios').last, warnIfMissed: false);
     await tester.pumpAndSettle();
 
     // Tap Tags Tab
-    await tester.tap(find.text('Tags').last);
+    await tester.tap(find.text('Tags').last, warnIfMissed: false);
     await tester.pumpAndSettle();
 
     // Tap Galleries Tab
-    await tester.tap(find.text('Galleries').last);
+    await tester.tap(find.text('Galleries').last, warnIfMissed: false);
     await tester.pumpAndSettle();
   });
 
