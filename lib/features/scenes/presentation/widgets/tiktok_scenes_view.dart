@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:clock/clock.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import '../../../../core/utils/l10n_extensions.dart';
@@ -537,7 +536,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
     if (_playStartTime != null) return; // Already tracking
 
     _startPlayCountTimer();
-    _playStartTime = clock.now();
+    _playStartTime = DateTime.now();
 
     _periodicSaveTimer?.cancel();
     _periodicSaveTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
@@ -551,7 +550,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
     _periodicSaveTimer = null;
 
     if (_playStartTime != null) {
-      final now = clock.now();
+      final now = DateTime.now();
       _accumulatedDuration +=
           now.difference(_playStartTime!).inMilliseconds / 1000.0;
       _playStartTime = null;
@@ -568,7 +567,7 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
 
     double durationToSave = _accumulatedDuration;
     if (_playStartTime != null) {
-      final now = clock.now();
+      final now = DateTime.now();
       durationToSave += now.difference(_playStartTime!).inMilliseconds / 1000.0;
       _playStartTime = now;
     }

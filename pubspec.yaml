@@ -49,7 +49,6 @@ dependencies:
   freezed_annotation: ^3.1.0
   riverpod_annotation: ^4.0.3
   graphql: ^5.2.4
-  clock: ^1.1.2
   url_launcher: ^6.3.2
   cached_network_image: ^3.4.1
   flutter_cache_manager: ^3.4.1
