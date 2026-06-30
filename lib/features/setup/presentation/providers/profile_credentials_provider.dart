@@ -24,5 +24,6 @@ Future<String> profilePassword(Ref ref, String profileId) async {
 @riverpod
 Future<String> profileCookieHeader(Ref ref, String profileId) async {
   final secureStorage = ref.read(secureStorageProvider);
-  return await secureStorage.read(key: 'profile_${profileId}_cookie_header') ?? '';
+  return await secureStorage.read(key: 'profile_${profileId}_cookie_header') ??
+      '';
 }

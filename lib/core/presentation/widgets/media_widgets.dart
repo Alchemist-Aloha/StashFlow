@@ -101,14 +101,19 @@ class MediaHeader extends StatelessWidget {
           SizedBox(height: context.dimensions.spacingSmall / 2),
           Semantics(
             button: onSecondaryTitleTap != null,
-            label: onSecondaryTitleTap != null ? 'Open $secondaryTitle details' : null,
+            label: onSecondaryTitleTap != null
+                ? 'Open $secondaryTitle details'
+                : null,
             child: Material(
               color: Colors.transparent,
               child: InkWell(
                 onTap: onSecondaryTitleTap,
                 borderRadius: BorderRadius.circular(4),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 2,
+                    vertical: 1,
+                  ),
                   child: Text(
                     secondaryTitle!,
                     style: context.textTheme.titleMedium?.copyWith(

@@ -3,19 +3,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
-import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
+import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scene_repository.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 
 import '../../../../helpers/test_helpers.dart';
 
-final _testSceneRepositoryProvider =
-    NotifierProvider<_TestSceneRepository, SceneRepository>(
-      _TestSceneRepository.new,
+final _testGraphQLSceneRepositoryProvider =
+    NotifierProvider<_TestGraphQLSceneRepository, GraphQLSceneRepository>(
+      _TestGraphQLSceneRepository.new,
     );
 
-class _TestSceneRepository extends Notifier<SceneRepository> {
+class _TestGraphQLSceneRepository extends Notifier<GraphQLSceneRepository> {
   @override
-  SceneRepository build() => MockSceneRepository();
+  GraphQLSceneRepository build() => MockGraphQLSceneRepository();
 }
 
 Scene _scene(String id) {
@@ -53,25 +53,27 @@ void main() {
 
   test('scene list rebuilds when the repository dependency changes', () async {
     final prefs = await SharedPreferences.getInstance();
-    final firstRepo = MockSceneRepository()..setData([_scene('old')]);
-    final secondRepo = MockSceneRepository()..setData([_scene('new')]);
+    final firstRepo = MockGraphQLSceneRepository()..setData([_scene('old')]);
+    final secondRepo = MockGraphQLSceneRepository()..setData([_scene('new')]);
     final container = ProviderContainer(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
         sceneRepositoryProvider.overrideWith(
-          (ref) => ref.watch(_testSceneRepositoryProvider),
+          (ref) => ref.watch(_testGraphQLSceneRepositoryProvider),
         ),
       ],
     );
     addTearDown(container.dispose);
-    container.read(_testSceneRepositoryProvider.notifier).state = firstRepo;
+    container.read(_testGraphQLSceneRepositoryProvider.notifier).state =
+        firstRepo;
 
     expect(
       (await container.read(sceneListProvider.future)).map((scene) => scene.id),
       ['old'],
     );
 
-    container.read(_testSceneRepositoryProvider.notifier).state = secondRepo;
+    container.read(_testGraphQLSceneRepositoryProvider.notifier).state =
+        secondRepo;
 
     expect(
       (await container.read(sceneListProvider.future)).map((scene) => scene.id),

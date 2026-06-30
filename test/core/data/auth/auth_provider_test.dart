@@ -193,8 +193,10 @@ void main() {
       final state = container.read(authProvider);
       expect(state.loginStatus, AuthLoginStatus.loggedIn);
       expect(state.cookieHeader, contains('session=provider-cookie'));
-      expect(await secureStorage.read(key: 'profile_${profileId}_cookie_header'),
-          isNotEmpty);
+      expect(
+        await secureStorage.read(key: 'profile_${profileId}_cookie_header'),
+        isNotEmpty,
+      );
     });
 
     test('hydrates basic mode and sets loggedIn status', () async {

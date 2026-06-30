@@ -937,13 +937,17 @@ class _TiktokSceneItemState extends ConsumerState<TiktokSceneItem> {
                                           }
                                         },
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 1.0),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 2.0,
+                                            vertical: 1.0,
+                                          ),
                                           child: Text(
                                             widget.scene.studioName!,
                                             style: context.textTheme.bodyMedium
                                                 ?.copyWith(
                                                   color: Colors.white,
-                                                  fontSize: context.fontSizes.body,
+                                                  fontSize:
+                                                      context.fontSizes.body,
                                                   fontWeight: FontWeight.w500,
                                                   decoration:
                                                       TextDecoration.underline,

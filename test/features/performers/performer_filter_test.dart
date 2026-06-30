@@ -3,7 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/features/performers/presentation/providers/performer_list_provider.dart';
-import 'package:stash_app_flutter/features/performers/domain/entities/performer_filter.dart' as domain;
+import 'package:stash_app_flutter/features/performers/domain/entities/performer_filter.dart'
+    as domain;
 
 void main() {
   group('PerformerFilterNotifier', () {

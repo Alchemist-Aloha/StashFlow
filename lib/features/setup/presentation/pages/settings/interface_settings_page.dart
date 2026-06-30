@@ -219,7 +219,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
         .read(gridLayoutSettingProvider(GridLayoutSetting.tagMedia).notifier)
         .set(_tagMediaGridLayout);
     ref
-        .read(gridLayoutSettingProvider(GridLayoutSetting.tagGalleries).notifier)
+        .read(
+          gridLayoutSettingProvider(GridLayoutSetting.tagGalleries).notifier,
+        )
         .set(_tagGalleriesGridLayout);
     ref
         .read(gridLayoutSettingProvider(GridLayoutSetting.groupMedia).notifier)

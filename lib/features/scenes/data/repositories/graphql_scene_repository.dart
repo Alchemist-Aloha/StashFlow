@@ -8,21 +8,18 @@ import 'package:stash_app_flutter/core/domain/entities/criterion.dart'
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_deduplication.dart';
 import '../../domain/entities/scene_filter.dart';
-import '../../domain/repositories/scene_repository.dart';
 import '../../domain/models/scraper.dart';
 import '../graphql/scenes.graphql.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
 import '../utils/scrape_normalizer.dart';
 
-class GraphQLSceneRepository implements SceneRepository {
-  final GraphQLClient client;
-  GraphQLSceneRepository(this.client);
+class GraphQLSceneRepository {
+  final GraphQLClient _client;
+  GraphQLSceneRepository(this._client);
 
-  Uri get _graphqlEndpoint => client.link is HttpLink
-      ? (client.link as HttpLink).uri
+  Uri get _graphqlEndpoint => _client.link is HttpLink
+      ? (_client.link as HttpLink).uri
       : Uri.parse('https://localhost/graphql');
-
-  @override
   Future<List<Scene>> findScenes({
     int? page,
     int? perPage,
@@ -180,7 +177,7 @@ class GraphQLSceneRepository implements SceneRepository {
     String? tagId,
     SceneFilter? sceneFilter,
   }) {
-    return client.query$FindScenes(
+    return _client.query$FindScenes(
       Options$Query$FindScenes(
         fetchPolicy: FetchPolicy.cacheAndNetwork,
         variables: Variables$Query$FindScenes(
@@ -290,10 +287,8 @@ class GraphQLSceneRepository implements SceneRepository {
     }
     return false;
   }
-
-  @override
   Future<Scene> getSceneById(String id, {bool refresh = false}) async {
-    final result = await client.query$FindScene(
+    final result = await _client.query$FindScene(
       Options$Query$FindScene(
         fetchPolicy: refresh
             ? FetchPolicy.networkOnly
@@ -395,8 +390,6 @@ class GraphQLSceneRepository implements SceneRepository {
       markers: _mapSceneMarkers(rawScene?['scene_markers']),
     );
   }
-
-  @override
   Future<SceneMarker> createSceneMarker({
     required String sceneId,
     required String title,
@@ -429,7 +422,7 @@ class GraphQLSceneRepository implements SceneRepository {
       input['end_seconds'] = endSeconds;
     }
 
-    final result = await client.mutate<Map<String, dynamic>>(
+    final result = await _client.mutate<Map<String, dynamic>>(
       MutationOptions<Map<String, dynamic>>(
         document: gql(r'''
           mutation CreateSceneMarker($input: SceneMarkerCreateInput!) {
@@ -464,10 +457,8 @@ class GraphQLSceneRepository implements SceneRepository {
     }
     return _mapSceneMarker(rawMarker);
   }
-
-  @override
   Future<void> deleteSceneMarker(String markerId) async {
-    final result = await client.mutate<Map<String, dynamic>>(
+    final result = await _client.mutate<Map<String, dynamic>>(
       MutationOptions<Map<String, dynamic>>(
         document: gql(r'''
           mutation DeleteSceneMarker($id: ID!) {
@@ -492,7 +483,7 @@ class GraphQLSceneRepository implements SceneRepository {
     final explicit = explicitPrimaryTagId?.trim();
     if (explicit != null && explicit.isNotEmpty) return explicit;
 
-    final findResult = await client.query<Map<String, dynamic>>(
+    final findResult = await _client.query<Map<String, dynamic>>(
       QueryOptions<Map<String, dynamic>>(
         document: gql(r'''
           query FindMarkerPrimaryTag($filter: FindFilterType) {
@@ -525,7 +516,7 @@ class GraphQLSceneRepository implements SceneRepository {
       }
     }
 
-    final createResult = await client.mutate<Map<String, dynamic>>(
+    final createResult = await _client.mutate<Map<String, dynamic>>(
       MutationOptions<Map<String, dynamic>>(
         document: gql(r'''
           mutation CreateMarkerPrimaryTag($input: TagCreateInput!) {
@@ -596,10 +587,8 @@ class GraphQLSceneRepository implements SceneRepository {
           .toList(growable: false),
     );
   }
-
-  @override
   Future<List<Scraper>> listScrapers({required List<String> types}) async {
-    final result = await client.query$ListScrapers(
+    final result = await _client.query$ListScrapers(
       Options$Query$ListScrapers(
         variables: Variables$Query$ListScrapers(
           types: types.map((t) => fromJson$Enum$ScrapeContentType(t)).toList(),
@@ -614,15 +603,13 @@ class GraphQLSceneRepository implements SceneRepository {
 
     return raw.map((e) => Scraper.fromJson(e.toJson())).toList();
   }
-
-  @override
   Future<List<ScrapedScene>> scrapeSingleScene({
     String? scraperId,
     String? stashBoxEndpoint,
     String? sceneId,
     String? query,
   }) async {
-    final result = await client.query$ScrapeSingleScene(
+    final result = await _client.query$ScrapeSingleScene(
       Options$Query$ScrapeSingleScene(
         fetchPolicy: FetchPolicy.noCache,
         variables: Variables$Query$ScrapeSingleScene(
@@ -645,10 +632,8 @@ class GraphQLSceneRepository implements SceneRepository {
         .map(_stripScrapedImages)
         .toList();
   }
-
-  @override
   Future<ScrapedScene?> scrapeSceneURL(String url) async {
-    final result = await client.query$ScrapeSceneURL(
+    final result = await _client.query$ScrapeSceneURL(
       Options$Query$ScrapeSceneURL(
         fetchPolicy: FetchPolicy.noCache,
         variables: Variables$Query$ScrapeSceneURL(url: url),
@@ -661,10 +646,8 @@ class GraphQLSceneRepository implements SceneRepository {
     if (raw == null) return null;
     return _stripScrapedImages(ScrapedScene.fromJson(raw.toJson()));
   }
-
-  @override
   Future<void> generatePhash(String sceneId) async {
-    final result = await client.mutate$MetadataGenerate(
+    final result = await _client.mutate$MetadataGenerate(
       Options$Mutation$MetadataGenerate(
         variables: Variables$Mutation$MetadataGenerate(
           input: Input$GenerateMetadataInput(
@@ -677,8 +660,6 @@ class GraphQLSceneRepository implements SceneRepository {
 
     BaseRepository.validateResult(result);
   }
-
-  @override
   Future<void> saveScrapedScene({
     required String sceneId,
     required ScrapedScene scraped,
@@ -701,7 +682,7 @@ class GraphQLSceneRepository implements SceneRepository {
       tag_ids: tagIds,
     );
 
-    final result = await client.mutate$SceneUpdate(
+    final result = await _client.mutate$SceneUpdate(
       Options$Mutation$SceneUpdate(
         variables: Variables$Mutation$SceneUpdate(input: input),
       ),
@@ -709,24 +690,18 @@ class GraphQLSceneRepository implements SceneRepository {
 
     BaseRepository.validateResult(result);
   }
-
-  @override
   Future<Map<String, List<Map<String, dynamic>>>> findPerformerCandidates(
     List<String> performers,
   ) async {
     return {};
   }
-
-  @override
   Future<Map<String, List<Map<String, dynamic>>>> findTagCandidates(
     List<String> tags,
   ) async {
     return {};
   }
-
-  @override
   Future<void> updateSceneRating(String id, int rating100) async {
-    final result = await client.mutate$SceneUpdate(
+    final result = await _client.mutate$SceneUpdate(
       Options$Mutation$SceneUpdate(
         variables: Variables$Mutation$SceneUpdate(
           input: Input$SceneUpdateInput(id: id, rating100: rating100),
@@ -735,34 +710,28 @@ class GraphQLSceneRepository implements SceneRepository {
     );
     BaseRepository.validateResult(result);
   }
-
-  @override
   Future<void> incrementSceneOCounter(String id) async {
-    final result = await client.mutate$SceneAddO(
+    final result = await _client.mutate$SceneAddO(
       Options$Mutation$SceneAddO(
         variables: Variables$Mutation$SceneAddO(id: id),
       ),
     );
     BaseRepository.validateResult(result);
   }
-
-  @override
   Future<void> incrementScenePlayCount(String id) async {
-    final result = await client.mutate$SceneIncrementPlayCount(
+    final result = await _client.mutate$SceneIncrementPlayCount(
       Options$Mutation$SceneIncrementPlayCount(
         variables: Variables$Mutation$SceneIncrementPlayCount(id: id),
       ),
     );
     BaseRepository.validateResult(result);
   }
-
-  @override
   Future<void> saveSceneActivity(
     String id, {
     double? resumeTime,
     double? playDuration,
   }) async {
-    final result = await client.mutate$SceneSaveActivity(
+    final result = await _client.mutate$SceneSaveActivity(
       Options$Mutation$SceneSaveActivity(
         variables: Variables$Mutation$SceneSaveActivity(
           id: id,
@@ -773,14 +742,12 @@ class GraphQLSceneRepository implements SceneRepository {
     );
     BaseRepository.validateResult(result);
   }
-
-  @override
   Future<void> deleteScene(
     String id, {
     required bool deleteFile,
     bool deleteGenerated = true,
   }) async {
-    final result = await client.mutate$SceneDestroy(
+    final result = await _client.mutate$SceneDestroy(
       Options$Mutation$SceneDestroy(
         variables: Variables$Mutation$SceneDestroy(
           id: id,
@@ -791,13 +758,11 @@ class GraphQLSceneRepository implements SceneRepository {
     );
     BaseRepository.validateResult(result);
   }
-
-  @override
   Future<List<SceneDuplicateGroup>> findDuplicateScenes({
     int distance = 0,
     double durationDiff = 1,
   }) async {
-    final result = await client.query$FindDuplicateScenes(
+    final result = await _client.query$FindDuplicateScenes(
       Options$Query$FindDuplicateScenes(
         fetchPolicy: FetchPolicy.noCache,
         variables: Variables$Query$FindDuplicateScenes(
@@ -819,10 +784,8 @@ class GraphQLSceneRepository implements SceneRepository {
           .toList(growable: false),
     );
   }
-
-  @override
   Future<int> countScenesMissingPhash() async {
-    final result = await client.query$CountScenesMissingPhash(
+    final result = await _client.query$CountScenesMissingPhash(
       Options$Query$CountScenesMissingPhash(fetchPolicy: FetchPolicy.noCache),
     );
     BaseRepository.validateResult(result);

@@ -9,11 +9,12 @@ import '../../../../core/utils/pagination.dart';
 import '../../data/repositories/graphql_scene_marker_saved_filter_repository.dart';
 import '../../data/repositories/graphql_scene_marker_repository.dart';
 import '../../domain/entities/scene_marker.dart';
-import '../../domain/repositories/scene_marker_repository.dart';
 
 part 'scene_marker_list_provider.g.dart';
 
-final sceneMarkerRepositoryProvider = Provider<SceneMarkerRepository>((ref) {
+final sceneMarkerRepositoryProvider = Provider<GraphQLSceneMarkerRepository>((
+  ref,
+) {
   final client = ref.watch(graphqlClientProvider);
   return GraphQLSceneMarkerRepository(client);
 });

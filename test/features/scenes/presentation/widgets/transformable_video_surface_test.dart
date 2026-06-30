@@ -84,37 +84,40 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('TransformableVideoSurface applies transformation on scale gesture', (tester) async {
-    final controller = ManualMockVideoController();
+  testWidgets(
+    'TransformableVideoSurface applies transformation on scale gesture',
+    (tester) async {
+      final controller = ManualMockVideoController();
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: Center(
-            child: SizedBox(
-              width: 1600,
-              height: 900,
-              child: TransformableVideoSurface(
-                fontSize: 16,
-                textAlign: TextAlign.center,
-                bottomRatio: 0.1,
-                constraints: BoxConstraints(maxWidth: 1600, maxHeight: 900),
-                controller: controller,
-                aspectRatio: 16 / 9,
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 1600,
+                height: 900,
+                child: TransformableVideoSurface(
+                  fontSize: 16,
+                  textAlign: TextAlign.center,
+                  bottomRatio: 0.1,
+                  constraints: BoxConstraints(maxWidth: 1600, maxHeight: 900),
+                  controller: controller,
+                  aspectRatio: 16 / 9,
+                ),
               ),
             ),
           ),
         ),
-      ),
-    );
+      );
 
-    // Verify initial identity transform
-    final transformFinder = find.descendant(
-      of: find.byType(TransformableVideoSurface),
-      matching: find.byType(Transform),
-    );
-    expect(transformFinder, findsOneWidget);
-    var transform = tester.widget<Transform>(transformFinder);
-    expect(transform.transform, equals(Matrix4.identity()));
-  });
+      // Verify initial identity transform
+      final transformFinder = find.descendant(
+        of: find.byType(TransformableVideoSurface),
+        matching: find.byType(Transform),
+      );
+      expect(transformFinder, findsOneWidget);
+      var transform = tester.widget<Transform>(transformFinder);
+      expect(transform.transform, equals(Matrix4.identity()));
+    },
+  );
 }

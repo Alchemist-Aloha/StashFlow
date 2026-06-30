@@ -3,7 +3,7 @@ import 'package:stash_app_flutter/features/tags/domain/entities/tag_saved_filter
 
 void main() {
   test('TagSavedFilterConfig stores favorites-only as server favorite', () {
-    final config = TagSavedFilterConfig.current(
+    final config = TagSavedFilterConfig(
       name: 'Favorite tags',
       searchQuery: 'fav',
       sort: 'name',

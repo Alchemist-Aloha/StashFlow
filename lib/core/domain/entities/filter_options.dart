@@ -4,10 +4,10 @@ enum OrganizedFilter {
   unorganized;
 
   bool? toBool() => switch (this) {
-        OrganizedFilter.all => null,
-        OrganizedFilter.organized => true,
-        OrganizedFilter.unorganized => false,
-      };
+    OrganizedFilter.all => null,
+    OrganizedFilter.organized => true,
+    OrganizedFilter.unorganized => false,
+  };
 
   static OrganizedFilter fromBool(bool? value) {
     if (value == null) return OrganizedFilter.all;

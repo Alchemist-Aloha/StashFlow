@@ -5,7 +5,7 @@ import 'package:stash_app_flutter/features/images/domain/entities/image_saved_fi
 
 void main() {
   test('ImageSavedFilterConfig keeps organized state in object_filter', () {
-    final config = ImageSavedFilterConfig.current(
+    final config = ImageSavedFilterConfig(
       name: 'Organized images',
       searchQuery: 'cover',
       sort: 'path',

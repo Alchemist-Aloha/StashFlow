@@ -49,7 +49,7 @@ void main() {
   testWidgets('GlobalFullscreenOverlay visibility toggles with player state', (
     tester,
   ) async {
-    final mockRepo = MockSceneRepository()..withData([testScene]);
+    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
 
     await pumpTestWidget(
       tester,

@@ -87,9 +87,7 @@ class _DebugLogViewerPageState extends State<DebugLogViewerPage> {
           _scheduleAutoScroll();
 
           if (entries.isEmpty) {
-            return Center(
-              child: Text(context.l10n.settings_develop_no_logs),
-            );
+            return Center(child: Text(context.l10n.settings_develop_no_logs));
           }
 
           return ListView.builder(

@@ -108,10 +108,16 @@ class AppColors extends ThemeExtension<AppColors> {
       onSecondary: Colors.white,
       error: const Color(0xFFB3261E),
       onError: Colors.white,
-      surfaceVariant: isDark ? const Color(0xFF49454F) : const Color(0xFFE7E0EC),
-      onSurfaceVariant: isDark ? const Color(0xFFCAC4D0) : const Color(0xFF49454F),
+      surfaceVariant: isDark
+          ? const Color(0xFF49454F)
+          : const Color(0xFFE7E0EC),
+      onSurfaceVariant: isDark
+          ? const Color(0xFFCAC4D0)
+          : const Color(0xFF49454F),
       outline: isDark ? const Color(0xFF938F99) : const Color(0xFF79747E),
-      cardBackground: isDark ? const Color(0xFF2B2930) : const Color(0xFFF3EDF7),
+      cardBackground: isDark
+          ? const Color(0xFF2B2930)
+          : const Color(0xFFF3EDF7),
       ratingColor: isDark ? Colors.amber.shade300 : Colors.amber.shade700,
     );
   }
@@ -162,10 +168,16 @@ class AppDimensions extends ThemeExtension<AppDimensions> {
   AppDimensions lerp(ThemeExtension<AppDimensions>? other, double t) {
     if (other is! AppDimensions) return this;
     return AppDimensions(
-      performerAvatarSize:
-          lerpDouble(performerAvatarSize, other.performerAvatarSize, t)!,
-      cardTitleFontSize:
-          lerpDouble(cardTitleFontSize, other.cardTitleFontSize, t)!,
+      performerAvatarSize: lerpDouble(
+        performerAvatarSize,
+        other.performerAvatarSize,
+        t,
+      )!,
+      cardTitleFontSize: lerpDouble(
+        cardTitleFontSize,
+        other.cardTitleFontSize,
+        t,
+      )!,
       fontSizeFactor: lerpDouble(fontSizeFactor, other.fontSizeFactor, t)!,
       spacingSmall: lerpDouble(spacingSmall, other.spacingSmall, t)!,
       spacingMedium: lerpDouble(spacingMedium, other.spacingMedium, t)!,
@@ -251,9 +263,8 @@ class AppTheme {
       );
     }
 
-    final baseTextTheme = Typography.material2021(platform: defaultTargetPlatform)
-        .black
-        .apply(
+    final baseTextTheme =
+        Typography.material2021(platform: defaultTargetPlatform).black.apply(
           bodyColor: colorScheme.onSurface,
           displayColor: colorScheme.onSurface,
           fontSizeFactor: fontSizeFactor,

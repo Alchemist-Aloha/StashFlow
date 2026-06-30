@@ -113,7 +113,7 @@ void main() {
 
       final repository = GraphQLSceneSavedFilterRepository(client);
       final saved = await repository.save(
-        SceneSavedFilterConfig.current(
+        SceneSavedFilterConfig(
           name: 'By path',
           searchQuery: 'clip',
           sort: 'path',
@@ -159,7 +159,7 @@ void main() {
 
         final repository = GraphQLSceneSavedFilterRepository(client);
         final saved = await repository.save(
-          SceneSavedFilterConfig.current(
+          SceneSavedFilterConfig(
             name: 'Legacy payload',
             searchQuery: 'clip',
             sort: 'path',

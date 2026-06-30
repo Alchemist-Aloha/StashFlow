@@ -7,10 +7,7 @@ void main() {
     final config = GallerySavedFilterConfig.fromServerPayload(
       id: '8',
       name: 'Zip galleries',
-      findFilter: {
-        'sort': 'path',
-        'direction': 'DESC',
-      },
+      findFilter: {'sort': 'path', 'direction': 'DESC'},
       objectFilter: {
         'is_zip': true,
         'image_count': {'value': 10, 'modifier': 'GREATER_THAN'},

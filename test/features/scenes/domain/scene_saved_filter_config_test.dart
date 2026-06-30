@@ -6,7 +6,7 @@ import 'package:stash_app_flutter/features/scenes/domain/entities/scene_saved_fi
 void main() {
   group('SceneSavedFilterConfig', () {
     test('builds server input from current search, sort, and scene filter', () {
-      final config = SceneSavedFilterConfig.current(
+      final config = SceneSavedFilterConfig(
         name: 'Favorites',
         searchQuery: 'studio search',
         sort: 'rating',

@@ -20,7 +20,7 @@ import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../domain/entities/scene_title_utils.dart';
-import '../../../studios/presentation/providers/studio_media_provider.dart';
+import '../providers/entity_media_filter_scope.dart';
 import '../providers/scene_details_provider.dart';
 import '../providers/scene_list_provider.dart';
 import '../providers/playback_queue_provider.dart';
@@ -1305,7 +1305,9 @@ class _SceneDetailsPageState extends ConsumerState<SceneDetailsPage> {
 
     final canOpenStudio =
         scene.studioId != null && (scene.studioName ?? '').trim().isNotEmpty;
-    final studioMediaAsync = ref.watch(studioMediaProvider(scene.studioId!));
+    final studioMediaAsync = ref.watch(
+      entityMediaPreviewProvider(EntityMediaFilterKind.studio, scene.studioId!),
+    );
 
     return studioMediaAsync.when(
       data: (scenes) {

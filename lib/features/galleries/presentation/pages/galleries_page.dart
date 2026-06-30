@@ -219,7 +219,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
           return ref
               .read(savedFilterRepositoryProvider)
               .save(
-                input: GallerySavedFilterConfig.current(
+                input: GallerySavedFilterConfig(
                   id: existingId,
                   name: name,
                   searchQuery: ref.read(gallerySearchQueryProvider),

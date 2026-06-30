@@ -11,47 +11,28 @@ class TagSavedFilterConfig extends SavedFilterConfig<bool> {
     super.perPage,
   }) : super(filterMode: 'TAGS', filter: favorite);
 
-  factory TagSavedFilterConfig.current({
-    String? id,
-    required String name,
-    required String searchQuery,
-    required String? sort,
-    required bool descending,
-    required bool favorite,
-    int? perPage,
-  }) {
-    return TagSavedFilterConfig(
-      id: id,
-      name: name,
-      searchQuery: searchQuery,
-      sort: sort,
-      descending: descending,
-      favorite: favorite,
-      perPage: perPage,
-    );
-  }
-
   factory TagSavedFilterConfig.fromServerPayload({
     required String id,
     required String name,
     Object? findFilter,
     Object? objectFilter,
   }) {
-    final findFilterMap = savedFilterAsMap(findFilter);
-    final objectFilterMap = savedFilterAsMap(objectFilter);
-    final direction = findFilterMap['direction'];
+    final payload = savedFilterReadPayload(
+      findFilter: findFilter,
+      objectFilter: objectFilter,
+      emptyFilter: false,
+      fromJson: (json) =>
+          savedFilterReadBooleanCriterionValue(json['favorite']) ?? false,
+    );
 
     return TagSavedFilterConfig(
       id: id,
       name: name,
-      searchQuery: findFilterMap['q'] as String? ?? '',
-      sort: findFilterMap['sort'] as String?,
-      descending: direction is String
-          ? direction.toUpperCase() == 'DESC'
-          : true,
-      perPage: findFilterMap['per_page'] as int?,
-      favorite: savedFilterReadBooleanCriterionValue(objectFilterMap['favorite']) ??
-          false,
+      searchQuery: payload.searchQuery,
+      sort: payload.sort,
+      descending: payload.descending,
+      perPage: payload.perPage,
+      favorite: payload.filter,
     );
   }
 

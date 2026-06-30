@@ -223,7 +223,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
           return ref
               .read(savedFilterRepositoryProvider)
               .save(
-                input: ImageSavedFilterConfig.current(
+                input: ImageSavedFilterConfig(
                   id: existingId,
                   name: name,
                   searchQuery: ref.read(imageSearchQueryProvider),

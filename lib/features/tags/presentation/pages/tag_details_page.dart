@@ -6,9 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../scenes/domain/entities/scene.dart';
-import '../providers/tag_media_provider.dart';
+import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
 import '../providers/tag_details_provider.dart';
-import '../providers/tag_galleries_provider.dart';
+import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
 import '../../../images/presentation/providers/image_list_provider.dart';
 
 import '../../../../core/presentation/widgets/section_header.dart';
@@ -60,8 +60,12 @@ class TagDetailsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tagAsync = ref.watch(tagDetailsProvider(tagId));
-    final mediaAsync = ref.watch(tagMediaProvider(tagId));
-    final galleriesAsync = ref.watch(tagGalleriesProvider(tagId));
+    final mediaAsync = ref.watch(
+      entityMediaPreviewProvider(EntityMediaFilterKind.tag, tagId),
+    );
+    final galleriesAsync = ref.watch(
+      entityGalleryPreviewProvider(EntityGalleryFilterKind.tag, tagId),
+    );
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return Scaffold(
@@ -78,12 +82,29 @@ class TagDetailsPage extends ConsumerWidget {
           return RefreshIndicator(
             onRefresh: () async {
               ref.invalidate(tagDetailsProvider(tagId));
-              ref.invalidate(tagMediaProvider(tagId));
-              ref.invalidate(tagGalleriesProvider(tagId));
+              ref.invalidate(
+                entityMediaPreviewProvider(EntityMediaFilterKind.tag, tagId),
+              );
+              ref.invalidate(
+                entityGalleryPreviewProvider(
+                  EntityGalleryFilterKind.tag,
+                  tagId,
+                ),
+              );
               await Future.wait([
                 ref.read(tagDetailsProvider(tagId).future),
-                ref.read(tagMediaProvider(tagId).future),
-                ref.read(tagGalleriesProvider(tagId).future),
+                ref.read(
+                  entityMediaPreviewProvider(
+                    EntityMediaFilterKind.tag,
+                    tagId,
+                  ).future,
+                ),
+                ref.read(
+                  entityGalleryPreviewProvider(
+                    EntityGalleryFilterKind.tag,
+                    tagId,
+                  ).future,
+                ),
               ]);
             },
             child: SingleChildScrollView(

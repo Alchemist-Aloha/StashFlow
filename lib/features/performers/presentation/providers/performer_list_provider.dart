@@ -5,7 +5,6 @@ import 'dart:math';
 import 'dart:convert';
 import '../../domain/entities/performer.dart';
 import '../../domain/entities/performer_filter.dart' as domain;
-import '../../domain/repositories/performer_repository.dart';
 import '../../data/repositories/graphql_performer_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
@@ -14,7 +13,7 @@ import '../../../../core/utils/pagination.dart';
 part 'performer_list_provider.g.dart';
 
 // Provider for Repository interface
-final performerRepositoryProvider = Provider<PerformerRepository>((ref) {
+final performerRepositoryProvider = Provider<GraphQLPerformerRepository>((ref) {
   final client = ref.watch(graphqlClientProvider);
   return GraphQLPerformerRepository(client);
 });

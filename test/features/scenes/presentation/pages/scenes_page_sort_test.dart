@@ -9,7 +9,7 @@ void main() {
   testWidgets('Scenes page exposes marker list entry in action pill', (
     tester,
   ) async {
-    final mockRepo = MockSceneRepository();
+    final mockRepo = MockGraphQLSceneRepository();
     mockRepo.setData([]);
 
     await pumpTestWidget(
@@ -25,7 +25,7 @@ void main() {
   testWidgets(
     'Sort panel should have scrollable sort methods and visible buttons',
     (tester) async {
-      final mockRepo = MockSceneRepository();
+      final mockRepo = MockGraphQLSceneRepository();
       mockRepo.setData([
         Scene(
           id: '1',
@@ -81,7 +81,7 @@ void main() {
     tester.view.devicePixelRatio = 3.0;
     addTearDown(() => tester.view.resetPhysicalSize());
 
-    final mockRepo = MockSceneRepository();
+    final mockRepo = MockGraphQLSceneRepository();
     mockRepo.setData([]);
 
     await pumpTestWidget(

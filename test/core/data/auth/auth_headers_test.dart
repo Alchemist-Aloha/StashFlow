@@ -14,7 +14,7 @@ void main() {
         cookieHeader: 'session=123',
       );
       final headers = getAuthHeaders(authState: authState, apiKey: testApiKey);
-      
+
       expect(headers['Cookie'], 'session=123');
       expect(headers.containsKey('Authorization'), false);
       expect(headers.containsKey('ApiKey'), false);
@@ -23,7 +23,7 @@ void main() {
     test('prefers Bearer token over ApiKey when mode is bearer', () {
       final authState = AuthState.initial().copyWith(mode: AuthMode.bearer);
       final headers = getAuthHeaders(authState: authState, apiKey: testApiKey);
-      
+
       expect(headers['Authorization'], 'Bearer $testApiKey');
       expect(headers.containsKey('ApiKey'), false);
     });
@@ -35,7 +35,7 @@ void main() {
         password: 'pass',
       );
       final headers = getAuthHeaders(authState: authState, apiKey: testApiKey);
-      
+
       final expectedBase64 = base64Encode(utf8.encode('user:pass'));
       expect(headers['Authorization'], 'Basic $expectedBase64');
       expect(headers.containsKey('ApiKey'), false);
@@ -44,7 +44,7 @@ void main() {
     test('falls back to ApiKey header if no other mode is active', () {
       final authState = AuthState.initial().copyWith(mode: AuthMode.apiKey);
       final headers = getAuthHeaders(authState: authState, apiKey: testApiKey);
-      
+
       expect(headers['ApiKey'], testApiKey);
       expect(headers.containsKey('Authorization'), false);
     });

@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
-import '../../domain/repositories/scene_repository.dart';
 import '../../data/repositories/graphql_scene_repository.dart';
 import '../../data/repositories/graphql_scene_saved_filter_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
@@ -18,7 +17,7 @@ import '../../../../core/domain/entities/filter_options.dart';
 part 'scene_list_provider.g.dart';
 
 // Provider for Repository interface
-final sceneRepositoryProvider = Provider<SceneRepository>((ref) {
+final sceneRepositoryProvider = Provider<GraphQLSceneRepository>((ref) {
   final client = ref.watch(graphqlClientProvider);
   return GraphQLSceneRepository(client);
 });
@@ -192,7 +191,7 @@ class SceneGridLayout extends _$SceneGridLayout {
 /// filtering, sorting, and infinite pagination.
 ///
 /// This provider is responsible for:
-/// - Initializing and refreshing the scene list from the [SceneRepository].
+/// - Initializing and refreshing the scene list from the [GraphQLSceneRepository].
 /// - Managing the current page state and loading more scenes as the user scrolls.
 /// - Providing search and filtering capabilities.
 /// - Synchronizing the initial playback sequence with the [playbackQueueProvider].

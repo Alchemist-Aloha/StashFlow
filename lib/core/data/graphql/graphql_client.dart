@@ -55,7 +55,7 @@ class ServerUrl extends _$ServerUrl {
     if (profile != null) {
       return normalizeGraphqlServerUrl(profile.baseUrl);
     }
-    
+
     final prefs = ref.watch(sharedPreferencesProvider);
     final storedServerUrl = prefs.getString('server_base_url')?.trim() ?? '';
     return normalizeGraphqlServerUrl(storedServerUrl);
@@ -69,7 +69,7 @@ class ServerApiKey extends _$ServerApiKey {
     ref.watch(sharedPreferencesTriggerProvider);
     final profile = ref.watch(activeProfileProvider);
     if (profile == null) return '';
-    
+
     return ref.watch(profileApiKeyProvider(profile.id)).value ?? '';
   }
 }
@@ -81,7 +81,10 @@ final proxyAuthModesEnabledProvider = Provider<bool>((ref) {
 });
 
 @riverpod
-Future<GraphQLClient> profileGraphqlClient(Ref ref, ServerProfile profile) async {
+Future<GraphQLClient> profileGraphqlClient(
+  Ref ref,
+  ServerProfile profile,
+) async {
   final url = normalizeGraphqlServerUrl(profile.baseUrl);
   if (url.isEmpty) {
     throw Exception('Invalid profile URL');
@@ -111,7 +114,9 @@ Future<GraphQLClient> profileGraphqlClient(Ref ref, ServerProfile profile) async
   final headers = getAuthHeaders(authState: authState, apiKey: apiKey);
   debugPrint('profileGraphqlClient: URL: $url');
   debugPrint('profileGraphqlClient: AuthMode: ${profile.authMode}');
-  debugPrint('profileGraphqlClient: Cookie present: ${cookieHeader.isNotEmpty}');
+  debugPrint(
+    'profileGraphqlClient: Cookie present: ${cookieHeader.isNotEmpty}',
+  );
   debugPrint('profileGraphqlClient: Headers: ${headers.keys.join(', ')}');
 
   final isPasswordMode = profile.authMode == AuthMode.password;
@@ -125,7 +130,8 @@ Future<GraphQLClient> profileGraphqlClient(Ref ref, ServerProfile profile) async
 
   return GraphQLClient(
     link: httpLink,
-    cache: GraphQLCache(), // Always use fresh cache for non-active profile checks
+    cache:
+        GraphQLCache(), // Always use fresh cache for non-active profile checks
   );
 }
 

@@ -43,6 +43,8 @@ void main() {
             'rating100': 80,
             'director': 'Director',
             'synopsis': 'Synopsis',
+            'scene_count': 5,
+            'sub_group_count': 1,
             '__typename': 'Group',
           },
         ],

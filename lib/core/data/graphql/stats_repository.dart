@@ -89,7 +89,7 @@ class StatsRepository extends BaseRepository {
     );
 
     BaseRepository.validateResult(result);
-    
+
     final data = result.data?['stats'];
     if (data == null) {
       throw Exception('Failed to fetch stats: data is null');

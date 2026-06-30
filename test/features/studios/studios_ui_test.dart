@@ -27,7 +27,7 @@ void main() {
   );
 
   testWidgets('StudiosPage displays list of studios', (tester) async {
-    final mockRepo = MockStudioRepository()..withData([testStudio]);
+    final mockRepo = MockGraphQLStudioRepository()..withData([testStudio]);
 
     await pumpTestWidget(
       tester,

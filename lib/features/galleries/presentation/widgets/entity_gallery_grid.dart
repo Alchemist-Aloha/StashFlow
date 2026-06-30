@@ -257,7 +257,7 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
           return ref
               .read(savedFilterRepositoryProvider)
               .save(
-                input: GallerySavedFilterConfig.current(
+                input: GallerySavedFilterConfig(
                   id: existingId,
                   name: name,
                   searchQuery: ref.read(

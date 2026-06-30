@@ -7,21 +7,16 @@ import '../../../../core/presentation/theme/app_theme.dart';
 import '../../domain/entities/image.dart' as entity;
 
 class ImageCard extends ConsumerWidget {
-  const ImageCard.skeleton({
-    this.onTap,
-    this.memCacheWidth,
-    super.key,
-  }) : image = const entity.Image(
-         id: 'skeleton',
-         title: 'Loading',
-         rating100: null,
-         date: null,
-         urls: [],
-         files: [
-           entity.ImageFile(width: 1, height: 1, path: ''),
-         ],
-         paths: entity.ImagePaths(thumbnail: '', preview: '', image: ''),
-       );
+  const ImageCard.skeleton({this.onTap, this.memCacheWidth, super.key})
+    : image = const entity.Image(
+        id: 'skeleton',
+        title: 'Loading',
+        rating100: null,
+        date: null,
+        urls: [],
+        files: [entity.ImageFile(width: 1, height: 1, path: '')],
+        paths: entity.ImagePaths(thumbnail: '', preview: '', image: ''),
+      );
 
   const ImageCard({
     required this.image,
@@ -87,7 +82,11 @@ class ImageCard extends ConsumerWidget {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.star, color: Colors.amber, size: 10),
+                              const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: 10,
+                              ),
                               const SizedBox(width: 2),
                               Text(
                                 (image.rating100! / 20).toStringAsFixed(1),

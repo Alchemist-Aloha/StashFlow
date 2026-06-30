@@ -13,7 +13,9 @@ void main() {
     prefs = await SharedPreferences.getInstance();
   });
 
-  testWidgets('ServerSettingsPage renders add profile FAB with tooltip', (tester) async {
+  testWidgets('ServerSettingsPage renders add profile FAB with tooltip', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(1200, 1600);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);

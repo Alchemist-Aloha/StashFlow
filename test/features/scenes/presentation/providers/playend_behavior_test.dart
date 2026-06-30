@@ -8,7 +8,7 @@ import 'package:media_kit/media_kit.dart' as mk;
 import 'package:media_kit_video/media_kit_video.dart';
 
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
-import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
+import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scene_repository.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/playback_queue_provider.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
@@ -17,12 +17,12 @@ import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resol
 
 import 'playend_behavior_test.mocks.dart';
 
-@GenerateMocks([SceneRepository, mk.Player, VideoController])
+@GenerateMocks([GraphQLSceneRepository, mk.Player, VideoController])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late ProviderContainer container;
-  late MockSceneRepository mockRepo;
+  late MockGraphQLSceneRepository mockRepo;
   late MockPlayer mockPlayer;
   late MockVideoController mockVideoController;
   late StreamController<bool> playingStream;
@@ -34,7 +34,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final sharedPrefs = await SharedPreferences.getInstance();
 
-    mockRepo = MockSceneRepository();
+    mockRepo = MockGraphQLSceneRepository();
     mockPlayer = MockPlayer();
     mockVideoController = MockVideoController();
 

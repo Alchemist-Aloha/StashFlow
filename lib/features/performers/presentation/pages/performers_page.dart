@@ -265,7 +265,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
           return ref
               .read(savedFilterRepositoryProvider)
               .save(
-                input: PerformerSavedFilterConfig.current(
+                input: PerformerSavedFilterConfig(
                   id: existingId,
                   name: name,
                   searchQuery: ref.read(performerSearchQueryProvider),

@@ -21,11 +21,9 @@ enum GridLayoutSetting {
 }
 
 final gridLayoutSettingProvider =
-    NotifierProvider.family<
-      GridLayoutSettingNotifier,
-      bool,
-      GridLayoutSetting
-    >(GridLayoutSettingNotifier.new);
+    NotifierProvider.family<GridLayoutSettingNotifier, bool, GridLayoutSetting>(
+      GridLayoutSettingNotifier.new,
+    );
 
 class GridLayoutSettingNotifier extends Notifier<bool> {
   GridLayoutSettingNotifier(this.setting);
@@ -62,11 +60,9 @@ enum GridColumnSetting {
 }
 
 final gridColumnSettingProvider =
-    NotifierProvider.family<
-      GridColumnSettingNotifier,
-      int?,
-      GridColumnSetting
-    >(GridColumnSettingNotifier.new);
+    NotifierProvider.family<GridColumnSettingNotifier, int?, GridColumnSetting>(
+      GridColumnSettingNotifier.new,
+    );
 
 class GridColumnSettingNotifier extends Notifier<int?> {
   GridColumnSettingNotifier(this.setting);
