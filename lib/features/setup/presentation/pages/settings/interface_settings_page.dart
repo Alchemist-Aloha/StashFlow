@@ -628,8 +628,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   SizedBox(height: context.dimensions.spacingLarge),
                   _buildSingleLayoutSection(
                     context: context,
-                    title: 'Groups',
+                    title: 'Group Layouts',
                     subtitle: 'Default browsing mode for groups',
+                    segmentedKey: const Key('group-layout-segmented'),
                     label: context.l10n.settings_interface_media_layout,
                     description:
                         context.l10n.settings_interface_media_layout_subtitle,
@@ -647,8 +648,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   SizedBox(height: context.dimensions.spacingLarge),
                   _buildSingleLayoutSection(
                     context: context,
-                    title: 'Markers',
+                    title: 'Marker Layout',
                     subtitle: 'Default browsing mode for markers',
+                    segmentedKey: const Key('marker-layout-segmented'),
                     label: context.l10n.settings_interface_layout_default,
                     description:
                         context.l10n.settings_interface_layout_default_desc,
@@ -752,6 +754,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     required BuildContext context,
     required String title,
     required String subtitle,
+    Key? segmentedKey,
     required String label,
     required String description,
     required bool gridValue,
@@ -768,6 +771,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
         children: [
           _buildSegmentedSetting(
             context: context,
+            segmentedKey: segmentedKey,
             label: label,
             description: description,
             segments: [
