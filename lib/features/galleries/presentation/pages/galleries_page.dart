@@ -203,7 +203,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
         descending: sortConfig.descending,
         activeFilterCount: _activeFilterCount(effectiveFilter),
         defaultSortLabel: 'path',
-        saveSuccessMessage: 'Gallery filter saved to server',
+        saveSuccessMessage: context.l10n.saved_item('Gallery filter'),
         loadPresets: () => ref
             .read(savedFilterRepositoryProvider)
             .findAll(

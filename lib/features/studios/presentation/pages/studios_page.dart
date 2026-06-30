@@ -176,7 +176,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
         descending: sortConfig.descending,
         activeFilterCount: _activeFilterCount(filter),
         defaultSortLabel: 'name',
-        saveSuccessMessage: 'Studio filter saved to server',
+        saveSuccessMessage: context.l10n.saved_item('Studio filter'),
         loadPresets: () => ref
             .read(savedFilterRepositoryProvider)
             .findAll(
