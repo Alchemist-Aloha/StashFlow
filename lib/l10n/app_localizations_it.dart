@@ -3131,4 +3131,85 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get auto_missing_field => 'Campo mancante';
+
+  @override
+  String get filter_markers_title => 'Marcatori di filtro';
+
+  @override
+  String get marker_title => 'Marcatore';
+
+  @override
+  String get duration_title => 'Durata';
+
+  @override
+  String get scene_title => 'Scena';
+
+  @override
+  String get dates_title => 'Date';
+
+  @override
+  String get created_at_title => 'Creato a';
+
+  @override
+  String get updated_at_title => 'Aggiornato a';
+
+  @override
+  String get scene_date_title => 'Data della scena';
+
+  @override
+  String get scene_created_at_title => 'Scena creata a';
+
+  @override
+  String get scene_updated_at_title => 'Scena aggiornata a';
+
+  @override
+  String get organized_title => 'Organizzato';
+
+  @override
+  String get interactive_title => 'Interattivo';
+
+  @override
+  String get scraped_metadata_title => 'Metadati raschiati';
+
+  @override
+  String get local_scene_title => 'Scena locale';
+
+  @override
+  String get sort_markers_title => 'Ordina i marcatori';
+
+  @override
+  String get markers_title => 'Marcatori';
+
+  @override
+  String get sub_group_count_title => 'Conteggio sottogruppi';
+
+  @override
+  String get groups_browsing_mode_subtitle =>
+      'Modalità di navigazione predefinita per i gruppi';
+
+  @override
+  String get markers_browsing_mode_subtitle =>
+      'Modalità di navigazione predefinita per i marcatori';
+
+  @override
+  String get entity_layouts_title => 'Layout di entità';
+
+  @override
+  String get entity_layouts_subtitle =>
+      'Impostazioni predefinite del layout multimediale e della galleria per artisti, studi e tag';
+
+  @override
+  String get stats_subtitle_0_gb => '0,00GB';
+
+  @override
+  String get stats_subtitle_0_unique_items => '0 oggetti unici';
+
+  @override
+  String get markers_search_hint => 'Cerca marcatori';
+
+  @override
+  String get tags_title => 'Tag';
+
+  @override
+  String get scenes_title => 'Scene';
 }

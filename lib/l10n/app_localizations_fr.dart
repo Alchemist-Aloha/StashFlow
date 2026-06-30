@@ -3132,4 +3132,85 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get auto_missing_field => 'Champ manquant';
+
+  @override
+  String get filter_markers_title => 'Marqueurs de filtre';
+
+  @override
+  String get marker_title => 'Marqueur';
+
+  @override
+  String get duration_title => 'Durée';
+
+  @override
+  String get scene_title => 'Scène';
+
+  @override
+  String get dates_title => 'Dates';
+
+  @override
+  String get created_at_title => 'Créé à';
+
+  @override
+  String get updated_at_title => 'Mis à jour à';
+
+  @override
+  String get scene_date_title => 'Date de la scène';
+
+  @override
+  String get scene_created_at_title => 'Scène créée à';
+
+  @override
+  String get scene_updated_at_title => 'Scène mise à jour à';
+
+  @override
+  String get organized_title => 'Organisé';
+
+  @override
+  String get interactive_title => 'Interactif';
+
+  @override
+  String get scraped_metadata_title => 'Métadonnées grattées';
+
+  @override
+  String get local_scene_title => 'Scène locale';
+
+  @override
+  String get sort_markers_title => 'Trier les marqueurs';
+
+  @override
+  String get markers_title => 'Marqueurs';
+
+  @override
+  String get sub_group_count_title => 'Nombre de sous-groupes';
+
+  @override
+  String get groups_browsing_mode_subtitle =>
+      'Mode de navigation par défaut pour les groupes';
+
+  @override
+  String get markers_browsing_mode_subtitle =>
+      'Mode de navigation par défaut pour les marqueurs';
+
+  @override
+  String get entity_layouts_title => 'Dispositions d\'entité';
+
+  @override
+  String get entity_layouts_subtitle =>
+      'Paramètres par défaut de présentation des médias et de la galerie pour les artistes, les studios et les tags';
+
+  @override
+  String get stats_subtitle_0_gb => '0,00 Go';
+
+  @override
+  String get stats_subtitle_0_unique_items => '0 objets uniques';
+
+  @override
+  String get markers_search_hint => 'Marqueurs de recherche';
+
+  @override
+  String get tags_title => 'Balises';
+
+  @override
+  String get scenes_title => 'Scènes';
 }

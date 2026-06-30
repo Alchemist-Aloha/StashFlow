@@ -2951,6 +2951,84 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get auto_missing_field => '缺失字段';
+
+  @override
+  String get filter_markers_title => '过滤标记';
+
+  @override
+  String get marker_title => '标记';
+
+  @override
+  String get duration_title => '期间';
+
+  @override
+  String get scene_title => '场景';
+
+  @override
+  String get dates_title => '日期';
+
+  @override
+  String get created_at_title => '创建于';
+
+  @override
+  String get updated_at_title => '更新于';
+
+  @override
+  String get scene_date_title => '场景日期';
+
+  @override
+  String get scene_created_at_title => '场景创建于';
+
+  @override
+  String get scene_updated_at_title => '场景更新于';
+
+  @override
+  String get organized_title => '有组织';
+
+  @override
+  String get interactive_title => '交互的';
+
+  @override
+  String get scraped_metadata_title => '抓取的元数据';
+
+  @override
+  String get local_scene_title => '当地场景';
+
+  @override
+  String get sort_markers_title => '对标记进行排序';
+
+  @override
+  String get markers_title => '标记';
+
+  @override
+  String get sub_group_count_title => '子组计数';
+
+  @override
+  String get groups_browsing_mode_subtitle => '群组的默认浏览模式';
+
+  @override
+  String get markers_browsing_mode_subtitle => '标记的默认浏览模式';
+
+  @override
+  String get entity_layouts_title => '实体布局';
+
+  @override
+  String get entity_layouts_subtitle => '表演者、工作室和标签的媒体和画廊布局默认值';
+
+  @override
+  String get stats_subtitle_0_gb => '0.00GB';
+
+  @override
+  String get stats_subtitle_0_unique_items => '0 件独特物品';
+
+  @override
+  String get markers_search_hint => '搜索标记';
+
+  @override
+  String get tags_title => '标签';
+
+  @override
+  String get scenes_title => '场景';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5900,6 +5978,84 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get auto_missing_field => '缺失字段';
+
+  @override
+  String get filter_markers_title => '过滤标记';
+
+  @override
+  String get marker_title => '标记';
+
+  @override
+  String get duration_title => '期间';
+
+  @override
+  String get scene_title => '场景';
+
+  @override
+  String get dates_title => '日期';
+
+  @override
+  String get created_at_title => '创建于';
+
+  @override
+  String get updated_at_title => '更新于';
+
+  @override
+  String get scene_date_title => '场景日期';
+
+  @override
+  String get scene_created_at_title => '场景创建于';
+
+  @override
+  String get scene_updated_at_title => '场景更新于';
+
+  @override
+  String get organized_title => '有组织';
+
+  @override
+  String get interactive_title => '交互的';
+
+  @override
+  String get scraped_metadata_title => '抓取的元数据';
+
+  @override
+  String get local_scene_title => '当地场景';
+
+  @override
+  String get sort_markers_title => '对标记进行排序';
+
+  @override
+  String get markers_title => '标记';
+
+  @override
+  String get sub_group_count_title => '子组计数';
+
+  @override
+  String get groups_browsing_mode_subtitle => '群组的默认浏览模式';
+
+  @override
+  String get markers_browsing_mode_subtitle => '标记的默认浏览模式';
+
+  @override
+  String get entity_layouts_title => '实体布局';
+
+  @override
+  String get entity_layouts_subtitle => '表演者、工作室和标签的媒体和画廊布局默认值';
+
+  @override
+  String get stats_subtitle_0_gb => '0.00GB';
+
+  @override
+  String get stats_subtitle_0_unique_items => '0 件独特物品';
+
+  @override
+  String get markers_search_hint => '搜索标记';
+
+  @override
+  String get tags_title => '标签';
+
+  @override
+  String get scenes_title => '场景';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8853,4 +9009,82 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get auto_missing_field => '缺失字段';
+
+  @override
+  String get filter_markers_title => '過濾標記';
+
+  @override
+  String get marker_title => '標記';
+
+  @override
+  String get duration_title => '期間';
+
+  @override
+  String get scene_title => '場景';
+
+  @override
+  String get dates_title => '棗子';
+
+  @override
+  String get created_at_title => '創建於';
+
+  @override
+  String get updated_at_title => '更新於';
+
+  @override
+  String get scene_date_title => '場景日期';
+
+  @override
+  String get scene_created_at_title => '場景創建於';
+
+  @override
+  String get scene_updated_at_title => '場景更新於';
+
+  @override
+  String get organized_title => '有組織';
+
+  @override
+  String get interactive_title => '互動的';
+
+  @override
+  String get scraped_metadata_title => '抓取的元數據';
+
+  @override
+  String get local_scene_title => '當地場景';
+
+  @override
+  String get sort_markers_title => '對標記進行排序';
+
+  @override
+  String get markers_title => '標記';
+
+  @override
+  String get sub_group_count_title => '子組計數';
+
+  @override
+  String get groups_browsing_mode_subtitle => '群組的預設瀏覽模式';
+
+  @override
+  String get markers_browsing_mode_subtitle => '標記的預設瀏覽模式';
+
+  @override
+  String get entity_layouts_title => '實體佈局';
+
+  @override
+  String get entity_layouts_subtitle => '表演者、工作室和標籤的媒體和畫廊佈局預設值';
+
+  @override
+  String get stats_subtitle_0_gb => '0.00GB';
+
+  @override
+  String get stats_subtitle_0_unique_items => '0 件獨特物品';
+
+  @override
+  String get markers_search_hint => '搜尋標記';
+
+  @override
+  String get tags_title => '標籤';
+
+  @override
+  String get scenes_title => '場景';
 }

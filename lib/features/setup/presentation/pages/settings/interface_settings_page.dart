@@ -568,8 +568,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   SizedBox(height: context.dimensions.spacingLarge),
                   _buildSingleLayoutSection(
                     context: context,
-                    title: 'Groups',
-                    subtitle: 'Default browsing mode for groups',
+                    title: context.l10n.groups_title,
+                    subtitle: context.l10n.groups_browsing_mode_subtitle,
                     label: context.l10n.settings_interface_media_layout,
                     description:
                         context.l10n.settings_interface_media_layout_subtitle,
@@ -587,8 +587,8 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   SizedBox(height: context.dimensions.spacingLarge),
                   _buildSingleLayoutSection(
                     context: context,
-                    title: 'Markers',
-                    subtitle: 'Default browsing mode for markers',
+                    title: context.l10n.markers_title,
+                    subtitle: context.l10n.markers_browsing_mode_subtitle,
                     label: context.l10n.settings_interface_layout_default,
                     description:
                         context.l10n.settings_interface_layout_default_desc,
@@ -606,9 +606,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   SizedBox(height: context.dimensions.spacingLarge),
                   // Consolidated Entity Layouts
                   SettingsSectionCard(
-                    title: 'Entity Layouts',
+                    title: context.l10n.entity_layouts_title,
                     subtitle:
-                        'Media and gallery layout defaults for performers, studios and tags',
+                        context.l10n.entity_layouts_subtitle,
                     child: Column(
                       children: [
                         _buildEntityTypeLayoutRow(
