@@ -268,7 +268,9 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
   @override
   Widget build(BuildContext context) {
     final imagesAsync = ref.watch(imageListProvider);
-    final gridColumns = ref.watch(imageGridColumnsProvider);
+    final gridColumns = ref.watch(
+      gridColumnSettingProvider(GridColumnSetting.image),
+    );
     final isMobile = Responsive.isMobile(context);
     final isTablet = Responsive.isTablet(context);
 

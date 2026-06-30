@@ -149,8 +149,12 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
   Widget build(BuildContext context) {
     final markersAsync = ref.watch(sceneMarkerListProvider);
     final filter = ref.watch(sceneMarkerFilterStateProvider);
-    final isGridLayout = ref.watch(sceneMarkerGridLayoutProvider);
-    final gridColumns = ref.watch(sceneMarkerGridColumnsProvider) ?? 2;
+    final isGridLayout = ref.watch(
+      gridLayoutSettingProvider(GridLayoutSetting.sceneMarker),
+    );
+    final gridColumns =
+        ref.watch(gridColumnSettingProvider(GridColumnSetting.sceneMarker)) ??
+        2;
     final hasCustomSort =
         _sortField != _MarkerSortField.createdAt || !_sortDescending;
 

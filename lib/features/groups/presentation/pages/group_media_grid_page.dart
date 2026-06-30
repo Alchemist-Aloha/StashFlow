@@ -16,8 +16,12 @@ class GroupMediaGridPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mediaAsync = ref.watch(groupMediaGridProvider(groupId));
-    final isGridView = ref.watch(groupMediaGridLayoutProvider);
-    final gridColumns = ref.watch(groupGridColumnsProvider);
+    final isGridView = ref.watch(
+      gridLayoutSettingProvider(GridLayoutSetting.groupMedia),
+    );
+    final gridColumns = ref.watch(
+      gridColumnSettingProvider(GridColumnSetting.group),
+    );
 
     return EntitySceneMediaGrid(
       title: context.l10n.studios_media_title,

@@ -16,8 +16,12 @@ class TagGalleriesGridPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final galleriesAsync = ref.watch(tagGalleriesGridProvider(tagId));
-    final isGridView = ref.watch(tagGalleriesGridLayoutProvider);
-    final gridColumns = ref.watch(tagGridColumnsProvider);
+    final isGridView = ref.watch(
+      gridLayoutSettingProvider(GridLayoutSetting.tagGalleries),
+    );
+    final gridColumns = ref.watch(
+      gridColumnSettingProvider(GridColumnSetting.tag),
+    );
 
     return EntityGalleryGrid(
       title: context.l10n.details_galleries,

@@ -400,7 +400,9 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
 
     final isTiktokLayout = ref.watch(sceneTiktokLayoutProvider);
     final isGridView = ref.watch(sceneGridLayoutProvider);
-    final gridColumns = ref.watch(sceneGridColumnsProvider);
+    final gridColumns = ref.watch(
+      gridColumnSettingProvider(GridColumnSetting.scene),
+    );
     final scenesAsync = ref.watch(sceneListProvider);
 
     // Use select for more granular watching where possible

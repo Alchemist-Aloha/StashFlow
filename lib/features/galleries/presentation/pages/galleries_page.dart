@@ -265,7 +265,9 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
   Widget build(BuildContext context) {
     final galleriesAsync = ref.watch(galleryListProvider);
     final isGridView = ref.watch(galleryGridLayoutProvider);
-    final gridColumns = ref.watch(galleryGridColumnsProvider);
+    final gridColumns = ref.watch(
+      gridColumnSettingProvider(GridColumnSetting.gallery),
+    );
     final filterActive = ref.watch(
       galleryFilterStateProvider.select((s) => s != GalleryFilter.empty()),
     );

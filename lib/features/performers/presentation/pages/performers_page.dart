@@ -305,7 +305,9 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
   @override
   Widget build(BuildContext context) {
     final performersAsync = ref.watch(performerListProvider);
-    final gridColumns = ref.watch(performerGridColumnsProvider);
+    final gridColumns = ref.watch(
+      gridColumnSettingProvider(GridColumnSetting.performer),
+    );
     final filterState = ref.watch(performerFilterStateProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final scrollController = ref.watch(performerScrollControllerProvider);

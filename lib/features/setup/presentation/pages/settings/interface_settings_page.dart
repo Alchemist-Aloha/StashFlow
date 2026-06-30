@@ -86,14 +86,30 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     _imageFullscreenVerticalSwipe =
         prefs.getBool(_imageFullscreenVerticalSwipeKey) ?? true;
 
-    _sceneGridColumns = ref.read(sceneGridColumnsProvider);
-    _galleryGridColumns = ref.read(galleryGridColumnsProvider);
-    _performerGridColumns = ref.read(performerGridColumnsProvider);
-    _imageGridColumns = ref.read(imageGridColumnsProvider);
-    _studioGridColumns = ref.read(studioGridColumnsProvider);
-    _tagGridColumns = ref.read(tagGridColumnsProvider);
-    _groupGridColumns = ref.read(groupGridColumnsProvider);
-    _markerGridColumns = ref.read(sceneMarkerGridColumnsProvider);
+    _sceneGridColumns = ref.read(
+      gridColumnSettingProvider(GridColumnSetting.scene),
+    );
+    _galleryGridColumns = ref.read(
+      gridColumnSettingProvider(GridColumnSetting.gallery),
+    );
+    _performerGridColumns = ref.read(
+      gridColumnSettingProvider(GridColumnSetting.performer),
+    );
+    _imageGridColumns = ref.read(
+      gridColumnSettingProvider(GridColumnSetting.image),
+    );
+    _studioGridColumns = ref.read(
+      gridColumnSettingProvider(GridColumnSetting.studio),
+    );
+    _tagGridColumns = ref.read(
+      gridColumnSettingProvider(GridColumnSetting.tag),
+    );
+    _groupGridColumns = ref.read(
+      gridColumnSettingProvider(GridColumnSetting.group),
+    );
+    _markerGridColumns = ref.read(
+      gridColumnSettingProvider(GridColumnSetting.sceneMarker),
+    );
 
     _cardTitleFontSize = ref.read(cardTitleFontSizeProvider);
 
@@ -101,16 +117,30 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     _showPerformerAvatars = ref.read(showPerformerAvatarsProvider);
     _performerAvatarSize = ref.read(performerAvatarSizeProvider);
 
-    _performerMediaGridLayout = ref.read(performerMediaGridLayoutProvider);
-    _performerGalleriesGridLayout = ref.read(
-      performerGalleriesGridLayoutProvider,
+    _performerMediaGridLayout = ref.read(
+      gridLayoutSettingProvider(GridLayoutSetting.performerMedia),
     );
-    _studioMediaGridLayout = ref.read(studioMediaGridLayoutProvider);
-    _studioGalleriesGridLayout = ref.read(studioGalleriesGridLayoutProvider);
-    _tagMediaGridLayout = ref.read(tagMediaGridLayoutProvider);
-    _tagGalleriesGridLayout = ref.read(tagGalleriesGridLayoutProvider);
-    _groupMediaGridLayout = ref.read(groupMediaGridLayoutProvider);
-    _markerGridLayout = ref.read(sceneMarkerGridLayoutProvider);
+    _performerGalleriesGridLayout = ref.read(
+      gridLayoutSettingProvider(GridLayoutSetting.performerGalleries),
+    );
+    _studioMediaGridLayout = ref.read(
+      gridLayoutSettingProvider(GridLayoutSetting.studioMedia),
+    );
+    _studioGalleriesGridLayout = ref.read(
+      gridLayoutSettingProvider(GridLayoutSetting.studioGalleries),
+    );
+    _tagMediaGridLayout = ref.read(
+      gridLayoutSettingProvider(GridLayoutSetting.tagMedia),
+    );
+    _tagGalleriesGridLayout = ref.read(
+      gridLayoutSettingProvider(GridLayoutSetting.tagGalleries),
+    );
+    _groupMediaGridLayout = ref.read(
+      gridLayoutSettingProvider(GridLayoutSetting.groupMedia),
+    );
+    _markerGridLayout = ref.read(
+      gridLayoutSettingProvider(GridLayoutSetting.sceneMarker),
+    );
 
     setState(() => _loading = false);
   }
@@ -134,14 +164,30 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
         .read(entityImageFilterMethodSettingProvider.notifier)
         .set(_entityImageFilterMethod);
 
-    ref.read(sceneGridColumnsProvider.notifier).set(_sceneGridColumns);
-    ref.read(galleryGridColumnsProvider.notifier).set(_galleryGridColumns);
-    ref.read(performerGridColumnsProvider.notifier).set(_performerGridColumns);
-    ref.read(imageGridColumnsProvider.notifier).set(_imageGridColumns);
-    ref.read(studioGridColumnsProvider.notifier).set(_studioGridColumns);
-    ref.read(tagGridColumnsProvider.notifier).set(_tagGridColumns);
-    ref.read(groupGridColumnsProvider.notifier).set(_groupGridColumns);
-    ref.read(sceneMarkerGridColumnsProvider.notifier).set(_markerGridColumns);
+    ref
+        .read(gridColumnSettingProvider(GridColumnSetting.scene).notifier)
+        .set(_sceneGridColumns);
+    ref
+        .read(gridColumnSettingProvider(GridColumnSetting.gallery).notifier)
+        .set(_galleryGridColumns);
+    ref
+        .read(gridColumnSettingProvider(GridColumnSetting.performer).notifier)
+        .set(_performerGridColumns);
+    ref
+        .read(gridColumnSettingProvider(GridColumnSetting.image).notifier)
+        .set(_imageGridColumns);
+    ref
+        .read(gridColumnSettingProvider(GridColumnSetting.studio).notifier)
+        .set(_studioGridColumns);
+    ref
+        .read(gridColumnSettingProvider(GridColumnSetting.tag).notifier)
+        .set(_tagGridColumns);
+    ref
+        .read(gridColumnSettingProvider(GridColumnSetting.group).notifier)
+        .set(_groupGridColumns);
+    ref
+        .read(gridColumnSettingProvider(GridColumnSetting.sceneMarker).notifier)
+        .set(_markerGridColumns);
 
     ref.read(cardTitleFontSizeProvider.notifier).set(_cardTitleFontSize);
 
@@ -150,23 +196,37 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     ref.read(performerAvatarSizeProvider.notifier).set(_performerAvatarSize);
 
     ref
-        .read(performerMediaGridLayoutProvider.notifier)
+        .read(
+          gridLayoutSettingProvider(GridLayoutSetting.performerMedia).notifier,
+        )
         .set(_performerMediaGridLayout);
     ref
-        .read(performerGalleriesGridLayoutProvider.notifier)
+        .read(
+          gridLayoutSettingProvider(
+            GridLayoutSetting.performerGalleries,
+          ).notifier,
+        )
         .set(_performerGalleriesGridLayout);
     ref
-        .read(studioMediaGridLayoutProvider.notifier)
+        .read(gridLayoutSettingProvider(GridLayoutSetting.studioMedia).notifier)
         .set(_studioMediaGridLayout);
     ref
-        .read(studioGalleriesGridLayoutProvider.notifier)
+        .read(
+          gridLayoutSettingProvider(GridLayoutSetting.studioGalleries).notifier,
+        )
         .set(_studioGalleriesGridLayout);
-    ref.read(tagMediaGridLayoutProvider.notifier).set(_tagMediaGridLayout);
     ref
-        .read(tagGalleriesGridLayoutProvider.notifier)
+        .read(gridLayoutSettingProvider(GridLayoutSetting.tagMedia).notifier)
+        .set(_tagMediaGridLayout);
+    ref
+        .read(gridLayoutSettingProvider(GridLayoutSetting.tagGalleries).notifier)
         .set(_tagGalleriesGridLayout);
-    ref.read(groupMediaGridLayoutProvider.notifier).set(_groupMediaGridLayout);
-    ref.read(sceneMarkerGridLayoutProvider.notifier).set(_markerGridLayout);
+    ref
+        .read(gridLayoutSettingProvider(GridLayoutSetting.groupMedia).notifier)
+        .set(_groupMediaGridLayout);
+    ref
+        .read(gridLayoutSettingProvider(GridLayoutSetting.sceneMarker).notifier)
+        .set(_markerGridLayout);
 
     await prefs.setBool(
       _imageFullscreenVerticalSwipeKey,

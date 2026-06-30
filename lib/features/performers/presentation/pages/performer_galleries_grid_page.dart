@@ -22,8 +22,12 @@ class PerformerGalleriesGridPage extends ConsumerWidget {
     final galleriesAsync = ref.watch(
       performerGalleriesGridProvider(performerId),
     );
-    final isGridView = ref.watch(performerGalleriesGridLayoutProvider);
-    final gridColumns = ref.watch(performerGridColumnsProvider);
+    final isGridView = ref.watch(
+      gridLayoutSettingProvider(GridLayoutSetting.performerGalleries),
+    );
+    final gridColumns = ref.watch(
+      gridColumnSettingProvider(GridColumnSetting.performer),
+    );
 
     return EntityGalleryGrid(
       title: context.l10n.performers_galleries_title,

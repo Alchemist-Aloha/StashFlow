@@ -21,8 +21,12 @@ class TagMediaGridPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mediaAsync = ref.watch(tagMediaGridProvider(tagId));
-    final isGridView = ref.watch(tagMediaGridLayoutProvider);
-    final gridColumns = ref.watch(tagGridColumnsProvider);
+    final isGridView = ref.watch(
+      gridLayoutSettingProvider(GridLayoutSetting.tagMedia),
+    );
+    final gridColumns = ref.watch(
+      gridColumnSettingProvider(GridColumnSetting.tag),
+    );
 
     return EntitySceneMediaGrid(
       title: context.l10n.studios_media_title,

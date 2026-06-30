@@ -21,8 +21,12 @@ class StudioMediaGridPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mediaAsync = ref.watch(studioMediaGridProvider(studioId));
-    final isGridView = ref.watch(studioMediaGridLayoutProvider);
-    final gridColumns = ref.watch(studioGridColumnsProvider);
+    final isGridView = ref.watch(
+      gridLayoutSettingProvider(GridLayoutSetting.studioMedia),
+    );
+    final gridColumns = ref.watch(
+      gridColumnSettingProvider(GridColumnSetting.studio),
+    );
 
     return EntitySceneMediaGrid(
       title: context.l10n.studios_media_title,

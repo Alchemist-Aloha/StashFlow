@@ -1,160 +1,82 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../data/preferences/shared_preferences_provider.dart';
 
 part 'layout_settings_provider.g.dart';
 
-@riverpod
-class PerformerMediaGridLayout extends _$PerformerMediaGridLayout {
-  static const _storageKey = 'performer_media_grid_layout';
+enum GridLayoutSetting {
+  performerMedia('performer_media_grid_layout', true),
+  performerGalleries('performer_galleries_grid_layout', true),
+  studioMedia('studio_media_grid_layout', true),
+  studioGalleries('studio_galleries_grid_layout', true),
+  tagMedia('tag_media_grid_layout', true),
+  tagGalleries('tag_galleries_grid_layout', true),
+  groupMedia('group_media_grid_layout', true),
+  sceneMarker('scene_marker_grid_layout', true);
+
+  const GridLayoutSetting(this.storageKey, this.defaultValue);
+
+  final String storageKey;
+  final bool defaultValue;
+}
+
+final gridLayoutSettingProvider =
+    NotifierProvider.family<
+      GridLayoutSettingNotifier,
+      bool,
+      GridLayoutSetting
+    >(GridLayoutSettingNotifier.new);
+
+class GridLayoutSettingNotifier extends Notifier<bool> {
+  GridLayoutSettingNotifier(this.setting);
+
+  final GridLayoutSetting setting;
 
   @override
   bool build() {
     final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(_storageKey) ?? true;
+    return prefs.getBool(setting.storageKey) ?? setting.defaultValue;
   }
 
   Future<void> set(bool value) async {
     if (state == value) return;
     state = value;
     final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_storageKey, value);
+    await prefs.setBool(setting.storageKey, value);
   }
 }
 
-@riverpod
-class PerformerGalleriesGridLayout extends _$PerformerGalleriesGridLayout {
-  static const _storageKey = 'performer_galleries_grid_layout';
+enum GridColumnSetting {
+  scene('scene_grid_columns_v2'),
+  performer('performer_grid_columns_v2'),
+  gallery('gallery_grid_columns_v2'),
+  image('image_grid_columns_v2'),
+  studio('studio_grid_columns_v2'),
+  tag('tag_grid_columns_v2'),
+  group('group_grid_columns_v2'),
+  sceneMarker('scene_marker_grid_columns_v2');
 
-  @override
-  bool build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(_storageKey) ?? true;
-  }
+  const GridColumnSetting(this.storageKey);
 
-  Future<void> set(bool value) async {
-    if (state == value) return;
-    state = value;
-    final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_storageKey, value);
-  }
+  final String storageKey;
 }
 
-@riverpod
-class StudioMediaGridLayout extends _$StudioMediaGridLayout {
-  static const _storageKey = 'studio_media_grid_layout';
+final gridColumnSettingProvider =
+    NotifierProvider.family<
+      GridColumnSettingNotifier,
+      int?,
+      GridColumnSetting
+    >(GridColumnSettingNotifier.new);
 
-  @override
-  bool build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(_storageKey) ?? true;
-  }
+class GridColumnSettingNotifier extends Notifier<int?> {
+  GridColumnSettingNotifier(this.setting);
 
-  Future<void> set(bool value) async {
-    if (state == value) return;
-    state = value;
-    final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_storageKey, value);
-  }
-}
-
-@riverpod
-class StudioGalleriesGridLayout extends _$StudioGalleriesGridLayout {
-  static const _storageKey = 'studio_galleries_grid_layout';
-
-  @override
-  bool build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(_storageKey) ?? true;
-  }
-
-  Future<void> set(bool value) async {
-    if (state == value) return;
-    state = value;
-    final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_storageKey, value);
-  }
-}
-
-@riverpod
-class TagMediaGridLayout extends _$TagMediaGridLayout {
-  static const _storageKey = 'tag_media_grid_layout';
-
-  @override
-  bool build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(_storageKey) ?? true;
-  }
-
-  Future<void> set(bool value) async {
-    if (state == value) return;
-    state = value;
-    final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_storageKey, value);
-  }
-}
-
-@riverpod
-class TagGalleriesGridLayout extends _$TagGalleriesGridLayout {
-  static const _storageKey = 'tag_galleries_grid_layout';
-
-  @override
-  bool build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(_storageKey) ?? true;
-  }
-
-  Future<void> set(bool value) async {
-    if (state == value) return;
-    state = value;
-    final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_storageKey, value);
-  }
-}
-
-@riverpod
-class GroupMediaGridLayout extends _$GroupMediaGridLayout {
-  static const _storageKey = 'group_media_grid_layout';
-
-  @override
-  bool build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(_storageKey) ?? true;
-  }
-
-  Future<void> set(bool value) async {
-    if (state == value) return;
-    state = value;
-    final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_storageKey, value);
-  }
-}
-
-@riverpod
-class SceneMarkerGridLayout extends _$SceneMarkerGridLayout {
-  static const _storageKey = 'scene_marker_grid_layout';
-
-  @override
-  bool build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(_storageKey) ?? true;
-  }
-
-  Future<void> set(bool value) async {
-    if (state == value) return;
-    state = value;
-    final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_storageKey, value);
-  }
-}
-
-@riverpod
-class SceneGridColumns extends _$SceneGridColumns {
-  static const _storageKey = 'scene_grid_columns_v2';
+  final GridColumnSetting setting;
 
   @override
   int? build() {
     final prefs = ref.watch(sharedPreferencesProvider);
-    final value = prefs.getInt(_storageKey);
+    final value = prefs.getInt(setting.storageKey);
     return value == 0 ? null : value;
   }
 
@@ -162,172 +84,7 @@ class SceneGridColumns extends _$SceneGridColumns {
     if (state == value) return;
     state = value;
     final prefs = ref.read(sharedPreferencesProvider);
-    if (value == null) {
-      await prefs.setInt(_storageKey, 0);
-    } else {
-      await prefs.setInt(_storageKey, value);
-    }
-  }
-}
-
-@riverpod
-class PerformerGridColumns extends _$PerformerGridColumns {
-  static const _storageKey = 'performer_grid_columns_v2';
-
-  @override
-  int? build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    final value = prefs.getInt(_storageKey);
-    return value == 0 ? null : value;
-  }
-
-  Future<void> set(int? value) async {
-    if (state == value) return;
-    state = value;
-    final prefs = ref.read(sharedPreferencesProvider);
-    if (value == null) {
-      await prefs.setInt(_storageKey, 0);
-    } else {
-      await prefs.setInt(_storageKey, value);
-    }
-  }
-}
-
-@riverpod
-class GalleryGridColumns extends _$GalleryGridColumns {
-  static const _storageKey = 'gallery_grid_columns_v2';
-
-  @override
-  int? build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    final value = prefs.getInt(_storageKey);
-    return value == 0 ? null : value;
-  }
-
-  Future<void> set(int? value) async {
-    if (state == value) return;
-    state = value;
-    final prefs = ref.read(sharedPreferencesProvider);
-    if (value == null) {
-      await prefs.setInt(_storageKey, 0);
-    } else {
-      await prefs.setInt(_storageKey, value);
-    }
-  }
-}
-
-@riverpod
-class ImageGridColumns extends _$ImageGridColumns {
-  static const _storageKey = 'image_grid_columns_v2';
-
-  @override
-  int? build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    final value = prefs.getInt(_storageKey);
-    return value == 0 ? null : value;
-  }
-
-  Future<void> set(int? value) async {
-    if (state == value) return;
-    state = value;
-    final prefs = ref.read(sharedPreferencesProvider);
-    if (value == null) {
-      await prefs.setInt(_storageKey, 0);
-    } else {
-      await prefs.setInt(_storageKey, value);
-    }
-  }
-}
-
-@riverpod
-class StudioGridColumns extends _$StudioGridColumns {
-  static const _storageKey = 'studio_grid_columns_v2';
-
-  @override
-  int? build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    final value = prefs.getInt(_storageKey);
-    return value == 0 ? null : value;
-  }
-
-  Future<void> set(int? value) async {
-    if (state == value) return;
-    state = value;
-    final prefs = ref.read(sharedPreferencesProvider);
-    if (value == null) {
-      await prefs.setInt(_storageKey, 0);
-    } else {
-      await prefs.setInt(_storageKey, value);
-    }
-  }
-}
-
-@riverpod
-class TagGridColumns extends _$TagGridColumns {
-  static const _storageKey = 'tag_grid_columns_v2';
-
-  @override
-  int? build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    final value = prefs.getInt(_storageKey);
-    return value == 0 ? null : value;
-  }
-
-  Future<void> set(int? value) async {
-    if (state == value) return;
-    state = value;
-    final prefs = ref.read(sharedPreferencesProvider);
-    if (value == null) {
-      await prefs.setInt(_storageKey, 0);
-    } else {
-      await prefs.setInt(_storageKey, value);
-    }
-  }
-}
-
-@riverpod
-class GroupGridColumns extends _$GroupGridColumns {
-  static const _storageKey = 'group_grid_columns_v2';
-
-  @override
-  int? build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    final value = prefs.getInt(_storageKey);
-    return value == 0 ? null : value;
-  }
-
-  Future<void> set(int? value) async {
-    if (state == value) return;
-    state = value;
-    final prefs = ref.read(sharedPreferencesProvider);
-    if (value == null) {
-      await prefs.setInt(_storageKey, 0);
-    } else {
-      await prefs.setInt(_storageKey, value);
-    }
-  }
-}
-
-@riverpod
-class SceneMarkerGridColumns extends _$SceneMarkerGridColumns {
-  static const _storageKey = 'scene_marker_grid_columns_v2';
-
-  @override
-  int? build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
-    final value = prefs.getInt(_storageKey);
-    return value == 0 ? null : value;
-  }
-
-  Future<void> set(int? value) async {
-    if (state == value) return;
-    state = value;
-    final prefs = ref.read(sharedPreferencesProvider);
-    if (value == null) {
-      await prefs.setInt(_storageKey, 0);
-    } else {
-      await prefs.setInt(_storageKey, value);
-    }
+    await prefs.setInt(setting.storageKey, value ?? 0);
   }
 }
 

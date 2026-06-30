@@ -21,8 +21,12 @@ class PerformerMediaGridPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mediaAsync = ref.watch(performerMediaGridProvider(performerId));
-    final isGridView = ref.watch(performerMediaGridLayoutProvider);
-    final gridColumns = ref.watch(performerGridColumnsProvider);
+    final isGridView = ref.watch(
+      gridLayoutSettingProvider(GridLayoutSetting.performerMedia),
+    );
+    final gridColumns = ref.watch(
+      gridColumnSettingProvider(GridColumnSetting.performer),
+    );
 
     return EntitySceneMediaGrid(
       title: context.l10n.performers_media_title,

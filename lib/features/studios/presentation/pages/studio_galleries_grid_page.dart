@@ -16,8 +16,12 @@ class StudioGalleriesGridPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final galleriesAsync = ref.watch(studioGalleriesGridProvider(studioId));
-    final isGridView = ref.watch(studioGalleriesGridLayoutProvider);
-    final gridColumns = ref.watch(studioGridColumnsProvider);
+    final isGridView = ref.watch(
+      gridLayoutSettingProvider(GridLayoutSetting.studioGalleries),
+    );
+    final gridColumns = ref.watch(
+      gridColumnSettingProvider(GridColumnSetting.studio),
+    );
 
     return EntityGalleryGrid(
       title: context.l10n.studios_galleries_title,
