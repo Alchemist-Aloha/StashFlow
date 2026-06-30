@@ -6,7 +6,9 @@ import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/domain/entities/criterion.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 import '../../../images/domain/entities/image_filter.dart';
+import '../../domain/entities/gallery.dart';
 import '../../domain/entities/gallery_filter.dart';
+import 'gallery_list_provider.dart';
 
 part 'entity_gallery_filter_scope.g.dart';
 
@@ -191,4 +193,112 @@ class EntityGalleryRandomSeed extends _$EntityGalleryRandomSeed {
 
   void next() =>
       state = DateTime.now().microsecondsSinceEpoch.remainder(10000000);
+}
+
+@riverpod
+FutureOr<List<Gallery>> entityGalleryPreview(
+  Ref ref,
+  EntityGalleryFilterKind kind,
+  String entityId,
+) async {
+  ref.keepAlive();
+  final repository = ref.read(galleryRepositoryProvider);
+
+  return switch (kind) {
+    EntityGalleryFilterKind.performer => repository.findGalleries(
+      perPage: 24,
+      performerId: entityId,
+    ),
+    EntityGalleryFilterKind.studio => repository.findGalleries(
+      perPage: 24,
+      studioId: entityId,
+    ),
+    EntityGalleryFilterKind.tag => repository.findGalleries(
+      perPage: 24,
+      tagId: entityId,
+    ),
+  };
+}
+
+@riverpod
+class EntityGalleryGrid extends _$EntityGalleryGrid {
+  static const int _perPage = 30;
+  int _currentPage = 1;
+  bool _hasMore = true;
+  bool _isLoadingMore = false;
+  EntityGalleryFilterKind? _kind;
+  String? _entityId;
+
+  @override
+  FutureOr<List<Gallery>> build(EntityGalleryFilterKind kind, String entityId) {
+    ref.keepAlive();
+    _kind = kind;
+    _entityId = entityId;
+    _currentPage = 1;
+    _hasMore = true;
+    return _fetchPage(kind: kind, entityId: entityId, page: _currentPage);
+  }
+
+  Future<List<Gallery>> _fetchPage({
+    required EntityGalleryFilterKind kind,
+    required String entityId,
+    required int page,
+  }) async {
+    final repository = ref.read(galleryRepositoryProvider);
+    final query = ref.read(entityGallerySearchQueryProvider(kind));
+    final sortConfig = ref.read(entityGallerySortProvider(kind));
+    final baseFilter = ref.read(entityGalleryFilterStateProvider(kind));
+    final filter = galleryFilterForEntityGalleries(
+      filter: baseFilter,
+      kind: kind,
+      entityId: entityId,
+    );
+    final organizedFilter = ref.read(entityGalleryOrganizedOnlyProvider(kind));
+    var effectiveSort = sortConfig.sort;
+    if (effectiveSort == 'random') {
+      effectiveSort =
+          'random_${ref.read(entityGalleryRandomSeedProvider(kind))}';
+    }
+
+    return repository.findGalleries(
+      page: page,
+      perPage: _perPage,
+      filter: query.isEmpty ? null : query,
+      sort: effectiveSort,
+      descending: sortConfig.descending,
+      galleryFilter: filter.copyWith(
+        organized: organizedFilter.toBool() ?? filter.organized,
+      ),
+    );
+  }
+
+  Future<void> fetchNextPage() async {
+    final kind = _kind;
+    final entityId = _entityId;
+    if (_isLoadingMore || !_hasMore || kind == null || entityId == null) {
+      return;
+    }
+
+    _isLoadingMore = true;
+    try {
+      final nextPage = _currentPage + 1;
+      final nextItems = await _fetchPage(
+        kind: kind,
+        entityId: entityId,
+        page: nextPage,
+      );
+
+      if (nextItems.isEmpty) {
+        _hasMore = false;
+      } else {
+        _currentPage = nextPage;
+        state = AsyncData([...(state.value ?? <Gallery>[]), ...nextItems]);
+      }
+    } finally {
+      _isLoadingMore = false;
+    }
+  }
+
+  bool get hasMore => _hasMore;
+  bool get isLoadingMore => _isLoadingMore;
 }

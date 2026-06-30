@@ -168,7 +168,7 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
           return ref
               .read(savedFilterRepositoryProvider)
               .save(
-                input: GroupSavedFilterConfig.current(
+                input: GroupSavedFilterConfig(
                   id: existingId,
                   name: name,
                   searchQuery: ref.read(groupSearchQueryProvider),

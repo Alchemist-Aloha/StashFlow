@@ -23,29 +23,24 @@ void main() {
           '        if (!loggedIn) {',
         ),
       );
-    expect(
-      source,
-      contains(
-        'await notifier.updateProfileCredentials(',
-      ),
-    );
-    expect(
-      source,
-      contains(
-        '    if (!mounted) return;\n'
-        '\n'
-        '    final profile = ServerProfile(',
-      ),
-    );
-    expect(
-      source,
-      contains(
-        '      await ref\n'
-        '          .read(serverProfilesProvider.notifier)\n'
-        '          .removeProfile(widget.profile!.id);\n'
-        '      if (!mounted) return;\n',
-      ),
-    );
+      expect(source, contains('await notifier.updateProfileCredentials('));
+      expect(
+        source,
+        contains(
+          '    if (!mounted) return;\n'
+          '\n'
+          '    final profile = ServerProfile(',
+        ),
+      );
+      expect(
+        source,
+        contains(
+          '      await ref\n'
+          '          .read(serverProfilesProvider.notifier)\n'
+          '          .removeProfile(widget.profile!.id);\n'
+          '      if (!mounted) return;\n',
+        ),
+      );
     },
   );
 }

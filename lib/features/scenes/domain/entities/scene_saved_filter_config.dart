@@ -12,48 +12,29 @@ class SceneSavedFilterConfig extends SavedFilterConfig<SceneFilter> {
     super.perPage,
   }) : super(filterMode: 'SCENES');
 
-  factory SceneSavedFilterConfig.current({
-    String? id,
-    required String name,
-    required String searchQuery,
-    required String? sort,
-    required bool descending,
-    required SceneFilter filter,
-    int? perPage,
-  }) {
-    return SceneSavedFilterConfig(
-      id: id,
-      name: name,
-      searchQuery: searchQuery,
-      sort: sort,
-      descending: descending,
-      filter: filter,
-      perPage: perPage,
-    );
-  }
-
   factory SceneSavedFilterConfig.fromServerPayload({
     required String id,
     required String name,
     Object? findFilter,
     Object? objectFilter,
   }) {
-    final findFilterMap = _asMap(findFilter);
-    final objectFilterMap = _asMap(objectFilter);
-    final direction = findFilterMap['direction'];
+    final payload = savedFilterReadPayload(
+      findFilter: findFilter,
+      objectFilter: objectFilter,
+      emptyFilter: SceneFilter.empty(),
+      fromJson: SceneFilter.fromJson,
+      serverToLocalKeys: _serverToLocalKeys,
+      normalizeValue: _normalizeServerValue,
+    );
 
     return SceneSavedFilterConfig(
       id: id,
       name: name,
-      searchQuery: findFilterMap['q'] as String? ?? '',
-      sort: findFilterMap['sort'] as String?,
-      descending: direction is String
-          ? direction.toUpperCase() == 'DESC'
-          : true,
-      perPage: findFilterMap['per_page'] as int?,
-      filter: objectFilterMap.isEmpty
-          ? SceneFilter.empty()
-          : SceneFilter.fromJson(_fromServerObjectFilter(objectFilterMap)),
+      searchQuery: payload.searchQuery,
+      sort: payload.sort,
+      descending: payload.descending,
+      perPage: payload.perPage,
+      filter: payload.filter,
     );
   }
 
@@ -71,35 +52,18 @@ class SceneSavedFilterConfig extends SavedFilterConfig<SceneFilter> {
     );
   }
 
-  static Map<String, dynamic> _asMap(Object? value) {
-    return savedFilterAsMap(value);
-  }
-
-  static Map<String, dynamic> _withoutNulls(Map<String, dynamic> value) {
-    return savedFilterWithoutNulls(value);
-  }
-
   static Map<String, dynamic> _toServerObjectFilter(SceneFilter filter) {
-    final localJson = _withoutNulls(filter.toJson());
+    final localJson = savedFilterWithoutNulls(filter.toJson());
     return {
       for (final entry in localJson.entries)
         _localToServerKeys[entry.key] ?? entry.key: entry.value,
     };
   }
 
-  static Map<String, dynamic> _fromServerObjectFilter(
-    Map<String, dynamic> objectFilter,
-  ) {
-    return savedFilterFromServerObjectFilter(
-      objectFilter: objectFilter,
-      serverToLocalKeys: _serverToLocalKeys,
-      normalizeValue: _normalizeServerValue,
-    );
-  }
-
   static Object? _normalizeServerValue(String localKey, Object? value) {
     if (_booleanFields.contains(localKey)) {
-      return savedFilterReadBooleanCriterionValue(value) ?? savedFilterSkipValue;
+      return savedFilterReadBooleanCriterionValue(value) ??
+          savedFilterSkipValue;
     }
 
     if (_multiValueFields.contains(localKey)) {

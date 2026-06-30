@@ -17,7 +17,8 @@ class SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: padding ??
+      padding:
+          padding ??
           EdgeInsets.symmetric(
             horizontal: context.dimensions.spacingMedium,
             vertical: context.dimensions.spacingSmall,

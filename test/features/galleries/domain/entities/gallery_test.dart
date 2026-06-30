@@ -13,20 +13,26 @@ void main() {
       expect(gallery.displayName, 'Trimmed Title');
     });
 
-    test('displayName returns cleaned filename from path if title is empty', () {
-      const gallery = Gallery(
-        id: '3',
-        title: '',
-        path: '/some/path/to/my_cool_gallery_123.zip',
-      );
-      // Tests regex substitution for underscores and dots
-      expect(gallery.displayName, 'my cool gallery 123');
-    });
+    test(
+      'displayName returns cleaned filename from path if title is empty',
+      () {
+        const gallery = Gallery(
+          id: '3',
+          title: '',
+          path: '/some/path/to/my_cool_gallery_123.zip',
+        );
+        // Tests regex substitution for underscores and dots
+        expect(gallery.displayName, 'my cool gallery 123');
+      },
+    );
 
-    test('displayName returns "Untitled gallery" if title and path are empty', () {
-      const gallery = Gallery(id: '4', title: '', path: '');
-      expect(gallery.displayName, 'Untitled gallery');
-    });
+    test(
+      'displayName returns "Untitled gallery" if title and path are empty',
+      () {
+        const gallery = Gallery(id: '4', title: '', path: '');
+        expect(gallery.displayName, 'Untitled gallery');
+      },
+    );
 
     test('fromJson correctly parses valid JSON mapping', () {
       final json = {
@@ -37,16 +43,14 @@ void main() {
         'image_count': 15,
         'details': 'Some details',
         'files': [
-          {'path': '/path/file1.zip'}
+          {'path': '/path/file1.zip'},
         ],
-        'paths': {
-          'cover': 'http://cover.path'
-        },
+        'paths': {'cover': 'http://cover.path'},
         'cover': {
           'visual_files': [
-            {'width': 800, 'height': 600}
-          ]
-        }
+            {'width': 800, 'height': 600},
+          ],
+        },
       };
 
       final gallery = Gallery.fromJson(json);

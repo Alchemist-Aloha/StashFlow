@@ -219,7 +219,7 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
           return ref
               .read(savedFilterRepositoryProvider)
               .save(
-                input: GallerySavedFilterConfig.current(
+                input: GallerySavedFilterConfig(
                   id: existingId,
                   name: name,
                   searchQuery: ref.read(gallerySearchQueryProvider),
@@ -265,7 +265,9 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
   Widget build(BuildContext context) {
     final galleriesAsync = ref.watch(galleryListProvider);
     final isGridView = ref.watch(galleryGridLayoutProvider);
-    final gridColumns = ref.watch(galleryGridColumnsProvider);
+    final gridColumns = ref.watch(
+      gridColumnSettingProvider(GridColumnSetting.gallery),
+    );
     final filterActive = ref.watch(
       galleryFilterStateProvider.select((s) => s != GalleryFilter.empty()),
     );

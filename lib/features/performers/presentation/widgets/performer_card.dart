@@ -6,45 +6,42 @@ import '../../domain/entities/performer.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 
 class PerformerCard extends ConsumerWidget {
-  const PerformerCard.skeleton({
-    this.onTap,
-    this.memCacheWidth,
-    super.key,
-  }) : performer = const Performer(
-         id: 'skeleton',
-         name: 'Loading',
-         disambiguation: null,
-         urls: [],
-         gender: null,
-         birthdate: null,
-         ethnicity: null,
-         country: null,
-         eyeColor: null,
-         heightCm: null,
-         measurements: null,
-         fakeTits: null,
-         penisLength: null,
-         circumcised: null,
-         careerStart: null,
-         careerEnd: null,
-         tattoos: null,
-         piercings: null,
-         aliasList: [],
-         favorite: false,
-         imagePath: null,
-         sceneCount: 0,
-         imageCount: 0,
-         galleryCount: 0,
-         groupCount: 0,
-         rating100: null,
-         details: null,
-         deathDate: null,
-         hairColor: null,
-         weight: null,
-         tagIds: [],
-         tagNames: [],
-       ),
-       skeletonize = true;
+  const PerformerCard.skeleton({this.onTap, this.memCacheWidth, super.key})
+    : performer = const Performer(
+        id: 'skeleton',
+        name: 'Loading',
+        disambiguation: null,
+        urls: [],
+        gender: null,
+        birthdate: null,
+        ethnicity: null,
+        country: null,
+        eyeColor: null,
+        heightCm: null,
+        measurements: null,
+        fakeTits: null,
+        penisLength: null,
+        circumcised: null,
+        careerStart: null,
+        careerEnd: null,
+        tattoos: null,
+        piercings: null,
+        aliasList: [],
+        favorite: false,
+        imagePath: null,
+        sceneCount: 0,
+        imageCount: 0,
+        galleryCount: 0,
+        groupCount: 0,
+        rating100: null,
+        details: null,
+        deathDate: null,
+        hairColor: null,
+        weight: null,
+        tagIds: [],
+        tagNames: [],
+      ),
+      skeletonize = true;
 
   final Performer performer;
   final VoidCallback? onTap;
@@ -107,7 +104,8 @@ class PerformerCard extends ConsumerWidget {
                   performer.name,
                   style: context.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    fontSize: context.dimensions.cardTitleFontSize *
+                    fontSize:
+                        context.dimensions.cardTitleFontSize *
                         context.dimensions.fontSizeFactor,
                   ),
                   textAlign: TextAlign.center,

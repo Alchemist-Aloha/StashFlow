@@ -7,19 +7,16 @@ import 'package:stash_app_flutter/core/domain/entities/criterion.dart'
     as domain;
 import '../../domain/entities/image.dart';
 import '../../domain/entities/image_filter.dart';
-import '../../domain/repositories/image_repository.dart';
 import '../graphql/images.graphql.dart';
 
-class GraphQLImageRepository implements ImageRepository {
-  final GraphQLClient client;
+class GraphQLImageRepository {
+  final GraphQLClient _client;
 
-  GraphQLImageRepository(this.client);
+  GraphQLImageRepository(this._client);
 
-  Uri get _graphqlEndpoint => client.link is HttpLink
-      ? (client.link as HttpLink).uri
+  Uri get _graphqlEndpoint => _client.link is HttpLink
+      ? (_client.link as HttpLink).uri
       : Uri.parse('http://localhost:9999/graphql');
-
-  @override
   Future<List<Image>> findImages({
     int? page,
     int? perPage,
@@ -82,7 +79,7 @@ class GraphQLImageRepository implements ImageRepository {
       updated_at: mapTimestampCriterion(imageFilter?.updatedAt),
     );
 
-    final result = await client.query$FindImages(
+    final result = await _client.query$FindImages(
       Options$Query$FindImages(
         fetchPolicy: sort == 'random'
             ? FetchPolicy.noCache
@@ -127,10 +124,8 @@ class GraphQLImageRepository implements ImageRepository {
       return Image.fromJson(map);
     }).toList();
   }
-
-  @override
   Future<Image> getImageById(String id, {bool refresh = false}) async {
-    final result = await client.query$FindImage(
+    final result = await _client.query$FindImage(
       Options$Query$FindImage(
         fetchPolicy: refresh ? FetchPolicy.networkOnly : FetchPolicy.cacheFirst,
         variables: Variables$Query$FindImage(id: id),
@@ -162,15 +157,13 @@ class GraphQLImageRepository implements ImageRepository {
 
     return Image.fromJson(map);
   }
-
-  @override
   /// Sends a direct `imageUpdate` GraphQL mutation for `rating100`.
   ///
   /// This method intentionally uses a lightweight inline mutation because only
   /// the rating field needs to be updated from the fullscreen viewer flow.
   /// Callers should update local list/detail state separately after success.
   Future<void> updateImageRating(String id, int rating100) async {
-    final result = await client.mutate(
+    final result = await _client.mutate(
       MutationOptions(
         document: gql(r'''
           mutation UpdateImageRating($id: ID!, $rating: Int!) {

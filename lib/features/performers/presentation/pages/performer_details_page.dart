@@ -7,9 +7,9 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/presentation/widgets/stash_image.dart';
 import '../../../scenes/domain/entities/scene.dart';
-import '../providers/performer_media_provider.dart';
+import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
 import '../providers/performer_details_provider.dart';
-import '../providers/performer_galleries_provider.dart';
+import '../../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
 import 'package:stash_app_flutter/features/images/presentation/providers/image_list_provider.dart';
 
 import '../../../../core/presentation/widgets/section_header.dart';
@@ -80,8 +80,15 @@ class PerformerDetailsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final performerAsync = ref.watch(performerDetailsProvider(performerId));
-    final mediaAsync = ref.watch(performerMediaProvider(performerId));
-    final galleriesAsync = ref.watch(performerGalleriesProvider(performerId));
+    final mediaAsync = ref.watch(
+      entityMediaPreviewProvider(EntityMediaFilterKind.performer, performerId),
+    );
+    final galleriesAsync = ref.watch(
+      entityGalleryPreviewProvider(
+        EntityGalleryFilterKind.performer,
+        performerId,
+      ),
+    );
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
     return Scaffold(
@@ -117,12 +124,32 @@ class PerformerDetailsPage extends ConsumerWidget {
                   .read(performerRepositoryProvider)
                   .getPerformerById(performerId, refresh: true);
               ref.invalidate(performerDetailsProvider(performerId));
-              ref.invalidate(performerMediaProvider(performerId));
-              ref.invalidate(performerGalleriesProvider(performerId));
+              ref.invalidate(
+                entityMediaPreviewProvider(
+                  EntityMediaFilterKind.performer,
+                  performerId,
+                ),
+              );
+              ref.invalidate(
+                entityGalleryPreviewProvider(
+                  EntityGalleryFilterKind.performer,
+                  performerId,
+                ),
+              );
               await Future.wait([
                 ref.read(performerDetailsProvider(performerId).future),
-                ref.read(performerMediaProvider(performerId).future),
-                ref.read(performerGalleriesProvider(performerId).future),
+                ref.read(
+                  entityMediaPreviewProvider(
+                    EntityMediaFilterKind.performer,
+                    performerId,
+                  ).future,
+                ),
+                ref.read(
+                  entityGalleryPreviewProvider(
+                    EntityGalleryFilterKind.performer,
+                    performerId,
+                  ).future,
+                ),
               ]);
             },
             child: SingleChildScrollView(

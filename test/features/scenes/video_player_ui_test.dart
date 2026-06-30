@@ -93,7 +93,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
-    final mockRepo = MockSceneRepository()..withData([testScene]);
+    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
 
     await pumpTestWidget(
       tester,
@@ -114,7 +114,7 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
 
-      final mockRepo = MockSceneRepository()..withData([testScene]);
+      final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
 
       await pumpTestWidget(
         tester,
@@ -147,7 +147,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
-    final mockRepo = MockSceneRepository()..withData([testScene]);
+    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
 
     await pumpTestWidget(
       tester,
@@ -168,7 +168,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
-    final mockRepo = MockSceneRepository()..withData([testScene]);
+    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
 
     await pumpTestWidget(
       tester,
@@ -201,7 +201,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
-    final mockRepo = MockSceneRepository()..withData([testScene]);
+    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
 
     await pumpTestWidget(
       tester,
@@ -224,7 +224,7 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
 
-      final mockRepo = MockSceneRepository()..withData([testScene]);
+      final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
 
       await pumpTestWidget(
         tester,
@@ -262,7 +262,7 @@ void main() {
         ),
       ],
     );
-    final mockRepo = MockSceneRepository()..withData([sceneWithMarker]);
+    final mockRepo = MockGraphQLSceneRepository()..withData([sceneWithMarker]);
 
     await pumpTestWidget(
       tester,
@@ -285,7 +285,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
-    final mockRepo = MockSceneRepository()..withData([testScene]);
+    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
 
     await pumpTestWidget(
       tester,
@@ -315,7 +315,7 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
 
-      final mockRepo = MockSceneRepository()..withData([testScene]);
+      final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
 
       await pumpTestWidget(
         tester,
@@ -368,7 +368,7 @@ void main() {
         ),
       ],
     );
-    final mockRepo = MockSceneRepository()..withData([sceneWithMarker]);
+    final mockRepo = MockGraphQLSceneRepository()..withData([sceneWithMarker]);
 
     await pumpTestWidget(
       tester,
@@ -398,7 +398,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
-    final mockRepo = MockSceneRepository()..withData([testScene]);
+    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
 
     await pumpTestWidget(
       tester,
@@ -428,7 +428,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
-    final mockRepo = MockSceneRepository()..withData([testScene]);
+    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
 
     await pumpTestWidget(
       tester,
@@ -459,7 +459,8 @@ void main() {
 
     final deletedScene = sceneWithoutStudio('s1', 'Deleted Scene');
     final nextScene = sceneWithoutStudio('s2', 'Next Scene');
-    final mockRepo = MockSceneRepository()..withData([deletedScene, nextScene]);
+    final mockRepo = MockGraphQLSceneRepository()
+      ..withData([deletedScene, nextScene]);
     final container = ProviderContainer(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
@@ -514,7 +515,8 @@ void main() {
 
     final deletedScene = sceneWithoutStudio('s1', 'Deleted Scene');
     final nextScene = sceneWithoutStudio('s2', 'Next Scene');
-    final mockRepo = MockSceneRepository()..withData([deletedScene, nextScene]);
+    final mockRepo = MockGraphQLSceneRepository()
+      ..withData([deletedScene, nextScene]);
     final container = ProviderContainer(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
@@ -579,7 +581,7 @@ void main() {
     final previousScene = sceneWithoutStudio('s0', 'Previous Scene');
     final deletedScene = sceneWithoutStudio('s1', 'Deleted Scene');
     final nextScene = sceneWithoutStudio('s2', 'Next Scene');
-    final mockRepo = MockSceneRepository()
+    final mockRepo = MockGraphQLSceneRepository()
       ..withData([previousScene, deletedScene, nextScene]);
     final container = ProviderContainer(
       overrides: [
@@ -633,7 +635,7 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
 
       final deletedScene = sceneWithoutStudio('s1', 'Deleted Scene');
-      final mockRepo = MockSceneRepository()..withData([deletedScene]);
+      final mockRepo = MockGraphQLSceneRepository()..withData([deletedScene]);
       final router = GoRouter(
         initialLocation: '/scenes/scene/${deletedScene.id}',
         routes: [
@@ -687,7 +689,7 @@ void main() {
 
     final previousScene = sceneWithoutStudio('s0', 'Previous Scene');
     final deletedScene = sceneWithoutStudio('s1', 'Deleted Scene');
-    final mockRepo = MockSceneRepository()
+    final mockRepo = MockGraphQLSceneRepository()
       ..withData([previousScene, deletedScene]);
     final router = GoRouter(
       initialLocation: '/scenes/scene/${previousScene.id}',
@@ -744,7 +746,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
-    final mockRepo = MockSceneRepository()..withData([testScene]);
+    final mockRepo = MockGraphQLSceneRepository()..withData([testScene]);
 
     await pumpTestWidget(
       tester,

@@ -4,17 +4,14 @@ import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../graphql/tags.graphql.dart';
 import '../../domain/entities/tag.dart';
-import '../../domain/repositories/tag_repository.dart';
 
-class GraphQLTagRepository implements TagRepository {
-  final GraphQLClient client;
-  GraphQLTagRepository(this.client);
+class GraphQLTagRepository {
+  final GraphQLClient _client;
+  GraphQLTagRepository(this._client);
 
-  Uri get _graphqlEndpoint => client.link is HttpLink
-      ? (client.link as HttpLink).uri
+  Uri get _graphqlEndpoint => _client.link is HttpLink
+      ? (_client.link as HttpLink).uri
       : Uri.parse('http://localhost:9999/graphql');
-
-  @override
   Future<List<Tag>> findTags({
     int? page,
     int? perPage,
@@ -107,7 +104,7 @@ class GraphQLTagRepository implements TagRepository {
     bool? descending,
     required bool favoritesOnly,
   }) {
-    return client.query$FindTags(
+    return _client.query$FindTags(
       Options$Query$FindTags(
         fetchPolicy: sort == 'random'
             ? FetchPolicy.noCache
@@ -137,10 +134,8 @@ class GraphQLTagRepository implements TagRepository {
           e.message.contains(attemptedSort),
     );
   }
-
-  @override
   Future<Tag> getTagById(String id, {bool refresh = false}) async {
-    final result = await client.query$FindTag(
+    final result = await _client.query$FindTag(
       Options$Query$FindTag(
         fetchPolicy: refresh ? FetchPolicy.networkOnly : FetchPolicy.cacheFirst,
         variables: Variables$Query$FindTag(id: id),
@@ -166,10 +161,8 @@ class GraphQLTagRepository implements TagRepository {
       favorite: t.favorite,
     );
   }
-
-  @override
   Future<void> setTagFavorite(String id, bool favorite) async {
-    final result = await client.mutate$UpdateTagFavorite(
+    final result = await _client.mutate$UpdateTagFavorite(
       Options$Mutation$UpdateTagFavorite(
         variables: Variables$Mutation$UpdateTagFavorite(
           id: id,

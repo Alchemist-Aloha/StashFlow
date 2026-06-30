@@ -5,14 +5,11 @@ import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provi
 import 'package:stash_app_flutter/core/domain/entities/criterion.dart';
 import 'package:stash_app_flutter/features/galleries/domain/entities/gallery.dart';
 import 'package:stash_app_flutter/features/galleries/domain/entities/gallery_filter.dart';
-import 'package:stash_app_flutter/features/galleries/domain/repositories/gallery_repository.dart';
+import 'package:stash_app_flutter/features/galleries/data/repositories/graphql_gallery_repository.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/entity_gallery_filter_scope.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_list_provider.dart';
-import 'package:stash_app_flutter/features/performers/presentation/providers/performer_galleries_provider.dart';
-import 'package:stash_app_flutter/features/studios/presentation/providers/studio_galleries_provider.dart';
-import 'package:stash_app_flutter/features/tags/presentation/providers/tag_galleries_provider.dart';
 
-class _FakeGalleryRepository implements GalleryRepository {
+class _FakeGraphQLGalleryRepository implements GraphQLGalleryRepository {
   GalleryFilter? lastFilter;
   String? lastSearch;
   String? lastSort;
@@ -51,7 +48,7 @@ class _FakeGalleryRepository implements GalleryRepository {
 }
 
 Future<ProviderContainer> _containerWith(
-  _FakeGalleryRepository repository,
+  _FakeGraphQLGalleryRepository repository,
 ) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
@@ -69,7 +66,7 @@ void main() {
   test(
     'performer galleries overwrite saved performer filter with page performer',
     () async {
-      final repository = _FakeGalleryRepository();
+      final repository = _FakeGraphQLGalleryRepository();
       final container = await _containerWith(repository);
 
       container
@@ -86,7 +83,10 @@ void main() {
           );
 
       await container.read(
-        performerGalleriesGridProvider('page-performer').future,
+        entityGalleryGridProvider(
+          EntityGalleryFilterKind.performer,
+          'page-performer',
+        ).future,
       );
 
       expect(repository.lastFilter?.performers?.value, ['page-performer']);
@@ -97,7 +97,7 @@ void main() {
   test(
     'entity gallery grids do not inherit galleries page sort and filters',
     () async {
-      final repository = _FakeGalleryRepository();
+      final repository = _FakeGraphQLGalleryRepository();
       final container = await _containerWith(repository);
 
       container
@@ -108,7 +108,10 @@ void main() {
           .update(const GalleryFilter(rating100: IntCriterion(value: 60)));
 
       await container.read(
-        performerGalleriesGridProvider('page-performer').future,
+        entityGalleryGridProvider(
+          EntityGalleryFilterKind.performer,
+          'page-performer',
+        ).future,
       );
 
       expect(repository.lastSort, 'path');
@@ -119,7 +122,7 @@ void main() {
   );
 
   test('studio and tag galleries overwrite their scoped filters', () async {
-    final repository = _FakeGalleryRepository();
+    final repository = _FakeGraphQLGalleryRepository();
     final container = await _containerWith(repository);
 
     container
@@ -135,7 +138,12 @@ void main() {
           ),
         );
 
-    await container.read(studioGalleriesGridProvider('page-studio').future);
+    await container.read(
+      entityGalleryGridProvider(
+        EntityGalleryFilterKind.studio,
+        'page-studio',
+      ).future,
+    );
     expect(repository.lastFilter?.studios?.value, ['page-studio']);
     expect(repository.lastFilter?.tags?.value, ['preset-tag']);
 
@@ -152,7 +160,9 @@ void main() {
           ),
         );
 
-    await container.read(tagGalleriesGridProvider('page-tag').future);
+    await container.read(
+      entityGalleryGridProvider(EntityGalleryFilterKind.tag, 'page-tag').future,
+    );
     expect(repository.lastFilter?.studios?.value, ['preset-studio']);
     expect(repository.lastFilter?.tags?.value, ['page-tag']);
   });

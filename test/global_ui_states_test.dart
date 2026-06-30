@@ -23,7 +23,7 @@ void main() {
 
   group('Global Empty States', () {
     testWidgets('Scenes page shows empty message', (tester) async {
-      final mockRepo = MockSceneRepository()..withEmpty();
+      final mockRepo = MockGraphQLSceneRepository()..withEmpty();
       await pumpTestWidget(
         tester,
         prefs: prefs,
@@ -39,7 +39,7 @@ void main() {
     });
 
     testWidgets('Performers page shows empty message', (tester) async {
-      final mockRepo = MockPerformerRepository()..withEmpty();
+      final mockRepo = MockGraphQLPerformerRepository()..withEmpty();
       await pumpTestWidget(
         tester,
         prefs: prefs,
@@ -55,7 +55,7 @@ void main() {
     });
 
     testWidgets('Studios page shows empty message', (tester) async {
-      final mockRepo = MockStudioRepository()..withEmpty();
+      final mockRepo = MockGraphQLStudioRepository()..withEmpty();
       await pumpTestWidget(
         tester,
         prefs: prefs,
@@ -71,7 +71,7 @@ void main() {
     });
 
     testWidgets('Tags page shows empty message', (tester) async {
-      final mockRepo = MockTagRepository()..withEmpty();
+      final mockRepo = MockGraphQLTagRepository()..withEmpty();
       await pumpTestWidget(
         tester,
         prefs: prefs,
@@ -87,7 +87,7 @@ void main() {
 
   group('Global Error States & Retry', () {
     testWidgets('Scenes page shows error and retries', (tester) async {
-      final mockRepo = MockSceneRepository()..withError('Network Error');
+      final mockRepo = MockGraphQLSceneRepository()..withError('Network Error');
       await pumpTestWidget(
         tester,
         prefs: prefs,
@@ -115,7 +115,7 @@ void main() {
     });
 
     testWidgets('Performers page shows error and retries', (tester) async {
-      final mockRepo = MockPerformerRepository()
+      final mockRepo = MockGraphQLPerformerRepository()
         ..withError('Failed to fetch performers');
       await pumpTestWidget(
         tester,

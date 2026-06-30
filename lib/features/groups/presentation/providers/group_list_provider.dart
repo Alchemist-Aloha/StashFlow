@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/group.dart';
 import '../../domain/entities/group_filter.dart';
-import '../../domain/repositories/group_repository.dart';
 import '../../data/repositories/graphql_group_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
@@ -13,7 +12,7 @@ import '../../../../core/utils/pagination.dart';
 
 part 'group_list_provider.g.dart';
 
-final groupRepositoryProvider = Provider<GroupRepository>((ref) {
+final groupRepositoryProvider = Provider<GraphQLGroupRepository>((ref) {
   final client = ref.watch(graphqlClientProvider);
   return GraphQLGroupRepository(client);
 });

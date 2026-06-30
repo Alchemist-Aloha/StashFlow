@@ -104,7 +104,7 @@ void main() {
   testWidgets('SceneTaggerPage scrapes current page and reviews results', (
     tester,
   ) async {
-    final repo = MockSceneRepository()
+    final repo = MockGraphQLSceneRepository()
       ..setData([
         toolTaggerScene(id: 'scene-a', title: 'Local A'),
         toolTaggerScene(id: 'scene-b', title: 'Local B'),
@@ -170,7 +170,7 @@ void main() {
   testWidgets('SceneTaggerPage opens scene details from tools route', (
     tester,
   ) async {
-    final repo = MockSceneRepository()
+    final repo = MockGraphQLSceneRepository()
       ..setData([toolTaggerScene(id: 'scene-a', title: 'Local A')]);
 
     final router = GoRouter(
@@ -243,7 +243,7 @@ void main() {
   testWidgets(
     'SceneTaggerPage random unorganized mode shows only matched scenes',
     (tester) async {
-      final repo = MockSceneRepository()
+      final repo = MockGraphQLSceneRepository()
         ..findScenesResponses.addAll([
           <Scene>[],
           [
@@ -329,7 +329,7 @@ void main() {
   testWidgets('SceneTaggerPage lazily renders long scene lists', (
     tester,
   ) async {
-    final repo = MockSceneRepository()
+    final repo = MockGraphQLSceneRepository()
       ..setData(
         List.generate(
           60,
@@ -361,7 +361,7 @@ void main() {
   testWidgets(
     'SceneTaggerPage applies the selected scraped result, shows cover image, and removes the item',
     (tester) async {
-      final repo = MockSceneRepository()
+      final repo = MockGraphQLSceneRepository()
         ..setData([toolTaggerScene(id: 'scene-a', title: 'Local A')])
         ..scrapedScenesBySceneId['scene-a'] = [
           const ScrapedScene(
@@ -451,7 +451,7 @@ void main() {
   testWidgets('SceneTaggerPage shows localized save success text', (
     tester,
   ) async {
-    final repo = MockSceneRepository()
+    final repo = MockGraphQLSceneRepository()
       ..setData([toolTaggerScene(id: 'scene-a', title: 'Local A')])
       ..scrapedScenesBySceneId['scene-a'] = [
         const ScrapedScene(
@@ -494,7 +494,7 @@ void main() {
   testWidgets('SceneTaggerPage skip removes the item from the list', (
     tester,
   ) async {
-    final repo = MockSceneRepository()
+    final repo = MockGraphQLSceneRepository()
       ..setData([toolTaggerScene(id: 'scene-a', title: 'Local A')])
       ..scrapedScenesBySceneId['scene-a'] = [
         const ScrapedScene(
@@ -540,7 +540,7 @@ void main() {
   testWidgets('SceneTaggerPage preview starts as a thumbnail-first control', (
     tester,
   ) async {
-    final repo = MockSceneRepository()
+    final repo = MockGraphQLSceneRepository()
       ..setData([
         toolTaggerScene(
           id: 'scene-a',
@@ -582,7 +582,7 @@ void main() {
   testWidgets('SceneTaggerPage renders scraped data-url images', (
     tester,
   ) async {
-    final repo = MockSceneRepository()
+    final repo = MockGraphQLSceneRepository()
       ..setData([toolTaggerScene(id: 'scene-a', title: 'Local A')])
       ..scrapedScenesBySceneId['scene-a'] = [
         const ScrapedScene(
@@ -622,7 +622,7 @@ void main() {
   testWidgets('SceneTaggerPage renders raw base64 scraped images', (
     tester,
   ) async {
-    final repo = MockSceneRepository()
+    final repo = MockGraphQLSceneRepository()
       ..setData([toolTaggerScene(id: 'scene-a', title: 'Local A')])
       ..scrapedScenesBySceneId['scene-a'] = [
         const ScrapedScene(
@@ -676,7 +676,7 @@ void main() {
 Future<void> _pumpSceneTagger(
   WidgetTester tester, {
   required SharedPreferences prefs,
-  required MockSceneRepository repo,
+  required MockGraphQLSceneRepository repo,
   required List<StashBoxEndpoint> stashBoxes,
   Locale? locale,
 }) async {

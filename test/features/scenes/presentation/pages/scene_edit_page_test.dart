@@ -6,7 +6,8 @@ import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_l
 import '../../../../helpers/test_helpers.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
 
-class CallTrackingMockSceneRepository extends MockSceneRepository {
+class CallTrackingMockGraphQLSceneRepository
+    extends MockGraphQLSceneRepository {
   bool saveCalled = false;
   ScrapedScene? lastScraped;
 
@@ -36,7 +37,7 @@ void main() {
     interactive: false,
     resumeTime: null,
     playCount: 0,
-        playDuration: 0,
+    playDuration: 0,
     files: [],
     paths: const ScenePaths(screenshot: null, preview: null, stream: null),
     urls: ['http://example.com'],
@@ -55,7 +56,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
-    final mockRepo = CallTrackingMockSceneRepository();
+    final mockRepo = CallTrackingMockGraphQLSceneRepository();
 
     await pumpTestWidget(
       tester,
@@ -98,7 +99,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
-    final mockRepo = CallTrackingMockSceneRepository();
+    final mockRepo = CallTrackingMockGraphQLSceneRepository();
 
     await pumpTestWidget(
       tester,

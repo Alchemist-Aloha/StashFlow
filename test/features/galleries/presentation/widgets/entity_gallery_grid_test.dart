@@ -7,7 +7,11 @@ import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provi
 import 'package:stash_app_flutter/core/domain/entities/criterion.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
 import 'package:stash_app_flutter/features/galleries/domain/entities/gallery.dart';
-import 'package:stash_app_flutter/features/galleries/presentation/providers/entity_gallery_filter_scope.dart';
+import 'package:stash_app_flutter/features/galleries/presentation/providers/entity_gallery_filter_scope.dart'
+    show
+        EntityGalleryFilterKind,
+        EntityImageFilterMethod,
+        entityImageFilterMethodSettingProvider;
 import 'package:stash_app_flutter/features/galleries/presentation/widgets/entity_gallery_grid.dart';
 import 'package:stash_app_flutter/features/images/domain/entities/image_filter.dart';
 import 'package:stash_app_flutter/features/images/presentation/providers/image_list_provider.dart';

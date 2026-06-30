@@ -20,11 +20,13 @@ class ServerProfileCard extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final activeProfile = ref.watch(activeProfileProvider);
     final isActive = activeProfile?.id == profile.id;
-    
+
     // Only watch connection status for the active profile.
     // This makes the connection check more robust by focusing on the selected server
     // and ensuring a fresh check happens when a profile becomes active.
-    final connectionStatus = isActive ? ref.watch(connectionStatusProvider(profile)) : null;
+    final connectionStatus = isActive
+        ? ref.watch(connectionStatusProvider(profile))
+        : null;
 
     return Card(
       elevation: isActive ? 4 : 1,
@@ -53,8 +55,8 @@ class ServerProfileCard extends ConsumerWidget {
                     Text(
                       profile.name ?? profile.baseUrl,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -109,7 +111,10 @@ class ServerProfileCard extends ConsumerWidget {
   }
 
   Widget _buildStatusRow(
-      BuildContext context, AsyncValue<String> status, AppLocalizations l10n) {
+    BuildContext context,
+    AsyncValue<String> status,
+    AppLocalizations l10n,
+  ) {
     return Row(
       children: [
         status.when(
@@ -138,11 +143,12 @@ class ServerProfileCard extends ConsumerWidget {
               error: (e, _) => l10n.settings_server_failed(e.toString()),
             ),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: status.when(
-                    data: (_) => Colors.green[700],
-                    loading: () => null,
-                    error: (_, _) => Theme.of(context).colorScheme.error,
-                  ),                ),
+              color: status.when(
+                data: (_) => Colors.green[700],
+                loading: () => null,
+                error: (_, _) => Theme.of(context).colorScheme.error,
+              ),
+            ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

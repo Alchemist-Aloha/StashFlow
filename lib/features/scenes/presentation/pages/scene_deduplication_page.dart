@@ -119,9 +119,7 @@ class _SceneDeduplicationPageState
       context: context,
       builder: (context) => AlertDialog(
         title: Text(context.l10n.delete_n_scenes_question(ids.length)),
-        content: Text(
-          context.l10n.delete_scenes_help,
-        ),
+        content: Text(context.l10n.delete_scenes_help),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(null),
@@ -159,16 +157,12 @@ class _SceneDeduplicationPageState
         _selectedSceneIds.clear();
         _future = _load();
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.deleted_n_scenes(ids.length))),
       );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(context.l10n.delete_failed_error(error.toString())),
         ),
@@ -286,13 +280,13 @@ class _SceneDeduplicationPageState
                   duration: const Duration(milliseconds: 200),
                 ),
                 if (data.missingPhashCount > 0) ...[
-                const SizedBox(height: 12),
-                _WarningBanner(
+                  const SizedBox(height: 12),
+                  _WarningBanner(
                     message: context.l10n.missing_phashes_for_scenes(
                       data.missingPhashCount,
                     ),
-                ),
-              ],
+                  ),
+                ],
                 const SizedBox(height: 16),
                 Expanded(
                   child: _buildGroupList(
@@ -452,149 +446,154 @@ class _Controls extends StatelessWidget {
           child: ListView(
             scrollDirection: Axis.horizontal,
             shrinkWrap: true,
-            children: [
-            DropdownMenu<int>(
-              width: dropdownWidth,
-              textStyle: isCompact ? theme.textTheme.bodySmall : null,
-              inputDecorationTheme: dropdownInputDecoration,
-              initialSelection: distance,
-              label: Text(context.l10n.search_accuracy),
-              dropdownMenuEntries: _SceneDeduplicationPageState
-                  ._accuracyOptions
-                  .entries
-                  .map(
-                    (entry) => DropdownMenuEntry<int>(
-                      value: entry.key,
-                      label: entry.value,
-                      style: menuItemStyle,
-                    ),
-                  )
-                  .toList(growable: false),
-              onSelected: (value) {
-                if (value != null) onDistanceChanged(value);
-              },
-            ),
-            DropdownMenu<double>(
-              width: dropdownWidth,
-              textStyle: isCompact ? theme.textTheme.bodySmall : null,
-              inputDecorationTheme: dropdownInputDecoration,
-              initialSelection: durationDiff,
-              label: Text(context.l10n.duration_difference),
-              dropdownMenuEntries: _SceneDeduplicationPageState._durationOptions
-                  .map(
-                    (value) => DropdownMenuEntry<double>(
-                      value: value,
-                      label: value.toStringAsFixed(
-                        value.truncateToDouble() == value ? 0 : 1,
+            children:
+                [
+                  DropdownMenu<int>(
+                    width: dropdownWidth,
+                    textStyle: isCompact ? theme.textTheme.bodySmall : null,
+                    inputDecorationTheme: dropdownInputDecoration,
+                    initialSelection: distance,
+                    label: Text(context.l10n.search_accuracy),
+                    dropdownMenuEntries: _SceneDeduplicationPageState
+                        ._accuracyOptions
+                        .entries
+                        .map(
+                          (entry) => DropdownMenuEntry<int>(
+                            value: entry.key,
+                            label: entry.value,
+                            style: menuItemStyle,
+                          ),
+                        )
+                        .toList(growable: false),
+                    onSelected: (value) {
+                      if (value != null) onDistanceChanged(value);
+                    },
+                  ),
+                  DropdownMenu<double>(
+                    width: dropdownWidth,
+                    textStyle: isCompact ? theme.textTheme.bodySmall : null,
+                    inputDecorationTheme: dropdownInputDecoration,
+                    initialSelection: durationDiff,
+                    label: Text(context.l10n.duration_difference),
+                    dropdownMenuEntries: _SceneDeduplicationPageState
+                        ._durationOptions
+                        .map(
+                          (value) => DropdownMenuEntry<double>(
+                            value: value,
+                            label: value.toStringAsFixed(
+                              value.truncateToDouble() == value ? 0 : 1,
+                            ),
+                            style: menuItemStyle,
+                          ),
+                        )
+                        .toList(growable: false),
+                    onSelected: (value) {
+                      if (value != null) onDurationChanged(value);
+                    },
+                  ),
+                  DropdownMenu<int>(
+                    width: dropdownWidth,
+                    textStyle: isCompact ? theme.textTheme.bodySmall : null,
+                    inputDecorationTheme: dropdownInputDecoration,
+                    initialSelection: pageSize,
+                    label: Text(context.l10n.page_size),
+                    dropdownMenuEntries: _SceneDeduplicationPageState
+                        ._pageSizeOptions
+                        .map(
+                          (value) => DropdownMenuEntry<int>(
+                            value: value,
+                            label: '$value',
+                            style: menuItemStyle,
+                          ),
+                        )
+                        .toList(growable: false),
+                    onSelected: (value) {
+                      if (value != null) onPageSizeChanged(value);
+                    },
+                  ),
+                  FilterChip(
+                    visualDensity: isCompact ? VisualDensity.compact : null,
+                    materialTapTargetSize: isCompact
+                        ? MaterialTapTargetSize.shrinkWrap
+                        : null,
+                    selected: safeSelect,
+                    label: Text(context.l10n.only_select_matching_codecs),
+                    onSelected: onSafeSelectChanged,
+                  ),
+                  PopupMenuButton<DuplicateSelectionMode>(
+                    tooltip: context.l10n.select_scenes,
+                    onSelected: onSelectMode,
+                    constraints: isCompact
+                        ? const BoxConstraints(minWidth: 196, maxWidth: 240)
+                        : null,
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: DuplicateSelectionMode.allButLargestResolution,
+                        height: isCompact ? 36 : kMinInteractiveDimension,
+                        child: Text(context.l10n.all_but_largest_resolution),
                       ),
-                      style: menuItemStyle,
+                      PopupMenuItem(
+                        value: DuplicateSelectionMode.allButLargestFile,
+                        height: isCompact ? 36 : kMinInteractiveDimension,
+                        child: Text(context.l10n.all_but_largest_file),
+                      ),
+                      PopupMenuItem(
+                        value: DuplicateSelectionMode.allButOldest,
+                        height: isCompact ? 36 : kMinInteractiveDimension,
+                        child: Text(context.l10n.all_but_oldest),
+                      ),
+                      PopupMenuItem(
+                        value: DuplicateSelectionMode.allButYoungest,
+                        height: isCompact ? 36 : kMinInteractiveDimension,
+                        child: Text(context.l10n.all_but_youngest),
+                      ),
+                    ],
+                    child: IntrinsicWidth(
+                      child: FilledButton.tonalIcon(
+                        onPressed: null,
+                        style: buttonStyle,
+                        icon: const Icon(Icons.select_all),
+                        label: Text(context.l10n.select),
+                      ),
                     ),
-                  )
-                  .toList(growable: false),
-              onSelected: (value) {
-                if (value != null) onDurationChanged(value);
-              },
-            ),
-            DropdownMenu<int>(
-              width: dropdownWidth,
-              textStyle: isCompact ? theme.textTheme.bodySmall : null,
-              inputDecorationTheme: dropdownInputDecoration,
-              initialSelection: pageSize,
-              label: Text(context.l10n.page_size),
-              dropdownMenuEntries: _SceneDeduplicationPageState._pageSizeOptions
-                  .map(
-                    (value) => DropdownMenuEntry<int>(
-                      value: value,
-                      label: '$value',
-                      style: menuItemStyle,
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: onSelectNone,
+                    style: buttonStyle,
+                    icon: const Icon(Icons.clear),
+                    label: Text(context.l10n.select_none),
+                  ),
+                  FilledButton.icon(
+                    onPressed: selectedCount == 0 || deleting
+                        ? null
+                        : onDeleteSelected,
+                    style: buttonStyle,
+                    icon: deleting
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.delete),
+                    label: Text(
+                      context.l10n.delete_selected_count(selectedCount),
                     ),
-                  )
-                  .toList(growable: false),
-              onSelected: (value) {
-                if (value != null) onPageSizeChanged(value);
-              },
-            ),
-            FilterChip(
-              visualDensity: isCompact ? VisualDensity.compact : null,
-              materialTapTargetSize: isCompact
-                  ? MaterialTapTargetSize.shrinkWrap
-                  : null,
-              selected: safeSelect,
-              label: Text(context.l10n.only_select_matching_codecs),
-              onSelected: onSafeSelectChanged,
-            ),
-            PopupMenuButton<DuplicateSelectionMode>(
-              tooltip: context.l10n.select_scenes,
-              onSelected: onSelectMode,
-              constraints: isCompact
-                  ? const BoxConstraints(minWidth: 196, maxWidth: 240)
-                  : null,
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  value: DuplicateSelectionMode.allButLargestResolution,
-                  height: isCompact ? 36 : kMinInteractiveDimension,
-                  child: Text(context.l10n.all_but_largest_resolution),
-                ),
-                PopupMenuItem(
-                  value: DuplicateSelectionMode.allButLargestFile,
-                  height: isCompact ? 36 : kMinInteractiveDimension,
-                  child: Text(context.l10n.all_but_largest_file),
-                ),
-                PopupMenuItem(
-                  value: DuplicateSelectionMode.allButOldest,
-                  height: isCompact ? 36 : kMinInteractiveDimension,
-                  child: Text(context.l10n.all_but_oldest),
-                ),
-                PopupMenuItem(
-                  value: DuplicateSelectionMode.allButYoungest,
-                  height: isCompact ? 36 : kMinInteractiveDimension,
-                  child: Text(context.l10n.all_but_youngest),
-                ),
-              ],
-              child: IntrinsicWidth(
-                child: FilledButton.tonalIcon(
-                  onPressed: null,
-                  style: buttonStyle,
-                  icon: const Icon(Icons.select_all),
-                  label: Text(context.l10n.select),
-                ),
-              ),
-            ),
-            OutlinedButton.icon(
-              onPressed: onSelectNone,
-              style: buttonStyle,
-              icon: const Icon(Icons.clear),
-              label: Text(context.l10n.select_none),
-            ),
-            FilledButton.icon(
-              onPressed: selectedCount == 0 || deleting
-                  ? null
-                  : onDeleteSelected,
-              style: buttonStyle,
-              icon: deleting
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.delete),
-              label: Text(context.l10n.delete_selected_count(selectedCount)),
-            ),
-            Tooltip(
-              message: context.l10n.merge_editing_not_wired,
-              child: FilledButton.tonalIcon(
-                onPressed: null,
-                style: buttonStyle,
-                icon: const Icon(Icons.merge),
-                label: Text(context.l10n.merge),
-              ),
-            ),
-            ].expand((widget) sync* {
-              yield Padding(
-                padding: EdgeInsets.only(right: isCompact ? 8 : 12),
-                child: widget,
-              );
-            }).toList(),
+                  ),
+                  Tooltip(
+                    message: context.l10n.merge_editing_not_wired,
+                    child: FilledButton.tonalIcon(
+                      onPressed: null,
+                      style: buttonStyle,
+                      icon: const Icon(Icons.merge),
+                      label: Text(context.l10n.merge),
+                    ),
+                  ),
+                ].expand((widget) sync* {
+                  yield Padding(
+                    padding: EdgeInsets.only(right: isCompact ? 8 : 12),
+                    child: widget,
+                  );
+                }).toList(),
           ),
         ),
       ),

@@ -5,7 +5,6 @@ import 'dart:math';
 import 'dart:convert';
 import '../../domain/entities/studio.dart';
 import '../../domain/entities/studio_filter.dart' as domain;
-import '../../domain/repositories/studio_repository.dart';
 import '../../data/repositories/graphql_studio_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
@@ -13,7 +12,7 @@ import '../../../../core/utils/pagination.dart';
 
 part 'studio_list_provider.g.dart';
 
-final studioRepositoryProvider = Provider<StudioRepository>((ref) {
+final studioRepositoryProvider = Provider<GraphQLStudioRepository>((ref) {
   final client = ref.watch(graphqlClientProvider);
   return GraphQLStudioRepository(client);
 });

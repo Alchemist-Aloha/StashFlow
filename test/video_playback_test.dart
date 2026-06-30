@@ -7,18 +7,18 @@ import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provi
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_deduplication.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
-import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
+import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scene_repository.dart';
 import 'package:stash_app_flutter/features/scenes/domain/models/scraper.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/main.dart';
 import 'package:stash_app_flutter/core/data/graphql/media_headers_provider.dart';
 import 'package:stash_app_flutter/features/scenes/data/repositories/stream_resolver.dart';
-import 'package:stash_app_flutter/features/studios/presentation/providers/studio_media_provider.dart';
+import 'package:stash_app_flutter/features/scenes/presentation/providers/entity_media_filter_scope.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
 
-class MockSceneRepository implements SceneRepository {
+class MockGraphQLSceneRepository implements GraphQLSceneRepository {
   final List<Scene> scenes;
-  MockSceneRepository(this.scenes);
+  MockGraphQLSceneRepository(this.scenes);
 
   @override
   Future<List<Scene>> findScenes({
@@ -180,14 +180,14 @@ void main() {
       tagNames: [],
     );
 
-    final repo = MockSceneRepository([testScene]);
+    final repo = MockGraphQLSceneRepository([testScene]);
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
           sceneRepositoryProvider.overrideWithValue(repo),
-          studioMediaProvider.overrideWith((ref, id) => const []),
+          entityMediaPreviewProvider.overrideWith((ref, arg) => const []),
           streamResolverProvider.overrideWith(MockStreamResolver.new),
           mediaHeadersProvider.overrideWithValue(const {}),
         ],

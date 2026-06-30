@@ -40,7 +40,8 @@ abstract class IntCriterion with _$IntCriterion {
     @Default(CriterionModifier.equals) CriterionModifier modifier,
   }) = _IntCriterion;
 
-  factory IntCriterion.fromJson(Map<String, dynamic> json) => _$IntCriterionFromJson(json);
+  factory IntCriterion.fromJson(Map<String, dynamic> json) =>
+      _$IntCriterionFromJson(json);
 }
 
 @freezed
@@ -50,7 +51,8 @@ abstract class StringCriterion with _$StringCriterion {
     @Default(CriterionModifier.equals) CriterionModifier modifier,
   }) = _StringCriterion;
 
-  factory StringCriterion.fromJson(Map<String, dynamic> json) => _$StringCriterionFromJson(json);
+  factory StringCriterion.fromJson(Map<String, dynamic> json) =>
+      _$StringCriterionFromJson(json);
 }
 
 @freezed
@@ -61,7 +63,8 @@ abstract class DateCriterion with _$DateCriterion {
     @Default(CriterionModifier.equals) CriterionModifier modifier,
   }) = _DateCriterion;
 
-  factory DateCriterion.fromJson(Map<String, dynamic> json) => _$DateCriterionFromJson(json);
+  factory DateCriterion.fromJson(Map<String, dynamic> json) =>
+      _$DateCriterionFromJson(json);
 }
 
 @freezed
@@ -71,7 +74,8 @@ abstract class MultiCriterion with _$MultiCriterion {
     @Default(CriterionModifier.includes) CriterionModifier modifier,
   }) = _MultiCriterion;
 
-  factory MultiCriterion.fromJson(Map<String, dynamic> json) => _$MultiCriterionFromJson(json);
+  factory MultiCriterion.fromJson(Map<String, dynamic> json) =>
+      _$MultiCriterionFromJson(json);
 }
 
 @freezed
@@ -81,5 +85,6 @@ abstract class HierarchicalMultiCriterion with _$HierarchicalMultiCriterion {
     @Default(CriterionModifier.includes) CriterionModifier modifier,
   }) = _HierarchicalMultiCriterion;
 
-  factory HierarchicalMultiCriterion.fromJson(Map<String, dynamic> json) => _$HierarchicalMultiCriterionFromJson(json);
+  factory HierarchicalMultiCriterion.fromJson(Map<String, dynamic> json) =>
+      _$HierarchicalMultiCriterionFromJson(json);
 }

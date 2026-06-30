@@ -7,30 +7,27 @@ import '../../scenes/presentation/pages/scenes_page.dart';
 import '../../scenes/presentation/pages/scene_deduplication_page.dart';
 import '../../scenes/presentation/pages/scene_details_page.dart';
 import '../../scenes/presentation/pages/scene_edit_page.dart';
+import '../../scenes/presentation/pages/entity_media_grid_page.dart';
 import '../../scenes/presentation/pages/scene_markers_page.dart';
 import '../../scenes/presentation/pages/scene_tagger_page.dart';
+import '../../scenes/presentation/providers/entity_media_filter_scope.dart';
 import '../../performers/domain/entities/performer.dart';
 import '../../performers/presentation/pages/performers_page.dart';
 import '../../performers/presentation/pages/performer_details_page.dart';
 import '../../performers/presentation/pages/performer_edit_page.dart';
-import '../../performers/presentation/pages/performer_media_grid_page.dart';
-import '../../performers/presentation/pages/performer_galleries_grid_page.dart';
 import '../../studios/domain/entities/studio.dart';
 import '../../studios/presentation/pages/studios_page.dart';
 import '../../studios/presentation/pages/studio_details_page.dart';
 import '../../studios/presentation/pages/studio_edit_page.dart';
-import '../../studios/presentation/pages/studio_media_grid_page.dart';
-import '../../studios/presentation/pages/studio_galleries_grid_page.dart';
 import '../../tags/presentation/pages/tags_page.dart';
 import '../../tags/presentation/pages/tag_details_page.dart';
-import '../../tags/presentation/pages/tag_media_grid_page.dart';
-import '../../tags/presentation/pages/tag_galleries_grid_page.dart';
 import '../../images/presentation/pages/images_page.dart';
 import '../../images/presentation/pages/image_fullscreen_page.dart';
+import '../../galleries/presentation/pages/entity_gallery_grid_page.dart';
 import '../../galleries/presentation/pages/galleries_page.dart';
 import '../../galleries/presentation/pages/gallery_details_page.dart';
+import '../../galleries/presentation/providers/entity_gallery_filter_scope.dart';
 import '../../groups/presentation/pages/group_details_page.dart';
-import '../../groups/presentation/pages/group_media_grid_page.dart';
 import '../../groups/presentation/pages/groups_page.dart';
 import '../../setup/presentation/pages/settings/settings_hub_page.dart';
 import '../../setup/presentation/pages/settings/server_settings_page.dart';
@@ -149,14 +146,16 @@ GoRouter router(Ref ref) {
                       ),
                       GoRoute(
                         path: 'media',
-                        builder: (context, state) => PerformerMediaGridPage(
-                          performerId: state.pathParameters['id']!,
+                        builder: (context, state) => EntityMediaGridPage(
+                          entityId: state.pathParameters['id']!,
+                          filterKind: EntityMediaFilterKind.performer,
                         ),
                       ),
                       GoRoute(
                         path: 'galleries',
-                        builder: (context, state) => PerformerGalleriesGridPage(
-                          performerId: state.pathParameters['id']!,
+                        builder: (context, state) => EntityGalleryGridPage(
+                          entityId: state.pathParameters['id']!,
+                          filterKind: EntityGalleryFilterKind.performer,
                         ),
                       ),
                     ],
@@ -191,14 +190,16 @@ GoRouter router(Ref ref) {
                       ),
                       GoRoute(
                         path: 'media',
-                        builder: (context, state) => StudioMediaGridPage(
-                          studioId: state.pathParameters['id']!,
+                        builder: (context, state) => EntityMediaGridPage(
+                          entityId: state.pathParameters['id']!,
+                          filterKind: EntityMediaFilterKind.studio,
                         ),
                       ),
                       GoRoute(
                         path: 'galleries',
-                        builder: (context, state) => StudioGalleriesGridPage(
-                          studioId: state.pathParameters['id']!,
+                        builder: (context, state) => EntityGalleryGridPage(
+                          entityId: state.pathParameters['id']!,
+                          filterKind: EntityGalleryFilterKind.studio,
                         ),
                       ),
                     ],
@@ -220,14 +221,16 @@ GoRouter router(Ref ref) {
                     routes: [
                       GoRoute(
                         path: 'media',
-                        builder: (context, state) => TagMediaGridPage(
-                          tagId: state.pathParameters['id']!,
+                        builder: (context, state) => EntityMediaGridPage(
+                          entityId: state.pathParameters['id']!,
+                          filterKind: EntityMediaFilterKind.tag,
                         ),
                       ),
                       GoRoute(
                         path: 'galleries',
-                        builder: (context, state) => TagGalleriesGridPage(
-                          tagId: state.pathParameters['id']!,
+                        builder: (context, state) => EntityGalleryGridPage(
+                          entityId: state.pathParameters['id']!,
+                          filterKind: EntityGalleryFilterKind.tag,
                         ),
                       ),
                     ],
@@ -277,8 +280,9 @@ GoRouter router(Ref ref) {
                     routes: [
                       GoRoute(
                         path: 'media',
-                        builder: (context, state) => GroupMediaGridPage(
-                          groupId: state.pathParameters['id']!,
+                        builder: (context, state) => EntityMediaGridPage(
+                          entityId: state.pathParameters['id']!,
+                          filterKind: EntityMediaFilterKind.group,
                         ),
                       ),
                     ],
@@ -304,14 +308,16 @@ GoRouter router(Ref ref) {
         routes: [
           GoRoute(
             path: 'media',
-            builder: (context, state) => PerformerMediaGridPage(
-              performerId: state.pathParameters['id']!,
+            builder: (context, state) => EntityMediaGridPage(
+              entityId: state.pathParameters['id']!,
+              filterKind: EntityMediaFilterKind.performer,
             ),
           ),
           GoRoute(
             path: 'galleries',
-            builder: (context, state) => PerformerGalleriesGridPage(
-              performerId: state.pathParameters['id']!,
+            builder: (context, state) => EntityGalleryGridPage(
+              entityId: state.pathParameters['id']!,
+              filterKind: EntityGalleryFilterKind.performer,
             ),
           ),
         ],
@@ -323,13 +329,17 @@ GoRouter router(Ref ref) {
         routes: [
           GoRoute(
             path: 'media',
-            builder: (context, state) =>
-                StudioMediaGridPage(studioId: state.pathParameters['id']!),
+            builder: (context, state) => EntityMediaGridPage(
+              entityId: state.pathParameters['id']!,
+              filterKind: EntityMediaFilterKind.studio,
+            ),
           ),
           GoRoute(
             path: 'galleries',
-            builder: (context, state) =>
-                StudioGalleriesGridPage(studioId: state.pathParameters['id']!),
+            builder: (context, state) => EntityGalleryGridPage(
+              entityId: state.pathParameters['id']!,
+              filterKind: EntityGalleryFilterKind.studio,
+            ),
           ),
         ],
       ),
@@ -340,13 +350,17 @@ GoRouter router(Ref ref) {
         routes: [
           GoRoute(
             path: 'media',
-            builder: (context, state) =>
-                TagMediaGridPage(tagId: state.pathParameters['id']!),
+            builder: (context, state) => EntityMediaGridPage(
+              entityId: state.pathParameters['id']!,
+              filterKind: EntityMediaFilterKind.tag,
+            ),
           ),
           GoRoute(
             path: 'galleries',
-            builder: (context, state) =>
-                TagGalleriesGridPage(tagId: state.pathParameters['id']!),
+            builder: (context, state) => EntityGalleryGridPage(
+              entityId: state.pathParameters['id']!,
+              filterKind: EntityGalleryFilterKind.tag,
+            ),
           ),
         ],
       ),
@@ -357,8 +371,10 @@ GoRouter router(Ref ref) {
         routes: [
           GoRoute(
             path: 'media',
-            builder: (context, state) =>
-                GroupMediaGridPage(groupId: state.pathParameters['id']!),
+            builder: (context, state) => EntityMediaGridPage(
+              entityId: state.pathParameters['id']!,
+              filterKind: EntityMediaFilterKind.group,
+            ),
           ),
         ],
       ),

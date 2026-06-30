@@ -5,41 +5,50 @@ import 'package:stash_app_flutter/features/images/presentation/providers/image_l
 
 void main() {
   group('entity scroll controller providers', () {
-    test('image scroll controller remains stable without active listeners', () async {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
+    test(
+      'image scroll controller remains stable without active listeners',
+      () async {
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
 
-      final subscription = container.listen(
-        imageScrollControllerProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      final firstController = subscription.read();
+        final subscription = container.listen(
+          imageScrollControllerProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        final firstController = subscription.read();
 
-      subscription.close();
-      await container.pump();
+        subscription.close();
+        await container.pump();
 
-      expect(container.read(imageScrollControllerProvider), same(firstController));
-    });
+        expect(
+          container.read(imageScrollControllerProvider),
+          same(firstController),
+        );
+      },
+    );
 
-    test('gallery scroll controller remains stable without active listeners', () async {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
+    test(
+      'gallery scroll controller remains stable without active listeners',
+      () async {
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
 
-      final subscription = container.listen(
-        galleryScrollControllerProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      final firstController = subscription.read();
+        final subscription = container.listen(
+          galleryScrollControllerProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        final firstController = subscription.read();
 
-      subscription.close();
-      await container.pump();
+        subscription.close();
+        await container.pump();
 
-      expect(
-        container.read(galleryScrollControllerProvider),
-        same(firstController),
-      );
-    });
+        expect(
+          container.read(galleryScrollControllerProvider),
+          same(firstController),
+        );
+      },
+    );
   });
 }

@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/image.dart' as entity;
 import '../../domain/entities/image_filter.dart';
-import '../../domain/repositories/image_repository.dart';
 import '../../data/repositories/graphql_image_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
@@ -13,7 +12,7 @@ import '../../../../core/domain/entities/filter_options.dart';
 
 part 'image_list_provider.g.dart';
 
-final imageRepositoryProvider = Provider<ImageRepository>((ref) {
+final imageRepositoryProvider = Provider<GraphQLImageRepository>((ref) {
   final client = ref.watch(graphqlClientProvider);
   return GraphQLImageRepository(client);
 });

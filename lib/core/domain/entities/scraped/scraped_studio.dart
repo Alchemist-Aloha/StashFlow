@@ -19,5 +19,6 @@ abstract class ScrapedStudio with _$ScrapedStudio {
     @Default([]) List<ScrapedTag> tags,
   }) = _ScrapedStudio;
 
-  factory ScrapedStudio.fromJson(Map<String, dynamic> json) => _$ScrapedStudioFromJson(json);
+  factory ScrapedStudio.fromJson(Map<String, dynamic> json) =>
+      _$ScrapedStudioFromJson(json);
 }

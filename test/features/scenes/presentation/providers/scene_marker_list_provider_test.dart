@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/core/domain/entities/criterion.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_marker.dart';
-import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_marker_repository.dart';
+import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scene_marker_repository.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_marker_list_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,7 +11,7 @@ void main() {
   test(
     'scene marker list forwards search sort and filter to repository',
     () async {
-      final repository = _FakeSceneMarkerRepository([
+      final repository = _FakeGraphQLSceneMarkerRepository([
         _marker('m1', title: 'Opening beat'),
       ]);
       SharedPreferences.setMockInitialValues({});
@@ -56,7 +56,7 @@ void main() {
   );
 
   test('scene marker list appends next page', () async {
-    final repository = _FakeSceneMarkerRepository([
+    final repository = _FakeGraphQLSceneMarkerRepository([
       _marker('m1'),
       _marker('m2'),
     ]);
@@ -148,8 +148,9 @@ SceneMarkerSummary _marker(String id, {String title = 'Marker'}) {
   );
 }
 
-class _FakeSceneMarkerRepository implements SceneMarkerRepository {
-  _FakeSceneMarkerRepository(this.responses);
+class _FakeGraphQLSceneMarkerRepository
+    implements GraphQLSceneMarkerRepository {
+  _FakeGraphQLSceneMarkerRepository(this.responses);
 
   final List<SceneMarkerSummary> responses;
   final List<

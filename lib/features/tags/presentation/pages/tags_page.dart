@@ -186,7 +186,7 @@ class _TagsPageState extends ConsumerState<TagsPage> {
           return ref
               .read(savedFilterRepositoryProvider)
               .save(
-                input: TagSavedFilterConfig.current(
+                input: TagSavedFilterConfig(
                   id: existingId,
                   name: name,
                   searchQuery: ref.read(tagSearchQueryProvider),

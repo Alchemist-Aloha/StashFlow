@@ -177,7 +177,7 @@ void main() {
   testWidgets('SceneDeduplicationPage loads Stash default duplicate query', (
     tester,
   ) async {
-    final repo = MockSceneRepository()
+    final repo = MockGraphQLSceneRepository()
       ..duplicateGroups = [
         SceneDuplicateGroup(
           scenes: [
@@ -225,7 +225,7 @@ void main() {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(390, 844);
 
-      final repo = MockSceneRepository()
+      final repo = MockGraphQLSceneRepository()
         ..duplicateGroups = [
           SceneDuplicateGroup(
             scenes: [
@@ -260,7 +260,6 @@ void main() {
       expect(deleteTopLeft.dy, greaterThan(openTopLeft.dy));
     },
   );
-
 }
 
 SceneDuplicateScene duplicateScene({

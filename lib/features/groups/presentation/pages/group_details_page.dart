@@ -7,10 +7,10 @@ import '../../../../core/presentation/widgets/error_state_view.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../scenes/domain/entities/scene.dart';
+import '../../../scenes/presentation/providers/entity_media_filter_scope.dart';
 import '../../../scenes/presentation/providers/playback_queue_provider.dart';
 import '../../../scenes/presentation/widgets/scene_strip.dart';
 import '../providers/group_details_provider.dart';
-import '../providers/group_media_provider.dart';
 
 class GroupDetailsPage extends ConsumerWidget {
   final String groupId;
@@ -37,7 +37,9 @@ class GroupDetailsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final groupAsync = ref.watch(groupDetailsProvider(groupId));
-    final mediaAsync = ref.watch(groupMediaProvider(groupId));
+    final mediaAsync = ref.watch(
+      entityMediaPreviewProvider(EntityMediaFilterKind.group, groupId),
+    );
 
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.details_group)),
@@ -45,10 +47,17 @@ class GroupDetailsPage extends ConsumerWidget {
         data: (group) => RefreshIndicator(
           onRefresh: () async {
             ref.invalidate(groupDetailsProvider(groupId));
-            ref.invalidate(groupMediaProvider(groupId));
+            ref.invalidate(
+              entityMediaPreviewProvider(EntityMediaFilterKind.group, groupId),
+            );
             await Future.wait([
               ref.read(groupDetailsProvider(groupId).future),
-              ref.read(groupMediaProvider(groupId).future),
+              ref.read(
+                entityMediaPreviewProvider(
+                  EntityMediaFilterKind.group,
+                  groupId,
+                ).future,
+              ),
             ]);
           },
           child: SingleChildScrollView(

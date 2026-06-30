@@ -20,7 +20,11 @@ class MockStreamResolver extends StreamResolver {
 
   @override
   Future<StreamChoice?> resolvePreferredStream(Scene scene) async {
-    return StreamChoice(url: _streamMap[scene.id]!, label: 'Direct', mimeType: 'video/mp4');
+    return StreamChoice(
+      url: _streamMap[scene.id]!,
+      label: 'Direct',
+      mimeType: 'video/mp4',
+    );
   }
 }
 
@@ -52,7 +56,11 @@ void main() {
     playDuration: 0,
     files: [],
     urls: [],
-    paths: const ScenePaths(stream: 'http://test.com/stream.mp4', screenshot: null, preview: null),
+    paths: const ScenePaths(
+      stream: 'http://test.com/stream.mp4',
+      screenshot: null,
+      preview: null,
+    ),
     studioId: 'st1',
     studioName: 'Test Studio',
     studioImagePath: null,
@@ -63,7 +71,9 @@ void main() {
     tagNames: [],
   );
 
-  testWidgets('Audio initializes correctly for consecutive video navigations', (tester) async {
+  testWidgets('Audio initializes correctly for consecutive video navigations', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(1200, 2400);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() {
@@ -76,7 +86,12 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
-        streamResolverProvider.overrideWith(() => MockStreamResolver({'s1': 'http://test.com/s1.mp4', 's2': 'http://test.com/s2.mp4'})),
+        streamResolverProvider.overrideWith(
+          () => MockStreamResolver({
+            's1': 'http://test.com/s1.mp4',
+            's2': 'http://test.com/s2.mp4',
+          }),
+        ),
         mediaHeadersProvider.overrideWithValue(const {}),
       ],
     );
@@ -86,7 +101,14 @@ void main() {
         container: container,
         child: MaterialApp(
           theme: AppTheme.darkTheme,
-          home: Scaffold(body: ListView(children: [SceneVideoPlayer(scene: scene1), SceneVideoPlayer(scene: scene2)])),
+          home: Scaffold(
+            body: ListView(
+              children: [
+                SceneVideoPlayer(scene: scene1),
+                SceneVideoPlayer(scene: scene2),
+              ],
+            ),
+          ),
         ),
       ),
     );

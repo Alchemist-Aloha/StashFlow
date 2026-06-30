@@ -192,7 +192,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
           return ref
               .read(savedFilterRepositoryProvider)
               .save(
-                input: StudioSavedFilterConfig.current(
+                input: StudioSavedFilterConfig(
                   id: existingId,
                   name: name,
                   searchQuery: ref.read(studioSearchQueryProvider),

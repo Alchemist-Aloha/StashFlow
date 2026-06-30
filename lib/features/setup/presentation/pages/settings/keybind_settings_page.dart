@@ -24,11 +24,11 @@ class KeybindSettingsPage extends ConsumerWidget {
               children: [
                 Expanded(
                   child: Text(
-                      context.l10n.settings_keyboard_subtitle,
-                      style: context.textTheme.bodyLarge?.copyWith(
-                        fontSize: context.fontSizes.large,
-                      ),
+                    context.l10n.settings_keyboard_subtitle,
+                    style: context.textTheme.bodyLarge?.copyWith(
+                      fontSize: context.fontSizes.large,
                     ),
+                  ),
                 ),
                 TextButton.icon(
                   onPressed: () =>
@@ -69,8 +69,13 @@ class KeybindSettingsPage extends ConsumerWidget {
                   ),
                   trailing: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      minimumSize: Size(80 * context.dimensions.fontSizeFactor, 36 * context.dimensions.fontSizeFactor),
-                      padding: EdgeInsets.symmetric(horizontal: context.dimensions.spacingMedium),
+                      minimumSize: Size(
+                        80 * context.dimensions.fontSizeFactor,
+                        36 * context.dimensions.fontSizeFactor,
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: context.dimensions.spacingMedium,
+                      ),
                     ),
                     onPressed: () => _showCaptureDialog(context, ref, action),
                     child: Text(
@@ -248,9 +253,11 @@ class _KeyCaptureDialogState extends State<_KeyCaptureDialog> {
               ),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(8 * context.dimensions.fontSizeFactor),
+                borderRadius: BorderRadius.circular(
+                  8 * context.dimensions.fontSizeFactor,
+                ),
               ),
-                child: Text(
+              child: Text(
                 _captured?.label ?? context.l10n.settings_keyboard_not_bound,
                 style: context.textTheme.displaySmall?.copyWith(
                   fontSize: context.fontSizes.display,

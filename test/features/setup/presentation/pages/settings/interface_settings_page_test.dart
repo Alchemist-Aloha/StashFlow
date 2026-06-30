@@ -104,29 +104,28 @@ void main() {
     },
   );
 
-  testWidgets(
-    'InterfaceSettingsPage saves performer list grid columns',
-    (tester) async {
-      tester.view.physicalSize = const Size(1200, 1800);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
+  testWidgets('InterfaceSettingsPage saves performer list grid columns', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
 
-      await pumpTestWidget(
-        tester,
-        prefs: prefs,
-        child: const InterfaceSettingsPage(),
-      );
-      await tester.pumpAndSettle();
+    await pumpTestWidget(
+      tester,
+      prefs: prefs,
+      child: const InterfaceSettingsPage(),
+    );
+    await tester.pumpAndSettle();
 
-      final slider = find.byKey(const Key('performer-list-grid-columns-slider'));
+    final slider = find.byKey(const Key('performer-list-grid-columns-slider'));
 
-      await tester.scrollUntilVisible(slider, 200);
-      tester.widget<Slider>(slider).onChanged!(5);
-      await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(slider, 200);
+    tester.widget<Slider>(slider).onChanged!(5);
+    await tester.pumpAndSettle();
 
-      expect(prefs.getInt('performer_grid_columns_v2'), 5);
-    },
-  );
+    expect(prefs.getInt('performer_grid_columns_v2'), 5);
+  });
 
   testWidgets('InterfaceSettingsPage saves the entity image filter method', (
     tester,

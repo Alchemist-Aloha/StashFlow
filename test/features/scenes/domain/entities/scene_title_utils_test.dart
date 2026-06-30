@@ -2,11 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_title_utils.dart';
 
-Scene _sceneWith({
-  String title = 'Title',
-  String? path,
-  String? streamPath,
-}) {
+Scene _sceneWith({String title = 'Title', String? path, String? streamPath}) {
   return Scene(
     id: 'scene-1',
     title: title,
@@ -118,10 +114,7 @@ void main() {
 
   group('SceneDisplayTitleX.displayTitle', () {
     test('uses extension logic for path fallback', () {
-      final scene = _sceneWith(
-        title: '',
-        path: '/library/Display_Title.mp4',
-      );
+      final scene = _sceneWith(title: '', path: '/library/Display_Title.mp4');
 
       expect(scene.displayTitle, 'Display Title');
     });

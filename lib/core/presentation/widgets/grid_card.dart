@@ -45,8 +45,10 @@ class GridCard extends ConsumerWidget {
 
   /// Optional memory cache height for image optimization.
   final int? memCacheHeight;
+
   /// Whether to allow masonry (dynamic) aspect ratio when in grid mode.
   final bool useMasonry;
+
   /// Optional aspect ratio to use when `useMasonry` is true.
   final double? aspectRatio;
 
@@ -67,8 +69,8 @@ class GridCard extends ConsumerWidget {
         children: [
           AspectRatio(
             aspectRatio: (useMasonry && aspectRatio != null)
-              ? (aspectRatio!).clamp(0.5, 2.5).toDouble()
-              : 16 / 9,
+                ? (aspectRatio!).clamp(0.5, 2.5).toDouble()
+                : 16 / 9,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
               child: Stack(
@@ -116,7 +118,8 @@ class GridCard extends ConsumerWidget {
                   title,
                   style: context.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    fontSize: context.dimensions.cardTitleFontSize *
+                    fontSize:
+                        context.dimensions.cardTitleFontSize *
                         context.dimensions.fontSizeFactor,
                   ),
                   maxLines: isGrid ? 2 : 1,
@@ -197,7 +200,8 @@ class GridCard extends ConsumerWidget {
                   title,
                   style: context.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    fontSize: context.dimensions.cardTitleFontSize *
+                    fontSize:
+                        context.dimensions.cardTitleFontSize *
                         context.dimensions.fontSizeFactor,
                   ),
                   maxLines: 1,

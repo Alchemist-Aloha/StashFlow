@@ -47,7 +47,7 @@ class _SceneSavedFilterDialogState
         return ref
             .read(sceneSavedFilterRepositoryProvider)
             .save(
-              SceneSavedFilterConfig.current(
+              SceneSavedFilterConfig(
                 id: existingId,
                 name: name,
                 searchQuery: widget.searchQuery,

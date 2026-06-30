@@ -9,13 +9,13 @@ void main() {
   late SharedPreferences prefs;
 
   setUp(() async {
-    SharedPreferences.setMockInitialValues({
-      'video_gravity_orientation': true,
-    });
+    SharedPreferences.setMockInitialValues({'video_gravity_orientation': true});
     prefs = await SharedPreferences.getInstance();
   });
 
-  testWidgets('PlaybackSettingsPage renders gravity orientation toggle', (tester) async {
+  testWidgets('PlaybackSettingsPage renders gravity orientation toggle', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(1200, 1600);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -28,7 +28,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Gravity-controlled orientation'), findsOneWidget);
-    expect(find.textContaining('Allow rotating between matching orientations'), findsOneWidget);
+    expect(
+      find.textContaining('Allow rotating between matching orientations'),
+      findsOneWidget,
+    );
 
     // Find the switch that is part of the gravity orientation ListTile
     // We can use descendant search
@@ -49,58 +52,70 @@ void main() {
     expect(prefs.getBool('video_gravity_orientation'), isFalse);
   });
 
-  testWidgets('PlaybackSettingsPage defaults direct-play-on-navigation to enabled', (tester) async {
-    tester.view.physicalSize = const Size(1200, 1600);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.resetPhysicalSize);
+  testWidgets(
+    'PlaybackSettingsPage defaults direct-play-on-navigation to enabled',
+    (tester) async {
+      tester.view.physicalSize = const Size(1200, 1600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
 
-    await pumpTestWidget(
-      tester,
-      prefs: prefs,
-      child: const PlaybackSettingsPage(),
-    );
-    await tester.pumpAndSettle();
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        child: const PlaybackSettingsPage(),
+      );
+      await tester.pumpAndSettle();
 
-    // Expect translated text, hardcoded matching text 'Direct-play on scene navigation' from en localization
-    expect(find.text('Direct-play on scene navigation'), findsOneWidget);
+      // Expect translated text, hardcoded matching text 'Direct-play on scene navigation' from en localization
+      expect(find.text('Direct-play on scene navigation'), findsOneWidget);
 
-    final directPlaySwitch = find.descendant(
-      of: find.widgetWithText(SwitchListTile, 'Direct-play on scene navigation'),
-      matching: find.byType(Switch),
-    );
+      final directPlaySwitch = find.descendant(
+        of: find.widgetWithText(
+          SwitchListTile,
+          'Direct-play on scene navigation',
+        ),
+        matching: find.byType(Switch),
+      );
 
-    expect(tester.widget<Switch>(directPlaySwitch).value, isTrue);
-  });
+      expect(tester.widget<Switch>(directPlaySwitch).value, isTrue);
+    },
+  );
 
-  testWidgets('PlaybackSettingsPage renders feed random start position toggle and updates prefs', (tester) async {
-    tester.view.physicalSize = const Size(1200, 1600);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.resetPhysicalSize);
+  testWidgets(
+    'PlaybackSettingsPage renders feed random start position toggle and updates prefs',
+    (tester) async {
+      tester.view.physicalSize = const Size(1200, 1600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
 
-    await pumpTestWidget(
-      tester,
-      prefs: prefs,
-      child: const PlaybackSettingsPage(),
-    );
-    await tester.pumpAndSettle();
+      await pumpTestWidget(
+        tester,
+        prefs: prefs,
+        child: const PlaybackSettingsPage(),
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.text('Start Feed from random position'), findsOneWidget);
-    expect(find.textContaining('start from a random position between 0% and 90%'), findsOneWidget);
+      expect(find.text('Start Feed from random position'), findsOneWidget);
+      expect(
+        find.textContaining('start from a random position between 0% and 90%'),
+        findsOneWidget,
+      );
 
-    final feedRandomSwitch = find.descendant(
-      of: find.ancestor(
-        of: find.text('Start Feed from random position'),
-        matching: find.byType(SwitchListTile),
-      ),
-      matching: find.byType(Switch),
-    );
+      final feedRandomSwitch = find.descendant(
+        of: find.ancestor(
+          of: find.text('Start Feed from random position'),
+          matching: find.byType(SwitchListTile),
+        ),
+        matching: find.byType(Switch),
+      );
 
-    expect(tester.widget<Switch>(feedRandomSwitch).value, isFalse);
+      expect(tester.widget<Switch>(feedRandomSwitch).value, isFalse);
 
-    await tester.tap(feedRandomSwitch);
-    await tester.pumpAndSettle();
+      await tester.tap(feedRandomSwitch);
+      await tester.pumpAndSettle();
 
-    expect(tester.widget<Switch>(feedRandomSwitch).value, isTrue);
-    expect(prefs.getBool('feed_start_random'), isTrue);
-  });
+      expect(tester.widget<Switch>(feedRandomSwitch).value, isTrue);
+      expect(prefs.getBool('feed_start_random'), isTrue);
+    },
+  );
 }

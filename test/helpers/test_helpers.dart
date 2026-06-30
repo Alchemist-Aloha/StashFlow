@@ -7,12 +7,12 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stash_app_flutter/core/data/preferences/shared_preferences_provider.dart';
 import 'package:stash_app_flutter/core/presentation/widgets/error_state_view.dart';
-import 'package:stash_app_flutter/features/scenes/domain/repositories/scene_repository.dart';
-import 'package:stash_app_flutter/features/performers/domain/repositories/performer_repository.dart';
-import 'package:stash_app_flutter/features/studios/domain/repositories/studio_repository.dart';
-import 'package:stash_app_flutter/features/tags/domain/repositories/tag_repository.dart';
-import 'package:stash_app_flutter/features/images/domain/repositories/image_repository.dart';
-import 'package:stash_app_flutter/features/groups/domain/repositories/group_repository.dart';
+import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scene_repository.dart';
+import 'package:stash_app_flutter/features/performers/data/repositories/graphql_performer_repository.dart';
+import 'package:stash_app_flutter/features/studios/data/repositories/graphql_studio_repository.dart';
+import 'package:stash_app_flutter/features/tags/data/repositories/graphql_tag_repository.dart';
+import 'package:stash_app_flutter/features/images/data/repositories/graphql_image_repository.dart';
+import 'package:stash_app_flutter/features/groups/data/repositories/graphql_group_repository.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_deduplication.dart';
 import 'package:stash_app_flutter/features/performers/domain/entities/performer.dart';
@@ -51,8 +51,8 @@ abstract class MockRepositoryState<T> {
   void withError(String message) => setThrow(true, message: message);
 }
 
-class MockSceneRepository extends MockRepositoryState<Scene>
-    implements SceneRepository {
+class MockGraphQLSceneRepository extends MockRepositoryState<Scene>
+    implements GraphQLSceneRepository {
   String? deletedSceneId;
   bool? deletedSceneDeleteFile;
   bool? deletedSceneDeleteGenerated;
@@ -321,8 +321,8 @@ class MockSceneRepository extends MockRepositoryState<Scene>
   }
 }
 
-class MockPerformerRepository extends MockRepositoryState<Performer>
-    implements PerformerRepository {
+class MockGraphQLPerformerRepository extends MockRepositoryState<Performer>
+    implements GraphQLPerformerRepository {
   @override
   Future<List<Performer>> findPerformers({
     int? page,
@@ -375,8 +375,8 @@ class MockPerformerRepository extends MockRepositoryState<Performer>
   }
 }
 
-class MockStudioRepository extends MockRepositoryState<Studio>
-    implements StudioRepository {
+class MockGraphQLStudioRepository extends MockRepositoryState<Studio>
+    implements GraphQLStudioRepository {
   @override
   Future<List<Studio>> findStudios({
     int? page,
@@ -428,8 +428,8 @@ class MockStudioRepository extends MockRepositoryState<Studio>
   }
 }
 
-class MockTagRepository extends MockRepositoryState<Tag>
-    implements TagRepository {
+class MockGraphQLTagRepository extends MockRepositoryState<Tag>
+    implements GraphQLTagRepository {
   @override
   Future<List<Tag>> findTags({
     int? page,
@@ -455,8 +455,8 @@ class MockTagRepository extends MockRepositoryState<Tag>
   }
 }
 
-class MockGroupRepository extends MockRepositoryState<Group>
-    implements GroupRepository {
+class MockGraphQLGroupRepository extends MockRepositoryState<Group>
+    implements GraphQLGroupRepository {
   @override
   Future<List<Group>> findGroups({
     int? page,
@@ -477,8 +477,8 @@ class MockGroupRepository extends MockRepositoryState<Group>
   }
 }
 
-class MockImageRepository extends MockRepositoryState<Image>
-    implements ImageRepository {
+class MockGraphQLImageRepository extends MockRepositoryState<Image>
+    implements GraphQLImageRepository {
   final List<
     ({
       int? page,

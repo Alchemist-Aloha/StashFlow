@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/gallery.dart';
 import '../../domain/entities/gallery_filter.dart';
-import '../../domain/repositories/gallery_repository.dart';
 import '../../data/repositories/graphql_gallery_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
@@ -14,7 +13,7 @@ import '../../../../core/domain/entities/filter_options.dart';
 
 part 'gallery_list_provider.g.dart';
 
-final galleryRepositoryProvider = Provider<GalleryRepository>((ref) {
+final galleryRepositoryProvider = Provider<GraphQLGalleryRepository>((ref) {
   final client = ref.watch(graphqlClientProvider);
   return GraphQLGalleryRepository(client);
 });

@@ -12,54 +12,29 @@ class StudioSavedFilterConfig extends SavedFilterConfig<StudioFilter> {
     super.perPage,
   }) : super(filterMode: 'STUDIOS');
 
-  factory StudioSavedFilterConfig.current({
-    String? id,
-    required String name,
-    required String searchQuery,
-    required String? sort,
-    required bool descending,
-    required StudioFilter filter,
-    int? perPage,
-  }) {
-    return StudioSavedFilterConfig(
-      id: id,
-      name: name,
-      searchQuery: searchQuery,
-      sort: sort,
-      descending: descending,
-      filter: filter,
-      perPage: perPage,
-    );
-  }
-
   factory StudioSavedFilterConfig.fromServerPayload({
     required String id,
     required String name,
     Object? findFilter,
     Object? objectFilter,
   }) {
-    final findFilterMap = savedFilterAsMap(findFilter);
-    final objectFilterMap = savedFilterAsMap(objectFilter);
-    final direction = findFilterMap['direction'];
+    final payload = savedFilterReadPayload(
+      findFilter: findFilter,
+      objectFilter: objectFilter,
+      emptyFilter: StudioFilter.empty(),
+      fromJson: StudioFilter.fromJson,
+      serverToLocalKeys: _serverToLocalKeys,
+      normalizeValue: _normalizeServerValue,
+    );
 
     return StudioSavedFilterConfig(
       id: id,
       name: name,
-      searchQuery: findFilterMap['q'] as String? ?? '',
-      sort: findFilterMap['sort'] as String?,
-      descending: direction is String
-          ? direction.toUpperCase() == 'DESC'
-          : true,
-      perPage: findFilterMap['per_page'] as int?,
-      filter: objectFilterMap.isEmpty
-          ? StudioFilter.empty()
-          : StudioFilter.fromJson(
-              savedFilterFromServerObjectFilter(
-                objectFilter: objectFilterMap,
-                serverToLocalKeys: _serverToLocalKeys,
-                normalizeValue: _normalizeServerValue,
-              ),
-            ),
+      searchQuery: payload.searchQuery,
+      sort: payload.sort,
+      descending: payload.descending,
+      perPage: payload.perPage,
+      filter: payload.filter,
     );
   }
 
@@ -82,7 +57,8 @@ class StudioSavedFilterConfig extends SavedFilterConfig<StudioFilter> {
 
   static Object? _normalizeServerValue(String localKey, Object? value) {
     if (_booleanFields.contains(localKey)) {
-      return savedFilterReadBooleanCriterionValue(value) ?? savedFilterSkipValue;
+      return savedFilterReadBooleanCriterionValue(value) ??
+          savedFilterSkipValue;
     }
     if (localKey == 'isMissing') return savedFilterSkipValue;
     return value;
