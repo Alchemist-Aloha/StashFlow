@@ -1,5 +1,5 @@
 import 'package:graphql/client.dart';
-import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
+import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import 'package:stash_app_flutter/core/domain/entities/criterion.dart'
@@ -96,12 +96,13 @@ class GraphQLGalleryRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     return result.parsedData!.findGalleries.galleries
         .map((g) => Gallery.fromJson(g.toJson()))
         .toList();
   }
+
   Future<Gallery> getGalleryById(String id, {bool refresh = false}) async {
     final result = await _client.query$FindGallery(
       Options$Query$FindGallery(
@@ -110,12 +111,13 @@ class GraphQLGalleryRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
     final data = result.parsedData?.findGallery;
     if (data == null) throw Exception('Gallery not found');
 
     return Gallery.fromJson(data.toJson());
   }
+
   Future<void> updateGalleryRating(String id, int rating100) async {
     final result = await _client.mutate$UpdateGalleryRating(
       Options$Mutation$UpdateGalleryRating(
@@ -126,6 +128,6 @@ class GraphQLGalleryRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
   }
 }

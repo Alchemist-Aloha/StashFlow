@@ -1,6 +1,6 @@
 import 'package:graphql/client.dart';
 
-import '../../../../core/data/graphql/base_repository.dart';
+import '../../../../core/data/graphql/graphql_exception.dart';
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
@@ -82,7 +82,7 @@ class GraphQLSceneMarkerRepository {
             : FetchPolicy.cacheAndNetwork,
       ),
     );
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     final rawMarkers =
         (result.data?['findSceneMarkers']

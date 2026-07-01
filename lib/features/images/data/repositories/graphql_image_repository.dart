@@ -1,5 +1,5 @@
 import 'package:graphql/client.dart';
-import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
+import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
@@ -99,7 +99,7 @@ class GraphQLImageRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     return result.parsedData!.findImages.images.map((i) {
       final map = i.toJson();
@@ -124,6 +124,7 @@ class GraphQLImageRepository {
       return Image.fromJson(map);
     }).toList();
   }
+
   Future<Image> getImageById(String id, {bool refresh = false}) async {
     final result = await _client.query$FindImage(
       Options$Query$FindImage(
@@ -132,7 +133,7 @@ class GraphQLImageRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
     final data = result.parsedData!.findImage;
     if (data == null) throw Exception('Image not found');
 
@@ -157,6 +158,7 @@ class GraphQLImageRepository {
 
     return Image.fromJson(map);
   }
+
   /// Sends a direct `imageUpdate` GraphQL mutation for `rating100`.
   ///
   /// This method intentionally uses a lightweight inline mutation because only
@@ -177,6 +179,6 @@ class GraphQLImageRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
   }
 }

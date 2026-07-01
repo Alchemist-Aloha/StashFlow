@@ -24,6 +24,12 @@ class AppGraphQLException implements Exception {
   String toString() => 'AppGraphQLException($kind): $message';
 }
 
+void validateGraphQLResult(QueryResult result) {
+  if (result.hasException) {
+    throw normalizeGraphQLException(result.exception!);
+  }
+}
+
 AppGraphQLException normalizeGraphQLException(OperationException exception) {
   final authError = _findAuthGraphQLError(exception.graphqlErrors);
   if (authError != null) {

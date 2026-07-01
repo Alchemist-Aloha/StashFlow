@@ -1,16 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:graphql/client.dart';
-import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
 import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
 
 void main() {
-  test('BaseRepository.validateResult does not throw when no exception', () {
+  test('validateGraphQLResult does not throw when no exception', () {
     final result = QueryResult.unexecuted;
 
-    expect(() => BaseRepository.validateResult(result), returnsNormally);
+    expect(() => validateGraphQLResult(result), returnsNormally);
   });
 
-  test('BaseRepository.validateResult normalizes GraphQL auth errors', () {
+  test('validateGraphQLResult normalizes GraphQL auth errors', () {
     final result = QueryResult.unexecuted.copyWith(
       exception: OperationException(
         graphqlErrors: [
@@ -23,7 +22,7 @@ void main() {
     );
 
     expect(
-      () => BaseRepository.validateResult(result),
+      () => validateGraphQLResult(result),
       throwsA(
         isA<AppGraphQLException>()
             .having((e) => e.kind, 'kind', GraphQLFailureKind.unauthorized)
@@ -32,7 +31,7 @@ void main() {
     );
   });
 
-  test('BaseRepository.validateResult normalizes network failures', () {
+  test('validateGraphQLResult normalizes network failures', () {
     final result = QueryResult.unexecuted.copyWith(
       exception: OperationException(
         linkException: NetworkException(
@@ -43,7 +42,7 @@ void main() {
     );
 
     expect(
-      () => BaseRepository.validateResult(result),
+      () => validateGraphQLResult(result),
       throwsA(
         isA<AppGraphQLException>()
             .having((e) => e.kind, 'kind', GraphQLFailureKind.network)
@@ -52,7 +51,7 @@ void main() {
     );
   });
 
-  test('BaseRepository.validateResult normalizes response format failures', () {
+  test('validateGraphQLResult normalizes response format failures', () {
     final result = QueryResult.unexecuted.copyWith(
       exception: OperationException(
         linkException: const ResponseFormatException(
@@ -62,7 +61,7 @@ void main() {
     );
 
     expect(
-      () => BaseRepository.validateResult(result),
+      () => validateGraphQLResult(result),
       throwsA(
         isA<AppGraphQLException>()
             .having((e) => e.kind, 'kind', GraphQLFailureKind.schema)
@@ -71,7 +70,7 @@ void main() {
     );
   });
 
-  test('BaseRepository.validateResult normalizes HTTP auth failures', () {
+  test('validateGraphQLResult normalizes HTTP auth failures', () {
     final result = QueryResult.unexecuted.copyWith(
       exception: OperationException(
         linkException: const ServerException(statusCode: 401),
@@ -79,7 +78,7 @@ void main() {
     );
 
     expect(
-      () => BaseRepository.validateResult(result),
+      () => validateGraphQLResult(result),
       throwsA(
         isA<AppGraphQLException>().having(
           (e) => e.kind,

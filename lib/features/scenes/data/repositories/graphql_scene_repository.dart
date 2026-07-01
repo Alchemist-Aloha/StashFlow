@@ -1,5 +1,5 @@
 import 'package:graphql/client.dart';
-import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
+import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
@@ -67,7 +67,7 @@ class GraphQLSceneRepository {
       );
     }
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     return result.parsedData!.findScenes.scenes
         .map(
@@ -298,7 +298,7 @@ class GraphQLSceneRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
     final s = result.parsedData?.findScene;
     if (s == null) throw Exception('Scene not found');
     final rawScene = result.data?['findScene'] as Map<String, dynamic>?;
@@ -451,7 +451,7 @@ class GraphQLSceneRepository {
         fetchPolicy: FetchPolicy.noCache,
       ),
     );
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     final rawMarker = result.data?['sceneMarkerCreate'];
     if (rawMarker is! Map<String, dynamic>) {
@@ -472,7 +472,7 @@ class GraphQLSceneRepository {
         fetchPolicy: FetchPolicy.noCache,
       ),
     );
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     if (result.data?['sceneMarkerDestroy'] != true) {
       throw StateError('Scene marker was not deleted');
@@ -504,7 +504,7 @@ class GraphQLSceneRepository {
         fetchPolicy: FetchPolicy.networkOnly,
       ),
     );
-    BaseRepository.validateResult(findResult);
+    validateGraphQLResult(findResult);
 
     final rawTags =
         (findResult.data?['findTags'] as Map<String, dynamic>?)?['tags'];
@@ -534,7 +534,7 @@ class GraphQLSceneRepository {
         fetchPolicy: FetchPolicy.noCache,
       ),
     );
-    BaseRepository.validateResult(createResult);
+    validateGraphQLResult(createResult);
 
     final id =
         (createResult.data?['tagCreate'] as Map<String, dynamic>?)?['id']
@@ -600,7 +600,7 @@ class GraphQLSceneRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     final List<Query$ListScrapers$listScrapers> raw =
         result.parsedData?.listScrapers ?? [];
@@ -627,7 +627,7 @@ class GraphQLSceneRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     final List<Query$ScrapeSingleScene$scrapeSingleScene> raw =
         result.parsedData?.scrapeSingleScene ?? [];
@@ -646,7 +646,7 @@ class GraphQLSceneRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     final raw = result.parsedData?.scrapeSceneURL;
     if (raw == null) return null;
@@ -665,7 +665,7 @@ class GraphQLSceneRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
   }
 
   Future<void> saveScrapedScene({
@@ -692,7 +692,7 @@ class GraphQLSceneRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
   }
 
   Future<Map<String, List<Map<String, dynamic>>>> findPerformerCandidates(
@@ -715,7 +715,7 @@ class GraphQLSceneRepository {
         ),
       ),
     );
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
   }
 
   Future<void> incrementSceneOCounter(String id) async {
@@ -724,7 +724,7 @@ class GraphQLSceneRepository {
         variables: Variables$Mutation$SceneAddO(id: id),
       ),
     );
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
   }
 
   Future<void> incrementScenePlayCount(String id) async {
@@ -733,7 +733,7 @@ class GraphQLSceneRepository {
         variables: Variables$Mutation$SceneIncrementPlayCount(id: id),
       ),
     );
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
   }
 
   Future<void> saveSceneActivity(
@@ -750,7 +750,7 @@ class GraphQLSceneRepository {
         ),
       ),
     );
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
   }
 
   Future<void> deleteScene(
@@ -767,7 +767,7 @@ class GraphQLSceneRepository {
         ),
       ),
     );
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
   }
 
   Future<List<SceneDuplicateGroup>> findDuplicateScenes({
@@ -783,7 +783,7 @@ class GraphQLSceneRepository {
         ),
       ),
     );
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     final groups = result.parsedData?.findDuplicateScenes ?? [];
     return sortDuplicateGroupsBySize(
@@ -801,7 +801,7 @@ class GraphQLSceneRepository {
     final result = await _client.query$CountScenesMissingPhash(
       Options$Query$CountScenesMissingPhash(fetchPolicy: FetchPolicy.noCache),
     );
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
     return result.parsedData?.findScenes.count ?? 0;
   }
 

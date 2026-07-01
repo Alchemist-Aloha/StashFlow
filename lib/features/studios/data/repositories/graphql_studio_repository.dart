@@ -1,5 +1,5 @@
 import 'package:graphql/client.dart';
-import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
+import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
 import '../../../../core/data/graphql/criterion_mapping.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
@@ -71,7 +71,7 @@ class GraphQLStudioRepository {
       );
     }
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     final studios = result.parsedData!.findStudios.studios
         .map(
@@ -169,6 +169,7 @@ class GraphQLStudioRepository {
           e.message.contains(attemptedSort),
     );
   }
+
   Future<Studio> getStudioById(String id, {bool refresh = false}) async {
     final result = await _client.query$FindStudio(
       Options$Query$FindStudio(
@@ -177,7 +178,7 @@ class GraphQLStudioRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
     final s = result.parsedData!.findStudio;
     if (s == null) throw StateError('Studio not found');
 
@@ -198,6 +199,7 @@ class GraphQLStudioRepository {
       favorite: s.favorite,
     );
   }
+
   Future<void> setStudioFavorite(String id, bool favorite) async {
     final result = await _client.mutate$UpdateStudioFavorite(
       Options$Mutation$UpdateStudioFavorite(
@@ -208,8 +210,9 @@ class GraphQLStudioRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
   }
+
   Future<List<ScrapedStudio>> scrapeStudio({
     String? scraperId,
     String? stashBoxEndpoint,
@@ -228,17 +231,19 @@ class GraphQLStudioRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     final List<Query$ScrapeSingleStudio$scrapeSingleStudio> raw =
         result.parsedData?.scrapeSingleStudio ?? [];
 
     return raw.map((e) => ScrapedStudio.fromJson(e.toJson())).toList();
   }
+
   Future<ScrapedStudio?> scrapeStudioURL(String url) async {
     final results = await scrapeStudio(query: url);
     return results.isNotEmpty ? results.first : null;
   }
+
   Future<void> updateStudio({
     required String id,
     required Map<String, dynamic> input,
@@ -251,6 +256,6 @@ class GraphQLStudioRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
   }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:graphql/client.dart';
-import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
 import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../data/graphql/version.graphql.dart';
@@ -21,7 +20,7 @@ final connectionStatusProvider = FutureProvider.family
           Options$Query$GetVersion(fetchPolicy: FetchPolicy.networkOnly),
         );
 
-        BaseRepository.validateResult(result);
+        validateGraphQLResult(result);
 
         final version = result.parsedData?.version.version;
         return version ?? 'Unknown Version';

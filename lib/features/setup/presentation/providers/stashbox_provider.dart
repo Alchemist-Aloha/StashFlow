@@ -1,5 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
+import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../data/graphql/config.graphql.dart';
 
@@ -17,7 +17,7 @@ Future<List<StashBoxEndpoint>> stashBoxEndpoints(Ref ref) async {
   final client = ref.watch(graphqlClientProvider);
   final result = await client.query$GetStashBoxes();
 
-  BaseRepository.validateResult(result);
+  validateGraphQLResult(result);
 
   final stashBoxes = result.parsedData?.configuration.general.stashBoxes ?? [];
   return stashBoxes

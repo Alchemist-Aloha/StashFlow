@@ -1,5 +1,5 @@
 import 'package:graphql/client.dart';
-import 'package:stash_app_flutter/core/data/graphql/base_repository.dart';
+import 'package:stash_app_flutter/core/data/graphql/graphql_exception.dart';
 import '../../../../core/data/graphql/schema.graphql.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../graphql/tags.graphql.dart';
@@ -64,7 +64,7 @@ class GraphQLTagRepository {
       );
     }
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
 
     final tags = result.parsedData!.findTags.tags
         .map(
@@ -134,6 +134,7 @@ class GraphQLTagRepository {
           e.message.contains(attemptedSort),
     );
   }
+
   Future<Tag> getTagById(String id, {bool refresh = false}) async {
     final result = await _client.query$FindTag(
       Options$Query$FindTag(
@@ -142,7 +143,7 @@ class GraphQLTagRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
     final t = result.parsedData!.findTag;
     if (t == null) throw StateError('Tag not found');
 
@@ -161,6 +162,7 @@ class GraphQLTagRepository {
       favorite: t.favorite,
     );
   }
+
   Future<void> setTagFavorite(String id, bool favorite) async {
     final result = await _client.mutate$UpdateTagFavorite(
       Options$Mutation$UpdateTagFavorite(
@@ -171,6 +173,6 @@ class GraphQLTagRepository {
       ),
     );
 
-    BaseRepository.validateResult(result);
+    validateGraphQLResult(result);
   }
 }
