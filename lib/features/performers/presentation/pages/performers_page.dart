@@ -9,6 +9,7 @@ import '../widgets/performer_filter_panel.dart';
 import '../widgets/performer_card.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
+import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
@@ -311,7 +312,9 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
     );
     final filterState = ref.watch(performerFilterStateProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
-    final scrollController = ref.watch(performerScrollControllerProvider);
+    final scrollController = ref.watch(
+      listScrollControllerProvider(ListScrollTarget.performer),
+    );
     final hasSortOverride =
         _sortOption != _PerformerSortOption.name || _sortDescending;
 

@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/gallery.dart';
@@ -17,26 +16,6 @@ final galleryRepositoryProvider = Provider<GraphQLGalleryRepository>((ref) {
   final client = ref.watch(graphqlClientProvider);
   return GraphQLGalleryRepository(client);
 });
-
-@Riverpod(keepAlive: true)
-class GalleryScrollController extends _$GalleryScrollController {
-  @override
-  ScrollController build() {
-    final controller = ScrollController();
-    ref.onDispose(controller.dispose);
-    return controller;
-  }
-
-  void scrollToTop() {
-    if (state.hasClients) {
-      state.animateTo(
-        0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    }
-  }
-}
 
 @Riverpod(keepAlive: true)
 class GalleryRandomSeed extends _$GalleryRandomSeed {

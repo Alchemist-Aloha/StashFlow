@@ -15,6 +15,7 @@ import '../widgets/scene_card.dart';
 import '../widgets/tiktok_scenes_view.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
+import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
 
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
@@ -412,7 +413,9 @@ class _ScenesPageState extends ConsumerState<ScenesPage> {
     final organizedFilter = ref.watch(sceneOrganizedOnlyProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
     final isFullScreen = ref.watch(fullScreenModeProvider);
-    final scrollController = ref.watch(sceneScrollControllerProvider);
+    final scrollController = ref.watch(
+      listScrollControllerProvider(ListScrollTarget.scene),
+    );
 
     final hasActiveFilters =
         filterActive || organizedFilter != OrganizedFilter.all;

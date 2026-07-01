@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
+import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
 import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
@@ -218,7 +219,9 @@ class _GroupsPageState extends ConsumerState<GroupsPage> {
   Widget build(BuildContext context) {
     final groupsAsync = ref.watch(groupListProvider);
     final activeFilterCount = _activeFilterCount();
-    final scrollController = ref.watch(groupScrollControllerProvider);
+    final scrollController = ref.watch(
+      listScrollControllerProvider(ListScrollTarget.group),
+    );
     final hasSortOverride =
         _sortOption != _GroupSortOption.name || _sortDescending;
 

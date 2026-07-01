@@ -23,6 +23,7 @@ import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
+import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
 
 enum _GallerySortOption {
   date,
@@ -289,7 +290,9 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
 
     return ListPageScaffold<Gallery>(
       title: context.l10n.galleries_title,
-      scrollController: ref.watch(galleryScrollControllerProvider),
+      scrollController: ref.watch(
+        listScrollControllerProvider(ListScrollTarget.gallery),
+      ),
       actions: [
         Stack(
           children: [

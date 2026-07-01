@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'dart:math';
@@ -16,30 +15,6 @@ final studioRepositoryProvider = Provider<GraphQLStudioRepository>((ref) {
   final client = ref.watch(graphqlClientProvider);
   return GraphQLStudioRepository(client);
 });
-
-final studioScrollControllerProvider =
-    NotifierProvider<StudioScrollController, ScrollController>(
-      StudioScrollController.new,
-    );
-
-class StudioScrollController extends Notifier<ScrollController> {
-  @override
-  ScrollController build() {
-    final controller = ScrollController();
-    ref.onDispose(controller.dispose);
-    return controller;
-  }
-
-  void scrollToTop() {
-    if (state.hasClients) {
-      state.animateTo(
-        0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    }
-  }
-}
 
 @Riverpod(keepAlive: true)
 class StudioRandomSeed extends _$StudioRandomSeed {

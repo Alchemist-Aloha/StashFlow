@@ -1,5 +1,4 @@
 import "dart:math";
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/image.dart' as entity;
@@ -16,26 +15,6 @@ final imageRepositoryProvider = Provider<GraphQLImageRepository>((ref) {
   final client = ref.watch(graphqlClientProvider);
   return GraphQLImageRepository(client);
 });
-
-@Riverpod(keepAlive: true)
-class ImageScrollController extends _$ImageScrollController {
-  @override
-  ScrollController build() {
-    final controller = ScrollController();
-    ref.onDispose(controller.dispose);
-    return controller;
-  }
-
-  void scrollToTop() {
-    if (state.hasClients) {
-      state.animateTo(
-        0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    }
-  }
-}
 
 @Riverpod(keepAlive: true)
 class ImageRandomSeed extends _$ImageRandomSeed {

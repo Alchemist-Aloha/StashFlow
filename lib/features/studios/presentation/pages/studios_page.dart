@@ -7,6 +7,7 @@ import '../providers/studio_list_provider.dart';
 import '../widgets/studio_filter_panel.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 
+import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
 import '../../../../core/utils/l10n_extensions.dart';
@@ -256,7 +257,9 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
     final filterState = ref.watch(studioFilterStateProvider);
     final randomNavigationEnabled = ref.watch(randomNavigationEnabledProvider);
 
-    final scrollController = ref.watch(studioScrollControllerProvider);
+    final scrollController = ref.watch(
+      listScrollControllerProvider(ListScrollTarget.studio),
+    );
     final hasSortOverride =
         _sortOption != _StudioSortOption.name || _sortDescending;
 

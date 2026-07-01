@@ -21,30 +21,6 @@ final sceneRepositoryProvider = Provider<GraphQLSceneRepository>((ref) {
   return GraphQLSceneRepository(client);
 });
 
-final sceneScrollControllerProvider =
-    NotifierProvider<SceneScrollController, ScrollController>(
-      SceneScrollController.new,
-    );
-
-class SceneScrollController extends Notifier<ScrollController> {
-  @override
-  ScrollController build() {
-    final controller = ScrollController();
-    ref.onDispose(controller.dispose);
-    return controller;
-  }
-
-  void scrollToTop() {
-    if (state.hasClients) {
-      state.animateTo(
-        0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    }
-  }
-}
-
 @Riverpod(keepAlive: true)
 class SceneRandomSeed extends _$SceneRandomSeed {
   @override

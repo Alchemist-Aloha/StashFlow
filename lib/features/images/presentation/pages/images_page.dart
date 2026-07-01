@@ -11,6 +11,7 @@ import '../../../../core/data/repositories/graphql_saved_filter_repository.dart'
 import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../../setup/presentation/providers/navigation_customization_provider.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
+import '../../../../core/presentation/providers/list_scroll_controller_provider.dart';
 import '../../../galleries/presentation/providers/gallery_list_provider.dart';
 import '../providers/image_list_provider.dart';
 import '../widgets/image_card.dart';
@@ -384,7 +385,9 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
               ),
             )
           : null,
-      scrollController: ref.watch(imageScrollControllerProvider),
+      scrollController: ref.watch(
+        listScrollControllerProvider(ListScrollTarget.image),
+      ),
       padding: EdgeInsets.all(context.dimensions.spacingSmall),
     );
   }
