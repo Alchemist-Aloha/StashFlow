@@ -1,6 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:math';
 import 'dart:convert';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/scene.dart';
@@ -8,6 +9,7 @@ import '../../domain/entities/scene_filter.dart';
 import '../../data/repositories/graphql_scene_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
 import '../../../../core/utils/app_log_store.dart';
 import 'playback_queue_provider.dart';
@@ -21,13 +23,7 @@ final sceneRepositoryProvider = Provider<GraphQLSceneRepository>((ref) {
   return GraphQLSceneRepository(client);
 });
 
-@Riverpod(keepAlive: true)
-class SceneRandomSeed extends _$SceneRandomSeed {
-  @override
-  int build() => Random().nextInt(10000000);
-
-  void next() => state = Random().nextInt(10000000);
-}
+final sceneRandomSeedProvider = listRandomSeedProvider('scene');
 
 @Riverpod(keepAlive: true)
 class SceneSort extends _$SceneSort {

@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -7,6 +6,7 @@ import '../../domain/entities/group_filter.dart';
 import '../../data/repositories/graphql_group_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
 
 part 'group_list_provider.g.dart';
@@ -16,13 +16,7 @@ final groupRepositoryProvider = Provider<GraphQLGroupRepository>((ref) {
   return GraphQLGroupRepository(client);
 });
 
-@Riverpod(keepAlive: true)
-class GroupRandomSeed extends _$GroupRandomSeed {
-  @override
-  int build() => Random().nextInt(10000000);
-
-  void next() => state = Random().nextInt(10000000);
-}
+final groupRandomSeedProvider = listRandomSeedProvider('group');
 
 @Riverpod(keepAlive: true)
 class GroupSort extends _$GroupSort {

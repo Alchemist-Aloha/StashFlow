@@ -1,12 +1,14 @@
+import 'dart:math';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:math';
 import 'dart:convert';
 import '../../domain/entities/performer.dart';
 import '../../domain/entities/performer_filter.dart' as domain;
 import '../../data/repositories/graphql_performer_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
 
 part 'performer_list_provider.g.dart';
@@ -17,13 +19,7 @@ final performerRepositoryProvider = Provider<GraphQLPerformerRepository>((ref) {
   return GraphQLPerformerRepository(client);
 });
 
-@Riverpod(keepAlive: true)
-class PerformerRandomSeed extends _$PerformerRandomSeed {
-  @override
-  int build() => Random().nextInt(10000000);
-
-  void next() => state = Random().nextInt(10000000);
-}
+final performerRandomSeedProvider = listRandomSeedProvider('performer');
 
 @Riverpod(keepAlive: true)
 class PerformerSort extends _$PerformerSort {

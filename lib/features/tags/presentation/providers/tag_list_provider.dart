@@ -1,10 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'dart:math';
 import '../../domain/entities/tag.dart';
 import '../../data/repositories/graphql_tag_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
 
 part 'tag_list_provider.g.dart';
@@ -14,13 +16,7 @@ final tagRepositoryProvider = Provider<GraphQLTagRepository>((ref) {
   return GraphQLTagRepository(client);
 });
 
-@Riverpod(keepAlive: true)
-class TagRandomSeed extends _$TagRandomSeed {
-  @override
-  int build() => Random().nextInt(10000000);
-
-  void next() => state = Random().nextInt(10000000);
-}
+final tagRandomSeedProvider = listRandomSeedProvider('tag');
 
 @Riverpod(keepAlive: true)
 class TagSort extends _$TagSort {

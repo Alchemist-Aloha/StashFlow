@@ -1,12 +1,14 @@
+import 'dart:math';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'dart:math';
 import 'dart:convert';
 import '../../domain/entities/studio.dart';
 import '../../domain/entities/studio_filter.dart' as domain;
 import '../../data/repositories/graphql_studio_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
 
 part 'studio_list_provider.g.dart';
@@ -16,13 +18,7 @@ final studioRepositoryProvider = Provider<GraphQLStudioRepository>((ref) {
   return GraphQLStudioRepository(client);
 });
 
-@Riverpod(keepAlive: true)
-class StudioRandomSeed extends _$StudioRandomSeed {
-  @override
-  int build() => Random().nextInt(10000000);
-
-  void next() => state = Random().nextInt(10000000);
-}
+final studioRandomSeedProvider = listRandomSeedProvider('studio');
 
 @Riverpod(keepAlive: true)
 class StudioSort extends _$StudioSort {

@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -7,6 +8,7 @@ import '../../domain/entities/gallery_filter.dart';
 import '../../data/repositories/graphql_gallery_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
+import '../../../../core/presentation/providers/list_random_seed_provider.dart';
 import '../../../../core/utils/pagination.dart';
 import '../../../../core/domain/entities/filter_options.dart';
 
@@ -17,13 +19,7 @@ final galleryRepositoryProvider = Provider<GraphQLGalleryRepository>((ref) {
   return GraphQLGalleryRepository(client);
 });
 
-@Riverpod(keepAlive: true)
-class GalleryRandomSeed extends _$GalleryRandomSeed {
-  @override
-  int build() => Random().nextInt(10000000);
-
-  void next() => state = Random().nextInt(10000000);
-}
+final galleryRandomSeedProvider = listRandomSeedProvider('gallery');
 
 @Riverpod(keepAlive: true)
 class GallerySort extends _$GallerySort {
