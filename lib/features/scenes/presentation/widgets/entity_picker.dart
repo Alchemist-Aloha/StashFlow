@@ -101,12 +101,6 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
                   if (items.isEmpty) {
                     return Center(child: Text(context.l10n.common_no_items));
                   }
-                  for (final item in items) {
-                    final id = _getId(item);
-                    if (_selectedIds.contains(id)) {
-                      _selectedEntities[id] ??= item as T;
-                    }
-                  }
                   return ListView.builder(
                     itemCount: items.length,
                     itemBuilder: (context, index) {
@@ -184,21 +178,74 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
     final filter = query.isEmpty ? null : query;
     switch (widget.providerType) {
       case 'studio':
-        return ref.read(studioRepositoryProvider).findStudios(filter: filter);
+        return _loadWithSelection(
+          () => ref.read(studioRepositoryProvider).findStudios(filter: filter),
+        );
       case 'performer':
-        return ref
-            .read(performerRepositoryProvider)
-            .findPerformers(filter: filter);
+        return _loadWithSelection(
+          () => ref
+              .read(performerRepositoryProvider)
+              .findPerformers(filter: filter),
+        );
       case 'tag':
-        return ref.read(tagRepositoryProvider).findTags(filter: filter);
+        return _loadWithSelection(
+          () => ref.read(tagRepositoryProvider).findTags(filter: filter),
+        );
       case 'scene':
-        return ref.read(sceneRepositoryProvider).findScenes(filter: filter);
+        return _loadWithSelection(
+          () => ref.read(sceneRepositoryProvider).findScenes(filter: filter),
+        );
       case 'gallery':
-        return ref
-            .read(galleryRepositoryProvider)
-            .findGalleries(filter: filter);
+        return _loadWithSelection(
+          () =>
+              ref.read(galleryRepositoryProvider).findGalleries(filter: filter),
+        );
       default:
         return Future.value([]);
+    }
+  }
+
+  Future<List<dynamic>> _loadWithSelection(
+    Future<List<dynamic>> Function() load,
+  ) async {
+    await Future.wait(_selectedIds.map(_ensureSelectedEntity));
+    final loaded = await load();
+    for (final item in loaded) {
+      final id = _getId(item);
+      if (_selectedIds.contains(id)) {
+        _selectedEntities[id] = item as T;
+      }
+    }
+    return [
+      ..._selectedIds.map((id) => _selectedEntities[id]).whereType<T>(),
+      ...loaded.where((item) => !_selectedIds.contains(_getId(item))),
+    ];
+  }
+
+  Future<void> _ensureSelectedEntity(String id) async {
+    if (_selectedEntities.containsKey(id)) return;
+    final entity = await _getById(id);
+    if (entity != null && _selectedIds.contains(id)) {
+      _selectedEntities[id] = entity;
+    }
+  }
+
+  Future<T?> _getById(String id) async {
+    switch (widget.providerType) {
+      case 'studio':
+        return await ref.read(studioRepositoryProvider).getStudioById(id) as T;
+      case 'performer':
+        return await ref.read(performerRepositoryProvider).getPerformerById(id)
+            as T;
+      case 'tag':
+        return await ref.read(tagRepositoryProvider).getTagById(id) as T;
+      case 'scene':
+        return await ref.read(sceneRepositoryProvider).getSceneById(id) as T;
+      case 'gallery':
+        return await ref.read(galleryRepositoryProvider).getGalleryById(id)
+            as T;
+      default:
+        return null;
     }
   }
 
