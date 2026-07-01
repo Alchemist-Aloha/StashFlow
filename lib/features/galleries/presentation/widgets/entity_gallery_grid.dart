@@ -215,7 +215,7 @@ class _EntityGalleryGridState extends ConsumerState<EntityGalleryGrid> {
   }
 
   int _activeFilterCount(GalleryFilter filter) {
-    return filter.toJson().values.where((value) => value != null).length;
+    return activeFilterCount(filter.toJson());
   }
 
   void _showSavedFilterDialog() {

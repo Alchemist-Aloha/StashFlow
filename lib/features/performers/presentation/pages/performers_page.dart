@@ -14,6 +14,7 @@ import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
+import '../../../../core/domain/entities/filter_options.dart';
 import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../domain/entities/performer_saved_filter_config.dart';
 
@@ -233,7 +234,7 @@ class _PerformersPageState extends ConsumerState<PerformersPage> {
   }
 
   int _activeFilterCount(PerformerFilter filter) {
-    return filter.toJson().values.where((value) => value != null).length;
+    return activeFilterCount(filter.toJson());
   }
 
   void _showSavedFilterDialog() {

@@ -187,7 +187,7 @@ class _ImagesPageState extends ConsumerState<ImagesPage> {
   }
 
   int _activeFilterCount(ImageFilter filter) {
-    return filter.toJson().values.where((value) => value != null).length;
+    return activeFilterCount(filter.toJson());
   }
 
   void _showSavedFilterDialog() {

@@ -14,3 +14,6 @@ enum OrganizedFilter {
     return value ? OrganizedFilter.organized : OrganizedFilter.unorganized;
   }
 }
+
+int activeFilterCount(Map<String, dynamic> filterJson) =>
+    filterJson.values.where((value) => value != null).length;

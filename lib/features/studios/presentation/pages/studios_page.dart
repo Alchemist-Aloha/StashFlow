@@ -12,6 +12,7 @@ import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
+import '../../../../core/domain/entities/filter_options.dart';
 import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../domain/entities/studio.dart';
 import '../../domain/entities/studio_saved_filter_config.dart';
@@ -160,7 +161,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
   }
 
   int _activeFilterCount(StudioFilter filter) {
-    return filter.toJson().values.where((value) => value != null).length;
+    return activeFilterCount(filter.toJson());
   }
 
   void _showSavedFilterDialog() {
