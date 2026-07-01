@@ -39,6 +39,15 @@ class SceneMarkerSavedFilterConfig
     );
   }
 
+  factory SceneMarkerSavedFilterConfig.fromRaw(Map<String, dynamic> raw) {
+    return SceneMarkerSavedFilterConfig.fromServerPayload(
+      id: raw['id'] as String,
+      name: raw['name'] as String,
+      findFilter: raw['find_filter'],
+      objectFilter: raw['object_filter'],
+    );
+  }
+
   @override
   Map<String, dynamic> toSaveInput() {
     return savedFilterBuildInput(

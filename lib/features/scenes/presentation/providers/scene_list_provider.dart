@@ -6,7 +6,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/scene.dart';
 import '../../domain/entities/scene_filter.dart';
 import '../../data/repositories/graphql_scene_repository.dart';
-import '../../data/repositories/graphql_scene_saved_filter_repository.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/preferences/shared_preferences_provider.dart';
 import '../../../../core/utils/pagination.dart';
@@ -21,12 +20,6 @@ final sceneRepositoryProvider = Provider<GraphQLSceneRepository>((ref) {
   final client = ref.watch(graphqlClientProvider);
   return GraphQLSceneRepository(client);
 });
-
-final sceneSavedFilterRepositoryProvider =
-    Provider<GraphQLSceneSavedFilterRepository>((ref) {
-      final client = ref.watch(graphqlClientProvider);
-      return GraphQLSceneSavedFilterRepository(client);
-    });
 
 final sceneScrollControllerProvider =
     NotifierProvider<SceneScrollController, ScrollController>(

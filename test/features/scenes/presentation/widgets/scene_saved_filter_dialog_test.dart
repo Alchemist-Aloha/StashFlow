@@ -3,9 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:graphql/client.dart';
 import 'package:stash_app_flutter/core/presentation/theme/app_theme.dart';
-import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scene_saved_filter_repository.dart';
+import 'package:stash_app_flutter/core/data/repositories/graphql_saved_filter_repository.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene_filter.dart';
-import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/widgets/scene_saved_filter_dialog.dart';
 import 'package:stash_app_flutter/l10n/app_localizations.dart';
 
@@ -42,8 +41,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            sceneSavedFilterRepositoryProvider.overrideWithValue(
-              GraphQLSceneSavedFilterRepository(client),
+            savedFilterRepositoryProvider.overrideWithValue(
+              GraphQLSavedFilterRepository(client),
             ),
           ],
           child: MaterialApp(
@@ -160,8 +159,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            sceneSavedFilterRepositoryProvider.overrideWithValue(
-              GraphQLSceneSavedFilterRepository(client),
+            savedFilterRepositoryProvider.overrideWithValue(
+              GraphQLSavedFilterRepository(client),
             ),
           ],
           child: MaterialApp(
@@ -261,8 +260,8 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          sceneSavedFilterRepositoryProvider.overrideWithValue(
-            GraphQLSceneSavedFilterRepository(client),
+          savedFilterRepositoryProvider.overrideWithValue(
+            GraphQLSavedFilterRepository(client),
           ),
         ],
         child: MaterialApp(

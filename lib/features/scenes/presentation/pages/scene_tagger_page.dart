@@ -12,6 +12,7 @@ import 'package:stash_app_flutter/core/utils/l10n_extensions.dart';
 import '../../../../core/data/auth/auth_provider.dart';
 import '../../../../core/data/graphql/graphql_client.dart';
 import '../../../../core/data/graphql/media_headers_provider.dart';
+import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
 import '../../../../core/data/graphql/url_resolver.dart';
 import '../../../../core/domain/entities/scraped/scraped_scene.dart';
 import '../../../../core/domain/entities/scraped/scraped_tag.dart';
@@ -89,7 +90,9 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
   @override
   void initState() {
     super.initState();
-    _presetsFuture = ref.read(sceneSavedFilterRepositoryProvider).findAll();
+    _presetsFuture = ref
+        .read(savedFilterRepositoryProvider)
+        .findAll(mode: 'SCENES', fromRaw: SceneSavedFilterConfig.fromRaw);
     Future.microtask(_loadScenes);
   }
 
