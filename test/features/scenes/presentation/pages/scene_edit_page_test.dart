@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_edit_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
+import 'package:stash_app_flutter/features/tags/domain/entities/tag.dart';
+import 'package:stash_app_flutter/features/tags/presentation/providers/tag_list_provider.dart';
 import '../../../../helpers/test_helpers.dart';
 import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
 
@@ -10,6 +12,8 @@ class CallTrackingMockGraphQLSceneRepository
     extends MockGraphQLSceneRepository {
   bool saveCalled = false;
   ScrapedScene? lastScraped;
+  List<String>? lastPerformerIds;
+  List<String>? lastTagIds;
 
   @override
   Future<void> saveScrapedScene({
@@ -22,6 +26,8 @@ class CallTrackingMockGraphQLSceneRepository
   }) async {
     saveCalled = true;
     lastScraped = scraped;
+    lastPerformerIds = performerIds;
+    lastTagIds = tagIds;
   }
 }
 
@@ -131,5 +137,63 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(mockRepo.lastScraped?.urls, ['http://newurl.com']);
+  });
+
+  testWidgets('SceneEditPage keeps existing tags when adding a tag', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final sceneWithTag = testScene.copyWith(
+      tagIds: ['tag-old'],
+      tagNames: ['Old Tag'],
+    );
+    final mockRepo = CallTrackingMockGraphQLSceneRepository();
+    final tagRepo = MockGraphQLTagRepository()
+      ..setData([
+        const Tag(
+          id: 'tag-old',
+          name: 'Old Tag',
+          sceneCount: 1,
+          imageCount: 0,
+          galleryCount: 0,
+          performerCount: 0,
+          favorite: false,
+        ),
+        const Tag(
+          id: 'tag-new',
+          name: 'New Tag',
+          sceneCount: 0,
+          imageCount: 0,
+          galleryCount: 0,
+          performerCount: 0,
+          favorite: false,
+        ),
+      ]);
+
+    await pumpTestWidget(
+      tester,
+      overrides: [
+        sceneRepositoryProvider.overrideWithValue(mockRepo),
+        tagRepositoryProvider.overrideWithValue(tagRepo),
+      ],
+      child: SceneEditPage(scene: sceneWithTag),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Add Tag'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('New Tag'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Done'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.save));
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(mockRepo.lastTagIds, ['tag-old', 'tag-new']);
   });
 }

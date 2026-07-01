@@ -6040,7 +6040,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get entity_layouts_title => '实体布局';
 
   @override
-  String get entity_layouts_subtitle => '表演者、工作室和标签的媒体和画廊布局默认值';
+  String get entity_layouts_subtitle => '演员、制片商和标签的媒体和画廊布局默认值';
 
   @override
   String get stats_subtitle_0_gb => '0.00GB';

@@ -33,7 +33,7 @@ class EntityPicker<T> extends ConsumerStatefulWidget {
 class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
   final _searchController = TextEditingController();
   final Set<String> _selectedIds = {};
-  final List<T> _selectedEntities = [];
+  final Map<String, T> _selectedEntities = {};
 
   @override
   void initState() {
@@ -109,6 +109,12 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
                   if (items.isEmpty) {
                     return Center(child: Text(context.l10n.common_no_items));
                   }
+                  for (final item in items) {
+                    final id = _getId(item);
+                    if (_selectedIds.contains(id)) {
+                      _selectedEntities[id] ??= item as T;
+                    }
+                  }
                   return ListView.builder(
                     itemCount: items.length,
                     itemBuilder: (context, index) {
@@ -124,12 +130,10 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
                           setState(() {
                             if (val == true) {
                               _selectedIds.add(id);
-                              _selectedEntities.add(item as T);
+                              _selectedEntities[id] = item as T;
                             } else {
                               _selectedIds.remove(id);
-                              _selectedEntities.removeWhere(
-                                (e) => _getId(e) == id,
-                              );
+                              _selectedEntities.remove(id);
                             }
                           });
                           if (!widget.multiSelect && val == true) {
@@ -157,7 +161,12 @@ class _EntityPickerState<T> extends ConsumerState<EntityPicker<T>> {
         if (widget.multiSelect)
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pop(_selectedEntities);
+              Navigator.of(context).pop(
+                _selectedIds
+                    .map((id) => _selectedEntities[id])
+                    .whereType<T>()
+                    .toList(),
+              );
             },
             child: Text(context.l10n.common_done),
           ),
