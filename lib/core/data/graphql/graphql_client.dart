@@ -14,6 +14,8 @@ import '../../utils/environment.dart' as env;
 
 part 'graphql_client.g.dart';
 
+const graphqlRequestTimeout = Duration(seconds: 60);
+
 Uri _withGraphqlPathIfMissing(Uri uri) {
   final path = uri.path.trim();
   if (path.isEmpty || path == '/') {
@@ -132,6 +134,7 @@ Future<GraphQLClient> profileGraphqlClient(
     link: httpLink,
     cache:
         GraphQLCache(), // Always use fresh cache for non-active profile checks
+    queryRequestTimeout: graphqlRequestTimeout,
   );
 }
 
@@ -146,6 +149,7 @@ class GraphqlClient extends _$GraphqlClient {
         return GraphQLClient(
           link: HttpLink('http://localhost'),
           cache: GraphQLCache(),
+          queryRequestTimeout: graphqlRequestTimeout,
         );
       }
       throw Exception('Server URL not configured');
@@ -168,6 +172,7 @@ class GraphqlClient extends _$GraphqlClient {
     return GraphQLClient(
       link: httpLink,
       cache: env.isTestMode ? GraphQLCache() : GraphQLCache(store: HiveStore()),
+      queryRequestTimeout: graphqlRequestTimeout,
     );
   }
 }

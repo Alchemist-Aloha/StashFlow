@@ -382,13 +382,14 @@ class _SceneEditPageState extends ConsumerState<SceneEditPage> {
           );
 
       if (mounted) {
-        // Invalidate and wait for refresh to ensure UI is up to date before closing
         ref.invalidate(sceneDetailsProvider(widget.scene.id));
         ref.invalidate(sceneListProvider);
-        await ref.read(sceneDetailsProvider(widget.scene.id).future);
 
         if (mounted) {
-          Navigator.of(context).pop(true);
+          final navigator = Navigator.of(context);
+          if (navigator.canPop()) {
+            navigator.pop(true);
+          }
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(context.l10n.scenes_updated_successfully)),
           );

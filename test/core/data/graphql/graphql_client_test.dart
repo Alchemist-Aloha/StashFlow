@@ -37,6 +37,7 @@ void main() {
       final client = container.read(graphqlClientProvider);
       final link = client.link as HttpLink;
 
+      expect(client.queryManager.requestTimeout, graphqlRequestTimeout);
       final expectedBase64 = base64Encode(utf8.encode('alice:secret'));
       expect(link.defaultHeaders['Authorization'], 'Basic $expectedBase64');
     });
@@ -58,6 +59,7 @@ void main() {
       final client = container.read(graphqlClientProvider);
       final link = client.link as HttpLink;
 
+      expect(client.queryManager.requestTimeout, graphqlRequestTimeout);
       expect(link.defaultHeaders['Authorization'], 'Bearer some-token');
     });
   });

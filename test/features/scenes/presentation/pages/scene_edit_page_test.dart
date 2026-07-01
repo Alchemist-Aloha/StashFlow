@@ -104,6 +104,30 @@ void main() {
     expect(mockRepo.lastScraped?.details, 'New Details');
   });
 
+  testWidgets('SceneEditPage does not fail save when refresh misses', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final mockRepo = CallTrackingMockGraphQLSceneRepository();
+
+    await pumpTestWidget(
+      tester,
+      overrides: [sceneRepositoryProvider.overrideWithValue(mockRepo)],
+      child: SceneEditPage(scene: testScene),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.save));
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(mockRepo.saveCalled, isTrue);
+    expect(find.textContaining('Failed to update scene'), findsNothing);
+  });
+
   testWidgets('SceneEditPage adds and removes URLs', (tester) async {
     tester.view.physicalSize = const Size(1200, 1200);
     tester.view.devicePixelRatio = 1.0;
@@ -138,7 +162,8 @@ void main() {
 
     // Tap Save
     await tester.tap(find.byIcon(Icons.save));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
 
     expect(mockRepo.lastScraped?.urls, ['http://newurl.com']);
   });

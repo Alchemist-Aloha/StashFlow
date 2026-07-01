@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:graphql/client.dart';
+import 'package:stash_app_flutter/core/domain/entities/scraped/scraped_scene.dart';
 import 'package:stash_app_flutter/features/scenes/data/repositories/graphql_scene_repository.dart';
 
 void main() {
@@ -77,6 +78,45 @@ void main() {
 
       expect(client.lastMutationVariables, {'id': 'marker-1'});
     });
+
+    test(
+      'saveScrapedScene normalizes scraped details before scene update',
+      () async {
+        final client = _FakeGraphQLClient(
+          queryData: const {'__typename': 'Query'},
+          mutationData: const {
+            '__typename': 'Mutation',
+            'sceneUpdate': {'__typename': 'Scene', 'id': 'scene-1'},
+          },
+        );
+        final repository = GraphQLSceneRepository(client);
+
+        await repository.saveScrapedScene(
+          sceneId: 'scene-1',
+          scraped: ScrapedScene(
+            title: '  Scraped title  ',
+            details: '  Scraped details  ',
+            urls: const ['example.com/scene', '  '],
+            image: 'https://images.example/cover.jpg',
+            studioId: 'studio-1',
+          ),
+          performerIds: const ['performer-1'],
+          tagIds: const ['tag-1'],
+        );
+
+        final input =
+            client.lastMutationVariables?['input'] as Map<String, dynamic>;
+        expect(input['id'], 'scene-1');
+        expect(input['title'], 'Scraped title');
+        expect(input['details'], 'Scraped details');
+        expect(input['urls'], ['http://example.com/scene']);
+        expect(input.containsKey('cover_image'), isFalse);
+        expect(input['studio_id'], 'studio-1');
+        expect(input['performer_ids'], ['performer-1']);
+        expect(input['tag_ids'], ['tag-1']);
+        expect(input['organized'], isTrue);
+      },
+    );
   });
 }
 

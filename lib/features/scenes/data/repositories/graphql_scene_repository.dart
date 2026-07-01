@@ -287,6 +287,7 @@ class GraphQLSceneRepository {
     }
     return false;
   }
+
   Future<Scene> getSceneById(String id, {bool refresh = false}) async {
     final result = await _client.query$FindScene(
       Options$Query$FindScene(
@@ -390,6 +391,7 @@ class GraphQLSceneRepository {
       markers: _mapSceneMarkers(rawScene?['scene_markers']),
     );
   }
+
   Future<SceneMarker> createSceneMarker({
     required String sceneId,
     required String title,
@@ -457,6 +459,7 @@ class GraphQLSceneRepository {
     }
     return _mapSceneMarker(rawMarker);
   }
+
   Future<void> deleteSceneMarker(String markerId) async {
     final result = await _client.mutate<Map<String, dynamic>>(
       MutationOptions<Map<String, dynamic>>(
@@ -587,6 +590,7 @@ class GraphQLSceneRepository {
           .toList(growable: false),
     );
   }
+
   Future<List<Scraper>> listScrapers({required List<String> types}) async {
     final result = await _client.query$ListScrapers(
       Options$Query$ListScrapers(
@@ -603,6 +607,7 @@ class GraphQLSceneRepository {
 
     return raw.map((e) => Scraper.fromJson(e.toJson())).toList();
   }
+
   Future<List<ScrapedScene>> scrapeSingleScene({
     String? scraperId,
     String? stashBoxEndpoint,
@@ -632,6 +637,7 @@ class GraphQLSceneRepository {
         .map(_stripScrapedImages)
         .toList();
   }
+
   Future<ScrapedScene?> scrapeSceneURL(String url) async {
     final result = await _client.query$ScrapeSceneURL(
       Options$Query$ScrapeSceneURL(
@@ -646,6 +652,7 @@ class GraphQLSceneRepository {
     if (raw == null) return null;
     return _stripScrapedImages(ScrapedScene.fromJson(raw.toJson()));
   }
+
   Future<void> generatePhash(String sceneId) async {
     final result = await _client.mutate$MetadataGenerate(
       Options$Mutation$MetadataGenerate(
@@ -660,6 +667,7 @@ class GraphQLSceneRepository {
 
     BaseRepository.validateResult(result);
   }
+
   Future<void> saveScrapedScene({
     required String sceneId,
     required ScrapedScene scraped,
@@ -668,19 +676,15 @@ class GraphQLSceneRepository {
     List<String>? tagIds,
     String? studioId,
   }) async {
-    final coverImage = normalizedSceneCoverImage(scraped.image);
-    final input = Input$SceneUpdateInput(
-      id: sceneId,
-      title: scraped.title,
-      details: scraped.details,
-      date: scraped.date?.toIso8601String().split('T').first,
-      organized: true,
-      urls: scraped.urls,
-      cover_image: coverImage,
-      studio_id: studioId ?? scraped.studioId ?? scraped.studio?.storedId,
-      performer_ids: performerIds,
-      tag_ids: tagIds,
-    );
+    final inputJson = buildSceneUpdateInputFromScraped(scraped)
+      ..['id'] = sceneId
+      ..['organized'] = true;
+    final resolvedStudioId =
+        studioId ?? scraped.studioId ?? scraped.studio?.storedId;
+    if (resolvedStudioId != null) inputJson['studio_id'] = resolvedStudioId;
+    if (performerIds != null) inputJson['performer_ids'] = performerIds;
+    if (tagIds != null) inputJson['tag_ids'] = tagIds;
+    final input = Input$SceneUpdateInput.fromJson(inputJson);
 
     final result = await _client.mutate$SceneUpdate(
       Options$Mutation$SceneUpdate(
@@ -690,16 +694,19 @@ class GraphQLSceneRepository {
 
     BaseRepository.validateResult(result);
   }
+
   Future<Map<String, List<Map<String, dynamic>>>> findPerformerCandidates(
     List<String> performers,
   ) async {
     return {};
   }
+
   Future<Map<String, List<Map<String, dynamic>>>> findTagCandidates(
     List<String> tags,
   ) async {
     return {};
   }
+
   Future<void> updateSceneRating(String id, int rating100) async {
     final result = await _client.mutate$SceneUpdate(
       Options$Mutation$SceneUpdate(
@@ -710,6 +717,7 @@ class GraphQLSceneRepository {
     );
     BaseRepository.validateResult(result);
   }
+
   Future<void> incrementSceneOCounter(String id) async {
     final result = await _client.mutate$SceneAddO(
       Options$Mutation$SceneAddO(
@@ -718,6 +726,7 @@ class GraphQLSceneRepository {
     );
     BaseRepository.validateResult(result);
   }
+
   Future<void> incrementScenePlayCount(String id) async {
     final result = await _client.mutate$SceneIncrementPlayCount(
       Options$Mutation$SceneIncrementPlayCount(
@@ -726,6 +735,7 @@ class GraphQLSceneRepository {
     );
     BaseRepository.validateResult(result);
   }
+
   Future<void> saveSceneActivity(
     String id, {
     double? resumeTime,
@@ -742,6 +752,7 @@ class GraphQLSceneRepository {
     );
     BaseRepository.validateResult(result);
   }
+
   Future<void> deleteScene(
     String id, {
     required bool deleteFile,
@@ -758,6 +769,7 @@ class GraphQLSceneRepository {
     );
     BaseRepository.validateResult(result);
   }
+
   Future<List<SceneDuplicateGroup>> findDuplicateScenes({
     int distance = 0,
     double durationDiff = 1,
@@ -784,6 +796,7 @@ class GraphQLSceneRepository {
           .toList(growable: false),
     );
   }
+
   Future<int> countScenesMissingPhash() async {
     final result = await _client.query$CountScenesMissingPhash(
       Options$Query$CountScenesMissingPhash(fetchPolicy: FetchPolicy.noCache),
