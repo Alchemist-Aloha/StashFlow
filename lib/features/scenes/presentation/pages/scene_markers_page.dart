@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/data/repositories/graphql_saved_filter_repository.dart';
+import '../../../../core/domain/entities/filter_options.dart';
 import '../../../../core/presentation/providers/layout_settings_provider.dart';
 import '../../../../core/presentation/theme/app_theme.dart';
 import '../../../../core/presentation/widgets/grid_utils.dart';
 import '../../../../core/presentation/widgets/list_page_scaffold.dart';
 import '../../../../core/presentation/widgets/list_sort_bottom_sheet.dart';
+import '../../../../core/presentation/widgets/saved_filter_dialog.dart';
 import '../../../../core/utils/l10n_extensions.dart';
 import '../../domain/entities/scene_marker.dart';
 import '../../domain/entities/scene_marker_saved_filter_config.dart';
 import '../providers/scene_marker_list_provider.dart';
 import '../widgets/scene_marker_card.dart';
 import '../widgets/scene_marker_filter_panel.dart';
-import '../widgets/scene_marker_saved_filter_dialog.dart';
 
 enum _MarkerSortField { createdAt, updatedAt, title, seconds, random }
 
@@ -117,11 +119,34 @@ class _SceneMarkersPageState extends ConsumerState<SceneMarkersPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => SceneMarkerSavedFilterDialog(
+      builder: (context) => SavedFilterDialog<SceneMarkerSavedFilterConfig>(
         searchQuery: ref.read(sceneMarkerSearchQueryProvider),
         sort: sortConfig.sort,
         descending: sortConfig.descending,
-        filter: filter,
+        activeFilterCount: activeFilterCount(filter.toJson()),
+        defaultSortLabel: 'created_at',
+        saveSuccessMessage: context.l10n.saved_item('Marker filter'),
+        loadPresets: () => ref
+            .read(savedFilterRepositoryProvider)
+            .findAll(
+              mode: 'SCENE_MARKERS',
+              fromRaw: SceneMarkerSavedFilterConfig.fromRaw,
+            ),
+        savePreset: ({required String name, String? existingId}) => ref
+            .read(savedFilterRepositoryProvider)
+            .save(
+              input: SceneMarkerSavedFilterConfig(
+                id: existingId,
+                name: name,
+                searchQuery: ref.read(sceneMarkerSearchQueryProvider),
+                sort: sortConfig.sort,
+                descending: sortConfig.descending,
+                filter: filter,
+              ).toSaveInput(),
+              fromRaw: SceneMarkerSavedFilterConfig.fromRaw,
+            ),
+        deletePreset: (id) =>
+            ref.read(savedFilterRepositoryProvider).delete(id: id),
         onLoad: _applySavedFilterConfig,
       ),
     );
