@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stash_app_flutter/features/scenes/domain/entities/scene.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/pages/scene_edit_page.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
+import 'package:stash_app_flutter/features/studios/domain/entities/studio.dart';
+import 'package:stash_app_flutter/features/studios/presentation/providers/studio_list_provider.dart';
 import 'package:stash_app_flutter/features/tags/domain/entities/tag.dart';
 import 'package:stash_app_flutter/features/tags/presentation/providers/tag_list_provider.dart';
 import '../../../../helpers/test_helpers.dart';
@@ -14,6 +16,7 @@ class CallTrackingMockGraphQLSceneRepository
   ScrapedScene? lastScraped;
   List<String>? lastPerformerIds;
   List<String>? lastTagIds;
+  String? lastStudioId;
 
   @override
   Future<void> saveScrapedScene({
@@ -28,6 +31,7 @@ class CallTrackingMockGraphQLSceneRepository
     lastScraped = scraped;
     lastPerformerIds = performerIds;
     lastTagIds = tagIds;
+    lastStudioId = studioId;
   }
 }
 
@@ -196,4 +200,50 @@ void main() {
 
     expect(mockRepo.lastTagIds, ['tag-old', 'tag-new']);
   });
+
+  testWidgets(
+    'SceneEditPage updates studio after confirming picker selection',
+    (tester) async {
+      tester.view.physicalSize = const Size(1200, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final mockRepo = CallTrackingMockGraphQLSceneRepository();
+      final studioRepo = MockGraphQLStudioRepository()
+        ..setData([
+          const Studio(
+            id: 'studio-1',
+            name: 'Studio One',
+            sceneCount: 1,
+            imageCount: 0,
+            galleryCount: 0,
+            performerCount: 0,
+            favorite: false,
+          ),
+        ]);
+
+      await pumpTestWidget(
+        tester,
+        overrides: [
+          sceneRepositoryProvider.overrideWithValue(mockRepo),
+          studioRepositoryProvider.overrideWithValue(studioRepo),
+        ],
+        child: SceneEditPage(scene: testScene),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('None'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Studio One'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Done'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.save));
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+
+      expect(mockRepo.lastStudioId, 'studio-1');
+    },
+  );
 }
