@@ -11,16 +11,6 @@ import '../../data/graphql/media_headers_provider.dart';
 import '../../data/graphql/url_resolver.dart';
 import '../../data/graphql/graphql_client.dart';
 
-// Lightweight in-file shimmer placeholder — avoids an extra package dependency.
-class _Shimmer extends StatefulWidget {
-  final Widget child;
-
-  const _Shimmer({required this.child});
-
-  @override
-  State<_Shimmer> createState() => _ShimmerState();
-}
-
 // Small stateful wrapper which retries a failed cached image load by
 // removing the local cache entry and forcing a re-download. This helps
 // recover from corrupted/partial files that would otherwise produce
@@ -88,12 +78,10 @@ class _RetryingCachedImageState extends State<_RetryingCachedImage> {
           child: SizedBox(
             width: 48 * context.dimensions.fontSizeFactor,
             height: 48 * context.dimensions.fontSizeFactor,
-            child: _Shimmer(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: context.colors.outline.withValues(alpha: 0.2),
-                  shape: BoxShape.circle,
-                ),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: context.colors.outline.withValues(alpha: 0.2),
+                shape: BoxShape.circle,
               ),
             ),
           ),
@@ -115,63 +103,6 @@ class _RetryingCachedImageState extends State<_RetryingCachedImage> {
           ),
         );
       },
-    );
-  }
-}
-
-class _ShimmerState extends State<_Shimmer>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    );
-    if (!kIsWeb) {
-      _controller.repeat();
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          return ShaderMask(
-            shaderCallback: (bounds) {
-              final double progress = _controller.value;
-              final double center = progress * 2 - 0.5; // move across
-              return LinearGradient(
-                begin: Alignment(-1, 0),
-                end: Alignment(1, 0),
-                colors: [
-                  Colors.grey.shade800,
-                  Colors.grey.shade700,
-                  Colors.grey.shade800,
-                ],
-                stops: [
-                  (center - 0.3).clamp(0.0, 1.0),
-                  center.clamp(0.0, 1.0),
-                  (center + 0.3).clamp(0.0, 1.0),
-                ],
-              ).createShader(bounds);
-            },
-            blendMode: BlendMode.srcATop,
-            child: widget.child,
-          );
-        },
-        child: widget.child,
-      ),
     );
   }
 }
@@ -348,12 +279,10 @@ class StashImage extends ConsumerWidget {
         child: SizedBox(
           width: 48 * context.dimensions.fontSizeFactor,
           height: 48 * context.dimensions.fontSizeFactor,
-          child: _Shimmer(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: context.colors.outline.withValues(alpha: 0.2),
-                shape: BoxShape.circle,
-              ),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: context.colors.outline.withValues(alpha: 0.2),
+              shape: BoxShape.circle,
             ),
           ),
         ),
