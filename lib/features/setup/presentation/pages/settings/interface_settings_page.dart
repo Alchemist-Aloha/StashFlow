@@ -10,7 +10,6 @@ import 'package:stash_app_flutter/features/setup/presentation/providers/main_pag
 import 'package:stash_app_flutter/features/scenes/presentation/providers/scene_list_provider.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/player_settings.dart';
 import 'package:stash_app_flutter/features/scenes/presentation/providers/video_player_provider.dart';
-import 'package:stash_app_flutter/features/galleries/presentation/providers/gallery_list_provider.dart';
 import 'package:stash_app_flutter/features/galleries/presentation/providers/entity_gallery_filter_scope.dart';
 import 'package:stash_app_flutter/core/presentation/providers/layout_settings_provider.dart';
 import 'package:stash_app_flutter/core/presentation/providers/app_language_provider.dart';
@@ -77,7 +76,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
     _showRandomNavigation = ref.read(randomNavigationEnabledProvider);
     _sceneGridLayout = ref.read(sceneGridLayoutProvider);
     _sceneTiktokLayout = ref.read(sceneTiktokLayoutProvider);
-    _galleryGridLayout = ref.read(galleryGridLayoutProvider);
+    _galleryGridLayout = ref.read(
+      gridLayoutSettingProvider(GridLayoutSetting.gallery),
+    );
     _mainPageGravityOrientation = ref.read(mainPageGravityOrientationProvider);
     _useActualSceneVideoInMiniPlayer = PlayerSettingsStore(
       prefs,
@@ -153,7 +154,9 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
         .set(_showRandomNavigation);
     ref.read(sceneGridLayoutProvider.notifier).set(_sceneGridLayout);
     ref.read(sceneTiktokLayoutProvider.notifier).set(_sceneTiktokLayout);
-    ref.read(galleryGridLayoutProvider.notifier).set(_galleryGridLayout);
+    ref
+        .read(gridLayoutSettingProvider(GridLayoutSetting.gallery).notifier)
+        .set(_galleryGridLayout);
     ref
         .read(mainPageGravityOrientationProvider.notifier)
         .set(_mainPageGravityOrientation);
@@ -671,8 +674,7 @@ class _InterfaceSettingsPageState extends ConsumerState<InterfaceSettingsPage> {
                   // Consolidated Entity Layouts
                   SettingsSectionCard(
                     title: context.l10n.entity_layouts_title,
-                    subtitle:
-                        context.l10n.entity_layouts_subtitle,
+                    subtitle: context.l10n.entity_layouts_subtitle,
                     child: Column(
                       children: [
                         _buildEntityTypeLayoutRow(

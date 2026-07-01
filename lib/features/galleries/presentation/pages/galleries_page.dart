@@ -264,7 +264,9 @@ class _GalleriesPageState extends ConsumerState<GalleriesPage> {
   @override
   Widget build(BuildContext context) {
     final galleriesAsync = ref.watch(galleryListProvider);
-    final isGridView = ref.watch(galleryGridLayoutProvider);
+    final isGridView = ref.watch(
+      gridLayoutSettingProvider(GridLayoutSetting.gallery),
+    );
     final gridColumns = ref.watch(
       gridColumnSettingProvider(GridColumnSetting.gallery),
     );

@@ -12,6 +12,7 @@ enum GridLayoutSetting {
   tagMedia('tag_media_grid_layout', true),
   tagGalleries('tag_galleries_grid_layout', true),
   groupMedia('group_media_grid_layout', true),
+  gallery('gallery_grid_layout', true),
   sceneMarker('scene_marker_grid_layout', true);
 
   const GridLayoutSetting(this.storageKey, this.defaultValue);

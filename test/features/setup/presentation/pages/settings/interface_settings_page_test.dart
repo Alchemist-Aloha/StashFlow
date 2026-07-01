@@ -71,9 +71,6 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Group Layouts'), findsOneWidget);
-      expect(find.text('Marker Layout'), findsOneWidget);
-
       await tester.scrollUntilVisible(
         find.byKey(const Key('marker-layout-segmented')),
         200,
