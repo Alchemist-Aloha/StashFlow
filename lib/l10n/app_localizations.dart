@@ -5681,6 +5681,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scenes'**
   String get scenes_title;
+
+  /// No description provided for @status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get status;
+
+  /// No description provided for @no_match_found.
+  ///
+  /// In en, this message translates to:
+  /// **'No match found'**
+  String get no_match_found;
+
+  /// No description provided for @error_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error_label;
 }
 
 class _AppLocalizationsDelegate

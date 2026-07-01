@@ -3148,4 +3148,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scenes_title => 'Scenes';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get no_match_found => 'No match found';
+
+  @override
+  String get error_label => 'Error';
 }

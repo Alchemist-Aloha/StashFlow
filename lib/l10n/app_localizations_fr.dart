@@ -3213,4 +3213,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get scenes_title => 'Scènes';
+
+  @override
+  String get status => 'Statut';
+
+  @override
+  String get no_match_found => 'Aucune correspondance trouvée';
+
+  @override
+  String get error_label => 'Erreur';
 }

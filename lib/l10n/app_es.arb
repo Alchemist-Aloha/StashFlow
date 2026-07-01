@@ -1093,5 +1093,8 @@
   "stats_subtitle_0_unique_items": "0 artículos únicos",
   "markers_search_hint": "Marcadores de búsqueda",
   "tags_title": "Etiquetas",
-  "scenes_title": "Escenas"
+  "scenes_title": "Escenas",
+  "error_label": "Error",
+  "status": "Estado",
+  "no_match_found": "No se encontró ninguna coincidencia"
 }

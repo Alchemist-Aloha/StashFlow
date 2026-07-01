@@ -3212,4 +3212,13 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get scenes_title => 'Scene';
+
+  @override
+  String get status => 'Stato';
+
+  @override
+  String get no_match_found => 'Nessuna corrispondenza trovata';
+
+  @override
+  String get error_label => 'Errore';
 }

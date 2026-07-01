@@ -1093,5 +1093,8 @@
   "stats_subtitle_0_unique_items": "0개의 고유 아이템",
   "markers_search_hint": "검색 마커",
   "tags_title": "태그",
-  "scenes_title": "장면"
+  "scenes_title": "장면",
+  "error_label": "오류",
+  "status": "상태",
+  "no_match_found": "일치하는 항목이 없습니다."
 }

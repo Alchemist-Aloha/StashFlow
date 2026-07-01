@@ -3029,6 +3029,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get scenes_title => '场景';
+
+  @override
+  String get status => '地位';
+
+  @override
+  String get no_match_found => '未找到匹配项';
+
+  @override
+  String get error_label => '错误';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6056,6 +6065,15 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get scenes_title => '场景';
+
+  @override
+  String get status => '地位';
+
+  @override
+  String get no_match_found => '未找到匹配项';
+
+  @override
+  String get error_label => '错误';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -9087,4 +9105,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get scenes_title => '場景';
+
+  @override
+  String get status => '地位';
+
+  @override
+  String get no_match_found => '未找到匹配項';
+
+  @override
+  String get error_label => '錯誤';
 }

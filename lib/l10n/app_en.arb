@@ -1470,5 +1470,8 @@
   "stats_subtitle_0_unique_items": "0 unique items",
   "markers_search_hint": "Search markers",
   "tags_title": "Tags",
-  "scenes_title": "Scenes"
+  "scenes_title": "Scenes",
+  "status": "Status",
+  "no_match_found": "No match found",
+  "error_label": "Error"
 }

@@ -1114,5 +1114,8 @@
   "stats_subtitle_0_unique_items": "0 einzigartige Artikel",
   "markers_search_hint": "Suchmarkierungen",
   "tags_title": "Schlagworte",
-  "scenes_title": "Szenen"
+  "scenes_title": "Szenen",
+  "error_label": "Fehler",
+  "status": "Status",
+  "no_match_found": "Keine Übereinstimmung gefunden"
 }

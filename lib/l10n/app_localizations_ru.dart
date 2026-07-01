@@ -3189,4 +3189,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get scenes_title => 'Сцены';
+
+  @override
+  String get status => 'Статус';
+
+  @override
+  String get no_match_found => 'Соответствие не найдено';
+
+  @override
+  String get error_label => 'Ошибка';
 }

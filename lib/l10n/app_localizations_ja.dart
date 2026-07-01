@@ -3086,4 +3086,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get scenes_title => 'シーン';
+
+  @override
+  String get status => '状態';
+
+  @override
+  String get no_match_found => '一致するものが見つかりませんでした';
+
+  @override
+  String get error_label => 'エラー';
 }

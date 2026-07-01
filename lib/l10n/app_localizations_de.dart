@@ -3194,4 +3194,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get scenes_title => 'Szenen';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get no_match_found => 'Keine Übereinstimmung gefunden';
+
+  @override
+  String get error_label => 'Fehler';
 }

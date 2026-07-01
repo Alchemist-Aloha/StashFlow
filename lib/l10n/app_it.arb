@@ -1098,5 +1098,8 @@
   "stats_subtitle_0_unique_items": "0 oggetti unici",
   "markers_search_hint": "Cerca marcatori",
   "tags_title": "Tag",
-  "scenes_title": "Scene"
+  "scenes_title": "Scene",
+  "error_label": "Errore",
+  "status": "Stato",
+  "no_match_found": "Nessuna corrispondenza trovata"
 }

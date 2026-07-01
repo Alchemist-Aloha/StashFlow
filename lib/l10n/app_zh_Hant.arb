@@ -1079,5 +1079,8 @@
   "stats_subtitle_0_unique_items": "0 件獨特物品",
   "markers_search_hint": "搜尋標記",
   "tags_title": "標籤",
-  "scenes_title": "場景"
+  "scenes_title": "場景",
+  "error_label": "錯誤",
+  "status": "地位",
+  "no_match_found": "未找到匹配項"
 }

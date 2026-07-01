@@ -1093,5 +1093,8 @@
   "stats_subtitle_0_unique_items": "0 objets uniques",
   "markers_search_hint": "Marqueurs de recherche",
   "tags_title": "Balises",
-  "scenes_title": "Scènes"
+  "scenes_title": "Scènes",
+  "error_label": "Erreur",
+  "status": "Statut",
+  "no_match_found": "Aucune correspondance trouvée"
 }

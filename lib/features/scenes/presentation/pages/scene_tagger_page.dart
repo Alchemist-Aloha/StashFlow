@@ -936,10 +936,16 @@ class _ScrapedSceneSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (error != null) {
-      return _MetadataPanel(title: title, rows: [('Error', error!)]);
+      return _MetadataPanel(
+        title: title,
+        rows: [(context.l10n.error_label, error!)],
+      );
     }
     if (scraped == null) {
-      return _MetadataPanel(title: title, rows: [('Status', 'No match found')]);
+      return _MetadataPanel(
+        title: title,
+        rows: [(context.l10n.status, context.l10n.no_match_found)],
+      );
     }
 
     return _MetadataPanel(

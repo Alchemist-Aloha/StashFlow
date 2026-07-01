@@ -3084,4 +3084,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get scenes_title => '장면';
+
+  @override
+  String get status => '상태';
+
+  @override
+  String get no_match_found => '일치하는 항목이 없습니다.';
+
+  @override
+  String get error_label => '오류';
 }
