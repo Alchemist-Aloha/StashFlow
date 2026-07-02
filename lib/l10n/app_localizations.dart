@@ -5681,6 +5681,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scenes'**
   String get scenes_title;
+
+  /// No description provided for @mini_player_now_playing.
+  ///
+  /// In en, this message translates to:
+  /// **'Now playing: {title}. Tap to open scene details.'**
+  String mini_player_now_playing(String title);
 }
 
 class _AppLocalizationsDelegate

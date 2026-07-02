@@ -3086,4 +3086,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get scenes_title => 'シーン';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return '現在再生中: $title。タップしてシーンの詳細を開きます。';
+  }
 }

@@ -3212,4 +3212,9 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get scenes_title => 'Scene';
+
+  @override
+  String mini_player_now_playing(String title) {
+    return 'Ora in riproduzione: $title. Tocca per aprire i dettagli della scena.';
+  }
 }

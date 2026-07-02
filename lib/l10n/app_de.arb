@@ -1114,5 +1114,6 @@
   "stats_subtitle_0_unique_items": "0 einzigartige Artikel",
   "markers_search_hint": "Suchmarkierungen",
   "tags_title": "Schlagworte",
-  "scenes_title": "Szenen"
+  "scenes_title": "Szenen",
+  "mini_player_now_playing": "Spielt gerade: {title}. Tippen Sie hier, um Szenendetails zu öffnen."
 }
