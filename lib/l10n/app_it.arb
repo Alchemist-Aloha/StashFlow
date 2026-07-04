@@ -1098,5 +1098,6 @@
   "stats_subtitle_0_unique_items": "0 oggetti unici",
   "markers_search_hint": "Cerca marcatori",
   "tags_title": "Tag",
-  "scenes_title": "Scene"
+  "scenes_title": "Scene",
+  "mini_player_now_playing": "Ora in riproduzione: {displayTitle}. Tocca per aprire i dettagli della scena."
 }

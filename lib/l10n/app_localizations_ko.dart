@@ -3084,4 +3084,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get scenes_title => '장면';
+
+  @override
+  String mini_player_now_playing(String displayTitle) {
+    return '현재 재생 중: $displayTitle. 장면 세부정보를 열려면 탭하세요.';
+  }
 }
