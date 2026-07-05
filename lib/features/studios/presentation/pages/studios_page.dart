@@ -366,7 +366,7 @@ class _StudiosPageState extends ConsumerState<StudiosPage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            trailing: Text('0', style: context.textTheme.bodySmall),
+            trailing: Text(context.l10n.scene_dedup_value_label('0'), style: context.textTheme.bodySmall),
           ),
         ),
       ),

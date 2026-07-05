@@ -3086,4 +3086,25 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get scenes_title => 'シーン';
+
+  @override
+  String get cache_label_image => '画像';
+
+  @override
+  String get cache_label_video => 'ビデオ';
+
+  @override
+  String now_playing_tap_to_open(String title) {
+    return '現在再生中: $title。タップしてシーンの詳細を開きます。';
+  }
+
+  @override
+  String scene_size_dropdown_label(String size) {
+    return '$size';
+  }
+
+  @override
+  String scene_dedup_value_label(String value) {
+    return '$value';
+  }
 }

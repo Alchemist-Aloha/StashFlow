@@ -552,7 +552,7 @@ class _SceneTaggerPageState extends ConsumerState<SceneTaggerPage> {
                   dropdownMenuEntries: _pageSizeOptions
                       .map(
                         (size) =>
-                            DropdownMenuEntry(value: size, label: '$size'),
+                            DropdownMenuEntry(value: size, label: context.l10n.scene_size_dropdown_label(size)),
                       )
                       .toList(growable: false),
                   onSelected: (value) {

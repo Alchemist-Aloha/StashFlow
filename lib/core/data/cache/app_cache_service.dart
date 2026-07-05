@@ -271,7 +271,7 @@ class AppCacheService {
       dirs: await _imageCacheDirs(),
       maxMb: maxMb,
       extensions: null,
-      label: 'image',
+      label: 'image', // These are for debug prints / analytics, leave as is or update to context but no context here
     );
   }
 

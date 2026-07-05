@@ -301,7 +301,7 @@ class _GalleryFilterPanelState extends ConsumerState<GalleryFilterPanel> {
                     : Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('$stars'),
+                          Text(context.l10n.scene_dedup_value_label(stars.toString())),
                           SizedBox(width: context.dimensions.spacingSmall / 2),
                           Icon(
                             Icons.star,

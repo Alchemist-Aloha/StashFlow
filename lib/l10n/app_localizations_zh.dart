@@ -3029,6 +3029,27 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get scenes_title => '场景';
+
+  @override
+  String get cache_label_image => '图像';
+
+  @override
+  String get cache_label_video => '视频';
+
+  @override
+  String now_playing_tap_to_open(String title) {
+    return '正在播放：$title。点击可打开场景详细信息。';
+  }
+
+  @override
+  String scene_size_dropdown_label(String size) {
+    return '$size';
+  }
+
+  @override
+  String scene_dedup_value_label(String value) {
+    return '$value';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6056,6 +6077,27 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get scenes_title => '场景';
+
+  @override
+  String get cache_label_image => '图像';
+
+  @override
+  String get cache_label_video => '视频';
+
+  @override
+  String now_playing_tap_to_open(String title) {
+    return '正在播放：$title。点击可打开场景详细信息。';
+  }
+
+  @override
+  String scene_size_dropdown_label(String size) {
+    return '$size';
+  }
+
+  @override
+  String scene_dedup_value_label(String value) {
+    return '$value';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -9087,4 +9129,25 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get scenes_title => '場景';
+
+  @override
+  String get cache_label_image => '影像';
+
+  @override
+  String get cache_label_video => '影片';
+
+  @override
+  String now_playing_tap_to_open(String title) {
+    return '正在播放：$title。點擊可開啟場景詳細資訊。';
+  }
+
+  @override
+  String scene_size_dropdown_label(String size) {
+    return '$size';
+  }
+
+  @override
+  String scene_dedup_value_label(String value) {
+    return '$value';
+  }
 }

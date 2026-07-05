@@ -502,7 +502,7 @@ class _Controls extends StatelessWidget {
                         .map(
                           (value) => DropdownMenuEntry<int>(
                             value: value,
-                            label: '$value',
+                            label: context.l10n.scene_dedup_value_label(value.toString()),
                             style: menuItemStyle,
                           ),
                         )

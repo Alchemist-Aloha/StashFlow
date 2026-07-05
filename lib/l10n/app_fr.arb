@@ -1093,5 +1093,10 @@
   "stats_subtitle_0_unique_items": "0 objets uniques",
   "markers_search_hint": "Marqueurs de recherche",
   "tags_title": "Balises",
-  "scenes_title": "Scènes"
+  "scenes_title": "Scènes",
+  "cache_label_image": "image",
+  "cache_label_video": "vidéo",
+  "now_playing_tap_to_open": "Lecture en cours : {title}. Appuyez pour ouvrir les détails de la scène.",
+  "scene_size_dropdown_label": "{size}",
+  "scene_dedup_value_label": "{value}"
 }

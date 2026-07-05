@@ -3084,4 +3084,25 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get scenes_title => '장면';
+
+  @override
+  String get cache_label_image => '영상';
+
+  @override
+  String get cache_label_video => '동영상';
+
+  @override
+  String now_playing_tap_to_open(String title) {
+    return '지금 재생 중: $title. 장면 세부정보를 열려면 탭하세요.';
+  }
+
+  @override
+  String scene_size_dropdown_label(String size) {
+    return '$size';
+  }
+
+  @override
+  String scene_dedup_value_label(String value) {
+    return '$value';
+  }
 }

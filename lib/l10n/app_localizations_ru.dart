@@ -3189,4 +3189,25 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get scenes_title => 'Сцены';
+
+  @override
+  String get cache_label_image => 'изображение';
+
+  @override
+  String get cache_label_video => 'видео';
+
+  @override
+  String now_playing_tap_to_open(String title) {
+    return 'Сейчас играет: $title. Нажмите, чтобы открыть сведения о сцене.';
+  }
+
+  @override
+  String scene_size_dropdown_label(String size) {
+    return '$size';
+  }
+
+  @override
+  String scene_dedup_value_label(String value) {
+    return '$value';
+  }
 }
